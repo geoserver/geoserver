@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>GeologicUnit</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <!-- test mappingName won't break getFeature request for top level feature -->
+            <sourceDataStore>GeologicUnit</sourceDataStore>
+            <sourceType>Nillable</sourceType>
+            <targetElement>gsml:MappedFeature</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>
+                        gsml:MappedFeature
+					</targetAttribute>
+                    <idExpression>
+                        <OCQL>strConCat('gsml.mappedfeature.',geologicunit_id)</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>
+                       gsml:observationMethod/gsml:CGI_TermValue/gsml:value
+					</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>observationmethod</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

@@ -1,0 +1,274 @@
+<!ELEMENT WMT_MS_Capabilities (Service, Capability) >
+
+<!ATTLIST WMT_MS_Capabilities
+	  version CDATA #FIXED "1.1.1"
+	  updateSequence CDATA #IMPLIED>
+
+<!-- Elements used in multiple places. -->
+
+<!-- The Name is typically for machine-to-machine communication. -->
+<!ELEMENT Name (#PCDATA) >
+
+<!-- The Title is for informative display to a human. -->
+<!ELEMENT Title (#PCDATA) >
+
+<!-- The abstract is a longer narrative description of an object. -->
+<!ELEMENT Abstract (#PCDATA) > 
+
+<!-- An OnlineResource is typically an HTTP URL.  The URL is placed in the
+xlink:href attribute.  The xmlns:xlink attribute is a required XML namespace
+declaration. -->
+<!ELEMENT OnlineResource EMPTY>
+<!ATTLIST OnlineResource
+          xmlns:xlink CDATA #FIXED "http://www.w3.org/1999/xlink"
+          xlink:type CDATA #FIXED "simple"
+          xlink:href CDATA #REQUIRED >
+
+<!-- A container for listing an available format's MIME type. -->
+<!ELEMENT Format (#PCDATA) >
+
+
+<!-- General service metadata. -->
+
+<!ELEMENT Service (Name, Title, Abstract?, KeywordList?, OnlineResource,
+                   ContactInformation?, Fees?, AccessConstraints?) >
+
+<!-- List of keywords or keyword phrases to help catalog searching. -->
+<!ELEMENT KeywordList (Keyword*) >
+
+<!-- A single keyword or phrase. -->
+<!ELEMENT Keyword (#PCDATA) >
+
+<!-- Information about a contact person for the service. -->
+<!ELEMENT ContactInformation  (ContactPersonPrimary?, ContactPosition?,
+                               ContactAddress?, ContactVoiceTelephone?,
+                               ContactFacsimileTelephone?,
+                               ContactElectronicMailAddress?) >
+
+<!--The primary contact person.-->
+<!ELEMENT ContactPersonPrimary  (ContactPerson, ContactOrganization) >
+
+<!--The person to contact.-->
+<!ELEMENT ContactPerson  (#PCDATA) >
+
+<!--The organization supplying the service.-->
+<!ELEMENT ContactOrganization  (#PCDATA) >
+
+<!--The position title for the contact person.-->
+<!ELEMENT ContactPosition  (#PCDATA) >
+
+<!--The address for the contact supplying the service.-->
+<!ELEMENT ContactAddress  (AddressType,Address,City,StateOrProvince,PostCode,
+               Country) >
+
+<!--The type of address.-->
+<!ELEMENT AddressType  (#PCDATA) >
+
+<!--The street address.-->
+<!ELEMENT Address  (#PCDATA) >
+
+<!--The address city.-->
+<!ELEMENT City  (#PCDATA) >
+
+<!--The state or province.-->
+<!ELEMENT StateOrProvince  (#PCDATA) >
+
+<!--The zip or postal code.-->
+<!ELEMENT PostCode  (#PCDATA) >
+
+<!--The address country.-->
+<!ELEMENT Country  (#PCDATA) >
+
+<!--Contact telephone number.-->
+<!ELEMENT ContactVoiceTelephone  (#PCDATA) >
+
+<!--The contact fax number.-->
+<!ELEMENT ContactFacsimileTelephone  (#PCDATA) >
+
+<!--The e-mail address for the contact.-->
+<!ELEMENT ContactElectronicMailAddress  (#PCDATA) >
+
+
+<!-- Elements indicating what fees or access constraints are imposed. -->
+<!ELEMENT Fees (#PCDATA)>
+<!ELEMENT AccessConstraints (#PCDATA)>
+
+
+<!-- A Capability lists available request types, how exceptions
+may be reported, and whether any vendor-specific capabilities are defined.  It
+also includes an optional list of map layers available from this server. -->
+<!ELEMENT Capability 
+          (Request, Exception, VendorSpecificCapabilities?,
+	   UserDefinedSymbolization?, Layer?) >
+
+<!-- Available WMS Operations are listed in a Request element. -->
+<!ELEMENT Request (GetCapabilities, GetMap, GetFeatureInfo?,
+                   DescribeLayer?, GetLegendGraphic?, GetStyles?, PutStyles?) >
+
+<!-- For each operation offered by the server, list the available output
+formats and the online resource. -->
+<!ELEMENT GetCapabilities (Format+, DCPType+)>
+<!ELEMENT GetMap (Format+, DCPType+)>
+<!ELEMENT GetFeatureInfo (Format+, DCPType+)>
+<!-- The following optional operations only apply to SLD-enabled WMS -->
+<!ELEMENT DescribeLayer (Format+, DCPType+)>
+<!ELEMENT GetLegendGraphic (Format+, DCPType+)>
+<!ELEMENT GetStyles (Format+, DCPType+)>
+<!ELEMENT PutStyles (Format+, DCPType+)>
+
+<!-- Available Distributed Computing Platforms (DCPs) are
+listed here.  At present, only HTTP is defined. -->
+<!ELEMENT DCPType (HTTP) >
+
+<!-- Available HTTP request methods.  One or both may be supported. -->
+<!ELEMENT HTTP (Get | Post)+ >
+
+<!-- URL prefix for each HTTP request method. -->
+<!ELEMENT Get (OnlineResource) >
+<!ELEMENT Post (OnlineResource) >
+
+<!-- An Exception element indicates which error-reporting formats are supported. -->
+<!ELEMENT Exception (Format+)>
+
+<!-- Optional user-defined symbolization (used only by SLD-enabled WMSes). -->
+<!ELEMENT UserDefinedSymbolization EMPTY >
+<!ATTLIST UserDefinedSymbolization
+          SupportSLD (0 | 1) "0"
+          UserLayer (0 | 1) "0"
+          UserStyle (0 | 1) "0"
+          RemoteWFS (0 | 1) "0" >
+
+<!-- Nested list of zero or more map Layers offered by this server. -->
+<!ELEMENT Layer ( Name?, Title, Abstract?, KeywordList?, SRS*,
+                  LatLonBoundingBox?, BoundingBox*, Dimension*, Extent*,
+                  Attribution?, AuthorityURL*, Identifier*, MetadataURL*, DataURL*,
+                  FeatureListURL*, Style*, ScaleHint?, Layer* ) >
+
+<!-- Optional attributes-->
+<!ATTLIST Layer queryable (0 | 1) "0"
+                cascaded CDATA #IMPLIED
+                opaque (0 | 1) "0"
+                noSubsets (0 | 1) "0"
+                fixedWidth CDATA #IMPLIED
+                fixedHeight CDATA #IMPLIED >
+          
+<!-- Identifier for a single Spatial Reference Systems (SRS). -->
+<!ELEMENT SRS (#PCDATA) >
+
+<!-- The LatLonBoundingBox attributes indicate the edges of the enclosing
+rectangle in latitude/longitude decimal degrees (as in SRS EPSG:4326 [WGS1984
+lat/lon]). -->
+<!ELEMENT LatLonBoundingBox EMPTY>
+<!ATTLIST LatLonBoundingBox 
+          minx CDATA #REQUIRED
+          miny CDATA #REQUIRED
+          maxx CDATA #REQUIRED
+          maxy CDATA #REQUIRED>
+
+<!-- The BoundingBox attributes indicate the edges of the bounding box
+in units of the specified spatial reference system. -->
+<!ELEMENT BoundingBox EMPTY>
+<!ATTLIST BoundingBox 
+          SRS CDATA #REQUIRED
+          minx CDATA #REQUIRED
+          miny CDATA #REQUIRED
+          maxx CDATA #REQUIRED
+          maxy CDATA #REQUIRED
+          resx CDATA #IMPLIED
+          resy CDATA #IMPLIED>
+
+<!-- The Dimension element declares the _existence_ of a dimension. -->
+<!ELEMENT Dimension EMPTY >
+<!ATTLIST Dimension
+          name CDATA #REQUIRED
+          units CDATA #REQUIRED
+          unitSymbol CDATA #IMPLIED>
+
+<!-- The Extent element indicates what _values_ along a dimension are valid. -->
+<!ELEMENT Extent (#PCDATA) >
+<!ATTLIST Extent
+          name CDATA #REQUIRED
+          default CDATA #IMPLIED
+          nearestValue (0 | 1) "0">
+
+<!-- Attribution indicates the provider of a Layer or collection of Layers.
+The provider's URL, descriptive title string, and/or logo image URL may be
+supplied.  Client applications may choose to display one or more of these
+items.  A format element indicates the MIME type of the logo image located at
+LogoURL.  The logo image's width and height assist client applications in
+laying out space to display the logo. -->
+<!ELEMENT Attribution ( Title?, OnlineResource?, LogoURL? )>
+<!ELEMENT LogoURL (Format, OnlineResource) >
+<!ATTLIST LogoURL
+          width NMTOKEN #REQUIRED
+          height NMTOKEN #REQUIRED>
+
+<!-- A Map Server may use zero or more MetadataURL elements to offer detailed,
+standardized metadata about the data underneath a particular layer. The type
+attribute indicates the standard to which the metadata complies.  Two types
+are defined at present: 'TC211' = ISO TC211 19115; 'FGDC' = FGDC CSDGM.  The
+format element indicates how the metadata is structured. -->
+<!ELEMENT MetadataURL (Format, OnlineResource) >
+<!ATTLIST MetadataURL
+          type ( TC211 | FGDC ) #REQUIRED>
+
+<!-- A Map Server may use zero or more Identifier elements to list ID numbers
+or labels defined by a particular Authority.  For example, the Global Change
+Master Directory (gcmd.gsfc.nasa.gov) defines a DIF_ID label for every
+dataset.  The authority name and explanatory URL are defined in a separate
+AuthorityURL element, which may be defined once and inherited by subsidiary
+layers.  Identifiers themselves are not inherited. -->
+
+<!ELEMENT AuthorityURL (OnlineResource) >
+<!ATTLIST AuthorityURL
+          name NMTOKEN #REQUIRED >
+<!ELEMENT Identifier (#PCDATA) >
+<!ATTLIST Identifier
+          authority CDATA #REQUIRED >
+
+<!-- A Map Server may use DataURL to offer more information about the data
+underneath a particular layer. While the semantics are not well-defined, as
+long as the results of an HTTP GET request against the DataURL are properly
+MIME-typed, Viewer Clients and Cascading Map Servers can make use of this. -->
+<!ELEMENT DataURL (Format, OnlineResource) >
+
+<!-- A Map Server may use FeatureListURL to point to a list of the features
+represented in a Layer. -->
+<!ELEMENT FeatureListURL (Format, OnlineResource) >
+
+<!-- A Style element lists the name by which a style is requested and a
+human-readable title for pick lists, optionally (and ideally) provides a
+human-readable description, and optionally gives a style URL. -->
+<!ELEMENT Style ( Name, Title, Abstract?,
+                  LegendURL*, StyleSheetURL?, StyleURL? ) >
+
+<!-- A Map Server may use zero or more LegendURL elements to provide an
+image(s) of a legend relevant to each Style of a Layer.  The Format element
+indicates the MIME type of the legend. Width and height attributes are
+provided to assist client applications in laying out space to display the
+legend. -->
+<!ELEMENT LegendURL (Format, OnlineResource) >
+<!ATTLIST LegendURL
+          width NMTOKEN #REQUIRED
+          height NMTOKEN #REQUIRED>
+
+<!-- StyleSheeetURL provides symbology information foreach Style of a Layer. -->
+<!ELEMENT StyleSheetURL (Format, OnlineResource) >
+
+<!-- A Map Server may use StyleURL to offer more information about the data or
+symbology underlying a particular Style. While the semantics are not
+well-defined, as long as the results of an HTTP GET request against the
+StyleURL are properly MIME-typed, Viewer Clients and Cascading Map Servers can
+make use of this. A possible use could be to allow a Map Server to provide
+legend information. -->
+<!ELEMENT StyleURL (Format, OnlineResource) >
+
+<!-- Minimum and maximum scale hints for which it is appropriate to
+display this layer. -->
+<!ELEMENT ScaleHint EMPTY>
+<!ATTLIST ScaleHint
+          min CDATA #REQUIRED
+          max CDATA #REQUIRED>
+
+
+

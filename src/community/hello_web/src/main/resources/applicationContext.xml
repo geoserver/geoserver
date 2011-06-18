@@ -1,0 +1,10 @@
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+      <beans>
+         <bean id="helloPage" class="org.geoserver.web.MenuPageInfo">
+           <property name="id" value="helloPage"/>
+           <property name="titleKey" value="HelloPage.page.title"/>
+           <property name="descriptionKey" value="HelloPage.page.description"/>
+           <property name="componentClass" value="org.geoserver.helloweb.HelloPage"/>
+         </bean>
+     </beans>

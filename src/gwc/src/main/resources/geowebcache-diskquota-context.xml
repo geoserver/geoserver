@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="DiskQuotaConfigLoader" class="org.geowebcache.diskquota.ConfigLoader">
+    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcAppCtx" />
+    <constructor-arg ref="gwcTLDispatcher" />
+  </bean>
+
+  <bean id="DiskQuotaMonitor" class="org.geowebcache.diskquota.DiskQuotaMonitor">
+    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="DiskQuotaConfigLoader" />
+    <constructor-arg ref="gwcTLDispatcher" />
+    <constructor-arg ref="gwcStorageBroker" />
+    <constructor-arg ref="DiskQuotaStore" />
+    <constructor-arg ref="gwcCacheCleaner" />
+  </bean>
+
+  <bean id="gwcTilePageCalculator" class="org.geowebcache.diskquota.storage.TilePageCalculator">
+    <constructor-arg ref="gwcTLDispatcher" />
+  </bean>
+
+  <bean id="DiskQuotaStore" class="org.geowebcache.diskquota.storage.BDBQuotaStore">
+    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcTilePageCalculator" />
+  </bean>
+
+  <bean id="gwcCacheCleaner" class="org.geowebcache.diskquota.CacheCleaner">
+    <constructor-arg ref="gwcTileBreeder" />
+    <constructor-arg ref="DiskQuotaStore" />
+  </bean>
+
+  <!--bean id="mockWMSSource" class="org.geowebcache.util.MockWMSLayerSource"> <description>REMOVE THIS, it's a fake WMS 
+    source for all layers!!!</description> <constructor-arg ref="gwcTLDispatcher" /> </bean -->
+
+  <bean id="gwdDiskQuotaResourcetFinder" class="org.geowebcache.diskquota.rest.DiskQuotaFinder">
+    <constructor-arg ref="DiskQuotaMonitor" />
+  </bean>
+  
+  <bean id="gwcDiskQuotaRestDispatcher" class="org.geowebcache.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key>
+            <value>/rest/diskquota/{layer}.{extension}"</value>
+          </key>
+          <ref bean="gwdDiskQuotaResourcetFinder" />
+        </entry>
+        <entry>
+          <key>
+            <value>/rest/diskquota.{extension}</value>
+          </key>
+          <ref bean="gwdDiskQuotaResourcetFinder" />
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  
+</beans>

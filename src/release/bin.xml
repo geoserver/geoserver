@@ -1,0 +1,103 @@
+<assembly>
+ <id>bin</id>
+ <formats>
+  <format>zip</format>
+ </formats>
+ <includeBaseDirectory>false</includeBaseDirectory>
+ <fileSets>
+  <fileSet>
+   <!-- the main webapp -->
+   <directory>web/app/target/geoserver</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT/webapps/geoserver</outputDirectory>
+   <includes>
+    <include>**/*</include>
+   </includes>
+   <excludes>
+    <exclude>META-INF</exclude>
+    <exclude>META-INF/**/*</exclude>
+    <exclude>data</exclude>
+    <exclude>data/**/*</exclude>
+   </excludes>
+  </fileSet>
+  <fileSet>
+   <!-- the data directory -->
+   <directory>web/app/target/geoserver/data</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT/data_dir</outputDirectory>
+   <includes>
+    <include>**/*</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <!-- the libs needed to run jetty -->
+   <directory>release/target/dependency</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT/lib</outputDirectory>
+   <includes>
+    <include>ant-*.jar</include>
+    <include>commons-el-*.jar</include>
+    <include>commons-logging-*.jar</include>
+    <include>log4j-*.jar</include>
+    <include>jasper-compiler-*.jar</include>
+    <include>jasper-compiler-jdt-*.jar</include>
+    <include>jasper-runtime-*.jar</include>
+    <include>jetty-*.jar</include>
+    <include>jetty-util-*.jar</include>
+    <include>jsp-api-*.jar</include>
+    <include>servlet-api-*.jar</include>
+    <include>slf4j-simple-*.jar</include>
+    <include>xercesImpl-*.jar</include>
+    <include>xmlParserAPIs-*.jar</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <!-- windows batch files -->
+   <directory>release/bin</directory>
+   <lineEnding>keep</lineEnding>
+   <outputDirectory>geoserver-2.1-SNAPSHOT/bin</outputDirectory>
+   <includes>
+    <include>*.bat</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <!-- unix shell scripts -->
+   <directory>release/bin</directory>
+   <lineEnding>unix</lineEnding>
+   <outputDirectory>geoserver-2.1-SNAPSHOT/bin</outputDirectory>
+   <fileMode>0755</fileMode>
+   <directoryMode>0755</directoryMode>
+   <includes>
+    <include>*.sh</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <!-- the README and other text files -->
+   <directory>release</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT</outputDirectory>
+   <includes>
+    <include>LICENSE.txt</include>
+    <include>GPL.txt</include>
+    <include>RUNNING.txt</include>
+    <include>README.txt</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <directory>target</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT</outputDirectory>
+   <includes>
+    <include>VERSION.txt</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <!-- jetty configuration -->
+   <directory>release/jetty</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT</outputDirectory>
+   <includes>
+    <include>**/*</include>
+   </includes>
+  </fileSet>
+  <fileSet>
+   <!-- empty log directory -->
+   <directory>release/logs</directory>
+   <outputDirectory>geoserver-2.1-SNAPSHOT</outputDirectory>
+  </fileSet>
+ </fileSets>
+</assembly>

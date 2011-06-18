@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+<xsd:schema 
+   targetNamespace="http://www.opengis.net/wfs"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified">
+
+   <!-- ==============================================================
+        Includes and Imports
+        ============================================================== -->
+   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../../gml/2.1.2.1/feature.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="../../filter/1.0.0/filter.xsd"/>
+
+   <!-- ==============================================================
+        REQUEST MESSAGES 
+        ============================================================== -->
+   <xsd:element name="GetCapabilities" type="wfs:GetCapabilitiesType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The GetCapapbilities element is used to request that a Web Feature
+            Service generate an XML document describing the organization
+            providing the service, the WFS operations that the service
+            supports, a list of feature types that the service can operate
+            on and list of filtering capabilities that the service support.
+            Such an XML document is called a capabilities document.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="DescribeFeatureType" type="wfs:DescribeFeatureTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The DescribeFeatureType element is used to request that a Web
+            Feature Service generate a document describing one or more 
+            feature types.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="GetFeature" type="wfs:GetFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The GetFeature element is used to request that a Web Feature
+            Service return feature instances of one or more feature types.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+
+   <!-- ==============================================================
+        RESPONSE MESSAGES 
+        ============================================================== -->
+   <xsd:element name="FeatureCollection"
+                type="wfs:FeatureCollectionType"
+                substitutionGroup="gml:_FeatureCollection">
+      <xsd:annotation>
+         <xsd:documentation>
+            This element is a container for the response to a GetFeature
+            or GetFeatureWithLock (WFS-transaction.xsd) request.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+
+   <!-- ==============================================================
+        COMMON ATTRIBUTES DOCUMENTATION
+        ==============================================================
+        VERSION:
+           The version attribute is used to indicate to which version
+           of the Web Feature Service Implementation Specification a
+           request conforms.
+
+        SERVICE:
+           The service attribute is used to indicate which service
+           should process an operation.  This attribute is particularly
+           useful in the case where a single server implements multiple
+           services (e.g. WMS, WFS, WCS, etc ...).
+
+        HANDLE:
+           The purpose of the handle attribute is to allow a client app
+           to associate a mnemonic name with a request for error handling
+           purposes.  If a "handle" is specified, and an exception occurs,
+           a Web Feature Service may use the handle to identify the
+           offending element.
+
+        TYPENAME:
+           The typeName attribute is used to specify the name of the
+           feature type to be queried.  The term "feature type" is a
+           term used by convention to refer to the container storing 
+           feature instances.  It does not mean type in the programmatic 
+           sense.  The typeName attribute should, instead, be thought
+           of as the feature name. -->
+
+   <!-- ==============================================================
+        TYPES
+        ============================================================== -->
+   <!-- GETCAPABILITIES -->
+   <xsd:complexType name="GetCapabilitiesType">
+      <xsd:annotation>
+         <xsd:documentation>
+            This type defines the GetCapabilities operation.  In response
+            to a GetCapabilities request, a Web Feature Service must 
+            generate a capabilities XML document that validates against
+            the schemas defined in WFS-capabilities.xsd.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:attribute name="version"
+                     type="xsd:string" use="optional" fixed="1.0.0"/>
+      <xsd:attribute name="service"
+                     type="xsd:string" use="required" fixed="WFS"/>
+   </xsd:complexType>
+   <!-- DESCRIBEFEATURETYPE -->
+   <xsd:complexType name="DescribeFeatureTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The DescribeFeatureType operation allows a client application
+            to request that a Web Feature Service describe one or more
+            feature types.   A Web Feature Service must be able to generate
+            feature descriptions as valid GML2 application schemas.
+
+            The schemas generated by the DescribeFeatureType operation can
+            be used by a client application to validate the output.
+
+            Feature instances within the WFS interface must be specified
+            using GML2.  The schema of feature instances specified within
+            the WFS interface must validate against the feature schemas 
+            generated by the DescribeFeatureType request.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="TypeName" type="xsd:QName"
+                      minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+               <xsd:documentation>
+                  The TypeName element is used to enumerate the feature types
+                  to be described.  If no TypeName elements are specified
+                  then all features should be described.
+               </xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="version"
+                     type="xsd:string" use="required" fixed="1.0.0"/>
+      <xsd:attribute name="service"
+                     type="xsd:string" use="required" fixed="WFS"/>
+      <xsd:attribute name="outputFormat"
+                     type="xsd:string" use="optional" default="XMLSCHEMA">
+         <xsd:annotation>
+            <xsd:documentation>
+               The outputFormat attribute is used to specify what schema
+               description language should be used to describe features.
+               The default value of XMLSCHEMA means that the Web Feature
+               Service must generate a GML2 application schema that can
+               be used to validate the GML2 output of a GetFeature request
+               or feature instances specified in Transaction operations.
+            </xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <!-- GETFEATURE -->
+   <xsd:complexType name="GetFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
+            A GetFeature element contains one or more Query elements
+            that describe a query operation on one feature type.  In
+            response to a GetFeature request, a Web Feature Service
+            must be able to generate a GML2 response that validates
+            using a schema generated by the DescribeFeatureType request.
+            A Web Feature Service may support other possibly non-XML
+            (and even binary) output formats as long as those formats
+            are advertised in the capabilities document.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="version"
+                     type="xsd:string" use="required" fixed="1.0.0"/>
+      <xsd:attribute name="service"
+                     type="xsd:string" use="required" fixed="WFS"/>
+      <xsd:attribute name="handle"
+                     type="xsd:string" use="optional"/>
+      <xsd:attribute name="outputFormat"
+                     type="xsd:string" use="optional" default="GML2">
+         <xsd:annotation>
+            <xsd:documentation>
+               The outputFormat attribute is used to specify the output
+               format that the Web Feature Service should generate in
+               response to a GetFeature or GetFeatureWithLock element.
+               The default value of GML2 indicates that the output is an
+               XML document that conforms to the Geography Markup Language
+               (GML) Implementation Specification V2.0.
+
+               Other values may be used to specify other formats as long
+               as those values are advertised in the capabilities document.
+               For example, the value WKB may be used to indicate that a 
+               Well Known Binary format be used to encode the output.
+            </xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="maxFeatures" type="xsd:positiveInteger"
+                     use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
+               The maxFeatures attribute is used to specify the maximum
+               number of features that a GetFeature operation should
+               generate (regardless of the actual number of query hits).
+            </xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:element name="Query" type="wfs:QueryType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The Query element is used to describe a single query.
+            One or more Query elements can be specified inside a
+            GetFeature element so that multiple queries can be 
+            executed in one request.  The output from the various
+            queries are combined in a wfs:FeatureCollection element
+            to form the response to the request.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="QueryType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The Query element is of type QueryType.
+         </xsd:documentation>
+      </xsd:annotation>
+     <xsd:sequence>
+       <xsd:element ref="ogc:PropertyName" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+             <xsd:documentation>
+                The PropertyName element is used to specify one or more
+                properties of a feature whose values are to be retrieved
+                by a Web Feature Service.  
+                
+                While a Web Feature Service should endeavour to satisfy
+                the exact request specified, in some instance this may
+                not be possible.  Specifically, a Web Feature Service
+                must generate a valid GML2 response to a Query operation.
+                The schema used to generate the output may include 
+                properties that are mandatory.  In order that the output
+                validates, these mandatory properties must be specified
+                in the request.  If they are not, a Web Feature Service
+                may add them automatically to the Query before processing
+                it.  Thus a client application should, in general, be
+                prepared to receive more properties than it requested.
+
+                Of course, using the DescribeFeatureType request, a client
+                application can determine which properties are mandatory
+                and request them in the first place.
+             </xsd:documentation>
+          </xsd:annotation>
+       </xsd:element>
+       <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1">
+          <xsd:annotation>
+             <xsd:documentation>
+                The Filter element is used to define spatial and/or non-spatial
+                constraints on query.  Spatial constrains use GML2 to specify
+                the constraining geometry.  A full description of the Filter
+                element can be found in the Filter Encoding Implementation
+                Specification.
+             </xsd:documentation>
+          </xsd:annotation>
+       </xsd:element>
+     </xsd:sequence>
+     <xsd:attribute name="handle"
+                    type="xsd:string" use="optional"/>
+     <xsd:attribute name="typeName"
+                    type="xsd:QName" use="required"/>
+     <xsd:attribute name="featureVersion"
+                    type="xsd:string" use="optional">
+        <xsd:annotation>
+           <xsd:documentation>
+              For systems that implement versioning, the featureVersion
+              attribute is used to specify which version of a particular
+              feature instance is to be retrieved.  A value of ALL means
+              that all versions should be retrieved.  An integer value
+              'i', means that the ith version should be retrieve if it
+              exists or the most recent version otherwise.
+           </xsd:documentation>
+        </xsd:annotation>
+     </xsd:attribute>
+   </xsd:complexType>
+   <!-- RESPONSE TYPE -->
+   <xsd:complexType name="FeatureCollectionType">
+      <xsd:annotation>
+         <xsd:documentation>
+            This type defines a container for the response to a 
+            GetFeature or GetFeatureWithLock request.  If the
+            request is GetFeatureWithLock, the lockId attribute
+            must be populated.  The lockId attribute can otherwise
+            be safely ignored.
+         </xsd:documentation>
+      </xsd:annotation>
+     <xsd:complexContent>
+       <xsd:extension base="gml:AbstractFeatureCollectionType">
+         <xsd:attribute name="lockId" type="xsd:string" use="optional">
+            <xsd:annotation>
+               <xsd:documentation>
+                  The value of the lockId attribute is an identifier
+                  that a Web Feature Service generates and which a
+                  client application can use in subsequent operations
+                  (such as a Transaction request) to reference the set
+                  of locked features.
+               </xsd:documentation>
+            </xsd:annotation>
+         </xsd:attribute>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+</xsd:schema>

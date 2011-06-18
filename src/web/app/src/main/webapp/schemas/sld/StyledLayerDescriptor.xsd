@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.opengis.net/sld"
+            xmlns:sld="http://www.opengis.net/sld"
+            xmlns:ogc="http://www.opengis.net/ogc"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
+  <xsd:import namespace="http://www.w3.org/1999/xlink"
+              schemaLocation="../xlink/1.0.0/xlinks.xsd"/>
+  <xsd:import namespace="http://www.opengis.net/ogc"
+              schemaLocation="../filter/1.0.0/filter.xsd"/>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      STYLED LAYER DESCRIPTOR version 1.0.0 (2002-09-21)
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="StyledLayerDescriptor">
+    <xsd:annotation>
+      <xsd:documentation>
+        A StyledLayerDescriptor is a sequence of styled layers, represented
+        at the first level by NamedLayer and UserLayer elements.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name" minOccurs="0"/>
+        <xsd:element ref="sld:Title" minOccurs="0"/>
+        <xsd:element ref="sld:Abstract" minOccurs="0"/>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="sld:NamedLayer"/>
+          <xsd:element ref="sld:UserLayer"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="xsd:string" use="required"
+                     fixed="1.0.0"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Name" type="xsd:string"/>
+  <xsd:element name="Title" type="xsd:string"/>
+  <xsd:element name="Abstract" type="xsd:string"/>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      LAYERS AND STYLES
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="NamedLayer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A NamedLayer is a layer of data that has a name advertised by a WMS.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name"/>
+        <xsd:element ref="sld:LayerFeatureConstraints" minOccurs="0"/>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="sld:NamedStyle"/>
+          <xsd:element ref="sld:UserStyle"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="NamedStyle">
+    <xsd:annotation>
+      <xsd:documentation>
+        A NamedStyle is used to refer to a style that has a name in a WMS.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UserLayer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A UserLayer allows a user-defined layer to be built from WFS and
+        WCS data.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name" minOccurs="0"/>
+        
+        <xsd:choice minOccurs="0">
+	        <xsd:element ref="sld:InlineFeature"/>
+	        <xsd:element ref="sld:RemoteOWS" minOccurs="0"/>
+	</xsd:choice>
+	
+        <xsd:element ref="sld:LayerFeatureConstraints"/>
+        <xsd:element ref="sld:UserStyle" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="InlineFeature">
+    <xsd:complexType>
+      <xsd:sequence> 
+        <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>     
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <xsd:element name="RemoteOWS">
+    <xsd:annotation>
+      <xsd:documentation>
+        A RemoteOWS gives a reference to a remote WFS/WCS/other-OWS server. 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Service"/>
+        <xsd:element ref="sld:OnlineResource"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Service">
+    <xsd:annotation>
+      <xsd:documentation>
+        A Service refers to the type of a remote OWS server.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="WFS"/>
+        <xsd:enumeration value="WCS"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="OnlineResource">
+    <xsd:annotation>
+      <xsd:documentation>
+        An OnlineResource is typically used to refer to an HTTP URL.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:attributeGroup ref="xlink:simpleLink"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="LayerFeatureConstraints">
+    <xsd:annotation>
+      <xsd:documentation>
+        LayerFeatureConstraints define what features &amp; feature types are
+        referenced in a layer.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:FeatureTypeConstraint" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FeatureTypeConstraint">
+    <xsd:annotation>
+      <xsd:documentation>
+        A FeatureTypeConstraint identifies a specific feature type and
+        supplies fitlering.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:FeatureTypeName" minOccurs="0"/>
+        <xsd:element ref="ogc:Filter" minOccurs="0"/>
+        <xsd:element ref="sld:Extent" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="FeatureTypeName" type="xsd:string"/>
+
+  <xsd:element name="Extent">
+    <xsd:annotation>
+      <xsd:documentation>
+        An Extent gives feature/coverage/raster/matrix dimension extent. 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name"/>
+        <xsd:element ref="sld:Value"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Value" type="xsd:string"/>
+
+  <xsd:element name="UserStyle">
+    <xsd:annotation>
+      <xsd:documentation>
+        A UserStyle allows user-defined styling and is semantically
+        equivalent to a WMS named style.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name" minOccurs="0"/>
+        <xsd:element ref="sld:Title" minOccurs="0"/>
+        <xsd:element ref="sld:Abstract" minOccurs="0"/>
+        <xsd:element ref="sld:IsDefault" minOccurs="0"/>
+        <xsd:element ref="sld:FeatureTypeStyle" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="IsDefault" type="xsd:string"/>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      FEATURE-TYPE STYLING
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="FeatureTypeStyle">
+  <xsd:annotation>
+    <xsd:documentation>
+      A FeatureTypeStyle contains styling information specific to one
+      feature type.  This is the SLD level that separates the 'layer'
+      handling from the 'feature' handling.
+    </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name" minOccurs="0"/>
+        <xsd:element ref="sld:Title" minOccurs="0"/>
+        <xsd:element ref="sld:Abstract" minOccurs="0"/>
+        <xsd:element ref="sld:FeatureTypeName" minOccurs="0"/>
+        <xsd:element ref="sld:SemanticTypeIdentifier" minOccurs="0"
+                    maxOccurs="unbounded"/>
+        <xsd:element ref="sld:Rule" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SemanticTypeIdentifier" type="xsd:string"/>
+
+  <xsd:element name="Rule">
+    <xsd:annotation>
+      <xsd:documentation>
+        A Rule is used to attach property/scale conditions to and group
+        the individual symbolizers used for rendering.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Name" minOccurs="0"/>
+        <xsd:element ref="sld:Title" minOccurs="0"/>
+        <xsd:element ref="sld:Abstract" minOccurs="0"/>
+        <xsd:element ref="sld:LegendGraphic" minOccurs="0"/>
+        <xsd:choice minOccurs="0">
+          <xsd:element ref="ogc:Filter"/>
+          <xsd:element ref="sld:ElseFilter"/>
+        </xsd:choice>
+        <xsd:element ref="sld:MinScaleDenominator" minOccurs="0"/>
+        <xsd:element ref="sld:MaxScaleDenominator" minOccurs="0"/>
+        <xsd:element ref="sld:Symbolizer" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="LegendGraphic">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Graphic"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ElseFilter">
+    <xsd:complexType/>
+  </xsd:element>
+  <xsd:element name="MinScaleDenominator" type="xsd:double"/>
+  <xsd:element name="MaxScaleDenominator" type="xsd:double"/>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      SYMBOLIZERS
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="Symbolizer" type="sld:SymbolizerType" abstract="true"/>
+
+  <xsd:complexType name="SymbolizerType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "SymbolizerType" is an abstract type for encoding the graphical
+        properties used to portray geographic information.  Concrete symbol
+        types are derived from this base type.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="uom" type="xsd:anyURI"/>
+  </xsd:complexType>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      LINE SYMBOLIZER
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="LineSymbolizer" substitutionGroup="sld:Symbolizer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A LineSymbolizer is used to render a "stroke" along a linear geometry.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sld:SymbolizerType">
+          <xsd:sequence>
+            <xsd:element ref="sld:Geometry" minOccurs="0"/>
+            <xsd:element ref="sld:Stroke" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Geometry">
+    <xsd:annotation>
+      <xsd:documentation>
+        A Geometry gives reference to a (the) geometry property of a
+        feature to be used for rendering.
+        As a GeoServer specific extensions all expressions are actually accepted.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="ogc:expression"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Stroke">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Stroke" specifies the appearance of a linear geometry.  It is
+        defined in parallel with SVG strokes.  The following CssParameters
+        may be used: "stroke" (color), "stroke-opacity", "stroke-width",
+        "stroke-linejoin", "stroke-linecap", "stroke-dasharray", and
+        "stroke-dashoffset".
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0">
+          <xsd:element ref="sld:GraphicFill"/>
+          <xsd:element ref="sld:GraphicStroke"/>
+        </xsd:choice>
+        <xsd:element ref="sld:CssParameter" minOccurs="0"
+                     maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CssParameter">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "CssParameter" refers to an SVG/CSS graphical-formatting
+        parameter.  The parameter is identified using the "name" attribute
+        and the content of the element gives the SVG/CSS-coded value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="true">
+      <xsd:complexContent>
+        <xsd:extension base="sld:ParameterValueType">
+          <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ParameterValueType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The "ParameterValueType" uses WFS-Filter expressions to give
+        values for SLD graphic parameters.  A "mixed" element-content
+        model is used with textual substitution for values.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:element ref="ogc:expression"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="GraphicFill">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "GraphicFill" defines repeated-graphic filling (stippling)
+        pattern for an area geometry.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Graphic"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GraphicStroke">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "GraphicStroke" defines a repated-linear graphic pattern to be used
+        for stroking a line.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Graphic"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      POLYGON SYMBOLIZER
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="PolygonSymbolizer" substitutionGroup="sld:Symbolizer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "PolygonSymbolizer" specifies the rendering of a polygon or
+        area geometry, including its interior fill and border stroke.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sld:SymbolizerType">
+          <xsd:sequence>
+            <xsd:element ref="sld:Geometry" minOccurs="0"/>
+            <xsd:element ref="sld:Fill" minOccurs="0"/>
+            <xsd:element ref="sld:Stroke" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Fill">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Fill" specifies the pattern for filling an area geometry.
+        The allowed CssParameters are: "fill" (color) and "fill-opacity".
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:GraphicFill" minOccurs="0"/>
+        <xsd:element ref="sld:CssParameter" minOccurs="0"
+                     maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      POINT SYMBOLIZER
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="PointSymbolizer" substitutionGroup="sld:Symbolizer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "PointSymbolizer" specifies the rendering of a "graphic symbol"
+        at a point.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sld:SymbolizerType">
+          <xsd:sequence>
+            <xsd:element ref="sld:Geometry" minOccurs="0"/>
+            <xsd:element ref="sld:Graphic" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Graphic">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Graphic" specifies or refers to a "graphic symbol" with inherent
+        shape, size, and coloring.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="sld:ExternalGraphic"/>
+          <xsd:element ref="sld:Mark"/>
+        </xsd:choice>
+        <xsd:sequence>
+          <xsd:element ref="sld:Opacity" minOccurs="0"/>
+          <xsd:element ref="sld:Size" minOccurs="0"/>
+          <xsd:element ref="sld:Rotation" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Opacity" type="sld:ParameterValueType"/>
+  <xsd:element name="Size" type="sld:ParameterValueType"/>
+  <xsd:element name="Rotation" type="sld:ParameterValueType"/>
+
+  <xsd:element name="ExternalGraphic">
+    <xsd:annotation>
+      <xsd:documentation>
+        An "ExternalGraphic" gives a reference to an external raster or
+        vector graphical object.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:OnlineResource"/>
+        <xsd:element ref="sld:Format"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Format" type="xsd:string"/>
+
+  <xsd:element name="Mark">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Mark" specifies a geometric shape and applies coloring to it.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:WellKnownName" minOccurs="0"/>
+        <xsd:element ref="sld:Fill" minOccurs="0"/>
+        <xsd:element ref="sld:Stroke" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="WellKnownName">
+    <xsd:annotation>
+      <xsd:documentation>
+        As a GeoServer specific extensions all expressions are actually accepted.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="true">
+  	  <xsd:sequence>
+	    <xsd:element ref="ogc:expression" minOccurs="0"/>
+  	  </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      TEXT SYMBOLIZER
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="TextSymbolizer" substitutionGroup="sld:Symbolizer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "TextSymbolizer" is used to render text labels according to
+        various graphical parameters.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sld:SymbolizerType">
+          <xsd:sequence>
+            <xsd:element ref="sld:Geometry" minOccurs="0"/>
+            <xsd:element ref="sld:Label" minOccurs="0"/>
+            <xsd:element ref="sld:Font" minOccurs="0"/>
+            <xsd:element ref="sld:LabelPlacement" minOccurs="0"/>
+            <xsd:element ref="sld:Halo" minOccurs="0"/>
+            <xsd:element ref="sld:Fill" minOccurs="0"/>
+            
+            <!-- GeoServer specific extensions, these are not part of the SLD 1.0 standard -->
+            <xsd:element ref="sld:Graphic" minOccurs="0"/>
+            <xsd:element ref="sld:Priority" minOccurs="0"/>
+            <xsd:element ref="sld:VendorOption" minOccurs="0" maxOccurs="unbounded" />                 
+                 
+
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+
+<xsd:element name="VendorOption">
+  <xsd:complexType mixed="true">
+      <xsd:simpleContent>
+          <xsd:extension base="xsd:string">
+             <xsd:attribute name="name" type="xsd:string" />
+          </xsd:extension>
+      </xsd:simpleContent>
+  </xsd:complexType>
+</xsd:element>
+
+  
+  
+   <xsd:element name="Priority" type="sld:ParameterValueType">
+   </xsd:element>
+  
+
+  <xsd:element name="Label" type="sld:ParameterValueType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Label" specifies the textual content to be rendered.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="Font">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Font" element specifies the text font to use.  The allowed
+        CssParameters are: "font-family", "font-style", "font-weight",
+        and "font-size".
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:CssParameter" minOccurs="0"
+                     maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="LabelPlacement">
+    <xsd:annotation>
+      <xsd:documentation>
+        The "LabelPlacement" specifies where and how a text label should
+        be rendered relative to a geometry.  The present mechanism is
+        poorly aligned with CSS/SVG.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:element ref="sld:PointPlacement"/>
+        <xsd:element ref="sld:LinePlacement"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="PointPlacement">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "PointPlacement" specifies how a text label should be rendered
+        relative to a geometric point.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:AnchorPoint" minOccurs="0"/>
+        <xsd:element ref="sld:Displacement" minOccurs="0"/>
+        <xsd:element ref="sld:Rotation" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="AnchorPoint">
+    <xsd:annotation>
+      <xsd:documentation>
+        An "AnchorPoint" identifies the location inside of a text label to
+        use an an 'anchor' for positioning it relative to a point geometry.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:AnchorPointX"/>
+        <xsd:element ref="sld:AnchorPointY"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="AnchorPointX" type="sld:ParameterValueType"/>
+  <xsd:element name="AnchorPointY" type="sld:ParameterValueType"/>
+
+  <xsd:element name="Displacement">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Displacement" gives X and Y offset displacements to use for
+        rendering a text label near a point.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:DisplacementX"/>
+        <xsd:element ref="sld:DisplacementY"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DisplacementX" type="sld:ParameterValueType"/>
+  <xsd:element name="DisplacementY" type="sld:ParameterValueType"/>
+
+  <xsd:element name="LinePlacement">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "LinePlacement" specifies how a text label should be rendered
+        relative to a linear geometry.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:PerpendicularOffset" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="PerpendicularOffset" type="sld:ParameterValueType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "PerpendicularOffset" gives the perpendicular distance away
+        from a line to draw a label.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="Halo">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "Halo" fills an extended area outside the glyphs of a rendered
+        text label to make the label easier to read over a background.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:Radius" minOccurs="0"/>
+        <xsd:element ref="sld:Fill" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Radius" type="sld:ParameterValueType"/>
+
+<!-- *********************************************************************** -->
+  <xsd:annotation>
+    <xsd:documentation>
+      RASTER SYMBOLIZER
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="RasterSymbolizer" substitutionGroup="sld:Symbolizer">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "RasterSymbolizer" is used to specify the rendering of raster/
+        matrix-coverage data (e.g., satellite images, DEMs).
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sld:SymbolizerType">
+          <xsd:sequence>
+            <xsd:element ref="sld:Geometry" minOccurs="0"/>
+            <xsd:element ref="sld:Opacity" minOccurs="0"/>
+            <xsd:element ref="sld:ChannelSelection" minOccurs="0"/>
+            <xsd:element ref="sld:OverlapBehavior" minOccurs="0"/>
+            <xsd:element ref="sld:ColorMap" minOccurs="0"/>
+            <xsd:element ref="sld:ContrastEnhancement" minOccurs="0"/>
+            <xsd:element ref="sld:ShadedRelief" minOccurs="0"/>
+            <xsd:element ref="sld:ImageOutline" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ChannelSelection">
+    <xsd:annotation>
+      <xsd:documentation>
+        "ChannelSelection" specifies the false-color channel selection
+        for a multi-spectral raster source.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:sequence>
+          <xsd:element ref="sld:RedChannel"/>
+          <xsd:element ref="sld:GreenChannel"/>
+          <xsd:element ref="sld:BlueChannel"/>
+        </xsd:sequence>
+        <xsd:element ref="sld:GrayChannel"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="RedChannel" type="sld:SelectedChannelType"/>
+  <xsd:element name="GreenChannel" type="sld:SelectedChannelType"/>
+  <xsd:element name="BlueChannel" type="sld:SelectedChannelType"/>
+  <xsd:element name="GrayChannel" type="sld:SelectedChannelType"/>
+  <xsd:complexType name="SelectedChannelType">
+    <xsd:sequence>
+      <xsd:element ref="sld:SourceChannelName"/>
+      <xsd:element ref="sld:ContrastEnhancement" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="SourceChannelName" type="xsd:string"/>
+
+  <xsd:element name="OverlapBehavior">
+    <xsd:annotation>
+      <xsd:documentation>
+        "OverlapBehavior" tells a system how to behave when multiple
+        raster images in a layer overlap each other, for example with
+        satellite-image scenes.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:element ref="sld:LATEST_ON_TOP"/>
+        <xsd:element ref="sld:EARLIEST_ON_TOP"/>
+        <xsd:element ref="sld:AVERAGE"/>
+        <xsd:element ref="sld:RANDOM"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="LATEST_ON_TOP">
+    <xsd:complexType/>
+  </xsd:element>
+  <xsd:element name="EARLIEST_ON_TOP">
+    <xsd:complexType/>
+  </xsd:element>
+  <xsd:element name="AVERAGE">
+    <xsd:complexType/>
+  </xsd:element>
+  <xsd:element name="RANDOM">
+    <xsd:complexType/>
+  </xsd:element>
+
+  <xsd:element name="ColorMap">
+    <xsd:annotation>
+      <xsd:documentation>
+        A "ColorMap" defines either the colors of a pallet-type raster
+        source or the mapping of numeric pixel values to colors.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="sld:ColorMapEntry"/>
+      </xsd:choice>
+      <xsd:attribute name="type" type="xsd:string"/>
+      <xsd:attribute name="extended" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ColorMapEntry">
+    <xsd:complexType>
+      <xsd:attribute name="color" type="xsd:string" use="required"/>
+      <xsd:attribute name="opacity" type="xsd:double"/>
+      <xsd:attribute name="quantity" type="xsd:double"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ContrastEnhancement">
+    <xsd:annotation>
+      <xsd:documentation>
+        "ContrastEnhancement" defines the 'stretching' of contrast for a
+        channel of a false-color image or for a whole grey/color image.
+        Contrast enhancement is used to make ground features in images
+        more visible.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0">
+          <xsd:element ref="sld:Normalize"/>
+          <xsd:element ref="sld:Histogram"/>
+        </xsd:choice>
+        <xsd:element ref="sld:GammaValue" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Normalize">
+    <xsd:complexType/>
+  </xsd:element>
+  <xsd:element name="Histogram">
+    <xsd:complexType/>
+  </xsd:element>
+  <xsd:element name="GammaValue" type="xsd:double"/>
+
+  <xsd:element name="ShadedRelief">
+    <xsd:annotation>
+      <xsd:documentation>
+        "ShadedRelief" specifies the application of relief shading
+        (or "hill shading") to a DEM raster to give it somewhat of a
+        three-dimensional effect and to make elevation changes more
+        visible.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="sld:BrightnessOnly" minOccurs="0"/>
+        <xsd:element ref="sld:ReliefFactor" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="BrightnessOnly" type="xsd:boolean"/>
+  <xsd:element name="ReliefFactor" type="xsd:double"/>
+
+  <xsd:element name="ImageOutline">
+    <xsd:annotation>
+      <xsd:documentation>
+        "ImageOutline" specifies how individual source rasters in
+        a multi-raster set (such as a set of satellite-image scenes)
+        should be outlined to make the individual-image locations visible.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:element ref="sld:LineSymbolizer"/>
+        <xsd:element ref="sld:PolygonSymbolizer"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

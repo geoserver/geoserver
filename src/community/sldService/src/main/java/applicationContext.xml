@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="sldServiceRestConfigMapping" class="org.geoserver.rest.RESTMapping">
+	<property name="routes">
+	  <map>
+	  		<entry>
+	          <key><value>/sldservice/{layer}/attributes</value></key>
+	          <value>layerAttributesFinder</value>
+	        </entry>
+	        <entry>
+	          <key><value>/sldservice/{layer}/classify</value></key>
+	          <value>classifierFinder</value>
+	        </entry>
+	        <entry>
+	          <key><value>/sldservice/{layer}/rasterize</value></key>
+	          <value>rasterizerFinder</value>
+	        </entry>
+	  </map>
+	</property>
+	</bean>
+
+	<bean id="layerAttributesFinder" class="org.geoserver.sldservice.rest.finder.LayerAttributesFinder" parent="abstractCatalogFinder"/>
+	<bean id="classifierFinder" class="org.geoserver.sldservice.rest.finder.ClassifierResourceFinder" parent="abstractCatalogFinder"/>
+	<bean id="rasterizerFinder" class="org.geoserver.sldservice.rest.finder.RasterizerResourceFinder" parent="abstractCatalogFinder"/>
+
+</beans>

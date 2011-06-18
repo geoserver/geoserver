@@ -1,0 +1,8 @@
+
+   <namespace>
+     <prefix>topp</prefix>
+     <uri>http://www.openplans.org/topp</uri>
+     <featureTypes>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/featuretypes.xml" type="application/xml"/>
+     </featureTypes>
+   </namespace>

@@ -1,0 +1,6 @@
+version = ${project.version}
+svn revision = ${build.revision}
+build date = ${build.timestamp}
+geotools version = ${gt.version}
+geotools revision = ${gt.revision}
+hudson build = ${build.hudsonId}

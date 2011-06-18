@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/1.1"
+xmlns:ows="http://www.opengis.net/ows/1.1"
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified" version="1.1.0" xml:lang="en">
+	<annotation>
+		<appinfo>owsContents.xsd 2006-02-14</appinfo>
+		<documentation>This XML Schema  Document encodes the typical Contents section of an OWS service metadata (Capabilities) document. This  Schema can be built upon to define the Contents section for a specific OWS. If the ContentsBaseType in this XML Schema cannot be restricted and extended to define the Contents section for a specific OWS, all other relevant parts defined in owsContents.xsd shall be used by the "ContentsType" in the wxsContents.xsd prepared for the specific OWS.
+		Copyright (c) 2006 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="owsDataIdentification.xsd"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<complexType name="ContentsBaseType">
+		<annotation>
+			<documentation>Contents of typical Contents section of an OWS service metadata (Capabilities) document. This type shall be extended and/or restricted if needed for specific OWS use to include the specific metadata needed. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:DatasetDescriptionSummary" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Unordered set of summary descriptions for the datasets available from this OWS server. This set shall be included unless another source is referenced and all this metadata is available from that source. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:OtherSource" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Unordered set of references to other sources of metadata describing the coverage offerings available from this server. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- ===========================================================-->
+	<element name="OtherSource" type="ows:MetadataType">
+		<annotation>
+			<documentation>Reference to a source of metadata describing  coverage offerings available from this server. This  parameter can reference a catalogue server from which dataset metadata is available. This ability is expected to be used by servers with thousands or millions of datasets, for which searching a catalogue is more feasible than fetching a long Capabilities XML document. When no DatasetDescriptionSummaries are included, and one or more catalogue servers are referenced, this set of catalogues shall contain current metadata summaries for all the datasets currently available from this OWS server, with the metadata for each such dataset referencing this OWS server. </documentation>
+		</annotation>
+	</element>
+	<!-- ===========================================================-->
+	<element name="DatasetDescriptionSummary" type="ows:DatasetDescriptionSummaryBaseType"/>
+	<!-- ===========================================================-->
+	<complexType name="DatasetDescriptionSummaryBaseType">
+		<annotation>
+			<documentation>Typical dataset metadata in typical Contents section of an OWS service metadata (Capabilities) document. This type shall be extended and/or restricted if needed for specific OWS use, to include the specific Dataset  description metadata needed. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="ows:DescriptionType">
+				<sequence>
+					<element ref="ows:WGS84BoundingBox" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered list of zero or more minimum bounding rectangles surrounding coverage data, using the WGS 84 CRS with decimal degrees and longitude before latitude. If no WGS 84 bounding box is recorded for a coverage, any such bounding boxes recorded for a higher level in a hierarchy of datasets shall apply to this coverage. If WGS 84 bounding box(es) are recorded for a coverage, any such bounding boxes recorded for a higher level in a hierarchy of datasets shall be ignored. For each lowest-level coverage in a hierarchy, at least one applicable WGS84BoundingBox shall be either recorded or inherited, to simplify searching for datasets that might overlap a specified region. If multiple WGS 84 bounding boxes are included, this shall be interpreted as the union of the areas of these bounding boxes. </documentation>
+						</annotation>
+					</element>
+					<element name="Identifier" type="ows:CodeType">
+						<annotation>
+							<documentation>Unambiguous identifier or name of this coverage, unique for this server. </documentation>
+						</annotation>
+					</element>
+					<element ref="ows:BoundingBox" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered list of zero or more minimum bounding rectangles surrounding coverage data, in AvailableCRSs.  Zero or more BoundingBoxes are  allowed in addition to one or more WGS84BoundingBoxes to allow more precise specification of the Dataset area in AvailableCRSs. These Bounding Boxes shall not use any CRS not listed as an AvailableCRS. However, an AvailableCRS can be listed without a corresponding Bounding Box. If no such bounding box is recorded for a coverage, any such bounding boxes recorded for a higher level in a hierarchy of datasets shall apply to this coverage. If such bounding box(es) are recorded for a coverage, any such bounding boxes recorded for a higher level in a hierarchy of datasets shall be ignored. If multiple bounding boxes are included with the same CRS, this shall be interpreted as the union of the areas of these bounding boxes. </documentation>
+						</annotation>
+					</element>
+					<element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Optional unordered list of additional metadata about this dataset. A list of optional metadata elements for this dataset description could be specified in the Implementation Specification for this service. </documentation>
+						</annotation>
+					</element>
+					<element ref="ows:DatasetDescriptionSummary" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Metadata describing zero or more unordered subsidiary datasets available from this server. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ===========================================================-->
+</schema>

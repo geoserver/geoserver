@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- wcs service setup, with loggin as an interceptor -->
+  <bean id="wcs111ServiceTarget" class="org.geoserver.wcs.DefaultWebCoverageService111">
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger">
+    <constructor-arg type="java.lang.String" value="org.geoserver.wcs" />
+  </bean>
+  <bean id="wcs111Service" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.wcs.WebCoverageService111</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>wcsLogger</value>
+        <value>wcs111ServiceTarget</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- service descriptors -->
+  <bean id="wcsService-1.1.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="wcs" />
+    <constructor-arg index="1" ref="wcs111Service" />
+    <constructor-arg index="2" value="1.1.0" />
+    <constructor-arg index="3">
+       <list>
+          <value>GetCapabilities</value>
+          <value>DescribeCoverage</value>
+          <value>GetCoverage</value>
+       </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="wcsService-1.1.1" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="wcs" />
+    <constructor-arg index="1" ref="wcs111Service" />
+    <constructor-arg index="2" value="1.1.1" />
+     <constructor-arg index="3">
+       <list>
+          <value>GetCapabilities</value>
+          <value>DescribeCoverage</value>
+          <value>GetCoverage</value>
+       </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Exception handler, we need to output ows 1.1 exceptions -->
+  <bean id="wcs111ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
+    <constructor-arg index="0">
+      <list>
+        <ref local="wcsService-1.1.0" />
+        <ref local="wcsService-1.1.1" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- kvp parsers -->
+  <bean id="ows11AcceptVersionsKvpParser" class="org.geoserver.wcs.kvp.AcceptVersionsKvpParser" />
+
+  <bean id="ows11SectionsKvpParser" class="org.geoserver.wcs.kvp.SectionsKvpParser" />
+
+  <bean id="wcs111RangeSubsetKvpParser" class="org.geoserver.wcs.kvp.RangeSubsetKvpParser" />
+
+  <bean id="wcs111IdentifierKvpParser" class="org.geoserver.wcs.kvp.IdentifierKvpParser">
+    <constructor-arg ref="catalog" />
+  </bean>
+
+  <bean id="wcs111BoundingBoxKvpParser" class="org.geoserver.wcs.kvp.BoundingBoxKvpParser" />
+
+  <bean id="wcs111GridBaseCRSKvpParser" class="org.geoserver.wcs.kvp.GridBaseCRSKvpParser" />
+
+  <bean id="wcs111TimeSequenceKvpParser" class="org.geoserver.wcs.kvp.TimeSequenceKvpParser" />
+
+  <bean id="wcs111GridTypeKvpParser" class="org.geoserver.wcs.kvp.GridTypeKvpParser" />
+
+  <bean id="wcs111GridCSKvpParser" class="org.geoserver.wcs.kvp.GridCSKvpParser" />
+
+  <bean id="wcs111GridOriginKvpParser" class="org.geoserver.wcs.kvp.GridOriginKvpParser" />
+
+  <bean id="wcs111GridOffsetsKvpParser" class="org.geoserver.wcs.kvp.GridOffsetsKvpParser" />
+
+  <!-- kvp request readers -->
+  <bean id="wcs111GetCapabilitiesKvpReader"
+    class="org.geoserver.wcs.kvp.WcsGetCapabilitiesRequestReader" />
+
+  <bean id="wcs111DescribeCoverageKvpReader"
+    class="org.geoserver.wcs.kvp.DescribeCoverageKvpRequestReader">
+    <constructor-arg index="0" ref="catalog" />
+  </bean>
+
+  <bean id="wcs111GetCoverageRequestReader"
+    class="org.geoserver.wcs.kvp.GetCoverageRequestReader">
+    <constructor-arg index="0" ref="catalog" />
+  </bean>
+
+  <bean id="wcs111StoreKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+    <constructor-arg value="store" />
+  </bean>
+
+  <!-- the xml configuration -->
+  <bean id="wcs-1.1.1-configuration" class="org.geoserver.wcs.xml.v1_1_1.WCSConfiguration" />
+
+  <!--  xml request readers -->
+  <bean id="wcs111CapabilitiesRequestReader" class="org.geoserver.wcs.xml.v1_1_1.WcsXmlReader">
+    <constructor-arg value="GetCapabilities" />
+    <constructor-arg value="1.1.1" />
+    <constructor-arg ref="wcs-1.1.1-configuration" />
+  </bean>
+
+  <bean id="wcs111DescribeCoverageRequestReader"
+    class="org.geoserver.wcs.xml.v1_1_1.WcsXmlReader">
+    <constructor-arg value="DescribeCoverage" />
+    <constructor-arg value="1.1.1" />
+    <constructor-arg ref="wcs-1.1.1-configuration" />
+  </bean>
+
+  <bean id="wcs111GetCoverageRequestXMLReader" class="org.geoserver.wcs.xml.v1_1_1.WcsXmlReader">
+    <constructor-arg value="GetCoverage" />
+    <constructor-arg value="1.1.1" />
+    <constructor-arg ref="wcs-1.1.1-configuration" />
+  </bean>
+
+
+  <!-- responses -->
+  <bean id="wcs111GetCapabilitiesResponse"
+    class="org.geoserver.wcs.response.GetCapabilitiesResponse" singleton="false" />
+
+  <bean id="wcs111DescribeCoverageResponse"
+    class="org.geoserver.wcs.response.DescribeCoverageResponse" singleton="false" />
+
+  <bean id="wcs111GetCoverageMultipartResponse"
+    class="org.geoserver.wcs.response.WCSMultipartResponse" singleton="false">
+    <constructor-arg ref="catalog" />
+  </bean>
+  <bean id="wcs111GetCoverageStoreResponse"
+    class="org.geoserver.wcs.response.WCSGetCoverageStoreResponse" singleton="false">
+    <constructor-arg ref="geoServer" />
+  </bean>
+
+  <!-- Map dispatcher in order to publish the wcsTempStorage directory -->
+  <bean id="wcs111DispatcherMapping"
+    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="mappings">
+      <props>
+        <prop key="/temp/**">filePublisher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- Temp storage cleanup -->
+  <!-- The actual scheduled task -->
+  <bean id="wcs111TempStorageCleaner" class="org.geoserver.wcs.response.WCSStorageCleaner">
+    <property name="expirationDelay" value="300" /><!-- 300 seconds, 5 minutes -->
+  </bean>
+
+  <!-- Definition of how often the scheduled task runs -->
+  <bean id="wcs111TempStorageCleanerTask"
+    class="org.springframework.scheduling.timer.ScheduledTimerTask">
+    <!-- wait 10 seconds before starting repeated execution -->
+    <property name="delay" value="10000" />
+    <!-- run every 60 seconds -->
+    <property name="period" value="60000" />
+    <property name="timerTask" ref="wcs111TempStorageCleaner" />
+  </bean>
+
+  <!-- And finally the class that instantiates the scheduled tasks and makes them run -->
+  <bean id="wcs111timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean"
+    lazy-init="false">
+    <property name="scheduledTimerTasks">
+      <list>
+        <ref bean="wcs111TempStorageCleanerTask" />
+      </list>
+    </property>
+    <property name="daemon" value="true"/>
+  </bean>
+  
+  <bean id="wcs11WorkspaceQualifier" class="org.geoserver.wcs.WCS11WorkspaceQualifier">
+    <constructor-arg ref="catalog"/>
+  </bean>
+</beans>

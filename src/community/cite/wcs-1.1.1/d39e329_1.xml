@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="MinimalValue">0</value>
+ <value key="MaximalValue">1399999999999</value>
+ <value key="BogusValue">bogus</value>
+</values>

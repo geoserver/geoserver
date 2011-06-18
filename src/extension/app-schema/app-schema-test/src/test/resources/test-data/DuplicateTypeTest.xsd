@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:gml="http://www.opengis.net/gml" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+
+    <xs:include schemaLocation="http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd" />
+
+    <!-- An element with the same type as gsml:MappedFeature but a different name. -->
+    <xs:element name="DuplicateMappedFeature" type="gsml:MappedFeatureType"
+        substitutionGroup="gml:_Feature" />
+
+</xs:schema>

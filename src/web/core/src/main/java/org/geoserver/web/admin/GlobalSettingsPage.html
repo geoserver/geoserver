@@ -1,0 +1,59 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+    <li>
+      <input id="verbose" class="field checkbox" type="checkbox" wicket:id="verbose" />
+      <label for="verbose" class="choice"><wicket:message key="verboseMessaging">Enable Verbose Messaging</wicket:message></label>
+    </li>
+    <li>
+      <input id="verboseExceptions" class="field checkbox" type="checkbox" wicket:id="verboseExceptions" />
+      <label for="verboseExceptions" class="choice"><wicket:message key="verboseExceptions">Enable Verbose Exceptions</wicket:message></label>
+    </li>
+    <li>
+      <input id="globalServices" class="field checkbox" type="checkbox" wicket:id="globalServices" />
+      <label for="globalServices" class="choice"><wicket:message key="globalServices">Enable Global Services</wicket:message></label>
+    </li>
+    <li>
+      <label for="numDecimals"><wicket:message key="numDecimals">Number of Decimals</wicket:message></label>
+      <input id="numDecimals" class="field text" type="text" wicket:id="numDecimals" />
+    </li>
+    <li>
+      <label for="charset"><wicket:message key="charset">Character Set</wicket:message></label>
+      <select id="charset" class="field" wicket:id="charset" />
+    </li>
+    <li>
+      <label for="proxyBaseUrl"><wicket:message key="proxyBaseUrl">Proxy Base URL</wicket:message></label>
+      <input id="proxyBaseUrl" class="field text" type="text" wicket:id="proxyBaseUrl" />
+    </li>
+    <li>
+      <label for="log4jConfigFile"><wicket:message key="log4jConfigFile">Logging Profile</wicket:message></label>
+      <select id="log4jConfigFile" class="field select" wicket:id="log4jConfigFile" />
+    </li>
+    <li>
+      <input id="stdOutLogging" class="field checkbox" type="checkbox" wicket:id="stdOutLogging" />
+      <label for="stdOutLogging" class="choice"><wicket:message key="stdOutLogging">Enable logging to STDOUT</wicket:message></label>
+    </li>
+    <li>
+      <label for="loggingLocation"><wicket:message key="loggingLocation">Logfile</wicket:message></label>
+      <input id="loggingLocation"class="field text" type="text" wicket:id="loggingLocation" />
+    </li>
+    <li>
+      <label for="xmlPostRequestLogBufferSize"><wicket:message key="xmlPostRequestLogBufferSize">log buffer size for incoming XML POST requests</wicket:message></label>
+      <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
+    </li>
+    <li>
+      <label for="featureTypeCacheSize"><wicket:message key="featureTypeCacheSize">Feature Type Cache Size</wicket:message></label>
+      <input id="featureTypeCacheSize"class="field text" type="text" wicket:id="featureTypeCacheSize" />
+    </li>
+    <li class="button-group selfclear">
+      <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+      <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+    </li>
+  </ul>
+</form>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body onload="document.getElementById('form').submit();return false;">
+<form id="form" wicket:id="form" action="TestWfsPost" method="POST">
+  <input  wicket:id="url" type='hidden' name='url'/>
+  <textarea  wicket:id="body" style='visibility:hidden' name='body'></textarea>
+  <input  wicket:id="username" type='hidden' name='username' value=''/>
+  <input  wicket:id="password" type='hidden' name='password' value=''/>
+</form>
+<div>
+  <span><wicket:message key="loading">Loading...</wicket:message></span>
+</div>
+</body>
+</html>

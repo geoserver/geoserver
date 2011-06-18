@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+   <wicket:extend>
+    <form wicket:id="form">
+     <ul>
+       <li>
+         <label for="name"><wicket:message key="name">Name</wicket:message></label>
+         <input wicket:id="name" id="name"></input>
+       </li>
+       <li>
+         <label><wicket:message key="bounds">Bounds</wicket:message></label>
+         <div wicket:id="bounds" class="selfclear"></div>
+       </li>
+       <li>
+         <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"></input>
+       </li>
+       <li>
+         <div wicket:id="layers"></div>
+       </li>
+       <li>
+         <br>
+         <div wicket:id="contributedPanels">
+          <span wicket:id="content"></span>
+         </div>
+       </li>
+       <li class="button-group selfclear">
+         <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+         <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 
+       </li>  
+     </ul>
+    </form>
+   </wicket:extend>
+  </body>
+</html>

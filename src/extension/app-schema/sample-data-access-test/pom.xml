@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geoserver.extension</groupId>
+		<artifactId>app-schema</artifactId>
+		<version>2.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver.extension</groupId>
+	<artifactId>sample-data-access-test</artifactId>
+	<name>Sample DataAccess Integration Test</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+			<classifier>tests</classifier>
+		</dependency>
+		<dependency>
+			<!--
+				wfs required to get applicationContext.xml. Without it, code will
+				compile but will not run.
+			-->
+			<groupId>org.geoserver</groupId>
+			<artifactId>wfs</artifactId>
+		</dependency>
+		<dependency>
+			<!-- text-feature-list runtime dependency -->
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- text-feature-list runtime dependency -->
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-sample-data-access</artifactId>
+			<version>${gt.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<!--
+							Exclude tests with lines like this
+							<exclude>**/Whatever.java</exclude>
+						-->
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

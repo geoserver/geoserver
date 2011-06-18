@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:datums:3.1.1"/>
+		<documentation>Subset of datums.xsd for GML 3.1.1 GridCRSs profile. Primary editor: Arliss Whiteside. Last updated 2005-11-15 
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="../../CommonCRSs/1.0.0/gmlCommonCRSsProfile.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="ImageDatum" type="gml:ImageDatumType" substitutionGroup="gml:_Datum"/>
+	<!-- =================================================== -->
+	<complexType name="ImageDatumType">
+		<annotation>
+			<documentation>An image datum defines the origin of an image coordinate reference system, and is used in a local context only. For more information, see OGC Abstract Specification Topic 2. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:pixelInCell"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="pixelInCell" type="gml:PixelInCellType"/>
+	<!-- =================================================== -->
+	<complexType name="PixelInCellType">
+		<annotation>
+			<documentation>Specification of the way an image grid is associated with the image data attributes. </documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:CodeType">
+				<attribute name="codeSpace" type="anyURI" use="required">
+					<annotation>
+						<documentation>Reference to a source of information specifying the values and meanings of all the allowed string values for this PixelInCellType. </documentation>
+					</annotation>
+				</attribute>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<!-- =================================================== -->
+	<complexType name="ImageDatumRefType">
+		<annotation>
+			<documentation>Association to an image datum, either referencing or containing the definition of that datum. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:ImageDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+</schema>

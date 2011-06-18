@@ -1,0 +1,1 @@
+wfs?request=GetFeature&version=1.1.0&typeName=topp:states&outputFormat=GML2&FILTER=%3CFilter%20xmlns=%22http://www.opengis.net/ogc%22%3E%3CFeatureId%20fid=%22states.23%22/%3E%3C/Filter%3E

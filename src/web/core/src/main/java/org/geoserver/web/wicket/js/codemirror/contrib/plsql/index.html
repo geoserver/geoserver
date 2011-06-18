@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="../../js/codemirror.js" type="text/javascript"></script>
+    <title>CodeMirror: PLSQL demonstration</title>
+    <link rel="stylesheet" type="text/css" href="../../css/docs.css"/>
+  </head>
+  <body style="padding: 20px;">
+
+<p>Demonstration of <a href="../../index.html">CodeMirror</a>'s PLSQL
+highlighter.</p>
+
+<p>Written by Peter Raganitsch (<a href="LICENSE">license</a>), based
+on John Benediktsson <a href="../sql/index.html">SQL parser</a>.</p>
+
+<div class="border">
+<textarea id="code" cols="120" rows="50">
+PROCEDURE generateResult
+  ( pRoutineType   IN VARCHAR2
+  , pReferenceType IN VARCHAR2
+  , pReferenceId   IN NUMBER
+  )
+IS
+    ROUTINE_NAME      CONSTANT VARCHAR2(30) := 'generateResult';
+    --
+    vDisplayAs        APEXLIB_V_PAGE_ITEM.DISPLAY_AS      %TYPE;
+    vLovQuery         APEXLIB_V_PAGE_ITEM.LOV_QUERY       %TYPE;
+    vDisplayNullValue APEXLIB_V_PAGE_ITEM.LOV_DISPLAY_NULL%TYPE;
+    vLovNullText      APEXLIB_V_PAGE_ITEM.LOV_NULL_TEXT   %TYPE;
+    vLovNullValue     APEXLIB_V_PAGE_ITEM.LOV_NULL_VALUE  %TYPE;
+    vApplicationId    APEXLIB_V_PAGE_ITEM.APPLICATION_ID  %TYPE;
+    vPageId           APEXLIB_V_PAGE_ITEM.PAGE_ID         %TYPE;
+BEGIN
+    ----------------------------------------------------------------------------
+    -- Determine which routine to call and pass parameters
+    ----------------------------------------------------------------------------
+    CASE pRoutineType
+    WHEN 'LOV'
+    THEN
+        ApexLib_Lov.generateLovResult( pReferenceType, pReferenceId );
+    --
+    WHEN 'COMPUTATION'
+    THEN
+        ApexLib_Computation.generateComputationResult( pReferenceType, pReferenceId );
+    --
+    ELSE
+        Apexlib_Error.raiseImplError('Unsupported routine type "'||pRoutineType||'"!');
+    END CASE;
+    --
+EXCEPTION WHEN OTHERS THEN
+    HTP.prn('Error: '||SQLERRM);
+    -- RAISE; no raise, because APEX doesn't care anyway.
+END generateResult;
+</textarea>
+</div>
+
+<script type="text/javascript">
+  var editor = CodeMirror.fromTextArea('code', {
+    height: "450px",
+    parserfile: "../contrib/plsql/js/parseplsql.js",
+    stylesheet: "css/plsqlcolors.css",
+    path: "../../js/",
+    textWrapping: false
+  });
+</script>
+
+  </body>
+</html>

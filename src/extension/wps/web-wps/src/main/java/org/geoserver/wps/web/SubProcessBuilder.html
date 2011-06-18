@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/" xml:lang="en" lang="en">
+
+<wicket:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<wicket:link>
+		<link href="../../web/favicon.ico" rel="shortcut icon" />
+		<link rel="stylesheet" href="../../web/css/blueprint/screen.css"
+			type="text/css" media="screen, projection" />
+		<link rel="stylesheet" href="../../web/css/blueprint/print.css"
+			type="text/css" media="print" />
+		<link rel="stylesheet" href="../../web/css/geoserver.css" type="text/css"
+			media="screen, projection" />
+		<!--[if IE]>
+        <link rel="stylesheet" href="../../web/css/blueprint/ie.css" type="text/css" media="screen, projection" />
+	    <link rel="stylesheet" href="../../web/css/geoserver-ie.css" type="text/css" media="screen, projection" />
+      <![endif]-->
+		<script type="text/javascript" src="../../web/js/jquery-1.2.6.min.js"></script>
+		<script type="text/javascript" src="../../web/js/jquery.inline-info.js"></script>
+	</wicket:link>
+</wicket:head>
+
+<body style="margin: 2em 1em 2em 1em">
+<div class="page-pane selfclear">
+<form wicket:id="form">
+<div wicket:id="builder"></div>
+<ul>
+	<li class="button-group selfclear">
+	<button wicket:id="apply" type="submit"><wicket:message
+		key="apply">apply</wicket:message></button>
+	</li>
+</ul>
+</form>
+</div>
+</body>
+
+</html>

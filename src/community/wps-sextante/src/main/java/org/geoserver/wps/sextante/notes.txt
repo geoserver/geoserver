@@ -1,0 +1,9 @@
+Elements to improve in the integration:
+- have it use an embedded H2 store (a single DB? multiple DBs?) so that
+  we don't end up mangling the geometry type, the attribute names and
+  the like
+- use the same for tables
+- remove the code dealing with stores and sources, what we deal with
+  GT2 wise is feature collections
+- eventually get rid of the Hungarian notation?
+- the raster integration still needs to be tested

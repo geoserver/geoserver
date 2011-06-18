@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:temporalReferenceSystems:3.1.1"/>
+		<documentation xml:lang="en">The Temporal Reference Systems schema for GML 3.1 provides constructs for handling various styles of temporal reference system. 
+    This schema reflects a partial implementation of the model described in ISO 19108:2002. 
+    Copyright (c) 2002-2005 OGC, All Rights Reserved.
+	For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr</documentation>
+	</annotation>
+	<!-- ================================================================== -->
+	<include schemaLocation="temporalTopology.xsd"/>
+	<include schemaLocation="dictionary.xsd"/>
+	<!-- ================================================================== -->
+	<!-- == Time Reference System == -->
+	<!-- ================================================================== -->
+	<element name="_TimeReferenceSystem" type="gml:AbstractTimeReferenceSystemType" abstract="true" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>Abstract element serves primarily as the head of a substitution group for temporal reference systems.</documentation>
+		</annotation>
+	</element>
+	<!-- ===================================== -->
+	<complexType name="AbstractTimeReferenceSystemType" abstract="true">
+		<annotation>
+			<documentation xml:lang="en">A value in the time domain is measured relative to a temporal reference system. Common 
+        types of reference systems include calendars, ordinal temporal reference systems, and 
+        temporal coordinate systems (time elapsed since some epoch, e.g. UNIX time).</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence>
+					<element name="domainOfValidity" type="string" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<!-- == Time Coordinate System == -->
+	<!-- ================================================================== -->
+	<element name="TimeCoordinateSystem" type="gml:TimeCoordinateSystemType" substitutionGroup="gml:_TimeReferenceSystem"/>
+	<!-- ===================================== -->
+	<complexType name="TimeCoordinateSystemType">
+		<annotation>
+			<documentation xml:lang="en">A temporal coordinate system is based on a continuous interval scale defined in terms of a single time interval.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractTimeReferenceSystemType">
+				<sequence>
+					<choice>
+						<element name="originPosition" type="gml:TimePositionType"/>
+						<element name="origin" type="gml:TimeInstantPropertyType"/>
+					</choice>
+					<element name="interval" type="gml:TimeIntervalLengthType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<!-- == Time Ordinal System == -->
+	<!-- ================================================================== -->
+	<element name="TimeOrdinalReferenceSystem" type="gml:TimeOrdinalReferenceSystemType" substitutionGroup="gml:_TimeReferenceSystem"/>
+	<!-- ===================================== -->
+	<complexType name="TimeOrdinalReferenceSystemType">
+		<annotation>
+			<documentation xml:lang="en">In an ordinal reference system the order of events in time can be well 
+      established, but the magnitude of the intervals between them can not be 
+      accurately determined (e.g. a stratigraphic sequence).</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractTimeReferenceSystemType">
+				<sequence>
+					<element name="component" type="gml:TimeOrdinalEraPropertyType" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<element name="TimeOrdinalEra" type="gml:TimeOrdinalEraType"/>
+	<!-- ===================================== -->
+	<complexType name="TimeOrdinalEraType">
+		<annotation>
+			<documentation xml:lang="en">Ordinal temporal reference systems are often hierarchically structured 
+      such that an ordinal era at a given level of the hierarchy includes a 
+      sequence of shorter, coterminous ordinal eras. This captured using the member/group properties.  
+      
+      Note that in this schema, TIme Ordinal Era is patterned on TimeEdge, which is a variation from ISO 19108.  
+      This is in order to fulfill the requirements of ordinal reference systems based on eras delimited by 
+      named points or nodes, which are common in geology, archeology, etc.  
+      
+      This change is subject of a change proposal to ISO</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence>
+					<element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="start" type="gml:TimeNodePropertyType"/>
+					<element name="end" type="gml:TimeNodePropertyType"/>
+					<element name="extent" type="gml:TimePeriodPropertyType" minOccurs="0"/>
+					<element name="member" type="gml:TimeOrdinalEraPropertyType" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>An Era may be composed of several member Eras. The "member" element implements the association to the Era at the next level down the hierarchy.  "member" follows the standard GML property pattern whereby its (complex) value may be either described fully inline, or may be the target of a link carried on the member element and described fully elsewhere, either in the same document or from another service.</documentation>
+						</annotation>
+					</element>
+					<element name="group" type="gml:ReferenceType" minOccurs="0">
+						<annotation>
+							<documentation>In a particular Time System, an Era may be a member of a group.  The "group" element implements the back-pointer to the Era at the next level up in the hierarchy. 
+
+If the hierarchy is represented by describing the nested components fully in the their nested position inside "member" elements, then the parent can be easily inferred, so the group property is unnecessary.  
+
+However, if the hierarchy is represented by links carried on the "member" property elements, pointing to Eras described fully elsewhere, then it may be useful for a child (member) era to carry an explicit pointer back to its parent (group) Era.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<complexType name="TimeOrdinalEraPropertyType">
+		<sequence minOccurs="0">
+			<element ref="gml:TimeOrdinalEra"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ================================================================== -->
+	<!-- == Calendar == -->
+	<!-- ================================================================== -->
+	<element name="TimeCalendar" type="gml:TimeCalendarType" substitutionGroup="gml:_TimeReferenceSystem"/>
+	<!-- ===================================== -->
+	<complexType name="TimeCalendarType">
+		<annotation>
+			<documentation xml:lang="en">A calendar is a discrete temporal reference system 
+      that provides a basis for defining temporal position to a resolution of one day. 
+      A single calendar may reference more than one calendar era.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractTimeReferenceSystemType">
+				<sequence>
+					<element name="referenceFrame" type="gml:TimeCalendarEraPropertyType" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Link to the CalendarEras that it uses as a reference for dating.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<complexType name="TimeCalendarPropertyType">
+		<sequence minOccurs="0">
+			<element ref="gml:TimeCalendar"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ================================================================== -->
+	<element name="TimeCalendarEra" type="gml:TimeCalendarEraType" substitutionGroup="gml:Definition"/>
+	<!-- ===================================== -->
+	<complexType name="TimeCalendarEraType">
+		<annotation>
+			<documentation xml:lang="en">In every calendar, years are numbered relative to the date of a 
+      reference event that defines a calendar era. 
+      In this implementation, we omit the back-pointer "datingSystem".</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence>
+					<element name="referenceEvent" type="gml:StringOrRefType">
+						<annotation>
+							<documentation>Name or description of a mythical or historic event which fixes the position of the base scale of the calendar era.</documentation>
+						</annotation>
+					</element>
+					<element name="referenceDate" type="date" default="0001-01-01" minOccurs="0">
+						<annotation>
+							<documentation>Date of the referenceEvent expressed as a date in the given calendar. 
+              In most calendars, this date is the origin (i.e., the first day) of the scale, but this is not always true.</documentation>
+						</annotation>
+					</element>
+					<element name="julianReference" type="decimal">
+						<annotation>
+							<documentation>Julian date that corresponds to the reference date.  
+              The Julian day numbering system is a temporal coordinate system that has an 
+              origin earlier than any known calendar, 
+              at noon on 1 January 4713 BC in the Julian proleptic calendar.  
+              The Julian day number is an integer value; 
+              the Julian date is a decimal value that allows greater resolution. 
+              Transforming calendar dates to and from Julian dates provides a 
+              relatively simple basis for transforming dates from one calendar to another.</documentation>
+						</annotation>
+					</element>
+					<element name="epochOfUse" type="gml:TimePeriodPropertyType">
+						<annotation>
+							<documentation>Period for which the calendar era was used as a basis for dating.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<complexType name="TimeCalendarEraPropertyType">
+		<sequence minOccurs="0">
+			<element ref="gml:TimeCalendarEra"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ================================================================== -->
+	<!-- == Clock == -->
+	<!-- ================================================================== -->
+	<element name="TimeClock" type="gml:TimeClockType" substitutionGroup="gml:_TimeReferenceSystem"/>
+	<!-- ===================================== -->
+	<complexType name="TimeClockType" final="#all">
+		<annotation>
+			<documentation xml:lang="en">A clock provides a basis for defining temporal position within a day. 
+      A clock must be used with a calendar in order to provide a complete description of a temporal position 
+      within a specific day.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractTimeReferenceSystemType">
+				<sequence>
+					<element name="referenceEvent" type="gml:StringOrRefType">
+						<annotation>
+							<documentation>Name or description of an event, such as solar noon or sunrise, 
+              which fixes the position of the base scale of the clock.</documentation>
+						</annotation>
+					</element>
+					<element name="referenceTime" type="time">
+						<annotation>
+							<documentation>time of day associated with the reference event expressed as 
+              a time of day in the given clock. The reference time is usually the origin of the clock scale.</documentation>
+						</annotation>
+					</element>
+					<element name="utcReference" type="time">
+						<annotation>
+							<documentation>24 hour local or UTC time that corresponds to the reference time.</documentation>
+						</annotation>
+					</element>
+					<element name="dateBasis" type="gml:TimeCalendarPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================================================================== -->
+	<complexType name="TimeClockPropertyType">
+		<sequence minOccurs="0">
+			<element ref="gml:TimeClock"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ================================================================== -->
+</schema>

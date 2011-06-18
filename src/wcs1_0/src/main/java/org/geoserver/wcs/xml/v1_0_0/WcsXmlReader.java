@@ -1,0 +1,56 @@
+/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
+package org.geoserver.wcs.xml.v1_0_0;
+
+import java.io.Reader;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import org.geoserver.ows.XmlRequestReader;
+import org.geotools.util.Version;
+import org.geotools.wcs.WCS;
+import org.geotools.wcs.WCSConfiguration;
+import org.geotools.xml.Parser;
+import org.vfny.geoserver.wcs.WcsException;
+
+/**
+ * Xml reader for wcs 1.0.0 xml requests.
+ * 
+ * @author Justin Deoliveira, The Open Planning Project
+ * @author Andrea Aime, The Open Planning project
+ * 
+ */
+public class WcsXmlReader extends XmlRequestReader {
+    /**
+     * Xml Configuration
+     */
+    WCSConfiguration configuration;
+
+    public WcsXmlReader(String element, String version, WCSConfiguration configuration) {
+        super(new QName(WCS.NAMESPACE, element), new Version(version), "wcs");
+        this.configuration = configuration;
+    }
+
+    public Object read(Object request, Reader reader, Map kvp) throws Exception {
+        // create the parser instance
+        Parser parser = new Parser(configuration);
+        parser.setValidating(true);
+        parser.setFailOnValidationError(true);
+        parser.setStrict(true);
+
+        // parse
+        Object parsed;
+        try {
+            parsed = parser.parse(reader);
+        } catch (Exception e) {
+            throw new WcsException(
+                    "Parsing failed, the xml request is most probably not compliant to the wcs schema",
+                    e);
+        }
+
+        return parsed;
+    }
+}

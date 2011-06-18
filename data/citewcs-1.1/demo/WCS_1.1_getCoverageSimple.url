@@ -1,0 +1,1 @@
+wcs?service=WCS&version=1.1.1&request=GetCoverage&identifier=topp:tazbm&format=image/png&boundingbox=-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326

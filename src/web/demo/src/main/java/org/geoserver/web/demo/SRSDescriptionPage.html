@@ -1,0 +1,87 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>EPSG:XXXX</title>
+  </head>
+  <body>
+    <wicket:extend>
+      <h2 wicket:id="code">EPSG:XXXX</h2>
+      <ul class="form-data">
+        <li>
+          <span class="fieldname">
+            <wicket:message key="name">Name</wicket:message>
+          </span>
+          <div class="value-wide" wicket:id="crsName">name</div>
+        </li>
+        <li>
+          <span class="fieldname">
+            <wicket:message key="scope">Scope</wicket:message>
+          </span>
+          <div class="value-wide" wicket:id="crsScope">scope...</div>
+        </li>
+        <li>
+          <span class="fieldname">
+            <wicket:message key="remarks">Remarks</wicket:message>
+          </span>
+          <div class="value-wide" wicket:id="crsRemarks">remarks...</div>
+        </li>
+        <li>
+          <span class="fieldname">WKT</span>
+          <div class="value-wide">
+            <pre wicket:id="wkt">wkt</pre>
+          </div>
+        </li>
+        <li>
+          <span class="fieldname">
+            <wicket:message key="areaOfValidity">Area of validity</wicket:message>
+          </span>
+          <div class="value-wide">
+            <pre wicket:id="aovCoords">0, 0</pre>
+          </div>
+          <div class="value-wide">
+            <pre wicket:id="aovDescription">aov desc</pre>
+          </div>
+        </li>
+        <li>
+          <div>
+            <img id="aovMap" wicket:id="aovMap" style="display:none;"/>
+            <div id="aovMapContainer" style="width:512px; height:256px;background-color:white;"></div>
+        <script>
+            var map = null;
+            
+            function initMap(srs, bbox, resolution){
+              // make OL compute scale according to WMS spec
+              OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
+              
+                format = 'image/png';
+
+                var bounds = new OpenLayers.Bounds(bbox[0], bbox[1], bbox[2], bbox[3]);
+                
+                var options = {
+                    controls: [],
+                    maxExtent: bounds,
+                    maxResolution: resolution
+                };
+                // setup single tiled layer
+                untiled = new OpenLayers.Layer.WMS(
+                    "CRS Area Of Validity", document.getElementById("aovMap").src,
+                    {layers: ""},
+                    {singleTile: true, ratio: 1}
+                );
+        
+                map = new OpenLayers.Map('aovMapContainer', options);
+                map.addLayers([untiled]);
+                map.addControl(new OpenLayers.Control.PanZoom(
+                    {position: new OpenLayers.Pixel(2, 2)}
+                  ));
+                map.addControl(new OpenLayers.Control.Navigation());
+                map.addControl(new OpenLayers.Control.MousePosition("location"));
+                
+                map.zoomToExtent(bounds);                
+            }
+        </script>
+          </div>
+        </li>
+      </ul>
+    </wicket:extend>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>extension</artifactId>
+    <version>2.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.extension</groupId>
+  <artifactId>teradata</artifactId>
+  <packaging>jar</packaging>
+  <name>Teradata DataStore Extension</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-teradata</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>teradataDriver</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.teradata</groupId>
+          <artifactId>terajdbc4</artifactId>
+          <version>${td.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.teradata</groupId>
+          <artifactId>tdgssconfig</artifactId>
+          <version>${td.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+  <properties>
+    <td.version>13.00.00.27</td.version>
+  </properties>
+</project>

@@ -1,0 +1,51 @@
+/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.gss.response;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import org.geoserver.gss.GetDiffResponseType;
+import org.geoserver.gss.xml.GSS;
+import org.geoserver.gss.xml.GSSConfiguration;
+import org.geoserver.ows.Response;
+import org.geoserver.platform.Operation;
+import org.geoserver.platform.ServiceException;
+import org.geotools.xml.Encoder;
+
+/**
+ * Encodes a {@link GetDiffResponseType} into an XML response
+ * 
+ * @author aaime
+ * 
+ */
+public class GetDiffResponseOutputFormat extends Response {
+
+    GSSConfiguration configuration;
+
+    GSS gss;
+
+    public GetDiffResponseOutputFormat(GSSConfiguration configuration, GSS gss) {
+        super(GetDiffResponseType.class);
+        this.configuration = configuration;
+        this.gss = gss;
+    }
+
+    @Override
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        return "text/xml";
+    }
+
+    @Override
+    public void write(Object value, OutputStream output, Operation operation) throws IOException,
+            ServiceException {
+        GetDiffResponseType response = (GetDiffResponseType) value;
+        Encoder encoder = new Encoder(configuration, gss.getSchema());
+        encoder.setIndenting(true);
+
+        encoder.encode(response, GSS.GetDiffResponse, output);
+    }
+
+}

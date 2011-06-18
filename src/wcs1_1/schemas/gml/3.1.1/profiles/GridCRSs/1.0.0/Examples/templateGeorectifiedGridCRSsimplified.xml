@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DerivedCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="GeorectifiedImageXXXXCRS">
+	<!-- Specific georectified image or grid must be identified in this gml:id.  -->
+	<!-- Last updated 2005-11-15 -->
+	<!-- ========================================================== -->
+	<srsName>Georectified Image XXXX CRS</srsName>
+	<!-- Specific georectified image or grid must be identified in srsName. -->
+	<srsID>
+		<name codeSpace="urn:opengis:def:crs:OGC:0.:GeorectifiedImageCRS">GeorectifiedImageXXXXCRS</name>
+		<!-- Specific image must be identified in "name" value. -->
+	</srsID>
+	<remarks>Template for georectified 2D image coordinate reference system definition. In this CRS, the origin is at the center of the first pixel in the georectified image file. This CRS template can be used for any size georectified image, since no image size is specified. A CRS definition using this template is expected to be needed and thus created before the georectified image pixels are produced. The coordinate Conversion used by this CRS definition is expected to NOT closely approximate the reverse of the coordinate Transformation used to georectify this image. This CRS template is not expected to be useful for an ungeorectified image. </remarks>
+	<baseCRS xlink:href="urn:opengis:def:crs:EPSG:6.3:YYYY"/>
+	<!-- Specific 2D CRS that was georectified into must be identified in baseCRS, usually a ProjectedCRS or GeographicCRS -->
+	<!-- ================================================= -->
+	<definedByConversion>
+		<Conversion gml:id="GeorectifiedImageXXXXConversion">
+			<!-- Specific georectified image or grid must be identified in this gml:id. -->
+			<coordinateOperationName>Georectified image XXXX conversion</coordinateOperationName>
+			<!-- Specific image must be identified in this coordinateOperationName. -->
+			<usesMethod xlink:href="urn:opengis:method:EPSG:6.3:9624"/>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8623"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8624"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted.
+				The value of this parameter is often 0.0. -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8625"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8639"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted.
+				The value of this parameter is often 0.0. -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8640"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8641"/>
+			</usesValue>
+		</Conversion>
+	</definedByConversion>
+	<!-- ================================================ -->
+	<derivedCRSType codeSpace="#DerivedCRSTypeValues">#image</derivedCRSType>
+	<usesCS xlink:href="urn:ogc:def:cs:OGC:1.0:Grid2dSquareCS"/>
+</DerivedCRS>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.opengis.net/wcs" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.1" xml:lang="en">
+	<xs:annotation>
+		<xs:appinfo>getCoverage.xsd v1.0.1 2005-07-18</xs:appinfo>
+		<xs:documentation>This schema defines the GetCoverage operation request and response XML elements and types, used by an OGC Web Coverage Service (WCS). This schema is believed to be a GML Application Schema. </xs:documentation>
+		<xs:documentation>AEW 03/07/22 Changes made:
+			Removed [xmlns:t=""] above
+			Added [version="1.0.0" xml:lang="en"] above
+			Removed [abstract="true"] from CoverageRequest
+			Combined CoverageRequestType with CoverageRequest
+			Changed names of all elements in CoverageRequest to start with lower case letter
+			Defined new OutputType for "output" element in CoverageRequest
+			Removed restriction of DomainSetType from DomainSubsetType, to make schema valid
+			Added documention to DomainSubsetType, CoverageRequest, RangeSubsetType
+			Changed definition of "name" in RangeSubsetType, to produce valid schema. Should this "name" attribute be changed to "label"?
+			Simplified definition of axisSubset in RangeSubsetType
+		</xs:documentation>
+		<xs:documentation>AEW 03/07/29 Changes made:
+			Added documentation to DomainSubsetType, GridOp
+		</xs:documentation>
+		<xs:documentation>AEW 03/08/01 Changes made:
+			Edited documentation of many types
+		</xs:documentation>
+		<xs:documentation>JDE 03/08/27 Changes made:
+		 	Made both GetCoverage/@service and DescribeCoverage/@version required
+		</xs:documentation>
+		<xs:documentation>AEW 04/07/17 Changes made:
+		 	Changed "import" statement for the "wcs" namespace to an "include" statement.
+		 	Added "import" statement for "gml" namespace used in gml4wcs.xsd. 
+		</xs:documentation>
+	</xs:annotation>
+	<!-- ==========================================================
+           includes and imports
+	========================================================== -->
+	<xs:include schemaLocation="./describeCoverage.xsd"/>
+	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="./gml4wcs.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<xs:element name="GetCoverage">
+		<xs:annotation>
+			<xs:documentation>Request to a WCS to perform the GetCoverage operation. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sourceCoverage" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The coverage offering (identified by its "name") that this request will draw from.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="domainSubset" type="DomainSubsetType"/>
+				<xs:element name="rangeSubset" type="RangeSubsetType" minOccurs="0"/>
+				<xs:element ref="interpolationMethod" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Spatial interpolation method to be used in  resampling data from its original form to the requested CRS and/or grid size. Method shall be among those listed for the requested coverage in the DescribeCoverage response.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="output" type="OutputType"/>
+			</xs:sequence>
+			<xs:attribute name="service" type="xs:string" use="required" fixed="WCS"/>
+			<xs:attribute name="version" type="xs:string" use="required" fixed="1.0.0"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- ======================================================= -->
+	<xs:complexType name="DomainSubsetType">
+		<xs:annotation>
+			<xs:documentation>Defines the desired subset of the domain set of the coverage. Is a GML property containing either or both spatialSubset and temporalSubset GML objects. </xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element ref="spatialSubset"/>
+				<xs:element ref="temporalSubset" minOccurs="0"/>
+			</xs:sequence>
+			<xs:element ref="temporalSubset"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ======================================================= -->
+	<xs:element name="spatialSubset" type="SpatialSubsetType"/>
+	<!-- ======================================================= -->
+	<xs:complexType name="SpatialSubsetType">
+		<xs:annotation>
+			<xs:documentation>Definition of a subset of a coverage spatial domain. Currently, only a grid subset of a coverage domain. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="SpatialDomainType">
+				<xs:sequence>
+					<xs:element ref="gml:Envelope"/>
+					<xs:element ref="gml:Grid"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ======================================================= -->
+	<xs:element name="temporalSubset" type="TimeSequenceType"/>
+	<!-- ======================================================= -->
+	<xs:complexType name="RangeSubsetType">
+		<xs:annotation>
+			<xs:documentation>Definition of a subset of the named coverage range(s). Currently, only a value enumeration definition of a range subset. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="axisSubset" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Ordered sequence of points and/or intervals along one axis of a compound range set. </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="valueEnumBaseType">
+							<xs:attribute name="name" type="xs:string" use="required">
+								<xs:annotation>
+									<xs:documentation>Name or identifier of one axis in this coverage. This name shall match that of an AxisDescription element in the DescribeCoverage XML response.  </xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ======================================================= -->
+	<xs:complexType name="OutputType">
+		<xs:annotation>
+			<xs:documentation>Asks for the GetCoverage response to be expressed in a particular Coordinate Reference System (crs) and encoded in a particular format. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="crs" type="gml:CodeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifier of the Coordinate Reference System (crs) in which GetCoverage response shall be expressed. Identifier shall be among those listed under supportedCRSs in the DescribeCoverage XML response. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="format" type="gml:CodeType">
+				<xs:annotation>
+					<xs:documentation>Identifier of the format in which GetCoverage response shall be encoded. Identifier shall be among those listed under supportedFormats in the DescribeCoverage XML response. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,353 @@
+<?xml version="1.0" ?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/wfs"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified">
+
+   <!-- Comments in this document may impose additional constraints
+        beyond those codified in the schema syntax.  A conformant
+        Web Feature Server must provide Capabilities XML that
+           (1) validates against this schema
+           (2) does not violate the constraints stated in
+               comments herein. -->
+
+   <!-- ==============================================================
+        Imports ...
+        ============================================================== -->
+   <xsd:import namespace="http://www.opengis.net/ogc"
+               schemaLocation="../../filter/1.0.0/filterCapabilities.xsd" />
+
+   <!-- ==============================================================
+        Global elements and attributes
+        ============================================================== -->
+   <!-- A descriptive narrative for more
+        information about this server. -->
+   <xsd:element name="Abstract" type="xsd:string"/>
+   <!-- Elements containing text blocks indicating what 
+        fees or access constraints are imposed by the 
+        service provider on the service or data retrieved
+        from the server. The reserved keyword "NONE" 
+        indicates no constraint exists. -->
+   <xsd:element name="AccessConstraints" type="xsd:string"/>
+   <xsd:element name="Fees" type="xsd:string"/>
+   <!-- Short words to help catalog searching.
+        Currently, no controlled vocabulary has
+        been defined. -->
+   <xsd:element name="Keywords" type="xsd:string"/>
+   <!-- The top-level HTTP URL of this service. 
+        Typically the URL of a "home page" for
+        the service.  See also the onlineResource
+        attributes of <DCPType> children, below.
+        Currently, no non-HTTP platforms have been
+        specified. -->
+   <xsd:element name="OnlineResource"/>
+   <xsd:element name="SRS" type="xsd:string"/>
+   <!-- A human-readable title to briefly identify
+        this server in menus. -->
+   <xsd:element name="Title" type="xsd:string"/>
+
+   <xsd:element name="Query"  type="wfs:EmptyType"/>
+   <xsd:element name="Insert" type="wfs:EmptyType"/>
+   <xsd:element name="Update" type="wfs:EmptyType"/>
+   <xsd:element name="Delete" type="wfs:EmptyType"/>
+   <xsd:element name="Lock"   type="wfs:EmptyType"/>
+
+   <!-- REDEFINE THIS ELEMENT AS NEEDED IN YOUR XML  -->
+   <xsd:element name="VendorSpecificCapabilities" type="xsd:string"/>
+
+   <!-- ==============================================================
+        Root element
+        ============================================================== -->
+   <!-- The parent element of the Capabilities document includes as
+        children a Service element with general information about the
+        server, a Capability element with specific information about
+        the kinds of functionality offered by the server, a FeatureTypeList
+        element defining the list of all feature types available from
+        this server and a FeatureCapabilities element describing the
+        filter capabilities of the server. -->
+   <xsd:element name="WFS_Capabilities" type="wfs:WFS_CapabilitiesType"/>
+
+   <!-- ==============================================================
+        Types
+        ============================================================== -->
+   <xsd:complexType name="WFS_CapabilitiesType">
+      <xsd:sequence>
+         <!-- The Service element provides metadata for
+              the service as a whole. -->
+         <xsd:element name="Service" type="wfs:ServiceType"/>
+
+         <!-- A Capability lists available request
+              types, how exceptions may be reported, and
+              whether any vendor-specific capabilities
+              are defined.  It also lists all the
+              feature types available from this feature 
+              server. -->
+         <xsd:element name="Capability" type="wfs:CapabilityType"/>
+         <xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType"/>
+         <xsd:element ref="ogc:Filter_Capabilities" />
+      </xsd:sequence>
+
+      <!-- The version attribute specifies the specification revision
+           to which this schema applies.  Its format is one,t two or three
+           integers separated by periods: "x", or "x.y", or "x.y.z",
+           with the most significant number appearing first.  Future
+           revisions are guaranteed to be numbered in monotonically
+           increasing fashion, though gaps may appear in the sequence. -->
+      <xsd:attribute name="version"
+                     type="xsd:string" fixed="1.0.0"/>
+
+      <!-- The updateSequence attribute is a sequence number for
+           managing propagation of the contents of this document.
+           For example, if a Feature Server adds some data feature
+           types it can increment the update sequence to inform
+           catalog servers that their previously cached versions
+           are now stale. The format is a positive integer. -->
+      <xsd:attribute name="updateSequence"
+                     type="xsd:nonNegativeInteger" default="0"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="ServiceType">
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:string"/>
+         <xsd:element ref="wfs:Title"/>
+         <xsd:element ref="wfs:Abstract" minOccurs="0"/>
+         <xsd:element ref="wfs:Keywords" minOccurs="0"/>
+         <xsd:element ref="wfs:OnlineResource"/>
+         <xsd:element ref="wfs:Fees" minOccurs="0"/>
+         <xsd:element ref="wfs:AccessConstraints" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="CapabilityType">
+      <xsd:sequence>
+         <xsd:element name="Request" type="wfs:RequestType"/>
+         <!-- The optional VendorSpecificCapabilities element lists any
+              capabilities unique to a particular server.  Because the
+              information is not known a priori, it cannot be constrained
+              by this particular schema document.  A vendor-specific schema
+              fragment must be supplied at the start of the XML capabilities
+              document, after the reference to the general WFS_Capabilities
+              schema. -->
+         <xsd:element ref="wfs:VendorSpecificCapabilities" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FeatureTypeListType">
+      <xsd:sequence>
+         <xsd:element name="Operations"
+                      type="wfs:OperationsType" minOccurs="0"/>
+         <xsd:element name="FeatureType"
+                      type="wfs:FeatureTypeType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- Available WFS-defined request types are listed here. At
+        least one of the values is required, but more than one
+        may be given. -->
+   <xsd:complexType name="RequestType">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="GetCapabilities"
+                      type="wfs:GetCapabilitiesType"/>
+         <xsd:element name="DescribeFeatureType"
+                      type="wfs:DescribeFeatureTypeType"/>
+         <xsd:element name="Transaction"
+                      type="wfs:TransactionType"/>
+         <xsd:element name="GetFeature"
+                      type="wfs:GetFeatureTypeType"/>
+         <xsd:element name="GetFeatureWithLock"
+                      type="wfs:GetFeatureTypeType"/>
+         <xsd:element name="LockFeature"
+                      type="wfs:LockFeatureTypeType"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="GetCapabilitiesType">
+      <xsd:sequence>
+         <xsd:element name="DCPType"
+                      type="wfs:DCPTypeType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="DescribeFeatureTypeType">
+      <xsd:sequence>
+         <xsd:element name="SchemaDescriptionLanguage"
+                      type="wfs:SchemaDescriptionLanguageType"/>
+         <xsd:element name="DCPType"
+                      type="wfs:DCPTypeType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="TransactionType">
+      <xsd:sequence>
+         <xsd:element name="DCPType"
+                      type="wfs:DCPTypeType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="GetFeatureTypeType">
+      <xsd:sequence>
+         <xsd:element name="ResultFormat"
+                      type="wfs:ResultFormatType"/>
+         <xsd:element name="DCPType"
+                      type="wfs:DCPTypeType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="LockFeatureTypeType">
+      <xsd:sequence>
+         <xsd:element name="DCPType"
+                      type="wfs:DCPTypeType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- Available Distributed Computing Platforms (DCPs) are
+        listed here.  At present, only HTTP is defined. -->
+   <xsd:complexType name="DCPTypeType">
+      <xsd:sequence>
+         <xsd:element name="HTTP" type="wfs:HTTPType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- A list of feature types available from
+        this server.  The following table
+        specifies the number and source of the
+        various elements that are available for
+        describing a feature type.
+   
+        element             number    comments
+        =================   =======   ======================================
+        Name                    1     this is the Name of the feature type
+   
+        Title                 0/1     an optional Meaningful title for the
+                                      feature type  (e.g. "Ontario Roads"
+                                      for ROADL_1M")
+
+        Abstract              0/1     optional; no Default
+   
+        Keywords              0/1     optional; no Default
+   
+        SRS                     1     the SRS that should be used
+                                      when specifying the state of
+                                      the feature
+
+        Operations            0/1     a list of available operations for
+                                      the feature type
+      
+        LatLongBoundingBox      1+    bounding box(s) of data
+      
+        MetadataURL           0/1+    optional; no default
+   -->
+   <xsd:complexType name="FeatureTypeType">
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:QName"/>
+         <xsd:element ref="wfs:Title" minOccurs="0"/>
+         <xsd:element ref="wfs:Abstract" minOccurs="0"/>
+         <xsd:element ref="wfs:Keywords" minOccurs="0"/>
+         <xsd:element ref="wfs:SRS"/>
+         <xsd:element name="Operations"
+                      type="wfs:OperationsType" minOccurs="0"/>
+         <xsd:element name="LatLongBoundingBox"
+                      type="wfs:LatLongBoundingBoxType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="MetadataURL"
+                      type="wfs:MetadataURLType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="GetType">
+      <xsd:attribute name="onlineResource" type="xsd:string" use="required"/>
+   </xsd:complexType>
+
+   <!-- Available HTTP request methods. -->
+   <xsd:complexType name="HTTPType">
+      <xsd:choice maxOccurs="unbounded">
+         <!-- HTTP request methods.  The onlineResourc attribute
+              indicates the URL prefix for HTTP GET requests
+              (everything before the question mark and query string:
+              http://hostname[:port]/path/scriptname); for HTTP POST
+              requests, onlineResource is the complete URL. -->
+         <xsd:element name="Get" type="wfs:GetType"/>
+         <xsd:element name="Post" type="wfs:PostType"/>
+      </xsd:choice>
+   </xsd:complexType>
+
+   <!-- The LatLongBoundingBox element is used to indicate the edges of 
+        an enclosing rectangle in the SRS of the associated feature type.
+        Its purpose is to facilitate geographic searches  by indicating
+        where instances of the particular feature type exist.  Since multiple
+        LatLongBoundingBoxes can be specified, a WFS can indicate where 
+        various clusters of data may exist.  This knowledge aids client 
+        applications by letting them know where they should query in order 
+        to have a high probability of finding data. -->
+   <xsd:complexType name="LatLongBoundingBoxType">
+      <xsd:attribute name="minx" type="xsd:string" use="required"/>
+      <xsd:attribute name="miny" type="xsd:string" use="required"/>
+      <xsd:attribute name="maxx" type="xsd:string" use="required"/>
+      <xsd:attribute name="maxy" type="xsd:string" use="required"/>
+   </xsd:complexType>
+
+   <!-- A Web Feature Server MAY use zero or more MetadataURL
+        elements to offer detailed, standardized metadata about
+        the data underneath a particular feature type.  The type
+        attribute indicates the standard to which the metadata
+        complies; the format attribute indicates how the metadata is
+        structured.  Two types are defined at present:
+        'TC211' = ISO TC211 19115; 
+        'FGDC'  = FGDC CSDGM. -->
+   <xsd:complexType name="MetadataURLType">
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:string">
+            <xsd:attribute name="type" use="required">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:NMTOKEN">
+                     <xsd:enumeration value="TC211"/>
+                     <xsd:enumeration value="FGDC"/>
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="format" use="required">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:NMTOKEN">
+                     <xsd:enumeration value="XML"/>
+                     <xsd:enumeration value="SGML"/>
+                     <xsd:enumeration value="TXT"/>
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:complexType name="OperationsType">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element ref="wfs:Insert"/>
+         <xsd:element ref="wfs:Update"/>
+         <xsd:element ref="wfs:Delete"/>
+         <xsd:element ref="wfs:Query"/>
+         <xsd:element ref="wfs:Lock"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="PostType">
+      <xsd:attribute name="onlineResource" type="xsd:string" use="required"/>
+   </xsd:complexType>
+
+   <!-- The ResultFormatType type defines the output formats that the
+        web feature server can generate.  The mandatory format "GML2"
+        must always be available.  Individual servers can define
+        additional elements representing other output formats. -->
+   <xsd:element name="GML2" type="wfs:EmptyType"/>
+   <xsd:complexType name="ResultFormatType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element ref="wfs:GML2"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- The SchemaDescriptionLanguageType type defines the schema languages
+        that a feature server is capable of using to describe the schema
+        of a feature.  Individual servers can define additional elements
+        representing other schema languages but XMLSCHEMA must always
+        be defined. -->
+   <xsd:element name="XMLSCHEMA" type="wfs:EmptyType"/>
+   <xsd:complexType name="SchemaDescriptionLanguageType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element ref="wfs:XMLSCHEMA"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="EmptyType" />
+</xsd:schema>

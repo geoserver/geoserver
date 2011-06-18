@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  targetNamespace="http://cite.opengeospatial.org/gmlsf"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  elementFormDefault="qualified"
+  version="2006.12">
+
+  <xsd:import namespace="http://www.opengis.net/gml"/>
+
+  <xsd:element name="PrimitiveGeoFeature" type="sf:PrimitiveGeoFeatureType"
+    substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+    Feature type with selected simple non-spatial properties and spatial
+    properties having primitive geometry values.
+    </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="PrimitiveGeoFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="surfaceProperty" minOccurs="0" type="gml:SurfacePropertyType" />
+          <xsd:element name="pointProperty" minOccurs="0" type="gml:PointPropertyType" />
+          <xsd:element name="curveProperty" minOccurs="0" type="gml:CurvePropertyType" />
+          <xsd:element name="intProperty" type="xsd:integer" />
+          <xsd:element name="uriProperty" type="xsd:anyURI" minOccurs="0"/>
+          <xsd:element name="measurand" type="xsd:float" />
+          <xsd:element name="dateTimeProperty" type="xsd:dateTime" minOccurs="0"/>
+          <xsd:element name="dateProperty" type="xsd:date" minOccurs="0"/>
+          <xsd:element name="decimalProperty">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:decimal">
+                <xsd:totalDigits value="4"/>
+                <xsd:fractionDigits value="2" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+          <xsd:element name="relatedFeature" type="gml:ReferenceType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo source="urn:x-gml:targetElement">sf:PrimitiveGeoFeature</xsd:appinfo>
+              <xsd:documentation xml:lang="en">A (simple) XLink element that refers to a sf:PrimitiveGeoFeature instance.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+</xsd:schema>

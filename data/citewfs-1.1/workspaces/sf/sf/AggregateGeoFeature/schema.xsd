@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  targetNamespace="http://cite.opengeospatial.org/gmlsf"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  elementFormDefault="qualified"
+  version="2006.12">
+
+  <xsd:import namespace="http://www.opengis.net/gml"/>
+
+  <xsd:element name="AggregateGeoFeature" type="sf:AggregateGeoFeatureType" 
+    substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+    Feature type with selected simple non-spatial properties and spatial 
+    properties having aggregate geometry values.
+    </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="AggregateGeoFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="multiPointProperty" minOccurs="0" type="gml:MultiPointPropertyType" />
+          <xsd:element name="multiCurveProperty" minOccurs="0" type="gml:MultiCurvePropertyType" />
+          <xsd:element name="multiSurfaceProperty" minOccurs="0" type="gml:MultiSurfacePropertyType" />
+          <xsd:element name="doubleProperty" type="xsd:double" />
+          <xsd:element name="intRangeProperty" type="sf:IntRangePropertyType" minOccurs="0"/>
+          <xsd:element name="strProperty" type="xsd:string" />
+          <xsd:element name="featureCode" type="sf:FeatureCodeType" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  <xsd:simpleType name="FeatureCodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z]{2}[0-9]{3}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+   <xsd:simpleType name="IntRangePropertyType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="0"/>
+      <xsd:maxInclusive value="99"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

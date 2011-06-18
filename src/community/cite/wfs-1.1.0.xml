@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="capabilities-url">http://localhost:8080/geoserver/wfs?request=getcapabilities&amp;service=wfs&amp;version=1.1.0</value>
+ <value key="wfs-transaction">Transaction</value>
+ <value key="profile">sf-0</value>
+</values>

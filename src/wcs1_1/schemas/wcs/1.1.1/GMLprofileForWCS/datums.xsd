@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:datums:3.1.1"/>
+		<documentation>Subset of datums.xsd for WCS 1.2 profile. Primary editor: Arliss Whiteside. Last updated 2007-04-23 
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="referenceSystems.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="_Datum" type="gml:AbstractDatumType" abstract="true" substitutionGroup="gml:Definition"/>
+	<!-- =================================================== -->
+	<complexType name="AbstractDatumBaseType" abstract="true">
+		<annotation>
+			<documentation>Basic encoding for datum objects, simplifying and restricting the DefinitionType as needed. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:datumName"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="datumName" type="gml:CodeType" substitutionGroup="gml:name">
+		<annotation>
+			<documentation>The name by which this datum is identified. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="AbstractDatumType" abstract="true">
+		<annotation>
+			<documentation>A datum specifies the relationship of a coordinate system to the earth, thus creating a coordinate reference system. A datum uses a parameter or set of parameters that determine the location of the origin of the coordinate reference system. Each datum subtype can be associated with only specific types of coordinate systems. This abstract complexType shall not be used, extended, or restricted, in an Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractDatumBaseType">
+				<sequence>
+					<element ref="gml:datumID" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Set of alternative identifications of this datum. The first datumID, if any, is normally the primary identification code, and any others are aliases. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:remarks" minOccurs="0">
+						<annotation>
+							<documentation>Comments on this reference system, including source information. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:anchorPoint" minOccurs="0"/>
+					<element ref="gml:realizationEpoch" minOccurs="0"/>
+					<element ref="gml:validArea" minOccurs="0"/>
+					<element ref="gml:scope" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="datumID" type="gml:IdentifierType">
+		<annotation>
+			<documentation>An identification of a datum. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="anchorPoint" type="gml:CodeType">
+		<annotation>
+			<documentation>Description, possibly including coordinates, of the point or points used to anchor the datum to the Earth. Also known as the "origin", especially for engineering and image datums. The codeSpace attribute can be used to reference a source of more detailed on this point or surface, or on a set of such descriptions. 
+- For a geodetic datum, this point is also known as the fundamental point, which is traditionally the point where the relationship between geoid and ellipsoid is defined. In some cases, the "fundamental point" may consist of a number of points. In those cases, the parameters defining the geoid/ellipsoid relationship have been averaged for these points, and the averages adopted as the datum definition.
+- For an engineering datum, the anchor point may be a physical point, or it may be a point with defined coordinates in another CRS. When appropriate, the coordinates of this anchor point can be referenced in another document, such as referencing a GML feature that references or includes a point position.
+- For an image datum, the anchor point is usually either the centre of the image or the corner of the image.
+- For a temporal datum, this attribute is not defined. Instead of the anchor point, a temporal datum carries a separate time origin of type DateTime. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="realizationEpoch" type="date">
+		<annotation>
+			<documentation>The time after which this datum definition is valid. This time may be precise (e.g. 1997.0 for IRTF97) or merely a year (e.g. 1983 for NAD83). In the latter case, the epoch usually refers to the year in which a major recalculation of the geodetic control network, underlying the datum, was executed or initiated. An old datum can remain valid after a new datum is defined. Alternatively, a datum may be superseded by a later datum, in which case the realization epoch for the new datum defines the upper limit for the validity of the superseded datum. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="ImageDatum" type="gml:ImageDatumType" substitutionGroup="gml:_Datum"/>
+	<!-- =================================================== -->
+	<complexType name="ImageDatumType">
+		<annotation>
+			<documentation>An image datum defines the origin of an image coordinate reference system, and is used in a local context only. For more information, see OGC Abstract Specification Topic 2. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:pixelInCell"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="pixelInCell" type="gml:PixelInCellType"/>
+	<!-- =================================================== -->
+	<complexType name="PixelInCellType">
+		<annotation>
+			<documentation>Specification of the way an image grid is associated with the image data attributes. </documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:CodeType">
+				<attribute name="codeSpace" type="anyURI" use="required">
+					<annotation>
+						<documentation>Reference to a source of information specifying the values and meanings of all the allowed string values for this PixelInCellType. </documentation>
+					</annotation>
+				</attribute>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<!-- =================================================== -->
+	<complexType name="ImageDatumRefType">
+		<annotation>
+			<documentation>Association to an image datum, either referencing or containing the definition of that datum. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:ImageDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+</schema>

@@ -1,0 +1,4 @@
+<map name="NamedPlaces">
+<area shape="poly" id="NamedPlaces.1107531895890.0"  coords="59,-228 530,-228 530,81 -70,81 -70,12 59,-228" all="Ashton"/>
+<area shape="poly" id="NamedPlaces.1107531895891.0"  coords="-5,372 -5,286 166,286 166,372 -5,372" all="Goose Island"/>
+</map>

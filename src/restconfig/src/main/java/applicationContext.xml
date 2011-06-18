@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+<bean id="restConfigMapping" class="org.geoserver.rest.RESTMapping">
+<property name="routes">
+  <map>
+        <entry>
+          <key><value>/workspaces/{workspace}.{type}</value></key>
+          <value>workspaceFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}</value></key>
+          <value>workspaceFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces.{type}</value></key>
+          <value>workspaceFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces</value></key>
+          <value>workspaceFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/file.{format}</value></key>
+          <value>storeFileFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/external.{format}</value></key>
+          <value>storeFileFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/url.{format}</value></key>
+          <value>storeFileFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/file.{format}</value></key>
+          <value>storeFileFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/external.{format}</value></key>
+          <value>storeFileFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/url.{format}</value></key>
+          <value>storeFileFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}.{format}</value></key>
+          <value>dataStoreFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}</value></key>
+          <value>dataStoreFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores.{format}</value></key>
+          <value>dataStoreFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/datastores</value></key>
+          <value>dataStoreFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}.{format}</value></key>
+          <value>coverageStoreFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}</value></key>
+          <value>coverageStoreFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores.{format}</value></key>
+          <value>coverageStoreFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/coveragestores</value></key>
+          <value>coverageStoreFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/wmsstores/{wmsstore}.{format}</value></key>
+          <value>wmsStoreFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmsstores/{wmsstore}</value></key>
+          <value>wmsStoreFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmsstores.{format}</value></key>
+          <value>wmsStoreFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/wmsstores</value></key>
+          <value>wmsStoreFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}.{format}</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes.{format}</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}.{format}</value></key>
+          <value>coverageFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages.{format}</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers/{wmslayer}.{format}</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers/{wmslayer}</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers.{format}</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmsstores/{wmsstore}/wmslayers</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/featuretypes/{featuretype}.{format}</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/featuretypes/{featuretype}</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/featuretypes.{format}</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/featuretypes</value></key>
+          <value>featureTypeFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/coverages/{coverage}.{format}</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coverages/{coverage}</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coverages.{format}</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/coverages</value></key>
+          <value>coverageFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/workspaces/{workspace}/wmslayers/{wmslayer}.{format}</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmslayers/{wmslayer}</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmslayers.{format}</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/wmslayers</value></key>
+          <value>wmsLayerFinder</value>
+        </entry>
+        
+        <entry>
+          <key><value>/namespaces/{namespace}.{format}</value></key>
+          <value>namespaceFinder</value>
+        </entry>
+        <entry>
+          <key><value>/namespaces/{namespace}</value></key>
+          <value>namespaceFinder</value>
+        </entry>
+        <entry>
+          <key><value>/namespaces.{format}</value></key>
+          <value>namespaceFinder</value>
+        </entry>
+        <entry>
+          <key><value>/namespaces</value></key>
+          <value>namespaceFinder</value>
+        </entry>
+        <entry>
+          <key><value>/layers/{layer}/styles.{format}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layers/{layer}/styles</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/styles/{style}.{format}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/styles/{style}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/styles.{format}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/styles</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layers/{layer}.{format}</value></key>
+          <value>layerFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layers/{layer}</value></key>
+          <value>layerFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layers.{format}</value></key>
+          <value>layerFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layers</value></key>
+          <value>layerFinder2</value>
+        </entry>
+        
+         <entry>
+          <key><value>/layergroups/{layergroup}.{format}</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layergroups/{layergroup}</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layergroups.{format}</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/layergroups</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/reload</value></key>
+          <value>catalogReloader</value>
+        </entry>
+        <entry>
+          <key><value>/fonts.{format}</value></key>
+          <value>fontFinder</value>
+        </entry>
+  </map>
+</property>
+</bean>
+
+  <bean id="abstractCatalogFinder" class="org.geoserver.catalog.rest.AbstractCatalogFinder" abstract="true">
+    <constructor-arg ref="catalog"/>
+  </bean>
+  
+  <bean id="workspaceFinder" class="org.geoserver.catalog.rest.WorkspaceFinder" parent="abstractCatalogFinder"/>
+  <bean id="namespaceFinder" class="org.geoserver.catalog.rest.NamespaceFinder" parent="abstractCatalogFinder"/>
+  <bean id="dataStoreFinder" class="org.geoserver.catalog.rest.DataStoreFinder" parent="abstractCatalogFinder"/>
+  <bean id="coverageStoreFinder" class="org.geoserver.catalog.rest.CoverageStoreFinder" parent="abstractCatalogFinder"/>
+  <bean id="wmsStoreFinder" class="org.geoserver.catalog.rest.WMSStoreFinder" parent="abstractCatalogFinder"/>
+  <bean id="storeFileFinder" class="org.geoserver.catalog.rest.StoreFileFinder" parent="abstractCatalogFinder"/>
+  <bean id="featureTypeFinder" class="org.geoserver.catalog.rest.FeatureTypeFinder" parent="abstractCatalogFinder"/>
+  <bean id="coverageFinder" class="org.geoserver.catalog.rest.CoverageFinder" parent="abstractCatalogFinder"/>
+  <bean id="wmsLayerFinder" class="org.geoserver.catalog.rest.WMSLayerFinder" parent="abstractCatalogFinder"/>
+  <bean id="styleFinder2" class="org.geoserver.catalog.rest.StyleFinder" parent="abstractCatalogFinder"/>
+  <bean id="layerFinder2" class="org.geoserver.catalog.rest.LayerFinder" parent="abstractCatalogFinder"/>
+  <bean id="layerGroupFinder2" class="org.geoserver.catalog.rest.LayerGroupFinder" parent="abstractCatalogFinder"/>
+  <bean id="catalogReloader" class="org.geoserver.catalog.rest.CatalogReloader">
+     <constructor-arg ref="geoServer"/>
+  </bean>
+
+  <bean id="fontFinder" class="org.geoserver.rest.FontListResource"/>
+</beans>

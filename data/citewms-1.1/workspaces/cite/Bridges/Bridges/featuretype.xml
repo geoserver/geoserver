@@ -1,0 +1,35 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--31b6253f:128b3c42f89:-7fd5</id>
+  <name>Bridges</name>
+  <nativeName>Bridges</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--31b6253f:128b3c42f89:-7ff8</id>
+  </namespace>
+  <title>cite:Bridges</title>
+  <abstract>Generated from cite</abstract>
+  <keywords>
+    <string>Bridges</string>
+    <string>cite</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <latLonBoundingBox>
+    <minx>1.9E-4</minx>
+    <maxx>2.1E-4</maxx>
+    <miny>6.9E-4</miny>
+    <maxy>7.1E-4</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="dirName">cite_Bridges</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--31b6253f:128b3c42f89:-7fdf</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

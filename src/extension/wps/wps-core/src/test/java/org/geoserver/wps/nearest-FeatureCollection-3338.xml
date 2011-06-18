@@ -1,0 +1,56 @@
+<wfs:FeatureCollection numberOfFeatures="5" timeStamp="2008-11-15T01:01:13.675-05:00" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:akgis="http://www.openroadsconsulting.com/akgis"   xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<gml:featureMember>
+		<akgis:orci_compiled_points fid="orci_compiled_points.2867">
+			<akgis:gid>2291</akgis:gid>
+			<akgis:cds_num>190000</akgis:cds_num>
+			<akgis:cds_name>RICHARDSON HIGHWAY</akgis:cds_name>
+			<akgis:offset>0E-11</akgis:offset>
+			<akgis:from_mpt>113.508000000</akgis:from_mpt>
+			<akgis:side>R</akgis:side>
+			<akgis:lat>1369704.49401855</akgis:lat>
+			<akgis:lon>445445.060241699</akgis:lon>
+			<akgis:displayname>MILEPOST 110</akgis:displayname>
+			<akgis:type>M10-2</akgis:type>
+			<akgis:source>milepost</akgis:source>
+			<akgis:the_geom>
+				<gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#3338">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">445445.0602417,1369704.49401855
+					</gml:coordinates>
+				</gml:Point>
+			</akgis:the_geom>
+			<akgis:jurisunion_orciid>11</akgis:jurisunion_orciid>
+			<akgis:jurisunion_districtid>11</akgis:jurisunion_districtid>
+			<akgis:jurisunion_district>J</akgis:jurisunion_district>
+			<akgis:jurisunion_regionid>3</akgis:jurisunion_regionid>
+			<akgis:jurisunion_region>2</akgis:jurisunion_region>
+		</akgis:orci_compiled_points>
+	</gml:featureMember>
+	<gml:featureMember>
+		<akgis:orci_compiled_points fid="orci_compiled_points.1137">
+			<akgis:gid>561</akgis:gid>
+			<akgis:cds_num>190000</akgis:cds_num>
+			<akgis:cds_name>RICHARDSON HIGHWAY</akgis:cds_name>
+			<akgis:offset>0E-11</akgis:offset>
+			<akgis:from_mpt>112.521000000</akgis:from_mpt>
+			<akgis:side>R</akgis:side>
+			<akgis:lat>1368643.35302734</akgis:lat>
+			<akgis:lon>446357.997009277</akgis:lon>
+			<akgis:displayname>MILEPOST 109</akgis:displayname>
+			<akgis:type>M10-2</akgis:type>
+			<akgis:source>milepost</akgis:source>
+			<akgis:the_geom>
+				<gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#3338">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">446357.99700928,1368643.35302734
+					</gml:coordinates>
+				</gml:Point>
+			</akgis:the_geom>
+			<akgis:jurisunion_orciid>11</akgis:jurisunion_orciid>
+			<akgis:jurisunion_districtid>11</akgis:jurisunion_districtid>
+			<akgis:jurisunion_district>J</akgis:jurisunion_district>
+			<akgis:jurisunion_regionid>3</akgis:jurisunion_regionid>
+			<akgis:jurisunion_region>2</akgis:jurisunion_region>
+		</akgis:orci_compiled_points>
+	</gml:featureMember>
+</wfs:FeatureCollection>

@@ -1,0 +1,63 @@
+html {
+  cursor: text;
+}
+
+.editbox {
+  margin: .4em;
+  padding: 0;
+  font-family: monospace;
+  font-size: 10pt;
+  color: black;
+}
+
+pre.code, .editbox {
+  color: #666666;
+}
+
+.editbox p {
+  margin: 0;
+}
+
+span.lua-comment {
+  color: #BB9977;
+}
+
+span.lua-keyword {
+  font-weight: bold;
+  color: blue;
+}
+
+span.lua-string {
+  color: #AA2222;
+}
+
+span.lua-stdfunc {
+  font-weight: bold;
+  color: #077;
+}
+span.lua-customfunc {
+  font-weight: bold;
+  color: #0AA;
+}
+
+
+span.lua-identifier {
+  color: black;
+}
+
+span.lua-number {
+  color: #3A3;
+}
+
+span.lua-token {
+  color: #151;
+}
+
+span.lua-error {
+  color: #FFF;
+  background-color: #F00;
+}
+
+
+
+

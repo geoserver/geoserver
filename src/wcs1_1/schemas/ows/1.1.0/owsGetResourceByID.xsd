@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.0" xml:lang="en">
+	<annotation>
+		<appinfo>owsGetResourceByID.xsd 2006-02-14</appinfo>
+		<documentation>This XML Schema Document encodes the GetResourceByID operation request message. This typical operation is specified as a base for profiling in specific OWS specifications. For information on the allowed changes and limitations in such profiling, see Subclause 9.4.1 of the OWS Common specification.
+		Copyright (c) 2006 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="owsDataIdentification.xsd"></include>
+	<include schemaLocation="owsGetCapabilities.xsd"></include>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<element name="Resource">
+		<annotation>
+			<documentation>XML encoded GetResourceByID operation response. The complexType used by this element shall be specified by each specific OWS.  </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="GetResourceByID" type="ows:GetResourceByIdType"></element>
+	<!-- =========================================================== -->
+	<complexType name="GetResourceByIdType">
+		<annotation>
+			<documentation>Request to a service to perform the GetResourceByID operation. This operation allows a client to retrieve one or more identified resources, including datasets and resources that describe datasets or parameters. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+		</annotation>
+		<sequence>
+			<element name="ResourceID" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Unordered list of zero or more resource identifiers. These identifiers can be listed in the Contents section of the service metadata (Capabilities) document. For more information on this parameter, see Subclause 9.4.2.1 of the OWS Common specification. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:OutputFormat" minOccurs="0">
+				<annotation>
+					<documentation>Optional reference to the data format to be used for response to this operation request. This element shall be included when multiple output formats are available for the selected resource(s), and the client desires a format other than the specified default, if any. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="service" type="ows:ServiceType" use="required"></attribute>
+		<attribute name="version" type="ows:VersionType" use="required"></attribute>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

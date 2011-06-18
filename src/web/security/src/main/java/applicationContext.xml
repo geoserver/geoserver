@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+
+	<!-- 
+   Menu category for security work
+   -->
+	<bean id="securityCategory" class="org.geoserver.web.Category">
+		<property name="nameKey" value="category.security" />
+		<property name="order" value="200" />
+	</bean>
+
+	<!--
+	The user list page 
+	 -->
+	<bean id="userSecurityPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="security.user" />
+		<property name="titleKey" value="security.user.title" />
+		<property name="descriptionKey" value="security.user.description" />
+		<property name="componentClass" value="org.geoserver.web.security.user.UserPage" />
+		<property name="icon" value="../../img/icons/silk/user.png" />
+		<property name="category" ref="securityCategory" />
+		<property name="order" value="100" />
+	</bean>
+
+	<!--
+	The data list page 
+	 -->
+	<bean id="dataSecurityPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="security.data" />
+		<property name="titleKey" value="security.data.title" />
+		<property name="descriptionKey" value="security.data.description" />
+		<property name="componentClass"
+			value="org.geoserver.web.security.data.DataAccessRulePage" />
+		<property name="icon" value="../../img/icons/silk/database_key.png" />
+		<property name="category" ref="securityCategory" />
+		<property name="order" value="200" />
+	</bean>
+
+	<!--
+	The service list page 
+	 -->
+
+	<bean id="serviceSecurityPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="security.service" />
+		<property name="titleKey" value="security.service.title" />
+		<property name="descriptionKey" value="security.service.description" />
+		<property name="componentClass"
+			value="org.geoserver.web.security.service.ServiceAccessRulePage" />
+		<property name="icon" value="../../img/icons/silk/shape_square_key.png" />
+		<property name="category" ref="securityCategory" />
+		<property name="order" value="300" />
+	</bean>
+	
+	<!--
+	The catalog mode page 
+	 -->
+
+	<bean id="catalogSecurityPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="security.catalog" />
+		<property name="titleKey" value="security.catalog.title" />
+		<property name="descriptionKey" value="security.catalog.description" />
+		<property name="componentClass"
+			value="org.geoserver.web.security.catalog.CatalogModePage" />
+		<property name="icon" value="../../img/icons/silk/application_key.png" />
+		<property name="category" ref="securityCategory" />
+		<property name="order" value="400" />
+	</bean>
+
+</beans> 

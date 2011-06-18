@@ -1,0 +1,34 @@
+<assembly>
+	<id>gdal-plugin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>release/extensions/gdal</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>release/target/dependency</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>*imageio-ext*.jar</include>
+			</includes>
+			<excludes>
+				<exclude>*arcgrid*.jar</exclude>
+				<exclude>*customstreams*.jar</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>release/extensions</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>LICENSE.txt</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>

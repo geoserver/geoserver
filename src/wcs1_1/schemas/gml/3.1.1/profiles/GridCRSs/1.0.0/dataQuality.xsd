@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:dataQuality:3.1.1"/>
+		<documentation>Subset of dataQuality.xsd for GML 3.1.1 GridCRSs profile. Primary editor: Arliss Whiteside. Last updated 2005-11-15
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="../../CommonCRSs/1.0.0/gmlCommonCRSsProfile.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<complexType name="AbstractPositionalAccuracyType" abstract="true">
+		<annotation>
+			<documentation>Position error estimate (or accuracy) data. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:measureDescription" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="measureDescription" type="gml:CodeType">
+		<annotation>
+			<documentation>A description of the position accuracy parameter(s) provided. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="absoluteExternalPositionalAccuracy" type="gml:AbsoluteExternalPositionalAccuracyType" substitutionGroup="gml:_positionalAccuracy"/>
+	<!-- =================================================== -->
+	<complexType name="AbsoluteExternalPositionalAccuracyType">
+		<annotation>
+			<documentation>Closeness of reported coordinate values to values accepted as or being true. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractPositionalAccuracyType">
+				<sequence>
+					<element ref="gml:result"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="relativeInternalPositionalAccuracy" type="gml:RelativeInternalPositionalAccuracyType" substitutionGroup="gml:_positionalAccuracy"/>
+	<!-- =================================================== -->
+	<complexType name="RelativeInternalPositionalAccuracyType">
+		<annotation>
+			<documentation>Closeness of the relative positions of two or more positions to their respective relative positions accepted as or being true. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractPositionalAccuracyType">
+				<sequence>
+					<element ref="gml:result"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="result" type="gml:MeasureType">
+		<annotation>
+			<documentation>A quantitative result defined by the evaluation procedure used, and identified by the measureDescription. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="covarianceMatrix" type="gml:CovarianceMatrixType" substitutionGroup="gml:_positionalAccuracy"/>
+	<!-- =================================================== -->
+	<complexType name="CovarianceMatrixType">
+		<annotation>
+			<documentation>Error estimate covariance matrix. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractPositionalAccuracyType">
+				<sequence>
+					<element ref="gml:unitOfMeasure" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Ordered sequence of units of measure, corresponding to the row and column index numbers of the covariance matrix, starting with row and column 1 and ending with row/column N. Each unit of measure is for the ordinate reflected in the relevant row and column of the covariance matrix. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:includesElement" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered set of elements in this covariance matrix. Because the covariance matrix is symmetrical, only the elements in the upper or lower diagonal part (including the main diagonal) of the matrix need to be specified. Any zero valued covariance elements can be omitted. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="includesElement" type="gml:CovarianceElementType"/>
+	<!-- =================================================== -->
+	<complexType name="CovarianceElementType">
+		<annotation>
+			<documentation>An element of a covariance matrix.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:rowIndex"/>
+			<element ref="gml:columnIndex"/>
+			<element ref="gml:covariance"/>
+		</sequence>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="rowIndex" type="positiveInteger">
+		<annotation>
+			<documentation>Row number of this covariance element value. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="columnIndex" type="positiveInteger">
+		<annotation>
+			<documentation>Column number of this covariance element value. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="covariance" type="double">
+		<annotation>
+			<documentation>Value of covariance matrix element. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+</schema>

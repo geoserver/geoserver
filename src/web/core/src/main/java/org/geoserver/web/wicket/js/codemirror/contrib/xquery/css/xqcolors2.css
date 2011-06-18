@@ -1,0 +1,96 @@
+/*
+Copyright 2010 Mike Brevoort http://mike.brevoort.com (twitter:@mbrevoort)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+This is an indirect collective derivative of the other parses in this package
+
+*/
+.editbox {
+  margin: .4em;
+  padding: 0;
+  font-family: monospace;
+  font-size: 10pt;
+  color: black;
+  background-color: white;
+  line-height: 16px;
+}
+
+span.word {
+}
+
+span.xqueryKeyword {
+  color: blue; 
+  /* font-weight: bold; */
+}
+
+span.xqueryComment {
+  color: gray;
+}
+
+span.xqueryModifier {
+  color: rgb(0,102,153);
+  font-weight: bold;
+}
+
+span.xqueryType {
+  color: rgb(0,135,255);
+  font-weight: bold;
+}
+
+span.xqueryAtom {
+  color: rgb(0,102,153);
+  font-weight: bold;  
+}
+
+span.xqueryString {
+  color: green;
+}
+
+span.xqueryRegexp {
+  color: rgb(128,0,64);
+}
+
+span.xqueryNumber {
+  color: rgb(255,0,0); 
+}
+
+span.xqueryVariable {
+    color: red;
+}
+
+span.xqueryFunction {
+    text-decoration:underline
+}
+
+
+span.xqueryOperator {
+    color: DimGray;
+}
+
+span.xqueryPunctuation {
+}
+
+span.xml-tagname {
+    color: purple;
+}
+
+span.xml-attribute {
+    color: purple;
+    font-style:italic;
+}
+
+span.xml-attribute-value {
+    color: purple;
+    font-style:italic;
+}

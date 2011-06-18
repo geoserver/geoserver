@@ -1,0 +1,46 @@
+<?config.xml version="1.0" encoding="UTF-8"?>
+<catalog>
+<datastores>
+<!--
+a datastore configuration element serves as a common data source connection
+parameters repository for all featuretypes it holds.
+-->
+</datastores>
+<formats>
+<!--
+a format configuration element serves as a common data source
+parameters repository for all coverages it holds.
+-->
+<format namespace = "cdf" enabled = "true" id = "gtopo" >
+<type>Gtopo30</type>
+<url>file:coverages/gtopo_sample/W020N90.dem</url>
+</format>
+<format namespace = "cdf" enabled = "true" id = "usa" >
+<type>WorldImage</type>
+<url>file:coverages/img_sample/usa.png</url>
+</format>
+</formats>
+<!--
+Defines namespaces to be used by the datastores.
+-->
+<namespaces>
+<namespace uri = "http://www.opengis.net/cite/data" prefix = "cdf" default = "true"  />
+<namespace uri = "http://www.opengis.net/cite/geometry" prefix = "cgf"  />
+<namespace uri = "http://www.opengis.net/cite/bluelake" prefix = "cblf"  />
+<namespace uri = "http://geoserver.sf.net" prefix = "sde"  />
+<namespace uri = "http://www.refractions.net/lakes" prefix = "lake"  />
+<namespace uri = "http://www.opengeospatial.net/cite" prefix = "cite"  />
+<namespace uri = "http://www.openplans.org/topp" prefix = "topp" default = "true"  />
+<namespace uri = "http://www.geo-solutions.it" prefix = "it.geosolutions"  />
+</namespaces>
+<styles>
+<!--
+Defines the style ids to be used by the wms.  The files must be
+contained in geoserver/misc/wms/styles.  We're working on finding
+a better place for them, but for now that's where you must put them
+if you want them on the server.
+-->
+<style filename = "normal.sld" id = "normal"  />
+<style filename = "raster.sld" id = "raster"  />
+</styles>
+</catalog>

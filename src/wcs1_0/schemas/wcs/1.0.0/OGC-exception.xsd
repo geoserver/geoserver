@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+xmlns:ogc="http://www.opengis.net/ogc" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://www.opengis.net/ogc" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified">
+ <element name="ServiceExceptionReport">
+  <annotation>
+   <documentation> The ServiceExceptionReport element contains one or more
+                ServiceException elements that describe a service exception. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element name="ServiceException" type="ogc:ServiceExceptionType" minOccurs="0" maxOccurs="unbounded">
+     <annotation>
+      <documentation> The Service exception element is used to describe a
+                            service exception. </documentation>
+     </annotation>
+    </element>
+   </sequence>
+   <attribute name="version" type="string" fixed="1.2.0"/>
+  </complexType>
+ </element>
+ <complexType name="ServiceExceptionType">
+  <annotation>
+   <documentation> The ServiceExceptionType type defines the ServiceException element.
+                The content of the element is an exception message that the service wished to convey
+                to the client application. </documentation>
+  </annotation>
+  <simpleContent>
+   <extension base="string">
+    <attribute name="code" type="string">
+     <annotation>
+      <documentation> A service may associate a code with an exception by using
+                            the code attribute. </documentation>
+     </annotation>
+    </attribute>
+    <attribute name="locator" type="string" use="optional">
+     <annotation>
+      <documentation> The locator attribute may be used by a service to
+                            indicate to a client where in the client's request an exception was
+                            encountered. If the request included a 'handle' attribute, this may be
+                            used to identify the offending component of the request. Otherwise the
+                            service may try to use other means to locate the exception such as line
+                            numbers or byte offset from the begining of the request, etc ...
+                        </documentation>
+     </annotation>
+    </attribute>
+   </extension>
+  </simpleContent>
+ </complexType>
+</schema>

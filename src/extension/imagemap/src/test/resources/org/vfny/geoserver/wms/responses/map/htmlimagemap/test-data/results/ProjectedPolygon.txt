@@ -1,0 +1,3 @@
+<map name="ProjectedPolygon">
+<area shape="poly" id="ProjectedPolygon.1.0"  coords="589,437 419,8 344,29 442,56 25,325 277,586 446,559 589,437"/>
+</map>

@@ -1,0 +1,47 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+    <li>
+      <label for="memoryCapacity"><wicket:message key="memoryCapacity">memoryCapacity</wicket:message></label>
+      <input id="memoryCapacity" class="field text" type="text" wicket:id="memoryCapacity" />
+    </li>
+    <li>
+      <label for="memoryThreshold"><wicket:message key="memoryThreshold">memoryThreshold</wicket:message></label>
+      <input id="memoryThreshold" class="field text" type="text" wicket:id="memoryThreshold" />
+    </li>
+    <li>
+      <label for="tileThreads"><wicket:message key="tileThreads">tileThreads</wicket:message></label>
+      <input id="tileThreads" class="field text" type="text" wicket:id="tileThreads" />
+    </li>
+    <li>
+      <label for="tilePriority"><wicket:message key="tilePriority">tilePriority</wicket:message></label>
+      <input id="tilePriority" class="field text" type="text" wicket:id="tilePriority" />
+    </li>
+    <li>
+      <input id="recycling" class="field checkbox" type="checkbox" wicket:id="recycling" />
+      <label for="recycling" class="choice"><wicket:message key="recycling">recycling</wicket:message></label>
+    </li>
+    <li>
+      <input id="jpegAcceleration" class="field checkbox" type="checkbox" wicket:id="jpegAcceleration" />
+      <label for="jpegAcceleration" class="choice"><wicket:message key="jpegAcceleration">jpegAcceleration</wicket:message></label>
+    </li>
+    <li>
+      <input id="pngAcceleration" class="field checkbox" type="checkbox" wicket:id="pngAcceleration" />
+      <label for="pngAcceleration" class="choice"><wicket:message key="pngAcceleration">pngAcceleration</wicket:message></label>
+    </li>
+    <li>
+      <input id="allowNativeMosaic" class="field checkbox" type="checkbox" wicket:id="allowNativeMosaic" />
+      <label for="allowNativeMosaic" class="choice"><wicket:message key="allowNativeMosaic">allowNativeMosaic</wicket:message></label>
+    </li>
+    <li class="button-group selfclear">
+      <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+      <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+    </li>
+  </ul>
+</form>
+</wicket:extend>
+</body>
+</html>

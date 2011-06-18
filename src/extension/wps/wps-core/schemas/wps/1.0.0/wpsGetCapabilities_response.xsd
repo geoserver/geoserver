@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: wpsGetCapabilities_response.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema Document encodes the WPS GetCapabilities operation response.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="common/WSDL.xsd"/>
+	<include schemaLocation="common/ProcessBriefType.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/1.0.0/xlinks.xsd"/>
+	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<element name="Capabilities" type="wps:WPSCapabilitiesType">
+		<annotation>
+			<documentation>WPS GetCapabilities operation response. This document provides clients with service metadata about a specific service instance, including metadata about the processes that can be executed. Since the server does not implement the updateSequence and Sections parameters, the server shall always return the complete Capabilities document, without the updateSequence parameter. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="WPSCapabilitiesType">
+		<complexContent>
+			<extension base="ows:CapabilitiesBaseType">
+				<sequence>
+					<element ref="wps:ProcessOfferings"/>
+					<element ref="wps:Languages">
+						<annotation>
+							<documentation>List of the default and other languages supported by this service. </documentation>
+						</annotation>
+					</element>
+					<element ref="wps:WSDL" minOccurs="0">
+						<annotation>
+							<documentation>Location of a WSDL document which describes the entire service.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+				<attribute name="service" use="required" fixed="WPS"/>
+				<attribute ref="xml:lang" use="required"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="Languages">
+		<annotation>
+			<documentation>Listing of the default and other languages supported by this service. </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="Default">
+					<annotation>
+						<documentation>Identifies the default language that will be used unless the operation request specifies another supported language. </documentation>
+					</annotation>
+					<complexType>
+						<sequence>
+							<element ref="ows:Language">
+								<annotation>
+									<documentation>Identifier of the default language supported by the service.  This language identifier shall be as specified in IETF RFC 4646.</documentation>
+								</annotation>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+				<element name="Supported" type="wps:LanguagesType">
+					<annotation>
+						<documentation>Unordered list of references to all of the languages supported by this service. The default language shall be included in this list.</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="LanguagesType">
+		<annotation>
+			<documentation>Identifies a list of languages supported by this service.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:Language" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Identifier of a language supported by the service.  This language identifier shall be as specified in IETF RFC 4646.</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="ProcessOfferings">
+		<annotation>
+			<documentation>List of brief descriptions of the processes offered by this WPS server. </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="Process" type="wps:ProcessBriefType" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of one or more brief descriptions of all the processes offered by this WPS server. </documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+</schema>

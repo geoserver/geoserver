@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GridCRS xmlns="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGridCRS.xsd"
+	gml:id="example2dGridCrs2">
+	<gml:srsName>2D Grid CRS Example 3</gml:srsName>
+	<GridBaseCRS>urn:ogc:def:crs:EPSG:6.6:4326</GridBaseCRS>
+	<GridType>urn:ogc:def:method:WCS:1.2:grid2dIn3dMethod</GridType>
+	<GridOrigin>0 0 0</GridOrigin>
+	<GridOffsets>0.0707 0.0707 0  -0.1414 0.1414 0</GridOffsets>
+	<GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS>
+</GridCRS>

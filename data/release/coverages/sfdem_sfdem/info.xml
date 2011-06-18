@@ -1,0 +1,75 @@
+<coverage format = "sfdem" >
+  <name>sfdem</name>
+  <label>sfdem is a Tagged Image File Format with Geographic information</label>
+  <description>Generated from sfdem</description>
+  <wmspath>/</wmspath>
+  <metadataLink about = "http://www.remotesensing.org:16080/websites/geotiff/geotiff.html" metadataType = "other" >
+    
+    null
+  
+  </metadataLink>
+  <keywords>WCS,sfdem,sfdem</keywords>
+  <!--
+    the default style this CoverageInfoDTO can be represented by.
+    at least must contain the "default" attribute
+  -->
+  <styles default = "dem" />
+  <envelope crs = "PROJCS['NAD27 / UTM zone 13N', 
+  GEOGCS['NAD27', 
+    DATUM['North American Datum 1927', 
+      SPHEROID['Clarke 1866', 6378206.4, 294.9786982138982, AUTHORITY['EPSG','7008']], 
+      TOWGS84[-4.2, 135.4, 181.9, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY['EPSG','6267']], 
+    PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+    UNIT['degree', 0.017453292519943295], 
+    AXIS['Geodetic longitude', EAST], 
+    AXIS['Geodetic latitude', NORTH], 
+    AUTHORITY['EPSG','4267']], 
+  PROJECTION['Transverse_Mercator'], 
+  PARAMETER['central_meridian', -105.0], 
+  PARAMETER['latitude_of_origin', 0.0], 
+  PARAMETER['scale_factor', 0.9996], 
+  PARAMETER['false_easting', 500000.0], 
+  PARAMETER['false_northing', 0.0], 
+  UNIT['m', 1.0], 
+  AXIS['Easting', EAST], 
+  AXIS['Northing', NORTH], 
+  AUTHORITY['EPSG','26713']]" srsName = "EPSG:26713" >
+    <pos>589980.0 4913700.0</pos>
+    <pos>609000.0 4928010.0</pos>
+  </envelope>
+  <grid dimension = "2" >
+    <low>0 0 </low>
+    <high>634 477 </high>
+    <axisName>GRAY_INDEX</axisName>
+    <geoTransform >
+      <scaleX>30.0</scaleX>
+      <scaleY>-30.0</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>589995.0</translateX>
+      <translateY>4927995.0</translateY>
+    </geoTransform>
+  </grid>
+  <CoverageDimension >
+    <name>GRAY_INDEX</name>
+    <description>GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]</description>
+    <interval >
+      <min>-9.999999933815813E36</min>
+      <max>-9.999999933815813E36</max>
+    </interval>
+    <nullValues >
+      <value>-9.999999933815813E36</value>
+    </nullValues>
+  </CoverageDimension>
+  <supportedCRSs >
+    <requestCRSs>EPSG:26713</requestCRSs>
+    <responseCRSs>EPSG:26713</responseCRSs>
+  </supportedCRSs>
+  <supportedFormats nativeFormat = "GeoTIFF" >
+    <formats>ARCGRID,IMAGEMOSAIC,GTOPO30,GEOTIFF,GIF,PNG,JPEG,TIFF</formats>
+  </supportedFormats>
+  <supportedInterpolations default = "nearest neighbor" >
+    <interpolationMethods>nearest neighbor,bilinear,bicubic</interpolationMethods>
+  </supportedInterpolations>
+</coverage>

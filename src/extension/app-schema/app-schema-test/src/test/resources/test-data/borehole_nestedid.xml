@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Loughborough mapping file -->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+    <namespaces>
+        <!-- declare here the namespaces and prefixes used by the parser to resolve <type> elements. -->
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>xlink</prefix>
+            <uri>http://www.w3.org/1999/xlink</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>sa</prefix>
+            <uri>http://www.opengis.net/sampling/1.0</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>datastore</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <!-- path can be relative to this file if starts with "file: -->
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <!-- State the needed xsd schemas to be loaded in order to make the schema-to-FeatureModel 
+                parse. Paths are relative to this file, or may be absolute URL's. Imports and includes at the schemas 
+                will be followed as long as they're relative paths. -->
+            <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>datastore</sourceDataStore>
+            <sourceType>borehole_nestedid</sourceType>
+            <targetElement>gsml:Borehole</targetElement>
+            <groupBy />
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gsml:Borehole</targetAttribute>
+                    <idExpression>
+                        <OCQL>GML_ID</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+
+                <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:dateOfDrilling</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>DRILLED_DATE</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:drillingMethod</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>DRILLING_DESCRIPTION</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:startPoint</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>STARTPOINT</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:inclinationType</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>
+							if_then_else(equalTo(parseInt(DECLIN_FROM_HORIZ),-90),'vertical',
+							if_then_else(equalTo(parseInt(DECLIN_FROM_HORIZ),0),'horizontal',
+							if_then_else(lessThan(parseInt(DECLIN_FROM_HORIZ),0),'inclined down','inclined up')))
+						</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                 <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:driller</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:role</name>
+                        <value>'http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/Borehole/BoreholeDetails.html#driller'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'http://www.opengis.net/def/nil/OGC/0/unknown'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:title</name>
+                        <value>DRILLER_NAME</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:coreCustodian</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:role</name>
+                        <value>'http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/Borehole/BoreholeDetails.html#coreCustodian'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'http://www.opengis.net/def/nil/OGC/0/unknown'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:title</name>
+                        <value>'CSIRONR'</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:coredInterval/gml:Envelope</targetAttribute>
+                    <ClientProperty>
+                        <name>axisLabels</name>
+                        <value>'core envelope'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>srsDimension</name>
+                        <value>'1'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>uomLabels</name>
+                        <value>'m'</value>
+                    </ClientProperty>
+                </AttributeMapping>  
+
+                <AttributeMapping>
+                    <targetAttribute>sa:surveyDetails/sa:SurveyProcedure</targetAttribute>
+                    <idExpression>
+                        <OCQL>strConcat('bh.', strConcat(CSIRONR, '.sp'))</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+               
+                <AttributeMapping>
+                    <targetAttribute>sa:sampledFeature</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:role</name>
+                        <value>'http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/GeologicUnit/GeologicUnit.html'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'http://www.opengis.net/def/nil/OGC/0/unknown'</value>
+                    </ClientProperty>
+                    <ClientProperty>
+                        <name>xlink:title</name>
+                        <value>'unknown'</value>
+                    </ClientProperty>
+                </AttributeMapping> 
+                          
+          <!--  <AttributeMapping>
+            <targetAttribute>sa:shape</targetAttribute>
+            <idExpression>
+            <OCQL>strConcat('gg', CSIRONR)</OCQL>
+            </idExpression>  
+             <sourceExpression>
+            <OCQL>LOCATION</OCQL>
+            </sourceExpression>        
+            <ClientProperty>
+            <name>xlink:href</name>
+            <value>'xlinkvalue'</value>
+            </ClientProperty>   
+            </AttributeMapping> -->  
+            
+            </attributeMappings> 
+        </FeatureTypeMapping>
+
+    </typeMappings>
+</as:AppSchemaDataAccess>

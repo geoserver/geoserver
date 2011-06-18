@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:observation:3.1.1">observation.xsd</appinfo>
+		<documentation>Observation schema for GML 3.1     
+    Copyright (c) 2002-2005 OGC, All Rights Reserved.
+	For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr</documentation>
+	</annotation>
+	<!-- =================================================================== -->
+	<!-- ===       includes and imports ============================================ -->
+	<include schemaLocation="feature.xsd"/>
+	<include schemaLocation="direction.xsd"/>
+	<include schemaLocation="valueObjects.xsd"/>
+	<!-- =================================================================== -->
+	<!-- =================== properties =================================== -->
+	<element name="using" type="gml:FeaturePropertyType">
+		<annotation>
+			<documentation>This element contains or points to a description of a sensor, instrument or procedure used for the observation</documentation>
+		</annotation>
+	</element>
+	<!-- =================================================================== -->
+	<element name="target" type="gml:TargetPropertyType">
+		<annotation>
+			<documentation>This element contains or points to the specimen, region or station which is the object of the observation</documentation>
+		</annotation>
+	</element>
+	<!-- =================================================================== -->
+	<element name="subject" type="gml:TargetPropertyType" substitutionGroup="gml:target">
+		<annotation>
+			<documentation>Synonym for target - common word used for photographs</documentation>
+		</annotation>
+	</element>
+	<!-- =================================================================== -->
+	<complexType name="TargetPropertyType">
+		<annotation>
+			<documentation>Container for an object representing the target or subject of an observation.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<choice>
+				<element ref="gml:_Feature"/>
+				<element ref="gml:_Geometry"/>
+			</choice>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================================== -->
+	<element name="resultOf" type="gml:AssociationType">
+		<annotation>
+			<documentation>The result of the observation: an image, external object, etc</documentation>
+		</annotation>
+	</element>
+	<!-- =================================================================== -->
+	<!-- ===================== Features =========================== -->
+	<element name="Observation" type="gml:ObservationType" substitutionGroup="gml:_Feature"/>
+	<!-- =========================================================== -->
+	<complexType name="ObservationType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element ref="gml:validTime"/>
+					<element ref="gml:using" minOccurs="0"/>
+					<element ref="gml:target" minOccurs="0"/>
+					<element ref="gml:resultOf"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="DirectedObservation" type="gml:DirectedObservationType" substitutionGroup="gml:Observation"/>
+	<!-- =========================================================== -->
+	<complexType name="DirectedObservationType">
+		<complexContent>
+			<extension base="gml:ObservationType">
+				<sequence>
+					<element ref="gml:direction"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="DirectedObservationAtDistance" type="gml:DirectedObservationAtDistanceType" substitutionGroup="gml:DirectedObservation"/>
+	<!-- =========================================================== -->
+	<complexType name="DirectedObservationAtDistanceType">
+		<complexContent>
+			<extension base="gml:DirectedObservationType">
+				<sequence>
+					<element name="distance" type="gml:MeasureType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

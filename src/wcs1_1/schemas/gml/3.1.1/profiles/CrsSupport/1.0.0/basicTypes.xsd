@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1">
+  <annotation>
+    <appinfo source="urn:opengis:specification:gml:schema-xsd:basicTypes:3.1.1">basicTypes.xsd</appinfo>
+	<documentation>Subset of basicTypes.xsd for GML 3.1.1 CRS Support profile. Primary editor: Arliss Whiteside. Last updated 2005-11-14
+	Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+  </annotation>
+  <!-- =========================================================== -->
+  <!-- =========================================================== -->
+  <simpleType name="doubleList">
+    <annotation>
+      <documentation>XML List based on XML Schema double type.  An element of this type contains a space-separated list of double values</documentation>
+    </annotation>
+    <list itemType="double"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="integerList">
+    <annotation>
+      <documentation>XML List based on XML Schema integer type.  An element of this type contains a space-separated list of integer values</documentation>
+    </annotation>
+    <list itemType="integer"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <complexType name="CodeType">
+    <annotation>
+      <documentation>Name or code with an (optional) authority.  Text token.  
+      If the codeSpace attribute is present, then its value should identify a dictionary, thesaurus 
+      or authority for the term, such as the organisation who assigned the value, 
+      or the dictionary from which it is taken.  
+      A text string with an optional codeSpace attribute. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="codeSpace" type="anyURI" use="optional"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="MeasureType">
+    <annotation>
+      <documentation>Number with a scale.  
+      The value of uom (Units Of Measure) attribute is a reference to a Reference System for the amount, either a ratio or position scale. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="double">
+        <attribute name="uom" type="anyURI" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="MeasureListType">
+    <annotation>
+      <documentation>List of numbers with a uniform scale.  
+      The value of uom (Units Of Measure) attribute is a reference to 
+      a Reference System for the amount, either a ratio or position scale. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="gml:doubleList">
+        <attribute name="uom" type="anyURI" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- ============================================================ -->
+</schema>

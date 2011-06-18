@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml"
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:gml:3.1.1">gml.xsd</appinfo>
+		<documentation>GML profile for WCS 1.2. Primary editor: Arliss Whiteside. Last updated 2007-06-06
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ============================================================== -->
+	<include schemaLocation="GMLprofileForWCS/coordinateOperations.xsd"/>
+	<include schemaLocation="GMLprofileForWCS/temporal.xsd"/>	
+	<include schemaLocation="GMLprofileForWCS/geometryBasic2d.xsd"/>	
+	<!-- ============================================================== -->
+</schema>

@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1  ../wcsGetCapabilities.xsd
+http://www.opengis.net/ows/1.1 ../../../ows/1.1.0/owsAll.xsd" 
+version="1.1.1" updateSequence="1.0">
+   <!-- ************************************************************ -->
+   <!-- * SERVICE IDENTIFICATION SECTION                 * -->
+   <!-- ************************************************************ -->
+   <ows:ServiceIdentification>
+      <ows:Title>CubeWerx Demonstation WCS</ows:Title>
+      <ows:Abstract>A demonstration server used to illustrate CubeWerx's compilance with the Web Coverage Service 1.1.0 implementation specification</ows:Abstract>
+      <ows:Keywords>
+         <ows:Keyword>Web Coverage Service</ows:Keyword>
+         <ows:Keyword>06-083</ows:Keyword>
+         <ows:Keyword>CubeWerx</ows:Keyword>
+         <ows:Keyword>GeoTIFF</ows:Keyword>
+         <ows:Keyword>Imagery</ows:Keyword>
+      </ows:Keywords>
+      <ows:ServiceType>WCS</ows:ServiceType>
+      <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+      <ows:ServiceTypeVersion>1.1.1</ows:ServiceTypeVersion>
+      <ows:Fees>NONE</ows:Fees>
+      <ows:AccessConstraints>NONE</ows:AccessConstraints>
+   </ows:ServiceIdentification>
+   <!-- ************************************************************ -->
+   <!-- * SERVICE PROVIDER SECTION                         * -->
+   <!-- ************************************************************ -->
+   <ows:ServiceProvider>
+      <ows:ProviderName>CubeWerx Inc.</ows:ProviderName>
+      <ows:ProviderSite xlink:href="http://www.cubewerx.com"/>
+      <ows:ServiceContact>
+         <ows:IndividualName>Panagiotis (Peter) A. Vretanos</ows:IndividualName>
+         <ows:PositionName>Senior Developer</ows:PositionName>
+         <ows:ContactInfo>
+            <ows:Phone>
+               <ows:Voice>123-456-7890</ows:Voice>
+               <ows:Facsimile>234-567-8901</ows:Facsimile>
+            </ows:Phone>
+            <ows:Address>
+               <ows:DeliveryPoint>15 rue Gamelin</ows:DeliveryPoint>
+               <ows:DeliveryPoint>Suite 506</ows:DeliveryPoint>
+               <ows:City>Gatineau</ows:City>
+               <ows:AdministrativeArea>Quebec</ows:AdministrativeArea>
+               <ows:PostalCode>J8Y 6N5</ows:PostalCode>
+               <ows:Country>Canada</ows:Country>
+               <ows:ElectronicMailAddress>pvretano[at]cubewerx[dot]com</ows:ElectronicMailAddress>
+            </ows:Address>
+            <ows:OnlineResource xlink:href="http://www.cubewerx.com/~pvretano"/>
+            <ows:HoursOfService>24x7x365</ows:HoursOfService>
+            <ows:ContactInstructions>email</ows:ContactInstructions>
+         </ows:ContactInfo>
+         <ows:Role>Developer</ows:Role>
+      </ows:ServiceContact>
+   </ows:ServiceProvider>
+   <!-- ************************************************************ -->
+   <!-- * OPERATIONS METADATA                                * -->
+   <!-- ************************************************************ -->
+   <ows:OperationsMetadata>
+      <ows:Operation name="GetCapabilities">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&amp;"/>
+            </ows:HTTP>
+         </ows:DCP>
+         <ows:Parameter name="service">
+            <ows:AllowedValues>
+               <ows:Value>WCS</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="version">
+            <ows:AllowedValues>
+               <ows:Value>1.0.0</ows:Value>
+               <ows:Value>1.1.1</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="AcceptVersions">
+            <ows:AllowedValues>
+               <ows:Value>1.0.0</ows:Value>
+               <ows:Value>1.1.1</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+      </ows:Operation>
+      <ows:Operation name="DescribeCoverage">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&amp;"/>
+            </ows:HTTP>
+         </ows:DCP>
+         <ows:Parameter name="service">
+            <ows:AllowedValues>
+               <ows:Value>WCS</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="version">
+            <ows:AllowedValues>
+               <ows:Value>1.0.0</ows:Value>
+               <ows:Value>1.1.1</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="Identifier">
+            <ows:AllowedValues>
+               <ows:Value>ETOPO2</ows:Value>
+               <ows:Value>GTOPO30</ows:Value>
+               <ows:Value>RELIEF</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+      </ows:Operation>
+      <ows:Operation name="GetCoverage">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&amp;"/>
+            </ows:HTTP>
+         </ows:DCP>
+         <ows:Parameter name="service">
+            <ows:AllowedValues>
+               <ows:Value>WCS</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="version">
+            <ows:AllowedValues>
+               <ows:Value>1.0.0</ows:Value>
+               <ows:Value>1.1.1</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="Identifier">
+            <ows:AllowedValues>
+               <ows:Value>ETOPO2</ows:Value>
+               <ows:Value>GTOPO30</ows:Value>
+               <ows:Value>RELIEF</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="InterpolationType">
+            <ows:AllowedValues>
+               <ows:Value>nearestNeighbor</ows:Value>
+               <ows:Value>bilinear</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="format">
+            <ows:AllowedValues>
+               <ows:Value>image/tiff</ows:Value>
+               <ows:Value>image/tiff; PhotometricInterpretation=RGB</ows:Value>
+               <ows:Value>image/png</ows:Value>
+               <ows:Value>image/png; PhotometricInterpretation=PaletteColor</ows:Value>
+               <ows:Value>image/png; PhotometricInterpretation=RGB</ows:Value>
+               <ows:Value>image/gif</ows:Value>
+               <ows:Value>image/jpeg</ows:Value>
+               <ows:Value>image/ppm</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+      </ows:Operation>
+   </ows:OperationsMetadata>
+   <!-- ************************************************************ -->
+   <!-- * CONTENTS SECTION                                        * -->
+   <!-- ************************************************************ -->
+   <Contents>
+      <CoverageSummary>
+         <ows:Title>Global 2 Minute Elevations</ows:Title>
+         <ows:Abstract>ETOPO2 was generated from a digital data base of land and sea-floor elevations on a 2-minute latitude/longitude grid. The data sources used to create the ETOPO2 data set were: Smith/Sandwell, GLOBE, DBDBV, IBCAO, and DBDB5</ows:Abstract>
+         <ows:Metadata xlink:href="http://www.ngdc.noaa.gov/mgg/image/2minrelief.html"/>
+         <ows:WGS84BoundingBox>
+            <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>
+            <ows:UpperCorner>+180.0 +90.0</ows:UpperCorner>
+         </ows:WGS84BoundingBox>
+         <Identifier>ETOPO2</Identifier>
+      </CoverageSummary>
+      <CoverageSummary>
+         <ows:Title>Global 30 Second Elevations</ows:Title>
+         <ows:Abstract>GTOPO30 is a global digital elevation model (DEM) resulting from a collaborative effort led by the staff at the U.S. Geological Survey's EROS Data Center in Sioux Falls, South Dakota.  Elevations in GTOPO30 are regularly spaced at 30-arc seconds (approximately 1 kilometer).  GTOPO30 was developed to meet the needs of the geospatial data user community for regional and continental scale topographic data.</ows:Abstract>
+         <ows:Metadata xlink:href="http://edcdaac.usgs.gov/gtopo30/README.html"/>
+         <ows:WGS84BoundingBox>
+            <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>
+            <ows:UpperCorner>+180.0 +90.0</ows:UpperCorner>
+         </ows:WGS84BoundingBox>
+         <Identifier>GTOPO30</Identifier>
+      </CoverageSummary>
+      <CoverageSummary>
+         <ows:Title>Two Minute Shaded Relief</ows:Title>
+         <ows:Abstract>This image was generated from digital data bases of seafloor and land elevations on a 2-minute latitude/longitude grid (1 minute of latitude = 1 nautical mile, or 1.852 km). Assumed illumination is from the west; shading is computed as a function of the east-west slope of the surface with a nonlinear exaggeration favoring low-relief areas. A Cylindrical Equidistant projection was used for the world image, which spans 360 degrees of of longitude from 180 West eastward to 180 East; latitude coverage is from 90 degrees North to 90 degrees South. The resolution of the gridded data varies from true 2-minute for the Atlantic, Pacific, andIndian Ocean floors and all land masses to 5 minutes for the Arctic Ocean floor. Clicking on a square above brings up a 512 x 512 pixel color relief image of the 45 degree area selected, clicking on the 512 x 512 image brings up the full-resolution 1350 x 1350 pixel (roughly 3 mb) color image of the area.</ows:Abstract>
+         <ows:Metadata xlink:href="http://www.ngdc.noaa.gov/mgg/image/2minrelief.html"/>
+         <ows:WGS84BoundingBox>
+            <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>
+            <ows:UpperCorner>+180.0 +90.0</ows:UpperCorner>
+         </ows:WGS84BoundingBox>
+         <Identifier>RELIEF</Identifier>
+      </CoverageSummary>
+      <SupportedCRS>urn:ogc:def:crs,AUTO:1.0:42001</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,AUTO:1.0:42002</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,AUTO:1.0:42003</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,AUTO:1.0:42004</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,CRS:1.0:27</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,CRS:1.0:83</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,CRS:1.0:84</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:100001</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:100002</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:102002</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:2163</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:2263</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:2283</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26703</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26704</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26705</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26706</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26707</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26708</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26709</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26710</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26711</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26712</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26713</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26714</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26715</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26716</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26717</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26718</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26719</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26720</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26721</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26722</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26903</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26904</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26905</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26906</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26907</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26908</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26909</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26910</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26911</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26912</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26913</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26914</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26915</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26916</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26917</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26918</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26919</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26920</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26921</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26922</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26923</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26930</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26985</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26986</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:26987</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:27582</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:27700</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:3005</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32118</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32128</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32129</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32601</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32602</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32603</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32604</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32605</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32606</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32607</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32608</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32609</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32610</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32611</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32612</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32613</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32614</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32615</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32616</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32617</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32618</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32619</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32620</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32621</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32622</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32623</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32624</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32625</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32626</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32627</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32628</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32629</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32630</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32631</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32632</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32633</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32634</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32635</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32636</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32637</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32638</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32639</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32640</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32641</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32642</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32643</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32644</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32645</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32646</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32647</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32648</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32649</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32650</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32651</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32652</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32653</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32654</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32655</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32656</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32657</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32658</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32659</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32660</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32701</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32702</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32703</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32704</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32705</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32706</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32707</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32708</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32709</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32710</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32711</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32712</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32713</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32714</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32715</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32716</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32717</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32718</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32719</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32720</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32721</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32722</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32723</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32724</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32725</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32726</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32727</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32728</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32729</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32730</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32731</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32732</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32733</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32734</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32735</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32736</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32737</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32738</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32739</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32740</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32741</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32742</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32743</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32744</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32745</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32746</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32747</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32748</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32749</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32750</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32751</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32752</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32753</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32754</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32755</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32756</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32757</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32758</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32759</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:32760</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:41001</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42101</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42103</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42104</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42105</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42106</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42301</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42302</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42303</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42304</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42305</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42306</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42307</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42308</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42309</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42310</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42311</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42312</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:42313</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:4267</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:4269</SupportedCRS>
+      <SupportedCRS>urn:ogc:def:crs,crs:EPSG:6.3:4326</SupportedCRS>
+      <SupportedFormat>image/tiff</SupportedFormat>
+      <SupportedFormat>image/tiff; PhotometricInterpretation=RGB</SupportedFormat>
+      <SupportedFormat>image/png</SupportedFormat>
+      <SupportedFormat>image/png; PhotometricInterpretation=PaletteColor</SupportedFormat>
+      <SupportedFormat>image/png; PhotometricInterpretation=RGB</SupportedFormat>
+      <SupportedFormat>image/gif</SupportedFormat>
+      <SupportedFormat>image/jpeg</SupportedFormat>
+      <SupportedFormat>image/ppm</SupportedFormat>
+   </Contents>
+</Capabilities>

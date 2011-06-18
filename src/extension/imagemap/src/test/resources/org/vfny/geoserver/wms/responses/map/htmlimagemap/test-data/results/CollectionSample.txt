@@ -1,0 +1,5 @@
+<map name="CollectionSample">
+<area shape="circle" id="Sample.1.0"  coords="488,120,6" href="123 Main Street"/>
+<area shape="poly" id="Sample.1.1"  coords="93,464 149,384 261,264 411,64 413,63 414,65 415,67 416,69 416,72 416,75 416,78 416,82 416,85 416,88 416,91 415,93 414,95 414,96 264,296 151,416 95,496 1,616 0,617 -2,615 -3,613 -3,611 -4,608 -4,605 -4,602 -4,598 -4,595 -4,592 -3,589 -3,587 -2,585 -1,584 93,464" href="123 Main Street"/>
+<area shape="circle" id="Sample.2.0"  coords="600,0,6" href="215 Main Street"/>
+</map>

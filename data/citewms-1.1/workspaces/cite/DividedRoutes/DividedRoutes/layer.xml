@@ -1,0 +1,17 @@
+<layer>
+  <name>DividedRoutes</name>
+  <id>LayerInfoImpl--31b6253f:128b3c42f89:-7fd0</id>
+  <path>/</path>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--31b6253f:128b3c42f89:-7fe3</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--31b6253f:128b3c42f89:-7fd1</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

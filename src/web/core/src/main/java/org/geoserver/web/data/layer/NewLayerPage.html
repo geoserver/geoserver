@@ -1,0 +1,32 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="newLayerSelector">New layer selector</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+  <!-- Selector, used when no store has been specified in the constructor -->
+  <form wicket:id="selector">
+  	<wicket:message key="addALayerFrom">Add a layer from </wicket:message> <select wicket:id="storesDropDown"></select>
+  </form>
+  
+  <div wicket:id="selectLayersContainer">
+      <div wicket:id="createWMSLayerImportContainer">You can import all cascading WMS layers from selected store at once using 
+            <b><a href="#" wicket:id="createWMSImport">batch import</a></b>
+      </div>
+      <div wicket:id="createTypeContainer">You can create a new feature type by manually configuring the attribute names and types. <a href="#" wicket:id="createFeatureType">Create new feature type...</a></div>
+      <div wicket:id="createSQLViewContainer">On databases you can also create a new feature type by configuring a native SQL statement. <a href="#" wicket:id="createSQLView">Configure new SQL view...</a></div>
+      
+      <div wicket:id="selectLayers">
+		  <p><wicket:message key="listOfResourcesContained">Here is a list of resources contained in the store</wicket:message> '<span
+		    wicket:id="storeName"></span>'. 
+		    <wicket:message key="clickOnTheLayerYouWishToConfigure">Click on the layer you wish to configure.</wicket:message>
+		  </p>
+          <div wicket:id="layers"></div>
+      	  <wicket:fragment wicket:id="iconFragment">
+            <img wicket:id="layerIcon" />
+          </wicket:fragment>
+	  </div>
+  </div>
+</wicket:extend>
+</body>
+</html>

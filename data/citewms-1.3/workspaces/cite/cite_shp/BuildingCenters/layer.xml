@@ -1,0 +1,16 @@
+<layer>
+  <name>BuildingCenters</name>
+  <id>LayerInfoImpl--2e539c29:12c805e6d8b:-7ff0</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--6d617f8c:12c804a8970:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--2e539c29:12c805e6d8b:-7ff1</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

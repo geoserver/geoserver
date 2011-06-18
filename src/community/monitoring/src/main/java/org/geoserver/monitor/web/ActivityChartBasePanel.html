@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">Activity</wicket:message></title>
+<wicket:head>
+  <style type="text/css">
+   form label {
+      display: inline;
+   }
+  </style>
+</wicket:head>
+
+</head>
+<body>
+<wicket:panel>
+     <form wicket:id="form" style="padding-bottom: 0.2em; padding-left: 55px;">
+        <label for="from">From</label>
+        <div wicket:id="from" id="start" style="display: inline; padding-right: 25px;"></div>
+        
+        <label for="to">To</label>
+        <div wicket:id="to" id="end" style="display: inline"></div>
+        
+        <a href="#" wicket:id="refresh" class="refresh-link">Refresh</a>
+    </form>
+    <img wicket:id="chart"></img>
+</wicket:panel>
+</body>
+</html>

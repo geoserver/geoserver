@@ -1,0 +1,31 @@
+
+   <namespaces>
+     <namespace>
+       <name>sf</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/sf.xml" type="application/xml"/>
+     </namespace>
+     <namespace>
+       <name>topp</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/topp.xml" type="application/xml"/>
+     </namespace>
+     <namespace>
+       <name>it.geosolutions</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.xml" type="application/xml"/>
+     </namespace>
+     <namespace>
+       <name>sde</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/sde.xml" type="application/xml"/>
+     </namespace>
+     <namespace>
+       <name>nurc</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/nurc.xml" type="application/xml"/>
+     </namespace>
+     <namespace>
+       <name>tiger</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
+     </namespace>
+     <namespace>
+       <name>cite</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/cite.xml" type="application/xml"/>
+     </namespace>
+   </namespaces>

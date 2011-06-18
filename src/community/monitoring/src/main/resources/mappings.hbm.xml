@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+  <typedef name="Status" class='org.geoserver.monitor.hib.EnumUserType'>
+      <param name="enumClassName">org.geoserver.monitor.RequestData$Status</param>
+  </typedef>
+  <typedef name="Error" class='org.geoserver.monitor.hib.ErrorUserType'>
+  </typedef>
+
+  <!-- TODO specify which attributes are not null -->
+  <class name="org.geoserver.monitor.RequestData" table="REQUEST">
+    <id column="ID" name="id">
+      <generator class="native"/>
+    </id>
+    <property column="STATUS" name="status" type="Status" index="REQ_STATUS_IDX"/>
+    <property column="PATH" name="path"/>
+    <property column="BODY" name="body" length="1024"/>
+    <property column="QUERY_STRING" name="queryString" length="4096"/>
+    <property column="SERVER_HOST" name="host"/>
+    <property column="HTTP_METHOD" name="httpMethod"/>
+    <property column="START_TIME" name="startTime" index="REQ_START_TIME_IDX"/>
+    <property column="END_TIME" name="endTime" index="REQ_END_TIME_IDX"/>
+    <property column="TOTAL_TIME" name="totalTime" index="REQ_TOTAL_TIME_IDX"/>
+    
+    <property column="REMOTE_ADDRESS" name="remoteAddr" />
+    <property column="REMOTE_HOST" name="remoteHost"/>
+    <property column="REMOTE_USER" name="remoteUser"/>
+    <property column="REMOTE_COUNTRY" name="remoteCountry"/>
+    <property column="REMOTE_CITY" name="remoteCity"/>
+    <property column="REMOTE_LAT" name="remoteLat"/>
+    <property column="REMOTE_LON" name="remoteLon"/>
+    
+    <property column="OWS_SERVICE" name="owsService" index="REQ_OWS_SERVICE_IDX"/>
+    <property column="OWS_VERSION" name="owsVersion"/>
+    <property column="OWS_OPERATION" name="owsOperation" index="REQ_OWS_OPERATION_IDX"/>
+    <property column="SUB_OPEARTION" name="subOperation" index="REQ_SUB_OPERATION_IDX"/>
+    
+    <property column="CONTENT_TYPE" name="responseContentType"/>
+    <property column="RESPONSE_LENGTH" name="responseLength"/>
+    
+    <property column="ERROR_MESSAGE" name="errorMessage"/>
+    <property column="EXCEPTION_STACK_TRACE" name="error" type="Error"/>
+    
+    <list name="layers" table="REQUEST_LAYERS">
+      <key column="REQUEST_ID" not-null="true"/>
+      <list-index column="IDX"/>
+      <element column="LAYER" type="string"/>
+    </list>
+    
+  </class>
+  
+</hibernate-mapping>

@@ -1,0 +1,35 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--31b6253f:128b3c42f89:-7fcd</id>
+  <name>Lakes</name>
+  <nativeName>Lakes</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--31b6253f:128b3c42f89:-7ff8</id>
+  </namespace>
+  <title>cite:Lakes</title>
+  <abstract>Generated from cite</abstract>
+  <keywords>
+    <string>cite</string>
+    <string>Lakes</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <latLonBoundingBox>
+    <minx>6.0E-4</minx>
+    <maxx>0.0031</maxx>
+    <miny>-0.0018</miny>
+    <maxy>-1.0E-4</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="dirName">cite_Lakes</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--31b6253f:128b3c42f89:-7fd8</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

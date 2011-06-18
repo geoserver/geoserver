@@ -1,0 +1,6 @@
+for sld in `ls *.sld`; do
+  base=${sld:0:${#sld}-4}
+  if [ "${base:0:7}" != "default" ]; then
+    curl -u admin:geoserver -XPUT -H 'Content-type: text/xml' -d '<layer><defaultStyle>$base</defaultStyle></layer>' http://localhost:8080/geoserver/rest/layers/$base
+  fi
+done

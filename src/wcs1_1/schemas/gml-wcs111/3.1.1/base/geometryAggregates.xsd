@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified"
+        version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:geometryAggregates:3.1.1">geometryAggregates.xsd</appinfo>
+		<documentation>Copyright (c) 2001-2005 OGC, All Rights Reserved.
+	For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr</documentation>
+	</annotation>
+	<include schemaLocation="geometryPrimitives.xsd"/>
+	<!-- =========================================================== -->
+	<!-- aggregate geometry objects -->
+	<!-- =========================================================== -->
+	<!-- =========================================================== -->
+	<element name="_GeometricAggregate" type="gml:AbstractGeometricAggregateType" abstract="true" substitutionGroup="gml:_Geometry">
+		<annotation>
+			<documentation>The "_GeometricAggregate" element is the abstract head of the substituition group for all geometric aggremates.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="AbstractGeometricAggregateType" abstract="true">
+		<annotation>
+			<documentation>This is the abstract root type of the geometric aggregates.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType"/>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="MultiGeometry" type="gml:MultiGeometryType" substitutionGroup="gml:_GeometricAggregate"/>
+	<!-- ======================================================= -->
+	<complexType name="MultiGeometryType">
+		<annotation>
+			<documentation>A geometry collection must include one or more geometries, referenced through geometryMember elements.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<annotation>
+						<documentation>The members of the geometric aggregate can be specified either using the "standard" property or the array property style. It is also valid to use both the "standard" and the array property style in the same collection.
+NOTE: Array properties cannot reference remote geometry elements.</documentation>
+					</annotation>
+					<element ref="gml:geometryMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:geometryMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="multiGeometryProperty" type="gml:MultiGeometryPropertyType">
+		<annotation>
+			<appinfo>
+				<sch:pattern name="Check either href or content not both">
+					<sch:rule context="gml:multiGeometryProperty">
+						<sch:extends rule="hrefOrContent"/>
+					</sch:rule>
+				</sch:pattern>
+			</appinfo>
+			<documentation>This property element either references a geometric aggregate via the XLink-attributes or contains the "multi geometry" element. multiGeometryProperty is the predefined property which can be used by GML Application Schemas whenever a GML Feature has a property with a value that is substitutable for _GeometricAggregate.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="MultiGeometryPropertyType">
+		<annotation>
+			<documentation>A property that has a geometric aggregate as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_GeometricAggregate"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="MultiPoint" type="gml:MultiPointType" substitutionGroup="gml:_GeometricAggregate"/>
+	<!-- ======================================================= -->
+	<complexType name="MultiPointType">
+		<annotation>
+			<documentation>A MultiPoint is defined by one or more Points, referenced through pointMember elements.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<annotation>
+						<documentation>The members of the geometric aggregate can be specified either using the "standard" property or the array property style. It is also valid to use both the "standard" and the array property style in the same collection.
+NOTE: Array properties cannot reference remote geometry elements.</documentation>
+					</annotation>
+					<element ref="gml:pointMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:pointMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="multiPointProperty" type="gml:MultiPointPropertyType">
+		<annotation>
+			<appinfo>
+				<sch:pattern name="Check either href or content not both">
+					<sch:rule context="gml:multiPointProperty">
+						<sch:extends rule="hrefOrContent"/>
+					</sch:rule>
+				</sch:pattern>
+			</appinfo>
+			<documentation>This property element either references a point aggregate via the XLink-attributes or contains the "multi point" element. multiPointProperty is the predefined property which can be used by GML Application Schemas whenever a GML Feature has a property with a value that is substitutable for MultiPoint.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="MultiPointPropertyType">
+		<annotation>
+			<documentation>A property that has a collection of points as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiPoint"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="MultiCurve" type="gml:MultiCurveType" substitutionGroup="gml:_GeometricAggregate"/>
+	<!-- ======================================================= -->
+	<complexType name="MultiCurveType">
+		<annotation>
+			<documentation>A MultiCurve is defined by one or more Curves, referenced through curveMember elements.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<annotation>
+						<documentation>The members of the geometric aggregate can be specified either using the "standard" property or the array property style. It is also valid to use both the "standard" and the array property style in the same collection.
+NOTE: Array properties cannot reference remote geometry elements.</documentation>
+					</annotation>
+					<element ref="gml:curveMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:curveMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="multiCurveProperty" type="gml:MultiCurvePropertyType">
+		<annotation>
+			<appinfo>
+				<sch:pattern name="Check either href or content not both">
+					<sch:rule context="gml:multiCurveProperty">
+						<sch:extends rule="hrefOrContent"/>
+					</sch:rule>
+				</sch:pattern>
+			</appinfo>
+			<documentation>This property element either references a curve aggregate via the XLink-attributes or contains the "multi curve" element. multiCurveProperty is the predefined property which can be used by GML Application Schemas whenever a GML Feature has a property with a value that is substitutable for MultiCurve.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="MultiCurvePropertyType">
+		<annotation>
+			<documentation>A property that has a collection of curves as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiCurve"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="MultiSurface" type="gml:MultiSurfaceType" substitutionGroup="gml:_GeometricAggregate"/>
+	<!-- ======================================================= -->
+	<complexType name="MultiSurfaceType">
+		<annotation>
+			<documentation>A MultiSurface is defined by one or more Surfaces, referenced through surfaceMember elements.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<annotation>
+						<documentation>The members of the geometric aggregate can be specified either using the "standard" property or the array property style. It is also valid to use both the "standard" and the array property style in the same collection.
+NOTE: Array properties cannot reference remote geometry elements.</documentation>
+					</annotation>
+					<element ref="gml:surfaceMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:surfaceMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="multiSurfaceProperty" type="gml:MultiSurfacePropertyType">
+		<annotation>
+			<appinfo>
+				<sch:pattern name="Check either href or content not both">
+					<sch:rule context="gml:multiSurfaceProperty">
+						<sch:extends rule="hrefOrContent"/>
+					</sch:rule>
+				</sch:pattern>
+			</appinfo>
+			<documentation>This property element either references a surface aggregate via the XLink-attributes or contains the "multi surface" element. multiSurfaceProperty is the predefined property which can be used by GML Application Schemas whenever a GML Feature has a property with a value that is substitutable for MultiSurface.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="MultiSurfacePropertyType">
+		<annotation>
+			<documentation>A property that has a collection of surfaces as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiSurface"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- ============================================================ -->
+	<element name="MultiSolid" type="gml:MultiSolidType" substitutionGroup="gml:_GeometricAggregate"/>
+	<!-- ======================================================= -->
+	<complexType name="MultiSolidType">
+		<annotation>
+			<documentation>A MultiSolid is defined by one or more Solids, referenced through solidMember elements.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<annotation>
+						<documentation>The members of the geometric aggregate can be specified either using the "standard" property or the array property style. It is also valid to use both the "standard" and the array property style in the same collection.
+NOTE: Array properties cannot reference remote geometry elements.</documentation>
+					</annotation>
+					<element ref="gml:solidMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:solidMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="multiSolidProperty" type="gml:MultiSolidPropertyType">
+		<annotation>
+			<appinfo>
+				<sch:pattern name="Check either href or content not both">
+					<sch:rule context="gml:multiSolidProperty">
+						<sch:extends rule="hrefOrContent"/>
+					</sch:rule>
+				</sch:pattern>
+			</appinfo>
+			<documentation>This property element either references a solid aggregate via the XLink-attributes or contains the "multi solid" element. multiSolidProperty is the predefined property which can be used by GML Application Schemas whenever a GML Feature has a property with a value that is substitutable for MultiSolid.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="MultiSolidPropertyType">
+		<annotation>
+			<documentation>A property that has a collection of solids as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiSolid"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- 
+	
+	The following types and elements are deprecated and should not be used !
+	For backward compatibility with GML2 only
+	
+	-->
+	<!-- =========================================================== -->
+	<element name="MultiPolygon" type="gml:MultiPolygonType" substitutionGroup="gml:_GeometricAggregate">
+		<annotation>
+			<documentation>Deprecated with GML 3.0 and included for backwards compatibility with GML 2. Use the "MultiSurface" element instead.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="MultiLineString" type="gml:MultiLineStringType" substitutionGroup="gml:_GeometricAggregate">
+		<annotation>
+			<documentation>Deprecated with GML 3.0 and included for backwards compatibility with GML 2. Use the "MultiCurve" element instead.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="MultiLineStringType">
+		<annotation>
+			<documentation>A MultiLineString is defined by one or more LineStrings, referenced through lineStringMember elements. Deprecated with GML version 3.0. Use MultiCurveType instead.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:lineStringMember" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="MultiLineStringPropertyType">
+		<annotation>
+			<documentation>This type is deprecated with GML 3 and shall not be used. It is included for backwards compatibility with GML 2. Use MultiCurvePropertyType instead.
+A property that has a collection of line strings as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiLineString"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="MultiPolygonType">
+		<annotation>
+			<documentation>A MultiPolygon is defined by one or more Polygons, referenced through polygonMember elements. Deprecated with GML version 3.0. Use MultiSurfaceType instead.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:polygonMember" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="MultiPolygonPropertyType">
+		<annotation>
+			<documentation>This type is deprecated with GML 3 and shall not be used. It is included for backwards compatibility with GML 2. Use MultiSurfacePropertyType instead.
+
+A property that has a collection of polygons as its value domain can either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element must be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiPolygon"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup">
+			<annotation>
+				<documentation>This attribute group includes the XLink attributes (see xlinks.xsd). XLink is used in GML to reference remote resources (including those elsewhere in the same document). A simple link element can be constructed by including a specific set of XLink attributes. The XML Linking Language (XLink) is currently a Proposed Recommendation of the World Wide Web Consortium. XLink allows elements to be inserted into XML documents so as to create sophisticated links between resources; such links can be used to reference remote properties.
+A simple link element can be used to implement pointer functionality, and this functionality has been built into various GML 3 elements by including the gml:AssociationAttributeGroup.</documentation>
+			</annotation>
+		</attributeGroup>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- =========================================================== -->
+	<element name="geometryMember" type="gml:GeometryPropertyType">
+		<annotation>
+			<documentation>This property element either references a geometry element via the XLink-attributes or contains the geometry element.</documentation>
+		</annotation>
+	</element>
+	<element name="geometryMembers" type="gml:GeometryArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of geometry elements. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<element name="pointMember" type="gml:PointPropertyType">
+		<annotation>
+			<documentation>This property element either references a Point via the XLink-attributes or contains the Point element.</documentation>
+		</annotation>
+	</element>
+	<element name="pointMembers" type="gml:PointArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of points. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<element name="curveMembers" type="gml:CurveArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of curves. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<element name="surfaceMember" type="gml:SurfacePropertyType">
+		<annotation>
+			<documentation>This property element either references a surface via the XLink-attributes or contains the surface element. A surface element is any element which is substitutable for "_Surface".</documentation>
+		</annotation>
+	</element>
+	<element name="surfaceMembers" type="gml:SurfaceArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of surfaces. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<element name="solidMember" type="gml:SolidPropertyType">
+		<annotation>
+			<documentation>This property element either references a solid via the XLink-attributes or contains the solid element. A solid element is any element which is substitutable for "_Solid".</documentation>
+		</annotation>
+	</element>
+	<element name="solidMembers" type="gml:SolidArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of solids. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<!-- some named geometry properties - for backward compatibility with GML2 -->
+	<element name="multiCenterOf" type="gml:MultiPointPropertyType"/>
+	<element name="multiPosition" type="gml:MultiPointPropertyType"/>
+	<element name="multiCenterLineOf" type="gml:MultiCurvePropertyType"/>
+	<element name="multiEdgeOf" type="gml:MultiCurvePropertyType"/>
+	<element name="multiCoverage" type="gml:MultiSurfacePropertyType"/>
+	<element name="multiExtentOf" type="gml:MultiSurfacePropertyType"/>
+	<!-- 
+	
+	The following types and elements are deprecated and should not be used !
+	
+	-->
+	<element name="multiLocation" type="gml:MultiPointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+			<documentation>Deprecated with GML 3.0 and included only for backwards compatibility with GML 2.0. Use "curveMember" instead.
+This property element either references a line string via the XLink-attributes or contains the line string element.</documentation>
+		</annotation>
+	</element>
+	<element name="lineStringMember" type="gml:LineStringPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+			<documentation>Deprecated with GML 3.0 and included only for backwards compatibility with GML 2.0. Use "curveMember" instead.
+This property element either references a line string via the XLink-attributes or contains the line string element.</documentation>
+		</annotation>
+	</element>
+	<element name="polygonMember" type="gml:PolygonPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+			<documentation>Deprecated with GML 3.0 and included only for backwards compatibility with GML 2.0. Use "surfaceMember" instead.
+This property element either references a polygon via the XLink-attributes or contains the polygon element.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+</schema>

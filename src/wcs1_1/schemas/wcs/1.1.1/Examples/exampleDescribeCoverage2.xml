@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DescribeCoverage xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsDescribeCoverage.xsd" 
+service="WCS" version="1.1.1">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2007-06-05 -->
+	<Identifier>Landsat_TM_Mosaic</Identifier>
+	<Identifier>WMO_Daily_Temps</Identifier>
+	<Identifier>Census_population_tables</Identifier>
+</DescribeCoverage>

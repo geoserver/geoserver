@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DerivedCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="GeorectifiedImageXXXXCRS">
+	<!-- Specific georectified image or grid must be identified in this gml:id.  -->
+	<!-- Last updated 2005-11-15 -->
+	<!-- ========================================================== -->
+	<srsName>Georectified Image XXXX CRS</srsName>
+	<!-- Specific georectified image or grid must be identified in srsName. -->
+	<srsID>
+		<name codeSpace="urn:opengis:def:crs:OGC:0.20:GeorectifiedImageXXXXCRS">GeorectifiedImageXXXXCRS</name>
+		<!-- Specific image must be identified in "name" value. -->
+	</srsID>
+	<remarks>Template for georectified 2D image coordinate reference system definition. In this CRS, the origin is at the center of the first pixel in the georectified image file. This CRS template can be used for any size georectified image, since no image size is specified. A CRS definition using this template is expected to be needed and thus created before the georectified image pixels are produced. The coordinate Conversion used by this CRS definition is expected to NOT closely approximate the reverse of the coordinate Transformation used to georectify this image. This CRS template is not expected to be useful for an ungeorectified image. </remarks>
+	<baseCRS xlink:href="urn:opengis:def:crs:EPSG:6.3:YYYY"/>
+	<!-- Specific 2D CRS that was georectified into must be identified in baseCRS, usually a ProjectedCRS or GeographicCRS -->
+	<!-- ================================================= -->
+	<definedByConversion>
+		<Conversion gml:id="GeorectifiedImageXXXXConversion">
+			<!-- Specific georectified image or grid must be identified in this gml:id. -->
+			<coordinateOperationName>Georectified image XXXX conversion</coordinateOperationName>
+			<!-- Specific image must be identified in this coordinateOperationName. -->
+			<usesMethod>
+				<OperationMethod gml:id="EPSG9624">
+					<methodName>Affine general parametric transformation</methodName>
+					<methodID>
+						<name codeSpace="urn:opengis:method:EPSG:6.3:">9624</name>
+					</methodID>
+					<methodFormula>
+XT   =  A0  +  A1. XS  +  A2.YS; 
+YT   =  B0  +  B1. XS  +  B2.YS; 
+where XT , YT  are the coordinates of a point P in the target coordinate system; 
+		XS , YS  are the coordinates of P in the source coordinate system. 
+
+Reversibility: The parameter values for an affine transformation cannot be used for the reverse transformation. However, the reverse transformation is another affine transformation using the same formulas but with different parameter values. The reverse parameter values, indicated by a prime ('), can be calculated from those of the forward transformation as follows:
+D    = A1 . B2   -   A2 . B1; 
+A0' = (A2 . B0   -   B2 . A0) / D; 
+B0' = (B1 . A0   -   A1 . B0) / D; 
+A1' = +B2 / D; 
+A2' = - A2 / D; 
+B1' = - B1 / D; 
+B2' = +A1 / D. 
+
+See Section 2.4.2.1 of EPSG Guidance Note 7. </methodFormula>
+					<sourceDimensions>2</sourceDimensions>
+					<targetDimensions>2</targetDimensions>
+					<!-- =============================================== -->
+					<usesParameter>
+						<OperationParameter gml:id="EPSG8623">
+							<parameterName>A0</parameterName>
+							<parameterID>
+								<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8623</name>
+							</parameterID>
+						</OperationParameter>
+					</usesParameter>
+					<!-- =============================================== -->
+					<usesParameter>
+						<OperationParameter gml:id="EPSG8624">
+							<parameterName>A1</parameterName>
+							<parameterID>
+								<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8624</name>
+							</parameterID>
+						</OperationParameter>
+					</usesParameter>
+					<!-- =============================================== -->
+					<usesParameter>
+						<OperationParameter gml:id="EPSG8625">
+							<parameterName>A2</parameterName>
+							<parameterID>
+								<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8625</name>
+							</parameterID>
+						</OperationParameter>
+					</usesParameter>
+					<!-- =============================================== -->
+					<usesParameter>
+						<OperationParameter gml:id="EPSG8639">
+							<parameterName>B0</parameterName>
+							<parameterID>
+								<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8639</name>
+							</parameterID>
+						</OperationParameter>
+					</usesParameter>
+					<!-- =============================================== -->
+					<usesParameter>
+						<OperationParameter gml:id="EPSG8640">
+							<parameterName>B1</parameterName>
+							<parameterID>
+								<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8640</name>
+							</parameterID>
+						</OperationParameter>
+					</usesParameter>
+					<!-- =============================================== -->
+					<usesParameter>
+						<OperationParameter gml:id="EPSG8641">
+							<parameterName>B2</parameterName>
+							<parameterID>
+								<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8641</name>
+							</parameterID>
+						</OperationParameter>
+					</usesParameter>
+				</OperationMethod>
+			</usesMethod>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8623"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8624"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted.
+				The value of this parameter is often 0.0. -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8625"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8639"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted.
+				The value of this parameter is often 0.0. -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8640"/>
+			</usesValue>
+			<!-- ============================================ -->
+			<usesValue>
+				<value uom="urn:opengis:def:uom:EPSG:6.3:ZZZZ">9999</value>
+				<!-- Specific uom code and parameter value must be inserted -->
+				<valueOfParameter xlink:href="urn:opengis:def:parameter:EPSG:6.3:8641"/>
+			</usesValue>
+		</Conversion>
+	</definedByConversion>
+	<!-- ================================================ -->
+	<derivedCRSType codeSpace="#DerivedCRSTypeValues">#image</derivedCRSType>
+	<!-- ================================================ -->
+	<usesCS>
+		<CartesianCS gml:id="Grid2dSquareCS">
+			<csName>2D square-cell grid based coordinate system</csName>
+			<csID>
+				<name codeSpace="urn:ogc:def:cs:OGC:1.0:">Grid2dSquareCS</name>
+			</csID>
+			<remarks>A 2D grid-based coordinate system for use by an image or other continuous grid coverage. It can be used for a grid of any size, since no grid size is defined. This coordinate system specifies that each row coordinate value shall be listed before the column coordinate value. The grid cells are assumed to be square, with the same grid spacing or pixel spacing in each direction. 
+
+In a grid coverage file, the "row" axis shall be the first axis by which grid points are sequenced, and the "column" axis shall be the second axis, as could be specified by the "scanDirection : Sequence(CharacterString)" attribute of the CV_SequenceRule class in Clause 8 of ISO 19123. With linear sequencing, the grid points in the first row shall be listed first, followed by other rows, with the grid points in each row listed in column number order. This relationship between the "row" and "column" names and the first grid points shall apply whether this Grid2dSquareCS is associated with a grid file before or after that file is recorded.
+
+The "row" and "column" axis names are used here although the "scanDirection : Sequence(CharacterString)" attribute may provide other axis names. Use of other axis names would require defining different CartesianCSs for other names, or adding other names as additional axisID values. The following XML includes the axis names "line" and "sample" as additional axisID values.
+
+If not otherwise identified in an image file, the "row" axis shall be the first axis whose number of pixels is identified, and the "column" axis shall be the second axis, as could be specified by the "extent[0..1] : CV_GridEnvelope" attribute of the CV_Grid class in Clause 8 of ISO 19123. In either case, the first point in the grid coverage file is assumed to be numbered (1, 1), meaning row 1, column 1. 
+
+The first row in a grid is sometimes called the "top" row, the first column is sometimes called the "left" column, and the first grid point is then called the "upperLeft" point. If desired, those names can be used with this Grid2dSquareCS. However other names can also be used, since this Grid2dSquareCS has been defined so that it does not depend on such left/right, top/bottom, and up/down names. </remarks>
+			<usesAxis>
+				<CoordinateSystemAxis gml:id="Row" gml:uom="urn:ogc:def:uom:OGC:1.0:GridSpacing">
+					<name>Grid row axis</name>
+					<axisID>
+						<name codeSpace="urn:ogc:def:axis:OGC:1.0:">Row</name>
+					</axisID>
+					<remarks>For this grid axis, row coordinate values match grid row numbers, but allow fractional coordinate values between grid points. The first row in a grid is sometimes called the "top" row, so the direction of this axis is "down", but these terms are not required. </remarks>
+					<axisAbbrev>R</axisAbbrev>
+					<axisDirection>urn:ogc:def:axisDirection:OGC:1.0:rowPositive</axisDirection>
+				</CoordinateSystemAxis>
+			</usesAxis>
+			<usesAxis>
+				<CoordinateSystemAxis gml:id="Column" gml:uom="urn:ogc:def:uom:OGC:1.0:GridSpacing">
+					<name>Grid column axis</name>
+					<axisID>
+						<name codeSpace="urn:ogc:def:axis:OGC:1.0:">Column</name>
+					</axisID>
+					<remarks>For this grid axis, column coordinate values match grid column numbers, but allow fractional coordinate values between grid points. The first column is sometimes called the "left" column, so the direction of this axis is "right", but these terms are not required. </remarks>
+					<axisAbbrev>C</axisAbbrev>
+					<axisDirection>urn:ogc:def:axisDirection:OGC:1.0:columnPositive</axisDirection>
+				</CoordinateSystemAxis>
+			</usesAxis>
+		</CartesianCS>
+	</usesCS>
+</DerivedCRS>

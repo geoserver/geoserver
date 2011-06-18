@@ -1,0 +1,17 @@
+<assembly>
+  <id>spatialite-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gt-jdbc-spatialite-*</include>
+        <include>sqlite-jdbc-spatialite*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

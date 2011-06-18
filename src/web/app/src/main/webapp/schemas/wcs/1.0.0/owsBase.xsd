@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.opengis.net/wcs" xmlns="http://www.opengis.net/wcs" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.0" xml:lang="en">
+	<xs:annotation>
+		<xs:appinfo>owsBase.xsd v1.0.0 2004-07-15</xs:appinfo>
+		<xs:documentation> This schema defines the XML elements and types expected to be used by multiple OGC Web Services (OWSs). This schema is believed to be a GML Application Schema. </xs:documentation>
+		<xs:documentation>AEW 03/07/22 Changes made:
+			Added [xml:lang="en"] above
+			Moved interpolationMethod and InterpolationMethodType here from DescribeCoverage.xsd, because I know the WCTS will also use it.
+			Added documentation elements in InterpolationMethodType 
+               (JDE 2003-07-28) Added LonLatBoundingBox, TimeSequence, name and description.
+		</xs:documentation>
+		<xs:documentation>AEW 03/07/29 Changes made:
+			Edited documentation of "keywords" element and various other parts
+		</xs:documentation>
+		<xs:documentation>AEW 03/07/30 Changes made:
+			Changed Substitution Group of lonLatEnvelope to gml:Envelope
+		</xs:documentation>
+		<xs:documentation>JDE 03/07/30 Changes made:
+			Removed the Substitution Group on lonLatEnvelope (we only want to use it in the context of CoverageOfferingBrief)
+			Added timeResolution to TimePeriodType
+		</xs:documentation>
+		<xs:documentation>AEW 03/08/01 Changes made:
+			In SupportedCRSsType, changed element name from NativeCRSs to nativeCRSs
+			Edited documentation of many types
+		</xs:documentation>
+		<xs:documentation>AEW 04/07/17 Changes made:
+		 	Changed fived value of srsName attribute in LonLatEnvelopeBaseType to URN value in "ogc" URN namespace, based on OWS Common and OGC 05-010. Also, defined srsName attribute as being anyURI type, and explicitly marked its use as optional.
+		 	Modified definition of wcs:name element to be in gml:name substitutionGroup.
+		 	Modified definition of wcs:description element to no longer be in gml:name substitutionGroup.
+		</xs:documentation>
+	</xs:annotation>
+	<!-- ==============================================================
+           includes and imports
+	============================================================== -->
+	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="gml4wcs.xsd"/>
+	<!-- ============================================================
+		 Elements and types		
+	============================================================== -->
+	<xs:element name="name" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Identifier for the object, normally a descriptive name. </xs:documentation>
+			<xs:documentation>For WCS use, removed optional CodeSpace attribute from gml:name.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ===========================================================-->
+	<xs:element name="description" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Contains a simple text description of the object. </xs:documentation>
+			<xs:documentation>For WCS use, removed optional AssociationAttributeGroup from gml:description. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ===========================================================-->
+	<xs:element name="keywords">
+		<xs:annotation>
+			<xs:documentation>Unordered list of one or more commonly used or formalised word(s) or phrase(s) used to describe the subject. When needed, the optional "type" can name the type of the associated list of keywords that shall all have the same type. Also when needed, the codeSpace attribute of that "type" can also reference the type name authority and/or thesaurus. (Largely based on MD_Keywords class in ISO 19115.) </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="keyword" type="xs:string" maxOccurs="unbounded"/>
+				<xs:element name="type" type="gml:CodeType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- =========================================================== -->
+	<xs:element name="lonLatEnvelope" type="LonLatEnvelopeType"/>
+	<!-- =========================================================== -->
+	<xs:complexType name="LonLatEnvelopeBaseType">
+		<xs:annotation>
+			<xs:documentation>For WCS use, LonLatEnvelopeBaseType restricts gml:Envelope to the WGS84 geographic CRS with Longitude preceding Latitude and both using decimal degrees only. If included, height values are third and use metre units. </xs:documentation>
+			<xs:documentation>Envelope defines an extent using a pair of positions defining opposite corners in arbitrary dimensions. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:EnvelopeType">
+				<xs:sequence>
+					<xs:element ref="gml:pos" minOccurs="2" maxOccurs="2"/>
+				</xs:sequence>
+				<xs:attribute name="srsName" type="xs:anyURI" use="optional" fixed="urn:ogc:def:crs:OGC:1.3:CRS84"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =========================================================== -->
+	<xs:complexType name="LonLatEnvelopeType">
+		<xs:annotation>
+			<xs:documentation>Defines spatial extent by extending LonLatEnvelope with an optional time position pair. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="LonLatEnvelopeBaseType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="gml:timePosition" minOccurs="2" maxOccurs="2"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =========================================================== -->
+	<xs:element name="TimeSequence" type="TimeSequenceType"/>
+	<!-- =========================================================== -->
+	<xs:complexType name="TimeSequenceType">
+		<xs:annotation>
+			<xs:documentation>An ordered sequence of time positions or intervals. The time positions and periods shall be ordered from the oldest to the newest. </xs:documentation>
+		</xs:annotation>
+		<xs:choice maxOccurs="unbounded">
+			<xs:element ref="gml:timePosition"/>
+			<xs:element ref="timePeriod"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ========================================================= -->
+	<xs:element name="timePeriod" type="TimePeriodType"/>
+	<!-- ========================================================= -->
+	<xs:complexType name="TimePeriodType">
+		<xs:annotation>
+			<xs:documentation>This is a variation of the GML TimePeriod, which allows the beginning and end of a time-period to be expressed in short-form inline using the begin/endPosition element, which allows an identifiable TimeInstant to be defined simultaneously with using it, or by reference, using xlinks on the begin/end elements. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="beginPosition" type="gml:TimePositionType"/>
+			<xs:element name="endPosition" type="gml:TimePositionType"/>
+			<xs:element name="timeResolution" type="gml:TimeDurationType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="frame" type="xs:anyURI" use="optional" default="#ISO-8601"/>
+	</xs:complexType>
+	<!-- =============================================================
+	Metadata Link elements and types
+	============================================================== -->
+	<xs:element name="metadataLink" type="MetadataLinkType" substitutionGroup="gml:metaDataProperty"/>
+	<!-- =========================================================== -->
+	<xs:complexType name="MetadataLinkType">
+		<xs:annotation>
+			<xs:documentation>Refers to a metadata package that contains metadata properties for an object. The metadataType attribute indicates the type of metadata referred to. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="MetadataAssociationType">
+				<xs:attribute name="metadataType" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:NMTOKEN">
+							<xs:enumeration value="TC211">
+								<xs:annotation>
+									<xs:documentation>This metadata uses a profile of ISO TC211’s Geospatial Metadata Standard 19115. </xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
+							<xs:enumeration value="FGDC">
+								<xs:annotation>
+									<xs:documentation>This metadata uses a profile of the US FGDC Content Standard for Digital Geospatial Metadata. </xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
+							<xs:enumeration value="other">
+								<xs:annotation>
+									<xs:documentation>This metadata uses some other metadata standard(s) and/or no standard. </xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================== -->
+	<xs:complexType name="MetadataAssociationType">
+		<xs:annotation>
+			<xs:documentation>Refers to a metadata package that contains metadata properties for an object. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:MetaDataPropertyType">
+				<xs:sequence/>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+				<xs:attribute name="about" type="xs:anyURI" use="optional"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =============================================================
+		 Supported Format elements and types-			
+	============================================================= -->
+	<xs:element name="supportedFormats" type="SupportedFormatsType"/>
+	<!-- ========================================================== -->
+	<xs:complexType name="SupportedFormatsType">
+		<xs:annotation>
+			<xs:documentation>Unordered list of data transfer formats supported. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="formats" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="nativeFormat" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Identifiers of one format in which the data is stored. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- ========================================================== -->
+	<xs:element name="formats" type="gml:CodeListType">
+		<xs:annotation>
+			<xs:documentation>Identifiers of one or more formats in which coverage content can be retrieved. The codeSpace optional attribute can reference the semantic of the format identifiers. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ============================================================
+	Supports CRSs elemente and types
+	============================================================= -->
+	<xs:element name="supportedCRSs" type="SupportedCRSsType"/>
+	<!-- ========================================================== -->
+	<xs:complexType name="SupportedCRSsType">
+		<xs:annotation>
+			<xs:documentation>Unordered list(s) of identifiers of Coordinate Reference Systems (CRSs) supported in server operation requests and responses. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="requestResponseCRSs" type="gml:CodeListType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Unordered list of identifiers of the CRSs in which the server can both accept requests and deliver responses for this data. These CRSs should include the native CRSs defined below. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="requestCRSs" type="gml:CodeListType" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Unordered list of identifiers of the CRSs in which the server can accept requests for this data. These CRSs should include the native CRSs defined below. </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="responseCRSs" type="gml:CodeListType" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Unordered list of identifiers of the CRSs in which the server can deliver responses for this data. These CRSs should include the native CRSs defined below. </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="nativeCRSs" type="gml:CodeListType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Unordered list of identifiers of the CRSs in which the server stores this data, that is, the CRS(s) in which data can be obtained without any distortion or degradation. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ==============================================================
+		 Interpolation Method elements and types
+	============================================================== -->
+	<xs:element name="supportedInterpolations" type="SupportedInterpolationsType"/>
+	<!-- =============================================== -->
+	<xs:complexType name="SupportedInterpolationsType">
+		<xs:annotation>
+			<xs:documentation>Unordered list of interpolation methods supported. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="interpolationMethod" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="default" type="InterpolationMethodType" use="optional" default="nearest neighbor"/>
+	</xs:complexType>
+	<!-- ========================================================= -->
+	<xs:element name="interpolationMethod" type="InterpolationMethodType"/>
+	<!-- ========================================================= -->
+	<xs:simpleType name="InterpolationMethodType">
+		<xs:annotation>
+			<xs:documentation>Codes that identify interpolation methods. The meanings of these codes are defined in Annex B of ISO 19123: Geographic information — Schema for coverage geometry and functions. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="nearest neighbor"/>
+			<xs:enumeration value="bilinear"/>
+			<xs:enumeration value="bicubic"/>
+			<xs:enumeration value="lost area"/>
+			<xs:enumeration value="barycentric"/>
+			<xs:enumeration value="none">
+				<xs:annotation>
+					<xs:documentation>No interpolation. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

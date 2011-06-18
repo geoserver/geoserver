@@ -1,0 +1,17 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <form wicket:id="form">
+      <div wicket:id="requestBuilder"></div>
+      <ul>
+        <li class="button-group selfclear">
+          <button wicket:id="execute" type="submit"><wicket:message key="execute">execute</wicket:message></button>
+          <button wicket:id="executeXML" type="submit"><wicket:message key="showXML">show xml</wicket:message></button>
+        </li>
+      </ul>
+    </form>
+    <div wicket:id="xmlWindow"></div>
+    <div wicket:id="responseWindow"></div>
+</wicket:extend>    
+</body>
+</html>

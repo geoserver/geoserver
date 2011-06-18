@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TransverseMercatorConversion xmlns="http://www.opengis.net/examples" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/examples transverseMercator.xsd" 
+gml:id="EPSG19916">
+	<!-- Example XML document. Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<!-- SourceCRS: EPSG:4277 OSGB 1936 -->
+	<!-- TargetCRS: EPSG:27700 OSGB 1936 / British National Grid -->
+	<gml:coordinateOperationName>Transverse Mercator</gml:coordinateOperationName>
+	<gml:validArea>
+		<gml:description>United Kingdom (UK) - Great Britain - England Scotland Wales - onshore; Isle of Man. </gml:description>
+	</gml:validArea>
+	<usesTransverseMercatorMethod xlink:href="urn:ogc:def:method:EPSG:6.3:9807"/>
+	<usesLatitudeOfNaturalOriginValue>
+		<angleValue uom="urn:ogc:def:uom:degree">49</angleValue>
+		<gml:valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8801"/>
+	</usesLatitudeOfNaturalOriginValue>
+	<usesLongitudeOfNaturalOriginValue>
+		<angleValue uom="urn:ogc:def:uom:OGC:1.0:degree">-2</angleValue>
+		<gml:valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8802"/>
+	</usesLongitudeOfNaturalOriginValue>
+	<usesScaleFactorAtNaturalOriginValue>
+		<scaleValue uom="urn:ogc:def:uom:OGC:1.0:unity">0.999601272</scaleValue>
+		<gml:valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8805"/>
+	</usesScaleFactorAtNaturalOriginValue>
+	<usesFalseEastingValue>
+		<lengthValue uom="urn:ogc:def:uom:OGC:1.0:metre">400000</lengthValue>
+		<gml:valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8806"/>
+	</usesFalseEastingValue>
+	<usesFalseNorthingValue>
+		<lengthValue uom="urn:ogc:def:uom:OGC:1.0:metre">-100000</lengthValue>
+		<gml:valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8807"/>
+	</usesFalseNorthingValue>
+</TransverseMercatorConversion>

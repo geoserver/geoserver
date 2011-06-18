@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:ex="http://example.com" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0" targetNamespace="http://example.com"
+    elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+    <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <import namespace="urn:cgi:xmlns:CGI:GeoSciML:2.0" schemaLocation="http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd" />
+    <element name="ERM" type="ex:ERMType">
+        <annotation>
+            <documentation>Identifies the material found in the earth or produced from earth
+                material that is of economic interest</documentation>
+        </annotation>
+    </element>
+    <complexType name="ERMType">
+        <sequence>
+            <element name="ermRole" type="ex:ERMRoleCodeType" />
+            <element name="material" type="ex:EMPropertyType" />
+            <element name="proportion" type="gsml:CGI_ValuePropertyType" minOccurs="0" />
+        </sequence>
+    </complexType>
+    <complexType name="ERMPropertyType">
+        <sequence>
+            <element ref="ex:ERM" />
+        </sequence>
+    </complexType>
+    <element name="EM" type="ex:EMType" abstract="true" substitutionGroup="gml:_GML" />
+    <complexType name="EMPropertyType">
+        <sequence minOccurs="0">
+            <element ref="ex:EM" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+    </complexType>
+    <complexType name="EMType" abstract="true">
+        <complexContent>
+            <extension base="gml:AbstractGMLType">
+                <sequence>
+                    <element name="color" type="gsml:CGI_TermValuePropertyType" minOccurs="0"
+                        maxOccurs="unbounded" />
+                    <element name="purpose" type="ex:PurposeType" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="CompoundMaterial" type="ex:CompoundMaterialType" substitutionGroup="ex:EM" />
+    <complexType name="CompoundMaterialPropertyType">
+        <sequence minOccurs="0">
+            <element ref="ex:CompoundMaterial" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+    </complexType>
+    <complexType name="CompoundMaterialType">
+        <complexContent>
+            <extension base="ex:EMType">
+                <sequence>
+                    <element name="compositionCategory" type="gsml:CGI_TermValuePropertyType"
+                        minOccurs="0" maxOccurs="unbounded" />
+                    <element name="geneticCategory" type="gsml:CGI_TermValuePropertyType"
+                        minOccurs="0" maxOccurs="unbounded" />
+                    <element name="part" type="gsml:ConstituentPartPropertyType" minOccurs="0"
+                        maxOccurs="unbounded" />
+                    <element name="particleGeometry" type="gsml:ParticleGeometryDescriptionPropertyType"
+                        minOccurs="0" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="RockMaterial" type="ex:RockMaterialType" substitutionGroup="ex:CompoundMaterial" />
+    <complexType name="RockMaterialPropertyType">
+        <sequence minOccurs="0">
+            <element ref="ex:RockMaterial" />
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup" />
+    </complexType>
+    <complexType name="RockMaterialType">
+        <complexContent>
+            <extension base="ex:CompoundMaterialType">
+                <sequence>
+                    <element name="consolidationDegree" type="gsml:CGI_TermValuePropertyType" />
+                    <element name="lithology" type="gsml:ControlledConceptPropertyType"
+                        maxOccurs="unbounded" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="PurposeType">
+        <union memberTypes="ex:PurposeEnumerationType ex:PurposeOtherType" />
+    </simpleType>
+    <simpleType name="PurposeEnumerationType">
+        <restriction base="string">
+            <enumeration value="typicalNorm" />
+            <enumeration value="definingNorm" />
+            <enumeration value="instance" />
+        </restriction>
+    </simpleType>
+    <simpleType name="PurposeOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+    <simpleType name="ERMRoleCodeType">
+        <union memberTypes="ex:ERMRoleCodeEnumerationType ex:ERMRoleCodeOtherType" />
+    </simpleType>
+    <simpleType name="ERMRoleCodeEnumerationType">
+        <restriction base="string">
+            <enumeration value="unspecified">
+                <annotation>
+                    <documentation>Where the role of the EarthResourceMaterial has not been
+                        specified</documentation>
+                </annotation>
+            </enumeration>
+            <enumeration value="secondary" />
+            <enumeration value="primary" />
+            <enumeration value="host rock" />
+            <enumeration value="alteration product" />
+            <enumeration value="gangue" />
+        </restriction>
+    </simpleType>
+    <simpleType name="ERMRoleCodeOtherType">
+        <restriction base="string">
+            <pattern value="other: \w{2,}" />
+        </restriction>
+    </simpleType>
+</schema>

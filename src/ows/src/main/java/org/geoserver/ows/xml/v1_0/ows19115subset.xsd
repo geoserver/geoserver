@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows" 
+xmlns:ows="http://www.opengis.net/ows" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>ows19115subset.xsd 2005-11-21</appinfo>
+		<documentation>This XML Schema Document encodes the parts of ISO 19115 used by the common "ServiceIdentification" and "ServiceProvider" sections of the GetCapabilities operation response, known as the service metadata XML document. The parts encoded here are the MD_Keywords, CI_ResponsibleParty, and related classes. This XML Schema largely follows the current draft for ISO 19139, with the addition of documentation text extracted and edited from Annex B of ISO 19115. The UML package prefixes were omitted from XML names, and the XML element names were all capitalized, for consistency with other OWS Schemas. Also, the optional smXML:id attributes were omitted, as not being useful in a service metadata document.
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/1.0.0/xlinks.xsd"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<element name="Title" type="string">
+		<annotation>
+			<documentation>Title of this resource, normally used for display to a human. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="Abstract" type="string">
+		<annotation>
+			<documentation>Brief narrative description of this resource, normally used for display to a human. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="Keywords" type="ows:KeywordsType"/>
+	<!-- =========================================================== -->
+	<complexType name="KeywordsType">
+		<annotation>
+			<documentation>Unordered list of one or more commonly used or formalised word(s) or phrase(s) used to describe the subject. When needed, the optional "type" can name the type of the associated list of keywords that shall all have the same type. Also when needed, the codeSpace attribute of that "type" can reference the type name authority and/or thesaurus. </documentation>
+			<documentation>For OWS use, the optional thesaurusName element was omitted as being complex information that could be referenced by the codeSpace attribute of the Type element. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Keyword" type="string" maxOccurs="unbounded"/>
+			<element name="Type" type="ows:CodeType" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="CodeType">
+		<annotation>
+			<documentation>Name or code with an (optional) authority. If the codeSpace attribute is present, its value should reference a dictionary, thesaurus, or authority for the name or code, such as the organisation who assigned the value, or the dictionary from which it is taken. </documentation>
+			<documentation>Type copied from basicTypes.xsd of GML 3 with documentation edited, for possible use outside the ServiceIdentification section of a service metadata document. </documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<attribute name="codeSpace" type="anyURI" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="PointOfContact" type="ows:ResponsiblePartyType">
+		<annotation>
+			<documentation>Identification of, and means of communication with, person(s) responsible for the resource(s). </documentation>
+			<documentation>For OWS use in the ServiceProvider section of a service metadata document, the optional organizationName element was removed, since this type is always used with the ProviderName element which provides that information. The optional individualName element was made mandatory, since either the organizationName or individualName element is mandatory. The mandatory "role" element was changed to optional, since no clear use of this information is known in the ServiceProvider section. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="ResponsiblePartyType">
+		<annotation>
+			<documentation>Identification of, and means of communication with, person responsible for the server. At least one of IndividualName, OrganisationName, or PositionName shall be included. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:IndividualName" minOccurs="0"/>
+			<element ref="ows:OrganisationName" minOccurs="0"/>
+			<element ref="ows:PositionName" minOccurs="0"/>
+			<element ref="ows:ContactInfo" minOccurs="0"/>
+			<element ref="ows:Role"/>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- =========================================================== -->
+	<complexType name="ResponsiblePartySubsetType">
+		<annotation>
+			<documentation>Identification of, and means of communication with, person responsible for the server. </documentation>
+			<documentation>For OWS use in the ServiceProvider section of a service metadata document, the optional organizationName element was removed, since this type is always used with the ProviderName element which provides that information. The mandatory "role" element was changed to optional, since no clear use of this information is known in the ServiceProvider section. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:IndividualName" minOccurs="0"/>
+			<element ref="ows:PositionName" minOccurs="0"/>
+			<element ref="ows:ContactInfo" minOccurs="0"/>
+			<element ref="ows:Role" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="IndividualName" type="string">
+		<annotation>
+			<documentation>Name of the responsible person: surname, given name, title separated by a delimiter. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="OrganisationName" type="string">
+		<annotation>
+			<documentation>Name of the responsible organization. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="PositionName" type="string">
+		<annotation>
+			<documentation>Role or position of the responsible person. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="Role" type="ows:CodeType">
+		<annotation>
+			<documentation>Function performed by the responsible party. Possible values of this Role shall include the values and the meanings listed in Subclause B.5.5 of ISO 19115:2003. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="ContactInfo" type="ows:ContactType">
+		<annotation>
+			<documentation>Address of the responsible party. </documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="ContactType">
+		<annotation>
+			<documentation>Information required to enable contact with the responsible person and/or organization. </documentation>
+			<documentation>For OWS use in the service metadata document, the optional hoursOfService and contactInstructions elements were retained, as possibly being useful in the ServiceProvider section. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Phone" type="ows:TelephoneType" minOccurs="0">
+				<annotation>
+					<documentation>Telephone numbers at which the organization or individual may be contacted. </documentation>
+				</annotation>
+			</element>
+			<element name="Address" type="ows:AddressType" minOccurs="0">
+				<annotation>
+					<documentation>Physical and email address at which the organization or individual may be contacted. </documentation>
+				</annotation>
+			</element>
+			<element name="OnlineResource" type="ows:OnlineResourceType" minOccurs="0">
+				<annotation>
+					<documentation>On-line information that can be used to contact the individual or organization. OWS specifics: The xlink:href attribute in the xlink:simpleLink attribute group shall be used to reference this resource. Whenever practical, the xlink:href attribute with type anyURI should be a URL from which more contact information can be electronically retrieved. The xlink:title attribute with type "string" can be used to name this set of information. The other attributes in the xlink:simpleLink attribute group should not be used. </documentation>
+				</annotation>
+			</element>
+			<element name="HoursOfService" type="string" minOccurs="0">
+				<annotation>
+					<documentation>Time period (including time zone) when individuals can contact the organization or individual. </documentation>
+				</annotation>
+			</element>
+			<element name="ContactInstructions" type="string" minOccurs="0">
+				<annotation>
+					<documentation>Supplemental instructions on how or when to contact the individual or organization. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="OnlineResourceType">
+		<annotation>
+			<documentation>Reference to on-line resource from which data can be obtained. </documentation>
+			<documentation>For OWS use in the service metadata document, the CI_OnlineResource class was XML encoded as the attributeGroup "xlink:simpleLink", as used in GML. </documentation>
+		</annotation>
+		<attributeGroup ref="xlink:simpleLink"/>
+	</complexType>
+	<!-- ========================================================== -->
+	<complexType name="TelephoneType">
+		<annotation>
+			<documentation>Telephone numbers for contacting the responsible individual or organization. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Voice" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Telephone number by which individuals can speak to the responsible organization or individual. </documentation>
+				</annotation>
+			</element>
+			<element name="Facsimile" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Telephone number of a facsimile machine for the responsible
+organization or individual. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="AddressType">
+		<annotation>
+			<documentation>Location of the responsible individual or organization. </documentation>
+		</annotation>
+		<sequence>
+			<element name="DeliveryPoint" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Address line for the location. </documentation>
+				</annotation>
+			</element>
+			<element name="City" type="string" minOccurs="0">
+				<annotation>
+					<documentation>City of the location. </documentation>
+				</annotation>
+			</element>
+			<element name="AdministrativeArea" type="string" minOccurs="0">
+				<annotation>
+					<documentation>State or province of the location. </documentation>
+				</annotation>
+			</element>
+			<element name="PostalCode" type="string" minOccurs="0">
+				<annotation>
+					<documentation>ZIP or other postal code. </documentation>
+				</annotation>
+			</element>
+			<element name="Country" type="string" minOccurs="0">
+				<annotation>
+					<documentation>Country of the physical address. </documentation>
+				</annotation>
+			</element>
+			<element name="ElectronicMailAddress" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Address of the electronic mailbox of the responsible organization or individual. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+</schema>

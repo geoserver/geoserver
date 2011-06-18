@@ -1,0 +1,26 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+<h2><span wicket:id="pageTitle"><wicket:message key="addOrEditWorkspace">Add or Edit Workspace</wicket:message></span></h2>
+<form wicket:id="nsForm">
+  <ul>
+    <li>
+      <label for="prefixValue"><span wicket:id="prefix"><wicket:message key="prefix">Prefix</wicket:message></span></label>
+    	<input wicket:id="prefixValue" type="text" size="20"/>
+      <p class="instruct"><wicket:message key="shortNameForWorkspaceUsedAsNamespacePrefix">Short name for the workspace. Will be used as namespace prefix.</wicket:message></p>
+    </li>
+    <li>
+      <label for="uriValue"><span wicket:id="uri"><wicket:message key="uri">URI</wicket:message></span></label>
+      <input wicket:id="uriValue" type="text" size="60"/>
+      <p class="instruct"><wicket:message key="setURIasNamespace">Set a valid URI (Universal Resource Identifier) as namespace.</wicket:message></p>
+    </li>
+    <li class="button-group selfclear">
+      <input class="btnTxt" wicket:id="submit" type="submit"><wicket:message key="submit"/></input>
+      <input class="btnTxt" wicket:id="cancel" type="submit"><wicket:message key="cancel"/></input> 
+    </li>
+  </ul>
+<div wicket:id="feedback"></div>
+</form>
+</wicket:extend>
+</body>
+</html>

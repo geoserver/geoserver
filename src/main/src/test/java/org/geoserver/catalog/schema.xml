@@ -1,0 +1,13 @@
+
+  <xs:complexType name="DividedRoutes_Type">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="the_geom" nillable="true" type="gml:MultiLineStringPropertyType"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="FID" nillable="true" type="xs:string"/>
+          <!--xs:element maxOccurs="1" minOccurs="0" name="NAME" nillable="true" type="xs:string"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="NUM_LANES" nillable="true" type="xs:double"/-->
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>

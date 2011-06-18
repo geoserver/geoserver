@@ -1,0 +1,365 @@
+Index: tests/wfs-1.0.0/ctl/wfs.xml
+===================================================================
+--- tests/wfs-1.0.0/ctl/wfs.xml	(revision 2757)
++++ tests/wfs-1.0.0/ctl/wfs.xml	(working copy)
+@@ -18440,7 +18440,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -18760,7 +18760,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -18974,7 +18974,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19089,7 +19089,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19206,7 +19206,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19317,7 +19317,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19428,7 +19428,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19584,7 +19584,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19740,7 +19740,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -19815,7 +19815,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -19892,7 +19892,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20040,7 +20040,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20120,7 +20120,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -20197,7 +20197,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20277,7 +20277,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -20355,7 +20355,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20435,7 +20435,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -20513,7 +20513,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20670,7 +20670,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20818,7 +20818,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -20967,7 +20967,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -21047,7 +21047,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -21124,7 +21124,7 @@
+          </xsl:variable>
+          <xsl:variable name="VAR_lockId">
+             <xsl:for-each select="$request2">
+-               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId"/>
++               <xsl:value-of select="string(/wfs:FeatureCollection/@lockId)"/>
+             </xsl:for-each>
+          </xsl:variable>
+          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
+@@ -23136,7 +23136,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -23441,7 +23441,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -23598,7 +23598,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -23756,7 +23756,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -24368,7 +24368,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request4">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/ogc:ServiceExceptionReport) or boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:FAILED))</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -24884,7 +24884,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request3">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/wfs:FeatureCollection) and count(//cdf:Deletes) = 0)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -24956,7 +24956,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request2">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/wfs:FeatureCollection) and count(//cdf:Deletes) = 0)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25068,7 +25068,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request3">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/wfs:FeatureCollection) and count(//cdf:Deletes) = 0)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25160,9 +25160,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request2">
+-            <xsl:variable name="expression">not(count(/wfs:WFS_TransactionResponse/wfs:InsertResult/ogc:FeatureId) = 1
+-and
+-boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(boolean(/wfs:FeatureCollection) and count(//cdf:Inserts) = 1)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25254,9 +25252,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request2">
+-            <xsl:variable name="expression">not(count(/wfs:WFS_TransactionResponse/wfs:InsertResult[@handle = 'Test Handle']/ogc:FeatureId) = 1
+-and
+-boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(count(//cdf:Inserts) = 1)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25369,9 +25365,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request2">
+-            <xsl:variable name="expression">not(count(/wfs:WFS_TransactionResponse/wfs:InsertResult/ogc:FeatureId) = 2
+-and
+-boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(count(//cdf:Inserts) = 2)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25478,7 +25472,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request3">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(count(//cdf:Updates/cdf:id[text() = 'changed']) = 1)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25594,7 +25588,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request3">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(count(//cdf:Updates/cdf:id[text() = 'changed']) = 2)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+@@ -25703,7 +25697,7 @@
+             </xsl:if>
+          </xsl:for-each>
+          <xsl:for-each select="$request3">
+-            <xsl:variable name="expression">not(boolean(/wfs:WFS_TransactionResponse/wfs:TransactionResult/wfs:Status/wfs:SUCCESS))</xsl:variable>
++            <xsl:variable name="expression">not(count(//cdf:Updates/cdf:id[text() = 'changed']) = 1)</xsl:variable>
+             <xsl:if test="saxon:evaluate($expression)">
+                <fail/>
+             </xsl:if>
+Index: tests/wfs-1.1.0/resources/xsd/w3c/xmlschema/1.0/XMLSchema.xsd
+===================================================================
+--- tests/wfs-1.1.0/resources/xsd/w3c/xmlschema/1.0/XMLSchema.xsd	(revision 2740)
++++ tests/wfs-1.1.0/resources/xsd/w3c/xmlschema/1.0/XMLSchema.xsd	(working copy)
+@@ -4,7 +4,7 @@
+ <!-- The prose copy in the structures REC is the normative -->
+ <!-- version (which shouldn't differ from this one except for -->
+ <!-- this comment and entity expansions, but just in case -->
+-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty" targetNamespace="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" blockDefault="#all" version="1.0" xml:lang="EN">
++<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty" targetNamespace="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" blockDefault="#all" version="1.0" xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="EN">
+ 	<xs:annotation>
+ 		<xs:documentation>
+     Part 1 version: Id: structures.xsd,v 1.2 2004/01/15 11:34:25 ht Exp 
+@@ -24,7 +24,7 @@
+    The simpleType element and all of its members are defined
+       towards the end of this schema document</xs:documentation>
+ 	</xs:annotation>
+-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd">
++	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+ 		<xs:annotation>
+ 			<xs:documentation>
+        Get access to the xml: attribute groups for xml:lang

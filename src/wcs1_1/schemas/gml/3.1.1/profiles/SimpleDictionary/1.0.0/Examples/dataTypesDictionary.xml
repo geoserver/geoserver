@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionary xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlSimpleDictionaryProfile.xsd" 
+gml:id="parameterTypeDictionary">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-16 -->
+	<name>parameterType standard values</name>
+	<name>Data type of an operation parameter. Usually refers to a data type defined in measures.xsd or allowed in the ParameterValueType of coordinateOperations.xsd. </name>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="measure">
+			<description>General numeric value of an operation parameter, with its associated unit of measure. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:measure</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="length">
+			<description>Value of a length (or distance) quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a length, such as metres or feet. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:length</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="scale">
+			<description>Value of a scale factor (or ratio) that has no physical unit. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a scale factor, such as one, percent, permil, or parts-per-million. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:scale</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="time">
+			<description>Value of a time or temporal quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a time value, such as seconds or weeks. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:time</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="gridLength">
+			<description>Value of a length (or distance) quantity in a grid, where the grid spacing does not have any associated physical units, or does not have a constant physical spacing. This grid length will often be used in a digital image grid, where the base units are likely to be pixel spacings. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for length along the axes of a grid, such as pixel spacings or grid spacings.</description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:grid length</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="angleChoice">
+			<description>Value of an angle quantity provided in either degree-minute-second format or single value format. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:angle choice</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="angle">
+			<description>Value of an angle quantity recorded as a single number, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for an angle, such as degrees or radians. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:angle</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="dmsAngle">
+			<description>Value of an angle operation parameter, in either degree-minute-second format or single value format. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:dms angle</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="lengthOrAngle">
+			<description>Value of a length or angle quantity, where an angle can be recorded in either degree-minute-second format or single value format. Often used for horizontal ground coordinates. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:length or angle</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="string">
+			<description>String value of an operation parameter. A string value does not have an associated unit of measure. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:string</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="positiveInteger">
+			<description>Positive integer value of an operation parameter, usually used for a count. An integer value does not have an associated unit of measure. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:positive integer</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="nonNegativeInteger">
+			<description>Zero or positive integer value of an operation parameter. An integer value does not have an associated unit of measure. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:non negative integer</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="boolean">
+			<description>Boolean value of an operation parameter. A Boolean value does not have an associated unit of measure. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:boolean</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="measureList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list, where each value has the same associated unit of measure. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:measure list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="lengthList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list of Length measures. Each value has the same associated unit of measure suitable for a length, such as metres or feet. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:length list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="scaleList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list of Scale measures. Each value has the same associated unit of measure suitable for a scale factor, such as one, percent, permil, or parts-per-million. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:scale list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="angleList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list of Angle measures, each recorded as a single number. Each value has the same associated unit of measure suitable for an angle, such as degrees or radians. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:angle list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="timeList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list of Time measures, each recorded as a single number. Each value has the same associated unit of measure suitable for a time value, such as seconds or days. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:time list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="gridLengthList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list of Grid Length measures. Each value has the same associated unit of measure suitable for length along the axes of a grid, such as pixel spacings or grid spacings. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:grid length list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="velocityList">
+			<description>Ordered sequence of two or more numeric values of an operation parameter list of Velocity measures. Each value has the same associated unit of measure suitable for a velocity, such as metres per second or miles per hour. An element of this type contains a space-separated list of double values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:velocity list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="integerList">
+			<description>Ordered sequence of two or more integer values of an operation parameter list, usually used for counts. These integer values do not have an associated unit of measure. An element of this type contains a space-separated list of integer values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:integer list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="positiveIntegerList">
+			<description>Ordered sequence of two or more positive integer values of an operation parameter list, usually used for counts. These integer values do not have an associated unit of measure. An element of this type contains a space-separated list of integer values. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:positive integer list</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="anyURI">
+			<description>Reference to a file or a part of a file containing one or more parameter values, each numeric value with its associated unit of measure. When referencing a part of a file, that file must contain multiple identified parts, such as an XML encoded document. Furthermore, the referenced file or part of a file can reference another part of the same or different files, as allowed in XML documents. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:cr:05-060">urn:ogc:def:dataType:OGC:1.0:anyURI</name>
+		</Definition>
+	</dictionaryEntry>
+</Dictionary>

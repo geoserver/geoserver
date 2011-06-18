@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="../../js/codemirror.js" type="text/javascript"></script>
+    <title>CodeMirror: C# demonstration</title>
+    <link rel="stylesheet" type="text/css" href="../../css/docs.css"/>
+  </head>
+  <body style="padding: 20px;">
+
+<p>Demonstration of <a href="../../index.html">CodeMirror</a>'s C# highlighter.</p>
+
+<p>Written by <a href="http://skilltesting.com/">Boris Gaber and Christopher Buchino</a> (<a
+href="http://skilltesting.com/codemirror-parser-license/">license</a>).</p>
+
+<div class="border">
+<textarea id="code" cols="120" rows="50">
+using System;
+
+namespace Example
+{
+    /// &lt;summary>
+    /// Represents a person employed at the company
+    /// &lt;/summary>
+    public class Employee : Person
+    {
+        #region Properties
+        
+        /// &lt;summary>
+        /// Gets or sets the first name.
+        /// &lt;/summary>
+        /// &lt;value>The first name.&lt;/value>
+        public string FirstName { get; set; }
+
+        #endregion
+
+        /// &lt;summary>
+        /// Calculates the salary.
+        /// &lt;/summary>
+        /// &lt;param name="grade">The grade.&lt;/param>
+        /// &lt;returns>&lt;/returns>
+        public decimal CalculateSalary(int grade)
+        {
+            if (grade > 10)
+                return 1000;
+            return 500;
+        }
+    }
+}
+</textarea>
+</div>
+
+<script type="text/javascript">
+  var editor = CodeMirror.fromTextArea('code', {
+    parserfile: ["../contrib/csharp/js/tokenizecsharp.js", "../contrib/csharp/js/parsecsharp.js"],
+    stylesheet: "css/csharpcolors.css",
+    path: "../../js/",
+    height: "500px"
+  });
+</script>
+
+</body>
+</html>

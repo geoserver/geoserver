@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+    <li>
+      <label for="name"><wicket:message key="name">Name</wicket:message></label>
+      <input wicket:id="name" id="name" type="text" size="10"/>
+    </li>
+    <li>
+      <label for="uri"><wicket:message key="namespaceURI">Namespace URI</wicket:message></label>
+      <input wicket:id="uri" id="uri" type="text" size="60"/>
+      <div class="instruct"><wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message></div>
+    </li>
+    <li>
+      <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
+      <input wicket:id="default" id="default" type="checkbox"/>
+    </li>
+    <!-- Commented out waiting for a consistent work to be done on the other edit pages    
+    <li>
+      <h3><wicket:message key="stores">Stores</wicket:message></h3>
+      <div wicket:id="storeTable"></div>
+    </li>
+    -->
+    
+    <li class="button-group selfclear">
+      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 
+    </li>
+  </ul>
+</form>
+</wicket:extend>
+</body>
+</html>

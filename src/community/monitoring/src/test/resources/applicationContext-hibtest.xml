@@ -1,0 +1,18 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <bean id="geoServerLoader" class="java.lang.Object"/>
+  <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
+    <constructor-arg>
+      <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
+        <constructor-arg>
+          <bean id="file" class="java.io.File">
+             <constructor-arg value="target"/>
+          </bean>
+        </constructor-arg>
+      </bean>
+    </constructor-arg>
+  </bean>
+    <bean id="monitorDataSource" class="org.geoserver.monitor.hib.MonitoringDataSource" depends-on="geoServerLoader" >
+      <property name="dataDirectory" ref="dataDirectory" />
+    </bean>
+</beans>

@@ -1,0 +1,19 @@
+<html>
+  <body>
+    <wicket:panel>
+      <ul>
+       <li><a class="add-link" wicket:id="add"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
+       <li>
+         <label><wicket:message key="layers">Layers</wicket:message></label>
+         <div wicket:id="layers"></div>
+       </li>
+     </ul>
+     <div wicket:id="popup"></div>
+    </wicket:panel>
+    
+    <wicket:fragment wicket:id="defaultStyle">
+        <input type="checkbox" wicket:id="checkbox"/>
+    </wicket:fragment>
+  </body>
+</html>
+

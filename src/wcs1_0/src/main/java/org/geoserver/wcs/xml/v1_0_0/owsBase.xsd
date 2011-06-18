@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+xmlns:wcs="http://www.opengis.net/wcs" 
+xmlns:gml="http://www.opengis.net/gml" 
+targetNamespace="http://www.opengis.net/wcs" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified" 
+version="1.0.0" xml:lang="en">
+ <annotation>
+  <appinfo>owsBase.xsd v1.0.0 2004-07-15</appinfo>
+  <documentation> This schema defines the XML elements and types expected to be used by multiple OGC Web Services (OWSs). This schema is believed to be a GML Application Schema. </documentation>
+  <documentation>AEW 03/07/22 Changes made:
+			Added [xml:lang="en"] above
+			Moved interpolationMethod and InterpolationMethodType here from DescribeCoverage.xsd, because I know the WCTS will also use it.
+			Added documentation elements in InterpolationMethodType 
+               (JDE 2003-07-28) Added LonLatBoundingBox, TimeSequence, name and description.
+		</documentation>
+  <documentation>AEW 03/07/29 Changes made:
+			Edited documentation of "keywords" element and various other parts
+		</documentation>
+  <documentation>AEW 03/07/30 Changes made:
+			Changed Substitution Group of lonLatEnvelope to gml:Envelope
+		</documentation>
+  <documentation>JDE 03/07/30 Changes made:
+			Removed the Substitution Group on lonLatEnvelope (we only want to use it in the context of CoverageOfferingBrief)
+			Added timeResolution to TimePeriodType
+		</documentation>
+  <documentation>AEW 03/08/01 Changes made:
+			In SupportedCRSsType, changed element name from NativeCRSs to nativeCRSs
+			Edited documentation of many types
+		</documentation>
+  <documentation>AEW 04/07/17 Changes made:
+		 	Changed fived value of srsName attribute in LonLatEnvelopeBaseType to URN value in "ogc" URN namespace, based on OWS Common and OGC 05-010. Also, defined srsName attribute as being anyURI type, and explicitly marked its use as optional.
+		 	Modified definition of wcs:name element to be in gml:name substitutionGroup.
+		 	Modified definition of wcs:description element to no longer be in gml:name substitutionGroup.
+		</documentation>
+ </annotation>
+ <!-- ==============================================================
+           includes and imports
+	============================================================== -->
+ <import namespace="http://www.opengis.net/gml" schemaLocation="gml4wcs.xsd"/>
+ <!-- ============================================================
+		 Elements and types		
+	============================================================== -->
+ <element name="name" type="string">
+  <annotation>
+   <documentation>Identifier for the object, normally a descriptive name. </documentation>
+   <documentation>For WCS use, removed optional CodeSpace attribute from gml:name.</documentation>
+  </annotation>
+ </element>
+ <!-- ===========================================================-->
+ <element name="description" type="string">
+  <annotation>
+   <documentation>Contains a simple text description of the object. </documentation>
+   <documentation>For WCS use, removed optional AssociationAttributeGroup from gml:description. </documentation>
+  </annotation>
+ </element>
+ <!-- ===========================================================-->
+ <element name="keywords">
+  <annotation>
+   <documentation>Unordered list of one or more commonly used or formalised word(s) or phrase(s) used to describe the subject. When needed, the optional "type" can name the type of the associated list of keywords that shall all have the same type. Also when needed, the codeSpace attribute of that "type" can also reference the type name authority and/or thesaurus. (Largely based on MD_Keywords class in ISO 19115.) </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element name="keyword" type="string" maxOccurs="unbounded"/>
+    <element name="type" type="gml:CodeType" minOccurs="0"/>
+   </sequence>
+  </complexType>
+ </element>
+ <!-- =========================================================== -->
+ <element name="lonLatEnvelope" type="wcs:LonLatEnvelopeType"/>
+ <!-- =========================================================== -->
+ <complexType name="LonLatEnvelopeBaseType">
+  <annotation>
+   <documentation>For WCS use, LonLatEnvelopeBaseType restricts gml:Envelope to the WGS84 geographic CRS with Longitude preceding Latitude and both using decimal degrees only. If included, height values are third and use metre units. </documentation>
+   <documentation>Envelope defines an extent using a pair of positions defining opposite corners in arbitrary dimensions. </documentation>
+  </annotation>
+  <complexContent>
+   <restriction base="gml:EnvelopeType">
+    <sequence>
+     <element ref="gml:pos" minOccurs="2" maxOccurs="2"/>
+    </sequence>
+    <attribute name="srsName" type="anyURI" use="optional" fixed="urn:ogc:def:crs:OGC:1.3:CRS84"/>
+   </restriction>
+  </complexContent>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="LonLatEnvelopeType">
+  <annotation>
+   <documentation>Defines spatial extent by extending LonLatEnvelope with an optional time position pair. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:LonLatEnvelopeBaseType">
+    <sequence minOccurs="0">
+     <element ref="gml:timePosition" minOccurs="2" maxOccurs="2"/>
+    </sequence>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- =========================================================== -->
+ <element name="TimeSequence" type="wcs:TimeSequenceType"/>
+ <!-- =========================================================== -->
+ <complexType name="TimeSequenceType">
+  <annotation>
+   <documentation>An ordered sequence of time positions or intervals. The time positions and periods shall be ordered from the oldest to the newest. </documentation>
+  </annotation>
+  <choice maxOccurs="unbounded">
+   <element ref="gml:timePosition"/>
+   <element ref="wcs:timePeriod"/>
+  </choice>
+ </complexType>
+ <!-- ========================================================= -->
+ <element name="timePeriod" type="wcs:TimePeriodType"/>
+ <!-- ========================================================= -->
+ <complexType name="TimePeriodType">
+  <annotation>
+   <documentation>This is a variation of the GML TimePeriod, which allows the beginning and end of a time-period to be expressed in short-form inline using the begin/endPosition element, which allows an identifiable TimeInstant to be defined simultaneously with using it, or by reference, using xlinks on the begin/end elements. </documentation>
+  </annotation>
+  <sequence>
+   <element name="beginPosition" type="gml:TimePositionType"/>
+   <element name="endPosition" type="gml:TimePositionType"/>
+   <element name="timeResolution" type="gml:TimeDurationType" minOccurs="0"/>
+  </sequence>
+  <attribute name="frame" type="anyURI" use="optional" default="#ISO-8601"/>
+ </complexType>
+ <!-- =============================================================
+	Metadata Link elements and types
+	============================================================== -->
+ <element name="metadataLink" type="wcs:MetadataLinkType" substitutionGroup="gml:metaDataProperty"/>
+ <!-- =========================================================== -->
+ <complexType name="MetadataLinkType">
+  <annotation>
+   <documentation>Refers to a metadata package that contains metadata properties for an object. The metadataType attribute indicates the type of metadata referred to. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:MetadataAssociationType">
+    <attribute name="metadataType" use="required">
+     <simpleType>
+      <restriction base="NMTOKEN">
+       <enumeration value="TC211">
+        <annotation>
+         <documentation>This metadata uses a profile of ISO TC211’s Geospatial Metadata Standard 19115. </documentation>
+        </annotation>
+       </enumeration>
+       <enumeration value="FGDC">
+        <annotation>
+         <documentation>This metadata uses a profile of the US FGDC Content Standard for Digital Geospatial Metadata. </documentation>
+        </annotation>
+       </enumeration>
+       <enumeration value="other">
+        <annotation>
+         <documentation>This metadata uses some other metadata standard(s) and/or no standard. </documentation>
+        </annotation>
+       </enumeration>
+      </restriction>
+     </simpleType>
+    </attribute>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- ========================================================== -->
+ <complexType name="MetadataAssociationType">
+  <annotation>
+   <documentation>Refers to a metadata package that contains metadata properties for an object. </documentation>
+  </annotation>
+  <complexContent>
+   <restriction base="gml:MetaDataPropertyType">
+    <sequence/>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attribute name="about" type="anyURI" use="optional"/>
+   </restriction>
+  </complexContent>
+ </complexType>
+ <!-- =============================================================
+		 Supported Format elements and types-			
+	============================================================= -->
+ <element name="supportedFormats" type="wcs:SupportedFormatsType"/>
+ <!-- ========================================================== -->
+ <complexType name="SupportedFormatsType">
+  <annotation>
+   <documentation>Unordered list of data transfer formats supported. </documentation>
+  </annotation>
+  <sequence>
+   <element ref="wcs:formats" maxOccurs="unbounded"/>
+  </sequence>
+  <attribute name="nativeFormat" type="string" use="optional">
+   <annotation>
+    <documentation>Identifiers of one format in which the data is stored. </documentation>
+   </annotation>
+  </attribute>
+ </complexType>
+ <!-- ========================================================== -->
+ <element name="formats" type="gml:CodeListType">
+  <annotation>
+   <documentation>Identifiers of one or more formats in which coverage content can be retrieved. The codeSpace optional attribute can reference the semantic of the format identifiers. </documentation>
+  </annotation>
+ </element>
+ <!-- ============================================================
+	Supports CRSs elemente and types
+	============================================================= -->
+ <element name="supportedCRSs" type="wcs:SupportedCRSsType"/>
+ <!-- ========================================================== -->
+ <complexType name="SupportedCRSsType">
+  <annotation>
+   <documentation>Unordered list(s) of identifiers of Coordinate Reference Systems (CRSs) supported in server operation requests and responses. </documentation>
+  </annotation>
+  <sequence>
+   <choice>
+    <element name="requestResponseCRSs" type="gml:CodeListType" maxOccurs="unbounded">
+     <annotation>
+      <documentation>Unordered list of identifiers of the CRSs in which the server can both accept requests and deliver responses for this data. These CRSs should include the native CRSs defined below. </documentation>
+     </annotation>
+    </element>
+    <sequence>
+     <element name="requestCRSs" type="gml:CodeListType" maxOccurs="unbounded">
+      <annotation>
+       <documentation>Unordered list of identifiers of the CRSs in which the server can accept requests for this data. These CRSs should include the native CRSs defined below. </documentation>
+      </annotation>
+     </element>
+     <element name="responseCRSs" type="gml:CodeListType" maxOccurs="unbounded">
+      <annotation>
+       <documentation>Unordered list of identifiers of the CRSs in which the server can deliver responses for this data. These CRSs should include the native CRSs defined below. </documentation>
+      </annotation>
+     </element>
+    </sequence>
+   </choice>
+   <element name="nativeCRSs" type="gml:CodeListType" minOccurs="0" maxOccurs="unbounded">
+    <annotation>
+     <documentation>Unordered list of identifiers of the CRSs in which the server stores this data, that is, the CRS(s) in which data can be obtained without any distortion or degradation. </documentation>
+    </annotation>
+   </element>
+  </sequence>
+ </complexType>
+ <!-- ==============================================================
+		 Interpolation Method elements and types
+	============================================================== -->
+ <element name="supportedInterpolations" type="wcs:SupportedInterpolationsType"/>
+ <!-- =============================================== -->
+ <complexType name="SupportedInterpolationsType">
+  <annotation>
+   <documentation>Unordered list of interpolation methods supported. </documentation>
+  </annotation>
+  <sequence>
+   <element ref="wcs:interpolationMethod" maxOccurs="unbounded"/>
+  </sequence>
+  <attribute name="default" type="wcs:InterpolationMethodType" use="optional" default="nearest neighbor"/>
+ </complexType>
+ <!-- ========================================================= -->
+ <element name="interpolationMethod" type="wcs:InterpolationMethodType"/>
+ <!-- ========================================================= -->
+ <simpleType name="InterpolationMethodType">
+  <annotation>
+   <documentation>Codes that identify interpolation methods. The meanings of these codes are defined in Annex B of ISO 19123: Geographic information — Schema for coverage geometry and functions. </documentation>
+  </annotation>
+  <restriction base="string">
+   <enumeration value="nearest neighbor"/>
+   <enumeration value="bilinear"/>
+   <enumeration value="bicubic"/>
+   <enumeration value="lost area"/>
+   <enumeration value="barycentric"/>
+   <enumeration value="none">
+    <annotation>
+     <documentation>No interpolation. </documentation>
+    </annotation>
+   </enumeration>
+  </restriction>
+ </simpleType>
+</schema>

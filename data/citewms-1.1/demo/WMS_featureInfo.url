@@ -1,0 +1,1 @@
+wms?bbox=-130,24,-66,50&styles=population&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers=states&query_layers=states&width=550&height=250&x=170&y=160

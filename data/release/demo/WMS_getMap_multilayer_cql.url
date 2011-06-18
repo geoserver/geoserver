@@ -1,0 +1,1 @@
+wms?request=GetMap&layers=tiger:poly_landmarks,tiger:tiger_roads&styles=,&bbox=-73.97,40.74,-73.93,40.78&Format=image/png&width=344&height=500&srs=EPSG:4326&cql_Filter=LANAME%20=%20%27East%20River%27;NAME%20=%20%27West%20Rd%27

@@ -1,0 +1,28 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form name="theForm">
+  <wicket:panel>
+    <ul>
+    <li>  
+      <fieldset>
+        <legend><span><wicket:message key="title">WFS Settings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label for="perReqFeatureLimit"><wicket:message key="perReqFeatureLimit">Per-Request feature limit</wicket:message></label>
+            <div wicket:id="perReqFeaturesBorder">
+              <input id="perReqFeatureLimit" class="text" wicket:id="perReqFeatureLimit" type="text"></input>
+            </div>
+            <label for="maxDecimals"><wicket:message key="maxDecimals">Maximum number of decimals</wicket:message></label>
+            <div wicket:id="maxDecimalsBorder">
+              <input id="maxDecimals" class="text" wicket:id="maxDecimals" type="text"></input>
+            </div>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    </ul>
+  </wicket:panel>
+</form>
+</body>
+</html>

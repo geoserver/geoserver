@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCoverage xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGetCoverage.xsd http://www.opengis.net/gml ../../../gml/3.1.1/base/gml.xsd" 
+service="WCS" version="1.1.1">
+	<ows:Identifier>SPVIEW_530_274_0_020809_5_1_J_3</ows:Identifier>
+	<DomainSubset>
+		<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::26910">
+			<ows:LowerCorner>551182.3990 4173461.7219</ows:LowerCorner>
+			<ows:UpperCorner>569339.8990 4192512.2137</ows:UpperCorner>
+		</ows:BoundingBox>
+		<TemporalSubset>
+            <gml:timePosition>2002-08-09T19:08:46Z</gml:timePosition>
+		</TemporalSubset>
+	</DomainSubset>
+	<RangeSubset>
+		<FieldSubset>
+			<ows:Identifier>Wavelength</ows:Identifier>
+			<InterpolationType>nearest</InterpolationType>
+			<AxisSubset>
+			    <Identifier>Band</Identifier>
+		        <Key>band1</Key>
+		        <Key>band2</Key>
+		        <Key>band3</Key>
+			</AxisSubset>
+		</FieldSubset>
+	</RangeSubset>
+	<Output format="image/GeoTIFF" store="false">
+        <GridCRS gml:id="SPVIEW_530_274_0_020809_5_1_J_3_SUBSET_CRS">
+        	<gml:srsName>SPVIEW_530_274_0_020809_5_1_J_3_SUBSET_CRS</gml:srsName>
+        	<GridBaseCRS>urn:ogc:def:crs:EPSG::4326</GridBaseCRS>
+        	<GridType>urn:ogc:def:method:WCS:1.1:grid2dIn2dMethod</GridType>
+        	<GridOrigin>-122.4193 37.7058</GridOrigin>
+        	<GridOffsets>0.0006926667 0 0 -0.000548889</GridOffsets>
+        	<GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS>
+		</GridCRS>
+	</Output>
+</GetCoverage>

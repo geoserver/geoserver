@@ -1,0 +1,18 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+  <wicket:panel>
+      <ul>
+        <li>
+          <label for="keywords"><wicket:message key="currentKeywords">Current Keywords</wicket:message></label>
+          <select id="keywords" class="select" wicket:id="keywords" multiple="multiple"></select>
+          <button wicket:id="removeKeywords" type="submit"><wicket:message key="removeSelected">Remove selected</wicket:message></button>
+        </li>   
+        <li>
+          <label for="newKeyword"><wicket:message key="newKeyword">New Keyword</wicket:message></label>
+          <input id="newKeyword" class="text" type="text" wicket:id="newKeyword"></input>
+          <button wicket:id="addKeyword" type="submit"> <wicket:message key="add">Add</wicket:message> </button>
+        </li>
+      </ul>
+   </wicket:panel>
+</body>
+</html>

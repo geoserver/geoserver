@@ -1,0 +1,66 @@
+<html>
+  <body>
+    <wicket:extend>
+    <div>
+     <form>
+     <ul>
+       <li>
+         <fieldset style="margin-top: 1em;">
+           <legend>
+             <span><wicket:message key="buildInformation">Build Information</wicket:message></span>
+           </legend>
+           <ul>
+             <li>
+               <label for="version">Version</label>
+               <span id="version"><wicket:message key="version"></wicket:message></span>
+             </li>
+             <li>
+               <label for="buildRevision"><wicket:message key="svnRevision">Subversion Revision</wicket:message></label>
+               <span id="buildRevision"><wicket:message key="build.revision"></wicket:message></span>
+             </li>
+             <li>
+               <label for="buildDate"><wicket:message key="buildDate">Build Date</wicket:message></label>
+               <span id="buildDate"><wicket:message key="build.date"></wicket:message></span>
+             </li>
+             <li>
+               <label for="geotoolsInfo"><wicket:message key="geotoolsVersion">GeoTools Version</wicket:message></label>
+               <span id="geotoolsInfo">
+                 <span wicket:id="geotoolsVersion"></span> (rev <span wicket:id="geotoolsRevision"></span>)
+               </span>
+             </li>
+           </ul>
+         </fieldset>
+       </li>
+       <li>
+         <fieldset>
+           <legend><span>More Information</span></legend>
+           <p style="margin-top: 1em;">
+             <wicket:message key="introduction"></wicket:message>
+           </p>
+           <p>
+             <wicket:message key="information"></wicket:message>
+           </p>
+             <ul style="margin-left: 2em;">
+              <li>
+                <a href="http://docs.geoserver.org"><wicket:message key="documentation">Documentation</wicket:message></a>
+              </li>
+              <li>
+                <a href="http://geoserver.org"><wicket:message key="wiki">Wiki</wicket:message></a>
+              </li>
+              <li>
+                <a href="http://jira.codehaus.org/browse/GEOS"><wicket:message key="bugTracker">Bug Tracker</wicket:message></a>
+              </li>
+              <!-- The user map is not there, uncomment when we have some 
+              <li>
+                <a href="http://users.geoserver.org/"><wicket:message key="userMap">User Map</wicket:message></a>
+              </li>
+               -->
+            </ul>
+         </fieldset>
+       </li>  
+     </ul>
+     </form>
+    </div>
+    </wicket:extend>
+  </body>
+</html>

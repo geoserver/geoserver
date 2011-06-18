@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsAll.xsd 2007-06-06</appinfo>
+		<documentation>This XML Schema Document includes, directly and indirectly, all the XML Schema Documents defined by the OGC Web Coverage Service (WCS). 
+			Copyright (c) 2007 Open Geospatial Consortium, Inc, All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+           includes and imports
+	============================================================== -->
+	<include schemaLocation="./wcsGetCoverage.xsd"/>
+	<include schemaLocation="./wcsDescribeCoverage.xsd"/>
+	<include schemaLocation="./wcsGetCapabilities.xsd"/>
+</schema>

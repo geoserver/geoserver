@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="page.title">Layer Preview</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+  <!-- the table component -->
+  <div wicket:id="table"></div>
+  
+  <!-- The fragment for the icon -->
+  <wicket:fragment wicket:id="iconFragment">
+    <img wicket:id="layerIcon"/>
+  </wicket:fragment>
+  
+  <!-- The fragment for the common links -->
+  <wicket:fragment wicket:id="commonLinks">
+  <div style="white-space: nowrap;"><a target="_blank" wicket:id="ol"></a>&nbsp;<a target="_blank" wicket:id="kml"></a>&nbsp;<a target="_blank" wicket:id="gml"></a></div>
+  </wicket:fragment>
+  
+  <!--  The custom drop down with optgroups -->
+  <wicket:fragment wicket:id="menuFragment">
+    <select wicket:id="menu">
+      <option><wicket:message key="selectOne">Select one</wicket:message></option>
+      <optgroup label="WMS">
+          <option wicket:id="wmsFormats"></option>
+      </optgroup>
+      <optgroup label="WFS" wicket:id="wfs">
+           <option wicket:id="wfsFormats"></option>
+       </optgroup>
+    </select>
+  </wicket:fragment>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by Peter Schut (Agriculture & Agri-Food Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: wpsDescribeProcess_response.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema Document encodes the WPS DescribeProcess operation response.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- =============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="common/ResponseBaseType.xsd"/>
+	<include schemaLocation="common/DescriptionType.xsd"/>
+	<include schemaLocation="common/ProcessBriefType.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- =============================================================
+		elements and types
+	============================================================== -->
+	<element name="ProcessDescriptions">
+		<annotation>
+			<documentation>WPS DescribeProcess operation response. </documentation>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="wps:ResponseBaseType">
+					<sequence>
+						<element name="ProcessDescription" type="wps:ProcessDescriptionType" maxOccurs="unbounded">
+							<annotation>
+								<documentation>Ordered list of one or more full Process descriptions, listed in the order in which they were requested in the DescribeProcess operation request. </documentation>
+							</annotation>
+						</element>
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="ProcessDescriptionType">
+		<annotation>
+			<documentation>Full description of a process. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="wps:ProcessBriefType">
+				<sequence>
+					<element name="DataInputs" minOccurs="0">
+						<annotation>
+							<documentation>List of the inputs to this process. In almost all cases, at least one process input is required. However, no process inputs may be identified when all the inputs are predetermined fixed resources.  In this case, those resources shall be identified in the ows:Abstract element that describes the process.</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element name="Input" type="wps:InputDescriptionType" maxOccurs="unbounded">
+									<annotation>
+										<documentation>Unordered list of one or more descriptions of the inputs that can be accepted by this process, including all required and optional inputs.  Where an input is optional because a default value exists, that default value must be identified in the "ows:Abstract" element for that input, except in the case of LiteralData, where the default must be indicated in the corresponding ows:DefaultValue element. Where an input is optional because it depends on the value(s) of other inputs, this must be indicated in the ows:Abstract element for that input. </documentation>
+									</annotation>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="ProcessOutputs">
+						<annotation>
+							<documentation>List of outputs which will or can result from executing the process. </documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element name="Output" type="wps:OutputDescriptionType" maxOccurs="unbounded">
+									<annotation>
+										<documentation>Unordered list of one or more descriptions of all the outputs that can result from executing this process. At least one output is required from each process. </documentation>
+									</annotation>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+				<attribute name="storeSupported" type="boolean" use="optional" default="false">
+					<annotation>
+						<documentation>Indicates if ComplexData outputs from this process can be stored by the WPS server as web-accessible resources. If "storeSupported" is "true", the Execute operation request may include "asReference" equals "true" for any complex output, directing that the output of the process be stored so that the client can retrieve it as required. By default for this process, storage is not supported and all outputs are returned encoded in the Execute response. </documentation>
+					</annotation>
+				</attribute>
+				<attribute name="statusSupported" type="boolean" use="optional" default="false">
+					<annotation>
+						<documentation>Indicates if ongoing status information can be provided for this process.  If "true", the Status element of the stored Execute response document shall be kept up to date.  If "false" then the Status element shall not be updated until processing is complete. By default, status information is not provided for this process. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================INPUT PARAMETERS======================== -->
+	<!-- =========================================================== -->
+	<complexType name="InputDescriptionType">
+		<annotation>
+			<documentation>Description of an input to a process. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="wps:DescriptionType">
+				<annotation>
+					<documentation>In this use, the DescriptionType shall describe this process input. </documentation>
+				</annotation>
+				<sequence>
+					<group ref="wps:InputFormChoice"/>
+				</sequence>
+				<attribute name="minOccurs" type="nonNegativeInteger" use="required">
+					<annotation>
+						<documentation>The minimum number of times that values for this parameter are required in an Execute request.  If "0", this data input is optional. If greater than "0" then this process input is required. </documentation>
+					</annotation>
+				</attribute>
+				<attribute name="maxOccurs" type="positiveInteger" use="required">
+					<annotation>
+						<documentation>The maximum number of times that values for this parameter are permitted in an Execute request. If "1" then this parameter may appear only once in an Execute request.  If greater than "1", then this input parameter may appear that many times in an Execute request. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<group name="InputFormChoice">
+		<annotation>
+			<documentation>Identifies the form of this input and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="ComplexData" type="wps:SupportedComplexDataInputType">
+				<annotation>
+					<documentation>Indicates that this Input shall be a complex data structure (such as a GML document), and provides a list of Formats, Encodings, and Schemas supported for this Input. The value of this ComplexData structure can be input either embedded in the Execute request or remotely accessible to the server.  The client can select from among the identified combinations of Formats, Encodings, and Schemas to specify the form of the Input. This allows for complete specification of particular versions of GML, or image formats. </documentation>
+				</annotation>
+			</element>
+			<element name="LiteralData" type="wps:LiteralInputType">
+				<annotation>
+					<documentation>Indicates that this Input shall be a simple numeric value or character string that is embedded in the execute request, and describes the possible values. </documentation>
+				</annotation>
+			</element>
+			<element name="BoundingBoxData" type="wps:SupportedCRSsType">
+				<annotation>
+					<documentation>Indicates that this Input shall be a BoundingBox data structure that is embedded in the execute request, and provides a list of the Coordinate Reference System support for this Bounding Box. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+	<!-- =========================================================== -->
+	<complexType name="LiteralInputType">
+		<annotation>
+			<documentation>Description of a process input that consists of a simple literal value (e.g., "2.1"). (Informative: This type is a subset of the ows:UnNamedDomainType defined in owsDomaintype.xsd.) </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="wps:LiteralOutputType">
+				<sequence>
+					<group ref="wps:LiteralValuesChoice">
+						<annotation>
+							<documentation>Identifies the type of this literal input and provides supporting information.  For literal values with a defined Unit of Measure, the contents of these sub-elements shall be understood to be consistent with the default Unit of Measure.</documentation>
+						</annotation>
+					</group>
+					<element name="DefaultValue" type="string" minOccurs="0">
+						<annotation>
+							<documentation>Optional default value for this quantity, which should be included when this quantity has a default value.  The DefaultValue shall be understood to be consistent with the unit of measure selected in the Execute request. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ========================================================== -->
+	<group name="LiteralValuesChoice">
+		<annotation>
+			<documentation>Identifies the type of this literal input and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element ref="ows:AllowedValues">
+				<annotation>
+					<documentation>Indicates that there are a finite set of values and ranges allowed for this input, and contains list of all the valid values and/or ranges of values. Notice that these values and ranges can be displayed to a human client. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:AnyValue">
+				<annotation>
+					<documentation>Indicates that any value is allowed for this input. This element shall be included when there are no restrictions, except for data type, on the allowable value of this input. </documentation>
+				</annotation>
+			</element>
+			<element name="ValuesReference" type="wps:ValuesReferenceType">
+				<annotation>
+					<documentation>Indicates that there are a finite set of values and ranges allowed for this input, which are specified in the referenced list. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+	<!-- =========================================================== -->
+	<complexType name="ValuesReferenceType">
+		<annotation>
+			<documentation>References an externally defined finite set of values and ranges for this input. </documentation>
+		</annotation>
+		<attribute ref="ows:reference"/>
+		<attribute name="valuesForm" type="anyURI">
+			<annotation>
+				<documentation>Reference to a description of the mimetype, encoding, and schema used for this set of values and ranges.</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="SupportedComplexDataInputType">
+		<complexContent>
+			<extension base="wps:SupportedComplexDataType">
+				<annotation>
+					<documentation> </documentation>
+				</annotation>
+				<attribute name="maximumMegabytes" type="integer" use="optional">
+					<annotation>
+						<documentation>The maximum file size, in megabytes, of this input.  If the input exceeds this size, the server will return an error instead of processing the inputs. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ================= INPUT AND OUTPUT TYPES =================== -->
+	<!-- =========================================================== -->
+	<complexType name="SupportedUOMsType">
+		<annotation>
+			<documentation>Listing of the Unit of Measure (U0M) support for this process input or output. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Default">
+				<annotation>
+					<documentation>Reference to the default UOM supported for this input or output, if UoM is applicable. The process shall expect input in or produce output in this UOM unless the Execute request specifies another supported UOM. </documentation>
+				</annotation>
+				<complexType>
+					<sequence>
+						<element ref="ows:UOM">
+							<annotation>
+								<documentation>Reference to the default UOM supported for this Input/Output</documentation>
+							</annotation>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="Supported" type="wps:UOMsType">
+				<annotation>
+					<documentation>Unordered list of references to all of the UOMs supported for this input or output, if UOM is applicable. The default UOM shall be included in this list. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="UOMsType">
+		<annotation>
+			<documentation>Identifies a UOM supported for this input or output.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:UOM" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Reference to a UOM supported for this input or output. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="SupportedCRSsType">
+		<annotation>
+			<documentation>Listing of the Coordinate Reference System (CRS) support for this process input or output. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Default">
+				<annotation>
+					<documentation>Identifies the default CRS that will be used unless the Execute operation request specifies another supported CRS. </documentation>
+				</annotation>
+				<complexType>
+					<sequence>
+						<element name="CRS" type="anyURI">
+							<annotation>
+								<documentation>Reference to the default CRS supported for this Input/Output</documentation>
+							</annotation>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="Supported" type="wps:CRSsType">
+				<annotation>
+					<documentation>Unordered list of references to all of the CRSs supported for this Input/Output. The default CRS shall be included in this list.</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="CRSsType">
+		<annotation>
+			<documentation>Identifies a Coordinate Reference System (CRS) supported for this input or output.</documentation>
+		</annotation>
+		<sequence>
+			<element name="CRS" type="anyURI" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Reference to a CRS supported for this Input/Output. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="SupportedComplexDataType">
+		<annotation>
+			<documentation>Formats, encodings, and schemas supported by a process input or output. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Default" type="wps:ComplexDataCombinationType">
+				<annotation>
+					<documentation>Identifies the default combination of Format, Encoding, and Schema supported for this Input/Output. The process shall expect input in or produce output in this combination of MimeType/Encoding/Schema unless the Execute request specifies otherwise.  </documentation>
+				</annotation>
+			</element>
+			<element name="Supported" type="wps:ComplexDataCombinationsType">
+				<annotation>
+					<documentation>Unordered list of combinations of format, encoding, and schema supported for this Input/Output. This element shall be repeated for each combination of MimeType/Encoding/Schema that is supported for this Input/Output. This list shall include the default MimeType/Encoding/Schema. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ComplexDataCombinationType">
+		<annotation>
+			<documentation>Identifies the default Format, Encoding, and Schema supported for this input or output. The process shall expect input in or produce output in this combination of Format/Encoding/Schema unless the Execute request specifies otherwise.. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Format" type="wps:ComplexDataDescriptionType">
+				<annotation>
+					<documentation>The default combination of MimeType/Encoding/Schema supported for this Input/Output. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ComplexDataCombinationsType">
+		<annotation>
+			<documentation>Identifies valid combinations of Format, Encoding, and Schema supported for this input or output. The process shall expect input in or produce output in this combination of Format/Encoding/Schema unless the Execute request specifies otherwise.. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Format" type="wps:ComplexDataDescriptionType" maxOccurs="unbounded">
+				<annotation>
+					<documentation>A valid combination of MimeType/Encoding/Schema supported for this Input/Output. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ComplexDataDescriptionType">
+		<annotation>
+			<documentation>A combination of format, encoding, and/or schema supported by a process input or output. </documentation>
+		</annotation>
+		<sequence>
+			<element name="MimeType" type="ows:MimeType">
+				<annotation>
+					<documentation>Mime type supported for this input or output (e.g., text/xml). </documentation>
+				</annotation>
+			</element>
+			<element name="Encoding" type="anyURI" minOccurs="0">
+				<annotation>
+					<documentation>Reference to an encoding supported for this input or output (e.g., UTF-8).  This element shall be omitted if Encoding does not apply to this Input/Output. </documentation>
+				</annotation>
+			</element>
+			<element name="Schema" type="anyURI" minOccurs="0">
+				<annotation>
+					<documentation>Reference to a definition of XML elements or types supported for this Input/Output (e.g., GML 2.1 Application Schema). Each of these XML elements or types shall be defined in a separate XML Schema Document. This parameter shall be included when this input/output is XML encoded using an XML schema. When included, the input/output shall validate against the referenced XML Schema. This element shall be omitted if Schema does not apply to this Input/Output. Note: If the Input/Output uses a profile of a larger schema, the server administrator should provide that schema profile for validation purposes. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =================OUTPUT PARAMETERS======================= -->
+	<!-- =========================================================== -->
+	<complexType name="OutputDescriptionType">
+		<annotation>
+			<documentation>Description of a process Output. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="wps:DescriptionType">
+				<annotation>
+					<documentation>In this use, the DescriptionType shall describe this process output. </documentation>
+				</annotation>
+				<group ref="wps:OutputFormChoice"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<group name="OutputFormChoice">
+		<annotation>
+			<documentation>Identifies the form of this output, and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="ComplexOutput" type="wps:SupportedComplexDataType">
+				<annotation>
+					<documentation>Indicates that this Output shall be a complex data structure (such as a GML fragment) that is returned by the execute operation response. The value of this complex data structure can be output either embedded in the execute operation response or remotely accessible to the client. When this output form is indicated, the process produces only a single output, and "store" is "false, the output shall be returned directly, without being embedded in the XML document that is otherwise provided by execute operation response. 
+					This element also provides a list of format, encoding, and schema combinations supported for this output. The client can select from among the identified combinations of formats, encodings, and schemas to specify the form of the output. This allows for complete specification of particular versions of GML, or image formats. </documentation>
+				</annotation>
+			</element>
+			<element name="LiteralOutput" type="wps:LiteralOutputType">
+				<annotation>
+					<documentation>Indicates that this output shall be a simple literal value (such as an integer) that is embedded in the execute response, and describes that output. </documentation>
+				</annotation>
+			</element>
+			<element name="BoundingBoxOutput" type="wps:SupportedCRSsType">
+				<annotation>
+					<documentation>Indicates that this output shall be a BoundingBox data structure, and provides a list of the CRSs supported in these Bounding Boxes. This element shall be included when this process output is an ows:BoundingBox element. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+	<!-- =========================================================== -->
+	<complexType name="LiteralOutputType">
+		<annotation>
+			<documentation>Description of a literal output (or input). </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:DataType" minOccurs="0">
+				<annotation>
+					<documentation>Data type of this set of values (e.g. integer, real, etc). This data type metadata should be included for each quantity whose data type is not a string. </documentation>
+				</annotation>
+			</element>
+			<element name="UOMs" type="wps:SupportedUOMsType" minOccurs="0">
+				<annotation>
+					<documentation>List of supported units of measure for this input or output. This element should be included when this literal has a unit of measure (e.g., "meters", without a more complete reference system). Not necessary for a count, which has no units. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

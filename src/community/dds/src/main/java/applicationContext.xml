@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>	
+	<!--  
+		Map producers and Responses
+	 -->
+	<bean id="DDSMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+      <constructor-arg>
+        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+        <value>image/dds</value>
+      </constructor-arg>
+      <constructor-arg ref="wms" />
+    </bean>
+	<bean id="DDSMapResponse"
+		singleton="false"
+		class="org.geoserver.wms.worldwind.DDSMapResponse">
+		<constructor-arg index="0" ref="wms"/>
+	</bean>
+	<bean id="BilMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+      <constructor-arg>
+        <description>The prescribed output format MIME-Type</description>
+        <value>image/bil</value>
+      </constructor-arg>
+      <constructor-arg>
+        <description>The declared output format MIME-Types in the capabilities document</description>
+        <list>
+          <value>application/bil</value>
+          <value>application/bil8</value>
+          <value>application/bil16</value>
+          <value>application/bil32</value>
+        </list>
+      </constructor-arg>
+      <constructor-arg ref="wms" />
+    </bean>
+	<bean id="BilMapResponse"
+		singleton="false"
+		class="org.geoserver.wms.worldwind.BilMapResponse">
+		<constructor-arg index="0" ref="wms"/>
+	</bean>
+</beans>

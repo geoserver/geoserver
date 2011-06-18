@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:datums:3.1.1"/>
+		<documentation>Subset of datums.xsd for GML 3.1.1 common CRSs profile. Primary editor: Arliss Whiteside. Last updated 2005-11-14. 
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="../../CrsSupport/1.0.0/gmlCrsSupportProfile.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="_Datum" type="gml:AbstractDatumType" abstract="true" substitutionGroup="gml:Definition"/>
+	<!-- =================================================== -->
+	<complexType name="AbstractDatumBaseType" abstract="true">
+		<annotation>
+			<documentation>Basic encoding for datum objects, simplifying and restricting the DefinitionType as needed. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:datumName"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="datumName" type="gml:CodeType" substitutionGroup="gml:name">
+		<annotation>
+			<documentation>The name by which this datum is identified. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="AbstractDatumType" abstract="true">
+		<annotation>
+			<documentation>A datum specifies the relationship of a coordinate system to the earth, thus creating a coordinate reference system. A datum uses a parameter or set of parameters that determine the location of the origin of the coordinate reference system. Each datum subtype can be associated with only specific types of coordinate systems. This abstract complexType shall not be used, extended, or restricted, in an Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractDatumBaseType">
+				<sequence>
+					<element ref="gml:datumID" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Set of alternative identifications of this datum. The first datumID, if any, is normally the primary identification code, and any others are aliases. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:remarks" minOccurs="0">
+						<annotation>
+							<documentation>Comments on this reference system, including source information. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:anchorPoint" minOccurs="0"/>
+					<element ref="gml:realizationEpoch" minOccurs="0"/>
+					<element ref="gml:validArea" minOccurs="0"/>
+					<element ref="gml:scope" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="datumID" type="gml:IdentifierType">
+		<annotation>
+			<documentation>An identification of a datum. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="anchorPoint" type="gml:CodeType">
+		<annotation>
+			<documentation>Description, possibly including coordinates, of the point or points used to anchor the datum to the Earth. Also known as the "origin", especially for engineering and image datums. The codeSpace attribute can be used to reference a source of more detailed on this point or surface, or on a set of such descriptions. 
+- For a geodetic datum, this point is also known as the fundamental point, which is traditionally the point where the relationship between geoid and ellipsoid is defined. In some cases, the "fundamental point" may consist of a number of points. In those cases, the parameters defining the geoid/ellipsoid relationship have been averaged for these points, and the averages adopted as the datum definition.
+- For an engineering datum, the anchor point may be a physical point, or it may be a point with defined coordinates in another CRS. When appropriate, the coordinates of this anchor point can be referenced in another document, such as referencing a GML feature that references or includes a point position.
+- For an image datum, the anchor point is usually either the centre of the image or the corner of the image.
+- For a temporal datum, this attribute is not defined. Instead of the anchor point, a temporal datum carries a separate time origin of type DateTime. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="realizationEpoch" type="date">
+		<annotation>
+			<documentation>The time after which this datum definition is valid. This time may be precise (e.g. 1997.0 for IRTF97) or merely a year (e.g. 1983 for NAD83). In the latter case, the epoch usually refers to the year in which a major recalculation of the geodetic control network, underlying the datum, was executed or initiated. An old datum can remain valid after a new datum is defined. Alternatively, a datum may be superseded by a later datum, in which case the realization epoch for the new datum defines the upper limit for the validity of the superseded datum. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="VerticalDatum" type="gml:VerticalDatumType" substitutionGroup="gml:_Datum"/>
+	<!-- =================================================== -->
+	<complexType name="VerticalDatumType">
+		<annotation>
+			<documentation>A textual description and/or a set of parameters identifying a particular reference level surface used as a zero-height surface, including its position with respect to the Earth for any of the height types recognized by this standard. There are several types of Vertical Datums, and each may place constraints on the Coordinate Axis with which it is combined to create a Vertical CRS. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:verticalDatumType" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="verticalDatumType" type="gml:VerticalDatumTypeType"/>
+	<!-- =================================================== -->
+	<complexType name="VerticalDatumTypeType">
+		<annotation>
+			<documentation>Type of a vertical datum. </documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:CodeType">
+				<attribute name="codeSpace" type="anyURI" use="required">
+					<annotation>
+						<documentation>Reference to a source of information specifying the values and meanings of all the allowed string values for this VerticalDatumTypeType. </documentation>
+					</annotation>
+				</attribute>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<!-- =================================================== -->
+	<complexType name="VerticalDatumRefType">
+		<annotation>
+			<documentation>Association to a vertical datum, either referencing or containing the definition of that datum. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:VerticalDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="GeodeticDatum" type="gml:GeodeticDatumType" substitutionGroup="gml:_Datum"/>
+	<!-- =================================================== -->
+	<complexType name="GeodeticDatumType">
+		<annotation>
+			<documentation>A geodetic datum defines the precise location and orientation in 3-dimensional space of a defined ellipsoid (or sphere) that approximates the shape of the earth, or of a Cartesian coordinate system centered in this ellipsoid (or sphere). </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:usesPrimeMeridian"/>
+					<element ref="gml:usesEllipsoid"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="usesPrimeMeridian" type="gml:PrimeMeridianRefType">
+		<annotation>
+			<documentation>Association to the prime meridian used by this geodetic datum. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesEllipsoid" type="gml:EllipsoidRefType">
+		<annotation>
+			<documentation>Association to the ellipsoid used by this geodetic datum. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="GeodeticDatumRefType">
+		<annotation>
+			<documentation>Association to a geodetic datum, either referencing or containing the definition of that datum. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:GeodeticDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+	<!-- =================================================== -->
+	<element name="PrimeMeridian" type="gml:PrimeMeridianType" substitutionGroup="gml:Definition"/>
+	<!-- =================================================== -->
+	<complexType name="PrimeMeridianBaseType" abstract="true">
+		<annotation>
+			<documentation>Basic encoding for prime meridian objects, simplifying and restricting the DefinitionType as needed. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:meridianName"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="meridianName" type="gml:CodeType" substitutionGroup="gml:name">
+		<annotation>
+			<documentation>The name by which this prime meridian is identified. The meridianName most common value is Greenwich, and that value shall be used when the greenwichLongitude value is zero. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="PrimeMeridianType">
+		<annotation>
+			<documentation>A prime meridian defines the origin from which longitude values are determined.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:PrimeMeridianBaseType">
+				<sequence>
+					<element ref="gml:meridianID" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Set of alternative identifications of this prime meridian. The first meridianID, if any, is normally the primary identification code, and any others are aliases. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:remarks" minOccurs="0">
+						<annotation>
+							<documentation>Comments on or information about this prime meridian, including source information. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:greenwichLongitude"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="meridianID" type="gml:IdentifierType">
+		<annotation>
+			<documentation>An identification of a prime meridian. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="greenwichLongitude" type="gml:AngleChoiceType">
+		<annotation>
+			<documentation>Longitude of the prime meridian measured from the Greenwich meridian, positive eastward. The greenwichLongitude most common value is zero, and that value shall be used when the meridianName value is Greenwich. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="PrimeMeridianRefType">
+		<annotation>
+			<documentation>Association to a prime meridian, either referencing or containing the definition of that meridian. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:PrimeMeridian"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="Ellipsoid" type="gml:EllipsoidType" substitutionGroup="gml:Definition"/>
+	<!-- =================================================== -->
+	<complexType name="EllipsoidBaseType" abstract="true">
+		<annotation>
+			<documentation>Basic encoding for ellipsoid objects, simplifying and restricting the DefinitionType as needed. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:ellipsoidName"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="ellipsoidName" type="gml:CodeType" substitutionGroup="gml:name">
+		<annotation>
+			<documentation>The name by which this ellipsoid is identified. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="EllipsoidType">
+		<annotation>
+			<documentation>An ellipsoid is a geometric figure that can be used to describe the approximate shape of the earth. In mathematical terms, it is a surface formed by the rotation of an ellipse about its minor axis.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:EllipsoidBaseType">
+				<sequence>
+					<element ref="gml:ellipsoidID" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Set of alternative identifications of this ellipsoid. The first ellipsoidID, if any, is normally the primary identification code, and any others are aliases. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:remarks" minOccurs="0">
+						<annotation>
+							<documentation>Comments on or information about this ellipsoid, including source information. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:semiMajorAxis"/>
+					<element ref="gml:secondDefiningParameter"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="ellipsoidID" type="gml:IdentifierType">
+		<annotation>
+			<documentation>An identification of an ellipsoid. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="semiMajorAxis" type="gml:MeasureType">
+		<annotation>
+			<documentation>Length of the semi-major axis of the ellipsoid, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a length, such as metres or feet. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="EllipsoidRefType">
+		<annotation>
+			<documentation>Association to an ellipsoid, either referencing or containing the definition of that ellipsoid. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:Ellipsoid"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="secondDefiningParameter" type="gml:SecondDefiningParameterType"/>
+	<!-- =================================================== -->
+	<complexType name="SecondDefiningParameterType">
+		<annotation>
+			<documentation>Definition of the second parameter that defines the shape of an ellipsoid. An ellipsoid requires two defining parameters: semi-major axis and inverse flattening or semi-major axis and semi-minor axis. When the reference body is a sphere rather than an ellipsoid, only a single defining parameter is required, namely the radius of the sphere; in that case, the semi-major axis "degenerates" into the radius of the sphere.</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:inverseFlattening"/>
+			<element ref="gml:semiMinorAxis"/>
+			<element ref="gml:isSphere"/>
+		</choice>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="inverseFlattening" type="gml:MeasureType">
+		<annotation>
+			<documentation>Inverse flattening value of the ellipsoid. Value is a scale factor (or ratio) that has no physical unit. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a scale factor, such as percent, permil, or parts-per-million. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="semiMinorAxis" type="gml:MeasureType">
+		<annotation>
+			<documentation>Length of the semi-minor axis of the ellipsoid. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a length, such as metres or feet. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="isSphere">
+		<annotation>
+			<documentation>The ellipsoid is degenerate and is actually a sphere. The sphere is completely defined by the semi-major axis, which is the radius of the sphere. </documentation>
+		</annotation>
+		<simpleType>
+			<restriction base="string">
+				<enumeration value="sphere"/>
+			</restriction>
+		</simpleType>
+	</element>
+	<!-- =================================================== -->
+</schema>

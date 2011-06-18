@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="istylePage" class="org.geoserver.web.MenuPageInfo">
+    <property name="componentClass" value="org.geoserver.web.istyle.IStylePage"/>
+    <property name="titleKey" value="IStylePage.title"/>
+    <property name="descriptionKey" value="IStylePage.description"/>
+  </bean>
+ 
+</beans>

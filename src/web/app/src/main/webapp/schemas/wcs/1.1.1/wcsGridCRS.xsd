@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns="http://www.w3.org/2001/XMLSchema" 
+	elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsGridCRS.xsd 2007-07-01</appinfo>
+		<appinfo>
+			<GMLProfileSchema>http://schemas.opengis.net/wcs/1.1.1/gml4wcs.xsd</GMLProfileSchema>
+		</appinfo>
+		<documentation>This XML Schema Document defines a GridCRS element that is much simpler but otherwise similar to a specialization of gml:DerivedCRS. This GridCRS roughly corresponds to the CV_RectifiedGrid class in ISO 19123, without inheritance from CV_Grid. This GridCRS is designed for use by the OGC Web Coverage Service (WCS) and elsewhere. 
+		This XML Schema Document is not a GML Application Schema, although it uses the GML 3.1.1 profile for WCS 1.1.1. 
+		Copyright (c) 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ========================================================
+           includes and imports
+	======================================================== -->
+	<import namespace="http://www.opengis.net/gml" schemaLocation="../../gml/3.1.1/base/gml.xsd"/>
+	<!-- ========================================================
+		elements and types
+	======================================================== -->
+	<element name="GridCRS" type="wcs:GridCrsType"/>
+	<!-- =================================================== -->
+	<complexType name="GridCrsType">
+		<annotation>
+			<documentation>Definition of a coordinate reference system (CRS) for a quadrilateral grid that is defined in another CRS, where this grid is defined by its coordinate Conversion from the other CRS. This GridCRS is not a ProjectedCRS. However, like a ProjectedCRS, the coordinate system used is Cartesian. This GridCRS can use any type of baseCRS, including GeographicCRS, ProjectedCRS, ImageCRS, or a different GridCRS. </documentation>
+			<documentation>This GridCRS is a simplification and specialization of a gml:DerivedCRS. All elements and attributes not required to define this GridCRS are optional. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:srsName" minOccurs="0"/>
+			<element ref="wcs:GridBaseCRS"/>
+			<element ref="wcs:GridType" minOccurs="0">
+				<annotation>
+					<documentation>When this GridType reference is omitted, the OperationMethod shall be the most commonly used method in a GridCRS, which is referenced by the default URN "urn:ogc:def:method:WCS:1.1:2dSimpleGrid". </documentation>
+				</annotation>
+			</element>
+			<element ref="wcs:GridOrigin" minOccurs="0">
+				<annotation>
+					<documentation>When this GridOrigin position is omitted, the origin defaults be the most commonly used origin in a GridCRS used in the output part of a GetCapabilities operation request, namely "0 0". </documentation>
+				</annotation>
+			</element>
+			<element ref="wcs:GridOffsets"/>
+			<element ref="wcs:GridCS" minOccurs="0">
+				<annotation>
+					<documentation>When this GridCS reference is omitted, the GridCS defaults to the most commonly used grid coordinate system, which is referenced by the URN "urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS". </documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute ref="gml:id" use="optional"/>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="GridBaseCRS" type="anyURI">
+		<annotation>
+			<documentation>Association to the coordinate reference system (CRS) in which this Grid CRS is specified. A GridCRS can use any type of baseCRS, including GeographicCRS, ProjectedCRS, ImageCRS, or a different GridCRS. </documentation>
+			<documentation>For a GridCRS, this association is limited to a remote definition of the baseCRS (not encoded in-line). </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="GridType" type="anyURI" default="urn:ogc:def:method:WCS:1.1:2dSimpleGrid">
+		<annotation>
+			<documentation>Association to the OperationMethod used to define this Grid CRS. This association defaults to an association to the most commonly used method, which is referenced by the URN "urn:ogc:def:method:WCS:1.1:2dSimpleGrid". </documentation>
+			<documentation>For a GridCRS, this association is limited to a remote definition of a grid definition Method (not encoded in-line) that encodes a variation on the method implied by the CV_RectifiedGrid class in ISO 19123, without the inheritance from CV_Grid. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="GridOrigin" type="gml:doubleList" default="0 0">
+		<annotation>
+			<documentation>Coordinates of the grid origin position in the GridBaseCRS of this GridCRS. This origin defaults be the most commonly used origin in a GridCRS used in the output part of a GetCapabilities operation request, namely "0 0". </documentation>
+			<documentation>This element is adapted from gml:pos. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="GridOffsets" type="gml:doubleList">
+		<annotation>
+			<documentation>Two or more grid position offsets from the grid origin in the GridBaseCRS of this GridCRS. Example: For the grid2dIn2dCRS OperationMethod, this Offsets element shall contain four values, the first two values shall specify the grid offset for the first grid axis in the 2D base CRS, and the second pair of values shall specify the grid offset for the second grid axis. In this case, the middle two values are zero for un-rotated and un-skewed grids. </documentation>
+		</annotation>
+	</element>
+ 	<!-- =================================================== -->
+	<element name="GridCS" type="anyURI" default="urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS">
+		<annotation>
+			<documentation>Association to the (Cartesian) grid coordinate system used by this Grid CRS. In this use of a (Cartesian) grid coordinate system, the grid positions shall be in the centers of the image or other grid coverage values (not between the grid values), as specified in ISO 19123. Also, the grid point indices at the origin shall be 0, 0 (not 1,1), as specified in ISO 19123. This GridCS defaults to the most commonly used grid coordinate system, which is referenced by the URN "urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS". </documentation>
+			<documentation>For a GridCRS, this association is limited to a remote definition of the GridCS (not encoded in-line). </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+</schema>

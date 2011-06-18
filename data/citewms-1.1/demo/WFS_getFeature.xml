@@ -1,0 +1,29 @@
+<!-- Performs a get feature.  Feel free to play with the Filter elements,  -->
+<!-- to get different results.  No filter will get all features, and you   -->
+<!-- can do filtering on spatial and non-spatial attributes.  See the ogc  -->
+<!-- filter specification http://www.opengis.org/docs/02-059.pdf for the   -->
+<!-- the complete syntax and examples.                                     -->
+<!--
+    This particular Query will return the topp:states with the FID (unique ID)
+    of 'states:3'. (Thats Delaware)
+    
+    You can also try a filter like:
+          <PropertyIsEqualTo>
+                <PropertyName>STATE_NAME</PropertyName>
+                <Literal>Delaware</Literal>
+          </PropertyIsEqualTo>
+  -->
+<wfs:GetFeature service="WFS" version="1.0.0"
+  outputFormat="GML2"
+  xmlns:topp="http://www.openplans.org/topp"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs
+                      http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+  <Query typeName="topp:states">
+    <Filter>
+       <FeatureId fid="states.3"/>
+    </Filter>
+    </Query>
+</wfs:GetFeature>

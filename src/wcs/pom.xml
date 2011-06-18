@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ 
+ <parent>
+  <groupId>org.geoserver</groupId>
+  <artifactId>geoserver</artifactId>
+  <version>2.1-SNAPSHOT</version>
+ </parent>
+ 
+ <groupId>org.geoserver</groupId>
+ <artifactId>wcs</artifactId>
+ <packaging>jar</packaging>
+ <name>Web Coverage Service Module</name>
+ 
+ <dependencies>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>main</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-coverage</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-referencing</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-arcgrid</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-geotiff</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-gtopo30</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-image</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-imagemosaic</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>main</artifactId>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>com.mockrunner</groupId>
+   <artifactId>mockrunner</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>xmlunit</groupId>
+   <artifactId>xmlunit</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <!--
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>imagepyramid</artifactId>
+  </dependency>
+    -->
+ </dependencies>
+
+</project>

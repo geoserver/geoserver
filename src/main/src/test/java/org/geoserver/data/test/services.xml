@@ -1,0 +1,146 @@
+<?config.xml version="1.0" encoding="UTF-8"?>
+<!--
+  Service level configuration
+-->
+<serverConfiguration >
+  <global >
+    <log4jConfigFile>TEST_LOGGING.properties</log4jConfigFile>
+    <suppressStdOutLogging value = "false" />
+    <logLocation>logs/geoserver.log</logLocation>
+    <JaiMemoryCapacity value = "0.5" />
+    <JaiMemoryThreshold value = "0.75" />
+    <JaiTileThreads value = "7" />
+    <JaiTilePriority value = "5" />
+    <JaiRecycling value = "true" />
+    <ImageIOCache value = "false" />
+    <JaiJPEGNative value = "true" />
+    <JaiPNGNative value = "true" />
+    <!--
+      Sets the max number of Features returned by GetFeature
+    -->
+    <maxFeatures value = "1000000" />
+    <!--
+      Whether newlines and indents should be returned in 
+      XML responses.  Default is false
+    -->
+    <verbose value = "false" />
+    <!--
+      Whether the Service Exceptions returned to clients should contain
+      full java stack traces (useful for debugging).
+    -->
+    <verboseExceptions value = "false" />
+    <!--
+      Sets the max number of decimal places past the zero returned in
+      a GetFeature response.  Default is 4
+    -->
+    <numDecimals value = "8" />
+    <!--
+      Sets the global character set.  This could use some more testing
+      from international users, but what it does is sets the encoding
+      globally for all postgis database connections (the charset tag
+      in FeatureTypeConfig), as well as specifying the encoding in the return
+      config.xml header and mime type.  The default is UTF-8.  Also be warned
+      that GeoServer does not check if the CharSet is valid before
+      attempting to use it, so it will fail miserably if a bad charset
+      is used.
+    -->
+    <charSet value = "UTF-8" />
+    <ContactInformation >
+      <ContactPersonPrimary >
+        <ContactPerson>Andrea Aime</ContactPerson>
+        <ContactOrganization></ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition></ContactPosition>
+      <ContactAddress >
+        <AddressType></AddressType>
+        <Address></Address>
+        <City></City>
+        <StateOrProvince></StateOrProvince>
+        <PostCode></PostCode>
+        <Country></Country>
+      </ContactAddress>
+      <ContactVoiceTelephone></ContactVoiceTelephone>
+      <ContactFacsimileTelephone></ContactFacsimileTelephone>
+      <ContactElectronicMailAddress></ContactElectronicMailAddress>
+      <ContactOnlineResource></ContactOnlineResource>
+    </ContactInformation>
+  </global>
+  <services >
+    <service type = "WCS" enabled = "true" >
+      <!--
+        ServiceDTO elements, needed for the capabilities document
+        Title and OnlineResource are the two required
+      -->
+      <name>My GeoServer WCS</name>
+      <title>My GeoServer WCS</title>
+      <abstract>
+This is a description of your Web Coverage Server.
+     </abstract>
+      <metadataLink about = "http://geoserver.sourceforge.net/html/index.php" metadataType = "other" type = "undef" >
+	NONE
+      </metadataLink>
+      <keywords >
+        <keyword>WCS</keyword>
+        <keyword>WMS</keyword>
+        <keyword>GEOSERVER</keyword>
+      </keywords>
+      <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+      <fees>NONE</fees>
+      <accessConstraints>NONE</accessConstraints>
+      <srsXmlStyle value = "false" />
+      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+    </service>
+    <service type = "WFS" enabled = "true" >
+      <!--
+        ServiceDTO elements, needed for the capabilities document
+        Title and OnlineResource are the two required
+      -->
+      <name>My GeoServer WFS</name>
+      <title>My GeoServer WFS</title>
+      <abstract>
+This is a description of your Web Feature Server.
+
+The GeoServer is a full transactional Web Feature Server, you may wish to limit
+GeoServer to a Basic service level to prevent modificaiton of your geographic
+data.
+     </abstract>
+      <metadataLink >null</metadataLink>
+      <keywords >
+        <keyword>WFS</keyword>
+        <keyword>WMS</keyword>
+        <keyword>GEOSERVER</keyword>
+      </keywords>
+      <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+      <fees>NONE</fees>
+      <accessConstraints>NONE</accessConstraints>
+      <srsXmlStyle value = "true" />
+      <serviceLevel value = "31" />
+      <citeConformanceHacks>false</citeConformanceHacks>
+      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+    </service>
+    <service type = "WMS" enabled = "true" >
+      <!--
+        ServiceDTO elements, needed for the capabilities document
+        Title and OnlineResource are the two required
+      -->
+      <name>OGC:WMS</name>
+      <title>My GeoServer WMS</title>
+      <abstract>
+This is a description of your Web Map Server.
+     </abstract>
+      <metadataLink >null</metadataLink>
+      <keywords >
+        <keyword>WFS</keyword>
+        <keyword>WMS</keyword>
+        <keyword>GEOSERVER</keyword>
+      </keywords>
+      <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
+      <fees>NONE</fees>
+      <accessConstraints>NONE</accessConstraints>
+      <srsXmlStyle value = "false" />
+      <maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>
+      <svgAntiAlias>true</svgAntiAlias>
+      <allowInterpolation>Nearest</allowInterpolation>
+    </service>
+  </services>
+</serverConfiguration>

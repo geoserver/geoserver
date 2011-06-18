@@ -1,0 +1,176 @@
+package org.geoserver.wps.gs;
+
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.data.test.MockData;
+import org.geoserver.wps.WPSTestSupport;
+import org.w3c.dom.Document;
+
+public class RasterZonalStatsTest extends WPSTestSupport {
+
+    static final double EPS = 1e-6;
+
+    public static QName RESTRICTED = new QName(MockData.SF_URI, "restricted", MockData.SF_PREFIX);
+
+    public static QName DEM = new QName(MockData.SF_URI, "sfdem", MockData.SF_PREFIX);
+
+    // put everything in the SF namespace because the GML encoder always applies the "feature" prefix to
+    // the output GML, so we need all tests to generate GML in the same namespace
+    public static QName TASMANIA_BM_ZONES = new QName(MockData.SF_URI, "BmZones",
+            MockData.SF_PREFIX);
+
+    @Override
+    protected void setUpInternal() throws Exception {
+        // init xmlunit
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("gml", "http://www.opengis.net/gml");
+        namespaces.put("wfs", "http://www.opengis.net/wfs");
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("feature", "http://cite.opengeospatial.org/gmlsf");
+
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+    }
+
+    @Override
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        super.populateDataDirectory(dataDirectory);
+        dataDirectory.addWcs11Coverages();
+        dataDirectory.addPropertiesType(RESTRICTED,
+                getClass().getResource("restricted.properties"), Collections.singletonMap(
+                        MockData.KEY_SRS_NUMBER, "EPSG:26713"));
+        dataDirectory.addPropertiesType(TASMANIA_BM_ZONES, getClass().getResource(
+                "tazdem_zones.properties"), Collections.singletonMap(MockData.KEY_SRS_NUMBER,
+                "EPSG:26713"));
+        dataDirectory.addCoverage(DEM, getClass().getResource("sfdem.tiff"), MockData.TIFF, null);
+    }
+    
+    public void testStatisticsTazDem() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:RasterZonalStatistics</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>data</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>145 -43</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>146 -41</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>zones</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
+                + "            <wfs:Query typeName=\""
+                + getLayerId(TASMANIA_BM_ZONES)
+                + "\"/>\n"
+                + "          </wfs:GetFeature>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
+                + "      <ows:Identifier>statistics</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n" + "  </wps:ResponseForm>\n" + "</wps:Execute>";
+
+        Document dom = postAsDOM(root(), xml);
+        // print(dom);
+
+        // half of the cells
+        assertXpathEvaluatesTo("14400", "//feature:BmZones[feature:z_cat=1]/feature:count", dom);
+        // quarter of the cells
+        assertXpathEvaluatesTo("7200", "//feature:BmZones[feature:z_cat=2]/feature:count", dom);
+        assertXpathEvaluatesTo("7200", "//feature:BmZones[feature:z_cat=3]/feature:count", dom);
+        // this can actually be counted by the naked eye
+        assertXpathEvaluatesTo("77", "//feature:BmZones[feature:z_cat=4]/feature:count", dom);
+        // all the cells
+        assertXpathEvaluatesTo("28800", "//feature:BmZones[feature:z_cat=5]/feature:count", dom);
+
+        assertXpathEvaluatesTo("860.0", "//feature:BmZones[feature:z_cat=4]/feature:min", dom);
+        assertXpathEvaluatesTo("1357.0", "//feature:BmZones[feature:z_cat=4]/feature:max", dom);
+        assertXpathEvaluatesTo("84511.0", "//feature:BmZones[feature:z_cat=4]/feature:sum", dom);
+        assertXpathEvaluatesTo("1097.5454545454547",
+                "//feature:BmZones[feature:z_cat=4]/feature:avg", dom);
+        assertXpathEvaluatesTo("108.38400851341224",
+                "//feature:BmZones[feature:z_cat=4]/feature:stddev", dom);
+    }
+
+    public void testStatisticsSfDem() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:RasterZonalStatistics</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>data</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>sf:sfdem</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#26713\">\n"
+                + "                <ows:LowerCorner>589980.0 4913700.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>609000.0 4928010.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>zones</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
+                + "            <wfs:Query typeName=\"sf:restricted\"/>\n"
+                + "          </wfs:GetFeature>\n" + "        </wps:Body>\n"
+                + "      </wps:Reference>\n" + "    </wps:Input>\n" + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=wfs-collection/1.0\">\n"
+                + "      <ows:Identifier>statistics</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n" + "  </wps:ResponseForm>\n" + "</wps:Execute>";
+
+        Document dom = postAsDOM(root(), xml);
+        // print(dom);
+
+        assertXpathEvaluatesTo("424", "//feature:restricted[feature:z_cat=1]/feature:count", dom);
+        assertXpathEvaluatesTo("218", "//feature:restricted[feature:z_cat=2]/feature:count", dom);
+        assertXpathEvaluatesTo("18629", "//feature:restricted[feature:z_cat=3]/feature:count", dom);
+        assertXpathEvaluatesTo("1697", "//feature:restricted[feature:z_cat=4]/feature:count", dom);
+
+        assertXpathEvaluatesTo("1281.0", "//feature:restricted[feature:z_cat=3]/feature:min", dom);
+        assertXpathEvaluatesTo("1695.0", "//feature:restricted[feature:z_cat=3]/feature:max", dom);
+        assertXpathEvaluatesTo("2.743147E7", "//feature:restricted[feature:z_cat=3]/feature:sum",
+                dom);
+        assertXpathEvaluatesTo("1472.514359332219",
+                "//feature:restricted[feature:z_cat=3]/feature:avg", dom);
+        assertXpathEvaluatesTo("93.61445950603424",
+                "//feature:restricted[feature:z_cat=3]/feature:stddev", dom);
+    }
+
+    
+
+}

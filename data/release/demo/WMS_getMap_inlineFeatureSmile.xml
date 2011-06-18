@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:GetMap xmlns:ogc="http://www.opengis.net/ows" 
+            xmlns:gml="http://www.opengis.net/gml" 
+            version="1.2.0"
+            service="WMS">
+
+  <StyledLayerDescriptor version="1.0.0" 
+                         xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+                         xmlns="http://www.opengis.net/sld" 
+                         xmlns:ogc="http://www.opengis.net/ogc" 
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         xmlns:dave="http://blasby.com" 
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <UserLayer>
+      <Name>Inline</Name>
+
+      <InlineFeature>
+        <FeatureCollection>
+
+          <featureMember>
+            <BodyPart>
+              <Type>Face</Type>
+              <polygonProperty>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>
+                        496,273 492,241 481,211 462,184 437,161 407,141 373,126 335,117 296,114 257,116 219,125 185,139
+                        155,159 130,184 111,212 100,243 96,274 100,306 111,336 130,364 155,388 185,408 219,422 257,431
+                        296,434 335,430 373,420 407,405 437,385 462,362 481,335 492,305 496,273
+                      </gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                </gml:Polygon>
+              </polygonProperty>
+            </BodyPart>
+          </featureMember>
+
+          <featureMember>
+            <BodyPart>
+              <Type>Eye</Type>
+              <polygonProperty>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>
+                        259,346 258,341 256,336 252,332 247,329 241,326 234,324 227,323 219,323 211,323 204,324 197,326
+                        191,328 186,332 182,336 180,340 179,345 180,350 182,354 186,358 191,362 197,364 204,366 211,367
+                        219,368 227,368 234,367 241,365 247,362 252,359 256,355 258,350 259,346
+                      </gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                </gml:Polygon>
+              </polygonProperty>
+            </BodyPart>
+          </featureMember>
+
+          <featureMember>
+            <BodyPart>
+              <Type>Eye</Type>
+              <polygonProperty>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>
+                        406,346 405,341 403,336 399,332 394,329 388,326 381,324 374,323 366,323 358,323 351,324 344,326
+                        338,328 333,332 329,336 327,340 326,345 327,350 329,354 333,358 338,362 344,364 351,366 358,367
+                        366,368 374,368 381,367 388,365 394,362 399,359 403,355 405,350 406,346
+                      </gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                </gml:Polygon>
+              </polygonProperty>
+            </BodyPart>
+          </featureMember>
+
+          <featureMember>
+            <BodyPart>
+              <Type>Nose</Type>
+              <polygonProperty>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>
+                        310,286 310,282 308,278 307,275 304,272 301,269 298,268 294,266 290,266 286,266 282,268 279,269
+                        276,272 273,275 272,278 270,282 270,286 270,290 272,294 273,297 276,300 279,303 282,304 286,306
+                        290,306 294,306 298,304 301,303 304,300 307,297 308,294 310,290 310,286
+                      </gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                </gml:Polygon>
+              </polygonProperty>
+            </BodyPart>
+          </featureMember>
+
+          <featureMember>
+            <BodyPart>
+              <Type>Mouth</Type>
+              <polygonProperty>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>
+                        397,226 396,209 396,196 390,185 384,175 368,163 353,155 331,150 308,149 283,148 261,153 231,163
+                        209,175 195,189 186,209 182,221 187,226 193,214 195,205 200,197 203,192 215,185 226,177 241,171
+                        256,167 266,163 281,161 297,161 321,160 341,160 359,168 371,175 382,185 388,197 390,215 390,225
+                        394,226 397,226
+                      </gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                </gml:Polygon>
+              </polygonProperty>
+            </BodyPart>
+          </featureMember>
+
+        </FeatureCollection>
+      </InlineFeature>
+
+      <UserStyle>
+        <FeatureTypeStyle>
+          <Rule>
+
+            <Filter>
+              <PropertyIsEqualTo>
+                <PropertyName>Type</PropertyName>
+                <Literal>Face</Literal>
+              </PropertyIsEqualTo>
+            </Filter>
+            <PolygonSymbolizer>
+              <Fill>
+                <CssParameter name="fill">
+                  <ogc:Literal>#FFF265</ogc:Literal>
+                </CssParameter>
+                <CssParameter name="fill-opacity">
+                  <ogc:Literal>1.0</ogc:Literal>
+                </CssParameter>
+              </Fill>
+              <Stroke>
+                <CssParameter name="stroke">
+                  <ogc:Literal>#222222</ogc:Literal>
+                </CssParameter>
+              </Stroke>
+            </PolygonSymbolizer>
+          </Rule>
+        </FeatureTypeStyle>
+        <FeatureTypeStyle>
+          <Rule>
+            <Filter>
+              <Or>
+                <PropertyIsEqualTo>
+                  <PropertyName>Type</PropertyName>
+                  <Literal>Nose</Literal>
+                </PropertyIsEqualTo>
+                <PropertyIsEqualTo>
+                  <PropertyName>Type</PropertyName>
+                  <Literal>Mouth</Literal>
+                </PropertyIsEqualTo>
+              </Or>
+            </Filter>
+            <PolygonSymbolizer>
+              <Fill>
+                <CssParameter name="fill">
+                  <ogc:Literal>#F00620</ogc:Literal>
+                </CssParameter>
+                <CssParameter name="fill-opacity">
+                  <ogc:Literal>1.0</ogc:Literal>
+                </CssParameter>
+              </Fill>
+              <Stroke>
+                <CssParameter name="stroke">
+                  <ogc:Literal>#FF0000</ogc:Literal>
+                </CssParameter>
+              </Stroke>
+            </PolygonSymbolizer>
+          </Rule>
+        </FeatureTypeStyle>
+        <FeatureTypeStyle>
+          <Rule>
+            <Filter>
+              <Or>
+                <PropertyIsEqualTo>
+                  <PropertyName>Type</PropertyName>
+                  <Literal>Eye</Literal>
+                </PropertyIsEqualTo>
+              </Or>
+            </Filter>
+            <PolygonSymbolizer>
+              <Fill>
+                <CssParameter name="fill">
+                  <ogc:Literal>#DD06E0</ogc:Literal>
+                </CssParameter>
+                <CssParameter name="fill-opacity">
+                  <ogc:Literal>1.0</ogc:Literal>
+                </CssParameter>
+              </Fill>
+              <Stroke>
+                <CssParameter name="stroke">
+                  <ogc:Literal>#FF00FF</ogc:Literal>
+                </CssParameter>
+              </Stroke>
+            </PolygonSymbolizer>
+          </Rule>
+        </FeatureTypeStyle>
+
+      </UserStyle>
+
+    </UserLayer>
+
+  </StyledLayerDescriptor>
+
+  <BoundingBox>
+    <gml:coord>
+      <gml:X>0</gml:X>
+      <gml:Y>0</gml:Y>
+    </gml:coord>
+    <gml:coord>
+      <gml:X>500</gml:X>
+      <gml:Y>500</gml:Y>
+    </gml:coord>
+  </BoundingBox>
+
+  <Output>
+    <Format>image/jpeg</Format>
+    <Transparent>false</Transparent>
+    <Size>
+      <Width>501</Width>
+      <Height>501</Height>
+    </Size>
+  </Output>
+
+  <Exceptions>application/vnd.ogc.se+xml</Exceptions>
+
+</ogc:GetMap>
+

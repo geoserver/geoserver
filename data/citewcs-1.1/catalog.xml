@@ -1,0 +1,43 @@
+<?config.xml version="1.0" encoding="UTF-8"?>
+<catalog >
+  <datastores >
+    <!--
+      a datastore configuration element serves as a common data source connection
+      parameters repository for all featuretypes it holds.
+    -->
+  </datastores>
+  <formats >
+    <!--
+      a format configuration element serves as a common data source
+      parameters repository for all coverages it holds.
+    -->
+    <format id = "tazdem" enabled = "true" namespace = "topp" >
+      <type>GeoTIFF</type>
+      <url>file:coverages/tazdem.tiff</url>
+    </format>
+    <format id = "dem" enabled = "true" namespace = "topp" >
+      <type>GeoTIFF</type>
+      <url>file:coverages/tazbm.tiff</url>
+    </format>
+    <format id = "rotated" enabled = "true" namespace = "topp" >
+      <type>GeoTIFF</type>
+      <url>file:coverages/rotated.tiff</url>
+    </format>
+  </formats>
+  <!--
+    Defines namespaces to be used by the datastores.
+  -->
+  <namespaces >
+    <namespace prefix = "it.geosolutions" uri = "http://www.geo-solutions.it" />
+    <namespace default = "true" prefix = "topp" uri = "http://www.openplans.org/topp" />
+  </namespaces>
+  <styles >
+    <!--
+      Defines the style ids and file name to be used by the wms.
+    -->
+    <style id = "polygon" filename = "default_polygon.sld" />
+    <style id = "point" filename = "default_point.sld" />
+    <style id = "raster" filename = "raster.sld" />
+    <style id = "line" filename = "default_line.sld" />
+  </styles>
+</catalog>

@@ -1,0 +1,46 @@
+  <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2001/XMLSchema" name="Other_Type">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="description" minOccurs="0" nillable="true">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="2147483647" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          
+          <xs:element name="name" minOccurs="0" nillable="true">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="2147483647" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="boundedBy" minOccurs="0" nillable="true" type="gml:PolygonPropertyType" />
+          <xs:element name="pointProperty" minOccurs="0" nillable="true"
+            type="gml:PointPropertyType" />
+          <xs:element name="string1" minOccurs="1" nillable="false">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="2147483647" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="string2" minOccurs="0" nillable="true">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="2147483647" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="integers" minOccurs="0" nillable="true" type="xs:int" />
+          <xs:element name="dates" minOccurs="0" nillable="true" type="xs:dateTime" />
+
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>

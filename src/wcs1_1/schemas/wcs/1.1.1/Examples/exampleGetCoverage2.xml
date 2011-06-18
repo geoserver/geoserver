@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCoverage xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGetCoverage.xsd" 
+service="WCS" version="1.1.1">
+	<ows:Identifier>Cov123</ows:Identifier>
+	<DomainSubset>
+		<ows:BoundingBox crs="urn:ogc:def:crs:OGC:2:84">
+			<ows:LowerCorner>-71 47</ows:LowerCorner>
+			<ows:UpperCorner>-66 51</ows:UpperCorner>
+		</ows:BoundingBox>
+		<TemporalSubset>
+			<TimePeriod>
+				<BeginPosition>2006-08-01</BeginPosition>
+				<EndPosition>2006-09-01</EndPosition>
+				<TimeResolution>P1D</TimeResolution>
+			</TimePeriod>
+		</TemporalSubset>
+	</DomainSubset>
+	<Output format="image/netcdf">
+		<GridCRS>
+			<GridBaseCRS>urn:ogc:def:crs:EPSG:6.6:32618</GridBaseCRS>
+			<GridType>urn:ogc:def:method:WCS:1.1:2dGridin2dCrs</GridType>
+			<GridOrigin>3000 4000</GridOrigin>
+			<GridOffsets>6.0 8.0 -8.0 6.0</GridOffsets>
+			<GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS>
+		</GridCRS>
+	</Output>
+</GetCoverage>

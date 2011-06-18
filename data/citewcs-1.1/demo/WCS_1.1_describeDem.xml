@@ -1,0 +1,10 @@
+<!-- 
+      This call describes the structure of the coverage whose name is contained in the <Identifier> 
+      tag
+  -->
+<DescribeCoverage
+  version="1.1.1" service="WCS" xmlns="http://www.opengis.net/wcs/1.1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsDescribeCoverage.xsd">
+    <Identifier>topp:tazdem</Identifier>
+</DescribeCoverage>

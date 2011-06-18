@@ -1,0 +1,35 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+  <wicket:child/>
+  <form wicket:id="rasterStoreForm">
+  <ul>
+    <li>
+      <fieldset>
+      <div><span wicket:id="storeType">Store Type</span></div>
+      <div><span wicket:id="storeTypeDescription">Store Description</span></div>
+      </fieldset>
+    </li>    
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend>
+        <div><span wicket:id="workspacePanel"></span></div>
+        <div><span wicket:id="namePanel"></span></div>
+        <div><span wicket:id="descriptionPanel"></span></div>
+        <div><span wicket:id="enabledPanel"></span></div>
+      </fieldset>
+    </li>
+    <li>
+        <div><span wicket:id="parametersPanel"></span></div>
+    </li>
+  </ul>
+
+    <div wicket:id="feedback"></div>
+    <div class="button-group selfclear">
+      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </div>
+  </form>
+</wicket:extend>
+</body>
+</html>

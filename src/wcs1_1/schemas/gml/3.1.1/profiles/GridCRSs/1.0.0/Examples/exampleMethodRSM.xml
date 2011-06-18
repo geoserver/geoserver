@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OperationMethod xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="ReplacementSensorModel">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15 -->
+	<methodName>Replacement Sensor Model (RSM) coordinate Transformation</methodName>
+	<methodID>
+		<name codeSpace="urn:ogc:def:method:OGC:0.0:">ReplacementSensorModel</name>
+	</methodID>
+	<remarks>This operation method is for a coordinate Transformation that georeferences an unrectified image using the Replacement Sensor Model (RSM). </remarks>
+	<methodFormula>urn:ogc:def:method:OGC:0.0:ReplacementSensorModel. </methodFormula>
+	<sourceDimensions>3</sourceDimensions>
+	<targetDimensions>2</targetDimensions>
+	<usesParameter>
+		<OperationParameter gml:id="RSMParameters">
+			<parameterName>Parameters for Replacement Sensor Model (RSM). </parameterName>
+			<parameterID>
+				<name codeSpace="http://baesystems.com/rsm/rsmParameters"/>
+			</parameterID>
+			<remarks>The value of this operation parameter is the URL of a file containing all the parameters for the Replacement Sensor Model (RSM) for the specific image. </remarks>
+		</OperationParameter>
+	</usesParameter>
+</OperationMethod>

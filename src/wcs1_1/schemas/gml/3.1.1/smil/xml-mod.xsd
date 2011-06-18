@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+=================== OpenGIS ============================  
+	This schema is required by SMIL schemas.
+	There are errors in publicly available smil schemas at w3c site.
+	One is acknowledged by w3c - it is typographical error described in SMIL errata document at:
+ 	http://www.w3.org/2001/07/REC-SMIL20-20010731-errata
+ 	under:
+	E30: Correction in the SMIL 2.0 utility Schema, section B.3.48 (revised 29 03 2002)
+	Others (at least one) are assumed after failed validation using Visual Studio .NET.
+	These smil schemas are reorganized to include in minimum number of files all and only definitions required by
+	defaultStyle.xsd. It was done to enable the validation of GML3.0 schemas.
+	When w3c fixes the public schemas these will be discarded 
+	comment: Milan Trninic, Galdos Systems Inc., May 2002
+	
+	comment#2: Milan Trninic, Galdos Systems Inc., Dec 2002
+	In order to validate with xerces, changed the "x:" prefix to "xml:" in the namespace declaration and references to "lang" and "space" attributes
+=================== OpenGIS ============================ 
+-->
+<schema targetNamespace="http://www.w3.org/XML/1998/namespace" xmlns="http://www.w3.org/2001/XMLSchema">
+	<attribute name="lang" type="language">
+		<annotation>
+			<documentation>In due course, we should install the relevant ISO 2- and 3-letter
+                codes as the enumerated possible values . . .</documentation>
+		</annotation>
+	</attribute>
+	<attribute name="space" default="preserve">
+		<simpleType>
+			<restriction base="NCName">
+				<enumeration value="default"/>
+				<enumeration value="preserve"/>
+			</restriction>
+		</simpleType>
+	</attribute>
+	<attributeGroup name="specialAttrs">
+		<attribute ref="xml:lang"/>
+		<attribute ref="xml:space"/>
+	</attributeGroup>
+</schema>

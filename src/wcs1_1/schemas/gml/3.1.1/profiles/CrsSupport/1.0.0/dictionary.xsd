@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd::3.1.1"/>
+		<documentation>Subset of dictionary.xsd for GML 3.1.1 CRS Support profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2005-10-11
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ========================================================
+       includes and imports
+	======================================================== -->
+	<include schemaLocation="gmlBase.xsd"/>
+	<!-- ===================================================== -->
+	<!-- ===================================================== -->
+	<!-- === Dictionary and Definition components === -->
+	<!-- ===================================================== -->
+	<element name="Definition" type="gml:DefinitionType" substitutionGroup="gml:_GML"/>
+	<!-- ===================================================== -->
+	<complexType name="DefinitionType">
+		<annotation>
+			<documentation>A definition, which can be included in or referenced by a dictionary. In this extended type, the inherited "description" optional element can hold the definition whenever only text is needed. The inherited "name" elements can provide one or more brief terms for which this is the definition. The inherited "metaDataProperty" elements can be used to reference or include more information about this definition.  
+The gml:id attribute is required - it must be possible to reference this definition using this handle.  </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:description" minOccurs="0"/>
+					<element ref="gml:name" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- ===================================================== -->
+	<element name="Dictionary" type="gml:DictionaryType" substitutionGroup="gml:Definition"/>
+	<!-- ===================================================== -->
+	<complexType name="DictionaryType">
+		<annotation>
+			<documentation>A non-abstract bag that is specialized for use as a dictionary which contains a set of definitions. These definitions are referenced from other places, in the same and different XML documents. In this restricted type, the inherited optional "description" element can be used for a description of this dictionary. The inherited optional "name" element can be used for the name(s) of this dictionary. The inherited "metaDataProperty" elements can be used to reference or contain more information about this dictionary. The inherited required gml:id attribute allows the dictionary to be referenced using this handle. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence minOccurs="0" maxOccurs="unbounded">
+					<choice>
+						<element ref="gml:dictionaryEntry">
+							<annotation>
+								<documentation>An entry in this dictionary. The content of an entry can itself be a lower level dictionary or definition collection. This element follows the standard GML property model, so the value may be provided directly or by reference. Note that if the value is provided by reference, this definition does not carry a handle (gml:id) in this context, so does not allow external references to this specific entry in this context. When used in this way the referenced definition will usually be in a dictionary in the same XML document. </documentation>
+							</annotation>
+						</element>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ===================================================== -->
+	<element name="dictionaryEntry" type="gml:DictionaryEntryType"/>
+	<!-- ===================================================== -->
+	<complexType name="DictionaryEntryType">
+		<annotation>
+			<documentation>An entry in a dictionary of definitions. An instance of this type contains one definition object. Specialized descendents of this dictionaryEntry might be restricted in an application schema to allow only including specified types of definitions as valid entries in a dictionary. </documentation>
+			<documentation>An entry in a dictionary of definitions. An instance of this type contains one definition object. Specialized descendents of this dictionaryEntry might be restricted in an application schema to allow only including specified types of definitions as valid entries in a dictionary. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:Definition">
+				<annotation>
+					<documentation>This element in a dictionary entry contains the actual definition. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+</schema>

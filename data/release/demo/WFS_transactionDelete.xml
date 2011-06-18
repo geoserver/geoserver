@@ -1,0 +1,20 @@
+<!-- We include this transaction as a sample for deletes.        -->
+<!--
+      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE 
+       IT WILL MODIFY YOUR SOURCE DATA FILES
+  -->
+<wfs:Transaction service="WFS" version="1.0.0"
+  xmlns:cdf="http://www.opengis.net/cite/data"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:topp="http://www.openplans.org/topp">
+  <wfs:Delete typeName="topp:tasmania_roads">
+    <ogc:Filter>
+      <ogc:PropertyIsEqualTo>
+        <ogc:PropertyName>topp:TYPE</ogc:PropertyName>
+        <ogc:Literal>alley</ogc:Literal>
+      </ogc:PropertyIsEqualTo>
+    </ogc:Filter>
+  </wfs:Delete>
+</wfs:Transaction>
+ 

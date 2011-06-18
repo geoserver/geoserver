@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+xmlns:wcs="http://www.opengis.net/wcs" 
+xmlns:gml="http://www.opengis.net/gml" 
+targetNamespace="http://www.opengis.net/wcs" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified" 
+version="1.0.1" xml:lang="en">
+ <annotation>
+  <appinfo>describeCoverage.xsd v1.0.1 2005-07-18</appinfo>
+  <documentation>This schema defines the DescribeCoverage operation request and reply XML elements and types, used by an OGC Web Coverage Service (WCS). </documentation>
+  <documentation>JDE 2003-07-24 changes:
+		Changed first and third "include" below to "import" so as to bring more than one namespace
+		Made spatialDomain a global element so as to substitute for it in GetCoverage spatialSubset
+		</documentation>
+  <documentation> JDE 2003-07-28 - Made temporalSubset of type TimeSequenceType (from owsBase.xsd, uses gml:timePosition).		</documentation>
+  <documentation>AEW 03/07/29 Changes made:
+			Edited documentation of some elements and types
+		</documentation>
+  <documentation>AEW 03/07/30 Changes made:
+			Corrrected defintion of temporalDomain element, makiing first letter of name lower case
+		</documentation>
+  <documentation>AEW 03/08/01 Changes made:
+			Edited documentation of many types
+		</documentation>
+  <documentation>JDE 03/08/27 Changes made:
+		 	Made DescribeCoverage/@service and DescribeCoverage/@version required
+			Added CoverageDescription/@version (required) and CoverageDescription/@updateSequence (optional)
+		</documentation>
+  <documentation>AEW 04/07/14 Changes made:
+		 	Changed two "import" statement for the "wcs" namespace to  "include" statements. 
+		 	Added "import" statement for the "gml" namespace used in gml4wcs.xsd.
+		</documentation>
+  <documentation>AEW 05/07/15 Changes made:
+		 	Changed documentation of updateSequence attribute in CoverageDescription element
+		</documentation>
+ </annotation>
+ <!-- ==============================================================
+           includes and imports
+	============================================================== -->
+ <include schemaLocation="./wcsCapabilities.xsd"/>
+ <include schemaLocation="./values.xsd"/>
+ <import namespace="http://www.opengis.net/gml" schemaLocation="./gml4wcs.xsd"/>
+ <!-- ==============================================================
+       elements and types
+	============================================================== -->
+ <element name="DescribeCoverage">
+  <annotation>
+   <documentation>Request to a WCS to perform the DescribeCoverage operation. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element name="Coverage" type="string" minOccurs="0" maxOccurs="unbounded">
+     <annotation>
+      <documentation>Name or identifier of this coverage. The same name value shall not be used for any other coverages available from the same server. A client can obtain this name by a prior GetCapabilities request, or possibly from a third-party source. If this element is omitted, the server may return descriptions of every coverage offering available, or return a service exception. </documentation>
+     </annotation>
+    </element>
+   </sequence>
+   <attribute name="service" type="string" use="required" fixed="WCS"/>
+   <attribute name="version" type="string" use="required" fixed="1.0.0"/>
+  </complexType>
+ </element>
+ <!-- =========================================================== -->
+ <element name="CoverageDescription">
+  <annotation>
+   <documentation>Reply from a WCS that performed the DescribeCoverage operation, containing one or more full coverage offering descriptions. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element ref="wcs:CoverageOffering" maxOccurs="unbounded"/>
+   </sequence>
+   <attribute name="version" type="string" use="required" fixed="1.0.0"/>
+   <attribute name="updateSequence" type="string" use="optional">
+    <annotation>
+     <documentation>Service metadata (Capabilities) document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and are always opaque to clients. </documentation>
+    </annotation>
+   </attribute>
+  </complexType>
+ </element>
+ <!-- =========================================================== -->
+ <element name="CoverageOffering" type="wcs:CoverageOfferingType" substitutionGroup="gml:_GML"/>
+ <!-- =========================================================== -->
+ <complexType name="CoverageOfferingType">
+  <annotation>
+   <documentation>Full description of one coverage available from a WCS instance. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:CoverageOfferingBriefType">
+    <sequence>
+     <element ref="wcs:domainSet"/>
+     <element ref="wcs:rangeSet"/>
+     <element ref="wcs:supportedCRSs"/>
+     <element ref="wcs:supportedFormats"/>
+     <element ref="wcs:supportedInterpolations" minOccurs="0">
+      <annotation>
+       <documentation>Specifies whether and how the server can interpolate coverage values over the spatial domain, when a GetCoverage request requires resampling, reprojection, or other generalization. If supportedInterpolations is absent or empty with no default, then clients should assume nearest-neighbor interpolation. If the only interpolation method listed is ‘none’, clients can only retrieve coverages from this layer in its native CRS and at its native resolution. </documentation>
+      </annotation>
+     </element>
+    </sequence>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- =============================================================
+		DomainSet elements and types			
+	============================================================== -->
+ <element name="domainSet" type="wcs:DomainSetType"/>
+ <!-- =========================================================== -->
+ <complexType name="DomainSetType">
+  <annotation>
+   <documentation>Defines the spatial-temporal domain set of a coverage offering. The domainSet shall include a SpatialDomain (describing the spatial locations for which coverages can be requested), a TemporalDomain (describing the time instants or inter-vals for which coverages can be requested), or both. </documentation>
+  </annotation>
+  <choice>
+   <sequence>
+    <element ref="wcs:spatialDomain"/>
+    <element ref="wcs:temporalDomain" minOccurs="0"/>
+   </sequence>
+   <element ref="wcs:temporalDomain"/>
+  </choice>
+ </complexType>
+ <!-- =========================================================== -->
+ <element name="spatialDomain" type="wcs:SpatialDomainType"/>
+ <!-- =========================================================== -->
+ <complexType name="SpatialDomainType">
+  <annotation>
+   <documentation>Defines the spatial domain of a coverage offering. A server shall describe the spatial domain by its edges, using one or more gml:Envelope elements. The gml:EnvelopeWithTimePeriod element may be used in place of gml:Envelope, to add the time bounds of the coverage offering. Each of these elements describes a bounding box defined by two points in space (or two positions in space and two in time). This bounding box could simply duplicate the information in the lonLatEnvelope of CoverageOfferingBrief; but the intent is to describe the locations in more detail (e.g., in several different CRSs, or several rectangular areas instead of one overall bounding box). 
+
+In addition, a server can describe the internal grid structure of a coverage offering, using a gml:Grid (or gml:RectifiedGrid) in addition to a gml:Envelope. This element can help clients assess the fitness of the gridded data for their use (e.g. its native resolution, inferred from the offsetVector of a gml:RectifiedGrid), and to formulate grid coverage requests expressed in the internal grid coordinate reference system.
+
+Finally, a server can describe the spatial domain by means of a (repeatable) gml:Polygon, representing the polygon(s) covered by the coverage spatial domain. This is particularly useful for areas that are poorly approximated by a gml:Envelope (such as satellite image swaths, island groups, other non-convex areas). </documentation>
+  </annotation>
+  <sequence>
+   <element ref="gml:Envelope" maxOccurs="unbounded"/>
+   <element ref="gml:Grid" minOccurs="0" maxOccurs="unbounded"/>
+   <element ref="gml:Polygon" minOccurs="0" maxOccurs="unbounded"/>
+  </sequence>
+ </complexType>
+ <!-- ========================================================== -->
+ <element name="temporalDomain" type="wcs:TimeSequenceType">
+  <annotation>
+   <documentation>Defines the temporal domain of a coverage offering, that is, the times for which valid data are available. The times shall to be ordered from the oldest to the newest. </documentation>
+  </annotation>
+ </element>
+ <!-- =============================================================
+		 RangeSet description elements and types 	
+	============================================================== -->
+ <element name="rangeSet">
+  <annotation>
+   <documentation>GML property containing one RangeSet GML object. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element ref="wcs:RangeSet"/>
+   </sequence>
+  </complexType>
+ </element>
+ <!-- =========================================================== -->
+ <element name="RangeSet" type="wcs:RangeSetType" substitutionGroup="gml:_GML"/>
+ <!-- =========================================================== -->
+ <complexType name="RangeSetType">
+  <annotation>
+   <documentation>Defines the properties (categories, measures, or values) assigned to each location in the domain. Any such property may be a scalar (numeric or text) value, such as population density, or a compound (vector or tensor) value, such as incomes by race, or radiances by wavelength. The semantic of the range set is typically an observable and is referenced by a URI. A rangeSet also has a reference system that is reffered by the URI in the refSys attribute. The refSys is either qualitative (classification) or quantitative (uom). The three attributes can be included either here and in each axisDescription. If included in both places, the values in the axisDescription over-ride those included in the RangeSet. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:AbstractDescriptionType">
+    <sequence>
+     <element ref="wcs:axisDescription" minOccurs="0" maxOccurs="unbounded">
+      <annotation>
+       <documentation>Defines a range provided by a coverage. Multiple occurences are used for compound observations, to descibe an additional parameter (that is, an independent variable besides space and time), plus the valid values of this parameter (which GetCoverage requests can use to select subsets of a coverage offering). </documentation>
+      </annotation>
+     </element>
+     <element name="nullValues" type="wcs:valueEnumType" minOccurs="0">
+      <annotation>
+       <documentation>Values used when valid values are not available. (The coverage encoding may specify a fixed value for null (e.g. “–99999” or “N/A”), but often the choice is up to the provider and must be communicated to the client outside of the coverage itself.) </documentation>
+      </annotation>
+     </element>
+    </sequence>
+    <attribute ref="wcs:semantic" use="optional"/>
+    <attribute name="refSys" type="anyURI" use="optional">
+     <annotation>
+      <documentation>Pointer to the reference system in which values are expressed. This attribute shall be included either here or in each AxisDescriptionType. </documentation>
+     </annotation>
+    </attribute>
+    <attribute name="refSysLabel" type="string" use="optional">
+     <annotation>
+      <documentation>Short human-readable label denoting the reference system, for human interface display. This attribute shall be included either here or in each AxisDescriptionType. </documentation>
+     </annotation>
+    </attribute>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- ==============================================================
+		Common elements and types for describing valid values in the DomainSet and RangeSet
+	============================================================== -->
+ <element name="axisDescription">
+  <annotation>
+   <documentation>GML property containing one AxisDescription GML object. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element ref="wcs:AxisDescription"/>
+   </sequence>
+  </complexType>
+ </element>
+ <!-- ========================================================== -->
+ <element name="AxisDescription" type="wcs:AxisDescriptionType" substitutionGroup="gml:_GML"/>
+ <!-- ========================================================== -->
+ <complexType name="AxisDescriptionType">
+  <annotation>
+   <documentation>Description of a measured or observed quantity, and list of the “valid” quantity values (values for which measurements are available or “by which” aggregate values are available). The semantic is the URI of the quantity (for example observable or mathematical variable). The refSys attribute is a URI to a reference system, and the refSysLabel is the label used by client to refer the reference system. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:AbstractDescriptionType">
+    <sequence>
+     <element name="values">
+      <annotation>
+       <documentation>The type and value constraints for the values of this axis.</documentation>
+      </annotation>
+      <complexType>
+       <complexContent>
+        <extension base="wcs:valueEnumType">
+         <sequence>
+          <element name="default" type="wcs:TypedLiteralType" minOccurs="0">
+           <annotation>
+            <documentation>Ordered sequence of the parameter value(s) that the server will use for GetCoverage requests which omit a constraint on this parameter axis. (GetCoverage requests against a coverage offering whose AxisDescription has no default must specify a valid constraint for this parameter.) </documentation>
+           </annotation>
+          </element>
+         </sequence>
+        </extension>
+       </complexContent>
+      </complexType>
+     </element>
+    </sequence>
+    <attribute ref="wcs:semantic" use="optional"/>
+    <attribute name="refSys" type="anyURI" use="optional">
+     <annotation>
+      <documentation>Pointer to the reference system in which values are expressed. This attribute shall be included either here or in RangeSetType. </documentation>
+     </annotation>
+    </attribute>
+    <attribute name="refSysLabel" type="string" use="optional">
+     <annotation>
+      <documentation>Short human-readable label denoting the reference system, for human interface display. This attribute shall be included either here or in RangeSetType. </documentation>
+     </annotation>
+    </attribute>
+   </extension>
+  </complexContent>
+ </complexType>
+</schema>

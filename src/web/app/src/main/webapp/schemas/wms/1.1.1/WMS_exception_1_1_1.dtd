@@ -1,0 +1,5 @@
+<!ELEMENT ServiceExceptionReport (ServiceException*)>
+<!ATTLIST ServiceExceptionReport version CDATA #FIXED "1.1.1">
+
+<!ELEMENT ServiceException (#PCDATA)>
+<!ATTLIST ServiceException code CDATA #IMPLIED>

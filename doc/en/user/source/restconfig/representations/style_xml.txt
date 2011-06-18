@@ -1,0 +1,4 @@
+   <style>
+     <name>population</name>
+     <filename>popshade.sld</filename>
+   </style>

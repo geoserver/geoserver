@@ -1,0 +1,5 @@
+<map name="BasicPolygons">
+<area shape="poly" id="BasicPolygons.1107531493630.0"  coords="150,514 300,429 450,514 300,600 150,514"/>
+<area shape="poly" id="BasicPolygons.1107531493643.0"  coords="0,0 450,0 450,257 0,257 0,0"/>
+<area shape="poly" id="BasicPolygons.1107531493644.0"  coords="150,86 600,86 600,343 150,343 150,86"/>
+</map>

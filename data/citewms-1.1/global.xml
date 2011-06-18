@@ -1,0 +1,22 @@
+<global>
+  <contact/>
+  <jai>
+    <allowInterpolation>false</allowInterpolation>
+    <recycling>false</recycling>
+    <tilePriority>5</tilePriority>
+    <tileThreads>7</tileThreads>
+    <memoryCapacity>0.5</memoryCapacity>
+    <memoryThreshold>0.75</memoryThreshold>
+    <imageIOCache>false</imageIOCache>
+    <pngAcceleration>false</pngAcceleration>
+    <jpegAcceleration>false</jpegAcceleration>
+    <allowNativeMosaic>false</allowNativeMosaic>
+  </jai>
+  <charset>UTF-8</charset>
+  <numDecimals>8</numDecimals>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <verbose>true</verbose>
+  <verboseExceptions>true</verboseExceptions>
+  <updateSequence>1</updateSequence>
+  <featureTypeCacheSize>0</featureTypeCacheSize>
+</global>

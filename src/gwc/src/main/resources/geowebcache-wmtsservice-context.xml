@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-wmts module
+  </description>
+  <bean id="gwcServiceWMTS"
+	class="org.geowebcache.service.wmts.WMTSService">
+	<constructor-arg ref="gwcStorageBroker"/>
+	<constructor-arg ref="gwcTLDispatcher"/>
+	<constructor-arg ref="gwcGridSetBroker"/>
+	<constructor-arg ref="gwcRuntimeStats"/>
+  </bean>
+	
+</beans>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="wmsExtendedCapsProvider" class="org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider">
+  </bean>
+  
+  <bean id="inspireInitializer" class="org.geoserver.inspire.wms.InspireInitializer">
+    <description>GeoServerInitializer implementation to make sure inspire resources are available. For example, the
+      schemas are copied to a publicaly accessible location inside the data directory, etc.</description>
+  </bean>
+  
+  <bean id="inspireAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="inspireAdminPanel"/>
+    <property name="titleKey" value="inspire"/>
+    <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
+  </bean>
+</beans>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="unqualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: wpsAll.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema includes and imports, directly and indirectly, all the XML Schemas defined by the WPS Implemetation Specification.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes
+	============================================================== -->
+	<include schemaLocation="wpsDescribeProcess_request.xsd"/>
+	<include schemaLocation="wpsDescribeProcess_response.xsd"/>
+	<include schemaLocation="wpsExecute_request.xsd"/>
+	<include schemaLocation="wpsExecute_response.xsd"/>
+	<include schemaLocation="wpsGetCapabilities_request.xsd"/>
+	<include schemaLocation="wpsGetCapabilities_response.xsd"/>
+</schema>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="VAR_WCS_CAPABILITIES_URL">http://localhost:8080/geoserver/wcs?request=getcapabilities&amp;service=wcs&amp;version=1.0.0</value>
+ <value key="VAR_WCS_FORMAT_1_HEADER">image/tiff</value>
+ <value key="VAR_HIGH_UPDATESEQUENCE">2</value>
+ <value key="VAR_LOW_UPDATESEQUENCE">0</value>
+ <value key="VAR_WCS_COVERAGE_1_RESX">0.1</value>
+ <value key="VAR_WCS_COVERAGE_1_RESY">0.1</value>
+ <value key="xml">xml</value>
+ <value key="haveparameter">haveparameter</value>
+ <value key="schemas">corrigendum1</value>
+ <value key="VAR_MULTIFILE_FORMATS"></value>
+</values>

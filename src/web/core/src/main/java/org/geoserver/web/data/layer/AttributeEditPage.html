@@ -1,0 +1,29 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="layerList">Layer list</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+
+    <form wicket:id="form">
+
+    <ul>
+        <li><label for="name"><wicket:message key="name">name</wicket:message></label> <input
+            id="name" class="text" type="text" wicket:id="name"></input></li>
+        <li><label for="binding"><wicket:message key="type">type</wicket:message></label> <select
+            id="binding" wicket:id="binding"></select></li>
+        <li><input type="checkbox" id="nullable" wicket:id="nullable"> <label
+            for="nullable" class="choice"><wicket:message key="nullable">nullable</wicket:message></label></li>
+        <li wicket:id="sizeContainer"><label for="size"><wicket:message key="size">size</wicket:message></label>
+        <input id="size" class="text" type="text" wicket:id="size"></input></li>
+        <li wicket:id="crsContainer"><label for="crs"><wicket:message key="crs">cRS</wicket:message></label>
+        <span wicket:id="crs"></span></li>
+    </ul>
+
+    <div class="button-group selfclear"><a href="#" wicket:id="save"><wicket:message
+        key="save">Save</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
+        key="cancel">Cancel</wicket:message></a></div>
+    </form>
+</wicket:extend>
+</body>
+</html>

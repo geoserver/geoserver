@@ -1,0 +1,17 @@
+
+h1 {
+  font-size: 1em;
+}
+
+body {
+  color: #000000;
+}
+
+td {
+  text-align: center;
+  font-size: 10pt;
+}
+
+.even {
+  background-color: #E2EFCD;
+}

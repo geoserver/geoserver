@@ -1,0 +1,5 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" >
+<name>Attribute</name>
+<description>Checks attributre relations as specified.</description>
+<class>org.geotools.validation.attributes.AttributeValidation</class>
+</plugin>

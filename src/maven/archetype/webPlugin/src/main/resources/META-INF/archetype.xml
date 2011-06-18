@@ -1,0 +1,11 @@
+<archetype>
+ <id>webplugin</id>
+ <sources>
+  <source>src/main/java/MyWebPluginPage.java</source>
+ </sources>
+ <resources>
+  <resource>src/main/resources/applicationContext.xml</resource>
+  <resource>src/main/resources/MyWebPluginPage.html</resource>
+  <resource>src/main/resources/GeoServerApplication.properties</resource>
+ </resources>
+</archetype>

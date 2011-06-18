@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoverageDescriptions xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsDescribeCoverage.xsd 
+http://www.opengis.net/ows/1.1 ../../../ows/1.1.0/owsAll.xsd">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2007-06-05-->
+	<CoverageDescription>
+		<ows:Title>TBD</ows:Title>
+		<ows:Abstract>TBD</ows:Abstract>
+		<Identifier>TBD</Identifier>
+		<Domain>
+			<SpatialDomain>
+				<ows:BoundingBox>
+					<ows:LowerCorner>-30.00 -30.00</ows:LowerCorner>
+					<ows:UpperCorner>30.00 30.00</ows:UpperCorner>
+				</ows:BoundingBox>
+			</SpatialDomain>
+		</Domain>
+		<Range>
+			<Field>
+				<ows:Title>TBD</ows:Title>
+				<ows:Abstract>TBD</ows:Abstract>
+				<Identifier>TBD</Identifier>
+				<Definition>
+					<ows:AnyValue/>
+				</Definition>
+				<InterpolationMethods>
+					<InterpolationMethod>linear</InterpolationMethod>
+					<Default>cubic</Default>
+				</InterpolationMethods>
+			</Field>
+		</Range>
+		<SupportedCRS>urn:ogc:def:crs:EPSG::XXXX</SupportedCRS>
+		<SupportedCRS>urn:ogc:def:crs:EPSG::YYYY</SupportedCRS>
+		<SupportedFormat>text/xml</SupportedFormat>
+	</CoverageDescription>
+</CoverageDescriptions>

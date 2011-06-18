@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="gwcSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="gwc.settings"/>
+    <property name="titleKey" value="geowebcache"/>
+    <property name="descriptionKey" value="GWCSettingsPage.description"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.GWCSettingsPage"/>
+    <property name="category" ref="settingsCategory"/>
+    <property name="icon" value="geowebcache-16.png"/>
+    <property name="order" value="35"/>
+  </bean>
+  
+</beans>

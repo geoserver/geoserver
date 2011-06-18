@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConcatenatedOperation xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="TemplateConcatenatedOperation">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15 -->
+	<coordinateOperationName>Template for ConcatenatedOperation</coordinateOperationName>
+	<remarks>Template for coordinate ConcatenatedOperation to unrectified image coordinates from ground CRS coordinates. </remarks>
+	<sourceCRS xlink:href="urn:ogc:def:crs:EPSG:6.3:TBD">
+		<!-- This sourceCRS must be 2D. -->
+	</sourceCRS>
+	<targetCRS xlink:href="urn:ogc:def:crs:OGC:0.0:ImageCRSpixelCenter:TBD"/>
+	<usesSingleOperation>
+		<Transformation gml:id="TemplateGridElevationModelTransformation">
+			<coordinateOperationName>Template for grid elevation model coordinate Transformations</coordinateOperationName>
+			<operationVersion>1.0</operationVersion>
+			<sourceCRS xlink:href="urn:ogc:def:crs:EPSG:6.3:TBD">
+				<!-- This sourceCRS must be the same as the sourceCRS above. -->
+			</sourceCRS>
+			<targetCRS xlink:href="urn:ogc:def:crs:EPSG:6.3:TBD">
+				<!-- This targetCRS must be 3D. -->
+			</targetCRS>
+			<usesMethod xlink:href="urn:ogc:def:method:OGC:0.0:GridElevationModel"/>
+			<usesValue>
+				<valueFile>http://baesystems.com/DEM/TBD</valueFile>
+				<valueOfParameter xlink:href="urn:ogc:def:parameter:OGC:0.0:GridElevationData"/>
+			</usesValue>
+		</Transformation>
+	</usesSingleOperation>
+	<usesSingleOperation>
+		<Transformation gml:id="TemplateGeoreferencingTransformation">
+			<coordinateOperationName>Template for image georeferencing coordinate Transformation</coordinateOperationName>
+			<operationVersion>1.0</operationVersion>
+			<sourceCRS xlink:href="urn:ogc:def:crs:EPSG:6.3:TBD">
+				<!-- This sourceCRS must be the same as the targetCRS above. -->
+			</sourceCRS>
+			<targetCRS xlink:href="urn:ogc:def:crs:OGC:0.0:ImageCRSpixelCenter:TBD"/>
+			<usesMethod xlink:href="urn:ogc:def:method:OGC:0.0:ReplacementSensorModel"/>
+			<usesValue>
+				<valueFile>http://baesystems.com/rsm/rsmParameterValues/TBD.xml</valueFile>
+				<valueOfParameter xlink:href="http://baesystems.com/rsm/rsmParameters"/>
+			</usesValue>
+		</Transformation>
+	</usesSingleOperation>
+</ConcatenatedOperation>

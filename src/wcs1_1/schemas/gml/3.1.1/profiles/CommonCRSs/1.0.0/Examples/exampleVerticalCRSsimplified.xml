@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VerticalCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="EPSG5701">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<srsName>Newlyn</srsName>
+	<srsID>
+		<name codeSpace="urn:ogc:def:crs:EPSG:6.0:">5701</name>
+	</srsID>
+	<usesVerticalCS xlink:href="urn:ogc:def:cs:EPSG:6.0:6499" xlink:title="Height up in metres"/>
+	<usesVerticalDatum>
+		<VerticalDatum gml:id="EPSG5101">
+			<datumName>Ordnance Datum Newlyn</datumName>
+			<datumID>
+				<name codeSpace="urn:ogc:def:datum:EPSG:6.0:">5101</name>
+			</datumID>
+			<verticalDatumType codeSpace="urn:ogc:def:verticalDatumType:OGC:1.0:">geoidal</verticalDatumType>
+		</VerticalDatum>
+	</usesVerticalDatum>
+</VerticalCRS>

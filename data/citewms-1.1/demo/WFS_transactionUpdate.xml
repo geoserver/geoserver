@@ -1,0 +1,22 @@
+ <!--       YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE 
+       IT WILL MODIFY YOUR SOURCE DATA FILES
+
+      This will update the length field for the bc_roads dataset.
+      
+   -->
+
+
+<wfs:Transaction service="WFS" version="1.0.0"
+  xmlns:topp="http://www.openplans.org/topp"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:wfs="http://www.opengis.net/wfs">
+  <wfs:Update typeName="topp:bc_roads">
+    <wfs:Property>
+      <wfs:Name>LENGTH</wfs:Name>
+      <wfs:Value>3.14159</wfs:Value>
+    </wfs:Property>
+    <ogc:Filter>
+      <ogc:FeatureId fid="bc_roads.1"/>
+    </ogc:Filter>
+  </wfs:Update>
+</wfs:Transaction>

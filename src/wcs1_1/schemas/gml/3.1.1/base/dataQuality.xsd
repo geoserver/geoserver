@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:dataQuality:3.1.1"/>
+		<documentation>How to encode positional data quality information. Builds on units.xsd to encode the data needed to describe the positional accuracy of coordinate operations. 
+		Copyright (c) 2002-2005 OGC, All Rights Reserved. For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr
+		This schema encodes the Data Quality (DQ) package of the extended UML Model for OGC Abstract Specification Topic 2: Spatial Referencing by Coordinates. That UML model is adapted from ISO 19111 - Spatial referencing by coordinates, as described in Annex C of Topic 2. 
+		Caution: The CRS package in GML 3.1 and GML 3.1.1 is preliminary, and is expected to undergo some modifications that are not backward compatible during the development of GML 3.2 (ISO 19136). The GML 3.2 package will implement the model described in the revised version of ISO 19111. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="units.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="_positionalAccuracy" type="gml:AbstractPositionalAccuracyType" abstract="true"/>
+	<!-- =================================================== -->
+	<complexType name="AbstractPositionalAccuracyType" abstract="true">
+		<annotation>
+			<documentation>Position error estimate (or accuracy) data. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:measureDescription" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="measureDescription" type="gml:CodeType">
+		<annotation>
+			<documentation>A description of the position accuracy parameter(s) provided. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="absoluteExternalPositionalAccuracy" type="gml:AbsoluteExternalPositionalAccuracyType" substitutionGroup="gml:_positionalAccuracy"/>
+	<!-- =================================================== -->
+	<complexType name="AbsoluteExternalPositionalAccuracyType">
+		<annotation>
+			<documentation>Closeness of reported coordinate values to values accepted as or being true. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractPositionalAccuracyType">
+				<sequence>
+					<element ref="gml:result"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="relativeInternalPositionalAccuracy" type="gml:RelativeInternalPositionalAccuracyType" substitutionGroup="gml:_positionalAccuracy"/>
+	<!-- =================================================== -->
+	<complexType name="RelativeInternalPositionalAccuracyType">
+		<annotation>
+			<documentation>Closeness of the relative positions of two or more positions to their respective relative positions accepted as or being true. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractPositionalAccuracyType">
+				<sequence>
+					<element ref="gml:result"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="result" type="gml:MeasureType">
+		<annotation>
+			<documentation>A quantitative result defined by the evaluation procedure used, and identified by the measureDescription. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="covarianceMatrix" type="gml:CovarianceMatrixType" substitutionGroup="gml:_positionalAccuracy"/>
+	<!-- =================================================== -->
+	<complexType name="CovarianceMatrixType">
+		<annotation>
+			<documentation>Error estimate covariance matrix. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractPositionalAccuracyType">
+				<sequence>
+					<element ref="gml:unitOfMeasure" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Ordered sequence of units of measure, corresponding to the row and column index numbers of the covariance matrix, starting with row and column 1 and ending with row/column N. Each unit of measure is for the ordinate reflected in the relevant row and column of the covariance matrix. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:includesElement" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered set of elements in this covariance matrix. Because the covariance matrix is symmetrical, only the elements in the upper or lower diagonal part (including the main diagonal) of the matrix need to be specified. Any zero valued covariance elements can be omitted. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="includesElement" type="gml:CovarianceElementType"/>
+	<!-- =================================================== -->
+	<complexType name="CovarianceElementType">
+		<annotation>
+			<documentation>An element of a covariance matrix.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:rowIndex"/>
+			<element ref="gml:columnIndex"/>
+			<element ref="gml:covariance"/>
+		</sequence>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="rowIndex" type="positiveInteger">
+		<annotation>
+			<documentation>Row number of this covariance element value. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="columnIndex" type="positiveInteger">
+		<annotation>
+			<documentation>Column number of this covariance element value. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="covariance" type="double">
+		<annotation>
+			<documentation>Value of covariance matrix element. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+</schema>

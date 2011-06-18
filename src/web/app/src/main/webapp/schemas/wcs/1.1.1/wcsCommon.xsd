@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsContents.xsd 2007-06-06</appinfo>
+		<appinfo>
+			<GMLProfileSchema>http://schemas.opengis.net/wcs/1.1.1/gml4wcs.xsd</GMLProfileSchema>
+		</appinfo>
+		<documentation>This XML Schema Document encodes the elements and types that are shared by multiple WCS operations. 
+		Copyright (c) 2007 Open Geospatial Consortium, Inc, All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+ 	includes and imports	
+	============================================================== -->
+	<import namespace="http://www.opengis.net/gml" schemaLocation="../../gml/3.1.1/base/gml.xsd"/>
+	<!-- ==============================================================		
+	elements and types	
+	============================================================== -->
+	<complexType name="RequestBaseType">
+		<annotation>
+			<documentation>XML encoded WCS operation request base, for all operations except GetCapabilities. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+		</annotation>
+		<sequence/>
+		<attribute name="service" type="string" use="required" fixed="WCS">
+			<annotation>
+				<documentation>Service type identifier, where the value is the OWS type abbreviation. For WCS operation requests, the value is "WCS". </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="version" type="string" use="required" fixed="1.1.1">
+			<annotation>
+				<documentation>Specification version for WCS version and operation. See Version parameter Subclause 7.3.1 of OWS Common for more information. </documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="Identifier" type="wcs:IdentifierType"/>
+	<!-- =========================================================== -->
+	<simpleType name="IdentifierType">
+		<annotation>
+			<documentation>Unambiguous identifier. Although there is no formal restriction on characters included, these identifiers shall be directly usable in GetCoverage operation requests for the specific server, whether those requests are encoded in KVP or XML. Each of these encodings requires that certain characters be avoided, encoded, or escaped (TBR). </documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value=".+"/>
+		</restriction>
+	</simpleType>
+	<!-- =========================================================== -->
+	<complexType name="TimeSequenceType">
+		<annotation>
+			<documentation>List of time positions and periods. The time positions and periods should be ordered from the oldest to the newest, but this is not required. </documentation>
+		</annotation>
+		<choice maxOccurs="unbounded">
+			<element ref="gml:timePosition"/>
+			<element name="TimePeriod" type="wcs:TimePeriodType"/>
+		</choice>
+	</complexType>
+	<!-- ========================================================= -->
+	<complexType name="TimePeriodType">
+		<annotation>
+			<documentation>This is a variation of the GML TimePeriod, which allows the beginning and end of a time-period to be expressed in short-form inline using the begin/endPosition element, which allows an identifiable TimeInstant to be defined simultaneously with using it, or by reference, using xlinks on the begin/end elements. </documentation>
+			<documentation>(Arliss) What does this mean? What do the TimeResolution and "frame" mean? </documentation>
+		</annotation>
+		<sequence>
+			<element name="BeginPosition" type="gml:TimePositionType"/>
+			<element name="EndPosition" type="gml:TimePositionType"/>
+			<element name="TimeResolution" type="wcs:TimeDurationType" minOccurs="0"/>
+		</sequence>
+		<attribute name="frame" type="anyURI" use="optional" default="#ISO-8601"/>
+	</complexType>
+	<!-- ========================================================= -->
+	<simpleType name="TimeDurationType">
+		<annotation>
+			<documentation xml:lang="en">
+      Base type for describing temporal length or distance. The value space is further 
+      constrained by subtypes that conform to the ISO 8601 or ISO 11404 standards.
+      </documentation>
+		</annotation>
+		<union memberTypes="duration decimal"/>
+	</simpleType>
+	<!-- ========================================================= -->
+</schema>
+

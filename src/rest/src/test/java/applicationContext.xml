@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="exceptionThrowingResource" class="org.geoserver.rest.ExceptionThrowingResource"/>
+    
+    <bean id="testMapping" class="org.geoserver.rest.RESTMapping">
+      <property name="routes">
+        <map>
+          <entry>
+            <key><value>/exception</value></key>
+            <value>exceptionThrowingResource</value>
+          </entry>
+        </map>
+      </property>
+    </bean>
+</beans>

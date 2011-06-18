@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionary xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml ../gmlSimpleDictionaryProfile.xsd" gml:id="PixelInCellDictionary">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-16-->
+	<name>PixelInCell standard values</name>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="cellCenter">
+			<description>The origin of the image coordinate system is at the centre of a grid cell or image pixel. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:pixelInCell:OGC:1.0:cellCenter</name>
+		</Definition>
+	</dictionaryEntry>
+	<dictionaryEntry>
+		<!-- ===================================================== -->
+		<Definition gml:id="cellCorner">
+			<description>The origin of the image coordinate system is at the corner of a grid cell, or half-way between the centres of adjacent image pixels. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:pixelInCell:OGC:1.0:cellCorner</name>
+		</Definition>
+	</dictionaryEntry>
+</Dictionary>

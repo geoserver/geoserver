@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-units:3.1.1"/>
+		<documentation>Builds on gmlBase.xsd to encode units of measure (or uom), including definitions of units of measure and dictionaries of such definitions. GML 3.0 candidate schema, primary editor: Arliss Whiteside. Last updated 2005-06-22.
+	Copyright (c) 2002-2005 OGC, All Rights Reserved.
+	For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr
+	Parts of this schema are based on Subclause 6.5.7 of ISO/CD 19103 Geographic information - Conceptual schema language, on Subclause A.5.2.2.3 of ISO/CD 19118 Geographic information - Encoding, and on most of OpenGIS Recommendation Paper OGC 02-007r4 Units of Measure Use and Definition Recommendations.</documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="dictionary.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<element name="unitOfMeasure" type="gml:UnitOfMeasureType"/>
+	<!-- =========================================================== -->
+	<complexType name="UnitOfMeasureType">
+		<annotation>
+			<documentation>Reference to a unit of measure definition that applies to all the numerical values described by the element containing this element. Notice that a complexType which needs to include the uom attribute can do so by extending this complexType. Alternately, this complexType can be used as a pattern for a new complexType.</documentation>
+		</annotation>
+		<sequence/>
+		<attribute name="uom" type="anyURI" use="required">
+			<annotation>
+				<documentation>Reference to a unit of measure definition, usually within the same XML document but possibly outside the XML document which contains this reference. For a reference within the same XML document, the "#" symbol should be used, followed by a text abbreviation of the unit name. However, the "#" symbol may be optional, and still may be interpreted as a reference.</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="UnitDefinition" type="gml:UnitDefinitionType" substitutionGroup="gml:Definition"/>
+	<!-- =========================================================== -->
+	<complexType name="UnitDefinitionType">
+		<annotation>
+			<documentation>Definition of a unit of measure (or uom). The definition includes a quantityType property, which indicates the phenomenon to which the units apply, and a catalogSymbol, which gives the short symbol used for this unit. This element is used when the relationship of this unit to other units or units systems is unknown.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:quantityType"/>
+					<element ref="gml:catalogSymbol" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="BaseUnit" type="gml:BaseUnitType" substitutionGroup="gml:UnitDefinition"/>
+	<!-- =========================================================== -->
+	<complexType name="BaseUnitType">
+		<annotation>
+			<documentation>Definition of a unit of measure which is a base unit from the system of units.  A base unit cannot be derived by combination of other base units within this system.  Sometimes known as "fundamental unit".</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:UnitDefinitionType">
+				<sequence>
+					<element name="unitsSystem" type="gml:ReferenceType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="DerivedUnit" type="gml:DerivedUnitType" substitutionGroup="gml:UnitDefinition"/>
+	<!-- ============================================================ -->
+	<complexType name="DerivedUnitType">
+		<annotation>
+			<documentation>Definition of a unit of measure which is defined through algebraic combination of more primitive units, which are usually base units from a particular system of units. Derived units based directly on base units are usually preferred for quantities other than the base units or fundamental quantities within a system.  If a derived unit is not the preferred unit, the ConventionalUnit element should be used instead.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:UnitDefinitionType">
+				<sequence>
+					<element ref="gml:derivationUnitTerm" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="ConventionalUnit" type="gml:ConventionalUnitType" substitutionGroup="gml:UnitDefinition"/>
+	<!-- =========================================================== -->
+	<complexType name="ConventionalUnitType">
+		<annotation>
+			<documentation>Definition of a unit of measure which is related to a preferred unit for this quantity type through a conversion formula.  A method for deriving this unit by algebraic combination of more primitive units, may also be provided.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:UnitDefinitionType">
+				<sequence>
+					<choice>
+						<element ref="gml:conversionToPreferredUnit"/>
+						<element ref="gml:roughConversionToPreferredUnit"/>
+					</choice>
+					<element ref="gml:derivationUnitTerm" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="quantityType" type="gml:StringOrRefType">
+		<annotation>
+			<documentation>Informal description of the phenomenon or type of quantity that is measured or observed. For example, "length", "angle", "time", "pressure", or "temperature". When the quantity is the result of an observation or measurement, this term is known as Observable Type or Measurand.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="catalogSymbol" type="gml:CodeType">
+		<annotation>
+			<documentation>For global understanding of a unit of measure, it is often possible to reference an item in a catalog of units, using a symbol in that catalog. The "codeSpace" attribute in "CodeType" identifies a namespace for the catalog symbol value, and might reference the catalog. The "string" value in "CodeType" contains the value of a symbol that is unique within this catalog namespace. This symbol often appears explicitly in the catalog, but it could be a combination of symbols using a specified algebra of units. For example, the symbol "cm" might indicate that it is the "m" symbol combined with the "c" prefix.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="derivationUnitTerm" type="gml:DerivationUnitTermType"/>
+	<!-- =========================================================== -->
+	<complexType name="DerivationUnitTermType">
+		<annotation>
+			<documentation>Definition of one unit term for a derived unit of measure. This unit term references another unit of measure (uom) and provides an integer exponent applied to that unit in defining the compound unit. The exponent can be positive or negative, but not zero.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:UnitOfMeasureType">
+				<attribute name="exponent" type="integer"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="conversionToPreferredUnit" type="gml:ConversionToPreferredUnitType">
+		<annotation>
+			<documentation>This element is included when this unit has an accurate conversion to the preferred unit for this quantity type.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="roughConversionToPreferredUnit" type="gml:ConversionToPreferredUnitType">
+		<annotation>
+			<documentation>This element is included when the correct definition of this unit is unknown, but this unit has a rough or inaccurate conversion to the preferred unit for this quantity type.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="ConversionToPreferredUnitType">
+		<annotation>
+			<documentation>Relation of a unit to the preferred unit for this quantity type, specified by an arithmetic conversion (scaling and/or offset). A preferred unit is either a base unit or a derived unit selected for all units of one quantity type. The mandatory attribute "uom" shall reference the preferred unit that this conversion applies to. The conversion is specified by one of two alternative elements: "factor" or "formula".</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:UnitOfMeasureType">
+				<choice>
+					<element name="factor" type="double">
+						<annotation>
+							<documentation>Specification of the scale factor by which a value using this unit of measure can be multiplied to obtain the corresponding value using the preferred unit of measure.</documentation>
+						</annotation>
+					</element>
+					<element name="formula" type="gml:FormulaType">
+						<annotation>
+							<documentation>Specification of the formula by which a value using this unit of measure can be converted to obtain the corresponding value using the preferred unit of measure.</documentation>
+						</annotation>
+					</element>
+				</choice>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="FormulaType">
+		<annotation>
+			<documentation>Paremeters of a simple formula by which a value using this unit of measure can be converted to the corresponding value using the preferred unit of measure. The formula element contains elements a, b, c and d, whose values use the XML Schema type "double". These values are used in the formula y = (a + bx) / (c + dx), where x is a value using this unit, and y is the corresponding value using the preferred unit. The elements a and d are optional, and if values are not provided, those parameters are considered to be zero. If values are not provided for both a and d, the formula is equivalent to a fraction with numerator and denominator parameters.</documentation>
+		</annotation>
+		<sequence>
+			<element name="a" type="double" minOccurs="0"/>
+			<element name="b" type="double"/>
+			<element name="c" type="double"/>
+			<element name="d" type="double" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

@@ -1,0 +1,34 @@
+<assembly>
+    <id>app-schema-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>release/extensions/app-schema</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>release/target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <!-- matches both gt-app-schema and gt-app-schema-resolver jars-->
+                <include>gt-app-schema-*.jar</include>
+                <include>xml-commons-resolver-*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>release/extensions</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>LICENSE.txt</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
+
+

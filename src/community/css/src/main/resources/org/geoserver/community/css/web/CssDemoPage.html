@@ -1,0 +1,29 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>
+      <wicket:message key="page.title">Map CSS Demo Page</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:extend>
+        <div wicket:id="main-content">
+        </div>
+        <wicket:fragment wicket:id="normal">
+            <div wicket:id="map"> </div>
+            <form wicket:id="layer-selection">
+                <label style="display:inline;" for="layername">Layer:</label><select style="display:inline; width: 200px;" wicket:id="layername"></select>
+                <label style="display:inline;" for="layername">Style:</label><select style="display:inline; width: 200px;" wicket:id="stylename"></select>
+                <a wicket:id="submit">Switch,</a> or <span wicket:id="create"></span>
+            </form>
+            <div wicket:id="feedback-low"></div>
+            <div wicket:id="tabs"></div>
+        </wicket:fragment>
+        <wicket:fragment wicket:id="loading-failure">
+            <wicket:message key="CssDemoPage.loadingFailure">The CSS Demo page
+                failed to load.  Please make sure you have at least one vector
+                layer and at least one style configured.
+            </wicket:message>
+        </wicket:fragment>
+    </wicket:extend>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+  <wicket:panel>
+    <ul>
+    <li>  
+      <fieldset>
+        <legend><span><wicket:message key="wms.attribution">WMS Attribution</wicket:message></span></legend>
+        <ul>
+          <li>
+              <label for="wms.attribution.title"><wicket:message key="wms.attribution.title"></wicket:message></label>
+              <input class="text" wicket:id="wms.attribution.title"></input>
+          </li>
+          <li>
+              <label for="wms.attribution.href"><wicket:message key="wms.attribution.href"></wicket:message></label>
+              <input class="text" wicket:id="wms.attribution.href"></input>
+          </li>
+          <li>
+              <label for="wms.attribution.logo"><wicket:message key="wms.attribution.logo"></wicket:message></label>
+              <input class="text" wicket:id="wms.attribution.logo"></input>
+          </li>
+          <li>
+              <label for="wms.attribution.type"><wicket:message key="wms.attribution.type"></wicket:message></label>
+              <input class="text" wicket:id="wms.attribution.type"></input>
+          </li>
+          <li>
+              <label for="wms.attribution.width"><wicket:message key="wms.attribution.width"></wicket:message></label>
+              <input wicket:id="wms.attribution.width" size="6"></input>
+          </li>
+          <li>
+              <label for="wms.attribution.height"><wicket:message key="wms.attribution.height"></wicket:message></label>
+              <input wicket:id="wms.attribution.height" size="6"></input>
+          </li>
+          <li>
+              <a href="#" wicket:id="verifyImage"><wicket:message key="wms.attribution.verify"></wicket:message></a>
+          </li>
+          </ul>
+      </fieldset>
+    </li>
+    </ul>
+  </wicket:panel>
+</body>
+</html>

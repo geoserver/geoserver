@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompoundCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="EPSG7405">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<srsName>OSGB36 /British National Grid + ODN</srsName>
+	<srsID>
+		<name codeSpace="urn:ogc:def:crs:EPSG:6.3:">7405</name>
+	</srsID>
+	<validArea>
+		<description>United Kingdom (UK) - Great Britain - England Scotland Wales - onshore; Isle of Man.
+</description>
+	</validArea>
+	<includesCRS xlink:href="urn:ogc:def:crs:EPSG:6.3:27700" xlink:title="OSGB 1936 / British National Grid"/>
+	<includesCRS xlink:href="urn:ogc:def:cs:EPSG:6.3:6499" xlink:title="Newlyn"/>
+</CompoundCRS>

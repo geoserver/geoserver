@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OperationMethod xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="EPSG9624">
+	<!-- Last updated 2005-11-15 -->
+	<methodName>Affine general parametric transformation</methodName>
+	<methodID>
+		<name codeSpace="urn:opengis:method:EPSG:6.3:">9624</name>
+	</methodID>
+	<methodFormula>
+XT   =  A0  +  A1. XS  +  A2.YS; 
+YT   =  B0  +  B1. XS  +  B2.YS; 
+where XT , YT  are the coordinates of a point P in the target coordinate system; 
+		XS , YS  are the coordinates of P in the source coordinate system. 
+
+Reversibility: The parameter values for an affine transformation cannot be used for the reverse transformation. However, the reverse transformation is another affine transformation using the same formulas but with different parameter values. The reverse parameter values, indicated by a prime ('), can be calculated from those of the forward transformation as follows:
+D    = A1 . B2   -   A2 . B1; 
+A0' = (A2 . B0   -   B2 . A0) / D; 
+B0' = (B1 . A0   -   A1 . B0) / D; 
+A1' = +B2 / D; 
+A2' = - A2 / D; 
+B1' = - B1 / D; 
+B2' = +A1 / D. 
+
+See Section 2.4.2.1 of EPSG Guidance Note 7. </methodFormula>
+	<sourceDimensions>2</sourceDimensions>
+	<targetDimensions>2</targetDimensions>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="EPSG8623">
+			<parameterName>A0</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8623</name>
+			</parameterID>
+		</OperationParameter>
+	</usesParameter>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="EPSG8624">
+			<parameterName>A1</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8624</name>
+			</parameterID>
+		</OperationParameter>
+	</usesParameter>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="EPSG8625">
+			<parameterName>A2</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8625</name>
+			</parameterID>
+		</OperationParameter>
+	</usesParameter>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="EPSG8639">
+			<parameterName>B0</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8639</name>
+			</parameterID>
+		</OperationParameter>
+	</usesParameter>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="EPSG8640">
+			<parameterName>B1</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8640</name>
+			</parameterID>
+		</OperationParameter>
+	</usesParameter>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="EPSG8641">
+			<parameterName>B2</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:EPSG:6.3:">8641</name>
+			</parameterID>
+		</OperationParameter>
+	</usesParameter>
+</OperationMethod>

@@ -1,0 +1,33 @@
+<xsd:schema targetNamespace="http://www.opengis.net/cite/geometry"
+  xmlns:cgf="http://www.opengis.net/cite/geometry"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:gml="http://www.opengis.net/gml">
+  
+  <xsd:import namespace="http://www.opengis.net/gml"/>
+  <xsd:element name="id" type="xsd:string"/>
+
+  <xsd:complexType name="AbstractSimpleFeatureType" abstract="true">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="cgf:id"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="_SimpleFeature" type="cgf:AbstractSimpleFeatureType" abstract="true" substitutionGroup="gml:_Feature"/>
+
+ <xsd:complexType name="MultiPolygonFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:multiPolygonProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="MPolygons" type="cgf:MultiPolygonFeatureType" substitutionGroup="cgf:_SimpleFeature"/>
+
+</xsd:schema>

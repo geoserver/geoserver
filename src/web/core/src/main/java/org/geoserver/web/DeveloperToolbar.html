@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/" xml:lang="en" lang="en">
+<body>
+<wicket:panel>
+<span class="navigation-tab-header">Developer toolbar</span><br/>
+<ul class="navigation-tab-content plain">
+<li title="Enables XHTML validation of pages">
+  XHTML validation<input id="xhtml" type="checkbox" wicket:id="xhtml"/></li>
+<li title="Strips all wicket attributes and tags from the output">
+  Strip Wicket tags<input id="wicketIds" type="checkbox" wicket:id="wicketIds"/></li>
+<li title="Generates wicket:path attributes (useful for writing tests, enabled only if wicket attributes are being generated)">
+  Gen. Wicket paths<input id="wicketPaths" type="checkbox" wicket:id="wicketPaths"/></li>
+<li title="Toggle ajax debugging">
+  Ajax debug<input id="ajaxDebug" type="checkbox" wicket:id="ajaxDebug"/></li>
+<li><a href="#" class="positive" wicket:id="clearCache"
+    title="Forces the Wicket caches to be cleared, so that localized messages will be reloaded without needing a restart">
+  Clear Wicket caches </a></li>
+<li><a href="#" class="positive" wicket:id="reload"
+    title="Reloads the catalog and configuration from the file system">
+  Reload catalog/config</a></li>
+</ul>
+</wicket:panel>
+</body>
+</html>

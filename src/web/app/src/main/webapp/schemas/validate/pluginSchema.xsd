@@ -1,0 +1,42 @@
+ <xs:schema targetNamespace="pluginSchema" 
+ xmlns:ogc="http://www.opengis.net/ogc" 
+ xmlns:gml="http://www.opengis.net/gml" 
+ xmlns="pluginSchema" 
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+   <xs:import namespace=”http://www.opengis.net/gml” 
+      schemaLocation="http://schemas.opengis.net/gml/2.0.0/geometry.xsd"/>
+   <xs:import namespace=”http://www.opengis.net/ogc”
+      schemaLocation="http://schemas.opengis.net/filter/1.0.0/filter.xsd"/>
+   <xs:element name="plugin">
+     <xs:complexType>
+       <xs:sequence>
+         <xs:element name="name" type="xs:string"/>
+         <xs:element name="description" type="xs:string" minOccurs="0"/>
+         <xs:element name="class" type="xs:string"/>
+         <xs:element name="argument" minOccurs="0" maxOccurs="unbounded">
+           <xs:complexType>
+             <xs:attribute name="final" type="xs:boolean" use="optional" default="false"/>
+             <xs:sequence>
+               <xs:element name="name" type="xs:string"/>
+               <xs:choice>
+                 <xs:element name="filter" type="ogc:FilterType"/>
+                 <xs:element name="geometry"
+                      type="gml:AbstractGeometryType"/>
+                 <xs:element name="bbox" type="ogc:BBOXType"/>
+                 <xs:element name="short" type="xs:short"/>
+                 <xs:element name="integer" type="xs:integer"/>
+                 <xs:element name="long" type="xs:long"/>
+                 <xs:element name="float" type="xs:float"/>
+                 <xs:element name="double" type="xs:double"/>
+                 <xs:element name="datetime" type="xs:dateTime"/>
+                 <xs:element name="anyURI" type="xs:anyURI"/>
+                 <xs:element name="boolean" type="xs:boolean"/>
+                 <xs:element name="string" type="xs:string"/>
+               </xs:choice>
+             </xs:sequence>
+           </xs:complexType>
+         </xs:element>
+       </xs:sequence>
+     </xs:complexType>
+   </xs:element>
+ </xs:schema>

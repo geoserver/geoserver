@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-units:3.1.1"/>
+		<documentation>Subset of units.xsd for GML 3.1.1 CRS Support profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2005-10-11.
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved.</documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="basicTypes.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<element name="unitOfMeasure" type="gml:UnitOfMeasureType"/>
+	<!-- =========================================================== -->
+	<complexType name="UnitOfMeasureType">
+		<annotation>
+			<documentation>Reference to a unit of measure definition that applies to all the numerical values described by the element containing this element. Notice that a complexType which needs to include the uom attribute can do so by extending this complexType. Alternately, this complexType can be used as a pattern for a new complexType.</documentation>
+		</annotation>
+		<sequence/>
+		<attribute name="uom" type="anyURI" use="required">
+			<annotation>
+				<documentation>Reference to a unit of measure definition, usually within the same XML document but possibly outside the XML document which contains this reference. For a reference within the same XML document, the "#" symbol should be used, followed by a text abbreviation of the unit name. However, the "#" symbol may be optional, and still may be interpreted as a reference.</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

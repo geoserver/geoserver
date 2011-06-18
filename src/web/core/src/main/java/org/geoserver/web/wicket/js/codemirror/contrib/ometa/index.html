@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+  <head> 
+    <script src="../../js/codemirror.js" type="text/javascript"></script> 
+    <title>CodeMirror: OmetaJS demonstration</title> 
+    <link rel="stylesheet" type="text/css" href="../../css/docs.css"/> 
+  </head> 
+  <body style="padding: 20px;"> 
+
+<p>This page demonstrates <a href="../../index.html">CodeMirror</a>'s <a
+      href="http://www.tinlizzie.org/ometa">OmetaJS</a> parser.</p>
+
+<p>Adapted from the official Javascript parser by Eric KEDJI
+  &lt;<a href="mailto:eric.kedji@gmail.com">eric.kedji@gmail.com</a>&gt;.</p>
+
+<div class="border">
+<textarea id="code" cols="120" rows="30">
+// Source: http://www.tinlizzie.org/ometa-js/#Lisp
+// Inspired by McCarthy's meta-circular lisp
+
+ometa Lisp {
+  ev     = string:a                                         -> self.env[a]
+         | [#lambda :fs :body]                              -> [#lambda, fs, body]
+         | [#quote  :ans]                                   -> ans
+         | [#cond   evCond:ans]                             -> ans
+         | [ev:f    ev*:xs]     app(f, xs):ans              -> ans,
+
+  evCond = condF* condT:ans anything*                       -> x,
+  condT  = [ev:x ?x ev:ans]                                 -> ans,
+  condF  = ~condT anything,
+
+  app    = #car                [[:hd anything*]]            -> hd
+         | #cdr                [[:hd anything*:tl]]         -> tl
+         | #cons               [:hd :tl]                    -> [hd].concat(tl)
+         | #atom               [:x]                         -> (!(x instanceof Array))
+         | #eq                 [:x :y]                      -> (x == y)
+         | [#lambda :fs :body] :args
+             enter bind(fs, args) ev(body):ans leave        -> ans,
+  enter  =                                                  -> (self.env = self.env.delegated({_p: self.env})),
+  bind   = []                []
+         | [:f anything*:fs] [:a anything*:as] bind(fs, as) -> (self.env[f] = a),
+  leave  =                                                  -> (self.env = self.env._p)
+}
+Lisp.initialize = function() { this.env = {car: "car", cdr: "cdr", cons: "cons", atom: "atom", eq: "eq", nil: null, T: "T"} }
+lispEval = function(x) { return Lisp.match(x, "ev") }
+
+lispEval([`quote, [1, 2, 3]])
+lispEval([`car, [`quote, [1, 2, 3]]])
+lispEval([`cdr, [`quote, [1, 2, 3]]])
+lispEval([`cons, [`quote, `x], [`quote, `y]])
+lispEval([`eq, [`quote, `x], [`quote, `x]])
+lispEval([[`lambda, [`x], [`cons, `x, `x]], [`quote, `boo]])
+</textarea>
+</div>
+
+<script type="text/javascript">
+/*  var textarea = document.getElementById('code');
+  var editor = new MirrorFrame(CodeMirror.replace(textarea), {
+    height: "350px",
+    content: textarea.value,
+    parserfile: ["tokenizeometa.js", "parseometa.js"],
+    stylesheet: "css/ometacolors.css",
+    path: "js/",
+    autoMatchParens: true
+  });
+*/
+  var editor = CodeMirror.fromTextArea('code', {
+    height: "450px",
+    parserfile: ["../contrib/ometa/js/tokenizeometa.js",
+      "../contrib/ometa/js/parseometa.js"],
+    stylesheet: "css/ometacolors.css",
+    path: "../../js/",
+    textWrapping: false
+  });
+</script>
+
+  </body>
+</html>

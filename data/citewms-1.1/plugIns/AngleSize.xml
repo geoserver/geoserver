@@ -1,0 +1,5 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" >
+<name>Angle Size</name>
+<description>Are the angle sizes too big/small?.</description>
+<class>org.geotools.validation.network.AngleSizeValidation</class>
+</plugin>

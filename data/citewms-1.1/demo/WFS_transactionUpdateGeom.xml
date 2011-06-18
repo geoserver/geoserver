@@ -1,0 +1,28 @@
+<!--       YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE 
+              IT WILL MODIFY YOUR SOURCE DATA FILES
+
+     This will update one of the geometry fields in the bc_roads dataset.
+     
+     
+-->
+<wfs:Transaction service="WFS" version="1.0.0"
+  xmlns:topp="http://www.openplans.org/topp"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml">
+  <wfs:Update typeName="topp:bc_roads">
+    <wfs:Property>
+      <wfs:Name>the_geom</wfs:Name>
+      <wfs:Value>
+        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#27345">
+          <gml:LineString>
+            <gml:coordinates>500000,5450000 540000,5450000</gml:coordinates>
+          </gml:LineString>
+        </gml:MultiLineString>
+      </wfs:Value>
+    </wfs:Property>
+    <ogc:Filter>
+      <ogc:FeatureId fid="bc_roads.1"/>
+    </ogc:Filter>
+  </wfs:Update>
+</wfs:Transaction>

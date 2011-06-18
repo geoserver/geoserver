@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: wpsGetCapabilities_request.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema Document encodes the WPS GetCapabilities operation request.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- =============================================================
+		includes and imports
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- =============================================================
+		elements and types
+	============================================================== -->
+	<element name="GetCapabilities">
+		<complexType>
+			<sequence>
+				<element name="AcceptVersions" type="ows:AcceptVersionsType" minOccurs="0">
+					<annotation>
+						<documentation>When omitted, server shall return latest supported version. </documentation>
+					</annotation>
+				</element>
+			</sequence>
+			<attribute name="service" type="ows:ServiceType" use="required" fixed="WPS">
+				<annotation>
+					<documentation>OGC service type identifier (WPS).</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="language" type="string">
+				<annotation>
+					<documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+</schema>

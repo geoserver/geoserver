@@ -1,0 +1,36 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+  <wicket:fragment wicket:id="header">
+    <ul>
+      <li><a href="gwc"><wicket:message key="GWCSettingsPage.gwcHome" /></a></li>
+      <li><a href="gwc/demo"><wicket:message key="GWCSettingsPage.gwcDemos" /></a></li>
+    </ul>
+  </wicket:fragment>
+  <form wicket:id="form">
+  <ul>
+    <li><br />
+    </li>
+    <li>
+    <fieldset>
+      <legend><span><wicket:message key="WMSIntegration">WMS Integration</wicket:message></span></legend>
+      <ul>
+        <li><input id="enableWMSIntegration" class="field checkbox" type="checkbox" wicket:id="enableWMSIntegration" />
+        <label for="enableWMSIntegration" class="choice"><wicket:message
+          key="GWCSettingsPage.enableWMSIntegration">Enable GWC</wicket:message></label></li>
+      </ul>
+    </fieldset>
+    </li>
+    <li>
+      <div wicket:id="diskQuotaConfigPanel"></div>
+    </li>
+    <li class="button-group selfclear">
+    <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+    <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+    </li>
+  </ul>
+  </form>
+</wicket:extend>
+</body>
+</html>

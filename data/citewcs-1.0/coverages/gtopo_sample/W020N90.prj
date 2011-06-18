@@ -1,0 +1,8 @@
+Projection    GEOGRAPHIC                                                        
+Datum         WGS84                                                             
+Zunits        METERS                                                            
+Units         DD                                                                
+Spheroid      WGS84                                                             
+Xshift        0.0000000000                                                      
+Yshift        0.0000000000                                                      
+Parameters                                                                      

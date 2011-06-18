@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:gml="http://www.opengis.net/gml" version="1.0">
+    <xs:import namespace="http://www.opengis.net/gml"
+        schemaLocation="http://schemas.opengis.net/gml/2.1.2/geometry.xsd" />
+    <xs:element name="gml2linestring" type="gml:LineStringType" />
+</xs:schema>

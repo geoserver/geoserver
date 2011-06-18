@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsInterpolationMethod.xsd 2007-06-06</appinfo>
+		<documentation>This XML Schema Document defines interpolation method elements and types, used by the OGC Web Coverage Service (WCS). 
+		Copyright (c) 2007 Open Geospatial Consortium, Inc, All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+ 	includes and imports	
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- ==============================================================    
+	   elements and types	
+	============================================================== -->
+	<element name="InterpolationMethods">
+		<annotation>
+			<documentation>List of the interpolation method(s) that can uses when continuous grid coverage resampling is needed. </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="InterpolationMethod" type="wcs:InterpolationMethodType" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of identifiers of spatial interpolation methods. </documentation>
+					</annotation>
+				</element>
+				<element name="Default" type="string" minOccurs="0">
+					<annotation>
+						<documentation>Identifier of interpolation method that will be used if the client does not specify one. Should be included when a default exists and is known. </documentation>
+						<documentation>(Arliss) Can any string be used to identify an interpolation method in a KVP encoded Get Coverage operation request? </documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- ========================================================== -->
+	<complexType name="InterpolationMethodType">
+		<annotation>
+			<documentation>Identifier of a spatial interpolation method applicable to continuous grid coverages, plus the optional "null Resistance" parameter. </documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="wcs:InterpolationMethodBaseType">
+				<attribute name="nullResistance" type="string" use="optional">
+					<annotation>
+						<documentation>Identifier of how the server handles null values when spatially interpolating values in this field using this interpolation method. This identifier shall be selected from the referenced dictionary. This parameter shall be omitted when the rule for handling nulls is unknown. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- ========================================================== -->
+	<complexType name="InterpolationMethodBaseType">
+		<annotation>
+			<documentation>Identifier of an interpolation method applicable to continuous grid coverages. The string in this type shall be one interpolation type identifier string, selected from the referenced dictionary. </documentation>
+			<documentation>Adapts gml:CodeWithAuthorityType from GML 3.2 for this WCS purpose, allowing the codeSpace to be omitted but providing a default value for the standard interpolation methods defined in Annex C of ISO 19123: Geographic information - Schema for coverage geometry and functions. </documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="ows:CodeType">
+				<attribute name="codeSpace" type="anyURI" use="optional" default="http://schemas.opengis.net/wcs/1.1.0/interpolationMethods.xml">
+					<annotation>
+						<documentation>Reference to a dictionary that specifies allowed values for interpolation method identifier strings and nullResistance identifier strings. This reference defaults to the standard interpolation methods dictionary specified in WCS 1.1.0. </documentation>
+					</annotation>
+				</attribute>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<!-- ========================================================== -->
+</schema>
+

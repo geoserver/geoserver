@@ -1,0 +1,19 @@
+
+   <featureTypes>
+     <featureType>
+       <name>giant_polygon</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/giant_polygon.xml" type="application/xml"/>
+     </featureType>
+     <featureType>
+       <name>poi</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.xml" type="application/xml"/>
+     </featureType>
+     <featureType>
+       <name>poly_landmarks</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poly_landmarks.xml" type="application/xml"/>
+     </featureType>
+     <featureType>
+       <name>tiger_roads</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/tiger_roads.xml" type="application/xml"/>
+     </featureType>
+   </featureTypes>

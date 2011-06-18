@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding="ISO-8859-1" standalone="no" ?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://www.digitalearth.gov/wmt/xml/capabilities_1_1_0.dtd"
+ [
+ <!ELEMENT VendorSpecificCapabilities EMPTY>
+ ]>  <!-- end of DOCTYPE declaration -->
+
+<WMT_MS_Capabilities version="1.1.0" updateSequence="0">
+
+<!-- MapServer version 4.0-beta2 OUTPUT=GIF OUTPUT=PNG OUTPUT=JPEG OUTPUT=WBMP OUTPUT=PDF OUTPUT=SWF SUPPORTS=PROJ SUPPORTS=FREETYPE SUPPORTS=WMS_SERVER SUPPORTS=WMS_CLIENT SUPPORTS=WFS_SERVER SUPPORTS=WFS_CLIENT INPUT=EPPL7 INPUT=JPEG INPUT=POSTGIS INPUT=OGR INPUT=GDAL INPUT=SHAPEFILE -->
+
+<Service> <!-- a service IS a MapServer mapfile -->
+  <Name>GetMap</Name> <!-- WMT defined -->
+  <Title>GMap WMS Demo Server</Title>
+  <Abstract>This demonstration server was setup by DM Solutions Group (http://www.dmsolutions.ca/) and is powered by the UMN MapServer (http://mapserver.gis.umn.edu/).  This server uses Canadian source data (c)2000, Government of Canada with permission from Natural Resources Canada from NRCan's GeoGratis 
+web site (http://geogratis.cgdi.gc.ca/).</Abstract>
+  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/>
+</Service>
+
+<Capability>
+  <Request>
+    <GetCapabilities>
+      <Format>application/vnd.ogc.wms_xml</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetCapabilities>
+    <GetMap>
+      <Format>image/gif</Format>
+      <Format>image/png</Format>
+      <Format>image/jpeg</Format>
+      <Format>image/wbmp</Format>
+      <Format>application/x-shockwave-flash</Format>
+      <Format>text/html</Format>
+      <Format>application/x-pdf</Format>
+      <Format>image/tiff</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetMap>
+    <GetFeatureInfo>
+      <Format>text/plain</Format>
+      <Format>text/html</Format>
+      <Format>application/vnd.ogc.gml</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/></Get>
+          <Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"/></Post>
+        </HTTP>
+      </DCPType>
+    </GetFeatureInfo>
+  </Request>
+  <Exception>
+    <Format>application/vnd.ogc.se_xml</Format>
+    <Format>application/vnd.ogc.se_inimage</Format>
+    <Format>application/vnd.ogc.se_blank</Format>
+  </Exception>
+  <VendorSpecificCapabilities />
+  <Layer>
+    <Name>DEMO</Name>
+    <Title>GMap WMS Demo Server</Title>
+    <SRS>EPSG:42304 EPSG:42101 EPSG:4269 EPSG:4326 AUTO:42001 AUTO:42002 AUTO:42003 AUTO:42004 AUTO:42005</SRS>
+    <LatLonBoundingBox minx="-172.367" miny="35.6673" maxx="-11.5624" maxy="83.8293" />
+    <BoundingBox SRS="EPSG:42304"
+                minx="-2.2e+06" miny="-712631" maxx="3.0728e+06" maxy="3.84e+06" />
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>bathymetry</Name>
+        <Title>Elevation/Bathymetry</Title>
+        <SRS>EPSG:42304</SRS>
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>land_fn</Name>
+        <Title>Foreign Lands</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-178.838" miny="31.8844" maxx="179.94" maxy="89.8254" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.75056e+06" miny="-936638" maxx="3.58387e+06" maxy="4.67312e+06" />
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>park</Name>
+        <Title>Parks</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-173.433" miny="41.4271" maxx="-13.0481" maxy="83.7466" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.3468e+06" miny="-67422.4" maxx="2.84037e+06" maxy="3.83012e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>drain_fn</Name>
+        <Title>Water</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-179.973" miny="35.2464" maxx="179.92" maxy="88.06" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.75056e+06" miny="-936638" maxx="2.75882e+06" maxy="4.36727e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>drainage</Name>
+        <Title>Drainage</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-169.629" miny="39.2232" maxx="-15.4464" maxy="83.0129" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.1694e+06" miny="-386968" maxx="2.79747e+06" maxy="3.74336e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>prov_bound</Name>
+        <Title>Province</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-173.537" miny="35.8775" maxx="-11.9603" maxy="83.8009" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.3406e+06" miny="-719746" maxx="3.00943e+06" maxy="3.83661e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>fedlimit</Name>
+        <Title>Federal Limit</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-179.96" miny="34.2409" maxx="178.833" maxy="89.9051" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.69358e+06" miny="-724162" maxx="3.38519e+06" maxy="4.6545e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>rail</Name>
+        <Title>Railroads</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-137.447" miny="37.7146" maxx="-46.3201" maxy="66.7201" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.14572e+06" miny="-680853" maxx="2.61606e+06" maxy="1.93097e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>road</Name>
+        <Title>Roads</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-148.059" miny="35.882" maxx="-33.7745" maxy="72.5503" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.30369e+06" miny="-724118" maxx="3.00053e+06" maxy="2.56497e+06" />
+    </Layer>
+    <Layer queryable="1" opaque="0" cascaded="0">
+        <Name>popplace</Name>
+        <Title>Cities</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-172.301" miny="36.3541" maxx="-12.9698" maxy="83.4832" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.30386e+06" miny="-681503" maxx="2.96177e+06" maxy="3.79886e+06" />
+    </Layer>
+    <Layer queryable="0" opaque="0" cascaded="0">
+        <Name>grid</Name>
+        <Title>Grid</Title>
+        <SRS>EPSG:42304</SRS>
+        <LatLonBoundingBox minx="-178.838" miny="31.8844" maxx="179.94" maxy="89.8254" />
+        <BoundingBox SRS="EPSG:42304"
+                    minx="-2.75056e+06" miny="-936639" maxx="3.58387e+06" maxy="4.67312e+06" />
+    </Layer>
+  </Layer>
+</Capability>
+</WMT_MS_Capabilities>

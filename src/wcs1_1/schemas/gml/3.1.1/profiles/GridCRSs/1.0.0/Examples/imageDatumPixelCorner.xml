@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ImageDatum xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="mageDatumPixelCorner">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<datumName>Origin at outside corner of first pixel</datumName>
+	<datumID>
+		<name codeSpace="urn:ogc:def:datum:OGC:1.0:">ImageDatumPixelCorner</name>
+	</datumID>
+	<remarks>2D image datum with the origin at the outside corner of the first pixel in the image file, usually the first pixel collected by the image sensor. In an image file, the pixels in the first row are assumed to be listed first, followed by other rows, with pixels in each row listed (and collected) in column number order. </remarks>
+	<anchorPoint>outside corner of first pixel</anchorPoint>
+	<pixelInCell codeSpace="urn:ogc:def:pixelInCell:OGC:1.0:">cellCorner</pixelInCell>
+</ImageDatum>

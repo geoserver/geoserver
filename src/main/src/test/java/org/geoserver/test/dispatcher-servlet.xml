@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <!-- 
+    Do not declare controllers here, but in applicationContext.xml please. See for example
+    the configuration file in this module.
+  -->
+</beans>
+ 

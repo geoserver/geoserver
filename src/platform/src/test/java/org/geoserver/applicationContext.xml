@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="myBean" class="org.geoserver.BeanPersisterTest$MyBean">
+		<property name="foo" value="foo"/>
+	</bean>
+	
+	<bean id="beanPersister" class="org.geoserver.BeanPersister">
+		<constructor-arg ref="resourceLoader"/>
+		<property name="beans">
+			<list>
+				<value>myBean</value>
+			</list>
+		</property>
+	</bean>
+	
+</beans>

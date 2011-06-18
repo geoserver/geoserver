@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCoverage xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGetCoverage.xsd" 
+service="WCS" version="1.1.1">
+	<ows:Identifier>Cov123</ows:Identifier>
+	<DomainSubset>
+		<ows:BoundingBox crs="urn:ogc:def:crs:OGC:2:84">
+			<ows:LowerCorner>-71 47</ows:LowerCorner>
+			<ows:UpperCorner>-66 51</ows:UpperCorner>
+		</ows:BoundingBox>
+	</DomainSubset>
+	<Output format="image/netcdf"/>
+</GetCoverage>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:gmlBase:3.1.1"/>
+		<documentation>Subset of gmlBase.xsd for WCS 1.2 profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2007-04-23 
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved.</documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="basicTypes.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../../xlink/1.0.0/xlinks.xsd"/>
+	<!-- =========================================================== -->
+	<!-- ==================== Objects ================================ -->
+	<!-- =========================================================== -->
+	<!-- =========== Abstract "Object" is "anyType" ============= -->
+	<!-- ===== Global element at the head of the "Object" substitution group ======== -->
+	<element name="_Object" abstract="true">
+		<annotation>
+			<documentation>This abstract element is the head of a substitutionGroup hierararchy which may contain either simpleContent or complexContent elements.  It is used to assert the model position of "class" elements declared in other GML schemas.</documentation>
+		</annotation>
+	</element>
+	<!-- ============================================================= -->
+	<!-- =========== Abstract "GMLobject" supertype ========================= -->
+	<element name="_GML" type="gml:AbstractGMLType" abstract="true" substitutionGroup="gml:_Object">
+		<annotation>
+			<documentation>Global element which acts as the head of a substitution group that may include any element which is a GML feature, object, geometry or complex value</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<group name="StandardObjectProperties">
+		<annotation>
+			<documentation>This content model group makes it easier to construct types that derive from AbstractGMLType and its descendents "by restriction".  A reference to the group saves having to enumerate the standard object properties.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:description" minOccurs="0"/>
+			<element ref="gml:name" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Multiple names may be provided.  These will often be distinguished by being assigned by different authorities, as indicated by the value of the codeSpace attribute.  In an instance document there will usually only be one name per authority.</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</group>
+	<!-- =========================================================== -->
+	<complexType name="AbstractGMLType" abstract="true">
+		<annotation>
+			<documentation>All complexContent GML elements are directly or indirectly derived from this abstract supertype to establish a hierarchy of GML types that may be distinguished from other XML types by their ancestry. Elements in this hierarchy may have an ID and are thus referenceable.</documentation>
+		</annotation>
+		<sequence>
+			<group ref="gml:StandardObjectProperties"/>
+		</sequence>
+		<attribute ref="gml:id" use="optional"/>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- ================== Base Property Types ========================= -->
+	<!-- =========================================================== -->
+	<complexType name="ReferenceType">
+		<annotation>
+			<documentation>A pattern or base for derived types used to specify complex types corresponding to a UML aggregation association.  An instance of this type serves as a pointer to a remote Object.</documentation>
+		</annotation>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- ==========================================================
+	global attribute, attribute group and element declarations 
+	============================================================  -->
+	<attribute name="id" type="ID">
+		<annotation>
+			<documentation>Database handle for the object.  It is of XML type ID, so is constrained to be unique in the XML document within which it occurs.  An external identifier for the object in the form of a URI may be constructed using standard XML and XPointer methods.  This is done by concatenating the URI for the document, a fragment separator, and the value of the id attribute.</documentation>
+		</annotation>
+	</attribute>
+	<!-- =========================================================== -->
+	<attributeGroup name="AssociationAttributeGroup">
+		<annotation>
+			<documentation>Attribute group used to enable property elements to refer to their value remotely. It contains the simple link components from xlinks.xsd, with all members optional, and the remoteSchema attribute, which is also optional.  These attributes can be attached to any element, thus allowing it to act as a pointer. The 'remoteSchema' attribute allows an element  that carries link attributes to indicate that the element is declared  in a remote schema rather than by the schema that constrains the current document instance.</documentation>
+		</annotation>
+		<attributeGroup ref="xlink:simpleLink"/>
+	</attributeGroup>
+	<!-- =========================================================== -->
+	<element name="name" type="gml:CodeType">
+		<annotation>
+			<documentation>Label for the object, normally a descriptive name. An object may have several names, typically assigned by different authorities.  The authority for a name is indicated by the value of its (optional) codeSpace attribute.  The name may or may not be unique, as determined by the rules of the organization responsible for the codeSpace.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<element name="description" type="string">
+		<annotation>
+			<documentation>Contains a simple text description of the object.</documentation>
+			<documentation>Restricted to only allow a text string, as done in GML 3.2. </documentation>
+		</annotation>
+	</element>
+	<!-- ===================================================== -->
+</schema>

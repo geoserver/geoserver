@@ -1,0 +1,18 @@
+<!-- Gets the WCS capabilities. For WMS capabilities, see WMS_getCapabilities demo-->
+<!--
+
+      This will briefly describe all the layers (Coverages) in that you have
+      in your WCS server, plus more generic information about what your server
+      supports.
+      
+      For more information about a particular Coverage, use the 
+      WCS_describeCoverage.xml demo!
+      
+  -->
+<GetCapabilities
+  service="WCS"
+  version="1.0.0"
+  xmlns="http://www.opengis.net/wcs"
+  xmlns:nurc="http://www.nurc.nato.int"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd"/>

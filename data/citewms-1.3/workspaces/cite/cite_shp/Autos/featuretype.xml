@@ -1,0 +1,45 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--2e539c29:12c805e6d8b:-7fe9</id>
+  <name>Autos</name>
+  <nativeName>Autos</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--6d617f8c:12c804a8970:-7ffb</id>
+  </namespace>
+  <title>cite:Autos</title>
+  <metadataLinks>
+    <metadataLink>
+      <type>application/xml</type>
+      <metadataType>FGDC</metadataType>
+      <content>http://localhost/www/Autos.xml</content>
+    </metadataLink>
+  </metadataLinks>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;D_WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-0.0032</minx>
+    <maxx>0.0029</maxx>
+    <miny>-0.0022</miny>
+    <maxy>0.0022</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-0.0032</minx>
+    <maxx>0.0029</maxx>
+    <miny>-0.0022</miny>
+    <maxy>0.0022</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>NONE</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--2e539c29:12c805e6d8b:-8000</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

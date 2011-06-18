@@ -1,0 +1,116 @@
+<?xml version="1.0"?> 
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+
+<!-- =============================================================== -->
+<!-- Configure the Jetty Server                                      -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.mortbay.jetty.Server">
+ 
+    <Set name="ThreadPool">
+      <New class="org.mortbay.thread.BoundedThreadPool">
+        <Set name="minThreads">25</Set>
+        <Set name="maxThreads">150</Set>
+      </New>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- Set connectors                                              -->
+    <!-- =========================================================== -->
+    <!-- One of each type!                                           -->
+    <!-- =========================================================== -->
+    <Set name="connectors">
+      <Array type="org.mortbay.jetty.Connector"> 
+      
+        <!-- Use this connector if NIO is not available. 
+        -->
+        <Item>
+          <New class="org.mortbay.jetty.bio.SocketConnector">
+            <Set name="port">8081</Set>
+          </New>
+        </Item>
+        
+        <!-- Use this connector for few very active connections.
+        <Item>
+          <New class="org.mortbay.jetty.nio.BlockingChannelConnector">
+            <Set name="port">8080</Set>
+          </New>
+        </Item>
+        -->
+        
+        <!-- Use this connector for many frequently idle connections 
+             and for threadless continuations.
+        -->
+        <Item>
+          <New class="org.mortbay.jetty.nio.SelectChannelConnector">
+            <Set name="port">8080</Set>
+            <Set name="maxIdleTime">50000</Set>
+            <Set name="Acceptors">10</Set>
+          </New>
+        </Item>
+
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!-- Add a HTTPS SSL listener on port 8443                           -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--  
+        <Item>
+          <New class="org.mortbay.jetty.security.SslSocketConnector">
+            <Set name="Port">8443</Set>
+            <Set name="maxIdleTime">30000</Set>
+            <Set name="Keystore"><SystemProperty name="jetty.home" default="." />/etc/keystore</Set>
+            <Set name="Password">OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4</Set>
+            <Set name="KeyPassword">OBF:1u2u1wml1z7s1z7a1wnl1u2g</Set>
+          </New>
+        </Item>
+        -->
+      </Array>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- Set handlers                                                -->
+    <!-- =========================================================== -->
+    <Set name="handlers">
+      <Array type="org.mortbay.jetty.Handler"> 
+        <!-- ======================================================= -->
+        <!-- Configure a test web application with web.xml           -->
+        <!-- ======================================================= -->
+        <Item>
+          <New id="testWebAppContext"  class="org.mortbay.jetty.webapp.WebAppContext">
+            <Set name="Server"><Ref id="Server"/></Set>
+            <Set name="contextPath">/stresstest</Set>
+            <Set name="war">../stresstest.war</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- Configure Realms                                            -->
+    <!-- =========================================================== -->
+    <Set name="UserRealms">
+      <Array type="org.mortbay.jetty.security.UserRealm">
+        <Item>
+          <New class="org.mortbay.jetty.security.HashUserRealm">
+            <Set name="name">StressTest</Set>
+            <Set name="config">etc/realm.properties</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- Start the server                                            -->
+    <!-- =========================================================== -->
+    <Set name="stopAtShutdown">true</Set>
+    <Call name="start"/>
+
+</Configure>
+
+
+
+
+
+
+
+
+

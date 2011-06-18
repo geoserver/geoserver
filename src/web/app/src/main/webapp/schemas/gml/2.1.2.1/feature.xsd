@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="2.1.2">
+  <annotation>
+    <appinfo>feature.xsd v2.1.2 2002-07</appinfo>
+    <documentation xml:lang="en">
+      GML Feature schema. Copyright (c) 2002 OGC, All Rights Reserved.
+    </documentation>
+  </annotation>
+  <!-- include constructs from the GML Geometry schema -->
+  <include schemaLocation="geometry.xsd"/>
+  <!-- bring in the XLink namespace -->
+ <import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/1.0.0/xlinks.xsd"/>
+  <!-- ==============================================================
+       global declarations
+  =================================================================== -->
+  <element name="_Feature" type="gml:AbstractFeatureType" abstract="true"/>
+  <element name="_FeatureCollection" type="gml:AbstractFeatureCollectionType" abstract="true" substitutionGroup="gml:_Feature"/>
+  <element name="featureMember" type="gml:FeatureAssociationType"/>
+  <!-- some basic geometric properties of features -->
+  <element name="_geometryProperty" type="gml:GeometryAssociationType" abstract="true"/>
+  <element name="geometryProperty" type="gml:GeometryAssociationType"/>
+  <element name="boundedBy" type="gml:BoundingShapeType"/>
+  <element name="pointProperty" type="gml:PointPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <element name="polygonProperty" type="gml:PolygonPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <element name="lineStringProperty" type="gml:LineStringPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <element name="multiPointProperty" type="gml:MultiPointPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <element name="multiLineStringProperty" type="gml:MultiLineStringPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <element name="multiPolygonProperty" type="gml:MultiPolygonPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <element name="multiGeometryProperty" type="gml:MultiGeometryPropertyType" substitutionGroup="gml:_geometryProperty"/>
+  <!-- common aliases for geometry properties -->
+  <element name="location" type="gml:PointPropertyType" substitutionGroup="gml:pointProperty"/>
+  <element name="centerOf" type="gml:PointPropertyType" substitutionGroup="gml:pointProperty"/>
+  <element name="position" type="gml:PointPropertyType" substitutionGroup="gml:pointProperty"/>
+  <element name="extentOf" type="gml:PolygonPropertyType" substitutionGroup="gml:polygonProperty"/>
+  <element name="coverage" type="gml:PolygonPropertyType" substitutionGroup="gml:polygonProperty"/>
+  <element name="edgeOf" type="gml:LineStringPropertyType" substitutionGroup="gml:lineStringProperty"/>
+  <element name="centerLineOf" type="gml:LineStringPropertyType" substitutionGroup="gml:lineStringProperty"/>
+  <element name="multiLocation" type="gml:MultiPointPropertyType" substitutionGroup="gml:multiPointProperty"/>
+  <element name="multiCenterOf" type="gml:MultiPointPropertyType" substitutionGroup="gml:multiPointProperty"/>
+  <element name="multiPosition" type="gml:MultiPointPropertyType" substitutionGroup="gml:multiPointProperty"/>
+  <element name="multiCenterLineOf" type="gml:MultiLineStringPropertyType" substitutionGroup="gml:multiLineStringProperty"/>
+  <element name="multiEdgeOf" type="gml:MultiLineStringPropertyType" substitutionGroup="gml:multiLineStringProperty"/>
+  <element name="multiCoverage" type="gml:MultiPolygonPropertyType" substitutionGroup="gml:multiPolygonProperty"/>
+  <element name="multiExtentOf" type="gml:MultiPolygonPropertyType" substitutionGroup="gml:multiPolygonProperty"/>
+  <!-- common feature descriptors -->
+  <element name="description" type="string"/>
+  <element name="name" type="string"/>
+  <!-- ==============================================================
+       abstract supertypes
+  =================================================================== -->
+  <complexType name="AbstractFeatureType" abstract="true">
+    <annotation>
+      <documentation>
+        An abstract feature provides a set of common properties. A concrete 
+        feature type must derive from this type and specify additional 
+        properties in an application schema. A feature may optionally 
+        possess an identifying attribute ('fid').
+      </documentation>
+    </annotation>
+    <sequence>
+      <element ref="gml:description" minOccurs="0"/>
+      <element ref="gml:name" minOccurs="0"/>
+      <element ref="gml:boundedBy" minOccurs="0"/>
+      <!-- additional properties must be specified in an application schema -->
+    </sequence>
+    <attribute name="fid" type="ID" use="optional"/>
+  </complexType>
+  <complexType name="AbstractFeatureCollectionBaseType" abstract="true">
+    <annotation>
+      <documentation>
+        This abstract base type just makes the boundedBy element mandatory 
+        for a feature collection.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:AbstractFeatureType">
+        <sequence>
+          <element ref="gml:description" minOccurs="0"/>
+          <element ref="gml:name" minOccurs="0"/>
+          <element ref="gml:boundedBy"/>
+        </sequence>
+        <attribute name="fid" type="ID" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="AbstractFeatureCollectionType" abstract="true">
+    <annotation>
+      <documentation>
+        A feature collection contains zero or more featureMember elements.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <extension base="gml:AbstractFeatureCollectionBaseType">
+        <sequence>
+          <element ref="gml:featureMember" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GeometryPropertyType">
+		<annotation>
+			<documentation>
+        A simple geometry property encapsulates a geometry element.
+        Alternatively, it can function as a pointer (simple-type link) 
+        that refers to a remote geometry element.
+      </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_Geometry"/>
+		</sequence>
+		<attributeGroup ref="xlink:simpleLink"/>
+             <attribute ref="gml:remoteSchema" use="optional"/>
+  </complexType>
+  <complexType name="FeatureAssociationType">
+    <annotation>
+      <documentation>
+        An instance of this type (e.g. a featureMember) can either 
+        enclose or point to a feature (or feature collection); this 
+        type can be restricted in an application schema to allow only 
+        specified features as valid participants in the association. 
+        When serving as a simple link that references a remote feature 
+        instance, the value of the gml:remoteSchema attribute can be 
+        used to locate a schema fragment that constrains the target 
+        instance.
+      </documentation>
+    </annotation>
+    <sequence minOccurs="0">
+      <element ref="gml:_Feature"/>
+    </sequence>
+    <attributeGroup ref="xlink:simpleLink"/>
+    <attribute ref="gml:remoteSchema" use="optional"/>
+  </complexType>
+  <complexType name="BoundingShapeType">
+    <annotation>
+      <documentation>
+        Bounding shapes--a Box or a null element are currently allowed.
+      </documentation>
+    </annotation>
+    <sequence>
+      <choice>
+        <element ref="gml:Box"/>
+        <element name="null" type="gml:NullType"/>
+      </choice>
+    </sequence>
+  </complexType>
+  <!-- ==============================================================
+       geometry properties
+  =================================================================== -->
+  <complexType name="PointPropertyType">
+    <annotation>
+      <documentation>
+        Encapsulates a single point to represent position, location, or 
+        centerOf properties.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:Point"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="PolygonPropertyType">
+    <annotation>
+      <documentation>
+        Encapsulates a single polygon to represent coverage or extentOf 
+        properties.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:Polygon"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="LineStringPropertyType">
+    <annotation>
+      <documentation>
+        Encapsulates a single LineString to represent centerLineOf or 
+        edgeOf properties.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:LineString"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="MultiPointPropertyType">
+    <annotation>
+      <documentation>
+        Encapsulates a MultiPoint element to represent the following 
+        discontiguous geometric properties: multiLocation, multiPosition, 
+        multiCenterOf.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:MultiPoint"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="MultiLineStringPropertyType">
+    <annotation>
+      <documentation>
+        Encapsulates a MultiLineString element to represent the following 
+        discontiguous geometric properties: multiEdgeOf, multiCenterLineOf.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:MultiLineString"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="MultiPolygonPropertyType">
+    <annotation>
+      <documentation>
+        Encapsulates a MultiPolygon to represent the following discontiguous 
+        geometric properties: multiCoverage, multiExtentOf.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:MultiPolygon"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="MultiGeometryPropertyType">
+    <annotation>
+      <documentation>Encapsulates a MultiGeometry element.</documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="gml:GeometryAssociationType">
+        <sequence minOccurs="0">
+          <element ref="gml:MultiGeometry"/>
+        </sequence>
+        <attributeGroup ref="xlink:simpleLink"/>
+        <attribute ref="gml:remoteSchema" use="optional"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <simpleType name="NullType">
+    <annotation>
+      <documentation>
+        If a bounding shape is not provided for a feature collection, 
+        explain why. Allowable values are:
+        innapplicable - the features do not have geometry
+        unknown - the boundingBox cannot be computed
+        unavailable - there may be a boundingBox but it is not divulged
+        missing - there are no features
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="inapplicable"/>
+      <enumeration value="unknown"/>
+      <enumeration value="unavailable"/>
+      <enumeration value="missing"/>
+    </restriction>
+  </simpleType>
+</schema>

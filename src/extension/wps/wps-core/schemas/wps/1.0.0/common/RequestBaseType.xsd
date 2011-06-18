@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by Peter Schut (Agriculture & Agri-Food Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: RequestBaseType.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema Document encodes elements and types that are shared by multiple WPS operations.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		Import or include schema
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../../ows/1.1.0/owsAll.xsd"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<complexType name="RequestBaseType">
+		<annotation>
+			<documentation>WPS operation request base, for all WPS operations except GetCapabilities. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation.</documentation>
+		</annotation>
+		<attribute name="service" type="string" use="required" fixed="WPS">
+			<annotation>
+				<documentation>Service type identifier (WPS)</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="version" type="ows:VersionType" use="required" fixed="1.0.0">
+			<annotation>
+				<documentation>Version of the WPS interface specification implemented by the server (1.0.0)</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="language" type="string">
+			<annotation>
+				<documentation>RFC 4646 language code of the human-readable text (e.g. "en-CA").</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+</schema>

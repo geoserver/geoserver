@@ -1,0 +1,34 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--570ae188:124761b8d78:-7fad</id>
+  <name>tiger-ny</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fd2</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fce</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fcc</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fd0</id>
+    </layer>
+  </layers>
+  <styles>
+    <style/>
+    <style/>
+    <style/>
+    <style/>
+  </styles>
+  <bounds>
+    <minx>-74.047185</minx>
+    <maxx>-73.907005</maxx>
+    <miny>40.679648</miny>
+    <maxy>40.882078</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="rawStyleList"></entry>
+  </metadata>
+</layerGroup>

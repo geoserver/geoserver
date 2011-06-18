@@ -1,0 +1,373 @@
+<xsd:schema targetNamespace="http://www.opengis.net/wfsv" xmlns:wfsv="http://www.opengis.net/wfsv"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified" version="1.0.0">
+
+  <!-- ==============================================================
+    Includes and Imports
+    ============================================================== -->
+  <xsd:import namespace="http://www.opengis.net/wfs" schemaLocation="../../wfs/1.0.0/WFS-transaction.xsd" />
+  <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="../../filter/1.0.0/filter.xsd" />
+  
+  <!-- ================================================================== -->
+  <!-- =   GetVersionedFeature Request                                  = -->
+  <!-- ================================================================== -->
+  <xsd:element  name="GetVersionedFeature" type="wfsv:GetVersionedFeatureType" substitutionGroup="wfs:GetFeature">
+      <xsd:annotation>
+         <xsd:documentation>
+            The GetVersionedFeature element is used to request that a Versioning 
+            Web Feature Service return versioned feature type instances 
+            of one or more feature types.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+  <xsd:complexType name="GetVersionedFeatureType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The GetVersionedFeature extends GetFeature by returning a collection
+        of AbstractVersionedFeature, which do contain more information about
+        the last change occurred on each feature.
+      </xsd:documentation> 
+    </xsd:annotation>
+    <xsd:complexContent>
+        <xsd:extension base="wfs:GetFeatureType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+   <!-- ================================================================== -->
+   <!-- =   DescribeFeatureType Request, WFSV variant                    = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="DescribeVersionedFeatureType" type="wfsv:DescribeVersionedFeatureTypeType"
+                substitutionGroup="wfs:DescribeFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
+            Same as wfs:DescribeFeatureType, but with the option to output
+            a versioned feature type instead of a plain one
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="DescribeVersionedFeatureTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
+            Same as wfs:DescribeFeatureType, but with the option to output
+            a versioned feature type instead of a plain one
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:DescribeFeatureTypeType">
+            <xsd:attribute name="versioned"
+                           type="xsd:boolean" use="optional"
+                           default="true">
+               <xsd:annotation>
+                  <xsd:documentation>
+                     If false, the output is the same as wfs:DescribeFeatureType,
+                     if true on the contrary the generated feature type will descend
+                     form wfsv:AbstractVersionedFeatureType
+                  </xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+  
+  <!-- ================================================================== -->
+  <!-- =   AbstractVersionedFeature                                     = -->
+  <!-- ================================================================== -->
+  <xsd:element name="_VersionedFeature" type="wfsv:AbstractVersionedFeatureType" abstract="true" substitutionGroup="gml:_Feature"/>
+  <xsd:complexType name="AbstractVersionedFeatureType" abstract="true">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="creationVersion" type="xsd:string" minOccurs="1"/>
+          <xsd:element name="createdBy" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="creationDate" type="xsd:dateTime" minOccurs="1"/>
+          <xsd:element name="creationMessage" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="lastUpdateVersion" type="xsd:string" minOccurs="1"/>
+          <xsd:element name="lastUpdatedBy" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="lastUpdateDate" type="xsd:dateTime" minOccurs="1"/>
+          <xsd:element name="lastUpdateMessage" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  <!-- ================================================================== -->
+  <!-- =   AbstractVersionedFeature                                     = -->
+  <!-- ================================================================== -->
+  <xsd:element name="VersionedFeatureCollection" type="wfsv:VersionedFeatureCollectionType" substitutionGroup="wfs:FeatureCollection"/>
+  <xsd:complexType name="VersionedFeatureCollectionType">
+    <xsd:annotation>
+      <xsd:documentation>A collection of versioned features</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="wfs:FeatureCollectionType">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+
+  <!-- ================================================================== -->
+  <!-- =   GETLOG Request and Response                                  = -->
+  <!-- ================================================================== -->
+  <xsd:element name="GetLog" type="wfsv:GetLogType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The GetLog element is used to request that a Versioning Web Feature Service return the
+        change history for features of one or more feature types.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="GetLogType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A GetLog element contains one or more DifferenceQuery elements that describe a diffence
+        query operation on one feature type. In response to a GetLog request, a Web Feature Service
+        must be able to generate a list of logs entries for features matched by the DifferenceQuery
+        parameters. Each log entry is an instance of the ChangeSet feature type. In response to a
+        GetFeature request, a Versioning Web Feature Service must be able to generate a GML3
+        response that validates using a schema generated by the DescribeFeatureType request against
+        the ChangeSets feature type. A Web Feature Service may support other possibly non-XML (and
+        even binary) output formats as long as those formats are advertised in the capabilities
+        document.
+      </xsd:documentation>
+    </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element ref="wfsv:DifferenceQuery" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="version"
+                     type="xsd:string" use="required" fixed="1.0.0"/>
+        <xsd:attribute name="service"
+                     type="xsd:string" use="required" fixed="WFS"/>
+        <xsd:attribute name="handle"
+                     type="xsd:string" use="optional"/>        
+        <xsd:attribute name="outputFormat" type="xsd:string" use="optional"
+          default="text/xml; subtype=GML2">
+          <xsd:annotation>
+            <xsd:documentation>
+              The outputFormat attribute is used to specify the output format that the Versioning
+              Web Feature Service should generate in response to a GetLog element. The default value
+              of 'GML2' indicates that the output is an XML document that
+              conforms to the Geography Markup Language (GML) Implementation Specification V2.
+              For the purposes of experimentation, vendor extension, or even extensions that serve a
+              specific community of interest, other acceptable output format values may be used to
+              specify other formats as long as those values are advertised in the capabilities
+              document.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+  </xsd:complexType>
+  <xsd:element name="DifferenceQuery" type="wfsv:DifferenceQueryType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The DifferenceFilter element is used to gather differences in features matched by a standard
+        OGC filter at starting and ending featureVersion, and a filter used to match
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="DifferenceQueryType">
+    <xsd:sequence>
+      <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>
+            The Filter element is used to define spatial and/or non-spatial constraints on query.
+            Spatial constrains use GML2 to specify the constraining geometry. A full description of
+            the Filter element can be found in the Filter Encoding Implementation Specification.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="typeName" type="xsd:QName" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          The typeName attribute is a single feature type name that indicates which type of feature
+          instances should be included in the reponse set. The names must be a valid type that
+          belong to this query's feature content as defined by the GML Application Schema.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="fromFeatureVersion" type="xsd:string" default="FIRST">
+      <xsd:annotation>
+        <xsd:documentation>
+          Same as featureVersion in QueryType, but this indicates a starting feature version for a
+          difference and log operations.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="toFeatureVersion" type="xsd:string" use="optional" default="LAST">
+      <xsd:annotation>
+        <xsd:documentation>
+          Same as featureVersion in QueryType, indicates the second version to be used for
+          performing a difference of log operation.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>
+          This attribute is used to specify a specific WFS-supported SRS that should be used for
+          returned feature geometries. The value may be the WFS StorageSRS value,
+          DefaultRetrievalSRS value, or one of AdditionalSRS values. If no srsName value is
+          supplied, then the features will be returned using either the DefaultRetrievalSRS, if
+          specified, and StorageSRS otherwise. For feature types with no spatial properties, this
+          attribute must not be specified or ignored if it is specified.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <!-- ================================================================== -->
+  <!-- =   GETDIFF Request and Response                                 = -->
+  <!-- ================================================================== -->
+  <xsd:element name="GetDiff" type="wfsv:GetDiffType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The GetDiff element is used to request that a Versioning Web Feature Service returns a
+        transaction command that can be used to alter features at version m to turn them into
+        version n
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="GetDiffType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A GetDiff element contains one or more DifferenceQuery elements that describe a difference
+        query operation on one feature type. In response to a GetDiff request, a Versioning Web
+        Feature Service must be able to generate a Transaction command that can be used to alter
+        features at fromFeatureVersion and alter them into features at toFeatureVersion
+      </xsd:documentation>
+    </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element ref="wfsv:DifferenceQuery" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="version"
+                     type="xsd:string" use="required" fixed="1.0.0"/>
+        <xsd:attribute name="service"
+                     type="xsd:string" use="required" fixed="WFS"/>
+        <xsd:attribute name="handle"
+                     type="xsd:string" use="optional"/>     
+        <xsd:attribute name="outputFormat" type="xsd:string" use="optional"
+          default="text/xml; subtype=wfs-transaction/1.1.0">
+          <xsd:annotation>
+            <xsd:documentation>
+              The outputFormat attribute is used to specify the output format that the Versioning
+              Web Feature Service should generate in response to a GetDiff element. The default
+              value of 'application/xml; subtype=wfsv-transaction/1.1.0' indicates that the output
+              is an XML document that conforms to the WFS 1.1.0 Transaction definition. For the
+              purposes of experimentation, vendor extension, or even extensions that serve a
+              specific community of interest, other acceptable output format values may be used to
+              specify other formats as long as those values are advertised in the capabilities
+              document.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+  </xsd:complexType>
+  <!-- ================================================================== -->
+  <!-- =   Extended Transaction elements: update                        = -->
+  <!-- ================================================================== -->
+  <xsd:element name="VersionedUpdate" type="wfsv:VersionedUpdateElementType"
+    substitutionGroup="wfs:Update" />
+  <xsd:complexType name="VersionedUpdateElementType">
+    <xsd:complexContent>
+      <xsd:extension base="wfs:UpdateElementType">
+        <xsd:attribute name="featureVersion" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The syntax and semantics is the same as featureVersion in Query. If specified, update
+              will check that every updated feature is still at the specified version before
+              executing, and will fail if a change occurred on the server in the meantime.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ================================================================== -->
+  <!-- =   Extended Transaction elements: delete                        = -->
+  <!-- ================================================================== -->
+  <xsd:element name="VersionedDelete" type="wfsv:VersionedDeleteElementType"
+    substitutionGroup="wfs:Delete" />
+  <xsd:complexType name="VersionedDeleteElementType">
+    <xsd:complexContent>
+      <xsd:extension base="wfs:DeleteElementType">
+        <xsd:attribute name="featureVersion" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              See VersionedUpdateElementType featureVersion attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ================================================================== -->
+  <!-- =   Extended Transaction elements: rollback                      = -->
+  <!-- ================================================================== -->
+  <xsd:element name="Rollback" type="wfsv:RollbackType" substitutionGroup="wfs:Native">
+    <xsd:annotation>
+      <xsd:documentation>
+        Rolls back the changes occurred on all matched features between fromFeatureVersion and
+        featureVersion
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="RollbackType">
+    <xsd:complexContent>
+      <xsd:extension base="wfs:NativeType">
+        <xsd:sequence>
+          <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+              <xsd:documentation>
+                The Filter element is used to define spatial and/or non-spatial constraints on
+                query. Spatial constrains use GML2 to specify the constraining geometry. A full
+                description of the Filter element can be found in the Filter Encoding Implementation
+                Specification.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="typeName" type="xsd:QName" use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The typeName attribute is a single feature type name that indicates which type of
+              feature instances should be included in the reponse set. The names must be a valid
+              type that belong to this query's feature content as defined by the GML Application
+              Schema.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="toFeatureVersion" type="xsd:string" default="FIRST">
+          <xsd:annotation>
+            <xsd:documentation>
+              Same as featureVersion in QueryType. Rollback will restore the "toFeatureVersion" 
+              feature state, removing all changes occurred between "toFeatureVersion" and current
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="user" type="xsd:string" use="optional" default="">
+          <xsd:annotation>
+            <xsd:documentation>
+              User id to be used in addition to the filter in order to isolate the features to be
+              rolled back. Only the features modified by the specified user between
+              fromFeatureVersion and the current version will be subjected to roll back.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="handle" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>
+              The handle attribute allows a client application to assign a client-generated request
+              identifier to an Insert action. The handle is included to facilitate error reporting.
+              If a Rollback action in a Transaction request fails, then a Versioning WFS may include
+              the handle in an exception report to localize the error. If no handle is included of
+              the offending Rollback element then a WFS may employee other means of localizing the
+              error (e.g. line number).
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  </xsd:schema>

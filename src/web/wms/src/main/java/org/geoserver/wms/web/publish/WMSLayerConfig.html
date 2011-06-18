@@ -1,0 +1,45 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form name="theForm">
+  <wicket:panel>
+  <ul>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="defaultTitle">Default Title</wicket:message></span></legend>
+        <ul>
+          <li>
+            <input id="queryableEnabled" class="field checkbox" type="checkbox" wicket:id="queryableEnabled"></input>
+            <label for="queryableEnabled" class="choice"><wicket:message key="queryable">Queryable</wicket:message></label>
+          </li>
+        </ul>
+        <ul wicket:id="styles">
+          <li>
+            <label for="defaultStyle"><wicket:message key="defaultStyle">Default Style</wicket:message></label>
+            <select id="defaultStyle" class="select" wicket:id="defaultStyle"></select>
+          </li>
+          <li>
+			<img wicket:id="defaultStyleLegendGraphic"></img>
+          </li>
+          <li> 
+            <label><wicket:message key="additionalStyles">Additional Styles</wicket:message></label>
+            <span wicket:id="extraStyles"></span>
+          </li>
+          <li>
+            <label for="buffer"><wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message></label>
+            <input id="buffer" class="text" wicket:id="renderingBuffer" type="text"></input> 
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <label for="wmsPath"><wicket:message key="defaultWmsPath">Default WMS Path</wicket:message></label>
+            <input id="wmsPath" class="text" wicket:id="wmsPath" type="text"></input> 
+          </li>
+        </ul>
+      </fieldset>
+    </li>   
+  </ul>
+  </wicket:panel>
+</form>
+</body>
+</html>

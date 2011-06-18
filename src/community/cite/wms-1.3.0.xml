@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="capabilities-url">http://localhost:8080/geoserver/wms?SERVICE=wms&amp;VERSION=1.3.0&amp;REQUEST=getcapabilities</value>
+ <value key="updatesequence">auto</value>
+ <value key="high-updatesequence">100</value>
+ <value key="low-updatesequence">0</value>
+ <value key="basic">basic</value>
+ <value key="queryable">queryable</value>
+ <value key="recommended">recommended</value>
+</values>

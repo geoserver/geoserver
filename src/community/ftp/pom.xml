@@ -1,0 +1,66 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>org.geoserver</groupId>
+      <artifactId>community</artifactId>
+      <version>2.1-SNAPSHOT</version>
+   </parent>
+   <groupId>org.geoserver.community</groupId>
+   <artifactId>ftp</artifactId>
+   <packaging>jar</packaging>
+   <version>2.1-SNAPSHOT</version>
+   <name>GeoServer Embedded FTP server</name>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.geoserver</groupId>
+         <artifactId>main</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.ftpserver</groupId>
+         <artifactId>ftpserver-core</artifactId>
+         <version>1.0.5</version>
+      </dependency>
+      <dependency>
+        <!-- StAX API is the standard java XML processing API defined by JSR-173 -->
+        <groupId>stax</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+        <!-- StAX is the reference implementation of the StAX API -->
+        <groupId>stax</groupId>
+        <artifactId>stax</artifactId>
+        <version>1.2.0</version>
+      </dependency>
+
+      <!-- Testing -->
+      <dependency>
+         <groupId>org.geoserver</groupId>
+         <artifactId>main</artifactId>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.mockrunner</groupId>
+         <artifactId>mockrunner</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>xmlunit</groupId>
+         <artifactId>xmlunit</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.easymock</groupId>
+         <artifactId>easymock</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.easymock</groupId>
+         <artifactId>easymockclassextension</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+</project>

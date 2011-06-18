@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+<bean id="geosearchMapping" class="org.geoserver.rest.RESTMapping">
+<property name="routes">
+  <map>
+     <entry>
+         <key>
+             <value>/layers/{namespace}:{layer}/{feature}_goto.kml</value>
+         </key>
+         <value>describefeaturekml</value>
+     </entry>
+     <entry>
+         <key><value>/layers/{namespace}:{layer}/{feature}.kml</value></key>
+         <value>feature</value>
+     </entry>
+     <entry>
+         <key><value>/layers/{layer}/sitemap.xml</value></key>
+         <value>layersitemap</value>
+     </entry>
+     <entry>
+         <key><value>/layers/{layer}/sitemap-{page}.xml</value></key>
+         <value>layersitemap</value>
+     </entry>
+     <entry>
+         <key><value>/layers/{namespace}:{layer}/{feature}.html</value></key>
+         <value>describefeaturehtml</value>
+     </entry>
+     <entry>
+       <key><value>/layers/{namespace}:{layer}.html</value></key>
+       <value>aboutpage</value>
+     </entry>
+     <entry>
+       <key><value>/sitemap.xml</value></key>
+       <value>sitemapindex</value>
+     </entry>
+   </map>
+<!--        
+        <entry>
+          <key><value>/layers/{layer}/sitemap.xml</value></key>
+          <value>layersitemap</value>
+        </entry>
+        <entry>
+          <key><value>/{namespace}/{layer}.kml</value></key>
+          <value>feature</value>
+        </entry>
+        <entry>
+          <key><value>/{namespace}/{layer}/{feature}.kml</value></key>
+          <value>feature</value>
+        </entry>
+  </map> 
+-->
+
+</property>
+</bean>
+
+<bean id="sitemapindex" class="org.geoserver.geosearch.SiteMapIndexRestlet">
+    <property name="catalog"><ref bean="catalog"/></property>
+    <property name="geoServer"><ref bean="geoServer"/></property>
+</bean>
+<bean id="layersitemap" class="org.geoserver.geosearch.LayerSiteMapRestlet">
+    <property name="catalog"><ref bean="catalog"/></property>
+    <property name="geoServer"><ref bean="geoServer"/></property>
+</bean>
+<bean id="feature" class="org.geoserver.geosearch.FeatureRestlet">
+    <property name="WMS"><ref bean="wms"/></property>
+    <property name="webMapService"><ref bean="webMapService"/></property>
+    <property name="catalog"><ref bean="catalog"/></property>
+</bean>
+<bean id="aboutpage" class="org.geoserver.geosearch.LayerAboutPage">
+    <property name="catalog"><ref bean="catalog"/></property>
+</bean>
+<bean id="describefeaturehtml" 
+    class="org.geoserver.geosearch.HTMLFeatureDescription">
+    <property name="catalog"><ref bean="catalog"/></property>
+    <property name="geoServer"><ref bean="geoServer"/></property>
+</bean>
+<bean id="describefeaturekml"
+    class="org.geoserver.geosearch.KMLFeatureDescription">
+    <property name="catalog"><ref bean="catalog"/></property>
+    <property name="geoServer"><ref bean="geoServer"/></property>
+</bean>
+
+  <!-- Add configuration section to Wicket UI -->
+  <bean id="geosearchLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="geosearchLayerConfig"/>
+    <property name="titleKey" value="publish.layer.config.geosearch"/>
+    <property name="componentClass" value="org.geoserver.wms.web.publish.GeoSearchLayerConfigPanel"/>
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+</beans>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+	PolicySetId="org:geoserver:policySet:permission:writer"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:1.0:policy-combining-algorithm:permit-overrides">
+
+	<Target></Target>
+	<!-- Permissions specifically for the writer role -->
+
+	<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+        http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+		PolicyId="org:geoserver:policy:permission:writer"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+		<Target>
+			<Actions>
+				<Action>
+					<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">WRITE|READ</AttributeValue>
+						<ActionAttributeDesignator
+							AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</ActionMatch>
+				</Action>
+			</Actions>
+		</Target>
+		<Rule Effect="Permit" RuleId="org:geoserver:rule:write:role:writer">
+		</Rule>
+	</Policy>
+	<PolicySetIdReference>org:geoserver:policySet:permission:anonymous</PolicySetIdReference>
+</PolicySet>

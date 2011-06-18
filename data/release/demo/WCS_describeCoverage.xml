@@ -1,0 +1,19 @@
+<!-- A sample describe request.  The schema is generated automatically by  -->
+<!-- GeoServer.  You can modify the schema with the web interface to hide  -->
+<!-- and/or require certain attributes. -->
+<!-- 
+      If you change the "<Coverage>" tag below to the name of another 
+      coverage, you can see the GML Schema for that layer.
+      The getCapabilities demo will tell you the names of all the layers!
+  -->
+<DescribeCoverage
+  version="1.0.0"
+  service="WCS"
+  xmlns="http://www.opengis.net/wcs"
+  xmlns:nurc="http://www.nurc.nato.int"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd">
+  
+    <Coverage>nurc:Pk50095</Coverage>
+    
+</DescribeCoverage>

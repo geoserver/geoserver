@@ -1,0 +1,22 @@
+<!-- WMS_DescribeLayerResponse: the document is returned in response to a DescribeLayer request made on a WMS. -->
+
+<!ELEMENT WMS_DescribeLayerResponse (LayerDescription*) >
+<!ATTLIST WMS_DescribeLayerResponse
+            version CDATA #REQUIRED >
+
+<!-- LayerDescription: describes the contents of a NamedLayer, the name of which is specified in the "name" attribute.  If the NamedLayer is not feature based, then the LayerDescription has no further contents.  If the NamedLayer is feature based then the "wfs" attribute gives the URL prefix for the WFS containing the feature data.  Equivalently, the "owsType" and "owsURL" attributes can be used to indicate the OWS type & base URL of a service.  The "wfs" attribute is retained for greater compatibility with the WFS specification.  The presently recognized valid values for "owsType" are "WFS" and "WCS", though more may be allowed in the future.
+
+The LayerDescription contains one or more Query elements that specify the feature-types present in the NamedLayer. -->
+
+<!ELEMENT LayerDescription (Query*) >
+<!ATTLIST LayerDescription
+            name CDATA #REQUIRED
+            wfs CDATA #IMPLIED
+            owsType CDATA #IMPLIED
+            owsURL CDATA #IMPLIED >
+
+<!-- Query: a Query uses the "typeName" attribute to identify a feature/coverage-type.  This is a stripped down version of the Query element used in the WFS. -->
+
+<!ELEMENT Query EMPTY >
+<!ATTLIST Query
+            typeName CDATA #REQUIRED >

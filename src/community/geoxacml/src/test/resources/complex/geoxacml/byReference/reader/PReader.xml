@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+	PolicySetId="org:geoserver:policySet:permission:reader"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:1.0:policy-combining-algorithm:first-applicable">
+
+	<Target></Target>
+	
+		<!-- Permissions denying topp:states and bases --> 
+	<Policy RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides" PolicyId="org:geoserver:policy:reader:topp:bases">
+	  <Target>
+	  	<Resources>
+	  	   <Resource>
+	  	   	  <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topp</AttributeValue>
+					<ResourceAttributeDesignator
+						AttributeId="org:geoserver:resource:type:workspace"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />	  	   	  
+	  	   	  </ResourceMatch>	  	   	  
+	  	   	  <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">bases</AttributeValue>
+					<ResourceAttributeDesignator
+						AttributeId="org:geoserver:resource:type:gsresource"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />	  	   	  
+	  	   	  </ResourceMatch>	  	   	  
+	  	   </Resource>	  	   
+	  	</Resources>
+	  </Target>
+	  <Rule Effect="Deny" RuleId="org:geoserver:rule:anonymous:reader:bases"></Rule>
+	</Policy>
+	
+	<!-- Permissions denying nurc:arc.grid --> 
+	<Policy RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides" PolicyId="org:geoserver:policy:reader:nurc:arcgrid">
+	  <Target>
+	  	<Resources>
+	  	   <Resource>
+	  	   	  <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">nurc</AttributeValue>
+					<ResourceAttributeDesignator
+						AttributeId="org:geoserver:resource:type:workspace"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />	  	   	  
+	  	   	  </ResourceMatch>	  	   	  
+	  	   	  <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">arc.grid</AttributeValue>
+					<ResourceAttributeDesignator
+						AttributeId="org:geoserver:resource:type:gsresource"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />	  	   	  
+	  	   	  </ResourceMatch>	  	   	  
+	  	   </Resource>	  	   
+	  	</Resources>
+	  </Target>
+	  <Rule Effect="Deny" RuleId="org:geoserver:rule:reader:nurc:arc.grid"></Rule>
+	</Policy>	
+	
+	
+	
+	<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+        http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+		PolicyId="org:geoserver:policy:permission:reader"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+		<Target>
+			<Actions>
+				<Action>
+					<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">READ</AttributeValue>
+						<ActionAttributeDesignator
+							AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</ActionMatch>
+				</Action>
+			</Actions>
+		</Target>
+		<Rule Effect="Permit" RuleId="org:geoserver:rule:read:role:reader">
+		</Rule>
+	</Policy>
+	<PolicySetIdReference>org:geoserver:policySet:permission:anonymous</PolicySetIdReference>
+</PolicySet>

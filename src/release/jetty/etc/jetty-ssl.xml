@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<!-- =============================================================== -->
+<!-- Configure SSL for the Jetty Server                              -->
+<!-- this configuration file should be used in combination with      -->
+<!-- other configuration files.  e.g.                                -->
+<!--    java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml          -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.mortbay.jetty.Server">
+  <Call name="addConnector">
+    <Arg>
+      <New class="org.mortbay.jetty.security.SslSocketConnector">
+        <Set name="Port">8443</Set>
+        <Set name="maxIdleTime">30000</Set>
+        <Set name="keystore"><SystemProperty name="jetty.home" default="." />/etc/keystore</Set>
+        <Set name="password">OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4</Set>
+        <Set name="keyPassword">OBF:1u2u1wml1z7s1z7a1wnl1u2g</Set>
+        <Set name="truststore"><SystemProperty name="jetty.home" default="." />/etc/keystore</Set>
+        <Set name="trustPassword">OBF:1vny1zlo1x8e1vnw1vn61x8g1zlu1vn4</Set>
+      </New>
+    </Arg>
+  </Call>
+</Configure>

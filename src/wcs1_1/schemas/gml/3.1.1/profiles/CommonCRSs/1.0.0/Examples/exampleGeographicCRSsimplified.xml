@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeographicCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="EPSG4277">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<srsName>OSGB 1936</srsName>
+	<srsID>
+		<name codeSpace="urn:ogc:def:crs:EPSG:6.0:">4277</name>
+	</srsID>
+	<usesEllipsoidalCS xlink:href="urn:ogc:def:cs:EPSG:6.0:6402"/>
+	<usesGeodeticDatum>
+		<GeodeticDatum gml:id="EPSG6277">
+			<datumName>OSGB 1936</datumName>
+			<datumID>
+				<name codeSpace="urn:ogc:def:datum:EPSG:6.0:">6277</name>
+			</datumID>
+			<usesPrimeMeridian xlink:href="urn:ogc:def:meridian:EPSG:6.0:8901" xlink:title="Greenwich"/>
+			<usesEllipsoid>
+				<Ellipsoid gml:id="EPSG7001">
+					<ellipsoidName>Airy 1830</ellipsoidName>
+					<ellipsoidID>
+						<name codeSpace="urn:ogc:def:ellipsoid:EPSG:6.0:">7001</name>
+					</ellipsoidID>
+					<semiMajorAxis uom="urn:ogc:def:uom:OGC:1.0:meter">6377563.396</semiMajorAxis>
+					<secondDefiningParameter>
+						<inverseFlattening uom="urn:ogc:def:uom:OGC:1.0:unity">299.3249646</inverseFlattening>
+					</secondDefiningParameter>
+				</Ellipsoid>
+			</usesEllipsoid>
+		</GeodeticDatum>
+	</usesGeodeticDatum>
+</GeographicCRS>

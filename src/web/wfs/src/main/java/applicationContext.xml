@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="wfsServicePage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="wfs"/>
+    <property name="titleKey" value="wfs.title"/>
+    <property name="descriptionKey" value="wfs.description"/>
+    <property name="componentClass" value="org.geoserver.wfs.web.WFSAdminPage"/>
+    <property name="icon" value="server_vector.png"/>
+    <property name="category" ref="servicesCategory"/>
+  </bean>
+    
+  <bean id="wfsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="wfsLayerConfig"/>
+    <property name="titleKey" value="data.resource.config.wfs"/>
+    <property name="componentClass" value="org.geoserver.wfs.web.publish.WFSLayerConfig"/>
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.FeatureTypeInfo</value>
+      </list>
+    </property>
+  </bean>
+</beans>

@@ -1,0 +1,2 @@
+org.geoserver.wps.EnumerationConverterFactory
+org.geoserver.wps.ppio.JAIToolsRangeConverterFactory

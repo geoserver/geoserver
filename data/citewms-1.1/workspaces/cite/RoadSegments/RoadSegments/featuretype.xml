@@ -1,0 +1,35 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--31b6253f:128b3c42f89:-7fc5</id>
+  <name>RoadSegments</name>
+  <nativeName>RoadSegments</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--31b6253f:128b3c42f89:-7ff8</id>
+  </namespace>
+  <title>cite:RoadSegments</title>
+  <abstract>Generated from cite</abstract>
+  <keywords>
+    <string>RoadSegments</string>
+    <string>cite</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <latLonBoundingBox>
+    <minx>-0.0042</minx>
+    <maxx>0.0042</maxx>
+    <miny>-0.0024</miny>
+    <maxy>0.0024</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="dirName">cite_RoadSegments</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--31b6253f:128b3c42f89:-7fe1</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

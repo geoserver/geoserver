@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>geoserver</artifactId>
+    <version>2.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver</groupId>
+  <artifactId>wcs1_0</artifactId>
+  <packaging>jar</packaging>
+  <name>Web Coverage Service 1.0 Module</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+    </dependency>
+	<dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>wcs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.ogc</groupId>
+      <artifactId>net.opengis.wcs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.xsd</groupId>
+      <artifactId>gt-xsd-gml3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.xsd</groupId>
+      <artifactId>gt-xsd-filter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.xsd</groupId>
+      <artifactId>gt-xsd-ows</artifactId>
+      <!-- This is due to the fact the ows model jars come from geoserver but are
+           deployed separately for gt2 as well... this results in a conflict -->
+      <exclusions>
+        <exclusion>
+          <groupId>net.opengis</groupId>
+          <artifactId>ows</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.opengis</groupId>
+          <artifactId>ows11</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.xsd</groupId>
+  	  <artifactId>gt-xsd-wcs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- =========================================================== -->
+  <!--     Build Configuration                                     -->
+  <!-- =========================================================== -->
+  <build>
+  <plugins>
+    <!-- plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <id>jjtree</id>
+            <goals>
+              <goal>jjtree</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>src/main/java/org/geoserver/wcs/kvp/rangesubset</sourceDirectory>
+              <outputDirectory>target/generated-sources/jjtree</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>javacc</id>
+            <goals>
+              <goal>javacc</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>target/generated-sources/jjtree/</sourceDirectory>
+              <outputDirectory>target/generated-sources/javacc</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin -->
+    </plugins>
+  </build>
+
+
+</project>

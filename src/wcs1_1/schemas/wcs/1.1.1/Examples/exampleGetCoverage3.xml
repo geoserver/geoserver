@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCoverage xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGetCoverage.xsd" 
+service="WCS" version="1.1.1">
+	<!-- Partial example. Primary editor: Arliss Whiteside. Last updated 2007-06-05-->
+	<ows:Identifier>TBD</ows:Identifier>
+	<DomainSubset>
+		<ows:BoundingBox crs="urn:ogc:def:crs:OGC:2:84">
+			<ows:LowerCorner>9999 9999</ows:LowerCorner>
+			<ows:UpperCorner>9999 9999</ows:UpperCorner>
+		</ows:BoundingBox>
+	</DomainSubset>
+	<RangeSubset>
+		<FieldSubset>
+			<ows:Identifier>TBD</ows:Identifier>
+		</FieldSubset>
+	</RangeSubset>
+	<Output format="image/gif" store="false"/>
+</GetCoverage>

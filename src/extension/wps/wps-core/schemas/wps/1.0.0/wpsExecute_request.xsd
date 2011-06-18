@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by Peter Schut (Agriculture & Agri-Food Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: wpsExecute_request.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema Document encodes the WPS Execute operation request.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- =============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="common/RequestBaseType.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/1.0.0/xlinks.xsd"/>
+	<!-- =============================================================
+		elements and types
+	============================================================== -->
+	<element name="Execute">
+		<annotation>
+			<documentation>WPS Execute operation request, to execute one identified Process. If a process is to be run multiple times, each run shall be submitted as a separate Execute request. </documentation>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="wps:RequestBaseType">
+					<sequence>
+						<element ref="ows:Identifier">
+							<annotation>
+								<documentation>Identifier of the Process to be executed. This Process identifier shall be as listed in the ProcessOfferings section of the WPS Capabilities document. </documentation>
+							</annotation>
+						</element>
+						<element name="DataInputs" type="wps:DataInputsType" minOccurs="0">
+							<annotation>
+								<documentation>List of input (or parameter) values provided to the process, including each of the Inputs needed to execute the process. It is possible to have no inputs provided only when all the inputs are predetermined fixed resources. In all other cases, at least one input is required. </documentation>
+							</annotation>
+						</element>
+						<element name="ResponseForm" type="wps:ResponseFormType" minOccurs="0">
+							<annotation>
+								<documentation>Defines the response type of the WPS, either raw data or XML document.  If absent, the response shall be a response document which includes all outputs encoded in the response.</documentation>
+							</annotation>
+						</element>
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="DataInputsType">
+		<annotation>
+			<documentation>List of the Inputs provided as part of the Execute Request. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Input" type="wps:InputType" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Unordered list of one or more inputs to be used by the process, including each of the Inputs needed to execute the process. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ResponseFormType">
+		<annotation>
+			<documentation>Defines the response type of the WPS, either raw data or XML document</documentation>
+		</annotation>
+		<choice>
+			<element name="ResponseDocument" type="wps:ResponseDocumentType">
+				<annotation>
+					<documentation>Indicates that the outputs shall be returned as part of a WPS response document.</documentation>
+				</annotation>
+			</element>
+			<element name="RawDataOutput" type="wps:OutputDefinitionType">
+				<annotation>
+					<documentation>Indicates that the output shall be returned directly as raw data, without a WPS response document.</documentation>
+				</annotation>
+			</element>
+		</choice>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ResponseDocumentType">
+		<sequence>
+			<element name="Output" type="wps:DocumentOutputDefinitionType" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Unordered list of definitions of the outputs (or parameters) requested from the process. These outputs are not normally identified, unless the client is specifically requesting a limited subset of outputs, and/or is requesting output formats and/or schemas and/or encodings different from the defaults and selected from the alternatives identified in the process description, or wishes to customize the descriptive information about the output. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="storeExecuteResponse" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>Indicates if the execute response document shall be stored.  If "true" then the executeResponseLocation attribute in the execute response becomes mandatory, which will point to the location where the executeResponseDocument is stored.  The service shall respond immediately to the request and return an executeResponseDocument containing the executeResponseLocation and the status element which has five possible subelements (choice):ProcessAccepted, ProcessStarted, ProcessPaused, ProcessFailed and ProcessSucceeded, which are chosen and populated as follows:   1) If the process is completed when the initial executeResponseDocument is returned, the element ProcessSucceeded is populated with the process results.  2) If the process already failed when the initial executeResponseDocument is returned, the element ProcessFailed is populated with the Exception.  3) If the process has been paused when the initial executeResponseDocument is returned, the element ProcessPaused is populated.  4) If the process has been accepted when the initial executeResponseDocument is returned, the element ProcessAccepted is populated, including percentage information. 5) If the process execution is ongoing when the initial executeResponseDocument is returned, the element ProcessStarted is populated.  In case 3, 4, and 5, if status updating is requested, updates are made to the executeResponseDocument at the executeResponseLocation until either the process completes successfully or fails.  Regardless, once the process completes successfully, the ProcessSucceeded element is populated, and if it fails, the ProcessFailed element is populated.</documentation>
+				<documentation>Specifies if the Execute operation response shall be returned quickly with status information, or not returned until process execution is complete. This parameter shall not be included unless the corresponding "statusSupported" parameter is included and is "true" in the ProcessDescription for this process. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="lineage" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>Indicates if the Execute operation response shall include the DataInputs and OutputDefinitions elements.  If lineage is "true" the server shall include in the execute response a complete copy of the DataInputs and OutputDefinition elements as received in the execute request.  If lineage is "false" then these elements shall be omitted from the response.  </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="status" type="boolean" default="false">
+			<annotation>
+				<documentation>Indicates if the stored execute response document shall be updated to provide ongoing reports on the status of execution.  If status is "true" and storeExecuteResponse is "true" (and the server has indicated that both storeSupported and statusSupported are "true")  then the Status element of the execute response document stored at executeResponseLocation is kept up to date by the process.  While the execute response contains ProcessAccepted, ProcessStarted, or ProcessPaused, updates shall be made to the executeResponse document until either the process completes successfully (in which case ProcessSucceeded is populated), or the process fails (in which case ProcessFailed is populated).  If status is "false" then the Status element shall not be updated until the process either completes successfully or fails.  If status="true" and storeExecuteResponse is "false" then the service shall raise an exception.</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="DocumentOutputDefinitionType">
+		<annotation>
+			<documentation>Definition of a format, encoding,  schema, and unit-of-measure for an output to be returned from a process. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="wps:OutputDefinitionType">
+				<annotation>
+					<documentation>In this use, the DescriptionType shall describe this process input or output. </documentation>
+				</annotation>
+				<sequence>
+					<element ref="ows:Title" minOccurs="0">
+						<annotation>
+							<documentation>Title of the process output, normally available for display to a human. This element should be used if the client wishes to customize the Title in the execute response. This element should not be used if the Title provided for this output in the ProcessDescription is adequate. </documentation>
+						</annotation>
+					</element>
+					<element ref="ows:Abstract" minOccurs="0">
+						<annotation>
+							<documentation>Brief narrative description of a process output, normally available for display to a human. This element should be used if the client wishes to customize the Abstract in the execute response. This element should not be used if the Abstract provided for this output in the ProcessDescription is adequate. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+				<attribute name="asReference" type="boolean" use="optional" default="false">
+					<annotation>
+						<documentation>Specifies if this output should be stored by the process as a web-accessible resource. If asReference is "true", the server shall store this output so that the client can retrieve it as required. If store is "false", all the output shall be encoded in the Execute operation response document. This parameter only applies to ComplexData outputs.  This parameter shall not be included unless the corresponding "storeSupported" parameter is included and is "true" in the ProcessDescription for this process. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="OutputDefinitionType">
+		<annotation>
+			<documentation>Definition of a format, encoding,  schema, and unit-of-measure for an output to be returned from a process. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:Identifier">
+				<annotation>
+					<documentation>Unambiguous identifier or name of an output, unique for this process. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="uom" type="anyURI" use="optional">
+			<annotation>
+				<documentation>Reference to the unit of measure (if any) requested for this output. A uom can be referenced when a client wants to specify one of the units of measure supported for this output. This uom shall be a unit of measure referenced for this output of this process in the Process full description. </documentation>
+			</annotation>
+		</attribute>
+		<attributeGroup ref="wps:ComplexDataEncoding"/>
+	</complexType>
+	<!-- =========================================================== -->
+	<attributeGroup name="ComplexDataEncoding">
+		<annotation>
+			<documentation>References the XML schema, format, and encoding of a complex value. </documentation>
+		</annotation>
+		<attribute name="mimeType" type="ows:MimeType" use="optional">
+			<annotation>
+				<documentation>The Format of this input or requested for this output (e.g., text/xml). This element shall be omitted when the Format is indicated in the http header of the output. When included, this format shall be one published for this output or input in the Process full description. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="encoding" type="anyURI" use="optional">
+			<annotation>
+				<documentation>The encoding of this input or requested for this output (e.g., UTF-8). This "encoding" shall be included whenever the encoding required is not the default encoding indicated in the Process full description. When included, this encoding shall be one published for this output or input in the Process full description. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="schema" type="anyURI" use="optional">
+			<annotation>
+				<documentation>Web-accessible XML Schema Document that defines the content model of this complex resource (e.g., encoded using GML 2.2 Application Schema).  This reference should be included for XML encoded complex resources to facilitate validation. </documentation>
+				<documentation>PS I changed the name of this attribute to be consistent with the ProcessDescription.  The original was giving me validation troubles in XMLSpy. </documentation>
+			</annotation>
+		</attribute>
+	</attributeGroup>
+	<!-- ==============INPUT AND OUTPUT VALUES ====================== -->
+	<!-- =========================================================== -->
+	<complexType name="InputType">
+		<annotation>
+			<documentation>Value of one input to a process. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:Identifier">
+				<annotation>
+					<documentation>Unambiguous identifier or name of a process, unique for this server, or unambiguous identifier or name of an output, unique for this process. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:Title" minOccurs="0">
+				<annotation>
+					<documentation>Title of a process or output, normally available for display to a human. </documentation>
+				</annotation>
+			</element>
+			<element ref="ows:Abstract" minOccurs="0">
+				<annotation>
+					<documentation>Brief narrative description of a process or output, normally available for display to a human. </documentation>
+				</annotation>
+			</element>
+			<group ref="wps:InputDataFormChoice">
+				<annotation>
+					<documentation>Identifies the form of this input, and provides supporting information. </documentation>
+				</annotation>
+			</group>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<group name="InputDataFormChoice">
+		<annotation>
+			<documentation>Identifies the form of this input or output value, and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="Reference" type="wps:InputReferenceType">
+				<annotation>
+					<documentation>Identifies this input value as a web accessible resource, and references that resource. </documentation>
+				</annotation>
+			</element>
+			<element name="Data" type="wps:DataType">
+				<annotation>
+					<documentation>Identifies this input value as a data embedded in this request, and includes that data. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+	<!-- =========================================================== -->
+	<complexType name="DataType">
+		<annotation>
+			<documentation>Identifies the form of this input or output value, and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="ComplexData" type="wps:ComplexDataType">
+				<annotation>
+					<documentation>Identifies this input or output value as a complex data structure encoded in XML (e.g., using GML), and provides that complex data structure. For an input, this element may be used by a client for any process input coded as ComplexData in the ProcessDescription. For an output, this element shall be used by a server when "store" in the Execute request is "false". </documentation>
+				</annotation>
+			</element>
+			<element name="LiteralData" type="wps:LiteralDataType">
+				<annotation>
+					<documentation>Identifies this input or output data as literal data of a simple quantity (e.g., one number), and provides that data. </documentation>
+				</annotation>
+			</element>
+			<element name="BoundingBoxData" type="ows:BoundingBoxType">
+				<annotation>
+					<documentation>Identifies this input or output data as an ows:BoundingBox data structure, and provides that ows:BoundingBox data. </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- =========================================================== -->
+	<complexType name="InputReferenceType">
+		<annotation>
+			<documentation>Reference to an input or output value that is a web accessible resource. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="Header" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Extra HTTP request headers needed by the service identified in ../Reference/@href.  For example, an HTTP SOAP request requires a SOAPAction header.  This permits the creation of a complete and valid POST request.</documentation>
+				</annotation>
+				<complexType>
+					<attribute name="key" type="string" use="required">
+						<annotation>
+							<documentation>Key portion of the Key-Value pair in the HTTP request header.</documentation>
+						</annotation>
+					</attribute>
+					<attribute name="value" type="string" use="required">
+						<annotation>
+							<documentation>Value portion of the Key-Value pair in the HTTP request header.</documentation>
+						</annotation>
+					</attribute>
+				</complexType>
+			</element>
+			<choice minOccurs="0">
+				<element name="Body" type="anyType">
+					<annotation>
+						<documentation>The contents of this element to be used as the body of the HTTP request message to be sent to the service identified in ../Reference/@href.  For example, it could be an XML encoded WFS request using HTTP POST</documentation>
+					</annotation>
+				</element>
+				<element name="BodyReference">
+					<annotation>
+						<documentation>Reference to a remote document to be used as the body of the an HTTP POST request message to the service identified in ../Reference/@href.</documentation>
+					</annotation>
+					<complexType>
+						<attribute ref="xlink:href" use="required">
+							<annotation>
+								<documentation>Reference to a remote document to be used as the body of the an HTTP POST request message. This attribute shall contain a URL from which this input can be electronically retrieved. </documentation>
+							</annotation>
+						</attribute>
+					</complexType>
+				</element>
+			</choice>
+		</sequence>
+		<attribute ref="xlink:href" use="required">
+			<annotation>
+				<documentation>Reference to a web-accessible resource that can be used as input, or is provided by the process as output. This attribute shall contain a URL from which this input/output can be electronically retrieved. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="method" use="optional" default="GET">
+			<annotation>
+				<documentation>Identifies the HTTP method.  Allows a choice of GET or POST.  Default is GET.</documentation>
+			</annotation>
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="GET"/>
+					<enumeration value="POST"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attributeGroup ref="wps:ComplexDataEncoding"/>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ComplexDataType" mixed="true">
+		<annotation>
+			<documentation>Complex data (such as an image), including a definition of the complex value data structure (i.e., schema, format, and encoding).  May be an ows:Manifest data structure.</documentation>
+		</annotation>
+		<complexContent mixed="true">
+			<extension base="anyType">
+				<attributeGroup ref="wps:ComplexDataEncoding"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="LiteralDataType">
+		<annotation>
+			<documentation>One simple literal value (such as an integer or real number) that is embedded in the Execute operation request or response. </documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<annotation>
+					<documentation>String containing the Literal value (e.g., "49").</documentation>
+				</annotation>
+				<attribute name="dataType" type="anyURI" use="optional">
+					<annotation>
+						<documentation>Identifies the data type of this literal input or output. This dataType should be included for each quantity whose value is not a simple string. </documentation>
+					</annotation>
+				</attribute>
+				<attribute name="uom" type="anyURI" use="optional">
+					<annotation>
+						<documentation>Identifies the unit of measure of this literal input or output. This unit of measure should be referenced for any numerical value that has units (e.g., "meters", but not a more complete reference system). Shall be a UOM identified in the Process description for this input or output. </documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+</schema>

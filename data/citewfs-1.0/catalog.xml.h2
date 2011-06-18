@@ -1,0 +1,38 @@
+<?config.xml version="1.0" encoding="UTF-8"?>
+<catalog>
+<datastores>
+<!--
+a datastore configuration element serves as a common data source connection
+parameters repository for all featuretypes it holds.
+-->
+<datastore namespace = "cdf" enabled = "true" id = "cdf" >
+<connectionParams>
+<parameter value = "5432" name = "port"  />
+<parameter value = "cite" name = "database"  />
+<parameter value = "h2" name = "dbtype"  />
+</connectionParams>
+</datastore>
+<datastore namespace = "cgf" enabled = "true" id = "cgf" >
+<connectionParams>
+<parameter value = "cgf" name = "namespace"  />
+<parameter value = "cite" name = "database"  />
+<parameter value = "h2" name = "dbtype"  />
+</connectionParams>
+</datastore>
+</datastores>
+
+
+<formats>
+</formats>
+<!--
+Defines namespaces to be used by the datastores.
+-->
+<namespaces>
+<namespace uri = "http://www.opengis.net/cite/data" prefix = "cdf" default = "true"  />
+<namespace uri = "http://www.opengis.net/cite/geometry" prefix = "cgf"  />
+</namespaces>
+<styles>
+<style filename = "funkypolyshp.sld" id = "dotty"  />
+<style filename = "poly.sld" id = "poly"  />
+</styles>
+</catalog>

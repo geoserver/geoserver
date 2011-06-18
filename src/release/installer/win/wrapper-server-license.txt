@@ -1,0 +1,302 @@
+----------------------------------------------------------------------
+--------------------                              --------------------
+                         Tanuki Software, Ltd. 
+                   Server Software License Agreement
+                             Version 1.0
+
+IMPORTANT-READ CAREFULLY: This license agreement is a legal agreement
+between you and Tanuki Software, Ltd.("TSI"), which includes computer
+software, associated media, printed materials, and may include online
+or electronic documentation ( Software ).  PLEASE READ THIS AGREEMENT
+CAREFULLY BEFORE YOU INSTALL, COPY, DOWNLOAD OR USE THE SOFTWARE
+ACCOMPANYING THIS PACKAGE.
+
+
+Section 1 - Grant of License
+
+Effective upon the payment of the license fees, TSI grants to You a
+non-exclusive, non-transferable, worldwide right and license to use,
+one or more instances of the Software Program and documentation, in
+executable code form only, on a single physical server or workstation.
+You may not, under any circumstances, distribute or resell the
+Software in any form, nor use the Software to construct any product
+to directly compete with the Software.
+
+
+Section 2 - Definitions
+
+"Software Program" shall mean the computer software and license file
+provided by TSI under this Agreement, including all new releases,
+corrections, enhancements and updates to such computer software,
+which TSI makes generally available and which You receive pursuant to
+Your subscription to TSI's Maintenance Services as described herein.
+Some specific features or platforms may not be enabled if they do not
+fall under the feature set(s) covered by the specific license fees
+paid.
+
+"Computer" shall mean the computer, server, workstation, or device
+on which the Software Program is Licensed to be used.
+
+"Host Id" shall mean an identification string which uniquely
+identifies an individual Computer.
+
+"License File" shall mean the text file provided by TSI containing
+information associating the License File to You, a Host Id, a list
+of enabled features, Term of the this Agreement, and a set of keys
+used to activate the Software Program.
+
+
+Section 3 - Scope Of Use
+
+The Software Program can only exist on the Computer identified by
+the Host Id mentioned in the License File provided by TSI.  You are
+granted a license to use versions and updates of the Software Program
+released prior to the end of the Term of this Agreement on the
+Computer beyond the Term of this license Agreement.  Access to
+specific features may be restricted depending on the features
+mentioned in the License File provided with this Agreement.
+
+
+Section 4 - Copyright and Trademark
+
+You acknowledge that all copyrights in the Software Program and the
+goodwill associated therewith are vested in and belong to TSI.
+
+
+Section 5 - Maintenance Services
+
+5.1 Scope and Duration
+Maintenance Services are provided on an annual basis for certain TSI
+Software. The initial order for Maintenance Services shall be
+included in the initial fees paid for the license.  After the first
+year of Maintenance Services and for the remainder of the Term, You
+will be required to renew your Maintenance Services for successive
+one (1) year periods at the rates for such Maintenance Services.
+Maintenance Services must be paid in full without lapse to be
+eligible.
+
+5.2 Maintenance Obligations
+TSI will provide first line support of the Software Program to You
+for problems relating directly to the Software Program during the
+Term of this Agreement.
+
+
+Section 6 - Warranty and Limited Liability
+
+Software Warranty: TSI warrants that, for a period of ninety (90)
+days from the initial delivery of the software to You, the Software,
+if used by You in accordance with the Documentation, shall operate in
+material conformity with the Documentation for such Software. TSI
+does not warrant that the Software will meet all of Your requirements
+or that the use of the Software will be uninterrupted or error free.
+TSI's entire liability, and Your exclusive remedy, under this limited
+Software Warranty shall be for TSI (i) to attempt, through reasonable
+efforts, to correct any reproducible material nonconformity
+discovered within the ninety (90) day warranty period; or (ii) to
+replace the nonconforming Software with Software which conforms to
+the foregoing warranty. In the event TSI is unable to cure the breach
+of warranty described in this Section 6, after attempting the
+remedies described in (i) and (ii) above, You may return the Software
+and TSI shall refund any license and maintenance fees paid by You to
+TSI for the Software. The above remedies are available only if TSI is
+promptly notified in writing, within the warranty period, upon
+discovery of the nonconformity by You and TSI's examination of the
+Software discloses that such nonconformity exists, and that the
+Software has not been (i) altered or modified, other than by TSI,
+(ii) subjected to negligence, or computer or electrical malfunctions,
+or (iii) used, adjusted, or installed other than in accordance with
+the Documentation.  Maintenance Services and Other Services Warranty:
+TSI warrants that any Maintenance Services or other Services
+performed pursuant to the terms of this Agreement shall be performed
+in a professional and workmanlike manner consistent with generally
+accepted industry standards. TSI's entire liability and Your
+exclusive remedy under this limited Maintenance Services and Other
+Services Warranty shall be for You to recover the fees paid for such
+nonconforming services
+
+Disclaimer: THE EXPRESS LIMITED WARRANTIES SET FORTH ABOVE ARE
+EXCLUSIVE AND IN LIEU OF ALL OTHER WARRANTIES, EXPRESS, IMPLIED OR
+STATUTORY WITH RESPECT TO THE SOFTWARE, AND TSI EXPRESSLY DISCLAIMS
+ANY IMPLIED WARRANTIES, INCLUDING WITHOUT LIMITATION, WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+Limitation of Liability: EXCEPT FOR CLAIMS MADE UNDER SECTION 7
+( INDEMNIFICATION ), IN NO EVENT SHALL EITHER PARTY'S LIABILITY
+ARISING OUT OF THIS AGREEMENT OR THE TERMINATION OF THIS AGREEMENT
+EXCEED THE AMOUNTS PAID OR DUE TO TSI HEREUNDER. IN NO EVENT SHALL
+EITHER PARTY HAVE ANY LIABILITY FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+LOST PROFITS, LOSS OF DATA OR COSTS OF PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES, ARISING IN ANY WAY OUT OF THIS AGREEMENT UNDER ANY
+CAUSE OF ACTION, WHETHER OR NOT THE OTHER PARTY HAS BEEN ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGES. THESE LIMITATIONS SHALL APPLY
+NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY LIMITED
+REMEDY.
+
+Warranty Claims: Any claims made by You for the breach of a warranty
+set forth in this Section 6, shall be made in writing and delivered
+in writing to TSI, and You shall provide TSI a reproducible test
+case, if applicable, demonstrating the breach of warranty.
+
+
+Section 7 - Indemnification
+TSI warrants that the use of unaltered Software Program(s), or the
+exercise of the licenses granted hereunder, will not infringe any
+copyright or patent, or other intellectual property rights of any
+third party, and TSI has all rights necessary for the grant of the
+rights and licenses granted by this Agreement. TSI agrees to
+indemnify, defend and hold You harmless from any and all actions,
+causes of action, claims, demands, reasonable costs, liabilities,
+reasonable expenses (including attorney's fees) and damages
+(collectively, a "Loss" or "Losses") arising from any claim that the
+Software Program infringes any copyright or patent, or other
+intellectual property right of a third party, provided, however:
+(1) You shall promptly deliver to TSI notice in writing of any claim
+    for recovery under this section, and, if known, specify in
+    reasonable detail the nature of the Loss and the amount, or an
+    estimate of the amount, of the liability arising there-from. You
+    shall, at TSI's expense, provide to TSI as promptly as
+    practicable thereafter information and documentation reasonably
+    requested by TSI to support and verify the claim assert-ed,
+    provided that, in so doing, it may restrict or condition any
+    disclosure in the interest of preserving privileges of importance
+    in any foreseeable litigation.
+(2) If the facts pertaining to the Loss arise out of the claim of a
+    third party, or if there is any claim against a third party
+    available by virtue of the circumstances of the Loss, TSI shall
+    assume the defense or the prosecution thereof, including the
+    employment of counsel or accountants, at its cost and expense.
+    You shall have the right to employ counsel separate from counsel
+    employed by TSI in any such action and to participate therein,
+    but the fees and expenses of such counsel employed by You shall
+    be at Your expense.  TSI shall have the right to determine and
+    adopt (or, in the case of a proposal by You, to approve) a
+    settlement of such matter in its reasonable discretion. TSI shall
+    not be liable for any settlement of any claim effected without
+    its prior written consent, which shall not be unreasonably
+    withheld.  Whether or not TSI chooses to so defend or prosecute
+    such claim, You and TSI shall cooperate in the defense or
+    prosecution thereof and shall furnish such records, information
+    and testimony, and attend such conferences, discovery
+    proceedings, hearings, trials and appeals, as may be reasonably
+    requested in connection therewith.
+(3) If such a claim arises, or in either party's judgment is likely
+    to arise, You agree to allow TSI, at TSI's option, to either
+    (i) procure the right to permit the continued exercise of the
+    rights and licenses in the Software Program granted under this
+    Agreement; (ii) replace or modify the Software Program so it
+    be-comes non-infringing, while affording equivalent performance;
+    or (iii) as its sole obligation, terminate the license for the
+    infringing Software Program and upon return thereof by You,
+    refund the unearned portion of any license fees paid by You for
+    the remainder of the current term hereof.
+(4) TSI shall have no indemnity obligation for claims of infringement
+    resulting from any combination, operation or use of the Software
+    Program, or any components thereof, with any software programs or
+    data not supplied by TSI if such infringement would have been
+    avoided by use of the Software Program alone. You acknowledge and
+    agree that these four items are the exclusive remedy of You for
+    damages for breach of warranty or representations contained in
+    this Section 7.
+
+
+Section 8 - Termination
+
+Should either party commit a material breach of its obligations
+hereunder, the other party may, at its option, terminate this
+Agreement by written notice to the party in default. Such notice
+shall identify and describe the default upon which termination is
+based. The defaulting party shall have thirty (30) days from the
+effective delivery of the notice to cure such default, which, if
+effected, shall prevent termination by virtue of such default.  Upon
+termination of this Agreement, You will either return to TSI or
+destroy all copies of the Software Program and documentation then in
+your possession.  You shall, within thirty (30) days after the date
+of such termination furnish TSI with a certificate of compliance in
+accordance with this Section.  The parties agree that TSI shall have
+the right to enforce the obligations arising under this Section by
+seeking specific performance and to enjoin or compel You through
+injunctive relief.
+
+
+Section 9 - Export Controls
+
+You shall comply with, all applicable laws, regulations, rulings and
+executive orders of the Japan relating to the export and re-export of
+Products containing the Software Program. You shall not directly or
+indirectly export or re-export any Products containing the Software
+Program unless You have obtained a license to do so if such a license
+is required.
+
+
+Section 10 - Entire Agreement
+
+This Agreement, including any attachments, constitutes the entire
+agreement of the parties with respect to the subject matter hereof
+and supersedes all prior agreements, both oral and written,
+representations, statements, negotiations and undertakings, with
+respect to the subject matter hereof, which such agreements,
+representations, statements, negotiations and undertakings are merged
+herein.  No amendment or modification of this Agreement or any
+provision or attachment of this Agreement shall be effective unless
+it is in writing and signed by both parties.
+
+
+Section 11 - Governing Law
+
+The validity, construction and performance of this Agreement shall be
+governed by the substantive laws of Japan (excluding conflicts of law
+principles).  Each party hereto expressly consents to the personal
+jurisdiction of, and venue in, such courts. If any legal action is
+undertaken to enforce the terms of this Agreement, the prevailing
+party shall be entitled to reasonable attorney's fees and costs in
+addition to any other relief to which that party may be entitled.
+
+
+Section 12 - Assignment and Benefit
+
+Without the consent of the other party in writing, neither party may
+assign this Agreement; provided, however, TSI or You may assign this
+Agreement to a wholly-owned subsidiary of the respective corporation
+or a corporation in which the shareholders of the respective
+corporation own a majority interest of the voting control provided
+that the assigning party remains obligated hereunder; further
+provided, however, TSI or You may assign this Agreement to another
+corporation which acquires or has acquired substantially all of the
+stock or assets of the assignor so long as, if the assignor is You,
+the assignee's license to use the Software Program is limited to the
+specific Server for which the Software Program is licensed.
+
+This Agreement shall be binding upon and shall inure to the benefit
+of You and TSI and each party's successors, subject to the other
+provisions of this Section.
+
+
+Section 13 - 3rd Party Components
+
+(1) The Software Program includes software and documentation components
+developed in part by Silver Egg Technology, Inc.("SET") prior to
+2001.  All SET components were released under the following license.
+
+    Copyright (c) 2001 Silver Egg Technology
+    
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without 
+    restriction, including without limitation the rights to use, 
+    copy, modify, merge, publish, distribute, sub-license, and/or 
+    sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following 
+    conditions:
+    
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+    NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.

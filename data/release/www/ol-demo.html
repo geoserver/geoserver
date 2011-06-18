@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src='http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.2&mkt=en-us'></script>
+    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
+    <script src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"></script>
+
+    <link rel="stylesheet" href="/geoserver/style.css" type="text/css" />
+    <link rel="stylesheet" href="openlayers/theme/default/style.css" type="text/css" />
+
+    <style type="text/css">
+        body {
+            margin: 1em;
+        }
+        #map {
+            width: 95%;
+            height: 512px;
+            border: 1px solid gray;
+        }
+        div.olControlMousePosition {
+            color: white;
+        }
+        #bounds {
+            font-size: 0.9em;
+        }
+    </style>
+
+    <script src="http://openlayers.org/api/OpenLayers.js"></script>
+    <script type="text/javascript">
+ 
+        // make map available for easy debugging
+        var map;
+
+        // avoid pink tiles
+        OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
+        OpenLayers.Util.onImageLoadErrorColor = "transparent";
+
+        function init(){
+            
+            /**
+             * The commercial layers (Google, Virtual Earth, and Yahoo) are
+             * in a custom projection - we're calling this Spherical Mercator.
+             * GeoServer understands that requests for EPSG:900913 should
+             * match the projection for these commercial layers.  Note that
+             * this is not a standard EPSG code - so, if you want to load
+             * layers from another WMS, it will have to be configured to work
+             * with this projection.
+             */
+            var options = {
+                // the "community" epsg code for spherical mercator
+                projection: "EPSG:900913",
+                // map horizontal units are meters
+                units: "m",
+                // this resolution displays the globe in one 256x256 pixel tile
+                maxResolution: 78271.51695,
+                // these are the bounds of the globe in sperical mercator
+                maxExtent: new OpenLayers.Bounds(-20037508, -20037508,
+                                                 20037508, 20037508)
+            };
+            // construct a map with the above options
+            map = new OpenLayers.Map('map', options);
+
+            // create Google layer
+            var gsat = new OpenLayers.Layer.Google(
+                "Google Satellite",
+                {type: G_SATELLITE_MAP, sphericalMercator: true}
+            );
+
+            // create Virtual Earth layer
+            var veaer = new OpenLayers.Layer.VirtualEarth("Bing maps", {
+                type: VEMapStyle.Aerial, sphericalMercator: true
+            });
+
+            // create Yahoo layer (only the default layer works, the hibrid and the
+            // satellite ones do throw exceptions and rendering goes totally bye bye)
+            var yahoosat = new OpenLayers.Layer.Yahoo("Yahoo", {
+            	 sphericalMercator: true
+            });
+
+            // you can create your own layers here
+
+            // create WMS layer
+            var wms = new OpenLayers.Layer.WMS(
+                "TOPP States",
+                "http://localhost:8080/geoserver/wms?",
+                {
+                   layers: 'topp:states',
+                   styles: '',
+                   srs: 'EPSG:4326',
+                   format: 'image/png',
+                   tiled: 'true',
+                   tilesOrigin : "143.60260815000004,-43.851764249999995",
+                   transparent: true
+                },
+                {
+                    'opacity': 0.75, 'isBaseLayer': false, 'wrapDateLine': true
+                }
+            );
+
+            var usBounds = new OpenLayers.Bounds(
+                -14392000, 2436200, -7279500, 6594375
+            );
+
+            // add the created layers to the map
+            // (if you want custom layers to show up they must be here as well)
+            map.addLayers([gsat, veaer, yahoosat, wms]);
+            
+            map.addControl(new OpenLayers.Control.LayerSwitcher());
+            map.addControl(new OpenLayers.Control.MousePosition());
+            map.zoomToExtent(usBounds);
+            
+            // the part below is just to make the bounds show up on the page
+            var boundsOutput = document.getElementById('bounds');
+            function updateBounds() {
+                var code =
+                    "    var bounds = new OpenLayers.Bounds(\n" +
+                    "        " + map.getExtent().toBBOX().replace(/,/g, ', ') + "\n" +
+                    "    );\n" +
+                    "    map.zoomToExtent(bounds);"
+                boundsOutput.innerHTML = code;
+            }
+            // update the bounds with each map move
+            map.events.register('moveend', map, updateBounds);
+            // and update the bounds on first load
+            updateBounds();
+        }
+        
+    </script>
+  </head>
+  <body onload="init()">
+    <h3>Geoserver OpenLayers Demo</h3>
+    <div id="map"></div>
+    <p>In creating your own OpenLayers application, you can use the bounds shown
+    above as your initial extent.  For example, the following code would zoom
+    your map to the current extent:
+    </p>
+    <pre id="bounds"></pre>
+  </body>
+</html>

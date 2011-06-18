@@ -1,0 +1,36 @@
+<html>
+<head>
+<title><wicket:message key="title">Affine Transform Panel</wicket:message></title>
+</head>
+<body>
+<wicket:panel>
+   <ul class="selfclear">
+     <li class="leftwise">
+      <label for="scaleX" ><wicket:message key="scaleX">scaleX</wicket:message></label>
+      <input wicket:id="scaleX" id="scaleX" type="text" size="12"/>
+     </li>
+     <li class="leftwise" wicket:id="shearXContainer">
+      <label for="shearX"><wicket:message key="shearX">shearX</wicket:message></label>
+      <input wicket:id="shearX" id="shearX" type="text" size="12"/>
+     </li>
+     <li class="leftwise" wicket:id="originXContainer">
+      <label for="originX"><wicket:message key="originX">originX</wicket:message></label>
+      <input wicket:id="originX" id="originX" type="text" size="12"/>
+     </li>
+     <br class="clearBoth" wicket:id="newline"/>
+     <li class="leftwise" wicket:id="shearYContainer">
+      <label for="shearY" ><wicket:message key="shearY">shearY</wicket:message></label>
+      <input wicket:id="shearY" id="shearY" type="text" size="12"/>
+     </li>
+     <li class="leftwise">
+      <label for="scaleY"><wicket:message key="scaleY">scaleY</wicket:message></label>
+      <input wicket:id="scaleY" id="scaleY" type="text" size="12"/>
+     </li>
+     <li class="leftwise" wicket:id="originYContainer">
+      <label for="originY"><wicket:message key="originY">originY</wicket:message></label>
+      <input wicket:id="originY" id="originY" type="text" size="12"/>
+     </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

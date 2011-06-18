@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OperationMethod xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="GridElevationModel">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15 -->
+	<methodName>Grid elevation model</methodName>
+	<methodID>
+		<name codeSpace="urn:ogc:def:method:OGC:0.0:">GridElevationModel</name>
+	</methodID>
+	<remarks>This operation method is for a coordinate Transformation that implements an elevation model using grid elevation data. </remarks>
+	<methodFormula>The elevation value for the input horizontal position shall be bilinear interpolated between the surrounding four grid points, and added to the input horizontal coordinates. </methodFormula>
+	<sourceDimensions>2</sourceDimensions>
+	<targetDimensions>3</targetDimensions>
+	<usesParameter>
+		<OperationParameter gml:id="GridElevationData">
+			<parameterName>Grid Elevation Data</parameterName>
+			<parameterID>
+				<name codeSpace="urn:ogc:def:parameter:OGC:0.0:">GridElevationData</name>
+			</parameterID>
+			<remarks>The value of this operation parameter is the URL of a source of grid elevation data, in the 3D targetCRS of the coordinate Transformation that contains the value of this operation parameter. </remarks>
+		</OperationParameter>
+	</usesParameter>
+</OperationMethod>

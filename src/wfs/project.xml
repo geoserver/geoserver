@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+	<pomVersion>3</pomVersion>
+	<extend>${basedir}/../org.vfny.geoserver.libs/project.xml</extend>
+
+	<groupId>org.vfny</groupId>
+  <artifactId>org.vfny.geoserver.wfs</artifactId>
+	<currentVersion>0.1</currentVersion>
+  <name>GeoServer WFS Module</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.vfny</groupId>
+			<artifactId>org.vfny.geoserver.main</artifactId>
+			<version>0.1</version>
+			<properties>
+				<eclipse.dependency>true</eclipse.dependency>
+			</properties>
+		</dependency>
+  </dependencies>
+
+</project>

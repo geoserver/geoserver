@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.opengis.net/wcs" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.1" xml:lang="en">
+	<xs:annotation>
+		<xs:appinfo>values.xsd v1.0.1 2005-07-18</xs:appinfo>
+		<xs:documentation> This schema defines the values and enumeration elements and types used by the OGC Web Coverage Service (WCS). </xs:documentation>
+		<xs:documentation>JDE 2003-07-30 Removed empty "sequence" from valueEnumType</xs:documentation>
+		<xs:documentation>AEW 2005-07-15 Edited almost all documentation elements to remove TBRs and TBDs and to make them clearer. However, I do not know enough to resolve the TBD in the documentation of the "atomic" attribute in the valueRangeType. I also added documentation elements where I thought they were needed. </xs:documentation>
+	</xs:annotation>
+	<!-- ==============================================================
+		elements and types 		
+	============================================================== -->
+	<xs:complexType name="valueEnumType">
+		<xs:annotation>
+			<xs:documentation>List of all the valid values and/or intervals of values for this variable. For numeric variables, signed values shall be ordered from negative infinity to positive infinity. For intervals, the type and semantic attributes are inherited by children elements, but can be superceded here. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="valueEnumBaseType">
+				<xs:attribute ref="type" use="optional">
+					<xs:annotation>
+						<xs:documentation>Should be included if the data type is not xs:string, and the valueEnumBaseType does not include any "interval" elements that include this attribute. </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute ref="semantic" use="optional">
+					<xs:annotation>
+						<xs:documentation>Should be included if the semantics or meaning is not clearly specified elsewhere, and the valueEnumBaseType does not include any "interval" elements that include this attribute. </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================== -->
+	<xs:complexType name="valueEnumBaseType">
+		<xs:annotation>
+			<xs:documentation>List of all the valid values and/or ranges of values for this variable. For numeric variables, signed values shall be ordered from negative infinity to positive infinity. For intervals, the "type" and "semantic" attributes are inherited by children elements, but can be superceded by them. </xs:documentation>
+		</xs:annotation>
+		<xs:choice maxOccurs="unbounded">
+			<xs:element ref="interval"/>
+			<xs:element ref="singleValue"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ========================================================== -->
+	<xs:element name="singleValue" type="TypedLiteralType">
+		<xs:annotation>
+			<xs:documentation>A single value for a quantity. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ========================================================== -->
+	<xs:element name="interval" type="intervalType"></xs:element>
+	<!-- ========================================================== -->
+	<xs:complexType name="intervalType">
+		<xs:annotation>
+			<xs:documentation>An interval of values of a numeric quantity. This interval can be continuous or discrete, defined by a fixed spacing between adjacent valid values. Note that the "type" and "semantic" attributes for min/max and "res" may be different (timeInstant and duration). </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="valueRangeType">
+				<xs:sequence>
+					<xs:element name="res" type="TypedLiteralType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The regular distance or spacing between the allowed values in this interval. Shall be included when the allowed values are NOT continuous in this interval. Shall not be included when the allowed values are continuous in this interval. </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================== -->
+	<xs:complexType name="valueRangeType">
+		<xs:annotation>
+			<xs:documentation>The range of an interval. If the "min" or "max" element is not included, there is no value limit in that direction. Inclusion of the specified minimum and maximum values in the range shall be defined by the "closure". (The interval can be bounded or semi-bounded with different closures.) The data type and the semantic of the values are inherited by children and may be superceded by them. This range may be qualitative, i.e., nominal (age range) or qualitative (percentage) meaning that a value between min/max can be queried. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="min" type="TypedLiteralType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Minimum value of this numeric parameter. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="max" type="TypedLiteralType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Maximum value of this numeric parameter. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute ref="type" use="optional">
+			<xs:annotation>
+				<xs:documentation>Can be omitted when the datatype of values in this interval is xs:string, or the "type" attribute is included in an enclosing element. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute ref="semantic" use="optional">
+			<xs:annotation>
+				<xs:documentation>Can be omitted when the semantics or meaning of values in this interval is clearly specified elsewhere, or the "semantic" attribute is included in an enclosing element. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="atomic" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>What does this attribute mean? Is it useful and not redundant? When should this attribute be included or omitted? TBD. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute ref="closure" use="optional">
+			<xs:annotation>
+				<xs:documentation>Shall be included unless the default value applies. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- ========================================================== -->
+	<xs:attribute name="closure" default="closed">
+		<xs:annotation>
+			<xs:documentation>Specifies which of the minimum and maximum values are included in the range. Note that plus and minus infinity are considered closed bounds. </xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:NMTOKENS">
+				<xs:enumeration value="closed">
+					<xs:annotation>
+						<xs:documentation>The specified minimum and maximum values are included in this range. </xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="open">
+					<xs:annotation>
+						<xs:documentation>The specified minimum and maximum values are NOT included in this range. </xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="open-closed">
+					<xs:annotation>
+						<xs:documentation>The specified minimum value is NOT included in this range, and the specified maximum value IS included in this range. </xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="closed-open">
+					<xs:annotation>
+						<xs:documentation>The specified minimum value IS included in this range, and the specified maximum value is NOT included in this range. </xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<!-- ============================================================ -->
+	<xs:complexType name="TypedLiteralType">
+		<xs:annotation>
+			<xs:documentation>A single value for a variable, encoded as a string. This type can be used for one value, for a spacing between allowed values, or for the default value of a parameter. The "type" attribute indicates the datatype of this value (default is a string). The value for a typed literal is found by applying the datatype mapping associated with the datatype URI to the lexical form string. </xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute ref="type" use="optional">
+					<xs:annotation>
+						<xs:documentation>Should be included unless the datatype is xs:string, or this "type" attribute is included in an enclosing element. </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- =========================================================== -->
+	<xs:attribute name="type" type="xs:anyURI">
+		<xs:annotation>
+			<xs:documentation>Datatype of a typed literal value. This URI typically references XSD simple types. It has the same semantic as rdf:datatype. </xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+	<!-- =========================================================== -->
+	<xs:attribute name="semantic" type="xs:anyURI">
+		<xs:annotation>
+			<xs:documentation>Definition of the semantics or meaning of the values in the XML element it belongs to. The value of this "semantic" attribute can be a RDF Property or Class of a taxonomy or ontology. </xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+</xs:schema>

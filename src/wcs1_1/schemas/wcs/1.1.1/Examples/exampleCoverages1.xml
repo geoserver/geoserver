@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Coverages xmlns="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:ows="http://www.opengis.net/ows/1.1" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsAll.xsd http://www.opengis.net/ows/1.1 ../../../ows/1.1.0/owsAll.xsd">
+	<Coverage>
+		<ows:Title>TBD</ows:Title>
+		<ows:Abstract>Coverage created from GetCoverage operation request to a WCS</ows:Abstract>
+		<ows:Identifier>TBD</ows:Identifier>
+		<ows:Reference xlink:href="http://my.server.com/coverage/image.tiff" xlink:role="urn:ogc:def:role:WCS:1.1:coverage"/>
+		<ows:Reference xlink:href="http://my.server.com/coverage/metadata.xml" xlink:role="urn:ogc:def:role:WCS:1.1:metadata"/>
+	</Coverage>
+</Coverages>

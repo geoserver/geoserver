@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+    targetNamespace="http://www.opengis.net/ogc"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    version="1.3.0 2010-02-03">
+   
+   <!--
+      WMS is an OGC Standard.
+      Copyright (c) 2004,2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+      To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+   -->
+
+    <xsd:element name="ServiceExceptionReport">
+       <xsd:complexType>
+          <xsd:sequence>
+             <xsd:element name="ServiceException"
+                          type="ogc:ServiceExceptionType"
+                          minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attribute name="version" type="xsd:string" fixed="1.3.0"/>
+       </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="ServiceExceptionType">
+       <xsd:simpleContent>
+          <xsd:extension base="xsd:string">
+             <xsd:attribute name="code" type="xsd:string"/>
+             <xsd:attribute name="locator" type="xsd:string"/>
+          </xsd:extension>
+       </xsd:simpleContent>
+    </xsd:complexType>
+</xsd:schema>

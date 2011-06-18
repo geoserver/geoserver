@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.0" xml:lang="en">
+	<annotation>
+		<appinfo>owsExceptionReport.xsd 2006-10-05</appinfo>
+		<documentation>This XML Schema Document encodes the Exception Report response to all OWS operations.
+		Copyright (c) 2006 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<import namespace="http://www.w3.org/XML/1998/namespace"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<element name="ExceptionReport">
+		<annotation>
+			<documentation>Report message returned to the client that requested any OWS operation when the server detects an error while processing that operation request. </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ows:Exception" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of one or more Exception elements that each describes an error. These Exception elements shall be interpreted by clients as being independent of one another (not hierarchical). </documentation>
+					</annotation>
+				</element>
+			</sequence>
+			<attribute name="version" use="required">
+				<annotation>
+					<documentation>Specification version for OWS operation. The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99. Each version shall be for the Implementation Specification (document) and the associated XML Schemas to which requested operations will conform. An Implementation Specification version normally specifies XML Schemas against which an XML encoded operation response must conform and should be validated. See Version negotiation subclause for more information. </documentation>
+				</annotation>
+				<simpleType>
+					<restriction base="string">
+						<pattern value="\d+\.\d?\d\.\d?\d"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<attribute ref="xml:lang" use="optional">
+				<annotation>
+					<documentation>Identifier of the language used by all included exception text values. These language identifiers shall be as specified in IETF RFC 4646. When this attribute is omitted, the language used is not identified. </documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+	<!-- ======================================================= -->
+	<element name="Exception" type="ows:ExceptionType"/>
+	<!-- ======================================================= -->
+	<complexType name="ExceptionType">
+		<annotation>
+			<documentation>An Exception element describes one detected error that a server chooses to convey to the client. </documentation>
+		</annotation>
+		<sequence>
+			<element name="ExceptionText" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Ordered sequence of text strings that describe this specific exception or error. The contents of these strings are left open to definition by each server implementation. A server is strongly encouraged to include at least one ExceptionText value, to provide more information about the detected error than provided by the exceptionCode. When included, multiple ExceptionText values shall provide hierarchical information about one detected error, with the most significant information listed first. </documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="exceptionCode" type="string" use="required">
+			<annotation>
+				<documentation>A code representing the type of this exception, which shall be selected from a set of exceptionCode values specified for the specific service operation and server. </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="locator" type="string" use="optional">
+			<annotation>
+				<documentation>When included, this locator shall indicate to the client where an exception was encountered in servicing the client's operation request. This locator should be included whenever meaningful information can be provided by the server. The contents of this locator will depend on the specific exceptionCode and OWS service, and shall be specified in the OWS Implementation Specification. </documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+</schema>

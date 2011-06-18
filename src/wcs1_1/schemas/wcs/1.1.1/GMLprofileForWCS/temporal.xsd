@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:temporal:3.1.1"/>
+		<documentation>Subset of temporal.xsd for WCS 1.2 profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2007-04-23.
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved.</documentation>
+	</annotation>
+	<!-- ======== includes and imports =================================== -->
+	<include schemaLocation="gmlBase.xsd"/>
+	<!-- =========================================================== -->
+	<!-- ==== Time Position ===== -->
+	<!-- =========================================================== -->
+	<element name="timePosition" type="gml:TimePositionType">
+		<annotation>
+			<documentation>Direct representation of a temporal position</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="TimePositionType" final="#all">
+		<annotation>
+			<documentation>Direct representation of a temporal position. 
+      Indeterminate time values are also allowed, as described in ISO 19108. The 
+      indeterminatePosition attribute can be used alone or it can qualify a specific value for temporal 
+      position (e.g. before 2002-12, after 1019624400). 
+      For time values that identify position within a calendar, the calendarEraName attribute provides 
+      the name of the calendar era to which the date is referenced (e.g. the Meiji era of the 
+      Japanese calendar).</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:TimePositionUnion">
+				<attribute name="frame" type="anyURI" use="optional" default="#ISO-8601"/>
+				<attribute name="calendarEraName" type="string" use="optional"/>
+				<attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<simpleType name="TimePositionUnion">
+		<annotation>
+			<documentation>The ISO 19108:2002 hierarchy of subtypes for temporal position are  
+      collapsed by defining a union of XML Schema simple types for indicating temporal position  
+      relative to a specific reference system. 
+      
+      Dates and dateTime may be indicated with varying degrees of precision.  
+      dateTime by itself does not allow right-truncation, except for fractions of seconds. 
+      When used with non-Gregorian calendars based on years, months, days, 
+      the same lexical representation should still be used, with leading zeros added if the 
+      year value would otherwise have fewer than four digits.  
+      
+      An ordinal position may be referenced via URI identifying the definition of an ordinal era.  
+      
+      A time coordinate value is indicated as a decimal (e.g. UNIX time, GPS calendar).</documentation>
+		</annotation>
+		<union memberTypes="gml:CalDate time dateTime anyURI decimal"/>
+	</simpleType>
+	<!-- =========================================================== -->
+	<simpleType name="CalDate">
+		<annotation>
+			<documentation>Calendar dates may be indicated with varying degrees of precision, 
+      using year, year-month, date. 
+      When used with non-Gregorian calendars based on years, months, days, 
+      the same lexical representation should still be used, with leading zeros added if the 
+      year value would otherwise have fewer than four digits.  
+      time is used for a position that recurs daily (see clause 5.4.4.2 of ISO 19108:2002).</documentation>
+		</annotation>
+		<union memberTypes="date gYearMonth gYear"/>
+	</simpleType>
+	<!-- =========================================================== -->
+	<simpleType name="TimeIndeterminateValueType">
+		<annotation>
+			<documentation xml:lang="en">This enumerated data type specifies values for indeterminate positions.</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="after"/>
+			<enumeration value="before"/>
+			<enumeration value="now"/>
+			<enumeration value="unknown"/>
+		</restriction>
+	</simpleType>
+	<!-- ============================================================ -->
+</schema>

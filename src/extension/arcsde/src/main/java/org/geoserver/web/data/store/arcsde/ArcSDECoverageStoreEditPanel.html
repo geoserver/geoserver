@@ -1,0 +1,19 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+	<fieldset>
+	  <legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
+    <div>
+        <label for="connectionPrototype"><span wicket:id="prototypeLabel">bar</span></label>
+        <select wicket:id="connectionPrototype" id="connectionPrototype" class="text"/>    
+    </div>
+	  <div><span wicket:id="server"></span></div>
+	  <div><span wicket:id="port"></span></div>
+	  <div><span wicket:id="instance"></span></div>
+	  <div><span wicket:id="user"></span></div>
+	  <div><span wicket:id="password"></span></div>
+    <div><span wicket:id="tableNamePanel"></span></div>
+	</fieldset>
+</wicket:panel>
+</body>
+</html>

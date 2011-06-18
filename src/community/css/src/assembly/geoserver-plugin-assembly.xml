@@ -1,0 +1,15 @@
+<assembly>
+  <id>geoserver-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>org.geoserver.community:css</include>
+        <include>org.scala-lang:scala-library</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

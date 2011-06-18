@@ -1,0 +1,81 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="../../js/codemirror.js" type="text/javascript"></script>
+    <script src="../../js/mirrorframe.js" type="text/javascript"></script>
+    <title>CodeMirror: Scheme demonstration</title>
+    <link rel="stylesheet" type="text/css" href="../../css/docs.css"/>
+
+    <style type="text/css">
+      .CodeMirror-line-numbers {
+        width: 2.2em;
+        color: #aaa;
+        background-color: #eee;
+        text-align: right;
+        padding-right: .3em;
+        font-size: 10pt;
+        font-family: monospace;
+        padding-top: .4em;
+      }
+    </style>
+  </head>
+  <body style="padding: 20px;">
+
+<p>This page demonstrates <a href="index.html">CodeMirror</a>'s
+Scheme parser. (<a href="LICENSE">license</a>)</p>
+
+<div class="border">
+<textarea id="code" cols="120" rows="30">
+(define (factorial x)
+  (cond
+    [(= x 0)
+     1]
+    [else
+     (* x (factorial (sub1 x)))]))
+
+(list "This is a string"
+      'boolean
+      true
+      3.14)
+
+(local [(define x 42)]
+  (printf "ok~n"))
+</textarea>
+</div>
+
+<script type="text/javascript">
+  function addClass(element, className) {
+    if (!editor.win.hasClass(element, className)) {
+      element.className = ((element.className.split(" ")).concat([className])).join(" ");
+    }
+  }
+
+  function removeClass(element, className) {
+    if (editor.win.hasClass(element, className)) {
+      var classes = element.className.split(" ");
+      for (var i = classes.length - 1 ; i >= 0; i--) {
+        if (classes[i] === className) {
+            classes.splice(i, 1);
+        }
+      }
+      element.className = classes.join(" ");
+    }
+  }
+
+  var textarea = document.getElementById('code');
+  var editor = new CodeMirror(CodeMirror.replace(textarea), {
+    height: "350px",
+    content: textarea.value,
+    path: "../../js/",
+    parserfile: ["../contrib/scheme/js/tokenizescheme.js",
+                 "../contrib/scheme/js/parsescheme.js"],
+    stylesheet:  "css/schemecolors.css",
+    autoMatchParens: true,
+    disableSpellcheck: true,
+    lineNumbers: true,
+    markParen: function(span, good) {addClass(span, good ? "good-matching-paren" : "bad-matching-paren");},
+    unmarkParen: function(span) {removeClass(span, "good-matching-paren"); removeClass(span, "bad-matching-paren");}
+  });
+</script>
+
+  </body>
+</html>

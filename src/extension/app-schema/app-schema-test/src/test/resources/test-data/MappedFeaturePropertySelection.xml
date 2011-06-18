@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!--
+        Mapped Feature mapping file with no gsml:specification attribute. This is to avoid circular
+        reference problem when this is linked as gsml:occurrence in Geologic Unit type.
+    -->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+         <Namespace>
+            <prefix>xlink</prefix>
+            <uri>http://www.w3.org/1999/xlink</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>MappedFeatureDataStore</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <!-- path can be relative to this file if starts with "file: -->
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>MappedFeatureNoId</sourceType>
+            <targetElement>gsml:MappedFeature</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>
+                        gsml:MappedFeature
+					</targetAttribute>
+                    <idExpression>
+                        <OCQL>strConCat('gsml.mappedfeature.',ID)</OCQL>
+                    </idExpression>
+                </AttributeMapping>               
+                <AttributeMapping>
+                    <targetAttribute>
+                       gsml:shape
+					</targetAttribute>
+                    <idExpression>
+                    <OCQL>Expression.NIL</OCQL>
+                    </idExpression>                   
+                    <sourceExpression>
+                        <OCQL>SHAPE</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                 <AttributeMapping>
+                    <targetAttribute>
+                       gml:name
+                    </targetAttribute>
+                    <sourceExpression>
+                        <OCQL>DOESNT_EXIST</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>
+                       gml:description
+                    </targetAttribute>
+                    <sourceExpression>
+                        <OCQL>strConcat('descr.', LEX_D)</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                 <AttributeMapping>
+                    <targetAttribute>gsml:metadata</targetAttribute>
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>strConcat ('zzz', GEOLOGIC_UNIT_ID)</value>
+                    </ClientProperty>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

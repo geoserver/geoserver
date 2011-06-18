@@ -1,0 +1,19 @@
+
+   <coverageStores>
+     <coverageStore>
+       <name>worldImageSample</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/worldImageSample.xml" type="application/xml"/>
+     </coverageStore>
+     <coverageStore>
+       <name>mosaic</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/mosaic.xml" type="application/xml"/>
+     </coverageStore>
+     <coverageStore>
+       <name>img_sample2</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/img_sample2.xml" type="application/xml"/>
+     </coverageStore>
+     <coverageStore>
+       <name>arcGridSample</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/arcGridSample.xml" type="application/xml"/>
+     </coverageStore>
+   </coverageStores>

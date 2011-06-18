@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1">
+  <annotation>
+    <appinfo source="urn:opengis:specification:gml:schema-xsd:basicTypes:3.1.1">basicTypes.xsd</appinfo>
+    <documentation>
+    Generic simpleContent components for use in GML 
+    Copyright (c) 2005 OGC, All Rights Reserved.
+	For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr
+    </documentation>
+  </annotation>
+  <!-- =========================================================== -->
+  <simpleType name="NullEnumeration">
+    <annotation>
+      <documentation> Some common reasons for a null value:   
+			
+        innapplicable - the object does not have a value
+        missing - The correct value is not readily available to the sender of this data.  
+                           Furthermore, a correct value may not exist.
+        template - the value will be available later
+        unknown - The correct value is not known to, and not computable by, the sender of this data. 
+                           However, a correct value probably exists.
+        withheld - the value is not divulged 
+        
+        other:reason - as indicated by "reason" string
+        
+        Specific communities may agree to assign more strict semantics when these terms are used in a particular context.  
+      </documentation>
+    </annotation>
+    <union>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="inapplicable"/>
+          <enumeration value="missing"/>
+          <enumeration value="template"/>
+          <enumeration value="unknown"/>
+          <enumeration value="withheld"/>
+        </restriction>
+      </simpleType>
+      <simpleType>
+        <restriction base="string">
+          <pattern value="other:\w{2,}"/>
+        </restriction>
+      </simpleType>
+    </union>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="NullType">
+    <annotation>
+      <documentation>Utility type for null elements.  The value may be selected from one of the enumerated tokens, or may be a URI in which case this should identify a resource which describes the reason for the null. </documentation>
+    </annotation>
+    <union memberTypes="gml:NullEnumeration anyURI"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <element name="Null" type="gml:NullType"/>
+  <!-- ===================================================== -->
+  <simpleType name="SignType">
+    <annotation>
+      <documentation>Utility type used in various places 
+      - e.g. to indicate the direction of topological objects;
+      "+" for forwards, or "-" for backwards.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="-"/>
+      <enumeration value="+"/>
+    </restriction>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="booleanOrNull">
+    <annotation>
+      <documentation>Union of the XML Schema boolean type and the GML Nulltype.  An element which uses this type may have content which is either a boolean {0,1,true,false} or a value from Nulltype</documentation>
+    </annotation>
+    <union memberTypes="gml:NullEnumeration boolean anyURI"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="booleanOrNullList">
+    <annotation>
+      <documentation>XML List based on the union type defined above.  An element declared with this type contains a space-separated list of boolean values {0,1,true,false} with null values interspersed as needed</documentation>
+    </annotation>
+    <list itemType="gml:booleanOrNull"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="booleanList">
+    <annotation>
+      <documentation>XML List based on XML Schema boolean type.  An element of this type contains a space-separated list of boolean values {0,1,true,false}</documentation>
+    </annotation>
+    <list itemType="boolean"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="stringOrNull">
+    <annotation>
+      <documentation>Union of the XML Schema string type and the GML Nulltype.  An element which uses this type may have content which is either a string or a value from Nulltype.  Note that a "string" may contain whitespace.  </documentation>
+    </annotation>
+    <union memberTypes="gml:NullEnumeration string anyURI"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="NameOrNull">
+    <annotation>
+      <documentation>Union of the XML Schema Name type and the GML Nulltype.  An element which uses this type may have content which is either a Name or a value from Nulltype.  Note that a "Name" may not contain whitespace.  </documentation>
+    </annotation>
+    <union memberTypes="gml:NullEnumeration Name anyURI"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="NameOrNullList">
+    <annotation>
+      <documentation>XML List based on the union type defined above.  An element declared with this type contains a space-separated list of Name values with null values interspersed as needed</documentation>
+    </annotation>
+    <list itemType="gml:NameOrNull"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="NameList">
+    <annotation>
+      <documentation>XML List based on XML Schema Name type.  An element of this type contains a space-separated list of Name values</documentation>
+    </annotation>
+    <list itemType="Name"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="doubleOrNull">
+    <annotation>
+      <documentation>Union of the XML Schema double type and the GML Nulltype.  An element which uses this type may have content which is either a double or a value from Nulltype</documentation>
+    </annotation>
+    <union memberTypes="gml:NullEnumeration double anyURI"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="doubleOrNullList">
+    <annotation>
+      <documentation>XML List based on the union type defined above.  An element declared with this type contains a space-separated list of double values with null values interspersed as needed</documentation>
+    </annotation>
+    <list itemType="gml:doubleOrNull"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="doubleList">
+    <annotation>
+      <documentation>XML List based on XML Schema double type.  An element of this type contains a space-separated list of double values</documentation>
+    </annotation>
+    <list itemType="double"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="integerOrNull">
+    <annotation>
+      <documentation>Union of the XML Schema integer type and the GML Nulltype.  An element which uses this type may have content which is either an integer or a value from Nulltype</documentation>
+    </annotation>
+    <union memberTypes="gml:NullEnumeration integer anyURI"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="integerOrNullList">
+    <annotation>
+      <documentation>XML List based on the union type defined above.  An element declared with this type contains a space-separated list of integer values with null values interspersed as needed</documentation>
+    </annotation>
+    <list itemType="gml:integerOrNull"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <simpleType name="integerList">
+    <annotation>
+      <documentation>XML List based on XML Schema integer type.  An element of this type contains a space-separated list of integer values</documentation>
+    </annotation>
+    <list itemType="integer"/>
+  </simpleType>
+  <!-- =========================================================== -->
+  <complexType name="CodeType">
+    <annotation>
+      <documentation>Name or code with an (optional) authority.  Text token.  
+      If the codeSpace attribute is present, then its value should identify a dictionary, thesaurus 
+      or authority for the term, such as the organisation who assigned the value, 
+      or the dictionary from which it is taken.  
+      A text string with an optional codeSpace attribute. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="codeSpace" type="anyURI" use="optional"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="CodeListType">
+    <annotation>
+      <documentation>List of values on a uniform nominal scale.  List of text tokens.   
+      In a list context a token should not include any spaces, so xsd:Name is used instead of xsd:string.   
+      If a codeSpace attribute is present, then its value is a reference to 
+      a Reference System for the value, a dictionary or code list.</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="gml:NameList">
+        <attribute name="codeSpace" type="anyURI" use="optional"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="CodeOrNullListType">
+    <annotation>
+      <documentation>List of values on a uniform nominal scale.  List of text tokens.   
+      In a list context a token should not include any spaces, so xsd:Name is used instead of xsd:string.  
+      A member of the list may be a typed null.  
+      If a codeSpace attribute is present, then its value is a reference to 
+      a Reference System for the value, a dictionary or code list.</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="gml:NameOrNullList">
+        <attribute name="codeSpace" type="anyURI" use="optional"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="MeasureType">
+    <annotation>
+      <documentation>Number with a scale.  
+      The value of uom (Units Of Measure) attribute is a reference to a Reference System for the amount, either a ratio or position scale. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="double">
+        <attribute name="uom" type="anyURI" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="MeasureListType">
+    <annotation>
+      <documentation>List of numbers with a uniform scale.  
+      The value of uom (Units Of Measure) attribute is a reference to 
+      a Reference System for the amount, either a ratio or position scale. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="gml:doubleList">
+        <attribute name="uom" type="anyURI" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="MeasureOrNullListType">
+    <annotation>
+      <documentation>List of numbers with a uniform scale.  
+      A member of the list may be a typed null. 
+      The value of uom (Units Of Measure) attribute is a reference to 
+      a Reference System for the amount, either a ratio or position scale. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="gml:doubleOrNullList">
+        <attribute name="uom" type="anyURI" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <complexType name="CoordinatesType">
+    <annotation>
+      <documentation>Tables or arrays of tuples.  
+        May be used for text-encoding of values from a table.  
+        Actually just a string, but allows the user to indicate which characters are used as separators.  
+        The value of the 'cs' attribute is the separator for coordinate values, 
+        and the value of the 'ts' attribute gives the tuple separator (a single space by default); 
+        the default values may be changed to reflect local usage.
+        Defaults to CSV within a tuple, space between tuples.  
+        However, any string content will be schema-valid.  </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="decimal" type="string" default="."/>
+        <attribute name="cs" type="string" default=","/>
+        <attribute name="ts" type="string" default="&#x20;"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <simpleType name="NCNameList">
+    <annotation>
+      <documentation>A set of values, representing a list of token with the lexical value space of NCName. The tokens are seperated by whitespace.</documentation>
+    </annotation>
+    <list itemType="NCName"/>
+  </simpleType>
+  <!-- ============================================================== -->
+  <simpleType name="QNameList">
+    <annotation>
+      <documentation>A set of values, representing a list of token with the lexical value space of QName. The tokens are seperated by whitespace.</documentation>
+    </annotation>
+    <list itemType="QName"/>
+  </simpleType>
+  <!-- ============================================================== -->
+</schema>

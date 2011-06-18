@@ -1,0 +1,97 @@
+<coverage format = "rotated" >
+  <name>rotated</name>
+  <label>An artificial rotated coverage</label>
+  <description>Just a fictuous rotated coverage used to show offset parameters in the rotated case</description>
+  <wmspath>/</wmspath>
+  <metadataLink about = "http://www.remotesensing.org:16080/websites/geotiff/geotiff.html" metadataType = "other" >
+    
+    null
+  
+  </metadataLink>
+  <keywords>WCS,rotated,rotated</keywords>
+  <!--
+    the default style this CoverageInfoDTO can be represented by.
+    at least must contain the "default" attribute
+  -->
+  <styles default = "raster" />
+  <envelope crs = "PROJCS['Monte Mario / Italy zone 1', 
+  GEOGCS['Monte Mario', 
+    DATUM['Monte Mario', 
+      SPHEROID['International 1924', 6378388.0, 297.0, AUTHORITY['EPSG','7022']], 
+      TOWGS84[-50.2, -50.4, 84.8, -0.69, -2.012, 0.459, -5.791915759418465], 
+      AUTHORITY['EPSG','6265']], 
+    PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+    UNIT['degree', 0.017453292519943295], 
+    AXIS['Geodetic longitude', EAST], 
+    AXIS['Geodetic latitude', NORTH], 
+    AUTHORITY['EPSG','4265']], 
+  PROJECTION['Transverse_Mercator'], 
+  PARAMETER['central_meridian', 9.0], 
+  PARAMETER['latitude_of_origin', 0.0], 
+  PARAMETER['scale_factor', 0.9996], 
+  PARAMETER['false_easting', 1500000.0], 
+  PARAMETER['false_northing', 0.0], 
+  UNIT['m', 1.0], 
+  AXIS['Easting', EAST], 
+  AXIS['Northing', NORTH], 
+  AUTHORITY['EPSG','3003']]" srsName = "EPSG:3003" >
+    <pos>1402796.735086838 5000064.822668008</pos>
+    <pos>1402868.2853603114 5000119.220342959</pos>
+  </envelope>
+  <grid dimension = "2" >
+    <low>0 0 </low>
+    <high>482 634 </high>
+    <axisName>Easting</axisName>
+    <axisName>Northing</axisName>
+    <geoTransform >
+      <scaleX>-5.270943E-6</scaleX>
+      <scaleY>5.2709729999999995E-6</scaleY>
+      <shearX>0.112851313689</shearX>
+      <shearY>0.112851313599</shearY>
+      <translateX>1402796.794050454</translateX>
+      <translateY>5000064.879096299</translateY>
+    </geoTransform>
+  </grid>
+  <CoverageDimension >
+    <name>Red band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>Green band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>Blue band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>values [0 ... 255]</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <supportedCRSs >
+    <requestCRSs>EPSG:3003</requestCRSs>
+    <responseCRSs>EPSG:3003</responseCRSs>
+  </supportedCRSs>
+  <supportedFormats nativeFormat = "GeoTIFF" >
+    <formats>GEOTIFF,TIFF,GIF,PNG,JPEG,DEBUG</formats>
+  </supportedFormats>
+  <supportedInterpolations default = "nearest neighbor" >
+    <interpolationMethods>nearest neighbor,bilinear,bicubic</interpolationMethods>
+  </supportedInterpolations>
+</coverage>

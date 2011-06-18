@@ -1,0 +1,22 @@
+<xsd:schema targetNamespace="http://www.opengis.net/cite/data"
+  xmlns:cdf="http://www.opengis.net/cite/data"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:gml="http://www.opengis.net/gml">
+  
+  <xsd:import namespace="http://www.opengis.net/gml"/>
+
+   <xsd:complexType name="NullFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="integers" type="xsd:integer" minOccurs="0"/>
+          <xsd:element name="dates" type="xsd:date" minOccurs="0"/>
+          <xsd:element ref="gml:pointProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Nulls" type="cdf:NullFeatureType" substitutionGroup="gml:_Feature"/>
+
+</xsd:schema>

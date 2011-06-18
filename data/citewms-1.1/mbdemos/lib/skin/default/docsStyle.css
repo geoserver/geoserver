@@ -1,0 +1,202 @@
+
+BODY { font-size: 80%; font-family: arial, helvetica, sans-serif; } 
+
+IMG { border-style: none; }
+
+P { font-size: 80%;  }
+
+/*
+TD { font: normal 100%; color:#000000; }
+UL { list-style: square; margin-bottom: 0%; line-height:1.3; }
+*/
+
+UL { font-size: 80%; list-style: square; padding: 0 }
+OL { font-size: 80%; padding: 0 }
+UL LI { margin-left: 1em; }
+OL LI { margin-left: 1em; }
+
+UL.sidebar { font-size: 100%; list-style: none; padding: 0 }
+UL.sidebar LI { margin-left: 4px; }
+
+.title { font-weight: bold; }
+
+DT { font-weight: bold; }
+
+PRE { font-size: 120% }
+
+A:active { color: #0000CC; }
+
+A:link { color: #0000CC; }
+
+A:visited { color: #336633; }
+
+A:hover { color: #FF0000; }
+
+A.banner { text-decoration: none; color: white; }
+
+INPUT.bareinput {
+  border: 0px blue none;
+  font: 8pt Verdana, geneva, arial, sans-serif;
+  color: #000000;
+  background-color: transparent;
+}
+
+#mainMapContainer {
+  border: 1px solid olive;
+  cursor: crosshair;
+}
+
+
+H1 { 
+  font: normal 18pt;  
+  color: #3366cc; 
+  margin: 0; 
+  margin-top: 10; 
+  width: 100%; 
+  border-bottom: 1pt solid #3366cc; 
+  text-align: left}
+
+H2 {  font-size: 130%; font-weight: bold; padding-top: 10px;}
+
+H3 { font-size: 110%; font-weight: bold; }
+
+H4 { font-size: 100%; font-weight: bold; }
+
+H5 { font-size: 110%; font-weight: bold; }
+
+H6 { font-size: 100%; font-weight: bold; }
+
+.footer { 
+  font-size: 80%;  
+  color: #3366cc; 
+  margin: 0; 
+  margin-bottom: 10; 
+  width: 100%; 
+  border-top: 1pt solid #3366cc; 
+  text-align: right;
+}
+
+.exsml { font-size: 70%; font-weight: normal; }
+
+.exsmlbld { font-size: 70%; font-weight: bold; }
+
+.sml { font-size: 70%; font-weight: normal; }
+
+.smlbld { font-size: 70%; font-weight: bold; }
+
+.med { font-size: 80%; font-weight: normal; }
+
+.medbld { font-size: 80%; font-weight: bold; }
+
+.medblditalic { font-size: 80%; font-weight: bold; font-style: italic; }
+
+.meditalic { font-size: 80%; font-style: italic; font-family: arial, helvetica, sans-serif;}
+
+.reg { font-size: 100%; font-weight: normal; }
+
+.regbld { font-size: 100%; font-weight: bold; }
+
+.lg { font-size: 110%; font-weight: normal; }
+
+.lgbld { font-size: 110%; font-weight: bold; }
+
+.exlg { font-size: 130%; font-weight: normal; }
+
+.exlgbld { font-size: 130%; font-weight: bold; }
+
+.lgbldt { font-size: 90%; font-weight: bold; font-family: tahoma, arial, helvetica, sans-serif; }
+
+.exlgbldt { font-size: 140%; font-weight: bold; font-family: tahoma, arial, helvetica, sans-serif; }
+
+.exlgbldblu { font-size: 170%; font-weight: bold; color:#3366CC; }
+
+
+
+@media print {
+
+  @page         { margin: 10% }
+
+  H1, H2, H3,
+
+  H4, H5, H6    { page-break-after: avoid; page-break-inside: avoid }
+
+  BLOCKQUOTE, 
+
+  UL, OL, DL    { page-break-before: avoid }
+
+}
+
+
+
+
+
+
+
+@media speech {
+
+
+
+  H1, H2, H3, 
+
+
+
+  H4, H5, H6    { voice-family: paul, male; stress: 20; richness: 90 }
+
+
+
+  H2            { pitch: x-low; pitch-range: 80 }
+
+
+
+  H3            { pitch: low; pitch-range: 70 }
+
+
+
+  H4            { pitch: medium; pitch-range: 60 }
+
+
+
+  H5            { pitch: medium; pitch-range: 50 }
+
+
+
+  H6            { pitch: medium; pitch-range: 40 }
+
+
+
+  LI, DT, DD    { pitch: medium; richness: 60 }
+
+
+
+  DT            { stress: 80 }
+
+
+
+  STRONG        { pitch: medium; pitch-range: 60; stress: 90; richness: 90 }
+
+
+
+  I             { pitch: medium; pitch-range: 60; stress: 60; richness: 50 }
+
+
+
+  B             { pitch: medium; pitch-range: 60; stress: 90; richness: 90 }
+
+
+
+  U             { richness: 0 }
+
+
+
+  A:link        { voice-family: harry, male }
+
+
+
+  A:visited     { voice-family: betty, female }
+
+
+
+  A:active      { voice-family: betty, female; pitch-range: 80; pitch: x-high }
+
+
+

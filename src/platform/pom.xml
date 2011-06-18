@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+
+ <parent>
+  <groupId>org.geoserver</groupId>
+  <artifactId>geoserver</artifactId>
+  <version>2.1-SNAPSHOT</version>
+ </parent>
+
+ <groupId>org.geoserver</groupId>
+ <artifactId>platform</artifactId>
+ <packaging>jar</packaging>
+ <name>Core Platform Module</name>
+
+ <dependencies>
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-beans</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-core</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-context</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-webmvc</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>javax.servlet</groupId>
+   <artifactId>servlet-api</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>javax.media</groupId>
+   <artifactId>jai_core</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>javax.media</groupId>
+   <artifactId>jai_codec</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>javax.media</groupId>
+   <artifactId>jai_imageio</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>junit</groupId>
+   <artifactId>junit</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.easymock</groupId>
+   <artifactId>easymock</artifactId>
+   <scope>test</scope>
+  </dependency>
+ </dependencies>
+</project>

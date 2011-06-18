@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProjectedCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="EPSG27700">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<srsName>OSGB 1936 / British National Grid</srsName>
+	<srsID>
+		<name codeSpace="urn:ogc:def:crs:EPSG:6.0:">27700</name>
+	</srsID>
+	<baseCRS xlink:href="urn:ogc:def:crs:EPSG:6.0:4277"/>
+	<definedByConversion xlink:href="urn:ogc:def:coordinateOperation:EPSG:6.0:19916"/>
+	<usesCartesianCS>
+		<CartesianCS gml:id="EPSG4400">
+			<csName>Easting and Northing in metres</csName>
+			<csID>
+				<name codeSpace="urn:ogc:def:cs:EPSG:6.0:">4400</name>
+			</csID>
+			<usesAxis>
+				<CoordinateSystemAxis gml:id="EPSG9906" gml:uom="urn:ogc:def:uom:OGC:1.0:metre">
+					<name>Easting in east direction with metre units </name>
+					<axisID>
+						<name codeSpace="urn:ogc:def:axis:EPSG:6.0:">9906</name>
+					</axisID>
+					<axisAbbrev>E</axisAbbrev>
+					<axisDirection>east</axisDirection>
+				</CoordinateSystemAxis>
+			</usesAxis>
+			<usesAxis>
+				<CoordinateSystemAxis gml:id="EPSG9907" gml:uom="urn:ogc:def:uom:OGC:1.0:metre">
+					<name>Northing in north direction with metre units </name>
+					<axisID>
+						<name codeSpace="urn:ogc:def:axis:EPSG:6.0:">9907</name>
+					</axisID>
+					<axisAbbrev>N</axisAbbrev>
+					<axisDirection>north</axisDirection>
+				</CoordinateSystemAxis>
+			</usesAxis>
+		</CartesianCS>
+	</usesCartesianCS>
+</ProjectedCRS>

@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form>
+  <wicket:panel>
+    <ul>
+    <li>  
+      <fieldset>
+        <legend><span><wicket:message key="title">HTTP Settings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <input id="cachingEnabled" class="field checkbox" wicket:id="cachingEnabled" type="checkbox"></input>
+            <label for="cachingEnabled" class="choice"><wicket:message key="cacheResponses">Cache Responses</wicket:message></label>
+          </li>
+          <li>
+            <label for="cacheAgeMax"><wicket:message key="cacheTime">Cache Time (seconds)</wicket:message></label> 
+            <input id="cacheAgeMax" class="text" type="text" wicket:id="cacheAgeMax"></input>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    </ul>
+  </wicket:panel>
+  <input type="submit" value="Save Changes"></input>
+</form>
+</body>
+</html>

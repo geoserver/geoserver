@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cite="http://www.opengeospatial.net/cite" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" targetNamespace="http://www.opengeospatial.net/cite">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://localhost:8080/geoserver/schemas/gml/3.1.1/base/gml.xsd"/>
+  <xsd:complexType name="DividedRoutesType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="0" name="the_geom" nillable="true" type="gml:MultiLineStringPropertyType"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="FID" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="0" name="NAME" nillable="true" type="xsd:string"/>
+          <!--xsd:element maxOccurs="1" minOccurs="0" name="NUM_LANES" nillable="true" type="xsd:double"/-->
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="DividedRoutes" substitutionGroup="gml:_Feature" type="cite:DividedRoutesType"/>
+</xsd:schema>

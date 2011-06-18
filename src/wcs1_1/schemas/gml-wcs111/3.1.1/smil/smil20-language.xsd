@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+=================== OpenGIS ============================  
+	This schema is here because there are errors in publicly available smil schemas at w3c site.
+	One is acknowledged by w3c - it is typographical error described in SMIL errata document at:
+ 	http://www.w3.org/2001/07/REC-SMIL20-20010731-errata
+ 	under:
+	E30: Correction in the SMIL 2.0 utility Schema, section B.3.48 (revised 29 03 2002)
+	Others (at least one) are assumed after failed validation using Visual Studio .NET.
+	These smil schemas are reorganized to include in minimum number of files all and only definitions required by
+	defaultStyle.xsd. It was done to enable the validation of GML3.0 schemas.
+	When w3c fixes the public schemas these will be discarded 
+	comment: Milan Trninic, Galdos Systems Inc., May 2002
+=================== OpenGIS ============================ 
+-->
+<!--
+XML Schema for the SMIL 2.0 Language
+
+This is SMIL 2.0
+Copyright: 1998-2001 W3C (MIT, INRIA, Keio), All Rights Reserved.
+See http://www.w3.org/Consortium/Legal/.
+
+Public URI: http://www.w3.org/2001/SMIL20/smil20-language.xsd
+Author: Aaron Michael Cohen (Intel)
+
+Revision: 2001/07/15
+
+Note: <any> wildcard element content is missing from most of the SMIL 2.0 elements because of a conflict 
+between substitutionGroups and wildcard content.
+-->
+<schema targetNamespace="http://www.w3.org/2001/SMIL20/Language" xmlns:smil20lang="http://www.w3.org/2001/SMIL20/Language" xmlns:smil20="http://www.w3.org/2001/SMIL20/" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<!-- import the smil20 namespaces -->
+	<import namespace="http://www.w3.org/2001/SMIL20/" schemaLocation="smil20.xsd"/>
+	<element name="animate" type="smil20lang:animateType"/>
+	<complexType name="animateType">
+		<complexContent>
+			<extension base="smil20:animatePrototype">
+				<choice minOccurs="0" maxOccurs="unbounded">
+					<any namespace="##other" processContents="lax"/>
+				</choice>
+				<attributeGroup ref="smil20lang:CoreAttrs"/>
+				<attributeGroup ref="smil20lang:TimingAttrs"/>
+				<attributeGroup ref="smil20:animTargetAttrs"/>
+				<attributeGroup ref="smil20:animModeAttrs"/>
+				<attributeGroup ref="smil20:skipContentAttrs"/>
+				<anyAttribute namespace="##any" processContents="strict"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<attributeGroup name="CoreAttrs">
+		<attributeGroup ref="smil20:structureModuleAttrs"/>
+		<attributeGroup ref="smil20:alternateContentAttrs"/>
+	</attributeGroup>
+	<attributeGroup name="TimingAttrs">
+		<attributeGroup ref="smil20lang:BasicTimingAttrs"/>
+		<attributeGroup ref="smil20:syncBehaviorAttrs"/>
+		<attributeGroup ref="smil20:syncBehaviorDefaultAttrs"/>
+		<attributeGroup ref="smil20:restartTimingAttrs"/>
+		<attributeGroup ref="smil20:restartDefaultAttrs"/>
+		<attributeGroup ref="smil20:fillTimingAttrs"/>
+		<attributeGroup ref="smil20:fillDefaultAttrs"/>
+	</attributeGroup>
+	<attributeGroup name="BasicTimingAttrs">
+		<attributeGroup ref="smil20:beginEndTimingAttrs"/>
+		<attributeGroup ref="smil20:durTimingAttrs"/>
+		<attributeGroup ref="smil20:repeatTimingAttrs"/>
+		<attributeGroup ref="smil20:deprecatedRepeatTiming"/>
+		<attributeGroup ref="smil20:minMaxTimingAttrs"/>
+	</attributeGroup>
+	<element name="animateMotion" type="smil20lang:animateMotionType"/>
+	<complexType name="animateMotionType">
+		<complexContent>
+			<extension base="smil20:animateMotionPrototype">
+				<choice minOccurs="0" maxOccurs="unbounded">
+					<any namespace="##other" processContents="lax"/>
+				</choice>
+				<attributeGroup ref="smil20lang:CoreAttrs"/>
+				<attributeGroup ref="smil20lang:TimingAttrs"/>
+				<attributeGroup ref="smil20:animTargetAttrs"/>
+				<attributeGroup ref="smil20:animModeAttrs"/>
+				<attributeGroup ref="smil20:skipContentAttrs"/>
+				<anyAttribute namespace="##any" processContents="strict"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="animateColor" type="smil20lang:animateColorType"/>
+	<complexType name="animateColorType">
+		<complexContent>
+			<extension base="smil20:animateColorPrototype">
+				<choice minOccurs="0" maxOccurs="unbounded">
+					<any namespace="##other" processContents="lax"/>
+				</choice>
+				<attributeGroup ref="smil20lang:CoreAttrs"/>
+				<attributeGroup ref="smil20lang:TimingAttrs"/>
+				<attributeGroup ref="smil20:animTargetAttrs"/>
+				<attributeGroup ref="smil20:animModeAttrs"/>
+				<attributeGroup ref="smil20:skipContentAttrs"/>
+				<anyAttribute namespace="##any" processContents="strict"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="set" type="smil20lang:setType"/>
+	<complexType name="setType">
+		<complexContent>
+			<extension base="smil20:setPrototype">
+				<choice minOccurs="0" maxOccurs="unbounded">
+					<any namespace="##other" processContents="lax"/>
+				</choice>
+				<attributeGroup ref="smil20lang:CoreAttrs"/>
+				<attributeGroup ref="smil20lang:TimingAttrs"/>
+				<attributeGroup ref="smil20:animTargetAttrs"/>
+				<attributeGroup ref="smil20:skipContentAttrs"/>
+				<anyAttribute namespace="##any" processContents="strict"/>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

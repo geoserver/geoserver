@@ -1,0 +1,223 @@
+{%- set breadcrumbdelim = breadcrumbdelim is not defined and ' &raquo;' or breadcrumbdelim %}
+{%- set reldelim = reldelim is not defined and '|' or reldelim %}
+{%- macro breadcrumbs() %}
+<ul id="breadcrumbs">
+  {% if pagename != 'index' %}
+  {%- block rootrellink %}
+  <li><a href="{{ pathto('index') }}">{{ docstitle }}</a>{{ breadcrumbdelim }}</li>
+  {%- endblock %}
+
+  {%- for parent in parents %}
+  <li><a href="{{ parent.link|e }}" accesskey="U">{{ parent.title }}</a>{{ breadcrumbdelim }}</li>
+  {%- endfor %}
+  <li>{{ title|striptags }}</li>
+  {%- else %}
+  <li>{{ docstitle }}</li>
+  {%- endif %}
+</ul>
+{%- endmacro %}
+{%- macro rellinkbar() %}
+<ul id="relatedlinks" class="selfclear">
+  {%- for rellink in rellinks %}
+  <li{% if loop.first %} class="first"{% endif %}>
+    <a href="{{ pathto(rellink[0]) }}" title="{{ rellink[1]|striptags }}"
+       accesskey="{{ rellink[2] }}">{{ rellink[3] }}</a>
+    {%- if not loop.first %}{{ reldelim }}{% endif %}</li>
+  {%- endfor %}
+  {%- block relbaritems %}{% endblock %}
+</ul>
+{%- endmacro %}
+
+{%- macro sidebar() %}
+  {%- if builder != 'htmlhelp' %}
+  <div id="sidebar"{%- if pagename not in ['index', 'search'] %} class="contrast"{%- endif %}>
+    {%- if display_toc %}
+      {%- block sidebartoc %}
+      <div id="toc" class="section">
+        <h3 class="pngfix">Table Of Contents</h3>
+        {{ toc }}
+        <div class="section-footer"></div>
+      </div>
+      {%- endblock %}
+    {%- endif %}
+      {%- block sidebarrel %}
+        {%- if (prev or next) %}
+        <div class="section">
+          <h3>Continue Reading</h3>
+          <ul>
+          {%- if prev %}
+            <li>Previous: <a href="{{ prev.link|e }}" title="previous chapter">{{ prev.title }}</a></li>
+          {%- endif %}
+          {%- if next %}
+            <li>Next: <a href="{{ next.link|e }}" title="next chapter">{{ next.title }}</a></li>
+          {%- endif %}
+          </ul>
+        </div>
+        {%- endif %}
+      {%- endblock %}
+      {%- if sourcename %}
+        <div class="section">
+        <h3>This Page</h3>
+        <ul class="this-page-menu">
+        {%- if builder == 'web' %}
+          <li><a href="#comments">Comments ({{ comments|length }} so far)</a></li>
+          <li><a href="{{ pathto('@edit/' + sourcename)|e }}">Suggest Change</a></li>
+          <li><a href="{{ pathto('@source/' + sourcename)|e }}">Show Source</a></li>
+        {%- elif builder == 'html' %}
+          <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}">Show Source</a></li>
+        {%- endif %}
+        </ul>
+        </div>
+      {%- endif %}
+      {%- if customsidebar %}
+      {{ rendertemplate(customsidebar) }}
+      {%- endif %}
+      {%- block sidebarsearch %}{%- endblock %}
+  </div><!-- /#sidebar -->
+  {%- endif %}
+{%- endmacro -%}
+{%- block doctype -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{%- endblock %}
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  {{ metatags }}
+  {%- if not embedded %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif %}
+  <title>{{ title|striptags }}{{ titlesuffix }}</title>
+  {%- block basecss %}
+  <link rel="stylesheet" href="{{ pathto('_static/blueprint/screen.css', 1) }}" type="text/css" media="screen, projection" />
+  <link rel="stylesheet" href="{{ pathto('_static/blueprint/print.css', 1) }}" type="text/css" media="print" /> 
+  <!--[if IE]>
+  <link rel="stylesheet" href="{{ pathto('_static/blueprint/ie.css', 1) }}" type="text/css" media="screen, projection" />
+  <![endif]-->
+  {%- endblock %}
+  {%- if builder == 'web' %}
+  <link rel="stylesheet" href="{{ pathto('index') }}?do=stylesheet{%
+    if in_admin_panel %}&admin=yes{% endif %}" type="text/css" />
+  {%- for link, type, title in page_links %}
+  <link rel="alternate" type="{{ type|e(true) }}" title="{{ title|e(true) }}" href="{{ link|e(true) }}" />
+  {%- endfor %}
+  {%- else %}
+  <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
+  <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
+  {%- endif %}
+  {%- if builder != 'htmlhelp' %}
+  <script type="text/javascript">
+    var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '{{ pathto("", 1) }}',
+        VERSION:     '{{ release }}',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '{{ file_suffix }}'
+    };
+  </script>
+  <script type="text/javascript" src="{{ pathto('_static/jquery.js', 1) }}"></script>
+  <script type="text/javascript" src="{{ pathto('_static/doctools.js', 1) }}"></script>
+  <script type="text/javascript" src="{{ pathto('_static/searchtools.js', 1) }}"></script>
+  <script type="text/javascript" src="{{ pathto('searchindex.js', 1) }}"></script>
+  {%- if use_opensearch %}
+  <link rel="search" type="application/opensearchdescription+xml"
+        title="Search within {{ docstitle }}"
+        href="{{ pathto('_static/opensearch.xml', 1) }}"/>
+  {%- endif %}
+  {%- if favicon %}
+  <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+  {%- endif %}
+  {%- endif %}
+  {%- block linktags %}
+      {%- if hasdoc('about') %}
+      <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" />
+      {%- endif %}
+      {%- if hasdoc('genindex') %}
+      <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" />
+      {%- endif %}
+      {%- if hasdoc('search') %}
+      <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" />
+      {%- endif %}
+      {%- if hasdoc('copyright') %}
+      <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" />
+      {%- endif %}
+      <link rel="top" title="{{ docstitle|e }}" href="{{ pathto('index') }}" />
+      {%- if parents %}
+      <link rel="up" title="{{ parents[-1].title|striptags }}" href="{{ parents[-1].link|e }}" />
+      {%- endif %}
+      {%- if next %}
+      <link rel="next" title="{{ next.title|striptags }}" href="{{ next.link|e }}" />
+      {%- endif %}
+      {%- if prev %}
+      <link rel="prev" title="{{ prev.title|striptags }}" href="{{ prev.link|e }}" />
+      {%- endif %}
+  {%- endblock %}
+{%- block extrahead %}{% endblock %}
+</head>
+<body class="{{pagename}}">
+  {%- block header %}
+  <div id="header" class="selfclear">
+    <div class="wrap selfclear">
+      <div id="logo"><a href="{{ pathto('index') }}">{{ shorttitle }}</a></div>
+      <ul id="top-nav">
+        <li class="first"><a href="http://geoserver.org/display/GEOS/What+is+Geoserver">About</a></li>
+        <li><a href="http://blog.geoserver.org/">Blog</a></li>
+        <li><a href="http://geoserver.org/display/GEOS/Download">Download</a></li>
+        <li><a href="{{ pathto('index') }}">Documentation</a></li>
+      </ul>
+      
+      {%- block quicksearch %}
+        <form id="quick-search" action="{{ pathto('search') }}" method="get">
+          <fieldset>
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+            <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" value="Search Documentation&hellip;" size="20" tabindex="3" onblur="if(this.value=='') this.value='Search Documentation&hellip;';" onfocus="if(this.value=='Search Documentation&hellip;') this.value='';" />
+            <input id="quick-search-submit" type="image" value="Search" src="{{ pathto('_static/chrome/search_icon_green.png', 1)}}" />
+          </fieldset>
+        </form>
+      {%- endblock %}
+    </div><!-- /.wrap -->
+  </div><!-- /#header -->
+  {%- endblock %}
+  <div id="main">
+    <div class="wrap selfclear">
+      <div id="content">
+      {%- block breadcrumbbar %}{{ breadcrumbs() }}{% endblock %}
+      {%- block rellinkbar %}{{ rellinkbar() }}{% endblock %}
+      {%- block document %}
+        {% block body %}{% endblock %}
+      {%- endblock %}
+      {%- if (prev or next) %}
+      <div class="selfclear pagination-nav">
+        {%- if prev %}
+          <div class="leftwise"><strong>Previous</strong>: <a href="{{ prev.link|e }}" title="previous chapter">{{ prev.title }}</a></div>
+        {%- endif %}
+        {%- if next %}
+          <div class="rightwise"><strong>Next</strong>: <a href="{{ next.link|e }}" title="next chapter">{{ next.title }}</a></div>
+        {%- endif %}
+      </div>
+      {%- endif %}
+      </div><!-- /#content> -->
+{%- block sidebar %}{{ sidebar() }}{% endblock %}
+  </div><!-- /.wrap> -->
+</div><!-- /#main -->
+{%- block footer %}
+<div id="footer">
+  <div class="wrap">
+  {%- if hasdoc('copyright') %}
+    &copy; <a href="{{ pathto('copyright') }}">Copyright</a> {{ copyright }}.
+  {%- else %}
+    &copy; Copyright {{ copyright }}.
+  {%- endif %}
+  {%- if last_updated %}
+    Last updated on {{ last_updated }}.
+  {%- endif %}
+  {%- if show_sphinx %}
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  {%- endif %}
+  </div><!-- /.wrap> -->
+</div><!-- /#footer --> 
+{%- endblock %}
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<html>
+
+<head>
+<title>Validation Config package</title>
+</head>
+
+<body>
+Validation Model being edited.
+
+<p>
+This class opperates as the Validation Model and is stored in Web Container.
+</p>
+Details:
+<ul>
+<li>
+Represents the Model of the STRUTS based Model-View-Controller Design
+</li>
+<li>
+Will support additional user-interface state, beyond requirements of the
+GeoServer Validation application.
+</li>
+<li>
+Makes use of GeoTools2 and Vivid.
+</li>
+</ul>
+<p>
+Of the course of sorting this stuff out we have had a couple of bad ideas:
+</p>
+<ul>
+<li>
+It is tempting to replace a lot of these classes by changing the scope of the
+FormBeans to session, rather than request. I cannot convince my self that this
+would be a good idea, as storing the configuration model (and associated
+resources in the Web Container) is sure to prevent duplication in the face
+of multiple users configuring differnt subsystems. If the state was limited
+to session - they would manage to overwrite each other with no prior warning.
+</li>
+<li>
+It is tempting to make the Actions use the DTO objects directly (or forgo the
+config classes entierly). Having the config classes allows us to make
+whatever methods we need for easy, quick ui developement without breaking
+the rest of the application.
+</li>
+</ul>
+</body>
+
+</html>

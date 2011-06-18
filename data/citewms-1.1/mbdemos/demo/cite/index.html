@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--
+Description: A Browser based Transactional Web Feature Server client
+             based on javascript and XSL
+             libraries from http://mapbuilder.sourceforge.net .
+Licence:     GPL as per: http://www.gnu.org/copyleft/gpl.html
+-->
+
+<html>
+<head>
+<title>WMS Client</title>
+
+<link rel="stylesheet" href="../../../../style.css"
+	type="text/css">
+<link rel="stylesheet" href="../../lib/skin/default/html.css"
+	type="text/css">
+
+<script type="text/javascript">
+      // URL of Mapbuilder configuration file.
+      var mbConfigUrl='config.xml';
+    </script>
+<script type="text/javascript" src="../../lib/Mapbuilder.js"></script>
+</head>
+
+<body onload="mbDoLoad()">
+<!-- Layout mapbuilder widgets and HTML -->
+<h2><a href="http://geoserver.sf.net">GeoServer</a>/<a
+	href="http://mapbuilder.sourceforge.net">Map Builder</a>
+Interoperability Demo</h2>
+
+<table border="0">
+	<tr>
+		<td valign="top" id="locatorMap" style="background-color: white;" />
+		<td rowspan="2" valign="top" />
+		<table border="0">
+			<tr>
+				<td align="left" id="mainButtonBar"/>
+				<td align="right" id="cursorTrack" />
+			</tr>
+			<tr>
+				<td colspan="2" id="mainMapPane" style="background-color: white;" />
+			</tr>
+	<tr align="right">
+		<td colspan="2">
+		<table>
+			<tr>
+        <td align="left" id="mapScaleText"/>
+				<td align="right">Powered by <a href="http://mapbuilder.sourceforge.net">Community Map
+				Builder</a></td>
+				<td><img src="../../lib/skin/default/images/Icon.gif" alt="" /></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td id="legend" />
+	</tr>
+	<tr>
+		<td colspan="3" id="featureList" />
+	</tr>
+	<tr>
+		<td colspan="3" id="transactionResponse" />
+	</tr>
+	<tr>
+		<td colspan="3">
+		<div id="eventLog" />
+		</td>
+	</tr>
+</table>
+</body>
+</html>

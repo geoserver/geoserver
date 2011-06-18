@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema version="1.0.0"
+			 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ 			 targetNamespace="http://www.opengis.net/context"
+			 xmlns:context="http://www.opengis.net/context"
+			 xmlns:sld="http://www.opengis.net/sld"
+			 xmlns:xlink="http://www.w3.org/1999/xlink"
+			 elementFormDefault="qualified">
+	<xs:import namespace="http://www.opengis.net/sld" schemaLocation="../../sld/1.0.0/StyledLayerDescriptor.xsd"/>
+	<xs:element name="ViewContext" type="context:ViewContextType"/>
+	<xs:complexType name="ViewContextType">
+		<xs:sequence>
+			<xs:element name="General" type="context:GeneralType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="LayerList" type="context:LayerListType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="version" type="xs:string" use="required" fixed="1.0.0"/>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="GeneralType">
+		<xs:sequence>
+			<xs:element name="Window" type="context:WindowType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="BoundingBox" type="context:BoundingBoxType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="KeywordList" type="context:KeywordListType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Abstract" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="LogoURL" type="context:URLType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="DescriptionURL" type="context:URLType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ContactInformation" type="context:ContactInformationType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Extension" type="context:ExtensionType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WindowType">
+		<xs:attribute name="width" type="xs:integer" use="required"/>
+		<xs:attribute name="height" type="xs:integer" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="BoundingBoxType">
+		<xs:attribute name="SRS" type="xs:string" use="required"/>
+		<xs:attribute name="minx" type="xs:decimal" use="required"/>
+		<xs:attribute name="miny" type="xs:decimal" use="required"/>
+		<xs:attribute name="maxx" type="xs:decimal" use="required"/>
+		<xs:attribute name="maxy" type="xs:decimal" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="KeywordListType">
+		<xs:sequence>
+			<xs:element name="Keyword" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>	</xs:complexType>
+	<xs:complexType name="URLType">
+		<xs:sequence>
+			<xs:element name="OnlineResource" type="context:OnlineResourceType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="width" type="xs:integer" use="optional"/>
+		<xs:attribute name="height" type="xs:integer" use="optional"/>
+		<xs:attribute name="format" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="ContactInformationType">
+		<xs:sequence>
+			<xs:element name="ContactPersonPrimary" type="context:ContactPersonPrimaryType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ContactPosition" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ContactAddress" type="context:AddressType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ContactVoiceTelephone" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ContactFacsimileTelephone" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ContactElectronicMailAddress" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactPersonPrimaryType">
+		<xs:sequence>
+			<xs:element name="ContactPerson" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ContactOrganization" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element name="AddressType" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Address" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="City" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="StateOrProvince" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="PostCode" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Country" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LayerListType">
+		<xs:sequence>
+			<xs:element name="Layer" type="context:LayerType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LayerType">
+		<xs:sequence>
+			<xs:element name="Server" type="context:ServerType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Abstract" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="DataURL" type="context:URLType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="MetadataURL" type="context:URLType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="SRS" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="FormatList" type="context:FormatListType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="StyleList" type="context:StyleListType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Extension" type="context:ExtensionType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="queryable" type="xs:boolean" use="required"/>
+		<xs:attribute name="hidden" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ServerType">
+		<xs:sequence>
+			<xs:element name="OnlineResource" type="context:OnlineResourceType"/>
+		</xs:sequence>
+		<xs:attribute name="service" type="xs:string" use="required"/>
+		<xs:attribute name="version" type="xs:string" use="required"/>
+		<xs:attribute name="title" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FormatListType">
+		<xs:sequence>
+			<xs:element name="Format" type="context:FormatType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FormatType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="current" type="xs:boolean"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="StyleListType">
+		<xs:sequence>
+			<xs:element name="Style" type="context:StyleType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="StyleType">
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="Title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="Abstract" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="LegendURL" type="context:URLType" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:element name="SLD" type="context:SLDType" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
+		<xs:attribute name="current" type="xs:boolean"/>
+	</xs:complexType>
+	<xs:complexType name="SLDType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Title" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:choice>
+				<xs:element name="OnlineResource" type="context:OnlineResourceType"/>
+				<xs:element ref="sld:StyledLayerDescriptor"/>
+				<xs:element ref="sld:FeatureTypeStyle"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnlineResourceType">
+		<xs:attributeGroup ref="xlink:simpleLink"/>
+	</xs:complexType>
+	<xs:complexType name="ExtensionType">
+		<xs:annotation>
+			<xs:documentation>This allows additional elements to be added to support non WMS Layer services.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:any namespace="##any"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
+

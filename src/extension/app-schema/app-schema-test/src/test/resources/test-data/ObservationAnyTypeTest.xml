@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>om</prefix>
+            <uri>http://www.opengis.net/om/1.0</uri>
+        </Namespace>
+        <Namespace>
+			<prefix>gml</prefix>
+			<uri>http://www.opengis.net/gml</uri>
+		</Namespace>
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>MappedFeaturePropertyfile</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>        
+        	<schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+            <schemaUri>http://schemas.opengis.net/om/1.0.0/observation.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>MappedFeaturePropertyfile</sourceDataStore>
+            <sourceType>MappedFeaturePropertyfile</sourceType>
+            <targetElement>
+				om:Observation
+			</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>
+						om:Observation
+					</targetAttribute>
+                    <idExpression>
+                        <OCQL>strConcat('observation:', getID())</OCQL>
+                    </idExpression>
+                </AttributeMapping>               
+               
+				<!--
+					om:metadata is of AnyOrReferenceType, so we're testing to put a
+					complex attribute in it
+				-->
+				<AttributeMapping>
+					<targetAttribute>om:metadata</targetAttribute>
+					<targetAttributeNode>gsml:CGI_NumericValuePropertyType</targetAttributeNode>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>om:metadata/gsml:CGI_NumericValue/gsml:principalValue</targetAttribute>
+					<sourceExpression>
+						<OCQL>MSLINK</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>uom</name>
+						<value>'urn:ogc:def:uom:UCUM:m'</value>
+					</ClientProperty>
+				</AttributeMapping>		
+				
+				<!--
+					om:resultQuality is of AnyOrReferenceType, so we're testing to put
+					a feature in it
+				-->			
+				<AttributeMapping>
+					<targetAttribute>om:resultQuality</targetAttribute>
+					<sourceExpression>
+						<OCQL>GEOLOGIC_UNIT_ID</OCQL>
+						<linkElement>myGeologicUnit</linkElement>
+						<linkField>FEATURE_LINK</linkField>
+					</sourceExpression>			
+				</AttributeMapping>							
+               
+                <!-- om:result is of anyType, so we're testing to put a feature in it -->
+                <AttributeMapping>
+                    <targetAttribute>om:result</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>LEX_D</OCQL>
+                        <linkElement>gsml:MappedFeature</linkElement>
+                        <linkField>gml:name</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

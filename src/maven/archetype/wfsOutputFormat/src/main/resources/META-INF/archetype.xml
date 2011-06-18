@@ -1,0 +1,12 @@
+<archetype>
+  <id>wfsoutputformat</id>
+  <sources>
+    <source>src/main/java/MyOutputFormat.java</source>
+  </sources>
+  <testSources>
+    <source>src/test/java/MyOutputFormatTest.java</source>
+  </testSources>
+  <resources>
+    <resource>src/main/resources/applicationContext.xml</resource>
+  </resources>
+</archetype>

@@ -1,0 +1,357 @@
+/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
+package org.geoserver.ows;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Map;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import junit.framework.TestCase;
+
+import org.geoserver.test.CodeExpectingHttpServletResponse;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockServletInputStream;
+
+
+public class DispatcherTest extends TestCase {
+    public void testReadContextAndPath() throws Exception {
+        Dispatcher dispatcher = new Dispatcher();
+        
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("get");
+        
+        Request req = new Request();
+        req.httpRequest = request;
+        
+        dispatcher.init(req);
+        assertNull(req.context);
+        assertEquals("hello", req.path);
+        
+        request.setRequestURI("/geoserver/foo/hello");
+        dispatcher.init(req);
+        assertEquals("foo", req.context);
+        assertEquals("hello", req.path);
+        
+        request.setRequestURI("/geoserver/foo/baz/hello/");
+        dispatcher.init(req);
+        assertEquals("foo/baz", req.context);
+        assertEquals("hello", req.path);
+        
+    }
+    public void testReadOpContext() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("get");
+
+        Dispatcher dispatcher = new Dispatcher();
+        
+        Request req = new Request();
+        req.httpRequest = request;
+        dispatcher.init(req);
+        
+        Map map = dispatcher.readOpContext(req);
+
+        assertEquals("hello", map.get("service"));
+        
+        request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/foobar/hello");
+        request.setMethod("get");
+        map = dispatcher.readOpContext(req);
+        assertEquals("hello", map.get("service"));
+        
+        request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/foobar/hello/");
+        request.setMethod("get");
+        map = dispatcher.readOpContext(req);
+
+        assertEquals("hello", map.get("service"));
+        
+    }
+
+    public void testReadOpPost() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("post");
+
+        String body = "<Hello service=\"hello\"/>";
+
+        MockServletInputStream input = new MockServletInputStream(body.getBytes());
+
+        Dispatcher dispatcher = new Dispatcher();
+
+        BufferedReader buffered = new BufferedReader(new InputStreamReader(input));
+        buffered.mark(2048);
+
+        Map map = dispatcher.readOpPost(buffered);
+
+        assertNotNull(map);
+        assertEquals("Hello", map.get("request"));
+        assertEquals("hello", map.get("service"));
+    }
+
+    public void testParseKVP() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+
+        request.setupAddParameter("service", "hello");
+        request.setupAddParameter("request", "Hello");
+        request.setupAddParameter("message", "Hello world!");
+
+        request.setQueryString("service=hello&request=hello&message=Hello World!");
+
+        Request req = new Request();
+        req.setHttpRequest(request);
+
+        dispatcher.parseKVP(req);
+
+        Message message = (Message) dispatcher.parseRequestKVP(Message.class, req);
+        assertEquals(new Message("Hello world!"), message);
+    }
+
+    public void testParseXML() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        String body = "<Hello service=\"hello\" message=\"Hello world!\"/>";
+        File file = File.createTempFile("geoserver", "req");
+        file.deleteOnExit();
+
+        FileOutputStream output = new FileOutputStream(file);
+        output.write(body.getBytes());
+        output.flush();
+        output.close();
+
+        BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+
+        input.mark(8192);
+
+        Request req = new Request();
+        req.setInput(input);
+
+        Object object = dispatcher.parseRequestXML(null,input, req);
+        assertEquals(new Message("Hello world!"), object);
+    }
+
+    public void testHelloOperationGet() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
+
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+
+        request.setContextPath("/geoserver");
+        request.setMethod("GET");
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        request.setupAddParameter("service", "hello");
+        request.setupAddParameter("request", "Hello");
+        request.setupAddParameter("version", "1.0.0");
+        request.setupAddParameter("message", "Hello world!");
+
+        request.setRequestURI(
+            "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
+        request.setQueryString("service=hello&request=hello&message=HelloWorld");
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+    }
+
+    public void testHelloOperationPost() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        final String body = "<Hello service=\"hello\" message=\"Hello world!\" version=\"1.0.0\" />";
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
+
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+
+                public ServletInputStream getInputStream() throws IOException{
+                    final ServletInputStream stream = super.getInputStream();
+                    return new ServletInputStream(){
+                        public int read() throws IOException{
+                            return stream.read();
+                        }
+
+                        public int available(){
+                            return body.length();
+                        }
+                    };
+                }
+            };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+        request.setContextPath("/geoserver");
+        request.setMethod("POST");
+        request.setRequestURI("http://localhost/geoserver/ows");
+        request.setContentType("application/xml");
+        request.setBodyContent(body);
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+    }
+    
+    /**
+     * Tests mixed get/post situations for cases in which there is no kvp parser
+     * @throws Exception
+     */
+    public void testHelloOperationMixed() throws Exception {
+        URL url = getClass().getResource("applicationContextOnlyXml.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        final String body = "<Hello service=\"hello\" message=\"Hello world!\" version=\"1.0.0\" />";
+
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
+
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+                
+                public ServletInputStream getInputStream() throws IOException{
+                    final ServletInputStream stream = super.getInputStream();
+                    return new ServletInputStream(){
+                        public int read() throws IOException{
+                            return stream.read();
+                        }
+
+                        public int available(){
+                            return body.length();
+                        }
+                    };
+                }
+            };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+        request.setContextPath("/geoserver");
+        request.setMethod("POST");
+        request.setRequestURI("http://localhost/geoserver/ows");
+        request.setContentType("application/xml");
+        request.setBodyContent(body);
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        request.setupAddParameter("strict", "true");
+
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+    }
+    
+    public void testHttpErrorCodeException() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
+
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+
+        request.setContextPath("/geoserver");
+        request.setMethod("GET");
+
+        CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
+
+        request.setupAddParameter("service", "hello");
+        request.setupAddParameter("request", "httpErrorCodeException");
+        request.setupAddParameter("version", "1.0.0");
+
+        request.setRequestURI(
+            "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
+        request.setQueryString("service=hello&request=hello&message=HelloWorld");
+        
+        dispatcher.handleRequest(request, response);
+        assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatusCode());
+    }
+}

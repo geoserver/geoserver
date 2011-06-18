@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+	PolicySetId="org:geoserver:policySet:permission:roleEnablement"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:1.0:policy-combining-algorithm:first-applicable">
+
+	<Target></Target>
+	<!-- Permissions specifically for the anonymous role , this is an example for enabling anonymous access only between 9:00 am and 17:00 pm -->
+	<!-- <Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+        http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+		PolicyId="org:geoserver:policy:permission:roleEnablement:Anonymous"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+		<Target>
+			<Resources>
+			 <Resource> 
+			 	<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+			 		<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ROLE_ANONYMOUS</AttributeValue>
+					<ResourceAttributeDesignator
+							AttributeId="org:geoserver:resource:type:RoleEnablement"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+			 		</ResourceMatch>
+			 </Resource>
+			</Resources>
+		</Target>
+		<Rule Effect="Permit" RuleId="org:geoserver:rule:write:role:reoleEnablementWriter">
+		  <Condition>
+   			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+   				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:time-greater-than-or-equal">
+   					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:time-one-and-only">
+					   <EnvironmentAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-time" DataType="http://www.w3.org/2001/XMLSchema#time"/>
+   					</Apply>
+   					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#time">09:00:00</AttributeValue>
+   					</Apply>
+   				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:time-less-than-or-equal">
+   					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:time-one-and-only">
+   						<EnvironmentAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-time" DataType="http://www.w3.org/2001/XMLSchema#time"/>
+   					</Apply>
+   					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#time">17:00:00</AttributeValue>
+   				</Apply>
+   				</Apply>
+			</Condition>
+		</Rule>
+	</Policy> -->
+	
+	<!--  users having role READER should send their pesrNr and geomtryRestriction as role parameters-->
+	<!-- <Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+        http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+		PolicyId="org:geoserver:policy:permission:roleEnablement:reader"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+		<Target>
+			<Resources>
+			 <Resource> 
+			 	<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+			 		<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">READER</AttributeValue>
+					<ResourceAttributeDesignator
+							AttributeId="org:geoserver:resource:type:RoleEnablement"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+			 		</ResourceMatch>
+			 </Resource>
+			</Resources>
+		</Target>
+		<Rule Effect="Permit" RuleId="org:geoserver:rule:write:role:reoleEnablementWriter">
+		</Rule>
+		<Obligations>
+			<Obligation FulfillOn="Permit" ObligationId="org:geoserver:obligation:userproperty">
+			   <AttributeAssignment DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="EPSG:4326">geometryRestriction</AttributeAssignment>
+			   <AttributeAssignment DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="">persNr</AttributeAssignment>
+			</Obligation>			
+		</Obligations>
+	</Policy>-->
+	
+	<PolicyIdReference>org:geoserver:policy:PermitAll</PolicyIdReference>	
+</PolicySet>

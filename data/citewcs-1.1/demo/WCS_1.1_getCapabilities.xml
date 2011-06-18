@@ -1,0 +1,8 @@
+<!--  This will briefly describe all the layers (Coverages) in that you have
+      in your WCS server, plus more generic information about what your server
+      supports.  -->
+<GetCapabilities
+  service="WCS"
+  xmlns="http://www.opengis.net/wcs/1.1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsCapabilities.xsd"/>

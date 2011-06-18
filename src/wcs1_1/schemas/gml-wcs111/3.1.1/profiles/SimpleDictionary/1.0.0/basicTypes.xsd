@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1">
+  <annotation>
+    <appinfo source="urn:opengis:specification:gml:schema-xsd:basicTypes:3.1.1">basicTypes.xsd</appinfo>
+		<documentation>Subset of basicTypes.xsd for GML 3.1.1 Simple Dictionary profile. Primary editor: Arliss Whiteside. Last updated 2005-10-14 </documentation>
+  </annotation>
+  <!-- =========================================================== -->
+  <!-- =========================================================== -->
+  <complexType name="CodeType">
+    <annotation>
+      <documentation>Name or code with an (optional) authority.  Text token.  
+      If the codeSpace attribute is present, then its value should identify a dictionary, thesaurus  or authority for the term, such as the organisation who assigned the value,  or the dictionary from which it is taken.  
+      A text string with an optional codeSpace attribute. </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="codeSpace" type="anyURI" use="optional"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- ============================================================ -->
+</schema>

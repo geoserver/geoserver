@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MD_Metadata
+ xmlns="http://www.isotc211.org/2005/gmd"
+ xmlns:gco="http://www.isotc211.org/2005/gco"
+ xmlns:gts="http://www.isotc211.org/2005/gts"
+ xmlns:gss="http://www.isotc211.org/2005/gss"
+ xmlns:gsr="http://www.isotc211.org/2005/gsr"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:gml="http://www.opengis.net/gml"
+ xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/schemas/2005/gmd/gmd.xsd">
+  <contact>
+    <CI_ResponsibleParty>
+      <organisationName>
+        <gco:CharacterString>Open Geospatial Consortium</gco:CharacterString>
+      </organisationName>
+      <role>
+        <CI_RoleCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml#CI_RoleCode" codeListValue="originator">originator</CI_RoleCode>
+      </role>
+    </CI_ResponsibleParty>
+  </contact>
+  <dateStamp>
+    <gco:Date>2009-03-17</gco:Date>
+  </dateStamp>
+  <spatialRepresentationInfo>
+    <MD_Georectified>
+      <numberOfDimensions>
+        <gco:Integer>1</gco:Integer>
+      </numberOfDimensions>
+      <axisDimensionProperties>
+        <MD_Dimension>
+          <dimensionName>
+            <MD_DimensionNameTypeCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml#MD_DimensionNameTypeCode" codeListValue="vertical">vertical</MD_DimensionNameTypeCode>
+          </dimensionName>
+          <dimensionSize>
+            <gco:Integer>1</gco:Integer>
+          </dimensionSize>
+          <resolution>
+            <gco:Measure uom="m">1</gco:Measure>
+          </resolution>
+        </MD_Dimension>
+      </axisDimensionProperties>
+      <cellGeometry>
+        <MD_CellGeometryCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml#MD_CellGeometryCode" codeListValue="area">area</MD_CellGeometryCode>
+      </cellGeometry>
+      <transformationParameterAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </transformationParameterAvailability>
+      <checkPointAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </checkPointAvailability>
+      <cornerPoints>
+        <gml:Point gml:id="lowerLeft">
+          <gml:coordinates>-0.5 -0.5</gml:coordinates>
+        </gml:Point>
+      </cornerPoints>
+      <cornerPoints>
+        <gml:Point gml:id="upperRight">
+          <gml:coordinates>0.49833333333333333333333333333333 0.49833333333333333333333333333333</gml:coordinates>
+        </gml:Point>
+      </cornerPoints>
+      <pointInPixel>
+        <MD_PixelOrientationCode>lowerLeft</MD_PixelOrientationCode>
+      </pointInPixel>
+    </MD_Georectified>
+  </spatialRepresentationInfo>
+  <identificationInfo>
+    <MD_DataIdentification>
+      <citation>
+        <CI_Citation>
+          <title>
+            <gco:CharacterString>CITE Terrain</gco:CharacterString>
+          </title>
+          <date>
+            <CI_Date>
+              <date>
+                <gco:Date>2009-01-07</gco:Date>
+              </date>
+              <dateType>
+                <CI_DateTypeCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml#CI_DateTypeCode" codeListValue="creation">creation</CI_DateTypeCode>
+              </dateType>
+            </CI_Date>
+          </date>
+        </CI_Citation>
+      </citation>
+      <abstract>
+        <gco:CharacterString>This is the cite:Terrain layer from the test dataset for the raster elevation tests in the CITE WMS 1.3.0 test suite.  It has values that range from 0 to 425m that include a "high spot" with values greater than 325m and a "low spot" with values less than 200m. The remainder of the dataset is filled with values between 200m and 325m, including a few values that are exactly 250m.</gco:CharacterString>
+      </abstract>
+      <language>
+        <gco:CharacterString>eng</gco:CharacterString>
+      </language>
+      <topicCategory>
+        <MD_TopicCategoryCode>elevation</MD_TopicCategoryCode>
+      </topicCategory>
+      <extent>
+        <EX_Extent>
+          <geographicElement>
+            <EX_GeographicBoundingBox>
+              <westBoundLongitude>
+                <gco:Decimal>-0.5</gco:Decimal>
+              </westBoundLongitude>
+              <eastBoundLongitude>
+                <gco:Decimal>0.5</gco:Decimal>
+              </eastBoundLongitude>
+              <southBoundLatitude>
+                <gco:Decimal>-0.5</gco:Decimal>
+              </southBoundLatitude>
+              <northBoundLatitude>
+                <gco:Decimal>0.5</gco:Decimal>
+              </northBoundLatitude>
+            </EX_GeographicBoundingBox>
+          </geographicElement>
+        </EX_Extent>
+      </extent>
+    </MD_DataIdentification>
+  </identificationInfo>
+</MD_Metadata>
+

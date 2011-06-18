@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by Peter Schut (Agriculture & Agri-Food Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: wpsExecute_response.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>This XML Schema Document encodes the WPS Execute operation response.</description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- =============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="common/ResponseBaseType.xsd"/>
+	<include schemaLocation="common/ProcessBriefType.xsd"/>
+	<include schemaLocation="wpsExecute_request.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- =============================================================
+		elements and types
+	============================================================== -->
+	<element name="ExecuteResponse">
+		<annotation>
+			<documentation>WPS Execute operation response. By default, this XML document is delivered to the client in response to an Execute request. If "status" is "false" in the Execute operation request, this document is normally returned when process execution has been completed.
+			If "status" in the Execute request is "true", this response shall be returned as soon as the Execute request has been accepted for processing. In this case, the same XML document is also made available as a web-accessible resource from the URL identified in the statusLocation, and the WPS server shall repopulate it once the process has completed. It may repopulate it on an ongoing basis while the process is executing.
+			However, the response to an Execute request will not include this element in the special case where the output is a single complex value result and the Execute request indicates that "store" is "false". Instead, the server shall return the complex result (e.g., GIF image or GML) directly, without encoding it in the ExecuteResponse. If processing fails in this special case, the normal ExecuteResponse shall be sent, with the error condition indicated. This option is provided to simplify the programming required for simple clients and for service chaining. </documentation>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="wps:ResponseBaseType">
+					<sequence>
+						<element name="Process" type="wps:ProcessBriefType">
+							<annotation>
+								<documentation>Process description from the ProcessOfferings section of the GetCapabilities response. </documentation>
+							</annotation>
+						</element>
+						<element name="Status" type="wps:StatusType">
+							<annotation>
+								<documentation>Execution status of this process. </documentation>
+							</annotation>
+						</element>
+						<element name="DataInputs" type="wps:DataInputsType" minOccurs="0">
+							<annotation>
+								<documentation>Inputs that were provided as part of the execute request. This element shall be omitted unless the lineage attribute of the execute request is set to "true".</documentation>
+							</annotation>
+						</element>
+						<element name="OutputDefinitions" type="wps:OutputDefinitionsType" minOccurs="0">
+							<annotation>
+								<documentation>Complete list of Output data types that were requested as part of the Execute request. This element shall be omitted unless the lineage attribute of the execute request is set to "true".</documentation>
+							</annotation>
+						</element>
+						<element name="ProcessOutputs" minOccurs="0">
+							<annotation>
+								<documentation>List of values of the Process output parameters. Normally there would be at least one output when the process has completed successfully. If the process has not finished executing, the implementer can choose to include whatever final results are ready at the time the Execute response is provided. If the reference locations of outputs are known in advance, these URLs may be provided before they are populated. </documentation>
+							</annotation>
+							<complexType>
+								<sequence>
+									<element name="Output" type="wps:OutputDataType" maxOccurs="unbounded">
+										<annotation>
+											<documentation>Unordered list of values of all the outputs produced by this process. It is not necessary to include an output until the Status is ProcessSucceeded. </documentation>
+										</annotation>
+									</element>
+								</sequence>
+							</complexType>
+						</element>
+					</sequence>
+					<attribute name="serviceInstance" type="anyURI" use="required">
+						<annotation>
+							<documentation>This attribute shall contain the GetCapabilities URL of the WPS service which was invoked</documentation>
+						</annotation>
+					</attribute>
+					<attribute name="statusLocation" type="anyURI" use="optional">
+						<annotation>
+							<documentation>The URL referencing the location from which the ExecuteResponse can be retrieved. If "status" is "true" in the Execute request, the ExecuteResponse should also be found here as soon as the process returns the initial response to the client. It should persist at this location as long as the outputs are accessible from the server. The outputs may be stored for as long as the implementer of the server decides. If the process takes a long time, this URL can be repopulated on an ongoing basis in order to keep the client updated on progress. Before the process has succeeded, the ExecuteResponse contains information about the status of the process, including whether or not processing has started, and the percentage completed. It may also optionally contain the inputs and any ProcessStartedType interim results. When the process has succeeded, the ExecuteResponse found at this URL shall contain the output values or references to them. </documentation>
+						</annotation>
+					</attribute>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="OutputDefinitionsType">
+		<annotation>
+			<documentation>Definition of a format, encoding,  schema, and unit-of-measure for an output to be returned from a process. </documentation>
+		</annotation>
+		<sequence>
+			<element name="Output" type="wps:DocumentOutputDefinitionType" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Output definition as provided in the execute request </documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="OutputDataType">
+		<annotation>
+			<documentation>Value of one output from a process. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="wps:DescriptionType">
+				<annotation>
+					<documentation>In this use, the DescriptionType shall describe this process output. </documentation>
+				</annotation>
+				<group ref="wps:OutputDataFormChoice">
+					<annotation>
+						<documentation>Identifies the form of this output, and provides supporting information. </documentation>
+					</annotation>
+				</group>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<group name="OutputDataFormChoice">
+		<annotation>
+			<documentation>Identifies the form of this input or output value, and provides supporting information. </documentation>
+		</annotation>
+		<choice>
+			<element name="Reference" type="wps:OutputReferenceType">
+				<annotation>
+					<documentation>Identifies this output as a web accessible resource, and references that resource.  This element shall only be used for complex data. This element shall be used by a server when "store" in the Execute request is "true". </documentation>
+				</annotation>
+			</element>
+			<element name="Data" type="wps:DataType">
+				<annotation>
+					<documentation>Identifies this output value as a data embedded in this response, and includes that data. This element shall be used by a server when "store" in the Execute request is "false". </documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+	<!-- =========================================================== -->
+	<complexType name="OutputReferenceType">
+		<annotation>
+			<documentation>Reference to an output value that is a web accessible resource. </documentation>
+		</annotation>
+		<attribute name="href" type="anyURI" use="required">
+			<annotation>
+				<documentation>Reference to a web-accessible resource that is provided by the process as output. This attribute shall contain a URL from which this output can be electronically retrieved. </documentation>
+			</annotation>
+		</attribute>
+		<attributeGroup ref="wps:ComplexDataEncoding"/>
+	</complexType>
+	<!-- =========== STATUS ========================================= -->
+	<!-- =========================================================== -->
+	<complexType name="StatusType">
+		<annotation>
+			<documentation>Description of the status of process execution. </documentation>
+		</annotation>
+		<choice>
+			<element name="ProcessAccepted" type="string">
+				<annotation>
+					<documentation>Indicates that this process has been accepted by the server, but is in a queue and has not yet started to execute. The contents of this human-readable text string is left open to definition by each server implementation, but is expected to include any messages the server may wish to let the clients know. Such information could include how long the queue is, or any warning conditions that may have been encountered. The client may display this text to a human user. </documentation>
+				</annotation>
+			</element>
+			<element name="ProcessStarted" type="wps:ProcessStartedType">
+				<annotation>
+					<documentation>Indicates that this process has been accepted by the server, and processing has begun. </documentation>
+				</annotation>
+			</element>
+			<element name="ProcessPaused" type="wps:ProcessStartedType">
+				<annotation>
+					<documentation>Indicates that this process has been  accepted by the server, and processing has started but subsequently been paused by the server.</documentation>
+				</annotation>
+			</element>
+			<element name="ProcessSucceeded" type="string">
+				<annotation>
+					<documentation>Indicates that this process has successfully completed execution. The contents of this human-readable text string is left open to definition by each server, but is expected to include any messages the server may wish to let the clients know, such as how long the process took to execute, or any warning conditions that may have been encountered. The client may display this text string to a human user. The client should make use of the presence of this element to trigger automated or manual access to the results of the process. If manual access is intended, the client should use the presence of this element to present the results as downloadable links to the user. </documentation>
+				</annotation>
+			</element>
+			<element name="ProcessFailed" type="wps:ProcessFailedType">
+				<annotation>
+					<documentation>Indicates that execution of this process has failed, and includes error information. </documentation>
+				</annotation>
+			</element>
+		</choice>
+		<attribute name="creationTime" type="dateTime" use="required">
+			<annotation>
+				<documentation>The time (UTC) that the process finished.  If the process is still executing or awaiting execution, this element shall contain the creation time of this document.</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ProcessStartedType">
+		<annotation>
+			<documentation>Indicates that this process has been has been accepted by the server, and processing has begun. </documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<annotation>
+					<documentation>A human-readable text string whose contents are left open to definition by each WPS server, but is expected to include any messages the server may wish to let the clients know. Such information could include how much longer the process may take to execute, or any warning conditions that may have been encountered to date. The client may display this text to a human user. </documentation>
+				</annotation>
+				<attribute name="percentCompleted" use="optional">
+					<annotation>
+						<documentation>Percentage of process that has been completed, where 0 means the process has just started, and 99 means the process is almost complete.  This value is expected to be accurate to within ten percent.</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="integer">
+							<minInclusive value="0"/>
+							<maxInclusive value="99"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ProcessFailedType">
+		<annotation>
+			<documentation>Indicator that the process has failed to execute successfully. The reason for failure is given in the exception report. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="ows:ExceptionReport"/>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

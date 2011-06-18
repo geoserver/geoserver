@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+
+      <ul>
+        <li>
+          <input type="checkbox" id="enabled" wicket:id="enabled"><wicket:message key="enabled">enabled</wicket:message></input>
+          &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em>
+        </li>
+        <li wicket:id="configContainer">
+         <ul wicket:id="configs">
+	          <li wicket:id="attributeContainer">
+	            <label for="attribute"><wicket:message key="attribute">attribute</wicket:message></label>
+	            <select id="attribute" wicket:id="attribute"></select>
+	          </li>            
+			      <li>
+			        <label><wicket:message key="presentation">presentation</wicket:message></label>
+			        <select id="presentation" wicket:id="presentation"></select>
+			      </li>
+			      <li wicket:id="resolutionContainer">
+			        <div wicket:id="resolutions">
+				        <label><wicket:message key="resolution">resolution</wicket:message></label>
+				        <input type="text" wicket:id="resElevation" class="field text"/>
+				        <div wicket:id="resTime"/>
+			        </div>
+			      </li>
+         </ul>
+        </li>
+   		</ul>
+
+</wicket:panel>
+</body>
+</html>

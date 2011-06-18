@@ -1,0 +1,39 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <div wicket:id="attributePanel"></div>
+    <wicket:fragment wicket:id="attributePanelFragment">
+      <div>
+      <fieldset><legend><span><wicket:message key="featureTypeDetails">Feature Type Details</wicket:message></span></legend>
+    <ul>
+      <li>
+      <table>
+        <tr>
+          <th><wicket:message key="property">Property</wicket:message></th>
+          <th><wicket:message key="type">Type</wicket:message></th>
+          <th><wicket:message key="nillable">Nillable</wicket:message></th>
+          <th><wicket:message key="minMaxOccurences">Min/Max Occurrences</wicket:message></th>
+        </tr>
+        <tr wicket:id="attributes">
+          <td wicket:id="name"></td>
+          <td wicket:id="type"></td>
+          <td wicket:id="nillable"></td>
+          <td wicket:id="minmax"></td>
+        </tr>
+      </table>
+      </li>
+      <li>
+        <ul>
+          <li wicket:id="reloadContainer"><a wicket:id="reload">Reload feature type</a>&nbsp;&nbsp;<a class="warning-link" style="padding-left: 18px;" wicket:id="reloadWarning">...</a></li>
+          <li wicket:id="editSqlContainer"><a wicket:id="editSql">Edit sql view</a></li>
+        </ul>
+      </li>
+    </ul>
+    </fieldset>
+    </div>
+    </wicket:fragment>
+    <div wicket:id="reloadWarningDialog"></div>
+</wicket:panel>
+</body>
+</html>

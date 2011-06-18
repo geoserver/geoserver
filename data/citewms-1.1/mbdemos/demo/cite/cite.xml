@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<ViewContext version="1.0.0" id="atlas_world" xmlns="http://www.opengis.net/context" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/context http://schemas.opengis.net/context/1.0.0/context.xsd">
+  <General>
+    <Window width="500" height="285"/>
+    <BoundingBox SRS="EPSG:4326" minx="-0.0042" miny="-0.0024" maxx="0.0042" maxy="0.0024"/>
+    <Title>Blue Lake Cite Map</Title>
+    <KeywordList>
+      <Keyword>CITE</Keyword>
+    </KeywordList>
+    <Abstract></Abstract>
+  </General>
+  <LayerList>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:Forests</Name>
+      <Title>Forests</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:Ponds</Name>
+      <Title>Ponds</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:Lakes</Name>
+      <Title>Lakes</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:Streams</Name>
+      <Title>Streams</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:NamedPlaces</Name>
+      <Title>Named Places</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:Buildings</Name>
+      <Title>Buildings</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:DividedRoutes</Name>
+      <Title>Divided Routes</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:RoadSegments</Name>
+      <Title>Road Segments</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:Bridges</Name>
+      <Title>Bridges</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+    <Layer queryable="1" hidden="0">
+      <Server service="OGC:WMS" version="1.1.1" title="Cite Forests">
+        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/wms"/>
+      </Server>
+      <Name>cite:MapNeatline</Name>
+      <Title>Map Neatline</Title>
+      <SRS>EPSG:4326</SRS>
+      <FormatList><Format current="1">image/png</Format></FormatList>
+    </Layer>
+  </LayerList>
+</ViewContext>

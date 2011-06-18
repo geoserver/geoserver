@@ -1,0 +1,17 @@
+<!-- Performs a get coverage.  Feel free to play with the elements,        -->
+<!-- to get different results.                                             -->
+<wcs:GetCoverage service="WCS" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1  http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd"
+  version="1.1.1" >
+  <ows:Identifier>topp:tazbm</ows:Identifier>
+  <wcs:DomainSubset>
+    <ows:BoundingBox crs="urn:ogc:def:crs:EPSG:6.6:4326">
+      <ows:LowerCorner>-90 -180</ows:LowerCorner>
+      <ows:UpperCorner>90 180</ows:UpperCorner>
+    </ows:BoundingBox>
+  </wcs:DomainSubset>
+  <wcs:Output format="image/png"/>
+</wcs:GetCoverage>
+

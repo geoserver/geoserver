@@ -1,0 +1,25 @@
+<assembly>
+  <id>dbconfig-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>dbconfig-*.jar</include>
+        <include>asm*.jar</include>
+        <include>cglib-*.jar</include>
+        <include>dom4j-*.jar</include>
+        <include>persistence-api*.jar</include>
+        <include>hibernate*.jar</include>
+        <include>ejb3-*.jar</include>
+        <include>ehcache-*.jar</include>
+        <include>spring-orm-*jar</include>
+        <include>jta-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

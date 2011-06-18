@@ -1,0 +1,22 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+ <script defer="defer" type="text/javascript">
+   var textArea = document.getElementById('logs');
+   textArea.scrollTop = textArea.scrollHeight;
+ </script>
+</wicket:head>
+<body>
+<wicket:extend>
+    <div style="width:95%">
+       <form wicket:id="form">
+         <div style="float:right"><a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
+         <div style="float:left"><wicket:message key="maxLines">max console lines</wicket:message>&nbsp;<input type="text" wicket:id="lines"/></div>
+       </form>
+       <div><textarea readonly="readonly" style="width:100%;height:50em;font-size:small" wicket:id="logs"></textarea></div>
+       <a href="#" wicket:id="download"><wicket:message key="download">download full log file</wicket:message></a>
+    </div>
+  
+  
+</wicket:extend>
+</body>
+</html>

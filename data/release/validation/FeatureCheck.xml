@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite xmlns="testSuiteSchema" 
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns:ogc="http://www.opengis.net/ogc" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
+	xs:schemaLocation="testSuiteSchema /data/capabilities/validate/testSuiteSchema.xsd">
+	<name>IntegrityCheck</name>
+	<description>Integrity Check Description</description>
+	<test>
+		<name>Attr Check</name>
+		<description>Checks all id's are non null, non zero values.</description>
+		<plugin>Null Zero</plugin>
+		<argument >
+			<name>attributeName</name>
+			<string>id</string>
+		</argument>
+		<argument >
+			<name>typeRef</name>
+			<string>*</string>
+		</argument>
+	</test>
+	<test>
+		<name>BC Roads Length</name>
+		<description>Checks that road lengths are non zero.</description>
+		<plugin>Null Zero</plugin>
+		<argument >
+			<name>attributeName</name>
+			<string>LENGTH</string>
+		</argument>
+		<argument >
+			<name>typeRef</name>
+			<string>bc_shapefile:bc_roads</string>
+		</argument>
+	</test>	
+	<test>
+		<name>Attr Check</name>
+		<description>Checks all pointProperty's are non null.</description>
+		<plugin>Null Zero</plugin>
+		<argument >
+			<name>attributeName</name>
+			<string>pointProperty</string>
+		</argument>
+		<argument >
+			<name>typeRef</name>
+			<string>*</string>
+		</argument>
+	</test>
+</suite>

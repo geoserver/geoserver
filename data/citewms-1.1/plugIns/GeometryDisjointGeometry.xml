@@ -1,0 +1,7 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" >
+<name>Geometry Disjoint Geometry</name>
+<description> A Geometry is disjoint from another Geometry.</description>
+<class>
+		org.geotools.validation.spatial.relate.DisjointIntegrity
+	</class>
+</plugin>

@@ -1,0 +1,5 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" >
+<name>Null Zero</name>
+<description>Checks for non null or zero values.</description>
+<class>org.geotools.validation.attributes.NullZeroValidation</class>
+</plugin>

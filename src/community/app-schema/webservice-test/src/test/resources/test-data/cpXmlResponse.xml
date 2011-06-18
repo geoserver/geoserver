@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Header />
+  <soapenv:Body>
+    <qaz:getGeologicalFeaturesByFilterStringResponse xmlns:qaz="http://www.xxx.yyy.zzz/testWebService/">
+      <qaz:out xmlns:gss="http://www.xxx.yyy.zzz/erd/gss" soapenc:arrayType="gss:GeologicalUnitFeatureType[5]">
+        <qaz:item xmlns:erd="http://www.xxx.yyy.zzz/erd" id="1679161021439131319" gmlID="lithostratigraphic.unit.1679161021439131319">
+          <gss:formattedName>Unit Name1248396531312 UC1248396531312 description name</gss:formattedName>
+          <!--  Missing second name for testing purposes with inputAttribute mapped to this -->
+          <gss:textDescription>Test description 1</gss:textDescription>
+          <gss:geologicalUnit>
+            <gss:GeologicalUnit id="1679161021439131391" gmlID="geological.unit.1679161021439131391"/>
+            <!-- Missing rank for testing purposes with xlink:href mapped to this -->
+          </gss:geologicalUnit>
+        </qaz:item>
+        <qaz:item xmlns:erd="http://www.xxx.yyy.zzz/erd" id="1679161041155866313" gmlID="lithostratigraphic.unit.1679161041155866313">
+          <gss:formattedName>Unit Name1233811724109 UC1233811724109 description name</gss:formattedName>
+          <gss:urn domain="GSV" authority="http://someserviceURL">urn:cgi:feature:GSV:1679161041155866313</gss:urn>
+          <gss:textDescription>Test description 1</gss:textDescription>
+          <gss:geologicalUnit>
+            <gss:GeologicalUnit id="1679161041155866310" gmlID="geological.unit.1679161041155866310">
+              <gss:rank>
+                <erd:TermValue id="composition.1679161041155866310">
+                  <erd:value>
+                    <erd:ClassificationCode id="167916112856013567" gmlID="classification.code.167916112856013567">
+						<erd:urn domain="GSV">urn:cgi:classifier:GSV:LithostratigraphicUnitRank:formation</erd:urn>
+		            </erd:ClassificationCode>
+                  </erd:value>
+                </erd:TermValue>
+              </gss:rank>
+            </gss:GeologicalUnit>
+          </gss:geologicalUnit>
+        </qaz:item>
+        <qaz:item xmlns:erd="http://www.xxx.yyy.zzz/erd" id="1679161021439938381" gmlID="lithostratigraphic.unit.1679161021439938381">
+          <gss:formattedName>Unit Name1248396020281 UC1248396020281 description name 2</gss:formattedName>
+          <gss:urn domain="GSV" authority="http://someserviceURL">urn:cgi:feature:GSV:1679161021439938381</gss:urn>
+          <gss:textDescription>Test description 2</gss:textDescription>
+          <gss:geologicalUnit>
+            <gss:GeologicalUnit id="1679161021439938393" gmlID="geological.unit.1679161021439938393">
+              <gss:rank>
+                <erd:TermValue id="composition.1679161021439938393.1">
+                  <erd:value>
+                    <erd:ClassificationCode id="167916112856013567" gmlID="classification.code.167916112856013567">
+                      <erd:name>Formation [lithostratigraphic]</erd:name>
+                      <erd:description>A body of rock strata distinguishable by its lithology; primary formal unit of lithostratigraphic classification.</erd:description>
+                      <erd:classificationScheme xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="urn:cgi:classifierScheme:GSV:LithostratigraphicUnitRank" />
+					  <erd:urn domain="GSV" authority="GSV">urn:cgi:classifier:GSV:LithostratigraphicUnitRank:formation</erd:urn>
+                      <erd:startDate>2007-11-01</erd:startDate>
+                    </erd:ClassificationCode>
+                  </erd:value>
+                </erd:TermValue>
+              </gss:rank>
+              <gss:rank>
+                <erd:TermValue id="composition.1679161021439938393.2">
+                  <erd:value>
+                    <erd:ClassificationCode id="167916112856013568" gmlID="classification.code.167916112856013568">
+                      <erd:name>Formation [lithostratigraphic] 2</erd:name>
+                      <erd:description>A body of rock strata distinguishable by its lithology; primary formal unit of lithostratigraphic classification.</erd:description>
+                      <erd:classificationScheme xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="urn:cgi:classifierScheme:GSV:LithostratigraphicUnitRank" />
+					  <erd:urn domain="GSV" authority="GSV">urn:cgi:classifier:GSV:LithostratigraphicUnitRank:formation2</erd:urn>
+                      <erd:startDate>2007-11-01</erd:startDate>
+                    </erd:ClassificationCode>
+                  </erd:value>
+                </erd:TermValue>
+              </gss:rank>
+            </gss:GeologicalUnit>
+          </gss:geologicalUnit>
+        </qaz:item>
+      </qaz:out>
+    </qaz:getGeologicalFeaturesByFilterStringResponse>
+  </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!--
+        Mapped Feature mapping file with no gsml:specification attribute. This is to avoid circular
+        reference problem when this is linked as gsml:occurrence in Geologic Unit type.
+    -->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>MappedFeatureDataStore</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <!-- path can be relative to this file if starts with "file: -->
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <mappingName>observationMethodMapping</mappingName>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>ObservationMethod</sourceType>
+            <targetElement>gsml:CGI_TermValue</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>
+						gsml:CGI_TermValue
+					</targetAttribute>
+                    <idExpression>
+                        <OCQL>ID</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:value</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>VALUE</OCQL>
+                    </sourceExpression>
+                    <ClientProperty>
+                        <name>codeSpace</name>
+                        <value>CODESPACE</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>
+                       FEATURE_LINK
+					</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>MappedFeature_id</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

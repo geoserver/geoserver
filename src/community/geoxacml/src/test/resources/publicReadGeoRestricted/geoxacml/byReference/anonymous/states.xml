@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os
+        http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+	PolicyId="org:geoserver:policy:permission:anonymous:states"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+	<Target>
+		<Resources>
+			<Resource>
+				<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topp</AttributeValue>
+					<ResourceAttributeDesignator
+						DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:workspace" />
+				</ResourceMatch>
+				<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wms</AttributeValue>
+					<ResourceAttributeDesignator
+						DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:OWSService" />
+				</ResourceMatch>
+				<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">states</AttributeValue>
+					<ResourceAttributeDesignator
+						DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:gsresource" />
+				</ResourceMatch>
+			</Resource>
+		</Resources>
+		<Actions>
+			<Action>
+				<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">READ</AttributeValue>
+					<ActionAttributeDesignator
+						AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</ActionMatch>
+			</Action>
+		</Actions>
+	</Target>
+	<Rule Effect="Permit" RuleId="org:geoserver:rule:states:role:anonymous">
+		<Condition>
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:any-of-any">
+				<Function FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal" />
+				<ResourceAttributeDesignator
+					DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:OWSRequest" />
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">GetMap</AttributeValue>
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">GetFeatureInfo</AttributeValue>
+				</Apply>
+			</Apply>
+		</Condition>
+	</Rule>
+	<Obligations>
+		<Obligation FulfillOn="Permit"
+			ObligationId="org:geoserver:obligation:areaintersect">
+			<AttributeAssignment DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+				AttributeId="org:geoserver:area">
+				<gml:Envelope srsName="EPSG:4326" xmlns:gml="http://www.opengis.net/gml"
+					xsi:schemaLocation="http://www.opengis.net/gml  http://schemas.opengis.net/gml/3.1.1/base/gml.xsd">
+					<gml:pos>10.1 10.0</gml:pos>
+					<gml:pos>20.0 20.0</gml:pos>
+				</gml:Envelope>
+			</AttributeAssignment>
+		</Obligation>
+	</Obligations>
+</Policy>
+	

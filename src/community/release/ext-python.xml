@@ -1,0 +1,20 @@
+<assembly>
+  <id>python-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>python*</include>
+        <include>jython*</include>
+        <include>gt-process*</include>
+        <include>gt-geojson*</include>
+        <include>json-simple*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

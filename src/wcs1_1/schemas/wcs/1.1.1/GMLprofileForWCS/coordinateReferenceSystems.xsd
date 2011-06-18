@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:coordinateReferenceSystems:3.1.1"/>
+		<documentation>Subset of coordinateReferenceOperations.xsd for WCS 1.2 profile. Primary editor: Arliss Whiteside. Last updated 2007-04-23 
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="datums.xsd"/>
+	<include schemaLocation="coordinateSystems.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="_CoordinateReferenceSystem" type="gml:AbstractReferenceSystemType" abstract="true" substitutionGroup="gml:_CRS">
+		<annotation>
+			<documentation>A coordinate reference system consists of an ordered sequence of coordinate system axes that are related to the earth through a datum. A coordinate reference system is defined by one datum and by one coordinate system. Most coordinate reference system do not move relative to the earth, except for engineering coordinate reference systems defined on moving platforms such as cars, ships, aircraft, and spacecraft. For further information, see OGC Abstract Specification Topic 2.
+
+Coordinate reference systems are commonly divided into sub-types. The common classification criterion for sub-typing of coordinate reference systems is the way in which they deal with earth curvature. This has a direct effect on the portion of the earth's surface that can be covered by that type of CRS with an acceptable degree of error. The exception to the rule is the subtype "Temporal" which has been added by analogy. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="ImageCRS" type="gml:ImageCRSType" substitutionGroup="gml:_CoordinateReferenceSystem"/>
+	<!-- =================================================== -->
+	<complexType name="ImageCRSType">
+		<annotation>
+			<documentation>An engineering coordinate reference system applied to locations in images. Image coordinate reference systems are treated as a separate sub-type because a separate user community exists for images with its own terms of reference. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractReferenceSystemType">
+				<sequence>
+					<choice>
+						<element ref="gml:usesCartesianCS"/>
+					</choice>
+					<element ref="gml:usesImageDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="usesCartesianCS" type="gml:CartesianCSRefType">
+		<annotation>
+			<documentation>Association to the Cartesian coordinate system used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesImageDatum" type="gml:ImageDatumRefType">
+		<annotation>
+			<documentation>Association to the image datum used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+</schema>

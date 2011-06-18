@@ -1,0 +1,12 @@
+<dataStore>
+  <id>DataStoreInfoImpl--31b6253f:128b3c42f89:-7fe1</id>
+  <name>RoadSegments</name>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--31b6253f:128b3c42f89:-7ff7</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="namespace">http://www.opengeospatial.net/cite</entry>
+    <entry key="url">file:data/cite_RoadSegments/RoadSegments.shp</entry>
+  </connectionParameters>
+</dataStore>

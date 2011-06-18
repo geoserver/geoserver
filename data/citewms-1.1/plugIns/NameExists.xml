@@ -1,0 +1,15 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" >
+<name>NameExists</name>
+<description>All features must pass the provided filter</description>
+<class>org.geotools.validation.attributes.NullZeroValidation</class>
+<argument >
+<name>attributeName</name>
+<string>name</string>
+
+</argument>
+<argument >
+<name>typeRef</name>
+<string>*</string>
+
+</argument>
+</plugin>

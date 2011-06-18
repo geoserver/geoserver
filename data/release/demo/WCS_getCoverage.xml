@@ -1,0 +1,38 @@
+<!-- Performs a get coverage.  Feel free to play with the elements,        -->
+<!-- to get different results.                                             -->
+<GetCoverage service="WCS" version="1.0.0"
+  xmlns="http://www.opengis.net/wcs"
+  xmlns:nurc="http://www.nurc.nato.int"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd">
+<sourceCoverage>nurc:Pk50095</sourceCoverage>
+  <domainSubset>
+    <spatialSubset>
+      <gml:Envelope srsName="EPSG:32633">
+        <gml:pos>347649.93086859107 5176214.082539256</gml:pos>
+        <gml:pos>370725.976428591 5196961.352859256</gml:pos>
+      </gml:Envelope>
+      <gml:Grid dimension="2" srsName="EPSG:4326">
+        <gml:limits>
+          <gml:GridEnvelope>
+            <gml:low>0 0</gml:low>
+            <gml:high>545 490</gml:high>
+          </gml:GridEnvelope>
+        </gml:limits>
+        <gml:axisName>E</gml:axisName>
+        <gml:axisName>N</gml:axisName>
+      </gml:Grid>
+    </spatialSubset>
+  </domainSubset>
+  <rangeSubset>
+    <axisSubset name="Band">
+      <singleValue>1</singleValue>
+    </axisSubset>
+  </rangeSubset>
+  <output>
+      <crs>EPSG:32633</crs>
+      <format>GeoTIFF</format>
+  </output>
+</GetCoverage>

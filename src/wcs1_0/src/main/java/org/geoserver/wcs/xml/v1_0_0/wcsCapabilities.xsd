@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+xmlns:wcs="http://www.opengis.net/wcs" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:gml="http://www.opengis.net/gml" 
+targetNamespace="http://www.opengis.net/wcs" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified" 
+version="1.0.1" xml:lang="en">
+ <annotation>
+  <appinfo>wcsCapabilities.xsd v1.0.1 2005-07-18</appinfo>
+  <documentation>This schema defines the Capabilities operation request and reply XML elements and types used by an OGC Web Coverage Service (WCS). This schema with the schemas it uses are believed to be GML Application Schemas. </documentation>
+  <documentation>AEW 03/07/22 Changes made:			Changed element name "Section" to "section" in GetCapabilities			Added documentation elements in GetCapabilities, CapabilitiesSectionType, ContentMetadata, AbstractDescriptionBaseType, AbstractDescriptionType			Expanded documentation of WCS_CapabilitiesType			Moved documentation from Service to ServiceType			Edited documentation of OnlineResourceType, electronicMailAddress in AddressType			Expanded separator comment before ContentMetadata elements and types			Added separator comment before CoverageOfferingBrief			Moved metadataLink from AbstractDescriptionType to AbstractDescriptionBaseType		</documentation>
+  <documentation>in CoverageOfferingBrief, replaced boundedBy with a new lonLatBoundingBox (added to owsBase.xsd); and made temporal domain of type TimeSequenceType.</documentation>
+  <documentation>AEW 03/07/29 Changes made:			Changed optionality and documentation os "fees" and accessConstraints" elements in ServiceType			Changed reference to gml:description to reference to (wcs:)description in AbstractDescriptionBaseType		</documentation>
+  <documentation>AEW 03/07/30 Changes made:			Added "version" and "updateSequence" attributes to ServiceType, WCSCapabilityType, and ContentMetadata		</documentation>
+  <documentation>JDE 03/07/30 - Added "version" and "updateSequence" attributes to WCS_Capabilities type		03/08/27 - Made "version" attribute required		</documentation>
+  <documentation>AEW 04/07/13 Changes made:			Added declaration of the "xlink" namespace. 			In wcs:AbstractDescriptionType, added the elements wcs:description and wcs:name, and the attribute "gml:id" with use="prohibited". 		</documentation>
+  <documentation>AEW 05/07/18 Changes made:		 	Changed documentation of updateSequence attribute in GetCapabilities element,  WCS_CapabilitiesType,  ServiceType, WCSCapabilityType, and ContentMetadata element.		 	Added documentation of all enumeration values in CapabilitiesSectionType.		 	Added documentation of WCSCapabilityType, DCPTypeType, CoverageOfferingBriefType, and AbstractDescriptionType.		</documentation>
+  <documentation>JDE 2005/08/31 Changes made:		 	AbstractDescriptionBaseType: made metadataLink repeatable		 </documentation>
+ </annotation>
+ <!-- ==============================================================       includes and imports	============================================================== -->
+ <include schemaLocation="./owsBase.xsd"/>
+ <import namespace="http://www.opengis.net/gml" schemaLocation="./gml4wcs.xsd"/>
+ <import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/1.0.0/xlinks.xsd"/>
+ <!-- ==============================================================       elements and types	============================================================== -->
+ <element name="GetCapabilities">
+  <annotation>
+   <documentation>Request to a WCS to perform the GetCapabilities operation. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element name="section" type="wcs:CapabilitiesSectionType" default="/" minOccurs="0"/>
+   </sequence>
+   <attribute name="service" type="string" use="required" fixed="WCS"/>
+   <attribute name="version" type="string" use="optional" fixed="1.0.0"/>
+   <attribute name="updateSequence" type="string" use="optional">
+    <annotation>
+     <documentation>Service metadata (Capabilities) document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and are always opaque to clients. When omitted or not supported by server, server shall return latest complete service metadata document. </documentation>
+    </annotation>
+   </attribute>
+  </complexType>
+ </element>
+ <!-- =========================================================== -->
+ <simpleType name="CapabilitiesSectionType">
+  <annotation>
+   <documentation>Identification of desired part of full Capabilities XML document to be returned. </documentation>
+  </annotation>
+  <restriction base="string">
+   <enumeration value="/">
+    <annotation>
+     <documentation>TBD. </documentation>
+    </annotation>
+   </enumeration>
+   <enumeration value="/WCS_Capabilities/Service">
+    <annotation>
+     <documentation>TBD. </documentation>
+    </annotation>
+   </enumeration>
+   <enumeration value="/WCS_Capabilities/Capability">
+    <annotation>
+     <documentation>TBD. </documentation>
+    </annotation>
+   </enumeration>
+   <enumeration value="/WCS_Capabilities/ContentMetadata">
+    <annotation>
+     <documentation>TBD. </documentation>
+    </annotation>
+   </enumeration>
+  </restriction>
+ </simpleType>
+ <!-- =========================================================== -->
+ <element name="WCS_Capabilities" type="wcs:WCS_CapabilitiesType"/>
+ <!-- =========================================================== -->
+ <complexType name="WCS_CapabilitiesType">
+  <annotation>
+   <documentation>Metadata for a WCS server, also known as Capabilities document. Reply from a WCS that performed the GetCapabilities operation. </documentation>
+  </annotation>
+  <sequence>
+   <element ref="wcs:Service"/>
+   <element ref="wcs:Capability"/>
+   <element ref="wcs:ContentMetadata"/>
+  </sequence>
+  <attribute name="version" type="string" use="required" fixed="1.0.0"/>
+  <attribute name="updateSequence" type="string" use="optional">
+   <annotation>
+    <documentation>Service metadata (Capabilities) document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and are always opaque to clients. When supported by server, server shall return this attribute. </documentation>
+   </annotation>
+  </attribute>
+ </complexType>
+ <!-- =============================================================		Service elements and types 	============================================================== -->
+ <element name="Service" type="wcs:ServiceType" substitutionGroup="gml:_GML"/>
+ <!-- =========================================================== -->
+ <complexType name="ServiceType">
+  <annotation>
+   <documentation>A minimal, human readable rescription of the service. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:AbstractDescriptionType">
+    <sequence>
+     <element ref="wcs:keywords" minOccurs="0" maxOccurs="unbounded"/>
+     <element name="responsibleParty" type="wcs:ResponsiblePartyType" minOccurs="0"/>
+     <element name="fees" type="gml:CodeListType">
+      <annotation>
+       <documentation>A text string identifying any fees imposed by the service provider. The keyword NONE shall be used to mean no fees. </documentation>
+      </annotation>
+     </element>
+     <element name="accessConstraints" type="gml:CodeListType" maxOccurs="unbounded">
+      <annotation>
+       <documentation>A text string identifying any access constraints imposed by the service provider. The keyword NONE shall be used to mean no access constraints are imposed. </documentation>
+      </annotation>
+     </element>
+    </sequence>
+    <attribute name="version" type="string" use="optional" fixed="1.0.0"/>
+    <attribute name="updateSequence" type="string" use="optional">
+     <annotation>
+      <documentation>Service metadata (Capabilities) document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and are always opaque to clients. When supported by server, server shall return this attribute. </documentation>
+     </annotation>
+    </attribute>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="ResponsiblePartyType">
+  <annotation>
+   <documentation>Identification of, and means of communication with, person(s) and organizations associated with the server. </documentation>
+  </annotation>
+  <sequence>
+   <choice>
+    <sequence>
+     <element name="individualName" type="string">
+      <annotation>
+       <documentation>Name of the responsible person-surname, given name, title separated by a delimiter. </documentation>
+      </annotation>
+     </element>
+     <element name="organisationName" type="string" minOccurs="0"/>
+    </sequence>
+    <element name="organisationName" type="string">
+     <annotation>
+      <documentation>Name of the responsible organizationt. </documentation>
+     </annotation>
+    </element>
+   </choice>
+   <element name="positionName" type="string" minOccurs="0">
+    <annotation>
+     <documentation>Role or position of the responsible person. </documentation>
+    </annotation>
+   </element>
+   <element name="contactInfo" type="wcs:ContactType" minOccurs="0">
+    <annotation>
+     <documentation>Address of the responsible party. </documentation>
+    </annotation>
+   </element>
+  </sequence>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="ContactType">
+  <annotation>
+   <documentation>Information required to enable contact with the responsible person and/or organization. </documentation>
+  </annotation>
+  <sequence>
+   <element name="phone" type="wcs:TelephoneType" minOccurs="0">
+    <annotation>
+     <documentation>Telephone numbers at which the organization or individual may becontacted. </documentation>
+    </annotation>
+   </element>
+   <element name="address" type="wcs:AddressType" minOccurs="0">
+    <annotation>
+     <documentation>Physical and email address at which the organization or individualmay be contacted. </documentation>
+    </annotation>
+   </element>
+   <element name="onlineResource" type="wcs:OnlineResourceType" minOccurs="0">
+    <annotation>
+     <documentation>On-line information that can be used to contact the individual ororganization. </documentation>
+    </annotation>
+   </element>
+  </sequence>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="OnlineResourceType">
+  <annotation>
+   <documentation>Reference to on-line resource from which data can be obtained. </documentation>
+  </annotation>
+  <attributeGroup ref="xlink:simpleLink"/>
+ </complexType>
+ <!-- ========================================================== -->
+ <complexType name="TelephoneType">
+  <annotation>
+   <documentation>Telephone numbers for contacting the responsible individual or organization. </documentation>
+  </annotation>
+  <sequence>
+   <element name="voice" type="string" minOccurs="0" maxOccurs="unbounded">
+    <annotation>
+     <documentation>Telephone number by which individuals can speak to the responsible organization or individual. </documentation>
+    </annotation>
+   </element>
+   <element name="facsimile" type="string" minOccurs="0" maxOccurs="unbounded">
+    <annotation>
+     <documentation>Telephone number of a facsimile machine for the responsibleorganization or individual. </documentation>
+    </annotation>
+   </element>
+  </sequence>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="AddressType">
+  <annotation>
+   <documentation>Location of the responsible individual or organization. </documentation>
+  </annotation>
+  <sequence>
+   <element name="deliveryPoint" type="string" minOccurs="0" maxOccurs="unbounded">
+    <annotation>
+     <documentation>Address line for the location (as described in ISO 11180, Annex A). </documentation>
+    </annotation>
+   </element>
+   <element name="city" type="string" minOccurs="0">
+    <annotation>
+     <documentation>City of the location. </documentation>
+    </annotation>
+   </element>
+   <element name="administrativeArea" type="string" minOccurs="0">
+    <annotation>
+     <documentation>State ot province of the location. </documentation>
+    </annotation>
+   </element>
+   <element name="postalCode" type="string" minOccurs="0">
+    <annotation>
+     <documentation>ZIP or other postal code. </documentation>
+    </annotation>
+   </element>
+   <element name="country" type="string" minOccurs="0">
+    <annotation>
+     <documentation>Country of the physical address. </documentation>
+    </annotation>
+   </element>
+   <element name="electronicMailAddress" type="string" minOccurs="0" maxOccurs="unbounded">
+    <annotation>
+     <documentation>Address of the electronic mailbox of the responsible organization or individual. </documentation>
+    </annotation>
+   </element>
+  </sequence>
+ </complexType>
+ <!-- =============================================================		WCSCapabilityType types and elements 	============================================================== -->
+ <element name="Capability" type="wcs:WCSCapabilityType"/>
+ <complexType name="WCSCapabilityType">
+  <annotation>
+   <documentation>XML encoded WCS GetCapabilities operation response. The Capabilities document provides clients with service metadata about a specific service instance, including metadata about the coverages served. </documentation>
+  </annotation>
+  <sequence>
+   <element name="Request">
+    <complexType>
+     <sequence>
+      <element name="GetCapabilities">
+       <complexType>
+        <sequence>
+         <element name="DCPType" type="wcs:DCPTypeType" maxOccurs="unbounded"/>
+        </sequence>
+       </complexType>
+      </element>
+      <element name="DescribeCoverage">
+       <complexType>
+        <sequence>
+         <element name="DCPType" type="wcs:DCPTypeType" maxOccurs="unbounded"/>
+        </sequence>
+       </complexType>
+      </element>
+      <element name="GetCoverage">
+       <complexType>
+        <sequence>
+         <element name="DCPType" type="wcs:DCPTypeType" maxOccurs="unbounded"/>
+        </sequence>
+       </complexType>
+      </element>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="Exception">
+    <complexType>
+     <sequence>
+      <element name="Format" type="string" maxOccurs="unbounded"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="VendorSpecificCapabilities" minOccurs="0">
+    <complexType>
+     <sequence>
+      <any/>
+     </sequence>
+    </complexType>
+   </element>
+  </sequence>
+  <attribute name="version" type="string" use="optional" fixed="1.0.0"/>
+  <attribute name="updateSequence" type="string" use="optional">
+   <annotation>
+    <documentation>Service metadata document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and are always opaque to clients. When not supported by server, server shall not return this attribute. </documentation>
+   </annotation>
+  </attribute>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="DCPTypeType">
+  <annotation>
+   <documentation>Connect point URLs for the HTTP Distributed Computing Platform (DCP). Normally, only one Get and/or one Post is included in this element. More than one Get and/or Post is allowed to support including alternative URLs for uses such as load balancing or backup. </documentation>
+  </annotation>
+  <sequence>
+   <element name="HTTP">
+    <complexType>
+     <choice maxOccurs="unbounded">
+      <element name="Get">
+       <complexType>
+        <sequence>
+         <element name="OnlineResource" type="wcs:OnlineResourceType"/>
+        </sequence>
+       </complexType>
+      </element>
+      <element name="Post">
+       <complexType>
+        <sequence>
+         <element name="OnlineResource" type="wcs:OnlineResourceType"/>
+        </sequence>
+       </complexType>
+      </element>
+     </choice>
+    </complexType>
+   </element>
+  </sequence>
+ </complexType>
+ <!-- =============================================================		ContentMetadata elements and types		=========================================================== -->
+ <element name="ContentMetadata">
+  <annotation>
+   <documentation>Unordered list of brief descriptions of all coverages avaialble from this WCS, or a reference to another service from which this information is available. </documentation>
+  </annotation>
+  <complexType>
+   <sequence>
+    <element ref="wcs:CoverageOfferingBrief" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+   <attributeGroup ref="gml:AssociationAttributeGroup"/>
+   <attribute name="version" type="string" use="optional" fixed="1.0.0"/>
+   <attribute name="updateSequence" type="string" use="optional">
+    <annotation>
+     <documentation>Service metadata document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and are always opaque to clients. When not supported by server, server shall not return this attribute. </documentation>
+    </annotation>
+   </attribute>
+  </complexType>
+ </element>
+ <!-- =========================================================== -->
+ <element name="CoverageOfferingBrief" type="wcs:CoverageOfferingBriefType" substitutionGroup="gml:_GML"/>
+ <!-- =========================================================== -->
+ <complexType name="CoverageOfferingBriefType">
+  <annotation>
+   <documentation>Brief description of one coverage avaialble from a WCS. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:AbstractDescriptionType">
+    <sequence>
+     <element ref="wcs:lonLatEnvelope"/>
+     <element ref="wcs:keywords" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="AbstractDescriptionBaseType" abstract="true">
+  <annotation>
+   <documentation>Description of a WCS object. </documentation>
+  </annotation>
+  <complexContent>
+   <restriction base="gml:AbstractGMLType">
+    <sequence>
+     <!-- element ref="metadataLink" minOccurs="0" maxOccurs="unbounded"/ -->
+    </sequence>
+   </restriction>
+  </complexContent>
+ </complexType>
+ <!-- =========================================================== -->
+ <complexType name="AbstractDescriptionType" abstract="true">
+  <annotation>
+   <documentation>Human-readable descriptive information for the object it is included within.</documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:AbstractDescriptionBaseType">
+    <sequence>
+     <element ref="wcs:metadataLink" minOccurs="0" maxOccurs="unbounded"/>
+     <element ref="wcs:description" minOccurs="0"/>
+     <element ref="wcs:name"/>
+     <element name="label" type="string">
+      <annotation>
+       <documentation>Short human-readable label for this object, for human interface display. </documentation>
+      </annotation>
+     </element>
+    </sequence>
+    <attribute ref="gml:id" use="prohibited"/>
+   </extension>
+  </complexContent>
+ </complexType>
+</schema>

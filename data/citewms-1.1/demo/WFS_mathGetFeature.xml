@@ -1,0 +1,26 @@
+<!-- Example of a getFeature with a math filter.  In this case  -->
+<!-- we want the states that have over 25% of their workers -->
+<!-- doing manual labor.  So we divide the manual field by    -->
+<!-- the total number of workers and compare it against 0.25 -->
+
+<wfs:GetFeature service="WFS" version="1.0.0"
+  outputFormat="GML2"
+  xmlns:topp="http://www.openplans.org/topp"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs
+                      http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+  <wfs:Query typeName="topp:states">
+    <ogc:Filter>
+      <ogc:PropertyIsGreaterThan>
+        <Div>
+            <PropertyName>MANUAL</PropertyName>
+            <PropertyName>WORKERS</PropertyName>
+        </Div>
+         <Literal>0.25</Literal>
+    </ogc:PropertyIsGreaterThan>
+    </ogc:Filter>
+    </wfs:Query>
+</wfs:GetFeature>
+ 

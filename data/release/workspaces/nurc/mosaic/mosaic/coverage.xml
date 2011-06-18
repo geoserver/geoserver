@@ -1,0 +1,125 @@
+<coverage>
+  <id>CoverageInfoImpl--570ae188:124761b8d78:-7fb3</id>
+  <name>mosaic</name>
+  <nativeName>mosaic</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff8</id>
+  </namespace>
+  <title>Sample PNG mosaic</title>
+  <description>Subsampled satellite imagery loaded as a mosaic of PNG images</description>
+  <keywords>
+    <string>WCS</string>
+    <string>mosaic</string>
+    <string>mosaic</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>6.346</minx>
+    <maxx>20.83</maxx>
+    <miny>36.492</miny>
+    <maxy>46.591</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>6.346</minx>
+    <maxx>20.83</maxx>
+    <miny>36.492</miny>
+    <maxy>46.591</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="dirName">mosaic_sample</entry>
+  </metadata>
+  <store class="coverageStore">
+    <id>CoverageStoreInfoImpl--570ae188:124761b8d78:-7fd6</id>
+  </store>
+  <nativeFormat>ImageMosaic</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>250 250</high>
+    </range>
+    <transform>
+      <scaleX>0.057934032977228433</scaleX>
+      <scaleY>-0.04039598061277999</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>6.375141924963005</translateX>
+      <translateY>46.570568984828704</translateY>
+    </transform>
+    <crs>EPSG:4326</crs>
+  </grid>
+  <supportedFormats>
+    <string>GTOPO30</string>
+    <string>GEOTIFF</string>
+    <string>IMAGEMOSAIC</string>
+    <string>ARCGRID</string>
+    <string>GIF</string>
+    <string>PNG</string>
+    <string>JPEG</string>
+    <string>TIFF</string>
+  </supportedFormats>
+  <interpolationMethods>
+    <string>nearest neighbor</string>
+    <string>bilinear</string>
+    <string>bicubic</string>
+    <string>bicubic_2</string>
+  </interpolationMethods>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>mosaic [0 ... 255]</name>
+      <description>GridSampleDimension[0.0,255.0]</description>
+      <range>
+        <min>0.0</min>
+        <max>255.0</max>
+      </range>
+    </coverageDimension>
+    <coverageDimension>
+      <name>mosaic [0 ... 255]</name>
+      <description>GridSampleDimension[0.0,255.0]</description>
+      <range>
+        <min>0.0</min>
+        <max>255.0</max>
+      </range>
+    </coverageDimension>
+    <coverageDimension>
+      <name>mosaic [0 ... 255]</name>
+      <description>GridSampleDimension[0.0,255.0]</description>
+      <range>
+        <min>0.0</min>
+        <max>255.0</max>
+      </range>
+    </coverageDimension>
+  </dimensions>
+  <requestSRS>
+    <string>EPSG:4326</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:4326</string>
+  </responseSRS>
+  <parameters>
+    <entry>
+      <string>InputTransparentColor</string>
+      <string></string>
+    </entry>
+    <entry>
+      <string>OutputTransparentColor</string>
+      <string>#000000</string>
+    </entry>
+    <entry>
+      <string>InputImageThresholdValue</string>
+      <string>NaN</string>
+    </entry>
+  </parameters>
+</coverage>

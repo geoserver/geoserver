@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-gmaps module
+  </description>
+  <bean id="gwcServiceGMaps"
+	class="org.geowebcache.service.gmaps.GMapsConverter">
+	<constructor-arg ref="gwcStorageBroker"/>
+	<constructor-arg ref="gwcTLDispatcher"/>
+	<constructor-arg ref="gwcGridSetBroker"/>
+  </bean>
+  <bean id="gwcServiceMGMaps"
+	class="org.geowebcache.service.mgmaps.MGMapsConverter">
+	<constructor-arg ref="gwcStorageBroker"/>
+	<constructor-arg ref="gwcTLDispatcher"/>
+	<constructor-arg ref="gwcGridSetBroker"/>
+  </bean>
+</beans>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Conversion xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="EPSG19916">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<!-- SourceCRS: EPSG:4277 OSGB 1936 -->
+	<!-- TargetCRS: EPSG:27700 OSGB 1936 / British National Grid -->
+	<coordinateOperationName>Transverse Mercator</coordinateOperationName>
+	<coordinateOperationID>
+		<name codeSpace="urn:ogc:def:coordinateOperation:EPSG:6.3:">19916</name>
+		<version>6.0</version>
+	</coordinateOperationID>
+	<usesMethod xlink:href="urn:ogc:def:method:EPSG:6.3:9807" xlink:title="Transverse Mercator"/>
+	<usesValue>
+		<value uom="urn:ogc:def:uom:OGC:1.0:degree">49</value>
+		<valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8801" xlink:title="Latitude of natural origin"/>
+	</usesValue>
+	<usesValue>
+		<value uom="urn:ogc:def:uom:OGC:1.0:degree">-2</value>
+		<valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8802" xlink:title="Longitude of natural origin"/>
+	</usesValue>
+	<usesValue>
+		<value uom="urn:ogc:def:uom:OGC:1.0:unity">0.999601272</value>
+		<valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8805" xlink:title="Scale factor at natural origin"/>
+	</usesValue>
+	<usesValue>
+		<value uom="urn:ogc:def:uom:OGC:1.0:metre">400000</value>
+		<valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8806" xlink:title="False Easting"/>
+	</usesValue>
+	<usesValue>
+		<value uom="urn:ogc:def:uom:OGC:1.0:metre">-100000</value>
+		<valueOfParameter xlink:href="urn:ogc:def:parameter:EPSG:6.3:8807" xlink:title="False Northing"/>
+	</usesValue>
+</Conversion>

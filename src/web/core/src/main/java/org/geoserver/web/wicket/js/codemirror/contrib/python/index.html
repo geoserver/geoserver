@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script src="../../js/codemirror.js" type="text/javascript"></script>
+    <title>CodeMirror: Python demonstration</title>
+    <style type="text/css">
+      .CodeMirror-line-numbers {
+        width: 2.2em;
+        color: #aaa;
+        background-color: #eee;
+        text-align: right;
+        padding: .4em;
+        margin: 0;
+        font-family: monospace;
+        font-size: 10pt;
+        line-height: 1.1em;
+      }
+    </style>
+</head>
+<body style="padding: 20px;">
+<p>
+    This is a simple demonstration of the Python syntax highlighting module
+    for <a href="index.html">CodeMirror</a>.
+</p>
+<p>
+    Features of this parser include:
+</p>
+<ul>
+    <li>Token-based syntax highlighting - currently very little lexical analysis happens.  Few lexical errors will be detected.</li>
+    <li>Use the normal indentation mode to enforce regular indentation, otherwise the "shift" indentation mode will give you more flexibility.</li>
+    <li>Parser Options:
+        <ul>
+            <li>pythonVersion (Integer) - 2 or 3 to indicate which version of Python to parse.  Default = 2</li>
+            <li>strictErrors (Bool) - true to highlight errors that may not be Python errors but cause confusion for this parser. Default = true</li>
+        </ul>
+    </li>
+</ul>
+<p>Written by Timothy Farrell (<a href="LICENSE">license</a>). Special
+thanks to Adam Brand and Marijn Haverbeke for their help in debugging
+and providing for this parser.</p>
+
+<div style="border: 1px solid black; padding: 0px;">
+<textarea id="code" cols="100" rows="20" style="width:100%">
+# Literals
+1234
+0.0e101
+.123
+0b01010011100
+0o01234567
+0x0987654321abcdef
+# Error Literals
+.0b000
+0.0e
+0e
+
+# String Literals
+'For\''
+"God\""
+"""so loved
+the world"""
+'''that he gave
+his only begotten\' '''
+'that whosoever believeth \
+in him'
+''
+
+# Identifiers
+__a__
+a.b
+a.b.c
+# Error Identifiers
+a.
+
+# Operators
++ - * / % & | ^ ~ < >
+== != <= >= <> << >> // **
+and or not in is
+
+# Delimiters
+() [] {} , : ` = ; @ . # At-signs and periods require context
++= -= *= /= %= &= |= ^=
+//= >>= <<= **=
+
+# Keywords
+as assert break class continue def del elif else except
+finally for from global if import lambda pass raise
+return try while with yield
+
+# Python 2 Keywords (otherwise Identifiers)
+exec print
+
+# Python 3 Keywords (otherwise Identifiers)
+nonlocal
+
+# Types
+bool classmethod complex dict enumerate float frozenset int list object
+property reversed set slice staticmethod str super tuple type
+
+# Python 2 Types (otherwise Identifiers)
+basestring buffer file long unicode xrange
+
+# Python 3 Types (otherwise Identifiers)
+bytearray bytes filter map memoryview open range zip
+
+# Example Strict Errors
+def doesNothing():
+   pass # indentUnit is set to 4 but this line is indented 3
+
+# Some Example code
+import os
+from package import ParentClass
+
+@nonsenseDecorator
+def doesNothing():
+    pass
+
+class ExampleClass(ParentClass):
+    @staticmethod
+    def example(inputStr):
+        a = list(inputStr)
+        a.reverse()
+        return ''.join(a)
+
+    def __init__(self, mixin = 'Hello'):
+        self.mixin = mixin
+
+</textarea>
+</div>
+
+<script type="text/javascript">
+    var editor = CodeMirror.fromTextArea('code', {
+        parserfile: ["../contrib/python/js/parsepython.js"],
+        stylesheet: "css/pythoncolors.css",
+        path: "../../js/",
+        lineNumbers: true,
+        textWrapping: false,
+        indentUnit: 4,
+        parserConfig: {'pythonVersion': 2, 'strictErrors': true}
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OperationMethod xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../../../gml/3.1.1/profiles/GridCRSs/1.0.0/gmlGridCRSsProfile.xsd" 
+gml:id="grid2dIn2dCrsMethod">
+	<!-- Last updated 2007-06-06 -->
+	<!-- =============================================== -->
+	<methodName>2D Simple Grid Method</methodName>
+	<methodID>
+		<name>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</name>
+	</methodID>
+	<remarks>Method for use by a Coordinate Conversion defining a simple 2D GridCRS in a 2D baseCRS, where this grid is not rotated or skewed in this baseCRS. </remarks>
+	<methodFormula>The reverse direction (from the grid CRS to the baseCRS) shall be as specified by the equations:
+	BaseX = origin(1) + offsets(1) * GridX
+	BaseY = origin(2) + offsets(2) * GridY
+where 
+	GridX, GridY are position coordinates in the grid 2D CRS
+	BaseX, BaseY are position coordinates in the 2D base CRS
+	origin(1), origin(2) are the two coordinates of the grid origin position in the 2D base CRS
+	offsets(1) is the grid point offsets of the first grid axis in the 2D base CRS
+	offsets(2) is the grid point offsets of the second grid axis in the 2D base CRS
+
+The forward direction (from the baseCRS to the GridCRS) equations are not included here. </methodFormula>
+	<sourceDimensions>2</sourceDimensions>
+	<targetDimensions>2</targetDimensions>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="origin2d">
+			<parameterName>origin2d</parameterName>
+			<parameterID>
+				<name>urn:ogc:def:parameter:WCS:1.1:origin2d</name>
+			</parameterID>
+			<remarks>This parameter shall be encoded as a wcs:Origin element, giving the two origin coordinates in the 2D base CRS of this GridCRS. </remarks>
+		</OperationParameter>
+	</usesParameter>
+	<!-- =============================================== -->
+	<usesParameter>
+		<OperationParameter gml:id="offsets2d">
+			<parameterName>offsets2d</parameterName>
+			<parameterID>
+				<name>urn:ogc:def:parameter:WCS:1.1:offsets2d</name>
+			</parameterID>
+			<remarks>This parameter shall be encoded as a wcs:Offsets element, giving the grid offsets in the two grid axes, relative to the specified origin. This wcs:Offsets shall contain two values, the first value shall specify the grid offset for the first grid axis in the first baseCRS axis, and the second value shall specify the grid offset for the second grid axis in the second baseCRS axis. </remarks>
+		</OperationParameter>
+	</usesParameter>
+</OperationMethod>

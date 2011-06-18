@@ -1,0 +1,30 @@
+<featureType>
+    <id>gsml_MappedFeature_featuretype</id>
+    <name>MappedFeature</name>
+    <nativeName>MappedFeature</nativeName>
+    <namespace>
+        <id>gsml_namespace</id>
+    </namespace>
+    <title>... TITLE ...</title>
+    <abstract>... ABSTRACT ...</abstract>
+    <srs>EPSG:4326</srs>
+    <latLonBoundingBox>
+        <minx>-180</minx>
+        <maxx>180</maxx>
+        <miny>-90</miny>
+        <maxy>90</maxy>
+        <crs>EPSG:4326</crs>
+    </latLonBoundingBox>
+    <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+    <enabled>true</enabled>
+    <metadata>
+        <entry key="kml.regionateFeatureLimit">10</entry>
+        <entry key="indexingEnabled">false</entry>
+        <entry key="cachingEnabled">false</entry>
+    </metadata>
+    <store class="dataStore">
+        <id>gsml_MappedFeature_datastore</id>
+    </store>
+    <maxFeatures>0</maxFeatures>
+    <numDecimals>0</numDecimals>
+</featureType>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>geoserver</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver</groupId>
+  <artifactId>extension</artifactId>
+  <packaging>pom</packaging>
+  <name>GeoServer Extensions</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>platform</artifactId>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+
+    <!-- profiles for individual modules -->
+
+    <profile>
+      <id>app-schema</id>
+      <modules>
+        <module>app-schema</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>arcsde</id>
+      <modules>
+        <module>arcsde</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>h2</id>
+      <modules>
+        <module>h2</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>sqlserver</id>
+      <modules>
+        <module>sqlserver</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>oracle</id>
+      <modules>
+        <module>oracle</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>mysql</id>
+      <modules>
+        <module>mysql</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>wfsv</id>
+      <modules>
+        <module>wfsv</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>db2</id>
+      <modules>
+        <module>db2</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>imagemosaic-jdbc</id>
+      <modules>
+        <module>imagemosaic-jdbc</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>jp2k</id>
+      <modules>
+        <module>jp2k</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>gdal</id>
+      <modules>
+        <module>gdal</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>feature-pregeneralized</id>
+      <modules>
+        <module>feature-pregeneralized</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>imagemap</id>
+      <modules>
+        <module>imagemap</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>ogr</id>
+      <modules>
+        <module>ogr</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>excel</id>
+      <modules>
+        <module>excel</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>validation</id>
+      <modules>
+        <module>validation</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>charts</id>
+      <modules>
+        <module>charts</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>geosearch</id>
+      <modules>
+        <module>geosearch</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>control-flow</id>
+      <modules>
+        <module>control-flow</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wps</id>
+      <modules>
+        <module>wps</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>querylayer</id>
+      <modules>
+        <module>querylayer</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>teradata</id>
+      <modules>
+        <module>teradata</module>
+      </modules>
+    </profile>
+
+    <!-- allExtensions profile, includes all modules -->
+    <profile>
+      <id>allExtensions</id>
+      <modules>
+        <module>app-schema</module>
+        <module>arcsde</module>
+        <module>geosearch</module>
+        <module>h2</module>
+        <module>sqlserver</module>
+        <module>oracle</module>
+        <module>mysql</module>
+        <module>wfsv</module>
+        <module>db2</module>
+        <module>imagemap</module>
+        <module>gdal</module>
+        <module>jp2k</module>
+        <module>ogr</module>
+        <module>excel</module>
+        <module>validation</module>
+        <module>charts</module>
+        <module>feature-pregeneralized</module>
+        <module>imagemosaic-jdbc</module>
+        <module>control-flow</module>
+        <module>wps</module>
+        <module>querylayer</module>
+        <module>teradata</module>
+      </modules>
+    </profile>
+
+    <!-- release profile, includes all modules -->
+    <profile>
+      <id>release</id>
+      <modules>
+        <module>app-schema</module>
+        <module>arcsde</module>
+        <module>geosearch</module>
+        <module>h2</module>
+        <module>sqlserver</module>
+        <module>oracle</module>
+        <module>mysql</module>
+        <module>wfsv</module>
+        <module>db2</module>
+        <module>imagemap</module>
+        <module>gdal</module>
+        <module>jp2k</module>
+        <module>ogr</module>
+        <module>excel</module>
+        <module>validation</module>
+        <module>charts</module>
+        <module>feature-pregeneralized</module>
+        <module>imagemosaic-jdbc</module>
+        <module>control-flow</module>
+        <module>wps</module>
+        <module>querylayer</module>
+        <module>teradata</module>
+      </modules>
+    </profile>
+
+  </profiles>
+
+</project>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.google.com/geo/schemas/sitemap/1.0"
+    xmlns="http://www.google.com/geo/schemas/sitemap/1.0"
+    elementFormDefault="qualified">
+
+<xsd:annotation>
+  <xsd:documentation>
+    XML Schema for the Geo Sitemap extension. This schema defines the
+    Geo-specific elements only; the core Sitemap elements are defined
+    separately.
+
+    Help Center documentation for the Geo Sitemap extension:
+
+      http://www.google.com/support/webmasters/bin/topic.py?topic=14688
+
+    Copyright 2010 Google Inc. All Rights Reserved.
+  </xsd:documentation>
+</xsd:annotation>
+
+<xsd:element name="geo">
+  <xsd:complexType>
+    <xsd:sequence>
+      <xsd:element name="format">
+        <xsd:annotation>
+          <xsd:documentation>
+            Specifies the format of the geo content.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[kK][mM][lL]|[kK][mM][zZ]|[gG][eE][oO][rR][sS][sS]"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

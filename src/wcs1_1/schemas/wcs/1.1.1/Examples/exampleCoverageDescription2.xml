@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoverageDescriptions xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:gml="http://www.opengis.net/gml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsDescribeCoverage.xsd 
+http://www.opengis.net/ows/1.1 ../../../ows/1.1.0/owsAll.xsd 
+http://www.opengis.net/gml ../gml4wcs.xsd">	
+    <CoverageDescription>
+		<ows:Title>Coverage File: SPVIEW_530_274_0_020809_5_1_J_3.TIF</ows:Title>
+		<ows:Abstract>530_274_0_020809_5_1_J_3 Image, SAN FRANCISCO UNITED STATES, Cnes 1986-2002, Distribution Spot Image</ows:Abstract>
+		<ows:Keywords>
+			<ows:Keyword>SPOT5</ows:Keyword>
+			<ows:Keyword>HRG1</ows:Keyword>
+			<ows:Keyword>SPOT</ows:Keyword>
+		</ows:Keywords>
+		<Identifier>SPVIEW_530_274_0_020809_5_1_J_3</Identifier>
+		<Domain>
+			<SpatialDomain>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::26910">
+					<ows:LowerCorner>516430.13465702 4151612.8386696503</ows:LowerCorner>
+					<ows:UpperCorner>589060.13465702 4224332.83866965</ows:UpperCorner>
+				</ows:BoundingBox>
+                <GridCRS gml:id="SPVIEW_530_274_0_020809_5_1_J_3_CRS">
+					<gml:srsName>SPVIEW_530_274_0_020809_5_1_J_3_CRS</gml:srsName>
+					<GridBaseCRS>urn:ogc:def:crs:EPSG::26910</GridBaseCRS>
+					<GridType>urn:ogc:def:method:WCS:1.1:grid2dIn2dMethod</GridType>
+                	<GridOrigin>516430.13465702 4224332.83866965</GridOrigin>
+                	<GridOffsets>10.0 0 0 -10.0</GridOffsets>
+                	<GridCS>urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS</GridCS>
+                 </GridCRS>
+			</SpatialDomain>
+            <TemporalDomain>
+                <gml:timePosition>2002-08-09T19:08:46Z</gml:timePosition>
+            </TemporalDomain>			
+		</Domain>
+		<Range>
+			<Field>
+				<ows:Title>Wavelength</ows:Title>
+				<ows:Abstract>Wavelength Selection, 4 Channels</ows:Abstract>
+				<Identifier>Wavelength</Identifier>
+				<Definition>
+					<ows:AnyValue/>
+				</Definition>
+				<NullValue>0.0</NullValue>
+				<InterpolationMethods>
+					<InterpolationMethod>linear</InterpolationMethod>
+				    <Default>nearest</Default>
+				</InterpolationMethods>
+			    <Axis identifier="Band">
+					<AvailableKeys>
+				        <Key>band1</Key>
+				        <Key>band2</Key>
+				        <Key>band3</Key>
+				        <Key>band4</Key>
+					</AvailableKeys>
+				</Axis>				
+			</Field>
+		</Range>
+		<SupportedCRS>urn:ogc:def:crs:EPSG::4326</SupportedCRS>
+		<SupportedCRS>urn:ogc:def:crs:EPSG::26910</SupportedCRS>
+		<SupportedFormat>image/GeoTIFF</SupportedFormat>
+        <SupportedFormat>image/ECW</SupportedFormat>
+        <SupportedFormat>image/DTED</SupportedFormat>
+        <SupportedFormat>image/JPEG2000</SupportedFormat>
+		<SupportedFormat>image/NITF</SupportedFormat> 
+	</CoverageDescription>
+</CoverageDescriptions>
+

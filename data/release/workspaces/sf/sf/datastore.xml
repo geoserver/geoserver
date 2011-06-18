@@ -1,0 +1,12 @@
+<dataStore>
+  <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdb</id>
+  <name>sf</name>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="namespace">http://www.openplans.org/spearfish</entry>
+    <entry key="url">file:data/sf</entry>
+  </connectionParameters>
+</dataStore>

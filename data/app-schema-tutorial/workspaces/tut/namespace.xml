@@ -1,0 +1,5 @@
+<namespace>
+    <id>tut_namespace</id>
+    <prefix>tut</prefix>
+    <uri>http://example.org/tutorial</uri>
+</namespace>

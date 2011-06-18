@@ -1,0 +1,48 @@
+<assembly>
+    <id>app-schema-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>release/extensions/app-schema</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>release/target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <!-- gt-app-schema and gt-app-schema-resolver jars-->
+                <include>gt-app-schema-*.jar</include>
+                <include>xml-commons-resolver-*.jar</include>
+                <!-- required for complex feature WFS output (see GML3OutputFormat) -->
+                <include>xalan-*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>release/extensions</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>LICENSE.txt</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../data/app-schema-tutorial</directory>
+            <outputDirectory>tutorial</outputDirectory>
+            <excludes>
+                <!-- might have been manually added as an eclipse project -->
+                <exclude>**/.project</exclude>
+                <!-- might have been used for local testing -->
+                <exclude>**/app-schema-cache/**</exclude>
+                <exclude>**/geoserver.log</exclude>
+                <exclude>**/gwc/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>
+
+

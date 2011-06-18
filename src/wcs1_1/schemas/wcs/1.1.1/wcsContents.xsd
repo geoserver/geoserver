@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsContents.xsd 2007-06-06</appinfo>
+		<documentation>This XML Schema Document encodes the Contents section of a GetCapabilities operation response used by the OGC Web Coverage Service (WCS). 
+		Copyright (c) 2007 Open Geospatial Consortium, Inc, All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="wcsCommon.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<element name="Contents">
+		<annotation>
+			<documentation>Contents section of WCS service metadata (or Capabilities) XML document. For the WCS, these contents are brief metadata about the coverages available from this server, or a reference to another source from which this metadata is available. </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wcs:CoverageSummary" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of brief metadata describing top-level coverages available from this WCS server. This list shall be included unless one or more OtherSources are referenced and all this metadata is available from those sources. </documentation>
+					</annotation>
+				</element>
+				<element name="SupportedCRS" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of references to coordinate reference systems in which GetCoverage operation requests and responses may be expressed. This list of SupportedCRSs shall be the union of all of the supported CRSs in all of the nested CoverageSummaries. Servers should include this list since it reduces the work clients need to do to determine that they can interoperate with the server. There may be a dependency of SupportedCRS on SupportedFormat, as described in Subclause 10.3.5. </documentation>
+					</annotation>
+				</element>
+				<element name="SupportedFormat" type="ows:MimeType" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of identifiers of formats in which GetCoverage operation response may be encoded. This list of SupportedFormats shall be the union of all of the supported formats in all of the nested CoverageSummaries. Servers should include this list since it reduces the work clients need to do to determine that they can interoperate with the server. There may be a dependency of SupportedCRS on SupportedFormat, as described in clause 10.3.5. </documentation>
+					</annotation>
+				</element>
+				<element name="OtherSource" type="ows:OnlineResourceType" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of references to other sources of coverage metadata. This list shall be included unless one or more CoverageSummaries are included. </documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+	<element name="CoverageSummary" type="wcs:CoverageSummaryType"/>
+	<!-- =========================================================== -->
+	<complexType name="CoverageSummaryType">
+		<annotation>
+			<documentation>Brief metadata describing one or more coverages available from this WCS server. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="ows:DescriptionType">
+				<sequence>
+					<element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Optional unordered list of more metadata elements about this coverage. A list of metadata elements for CoverageSummaries could be specified in a WCS Application Profile. </documentation>
+						</annotation>
+					</element>
+					<element ref="ows:WGS84BoundingBox" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered list of minimum bounding rectangles surrounding coverage data, using WGS 84 CRS with decimal degrees and longitude before latitude. These bounding boxes shall also apply to lower-level CoverageSummaries under this CoverageSummary, unless other bounding boxes are specified. </documentation>
+						</annotation>
+					</element>
+					<element name="SupportedCRS" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered list of references to CRSs in which GetCoverage operation requests and responses may be expressed. These CRSs shall also apply to all lower-level CoverageSummaries under this CoverageSummary, in addition to any other CRSs referenced. </documentation>
+						</annotation>
+					</element>
+					<element name="SupportedFormat" type="ows:MimeType" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered list of identifiers of formats in which GetCoverage operation responses may be encoded. These formats shall also apply to all lower-level CoverageSummaries under this CoverageSummary, in addition to any other formats identified. </documentation>
+						</annotation>
+					</element>
+					<choice>
+						<annotation>
+							<documentation>Each coverage summary shall contain one or more lower-level CoverageSummaries and/or one identifier. </documentation>
+						</annotation>
+						<sequence>
+							<element ref="wcs:CoverageSummary" maxOccurs="unbounded">
+								<annotation>
+									<documentation>Unordered list of lower-level CoverageSummaries under this CoverageSummary. </documentation>
+								</annotation>
+							</element>
+							<element ref="wcs:Identifier" minOccurs="0">
+								<annotation>
+									<documentation>Optional identifier of this coverage. This identifier shall be included only when this coverage can be accessed by the GetCoverage operation, and the CoverageDescription can be accessed by the DescribeCoverage operation. This identifier must be unique for this WCS server. </documentation>
+								</annotation>
+							</element>
+						</sequence>
+						<element ref="wcs:Identifier">
+							<annotation>
+								<documentation>Identifier of this coverage. This identifier must be unique for this WCS server. </documentation>
+							</annotation>
+						</element>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

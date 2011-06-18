@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-ve module
+  </description>
+  <bean id="gwcServiceVE"
+	class="org.geowebcache.service.ve.VEConverter">
+	<constructor-arg ref="gwcStorageBroker"/>
+	<constructor-arg ref="gwcTLDispatcher"/>
+	<constructor-arg ref="gwcGridSetBroker"/>
+  </bean>
+</beans>

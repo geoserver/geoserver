@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-core module
+  </description>
+
+  <bean id="gwowebCacheExtensions" class="org.geowebcache.GeoWebCacheExtensions"/>
+  
+  <bean id="gwcAppCtx" class="org.geowebcache.util.ApplicationContextProvider" />
+  
+  <!-- The location of a static configuration file for GeoWebCache. 
+       By default this lives in WEB-INF/classes/geowebcache.xml -->
+  <bean id="gwcXmlConfig" class="org.geowebcache.config.XMLConfiguration">
+    <constructor-arg ref="gwcAppCtx" />
+    <constructor-arg ref="gwcGridSetBroker"/>
+    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <!-- By default GWC will look for geowebcache.xml in WEB-INF/classes,
+         alternatively you can specify an absolute or relative path to a directory -->
+    <!-- constructor-arg value="/etc/geowebcache" / -->
+  </bean>
+  
+  <!-- For each configuration bean above, add them below to activate -->
+  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher">
+    <constructor-arg ref="gwcGridSetBroker"/>
+  </bean>
+  
+  <bean id="gwcDefaultStorageFinder" class="org.geowebcache.storage.DefaultStorageFinder">
+  	<constructor-arg ref="gwcAppCtx" />
+  </bean>
+
+  <bean id="gwcMetaStore" class="org.geowebcache.storage.metastore.jdbc.JDBCMetaBackend" destroy-method="destroy">
+    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg>
+      <description>Enable connection pooling?</description>
+      <value>TRUE</value>
+    </constructor-arg>
+    <constructor-arg>
+      <description>Max number of connections in the pool</description>
+      <value>15</value>
+    </constructor-arg>
+  </bean>
+  
+  <!-- Static definition of where to put the metastore. 
+       Note that the directory is AUTOMATICALLY CREATED if it does not exist. -->
+  <!-- bean id="gwcMetaStore" class="org.geowebcache.storage.metastore.jdbc.JDBCMetaBackend" destroy-method="destroy">
+    <constructor-arg value="org.h2.Driver" />
+    <constructor-arg value="jdbc:h2:file:/tmp/gwc_metastore/h2_metastore;TRACE_LEVEL_FILE=0" />
+    <constructor-arg value="username" />
+    <constructor-arg value="password" />
+  </bean -->
+  
+  <bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
+    <constructor-arg ref="gwcDefaultStorageFinder" />
+  </bean>
+  
+  <!-- Static definition of where to put the blobstore. 
+       Note that the directory MUST EXIST when GWC is started. -->
+  <!-- bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
+    <constructor-arg value="/tmp/gwc_blobstore" />
+  </bean -->
+  
+  <bean id="gwcStorageBroker" class="org.geowebcache.storage.StorageBroker" destroy-method="destroy">
+    <constructor-arg ref="gwcMetaStore" />
+    <constructor-arg ref="gwcBlobStore" />
+    <property name="verifyFileSize" value="TRUE"/>
+  </bean>
+  
+  
+  <bean id="gwcGridSetBroker" class="org.geowebcache.grid.GridSetBroker">
+    <!-- Should we used EPSG:900913 instead of EPSG:3857 ? -->
+    <constructor-arg type="boolean" value="TRUE" />
+    <!--
+      Should the default grids be named EPSG:4326 and EPSG:900913 (TRUE),
+      or (FALSE) use the new names similar to what WMTS suggests,
+      GlobalCRS84Geometric and GoogleMapsCompatible ? 
+      
+      If you say FALSE here, you have to manually
+      rename the directories and entries in the H2 database.
+     -->
+     <constructor-arg type="boolean" value="TRUE" />
+  </bean>
+  
+  <bean id="gwcRuntimeStats" class="org.geowebcache.stats.RuntimeStats" destroy-method="destroy">
+    <!-- The poll interval, the number of seconds until counters are aggregated -->
+    <constructor-arg type="int" value="3" />
+    <!-- The intervals (in seconds) for which aggregates are reported.
+         Each interval must be a multiple of the poll interval above and
+         listed in ascending order. For example, for a maximum interval 
+         of 60 seconds and 3 second poll interval from above, the amount
+         of memory consumed is (60 / 3) * 8 = 160 bytes
+    -->
+    <constructor-arg>
+      <list>
+        <value>3</value>
+        <value>15</value>
+        <value>60</value>
+      </list>
+    </constructor-arg>
+    <!-- Descriptive texts for each of the intervals above -->
+    <constructor-arg>
+      <list>
+        <value>3 seconds</value>
+        <value>15 seconds</value>
+        <value>60 seconds</value>
+      </list>
+    </constructor-arg>
+  </bean>
+  
+  <!-- controller for handling all incoming requests -->
+  <bean id="geowebcacheDispatcher" class="org.geowebcache.GeoWebCacheDispatcher" destroy-method="destroy">
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="gwcGridSetBroker"/>
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcXmlConfig"/>
+    <constructor-arg ref="gwcRuntimeStats"/>
+    <property name="defaultStorageFinder" ref="gwcDefaultStorageFinder"/>
+    <property name="servletPrefix" value="gwc"/>
+  </bean>
+	
+  <!-- Thread pool for seeding -->
+  <bean id="gwcSeederThreadPoolExec" 
+    class="org.geowebcache.seed.SeederThreadPoolExecutor">
+    <constructor-arg value="16"/><!-- Size of core pool -->
+    <constructor-arg value="32"/><!-- Maximum size of pool -->
+  </bean>
+
+  <!-- Breeder (the one that seeds) -->
+  <bean id="gwcTileBreeder" class="org.geowebcache.seed.TileBreeder">
+    <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
+    <property name="threadPoolExecutor" ref="gwcSeederThreadPoolExec"/>
+    <property name="storageBroker" ref="gwcStorageBroker"/>
+  </bean>
+
+  <bean id="gwcProxyDispatcher"
+	class="org.geowebcache.proxy.ProxyDispatcher"/>
+
+</beans>

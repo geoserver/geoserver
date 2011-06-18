@@ -1,0 +1,28 @@
+.status_bar {
+	width: 200px;
+	height: 10px;
+	float: left;
+	margin: 4px;
+	background-color: #e8e6e6;
+	border: 1px solid #555;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.statusBarProgress {
+	position: absolute;
+	z-index: 3;
+	background-color: green;
+	height: 10px;
+	width: 50px;
+}
+
+.statusBarExcess {
+	position: absolute;
+	z-index: 4;
+	background-color: red;
+	height: 10px;
+	width: 50px;
+	left: 50px;
+}

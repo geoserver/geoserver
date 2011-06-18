@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+=================== OpenGIS ============================  
+	This schema is here because there are errors in publicly available smil schemas at w3c site.
+	One is acknowledged by w3c - it is typographical error described in SMIL errata document at:
+ 	http://www.w3.org/2001/07/REC-SMIL20-20010731-errata
+ 	under:
+	E30: Correction in the SMIL 2.0 utility Schema, section B.3.48 (revised 29 03 2002)
+	Others (at least one) are assumed after failed validation using Visual Studio .NET.
+	These smil schemas are reorganized to include in minimum number of files all and only definitions required by
+	defaultStyle.xsd. It was done to enable the validation of GML3.0 schemas.
+	When w3c fixes the public schemas these will be discarded 
+	comment: Milan Trninic, Galdos Systems Inc., May 2002
+	
+	comment#2: Milan Trninic, Galdos Systems Inc., Dec 2002
+	In order to validate with xerces, changed the "x:" prefix to "xml:" in the namespace declaration and reference to "lang" attribute
+=================== OpenGIS ============================ 
+-->
+<!--
+XML Schema for the SMIL 2.0 modules
+
+This is SMIL 2.0
+Copyright: 1998-2001 W3C (MIT, INRIA, Keio), All Rights Reserved.
+See http://www.w3.org/Consortium/Legal/.
+
+Public URI: http://www.w3.org/2001/SMIL20/smil20.xsd
+Author: Aaron Michael Cohen (Intel)
+Revision: 2001/07/31
+-->
+<schema targetNamespace="http://www.w3.org/2001/SMIL20/" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:smil20="http://www.w3.org/2001/SMIL20/" xmlns:smil20lang="http://www.w3.org/2001/SMIL20/Language" elementFormDefault="qualified">
+	<import namespace="http://www.w3.org/2001/SMIL20/Language" schemaLocation="smil20-language.xsd"/>
+	<!-- ============================================================= 
+	struct.xsd
+	============================================================== -->
+	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml-mod.xsd"/>
+	<attributeGroup name="structureModuleAttrs">
+		<attribute name="id" type="ID" use="optional"/>
+		<attribute name="class" type="string" use="optional"/>
+		<attribute ref="xml:lang" use="optional"/>
+	</attributeGroup>
+	<!-- ============================================================= 
+	content.xsd
+	============================================================== -->
+	<attributeGroup name="skipContentAttrs">
+		<attribute name="skip-content" type="boolean" use="optional" default="true"/>
+	</attributeGroup>
+	<!-- ============================================================= 
+	media.xsd
+	============================================================== -->
+	<attributeGroup name="alternateContentAttrs">
+		<attribute name="alt" type="string" use="optional"/>
+		<attribute name="longdesc" type="anyURI" use="optional"/>
+	</attributeGroup>
+	<!-- ============================================================= 
+	utility.xsd
+	============================================================== -->
+	<simpleType name="nonNegativeDecimalType">
+		<restriction base="decimal">
+			<minInclusive value="0.0"/>
+		</restriction>
+	</simpleType>
+	<!-- ============================================================= 
+	animate.xsd
+	============================================================== -->
+	<element name="animate" type="smil20lang:animateType" substitutionGroup="smil20lang:animate"/>
+	<complexType name="animatePrototype">
+		<attributeGroup ref="smil20:animNamedTargetAttrs"/>
+		<attributeGroup ref="smil20:animAddAccumAttrs"/>
+		<attributeGroup ref="smil20:animValuesAttrs"/>
+	</complexType>
+	<attributeGroup name="animNamedTargetAttrs">
+		<attribute name="attributeName" type="string" use="required"/>
+		<attribute name="attributeType" use="optional" default="auto">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="XML"/>
+					<enumeration value="CSS"/>
+					<enumeration value="auto"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</attributeGroup>
+	<attributeGroup name="animAddAccumAttrs">
+		<attribute name="additive" use="optional" default="replace">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="replace"/>
+					<enumeration value="sum"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="accumulate" use="optional" default="none">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="none"/>
+					<enumeration value="sum"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</attributeGroup>
+	<attributeGroup name="animValuesAttrs">
+		<attributeGroup ref="smil20:animSetValuesAttrs"/>
+		<attribute name="from" type="string" use="optional"/>
+		<attribute name="by" type="string" use="optional"/>
+		<attribute name="values" type="string" use="optional"/>
+	</attributeGroup>
+	<attributeGroup name="animSetValuesAttrs">
+		<attribute name="to" type="string" use="optional"/>
+	</attributeGroup>
+	<attributeGroup name="animTargetAttrs">
+		<attribute name="targetElement" type="IDREF" use="optional"/>
+	</attributeGroup>
+	<attributeGroup name="animModeAttrs">
+		<attribute name="calcMode" use="optional" default="linear">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="discrete"/>
+					<enumeration value="linear"/>
+					<enumeration value="paced"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</attributeGroup>
+	<element name="animateMotion" type="smil20lang:animateMotionType" substitutionGroup="smil20lang:animateMotion"/>
+	<complexType name="animateMotionPrototype">
+		<attributeGroup ref="smil20:animAddAccumAttrs"/>
+		<attributeGroup ref="smil20:animValuesAttrs"/>
+		<attribute name="origin" type="string" use="optional"/>
+	</complexType>
+	<element name="animateColor" type="smil20lang:animateColorType" substitutionGroup="smil20lang:animateColor"/>
+	<complexType name="animateColorPrototype">
+		<attributeGroup ref="smil20:animNamedTargetAttrs"/>
+		<attributeGroup ref="smil20:animAddAccumAttrs"/>
+		<attributeGroup ref="smil20:animValuesAttrs"/>
+	</complexType>
+	<element name="set" type="smil20lang:setType" substitutionGroup="smil20lang:set"/>
+	<complexType name="setPrototype">
+		<attributeGroup ref="smil20:animNamedTargetAttrs"/>
+		<attributeGroup ref="smil20:animSetValuesAttrs"/>
+	</complexType>
+	<!-- ============================================================= 
+	timing.xsd
+	============================================================== -->
+	<attributeGroup name="syncBehaviorAttrs">
+		<attribute name="syncBehavior" type="smil20:syncBehaviorType" default="default"/>
+		<attribute name="syncTolerance" type="string" use="optional"/>
+	</attributeGroup>
+	<simpleType name="syncBehaviorType">
+		<restriction base="string">
+			<enumeration value="canSlip"/>
+			<enumeration value="locked"/>
+			<enumeration value="independent"/>
+			<enumeration value="default"/>
+		</restriction>
+	</simpleType>
+	<attributeGroup name="syncBehaviorDefaultAttrs">
+		<attribute name="syncBehaviorDefault" type="smil20:syncBehaviorDefaultType" default="inherit"/>
+		<attribute name="syncToleranceDefault" type="string" default="inherit"/>
+	</attributeGroup>
+	<simpleType name="syncBehaviorDefaultType">
+		<restriction base="string">
+			<enumeration value="canSlip"/>
+			<enumeration value="locked"/>
+			<enumeration value="independent"/>
+			<enumeration value="inherit"/>
+		</restriction>
+	</simpleType>
+	<attributeGroup name="restartTimingAttrs">
+		<attribute name="restart" type="smil20:restartTimingType" default="default"/>
+	</attributeGroup>
+	<simpleType name="restartTimingType">
+		<restriction base="string">
+			<enumeration value="never"/>
+			<enumeration value="always"/>
+			<enumeration value="whenNotActive"/>
+			<enumeration value="default"/>
+		</restriction>
+	</simpleType>
+	<attributeGroup name="restartDefaultAttrs">
+		<attribute name="restartDefault" type="smil20:restartDefaultType" default="inherit"/>
+	</attributeGroup>
+	<simpleType name="restartDefaultType">
+		<restriction base="string">
+			<enumeration value="never"/>
+			<enumeration value="always"/>
+			<enumeration value="whenNotActive"/>
+			<enumeration value="inherit"/>
+		</restriction>
+	</simpleType>
+	<attributeGroup name="fillTimingAttrs">
+		<attribute name="fill" type="smil20:fillTimingAttrsType" default="default"/>
+	</attributeGroup>
+	<simpleType name="fillTimingAttrsType">
+		<restriction base="string">
+			<enumeration value="remove"/>
+			<enumeration value="freeze"/>
+			<enumeration value="hold"/>
+			<enumeration value="auto"/>
+			<enumeration value="default"/>
+			<enumeration value="transition"/>
+		</restriction>
+	</simpleType>
+	<attributeGroup name="fillDefaultAttrs">
+		<attribute name="fillDefault" type="smil20:fillDefaultType" default="inherit"/>
+	</attributeGroup>
+	<simpleType name="fillDefaultType">
+		<restriction base="string">
+			<enumeration value="remove"/>
+			<enumeration value="freeze"/>
+			<enumeration value="hold"/>
+			<enumeration value="auto"/>
+			<enumeration value="inherit"/>
+			<enumeration value="transition"/>
+		</restriction>
+	</simpleType>
+	<attributeGroup name="beginEndTimingAttrs">
+		<attribute name="begin" type="string"/>
+		<attribute name="end" type="string"/>
+	</attributeGroup>
+	<attributeGroup name="durTimingAttrs">
+		<attribute name="dur" type="string"/>
+	</attributeGroup>
+	<attributeGroup name="repeatTimingAttrs">
+		<attribute name="repeatDur" type="string"/>
+		<attribute name="repeatCount" type="smil20:nonNegativeDecimalType"/>
+	</attributeGroup>
+	<attributeGroup name="deprecatedRepeatTiming">
+		<attribute name="repeat" type="nonNegativeInteger"/>
+	</attributeGroup>
+	<attributeGroup name="minMaxTimingAttrs">
+		<attribute name="min" type="string"/>
+		<attribute name="max" type="string"/>
+	</attributeGroup>
+</schema>

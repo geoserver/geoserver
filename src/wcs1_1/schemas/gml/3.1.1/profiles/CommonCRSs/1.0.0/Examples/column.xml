@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoordinateSystemAxis xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="Column" gml:uom="urn:ogc:def:uom:OGC:1.0:GridSpacing">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15 -->
+	<name>Grid column axis</name>
+	<axisID>
+		<name codeSpace="urn:ogc:def:axis:OGC:1.0:">Column</name>
+	</axisID>
+	<axisID>
+		<name codeSpace="urn:ogc:def:axis:OGC:1.0:">Sample</name>
+	</axisID>
+	<remarks>For this second grid axis, column coordinate values match grid column numbers, but allow fractional coordinate values between grid points. The first column is sometimes called the "left" column, so the direction of this axis is "right", but these terms are not required. </remarks>
+	<axisAbbrev>C</axisAbbrev>
+	<axisDirection>urn:ogc:def:axisDirection:OGC:1.0:columnPositive</axisDirection>
+</CoordinateSystemAxis>

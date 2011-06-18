@@ -1,0 +1,63 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+    <li>
+      <label for="contactPerson"><wicket:message key="contactPerson">contactPerson</wicket:message></label> 
+      <input id="contactPerson" class="field text" type="text" wicket:id="contactPerson" />
+    </li>
+    <li>
+      <label for="contactOrganization"><wicket:message key="contactOrganization">contactOrganization</wicket:message></label> 
+      <input id="contactOrganization" class="field text" type="text" wicket:id="contactOrganization"/>
+    </li>
+    <li>
+      <label for="contactPosition"><wicket:message key="contactPosition">contactPosition</wicket:message></label> 
+      <input id="contactPosition" class="field text" type="text" wicket:id="contactPosition"/>
+    </li>
+    <li>
+      <label for="addressType"><wicket:message key="addressType">addressType</wicket:message></label> 
+      <input id="addressType" class="field text" type="text" wicket:id="addressType"/>
+    </li>
+    <li>
+      <label for="address"><wicket:message key="address">address</wicket:message></label> 
+      <input id="address" class="field text" type="text" wicket:id="address"/> 
+    </li>
+    <li>
+      <label for="addressCity"><wicket:message key="addressCity">addressCity</wicket:message></label> 
+      <input id="addressCity" class="field text" type="text" wicket:id="addressCity"/>
+    </li>
+    <li>
+      <label for="addressState"><wicket:message key="addressState">addressState</wicket:message></label> 
+      <input id="addressState" class="field text" type="text" wicket:id="addressState"/> 
+    </li>
+    <li>
+      <label for="addressPostalCode"><wicket:message key="addressPostalCode">addressPostalCode</wicket:message></label> 
+      <input id="addressPostalCode" class="field text" type="text" wicket:id="addressPostalCode"/>
+    </li>
+    <li>
+      <label for="addressCountry"><wicket:message key="addressCountry">addressCountry</wicket:message></label> 
+      <input id="addressCountry" class="field text" type="text" wicket:id="addressCountry"/>
+    </li>
+    <li>
+      <label for="contactVoice"><wicket:message key="contactVoice">contactVoice</wicket:message></label> 
+      <input id="contactVoice" class="field text" type="text" wicket:id="contactVoice"/>
+    </li>
+    <li>
+      <label for="contactFacsimile"><wicket:message key="contactFacsimile">contactFacsimile</wicket:message></label> 
+      <input id="contactFacsimile" class="field text" type="text" wicket:id="contactFacsimile"/>
+    </li>
+    <li>
+      <label for="contactEmail"><wicket:message key="contactEmail">contactEmail</wicket:message></label> 
+      <input id="contactEmail" class="field text" type="text" wicket:id="contactEmail"/>
+    </li>
+    <li class="button-group selfclear">
+      <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+      <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+    </li>
+  </ul>
+</form>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<dataStore>
+  <id>DataStoreInfoImpl--2e539c29:12c805e6d8b:-8000</id>
+  <name>cite_shp</name>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--6d617f8c:12c804a8970:-7ffc</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="namespace">http://www.opengis.net/cite/bluelake</entry>
+    <entry key="url">file:data/</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

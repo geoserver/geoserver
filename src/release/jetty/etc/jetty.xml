@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<!-- =============================================================== -->
+<!-- Configure the Jetty Server                                      -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.mortbay.jetty.Server">
+
+    <!-- =========================================================== -->
+    <!-- Server Thread Pool                                          -->
+    <!-- =========================================================== -->
+    <Set name="ThreadPool">
+      <New class="org.mortbay.thread.BoundedThreadPool">
+        <Set name="minThreads">10</Set>
+        <Set name="lowThreads">50</Set>
+        <Set name="maxThreads">250</Set>
+      </New>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- Set connectors                                              -->
+    <!-- =========================================================== -->
+    <!-- One of each type!                                           -->
+    <!-- =========================================================== -->
+
+    <!-- Use this connector for many frequently idle connections
+         and for threadless continuations.
+    -->    
+    <Call name="addConnector">
+      <Arg>
+          <New class="org.mortbay.jetty.nio.SelectChannelConnector">
+            <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
+            <Set name="maxIdleTime">30000</Set>
+            <Set name="Acceptors">2</Set>
+            <Set name="confidentialPort">8443</Set>
+          </New>
+      </Arg>
+    </Call>
+        
+
+    <!-- Use this connector if NIO is not available.
+    <Call name="addConnector">
+      <Arg>
+          <New class="org.mortbay.jetty.bio.SocketConnector">
+            <Set name="port">8081</Set>
+            <Set name="maxIdleTime">50000</Set>
+            <Set name="lowResourceMaxIdleTime">1500</Set>
+          </New>
+      </Arg>
+    </Call>
+    -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- To add a HTTPS SSL listener                                     -->
+    <!-- see jetty-ssl.xml to add an ssl connector. use                  -->
+    <!-- java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml             -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    
+
+
+    <!-- =========================================================== -->
+    <!-- Set handler Collection Structure                            --> 
+    <!-- =========================================================== -->
+    <Set name="handler">
+      <New id="handlers" class="org.mortbay.jetty.handler.HandlerCollection">
+        <Set name="handlers">
+         <Array type="org.mortbay.jetty.Handler">
+           <Item>
+             <New id="contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
+           </Item>
+           <Item>
+             <New id="defaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
+           </Item>
+           <Item>
+             <New id="requestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
+           </Item>
+         </Array>
+        </Set>
+      </New>
+    </Set>
+    
+    
+    <!-- ======================================================= -->
+    <!-- Configure a WebApp                                      -->
+    <!-- ======================================================= -->
+    <!--
+    <New id="TestContext" class="org.mortbay.jetty.webapp.WebAppContext">
+      <Arg><Ref id="contexts"/></Arg>
+      <Arg><SystemProperty name="jetty.home" default="."/>/webapps/test</Arg>
+      <Arg>/</Arg>
+      <Set name="classLoader">
+        <New class="org.mortbay.jetty.webapp.TransformingWebAppClassLoader">
+          <Arg><Ref id="TestContext"/></Arg>
+        </New>
+      </Set>
+      <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Set>
+      <Set name="virtualHosts">
+        <Array type="java.lang.String">
+          <Item>localhost</Item>
+        </Array>
+      </Set>
+      
+      <Get name="SessionHandler">
+        <Set name="SessionManager">
+          <New class="org.mortbay.jetty.servlet.HashSessionManager">
+            <Set name="maxInactiveInterval">600</Set>
+          </New>
+        </Set>
+      </Get>
+    </New>
+    -->
+
+    <!-- ======================================================= -->
+    <!-- Configure a Context                                     -->
+    <!-- ======================================================= -->
+    <New class="org.mortbay.jetty.servlet.Context">
+      <Arg><Ref id="contexts"/></Arg>
+      <Arg>/javadoc</Arg>
+      <Set name="resourceBase"><SystemProperty name="jetty.home" default="."/>/javadoc/</Set>
+      <Call name="addServlet">
+        <Arg>org.mortbay.jetty.servlet.DefaultServlet</Arg>
+        <Arg>/</Arg>
+      </Call>
+    </New>
+
+    <!-- =========================================================== -->
+    <!-- Discover contexts from webapps directory                    -->
+    <!-- =========================================================== -->
+    <Call class="org.mortbay.jetty.webapp.WebAppContext" name="addWebApplications">
+      <Arg><Ref id="contexts"/></Arg>
+      <Arg><SystemProperty name="jetty.home" default="."/>/webapps</Arg>
+      <Arg><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Arg>
+      <Arg type="boolean">True</Arg>  <!-- extract -->
+      <Arg type="boolean">True</Arg> <!-- parent priority class loading -->
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Configure Realms                                            -->
+    <!-- =========================================================== -->
+    <Set name="UserRealms">
+      <Array type="org.mortbay.jetty.security.UserRealm">
+        <Item>
+          <New class="org.mortbay.jetty.security.HashUserRealm">
+            <Set name="name">Test Realm</Set>
+            <Set name="config"><SystemProperty name="jetty.home" default="."/>/etc/realm.properties</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+    
+
+    <!-- =========================================================== -->
+    <!-- Configure Request Log                                       -->
+    <!-- =========================================================== -->
+    <Ref id="requestLog">
+      <Set name="requestLog">
+        <New id="requestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
+          <Arg><SystemProperty name="jetty.logs" default="./logs"/>/yyyy_mm_dd.request.log</Arg>
+          <Set name="retainDays">90</Set>
+          <Set name="append">true</Set>
+          <Set name="extended">false</Set>
+          <Set name="LogTimeZone">GMT</Set>
+        </New>
+      </Set>
+    </Ref>
+
+    <!-- =========================================================== -->
+    <!-- extra options                                               -->
+    <!-- =========================================================== -->
+    <Set name="stopAtShutdown">true</Set>
+    <!-- ensure/prevent Server: header being sent to browsers        -->
+    <Set name="sendServerVersion">true</Set>
+
+</Configure>
+
+
+
+
+
+
+
+
+

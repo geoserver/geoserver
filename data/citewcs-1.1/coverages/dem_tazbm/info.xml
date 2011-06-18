@@ -1,0 +1,77 @@
+<coverage format = "dem" >
+  <name>tazbm</name>
+  <label>Tasmania Bluemarble portion</label>
+  <description>Tasmania Bluemarble portion extracted with the file GDAL utilities</description>
+  <wmspath>/</wmspath>
+  <metadataLink about = "http://www.remotesensing.org:16080/websites/geotiff/geotiff.html" metadataType = "other" >
+    
+    null
+  
+  </metadataLink>
+  <keywords>WCS,dem,tazbm</keywords>
+  <!--
+    the default style this CoverageInfoDTO can be represented by.
+    at least must contain the "default" attribute
+  -->
+  <styles default = "raster" />
+  <envelope crs = "GEOGCS['WGS 84', 
+  DATUM['World Geodetic System 1984', 
+    SPHEROID['WGS 84', 6378137.0, 298.257223563, AUTHORITY['EPSG','7030']], 
+    AUTHORITY['EPSG','6326']], 
+  PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+  UNIT['degree', 0.017453292519943295], 
+  AXIS['Geodetic longitude', EAST], 
+  AXIS['Geodetic latitude', NORTH], 
+  AUTHORITY['EPSG','4326']]" srsName = "EPSG:4326" >
+    <pos>146.49999999999477 -44.49999999999785</pos>
+    <pos>147.99999999999474 -42.99999999999787</pos>
+  </envelope>
+  <grid dimension = "2" >
+    <low>0 0 </low>
+    <high>360 360 </high>
+    <axisName>Geodetic longitude</axisName>
+    <axisName>Geodetic latitude</axisName>
+    <geoTransform >
+      <scaleX>0.0041666666666666</scaleX>
+      <scaleY>-0.0041666666666666</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>146.5020833333281</translateX>
+      <translateY>-43.0020833333312</translateY>
+    </geoTransform>
+  </grid>
+  <CoverageDimension >
+    <name>Red band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>Green band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>Blue band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+  </CoverageDimension>
+  <supportedCRSs >
+    <requestCRSs>EPSG:4326</requestCRSs>
+    <responseCRSs>EPSG:4326</responseCRSs>
+  </supportedCRSs>
+  <supportedFormats nativeFormat = "GeoTIFF" >
+    <formats>GEOTIFF,TIFF,GIF,PNG,JPEG,DEBUG</formats>
+  </supportedFormats>
+  <supportedInterpolations default = "nearest neighbor" >
+    <interpolationMethods>nearest neighbor,bilinear,bicubic</interpolationMethods>
+  </supportedInterpolations>
+</coverage>

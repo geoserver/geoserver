@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="ogr2ogrOutputFormat" class="org.geoserver.wfs.response.Ogr2OgrOutputFormat">
+      <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="ogr2ogrConfigurator" class="org.geoserver.wfs.response.Ogr2OgrConfigurator">
+        <constructor-arg>
+            <ref local="ogr2ogrOutputFormat"/>
+        </constructor-arg>
+    </bean>
+    
+</beans>

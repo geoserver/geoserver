@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionary xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml ../gmlSimpleDictionaryProfile.xsd" gml:id="DerivedCRStypeDictionary">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-16-->
+	<name>Derived CRS type standard values</name>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="geographic">
+			<description>A coordinate reference system based on an ellipsoidal approximation of the geoid; provides an accurate representation of the geometry of geographic features for a large portion of the earth's surface. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:derivedCRStype:OGC:1.0:geographic</name>
+		</Definition>
+	</dictionaryEntry>
+	<dictionaryEntry>
+		<Definition gml:id="vertical">
+			<description>A coordinate reference system used for recording of heights or depths. Vertical CRSs make use of the direction of gravity to define the concept of height or depth, but the relationship with gravity may not be straightforward. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:derivedCRStype:OGC:1.0:vertical</name>
+		</Definition>
+	</dictionaryEntry>
+	<dictionaryEntry>
+		<Definition gml:id="geocentric">
+			<description>A coordinate reference system with the origin at the centre of mass of the earth. A geocentric CRS deals with the earth's curvature by taking a 3D spatial view. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:derivedCRStype:OGC:1.0:geocentric</name>
+		</Definition>
+	</dictionaryEntry>
+	<dictionaryEntry>
+		<Definition gml:id="engineering">
+			<description>A contextually local coordinate reference system; which can be divided into two broad categories:
+- earth-fixed systems applied to engineering activities on or near the surface of the earth;
+- CRSs on moving platforms such as road vehicles, vessels, aircraft, or spacecraft. </description>
+			<name codeSpace="urn:ogc:def:derivedCRStype:OGC:OGC:1.0:">engineering</name>
+		</Definition>
+	</dictionaryEntry>
+	<dictionaryEntry>
+		<Definition gml:id="image">
+			<description>A derived CRS used like an engineering coordinate reference system applied to locations in images. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:derivedCRStype:OGC:1.0:image</name>
+		</Definition>
+	</dictionaryEntry>
+	<dictionaryEntry>
+		<Definition gml:id="temporal">
+			<description>A reference system used for the recording of time. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:ogc:def:derivedCRStype:OGC:1.0:temporal</name>
+		</Definition>
+	</dictionaryEntry>
+</Dictionary>

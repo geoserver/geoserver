@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="TemplateGeoreferencingTransformation">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15 -->
+	<coordinateOperationName>Example template for image georeferencing coordinate Transformations</coordinateOperationName>
+	<operationVersion>1.0</operationVersion>
+	<sourceCRS xlink:href="urn:ogc:def:crs:EPSG:6.3:TBD">
+		<!-- This sourceCRS must be 3D. -->
+	</sourceCRS>
+	<targetCRS xlink:href="urn:ogc:def:crs:OGC:0.0:ImageCRSpixelCenter:TBD"/>
+	<usesMethod>
+		<OperationMethod gml:id="ReplacementSensorModel">
+			<methodName>Replacement Sensor Model (RSM) coordinate Transformation</methodName>
+			<methodID>
+				<name codeSpace="urn:ogc:def:method:OGC:0.0:">ReplacementSensorModel</name>
+			</methodID>
+			<remarks>This operation method is for a coordinate Transformation that georeferences an unrectified image using the Replacement Sensor Model (RSM). </remarks>
+			<methodFormula>urn:ogc:def:method:OGC:0.0:ReplacementSensorModel. </methodFormula>
+			<sourceDimensions>3</sourceDimensions>
+			<targetDimensions>2</targetDimensions>
+			<usesParameter>
+				<OperationParameter gml:id="RSMParameters">
+					<parameterName>Parameters for Replacement Sensor Model (RSM). </parameterName>
+					<parameterID>
+						<name codeSpace="http://baesystems.com/rsm/rsmParameters"/>
+					</parameterID>
+					<remarks>The value of this operation parameter is the URL of a file containing all the parameters for the Replacement Sensor Model (RSM) for the specific image. </remarks>
+				</OperationParameter>
+			</usesParameter>
+		</OperationMethod>
+	</usesMethod>
+	<usesValue>
+		<valueFile>http://baesystems.com/rsm/rsmParameterValues/TBD.xml</valueFile>
+		<valueOfParameter xlink:href="http://baesystems.com/rsm/rsmParameters"/>
+	</usesValue>
+</Transformation>

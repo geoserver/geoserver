@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.1.1" xml:lang="en" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-measures:3.1.1"/>
+		<documentation>Subset of measures.xsd for GML 3.1.1 CRS Support profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2005-10-11
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="gmlBase.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<!-- This schema uses the gml:MeasureType defined in basicTypes.xsd with the modified meaning:
+			<documentation>Value of a quantity, with its units. This element uses the XML Schema primitive data type "double" because it supports both decimal and scientific notation, and thus offers flexibility and precision. However, there is no requirement to store values using any particular format, and applications receiving elements of this type may choose to coerce the data to any other type as convenient. The XML attribute uom references the units or scale by which the amount should be multiplied. For a reference within the same XML document, the abbreviated XPointer prefix "#" symbol should be used, followed by a text abbreviation of the unit name. However, the "#" symbol may be optional, and still may be interpreted as a reference. </documentation> -->
+	<!-- =========================================================== -->
+	<element name="measure" type="gml:MeasureType"/>
+	<!-- =========================================================== -->
+	<complexType name="LengthType">
+		<annotation>
+			<documentation>Value of a length (or distance) quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a length, such as metres or feet.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ScaleType">
+		<annotation>
+			<documentation>Value of a scale factor (or ratio) that has no physical unit. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a scale factor, such as percent, permil, or parts-per-million.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="TimeType">
+		<annotation>
+			<documentation>Value of a time or temporal quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a time value, such as seconds or weeks.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="GridLengthType">
+		<annotation>
+			<documentation>Value of a length (or distance) quantity in a grid, where the grid spacing does not have any associated physical units, or does not have a constant physical spacing. This grid length will often be used in a digital image grid, where the base units are likely to be pixel spacings. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for length along the axes of a grid, such as pixel spacings or grid spacings.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="SpeedType">
+		<annotation>
+			<documentation>Value of a speed, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a velocity, such as metres per second or miles per hour.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="AngleChoiceType">
+		<annotation>
+			<documentation>Value of an angle quantity provided in either degree-minute-second format or single value format.</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:angle"/>
+		</choice>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="angle" type="gml:MeasureType"/>
+	<!-- =========================================================== -->
+	<complexType name="AngleType">
+		<annotation>
+			<documentation>Value of an angle quantity recorded as a single number, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for an angle, such as degrees or radians.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

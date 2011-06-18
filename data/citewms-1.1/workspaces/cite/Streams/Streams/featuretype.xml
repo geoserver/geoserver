@@ -1,0 +1,35 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--31b6253f:128b3c42f89:-7fc3</id>
+  <name>Streams</name>
+  <nativeName>Streams</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--31b6253f:128b3c42f89:-7ff8</id>
+  </namespace>
+  <title>cite:Streams</title>
+  <abstract>Generated from cite</abstract>
+  <keywords>
+    <string>Streams</string>
+    <string>cite</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <latLonBoundingBox>
+    <minx>-4.0E-4</minx>
+    <maxx>0.0036</maxx>
+    <miny>-0.0024</miny>
+    <maxy>0.0024</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="dirName">cite_Streams</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--31b6253f:128b3c42f89:-7fda</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

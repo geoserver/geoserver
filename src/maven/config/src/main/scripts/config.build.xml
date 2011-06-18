@@ -1,0 +1,17 @@
+<project>
+	<target name="config">
+		<!-- check if config is available, if not fail -->
+		<available file="${configDirectory}/${configId}" property="configIsAvailable" />
+		<fail message="Unable to locate configuration: ${configDirectory}/${configId}" unless="configIsAvailable" />
+
+		<!-- copy the files from the config dir to the webapp dir -->
+		<echo message="Copying data dir from ${configDirectory}/${configId}" />
+		<copy todir="${webappSourceDirectory}/data">
+			<fileset dir="${configDirectory}/${configId}" includes="**/**" />
+		</copy>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${webappSourceDirectory}/data" />
+	</target>
+</project>

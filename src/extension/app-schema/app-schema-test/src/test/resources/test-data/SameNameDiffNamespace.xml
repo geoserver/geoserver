@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>ex</prefix>
+            <uri>http://example.com</uri>
+        </Namespace>
+         <Namespace>
+            <prefix>ex2</prefix>
+            <uri>http://example.com/2</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>datastore</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>SameNameDiffNamespace.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>datastore</sourceDataStore>
+            <sourceType>SameNameDiffNamespace</sourceType>
+            <targetElement>ex:MyTestFeature</targetElement>
+            <attributeMappings>
+               <!-- <AttributeMapping>
+                    <targetAttribute>ex:test</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>NAME2</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>ex2:test</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>NAME1</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>    -->  
+                <AttributeMapping>
+                    <targetAttribute>ex:name</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>NAME2</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gml:name</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>NAME1</OCQL>
+                    </sourceExpression>
+                </AttributeMapping> 
+            </attributeMappings>            
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

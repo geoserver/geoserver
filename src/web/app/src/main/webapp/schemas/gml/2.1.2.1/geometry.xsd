@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="2.1.2">
+	<annotation>
+		<appinfo>geometry.xsd v2.1.2 2002-07</appinfo>
+		<documentation xml:lang="en">
+      GML Geometry schema. Copyright (c) 2001,2002 OGC, All Rights Reserved.
+    </documentation>
+	</annotation>
+	<!-- bring in the XLink attributes -->
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/1.0.0/xlinks.xsd"/>
+	<!-- ==============================================================
+       global declarations
+  =================================================================== -->
+	<element name="_Geometry" type="gml:AbstractGeometryType" abstract="true"/>
+	<element name="_GeometryCollection" type="gml:GeometryCollectionType" abstract="true" substitutionGroup="gml:_Geometry"/>
+	<element name="geometryMember" type="gml:GeometryAssociationType"/>
+	<element name="pointMember" type="gml:PointMemberType" substitutionGroup="gml:geometryMember"/>
+	<element name="lineStringMember" type="gml:LineStringMemberType" substitutionGroup="gml:geometryMember"/>
+	<element name="polygonMember" type="gml:PolygonMemberType" substitutionGroup="gml:geometryMember"/>
+	<element name="outerBoundaryIs" type="gml:LinearRingMemberType"/>
+	<element name="innerBoundaryIs" type="gml:LinearRingMemberType"/>
+	<!-- primitive geometry elements -->
+	<element name="Point" type="gml:PointType" substitutionGroup="gml:_Geometry"/>
+	<element name="LineString" type="gml:LineStringType" substitutionGroup="gml:_Geometry"/>
+	<element name="LinearRing" type="gml:LinearRingType" substitutionGroup="gml:_Geometry"/>
+	<element name="Polygon" type="gml:PolygonType" substitutionGroup="gml:_Geometry"/>
+	<element name="Box" type="gml:BoxType"/>
+	<!-- aggregate geometry elements -->
+	<element name="MultiGeometry" type="gml:GeometryCollectionType" substitutionGroup="gml:_Geometry"/>
+	<element name="MultiPoint" type="gml:MultiPointType" substitutionGroup="gml:_Geometry"/>
+	<element name="MultiLineString" type="gml:MultiLineStringType" substitutionGroup="gml:_Geometry"/>
+	<element name="MultiPolygon" type="gml:MultiPolygonType" substitutionGroup="gml:_Geometry"/>
+	<!-- coordinate elements -->
+	<element name="coord" type="gml:CoordType"/>
+	<element name="coordinates" type="gml:CoordinatesType"/>
+	<!-- this attribute gives the location where an element is defined -->
+	<attribute name="remoteSchema" type="anyURI"/>
+	<!-- ==============================================================
+       abstract supertypes
+  =================================================================== -->
+	<complexType name="AbstractGeometryType" abstract="true">
+		<annotation>
+			<documentation>
+        All geometry elements are derived from this abstract supertype; 
+        a geometry element may have an identifying attribute (gid). 
+        It may be associated with a spatial reference system.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="anyType">
+				<attribute name="gid" type="ID" use="optional"/>
+				<attribute name="srsName" type="anyURI" use="optional"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AbstractGeometryCollectionBaseType" abstract="true">
+		<annotation>
+			<documentation>
+        This abstract base type for geometry collections just makes the 
+        srsName attribute mandatory.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:AbstractGeometryType">
+				<attribute name="gid" type="ID" use="optional"/>
+				<attribute name="srsName" type="anyURI" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<attributeGroup name="AssociationAttributeGroup">
+		<annotation>
+			<documentation>
+        These attributes can be attached to any element, thus allowing it 
+        to act as a pointer. The 'remoteSchema' attribute allows an element 
+        that carries link attributes to indicate that the element is declared 
+        in a remote schema rather than by the schema that constrains the 
+        current document instance.  
+      </documentation>
+		</annotation>
+		<attributeGroup ref="xlink:simpleLink"/>
+		<attribute ref="gml:remoteSchema" use="optional"/>
+	</attributeGroup>
+	<complexType name="GeometryAssociationType">
+		<annotation>
+			<documentation>
+        An instance of this type (e.g. a geometryMember) can either 
+        enclose or point to a primitive geometry element. When serving 
+        as a simple link that references a remote geometry instance, 
+        the value of the gml:remoteSchema attribute can be used to 
+        locate a schema fragment that constrains the target instance.
+      </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_Geometry"/>
+		</sequence>
+		<attributeGroup ref="xlink:simpleLink"/>
+		<attribute ref="gml:remoteSchema" use="optional"/>
+		<!-- <attributeGroup ref="gml:AssociationAttributeGroup"/> -->
+	</complexType>
+	<complexType name="PointMemberType">
+		<annotation>
+			<documentation>Restricts the geometry member to being a Point instance.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryAssociationType">
+				<sequence minOccurs="0">
+					<element ref="gml:Point"/>
+				</sequence>
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="LineStringMemberType">
+		<annotation>
+			<documentation>Restricts the geometry member to being a LineString instance.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryAssociationType">
+				<sequence minOccurs="0">
+					<element ref="gml:LineString"/>
+				</sequence>
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PolygonMemberType">
+		<annotation>
+			<documentation>Restricts the geometry member to being a Polygon instance.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryAssociationType">
+				<sequence minOccurs="0">
+					<element ref="gml:Polygon"/>
+				</sequence>
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="LinearRingMemberType">
+		<annotation>
+			<documentation>Restricts the outer or inner boundary of a polygon instance 
+			to being a LinearRing.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryAssociationType">
+				<sequence minOccurs="0">
+					<element ref="gml:LinearRing"/>
+				</sequence>
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- ==============================================================
+       primitive geometry types
+  =================================================================== -->
+	<complexType name="PointType">
+		<annotation>
+			<documentation>
+        A Point is defined by a single coordinate tuple.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<sequence>
+					<choice>
+						<element ref="gml:coord"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="LineStringType">
+		<annotation>
+			<documentation>
+        A LineString is defined by two or more coordinate tuples, with 
+        linear interpolation between them. 
+      </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<sequence>
+					<choice>
+						<element ref="gml:coord" minOccurs="2" maxOccurs="unbounded"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="LinearRingType">
+		<annotation>
+			<documentation>
+        A LinearRing is defined by four or more coordinate tuples, with 
+        linear interpolation between them; the first and last coordinates 
+        must be coincident.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<sequence>
+					<choice>
+						<element ref="gml:coord" minOccurs="4" maxOccurs="unbounded"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="BoxType">
+		<annotation>
+			<documentation>
+        The Box structure defines an extent using a pair of coordinate tuples.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<sequence>
+					<choice>
+						<element ref="gml:coord" minOccurs="2" maxOccurs="2"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="PolygonType">
+		<annotation>
+			<documentation>
+        A Polygon is defined by an outer boundary and zero or more inner 
+        boundaries which are in turn defined by LinearRings.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<sequence>
+					<element ref="gml:outerBoundaryIs"/>
+					<element ref="gml:innerBoundaryIs" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ==============================================================
+       aggregate geometry types
+  =================================================================== -->
+	<complexType name="GeometryCollectionType">
+		<annotation>
+			<documentation>
+        A geometry collection must include one or more geometries, referenced 
+        through geometryMember elements. User-defined geometry collections 
+        that accept GML geometry classes as members must instantiate--or 
+        derive from--this type.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryCollectionBaseType">
+				<sequence maxOccurs="unbounded">
+					<element ref="gml:geometryMember"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="MultiPointType">
+		<annotation>
+			<documentation>
+        A MultiPoint is defined by one or more Points, referenced through 
+        pointMember elements.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryCollectionType">
+				<sequence maxOccurs="unbounded">
+					<element ref="gml:pointMember"/>
+				</sequence>
+				<attribute name="gid" type="ID" use="optional"/>
+				<attribute name="srsName" type="anyURI" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="MultiLineStringType">
+		<annotation>
+			<documentation>
+        A MultiLineString is defined by one or more LineStrings, referenced 
+        through lineStringMember elements.
+      </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryCollectionType">
+				<sequence maxOccurs="unbounded">
+					<element ref="gml:lineStringMember"/>
+				</sequence>
+				<attribute name="gid" type="ID" use="optional"/>
+				<attribute name="srsName" type="anyURI" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="MultiPolygonType">
+		<annotation>
+			<documentation>
+        A MultiPolygon is defined by one or more Polygons, referenced through 
+        polygonMember elements. 
+      </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:GeometryCollectionType">
+				<sequence maxOccurs="unbounded">
+					<element ref="gml:polygonMember"/>
+				</sequence>
+				<attribute name="gid" type="ID" use="optional"/>
+				<attribute name="srsName" type="anyURI" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- ==============================================================
+       There are two ways to represent coordinates: (1) as a sequence 
+       of <coord> elements that encapsulate tuples, or (2) using a 
+       single <coordinates> string.
+  =================================================================== -->
+	<complexType name="CoordType">
+		<annotation>
+			<documentation>
+        Represents a coordinate tuple in one, two, or three dimensions.
+      </documentation>
+		</annotation>
+		<sequence>
+			<element name="X" type="decimal"/>
+			<element name="Y" type="decimal" minOccurs="0"/>
+			<element name="Z" type="decimal" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="CoordinatesType">
+		<annotation>
+			<documentation>
+        Coordinates can be included in a single string, but there is no 
+        facility for validating string content. The value of the 'cs' attribute 
+        is the separator for coordinate values, and the value of the 'ts' 
+        attribute gives the tuple separator (a single space by default); the 
+        default values may be changed to reflect local usage.
+      </documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<attribute name="decimal" type="string" use="optional" default="."/>
+				<attribute name="cs" type="string" use="optional" default=","/>
+				<attribute name="ts" type="string" use="optional" default="&#x20;"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+</schema>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"
+	PolicySetId="org:geoserver:policySet:permission:url:anonymous"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:1.0:policy-combining-algorithm:first-applicable">
+
+	<Target></Target>
+	<Policy RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable" PolicyId="org:geoserver:policy:permission:url:config">
+	  <Target>
+	  	<Resources>
+	  		<Resource>
+	  		<ResourceMatch MatchId="org:geotools:function:string-wildcard-match">
+	  			<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">*</AttributeValue>
+	  			<ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:url"/>
+	  		</ResourceMatch>
+	  		</Resource>
+	  	</Resources>	  	
+	 </Target>
+	 
+	 <Rule Effect="Deny" RuleId="org:geoserver:rule:anonymous:config">
+	 <Condition>
+	 	<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:any-of-any">
+	 	    <Function FunctionId="org:geotools:function:string-wildcard-match"/>
+	 		<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+	 			<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">/config/*</AttributeValue>
+	 			<!--  additional patterns here -->
+	 			<!-- <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">/xyz/*</AttributeValue> -->
+	 		</Apply>	 		 	    
+       	 	<ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:url"/>
+		</Apply> 		
+	 </Condition>	 
+	 </Rule>
+	 
+	 <Rule Effect="Deny" RuleId="org:geoserver:rule:anonymous:rest">
+	   <Target>
+	  	<Resources>
+	  		<Resource>
+	  		<ResourceMatch MatchId="org:geotools:function:string-wildcard-match">
+	  			<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">/rest/*</AttributeValue>
+	  			<ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="org:geoserver:resource:type:url"/>
+	  		</ResourceMatch>
+	  		</Resource>
+	  	</Resources>
+	  	<Actions>
+	  		<Action>
+	  			<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+	  				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">POST|PUT|DELETE</AttributeValue>
+	  			   <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>	  			
+	  			</ActionMatch>
+	  		</Action>
+	  	</Actions>	  	
+  	  </Target>
+	 </Rule>
+	 	 
+	 <Rule Effect="Permit" RuleId="org:geoserver:rule:url:permitAll"></Rule>
+	</Policy> 
+	 
+		
+</PolicySet>

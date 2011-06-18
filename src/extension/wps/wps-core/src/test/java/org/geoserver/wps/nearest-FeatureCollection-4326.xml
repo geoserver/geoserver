@@ -1,0 +1,392 @@
+<wfs:FeatureCollection numberOfFeatures="5" timeStamp="2008-11-15T01:01:13.675-05:00" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:vagis="http://www.openroadsconsulting.com/vagis"   xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<gml:featureMember>
+		<vagis:sde_vdot_edge_rte_overlap_lrs
+			fid="sde_vdot_edge_rte_overlap_lrs.5185">
+			<vagis:the_geom>
+				<gml:LineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">-76.25416511,36.77372343
+						-76.25417152,36.77371892 -76.25429501,36.77362868
+						-76.25440338,36.77355163 -76.25442915,36.77353331
+						-76.25450918,36.77347495</gml:coordinates>
+				</gml:LineString>
+			</vagis:the_geom>
+			<vagis:objectid>5165</vagis:objectid>
+			<vagis:edge_rte_key>9808-R-VA   IS00064WB</vagis:edge_rte_key>
+			<vagis:rte_nm>R-VA   IS00064WB</vagis:rte_nm>
+			<vagis:rte_common_nm>I-64W</vagis:rte_common_nm>
+			<vagis:street_nm>I-64 Expy</vagis:street_nm>
+			<vagis:rte_source_id>  IS00064W</vagis:rte_source_id>
+			<vagis:rte_source_cd>HTRIS</vagis:rte_source_cd>
+			<vagis:rte_transport_edge_seq>284.0</vagis:rte_transport_edge_seq>
+			<vagis:transport_edge_id>9808</vagis:transport_edge_id>
+			<vagis:transport_edge_flip_ind>Y</vagis:transport_edge_flip_ind>
+			<vagis:transport_junction_from_id>609072.0</vagis:transport_junction_from_id>
+			<vagis:transport_junction_to_id>609073.0</vagis:transport_junction_to_id>
+			<vagis:measure_system_cd>MPST</vagis:measure_system_cd>
+			<vagis:transport_edge_from_msr>291.388</vagis:transport_edge_from_msr>
+			<vagis:transport_edge_to_msr>291.412</vagis:transport_edge_to_msr>
+			<vagis:from_intersection_id>483260.0</vagis:from_intersection_id>
+			<vagis:to_intersection_id>483261.0</vagis:to_intersection_id>
+			<vagis:rte_intersection_from_dsc>the ramp to VA-168N (Battlefield Parkway)</vagis:rte_intersection_from_dsc>
+			<vagis:rte_intersection_to_dsc>the ramp from VA-168S (Battlefield Parkway)</vagis:rte_intersection_to_dsc>
+			<vagis:rte_category_nm>Interstate</vagis:rte_category_nm>
+			<vagis:rte_nbr>64</vagis:rte_nbr>
+			<vagis:rte_type_nm>Interstate</vagis:rte_type_nm>
+			<vagis:rte_category_set_cd>1</vagis:rte_category_set_cd>
+			<vagis:from_jurisdiction_nm>Norfolk Maintenance Area</vagis:from_jurisdiction_nm>
+			<vagis:to_jurisdiction_nm>Norfolk Maintenance Area</vagis:to_jurisdiction_nm>
+			<vagis:from_jurisdiction_cd>134</vagis:from_jurisdiction_cd>
+			<vagis:to_jurisdiction_cd>134</vagis:to_jurisdiction_cd>
+			<vagis:from_state_cd>VA</vagis:from_state_cd>
+			<vagis:to_state_cd>VA</vagis:to_state_cd>
+			<vagis:master_rte_nm>R-VA   IS00064WB</vagis:master_rte_nm>
+			<vagis:master_rte_common_nm>I-64W</vagis:master_rte_common_nm>
+			<vagis:master_rte_source_id>  IS00064W</vagis:master_rte_source_id>
+			<vagis:rte_opposite_direction_rte_nm>R-VA   IS00064EB</vagis:rte_opposite_direction_rte_nm>
+			<vagis:from_phy_jurisdiction_nm>City of Chesapeake</vagis:from_phy_jurisdiction_nm>
+			<vagis:to_phy_jurisdiction_nm>City of Chesapeake</vagis:to_phy_jurisdiction_nm>
+			<vagis:from_phy_jurisdiction_cd>131</vagis:from_phy_jurisdiction_cd>
+			<vagis:to_phy_jurisdiction_cd>131</vagis:to_phy_jurisdiction_cd>
+			<vagis:lrm_currency_dt>2009-05-26 07:43:33</vagis:lrm_currency_dt>
+			<vagis:change_status_cd>CL</vagis:change_status_cd>
+			<vagis:change_status_dt>2009-06-02 17:23:55</vagis:change_status_dt>
+			<vagis:len>0.0</vagis:len>
+			<vagis:shape_length>4.2442070349656E-4</vagis:shape_length>
+			<vagis:snow_jurisdiction_cd>131</vagis:snow_jurisdiction_cd>
+		</vagis:sde_vdot_edge_rte_overlap_lrs>
+	</gml:featureMember>
+	<gml:featureMember>
+		<vagis:sde_vdot_edge_rte_overlap_lrs
+			fid="sde_vdot_edge_rte_overlap_lrs.16326">
+			<vagis:the_geom>
+				<gml:LineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">-76.24245566,36.78007564
+						-76.24277327,36.77992278 -76.24291736,36.77985259
+						-76.24306207,36.77978287 -76.24320782,36.77971295
+						-76.24335469,36.77964253 -76.24350273,36.77957148
+						-76.24365112,36.77950006 -76.24379973,36.77942823
+						-76.24394829,36.77935717 -76.24409785,36.77928728
+						-76.24424677,36.77921709 -76.2443954,36.77914622
+						-76.24454324,36.77907523 -76.24469177,36.77900477
+						-76.2448396,36.77893467 -76.24498652,36.77886435
+						-76.24513249,36.77879373 -76.24527812,36.77872348
+						-76.2454233,36.77865378 -76.24556991,36.77858372
+						-76.24571579,36.77851356 -76.24586105,36.77844349
+						-76.24600666,36.77837383 -76.24615255,36.77830459
+						-76.24629708,36.7782359 -76.24644094,36.77816751
+						-76.24660169,36.77809106 -76.24676144,36.77801482
+						-76.24692149,36.77793884 -76.24708143,36.77786272
+						-76.24724152,36.77778639 -76.24740158,36.77770992
+						-76.24754446,36.77764189 -76.24770513,36.77756642
+						-76.24786491,36.77749131 -76.24802602,36.77741489
+						-76.24816863,36.77734684 -76.2483123,36.77727837
+						-76.24845524,36.77721026 -76.2485981,36.77714162
+						-76.24874143,36.77707273 -76.24888494,36.77700401
+						-76.2490279,36.77693604 -76.24918882,36.77686007
+						-76.24934852,36.77678406 -76.24950752,36.77670757
+						-76.24966558,36.77663061 -76.24982197,36.77655253
+						-76.24993418,36.7764947</gml:coordinates>
+				</gml:LineString>
+			</vagis:the_geom>
+			<vagis:objectid>16298</vagis:objectid>
+			<vagis:edge_rte_key>9805-R-VA   IS00064WB</vagis:edge_rte_key>
+			<vagis:rte_nm>R-VA   IS00064WB</vagis:rte_nm>
+			<vagis:rte_common_nm>I-64W</vagis:rte_common_nm>
+			<vagis:street_nm>I-64 Expy</vagis:street_nm>
+			<vagis:rte_source_id>  IS00064W</vagis:rte_source_id>
+			<vagis:rte_source_cd>HTRIS</vagis:rte_source_cd>
+			<vagis:rte_transport_edge_seq>282.0</vagis:rte_transport_edge_seq>
+			<vagis:transport_edge_id>9805</vagis:transport_edge_id>
+			<vagis:transport_edge_flip_ind>Y</vagis:transport_edge_flip_ind>
+			<vagis:transport_junction_from_id>609069.0</vagis:transport_junction_from_id>
+			<vagis:transport_junction_to_id>609070.0</vagis:transport_junction_to_id>
+			<vagis:measure_system_cd>MPST</vagis:measure_system_cd>
+			<vagis:transport_edge_from_msr>290.605</vagis:transport_edge_from_msr>
+			<vagis:transport_edge_to_msr>291.097</vagis:transport_edge_to_msr>
+			<vagis:from_intersection_id>726511.0</vagis:from_intersection_id>
+			<vagis:to_intersection_id>483259.0</vagis:to_intersection_id>
+			<vagis:rte_intersection_from_dsc>I-64W Dist/Coll at mp289</vagis:rte_intersection_from_dsc>
+			<vagis:rte_intersection_to_dsc>the ramp from VA-168N (Battlefield Parkway)</vagis:rte_intersection_to_dsc>
+			<vagis:rte_category_nm>Interstate</vagis:rte_category_nm>
+			<vagis:rte_nbr>64</vagis:rte_nbr>
+			<vagis:rte_type_nm>Interstate</vagis:rte_type_nm>
+			<vagis:rte_category_set_cd>1</vagis:rte_category_set_cd>
+			<vagis:from_jurisdiction_nm>Norfolk Maintenance Area</vagis:from_jurisdiction_nm>
+			<vagis:to_jurisdiction_nm>Norfolk Maintenance Area</vagis:to_jurisdiction_nm>
+			<vagis:from_jurisdiction_cd>134</vagis:from_jurisdiction_cd>
+			<vagis:to_jurisdiction_cd>134</vagis:to_jurisdiction_cd>
+			<vagis:from_state_cd>VA</vagis:from_state_cd>
+			<vagis:to_state_cd>VA</vagis:to_state_cd>
+			<vagis:master_rte_nm>R-VA   IS00064WB</vagis:master_rte_nm>
+			<vagis:master_rte_common_nm>I-64W</vagis:master_rte_common_nm>
+			<vagis:master_rte_source_id>  IS00064W</vagis:master_rte_source_id>
+			<vagis:rte_opposite_direction_rte_nm>R-VA   IS00064EB</vagis:rte_opposite_direction_rte_nm>
+			<vagis:from_phy_jurisdiction_nm>City of Chesapeake</vagis:from_phy_jurisdiction_nm>
+			<vagis:to_phy_jurisdiction_nm>City of Chesapeake</vagis:to_phy_jurisdiction_nm>
+			<vagis:from_phy_jurisdiction_cd>131</vagis:from_phy_jurisdiction_cd>
+			<vagis:to_phy_jurisdiction_cd>131</vagis:to_phy_jurisdiction_cd>
+			<vagis:lrm_currency_dt>2009-05-26 07:43:33</vagis:lrm_currency_dt>
+			<vagis:change_status_cd>CL</vagis:change_status_cd>
+			<vagis:change_status_dt>2009-06-02 17:23:55</vagis:change_status_dt>
+			<vagis:len>0.0</vagis:len>
+			<vagis:shape_length>0.00829176654834576</vagis:shape_length>
+			<vagis:snow_jurisdiction_cd>131</vagis:snow_jurisdiction_cd>
+		</vagis:sde_vdot_edge_rte_overlap_lrs>
+	</gml:featureMember>
+	<gml:featureMember>
+		<vagis:sde_vdot_edge_rte_overlap_lrs
+			fid="sde_vdot_edge_rte_overlap_lrs.31681">
+			<vagis:the_geom>
+				<gml:LineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">-76.22416243,36.78873598
+						-76.22425136,36.78869587 -76.22439246,36.78862724
+						-76.22454941,36.7885579 -76.22469491,36.78849061
+						-76.22484041,36.78842262 -76.22498521,36.78835467
+						-76.22512932,36.78828759 -76.22527402,36.78822087
+						-76.22541789,36.78815454 -76.22556199,36.78808823
+						-76.22572385,36.78801356 -76.22588516,36.78793887
+						-76.22604586,36.78786437 -76.22620607,36.78778975
+						-76.22636558,36.78771611 -76.22652543,36.78764293
+						-76.22668544,36.78756906 -76.22684613,36.78749418
+						-76.22700657,36.78741856 -76.22716708,36.78734404
+						-76.22732794,36.78727028 -76.22749002,36.78719617
+						-76.22763415,36.78713013 -76.22777866,36.78706295
+						-76.22792335,36.78699549 -76.22806816,36.78692775
+						-76.22821264,36.78685935 -76.2283566,36.78679126
+						-76.2285176,36.7867149 -76.22867774,36.78663867
+						-76.22883755,36.7865624 -76.2289966,36.78648617
+						-76.22915494,36.78640978 -76.22931174,36.78633372
+						-76.22946791,36.78625851 -76.22962427,36.78618431
+						-76.22978024,36.78611087 -76.22993758,36.78603634
+						-76.23009535,36.78596106 -76.23025505,36.78588503
+						-76.23039826,36.78581659 -76.23054246,36.78574723
+						-76.23068621,36.78567776 -76.23082996,36.78560848
+						-76.23097386,36.78553963 -76.23111741,36.78547153
+						-76.23126175,36.78540318 -76.23140572,36.78533484
+						-76.23154944,36.78526617 -76.23169312,36.78519742
+						-76.23183668,36.78512868 -76.2319806,36.78505992
+						-76.23212483,36.78499133 -76.23226894,36.78492325
+						-76.2324143,36.78485451 -76.23255913,36.78478584
+						-76.23270374,36.78471664 -76.2328486,36.78464717
+						-76.23299343,36.7845774 -76.23313838,36.7845076
+						-76.23328327,36.78443778 -76.23342846,36.78436831
+						-76.23345437,36.78435599 -76.23357369,36.78429924
+						-76.23371871,36.78423034 -76.23386358,36.78416176
+						-76.23400802,36.7840932 -76.23415255,36.78402445
+						-76.23429729,36.78395528 -76.23444163,36.78388595
+						-76.23458548,36.7838167 -76.23472858,36.78374867
+						-76.23489007,36.78367288 -76.23503305,36.78360546
+						-76.23517605,36.78353767 -76.23531915,36.78346979
+						-76.23546219,36.78340207 -76.23560523,36.78333442
+						-76.2357656,36.78325773 -76.23592507,36.7831817
+						-76.23608599,36.78310568 -76.23624637,36.78302915
+						-76.23638879,36.7829609 -76.23653163,36.78289262
+						-76.2366924,36.78281602 -76.23685258,36.78273989
+						-76.23701241,36.78266381 -76.23715485,36.78259612
+						-76.23729832,36.78252818 -76.2374421,36.78245978
+						-76.23758543,36.78239099 -76.23772877,36.78232246
+						-76.23788952,36.78224663 -76.23805013,36.78217118
+						-76.23821091,36.78209556 -76.23837179,36.78201945
+						-76.23853227,36.78194345 -76.23869219,36.78186676
+						-76.2388518,36.78179051 -76.23901038,36.78171509
+						-76.2391686,36.78164021 -76.23932627,36.78156584
+						-76.23948257,36.78149176 -76.23963851,36.78141736
+						-76.23979245,36.78134357 -76.23994613,36.78126946
+						-76.24010082,36.78119487 -76.24025635,36.78112048
+						-76.24041246,36.7810462 -76.24056913,36.78097214
+						-76.24072576,36.78089745 -76.24088258,36.78082314
+						-76.24103891,36.78074887 -76.24119438,36.78067489
+						-76.24135024,36.78060073 -76.24150676,36.78052612
+						-76.24166429,36.78045112 -76.24182235,36.78037629
+						-76.2419814,36.7803012 -76.24213972,36.78022608
+						-76.24229769,36.78015093 -76.24245566,36.78007564
+					</gml:coordinates>
+				</gml:LineString>
+			</vagis:the_geom>
+			<vagis:objectid>31648</vagis:objectid>
+			<vagis:edge_rte_key>9838-R-VA   IS00064WB</vagis:edge_rte_key>
+			<vagis:rte_nm>R-VA   IS00064WB</vagis:rte_nm>
+			<vagis:rte_common_nm>I-64W</vagis:rte_common_nm>
+			<vagis:street_nm>I-64 Expy</vagis:street_nm>
+			<vagis:rte_source_id>  IS00064W</vagis:rte_source_id>
+			<vagis:rte_source_cd>HTRIS</vagis:rte_source_cd>
+			<vagis:rte_transport_edge_seq>281.0</vagis:rte_transport_edge_seq>
+			<vagis:transport_edge_id>9838</vagis:transport_edge_id>
+			<vagis:transport_edge_flip_ind>Y</vagis:transport_edge_flip_ind>
+			<vagis:transport_junction_from_id>609063.0</vagis:transport_junction_from_id>
+			<vagis:transport_junction_to_id>609069.0</vagis:transport_junction_to_id>
+			<vagis:measure_system_cd>MPST</vagis:measure_system_cd>
+			<vagis:transport_edge_from_msr>289.436</vagis:transport_edge_from_msr>
+			<vagis:transport_edge_to_msr>290.605</vagis:transport_edge_to_msr>
+			<vagis:from_intersection_id>726510.0</vagis:from_intersection_id>
+			<vagis:to_intersection_id>726511.0</vagis:to_intersection_id>
+			<vagis:rte_intersection_from_dsc>I-64W Dist/Coll at mp289</vagis:rte_intersection_from_dsc>
+			<vagis:rte_intersection_to_dsc>the ramp to Greenbrier Pkwy.</vagis:rte_intersection_to_dsc>
+			<vagis:rte_category_nm>Interstate</vagis:rte_category_nm>
+			<vagis:rte_nbr>64</vagis:rte_nbr>
+			<vagis:rte_type_nm>Interstate</vagis:rte_type_nm>
+			<vagis:rte_category_set_cd>1</vagis:rte_category_set_cd>
+			<vagis:from_jurisdiction_nm>Norfolk Maintenance Area</vagis:from_jurisdiction_nm>
+			<vagis:to_jurisdiction_nm>Norfolk Maintenance Area</vagis:to_jurisdiction_nm>
+			<vagis:from_jurisdiction_cd>134</vagis:from_jurisdiction_cd>
+			<vagis:to_jurisdiction_cd>134</vagis:to_jurisdiction_cd>
+			<vagis:from_state_cd>VA</vagis:from_state_cd>
+			<vagis:to_state_cd>VA</vagis:to_state_cd>
+			<vagis:master_rte_nm>R-VA   IS00064WB</vagis:master_rte_nm>
+			<vagis:master_rte_common_nm>I-64W</vagis:master_rte_common_nm>
+			<vagis:master_rte_source_id>  IS00064W</vagis:master_rte_source_id>
+			<vagis:rte_opposite_direction_rte_nm>R-VA   IS00064EB</vagis:rte_opposite_direction_rte_nm>
+			<vagis:from_phy_jurisdiction_nm>City of Chesapeake</vagis:from_phy_jurisdiction_nm>
+			<vagis:to_phy_jurisdiction_nm>City of Chesapeake</vagis:to_phy_jurisdiction_nm>
+			<vagis:from_phy_jurisdiction_cd>131</vagis:from_phy_jurisdiction_cd>
+			<vagis:to_phy_jurisdiction_cd>131</vagis:to_phy_jurisdiction_cd>
+			<vagis:lrm_currency_dt>2009-05-26 07:43:33</vagis:lrm_currency_dt>
+			<vagis:change_status_cd>CL</vagis:change_status_cd>
+			<vagis:change_status_dt>2009-06-02 17:23:55</vagis:change_status_dt>
+			<vagis:len>0.0</vagis:len>
+			<vagis:shape_length>0.0202399986572478</vagis:shape_length>
+			<vagis:snow_jurisdiction_cd>131</vagis:snow_jurisdiction_cd>
+		</vagis:sde_vdot_edge_rte_overlap_lrs>
+	</gml:featureMember>
+	<gml:featureMember>
+		<vagis:sde_vdot_edge_rte_overlap_lrs
+			fid="sde_vdot_edge_rte_overlap_lrs.39345">
+			<vagis:the_geom>
+				<gml:LineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">-76.25450918,36.77347495
+						-76.25455652,36.77344042 -76.25468351,36.7733472
+						-76.25480977,36.77325431 -76.25493549,36.77316153
+						-76.25506038,36.77306892 -76.25518443,36.7729764
+						-76.25530788,36.77288328 -76.2554306,36.77278977
+						-76.25555229,36.77269598 -76.25567338,36.77260115
+						-76.25579372,36.77250622 -76.25591346,36.7724109
+						-76.2560326,36.77231543 -76.25615147,36.77221965
+						-76.25627024,36.77212382 -76.25638963,36.77202825
+						-76.25650938,36.77193284 -76.25662924,36.77183742
+						-76.25674919,36.77174203 -76.25686904,36.77164656
+						-76.25698904,36.77155103 -76.25710863,36.7714552
+						-76.25722813,36.77135915 -76.25734758,36.77126295
+						-76.25744975,36.77118045</gml:coordinates>
+				</gml:LineString>
+			</vagis:the_geom>
+			<vagis:objectid>39309</vagis:objectid>
+			<vagis:edge_rte_key>9810-R-VA   IS00064WB</vagis:edge_rte_key>
+			<vagis:rte_nm>R-VA   IS00064WB</vagis:rte_nm>
+			<vagis:rte_common_nm>I-64W</vagis:rte_common_nm>
+			<vagis:street_nm>I-64 Expy</vagis:street_nm>
+			<vagis:rte_source_id>  IS00064W</vagis:rte_source_id>
+			<vagis:rte_source_cd>HTRIS</vagis:rte_source_cd>
+			<vagis:rte_transport_edge_seq>285.0</vagis:rte_transport_edge_seq>
+			<vagis:transport_edge_id>9810</vagis:transport_edge_id>
+			<vagis:transport_edge_flip_ind>Y</vagis:transport_edge_flip_ind>
+			<vagis:transport_junction_from_id>609073.0</vagis:transport_junction_from_id>
+			<vagis:transport_junction_to_id>609075.0</vagis:transport_junction_to_id>
+			<vagis:measure_system_cd>MPST</vagis:measure_system_cd>
+			<vagis:transport_edge_from_msr>291.412</vagis:transport_edge_from_msr>
+			<vagis:transport_edge_to_msr>291.627</vagis:transport_edge_to_msr>
+			<vagis:from_intersection_id>483261.0</vagis:from_intersection_id>
+			<vagis:to_intersection_id>483262.0</vagis:to_intersection_id>
+			<vagis:rte_intersection_from_dsc>the ramp from VA-168S (Battlefield Parkway)</vagis:rte_intersection_from_dsc>
+			<vagis:rte_intersection_to_dsc>the ramp to Route 168/Battlefield Blvd.</vagis:rte_intersection_to_dsc>
+			<vagis:rte_category_nm>Interstate</vagis:rte_category_nm>
+			<vagis:rte_nbr>64</vagis:rte_nbr>
+			<vagis:rte_type_nm>Interstate</vagis:rte_type_nm>
+			<vagis:rte_category_set_cd>1</vagis:rte_category_set_cd>
+			<vagis:from_jurisdiction_nm>Norfolk Maintenance Area</vagis:from_jurisdiction_nm>
+			<vagis:to_jurisdiction_nm>Norfolk Maintenance Area</vagis:to_jurisdiction_nm>
+			<vagis:from_jurisdiction_cd>134</vagis:from_jurisdiction_cd>
+			<vagis:to_jurisdiction_cd>134</vagis:to_jurisdiction_cd>
+			<vagis:from_state_cd>VA</vagis:from_state_cd>
+			<vagis:to_state_cd>VA</vagis:to_state_cd>
+			<vagis:master_rte_nm>R-VA   IS00064WB</vagis:master_rte_nm>
+			<vagis:master_rte_common_nm>I-64W</vagis:master_rte_common_nm>
+			<vagis:master_rte_source_id>  IS00064W</vagis:master_rte_source_id>
+			<vagis:rte_opposite_direction_rte_nm>R-VA   IS00064EB</vagis:rte_opposite_direction_rte_nm>
+			<vagis:from_phy_jurisdiction_nm>City of Chesapeake</vagis:from_phy_jurisdiction_nm>
+			<vagis:to_phy_jurisdiction_nm>City of Chesapeake</vagis:to_phy_jurisdiction_nm>
+			<vagis:from_phy_jurisdiction_cd>131</vagis:from_phy_jurisdiction_cd>
+			<vagis:to_phy_jurisdiction_cd>131</vagis:to_phy_jurisdiction_cd>
+			<vagis:lrm_currency_dt>2009-05-26 07:43:33</vagis:lrm_currency_dt>
+			<vagis:change_status_cd>CL</vagis:change_status_cd>
+			<vagis:change_status_dt>2009-06-02 17:23:55</vagis:change_status_dt>
+			<vagis:len>0.0</vagis:len>
+			<vagis:shape_length>0.00373034536448994</vagis:shape_length>
+			<vagis:snow_jurisdiction_cd>131</vagis:snow_jurisdiction_cd>
+		</vagis:sde_vdot_edge_rte_overlap_lrs>
+	</gml:featureMember>
+	<gml:featureMember>
+		<vagis:sde_vdot_edge_rte_overlap_lrs
+			fid="sde_vdot_edge_rte_overlap_lrs.49648">
+			<vagis:the_geom>
+				<gml:LineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+						decimal="." cs="," ts=" ">-76.24993418,36.7764947
+						-76.24997704,36.7764726 -76.25013023,36.77639087
+						-76.25028154,36.77630709 -76.25043205,36.77622211
+						-76.25058177,36.77613614 -76.25073077,36.77604898
+						-76.25087873,36.77596014 -76.25102471,36.77586898
+						-76.25116844,36.7757755 -76.2513103,36.77568
+						-76.25145219,36.77558296 -76.25157855,36.77549673
+						-76.2517053,36.77540993 -76.2518319,36.77532283
+						-76.25195818,36.77523578 -76.25208474,36.77514854
+						-76.25221164,36.77506109 -76.25233844,36.77497317
+						-76.25246585,36.7748842 -76.25259321,36.7747952
+						-76.25272163,36.77470609 -76.252851,36.77461678
+						-76.25298125,36.77452781 -76.25311291,36.77443923
+						-76.25324555,36.77435103 -76.25337863,36.77426229
+						-76.25351177,36.77417317 -76.25364471,36.7740835
+						-76.25377727,36.77399313 -76.25390919,36.77390234
+						-76.25404072,36.77381079 -76.25416511,36.77372343
+					</gml:coordinates>
+				</gml:LineString>
+			</vagis:the_geom>
+			<vagis:objectid>49608</vagis:objectid>
+			<vagis:edge_rte_key>9807-R-VA   IS00064WB</vagis:edge_rte_key>
+			<vagis:rte_nm>R-VA   IS00064WB</vagis:rte_nm>
+			<vagis:rte_common_nm>I-64W</vagis:rte_common_nm>
+			<vagis:street_nm>I-64 Expy</vagis:street_nm>
+			<vagis:rte_source_id>  IS00064W</vagis:rte_source_id>
+			<vagis:rte_source_cd>HTRIS</vagis:rte_source_cd>
+			<vagis:rte_transport_edge_seq>283.0</vagis:rte_transport_edge_seq>
+			<vagis:transport_edge_id>9807</vagis:transport_edge_id>
+			<vagis:transport_edge_flip_ind>Y</vagis:transport_edge_flip_ind>
+			<vagis:transport_junction_from_id>609070.0</vagis:transport_junction_from_id>
+			<vagis:transport_junction_to_id>609072.0</vagis:transport_junction_to_id>
+			<vagis:measure_system_cd>MPST</vagis:measure_system_cd>
+			<vagis:transport_edge_from_msr>291.097</vagis:transport_edge_from_msr>
+			<vagis:transport_edge_to_msr>291.388</vagis:transport_edge_to_msr>
+			<vagis:from_intersection_id>483259.0</vagis:from_intersection_id>
+			<vagis:to_intersection_id>483260.0</vagis:to_intersection_id>
+			<vagis:rte_intersection_from_dsc>the ramp from VA-168N (Battlefield Parkway)</vagis:rte_intersection_from_dsc>
+			<vagis:rte_intersection_to_dsc>the ramp to Route 168/Battlefield Blvd.</vagis:rte_intersection_to_dsc>
+			<vagis:rte_category_nm>Interstate</vagis:rte_category_nm>
+			<vagis:rte_nbr>64</vagis:rte_nbr>
+			<vagis:rte_type_nm>Interstate</vagis:rte_type_nm>
+			<vagis:rte_category_set_cd>1</vagis:rte_category_set_cd>
+			<vagis:from_jurisdiction_nm>Norfolk Maintenance Area</vagis:from_jurisdiction_nm>
+			<vagis:to_jurisdiction_nm>Norfolk Maintenance Area</vagis:to_jurisdiction_nm>
+			<vagis:from_jurisdiction_cd>134</vagis:from_jurisdiction_cd>
+			<vagis:to_jurisdiction_cd>134</vagis:to_jurisdiction_cd>
+			<vagis:from_state_cd>VA</vagis:from_state_cd>
+			<vagis:to_state_cd>VA</vagis:to_state_cd>
+			<vagis:master_rte_nm>R-VA   IS00064WB</vagis:master_rte_nm>
+			<vagis:master_rte_common_nm>I-64W</vagis:master_rte_common_nm>
+			<vagis:master_rte_source_id>  IS00064W</vagis:master_rte_source_id>
+			<vagis:rte_opposite_direction_rte_nm>R-VA   IS00064EB</vagis:rte_opposite_direction_rte_nm>
+			<vagis:from_phy_jurisdiction_nm>City of Chesapeake</vagis:from_phy_jurisdiction_nm>
+			<vagis:to_phy_jurisdiction_nm>City of Chesapeake</vagis:to_phy_jurisdiction_nm>
+			<vagis:from_phy_jurisdiction_cd>131</vagis:from_phy_jurisdiction_cd>
+			<vagis:to_phy_jurisdiction_cd>131</vagis:to_phy_jurisdiction_cd>
+			<vagis:lrm_currency_dt>2009-05-26 07:43:33</vagis:lrm_currency_dt>
+			<vagis:change_status_cd>CL</vagis:change_status_cd>
+			<vagis:change_status_dt>2009-06-02 17:23:55</vagis:change_status_dt>
+			<vagis:len>0.0</vagis:len>
+			<vagis:shape_length>0.00506109711802641</vagis:shape_length>
+			<vagis:snow_jurisdiction_cd>131</vagis:snow_jurisdiction_cd>
+		</vagis:sde_vdot_edge_rte_overlap_lrs>
+	</gml:featureMember>
+</wfs:FeatureCollection>

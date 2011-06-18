@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ImageCRS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlGridCRSsProfile.xsd" 
+gml:id="ImageTBDCRSpixelCenter">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15 -->
+	<srsName>Image TBD CRS pixel centers</srsName>
+	<!-- Specific image or group shall be identified by "TBD" in this srsName. -->
+	<srsID>
+		<name codeSpace="urn:ogc:def:crs:OGC:1.0:ImageCRSpixelCenter:">ImageTBDCRSpixelCenter</name>
+		<!-- Specifies the URN that can be used to reference this image CRS. This URN includes the image name as a parameter. The specific image or group shall be identified by the "TBD" in the "name" value. -->
+	</srsID>
+	<remarks>Parameterized definition of 2D image coordinate reference systems with the origin at the center of the first pixel in the image file. This CRS definition can be used for any size image, since no image size is specified. 
+
+This CRS definition is designed to be used for ungeorectified images, and is not expected to be used for a georectified image. This definition can be used for a georeferenced or ungeoreferenced image, where a georeferenced image CRS is associated with the coordinate Transformation(s) that georeference it. </remarks>
+	<usesCartesianCS xlink:href="urn:ogc:def:cs:OGC:1.0:Grid2dSquareCS"/>
+	<usesImageDatum xlink:href="urn:ogc:def:datum:OGC:1.0:ImageDatumPixelCenter"/>
+</ImageCRS>

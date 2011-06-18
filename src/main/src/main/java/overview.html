@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>The GeoServer Project</title>
+</head>
+
+<body>
+
+<p>The GeoServer Project - the open Internet gateway for geographic data</p>
+
+<p>
+The GeoServer Project is a Java (J2EE) implementation of:
+</p>
+<ul>
+<li>The OpenGIS Consortium's  Web Feature Server specification.
+With full transactional support!
+</li>
+<li>
+The OpenGIS Consortium's Web Map Server Specification.
+</li>
+
+<li>
+ZServer
+</li>
+</ul>
+
+<p>
+GeoServer is free software, available under the GPL 2.0 license.
+</p>
+
+</p>
+Users who would like to access and modify their geographic data over the
+Internet using flexible, industry-approved standards should take a look at
+GeoServer.
+<p>
+
+<h3>GeoServer Design</h3>
+
+<p>
+GeoServer is constructed using a Layered Design as outlined in the diagram
+below. There are two Layer systems in use - the classic J2EE
+Servlet/Handler/Request/Response and the STRUTS Framework.
+</p>
+
+<center>
+<img src="doc-files/GeoServerLayerDiagram.gif">
+<br>
+<b>GeoServer Layer Diagram</b>
+</center>
+
+<h3>Use of GeoTools2</h3>
+<p>
+As seen in the above Layer Diagram GeoServer makes use of the wonderful
+GeoTools2 library to provide data access. GeoServer maintains its own
+geotools.jar available in the lib directory.  This jar is often more recent
+then the latest GeoTools public beta.
+</p>
+
+Many GeoServer classes implement GeoTools2 interfaces inorder to facilitate
+reuse and intergration with subsystems such as validation.
+</p>
+</body>
+
+</html>

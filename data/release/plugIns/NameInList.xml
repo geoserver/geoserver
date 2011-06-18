@@ -1,0 +1,10 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" >
+<name>NameInList</name>
+<description>All features must pass the provided filter</description>
+<class>org.geoserver.validation.plugins.filter.OGCFilter</class>
+<argument >
+<name>tempDirectory</name>
+<anyURI>file:///c:/temp</anyURI>
+
+</argument>
+</plugin>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionary xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml ../gmlSimpleDictionaryProfile.xsd" gml:id="AxisDirectionDictionary">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-18-->
+	<name>Axis Direction standard values</name>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="north">
+			<description>Axis positive direction is north. In a geographic or projected CRS, north is defined through the geodetic datum. In an engineering CRS, north may be defined with respect to an engineering object rather than a geographical direction. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:north</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="northNorthEast">
+			<description>Axis positive direction is approximately north-north-east. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:northNorthEast</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="northEast">
+			<description>Axis positive direction is approximately north-east. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:northEast</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="eastNorthEast">
+			<description>Axis positive direction is approximately east-north-east. </description>
+			<name codeSpace="urn:opengis:def:axisDirection:OGC:1.0:"/>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="east">
+			<description>Axis positive direction is pi/2 radians clockwise from north. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:east</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="eastSouthEast">
+			<description>Axis positive direction is approximately east-south-east. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:eastSouthEast</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="southEast">
+			<description>Axis positive direction is approximately south-east.</description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:southEast</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="southSouthEast">
+			<description>Axis positive direction is approximately south-south-east. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:southSouthEast</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="south">
+			<description>Axis positive direction is pi radians clockwise from north. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:south</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="southSouthWest">
+			<description>Axis positive direction is approximately south-south-west. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:southSouthWest</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="southWest">
+			<description>Axis positive direction is approximately south-west. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:southWest</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="westSouthWest">
+			<description>Axis positive direction is approximately west-south-west. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:westSouthWest</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="west">
+			<description>Axis positive direction is 3pi/2 radians clockwise from north. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:west</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="westNorthWest">
+			<description>Axis positive direction is approximately west-north-west. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:westNorthWest</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="northWest">
+			<description>Axis positive direction is approximately north-west.</description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:northWest</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="northNorthWest">
+			<description>Axis positive direction is approximately north-north-west. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:northNorthWest</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="up">
+			<description>Axis positive direction is up relative to gravity. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:up</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="down">
+			<description>Axis positive direction is down relative to gravity. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:down</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="geocentricX">
+			<description>Axis positive direction is in the equatorial plane from the centre of the modelled earth towards the intersection of the equator with the prime meridian. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:geocentricX</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="geocentricY">
+			<description>Axis positive direction is in the equatorial plane from the centre of the modelled earth towards the intersection of the equator and the meridian pi/2 radians eastwards from the prime meridian. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:geocentricY</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="geocentricZ">
+			<description>Axis positive direction is from the centre of the modelled earth parallel to its rotation axis and towards its north pole. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:geocentricZ</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="future">
+			<description>Axis positive direction is towards the future. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:future</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="past">
+			<description>Axis positive direction is towards the past. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:past</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="columnPositive">
+			<description>Axis positive direction is towards higher column numbers. </description>
+			<name codeSpace="urn:opengis:def:axisDirection:1.0:">columnPositive</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="columnNegative">
+			<description>Axis positive direction is towards lower pixel column numbers. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:columnNegative</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="rowPositive">
+			<description>Axis positive direction is towards higher row numbers. </description>
+			<name codeSpace="urn:opengis:def:axisDirection:1.0:">rowPositive</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="rowNegative">
+			<description>Axis positive direction is towards lower pixel row numbers. </description>
+			<name codeSpace="urn:opengis:def:axisDirection:OGC:1.0:"/>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="displayRight">
+			<description>Axis positive direction is right in display. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:displayRight</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="displayLeft">
+			<description>Axis positive direction is left in display. </description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:displayLeft</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="displayUp">
+			<description>Axis positive direction is towards top of approximately vertical display surface.
+</description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:displayUp</name>
+		</Definition>
+	</dictionaryEntry>
+	<!-- ===================================================== -->
+	<dictionaryEntry>
+		<Definition gml:id="displayDown">
+			<description>Axis positive direction is towards bottom of approximately vertical display surface.
+</description>
+			<name codeSpace="urn:ogc:tc:urn:doc:rp:05-010">urn:opengis:def:axisDirection:OGC:1.0:displayDown</name>
+		</Definition>
+	</dictionaryEntry>
+</Dictionary>

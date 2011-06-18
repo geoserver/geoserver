@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		This is to test polymorphism mixed with inline mapping in app-schema
+		(GEOT-3304)
+	-->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+	<namespaces>
+		<Namespace>
+			<prefix>ex</prefix>
+			<uri>http://example.com</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>gsml</prefix>
+			<uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+		</Namespace>
+	</namespaces>
+	<includedTypes>
+		<Include>CGITermValue.xml</Include>
+	</includedTypes>
+	<sourceDataStores>
+		<DataStore>
+			<id>PropertyFiles</id>
+			<parameters>
+				<Parameter>
+					<name>directory</name>
+					<value>file:./</value>
+				</Parameter>
+			</parameters>
+		</DataStore>
+	</sourceDataStores>
+	<targetTypes>
+		<FeatureType>
+			<schemaUri>polymorphism.xsd</schemaUri>
+		</FeatureType>
+	</targetTypes>
+	<typeMappings>
+		<FeatureTypeMapping>
+			<sourceDataStore>PropertyFiles</sourceDataStore>
+			<sourceType>PolymorphicFeature</sourceType>
+			<targetElement>ex:PolymorphicFeature</targetElement>
+			<attributeMappings>
+				<AttributeMapping>
+					<!--
+						This is made conditional on purpose, to test that the rest are
+						encoded correctly when this is omitted
+					-->
+					<targetAttribute>ex:firstValue[1]</targetAttribute>
+					<sourceExpression>
+						<OCQL>VALUE_ID</OCQL>
+						<linkElement>
+						    if_then_else(isNull(CLASS_TEXT), Expression.NIL, 'gsml:CGI_TermValue')
+						</linkElement>
+						<linkField>FEATURE_LINK</linkField>
+					</sourceExpression>
+				</AttributeMapping>
+				<AttributeMapping>
+					<!--
+						This didn't get encoded correctly when the first attribute above
+						is omitted
+					-->
+					<targetAttribute>ex:firstValue[2]/gsml:CGI_TermValue</targetAttribute>
+					<targetAttributeNode>gsml:CGI_TermValueType</targetAttributeNode>
+					<ClientProperty>
+						<name>gsml:qualifier</name>
+						<value>'approximate'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
+					<!--
+						Make sure this is encoded as one big attribute with above mapping
+					-->
+					<targetAttribute>ex:firstValue[2]/gsml:CGI_TermValue/gsml:value</targetAttribute>
+					<sourceExpression>
+						<OCQL>NUMERIC_VALUE</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'codespace'</value>
+					</ClientProperty>
+				</AttributeMapping>
+			</attributeMappings>
+		</FeatureTypeMapping>
+	</typeMappings>
+</as:AppSchemaDataAccess>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>spatialite</artifactId>
+  <packaging>jar</packaging>
+  <name>SpatiaLite DataStore Extension</name>
+
+
+<repositories>
+   <repository>
+     <id>codehaus</id>
+     <name>codehaus</name>
+     <url>http://snapshots.repository.codehaus.org/</url>
+     <snapshots>
+      <enabled>true</enabled>
+     </snapshots>
+    </repository>
+    <repository>
+      <id>opengeo</id>
+      <name>opengeo</name>
+      <url>http://repo.opengeo.org/</url>
+       <snapshots>
+        <enabled>true</enabled>
+       </snapshots>
+    </repository>
+  </repositories>
+
+ <dependencies>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>wfs</artifactId>
+   <version>2.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+   <groupId>junit</groupId>
+   <artifactId>junit</artifactId>
+   <version>3.8.1</version>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>wfs</artifactId>
+   <version>2.2-SNAPSHOT</version>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>main</artifactId>
+   <version>2.2-SNAPSHOT</version>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+     <groupId>com.mockrunner</groupId>
+     <artifactId>mockrunner</artifactId>
+     <version>0.3.1</version>
+     <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>xmlunit</groupId>
+    <artifactId>xmlunit</artifactId>
+    <version>1.1</version>
+    <scope>test</scope>
+  </dependency>
+   <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-spatialite</artifactId>
+      <version>${gt.version}</version>
+   </dependency>
+  </dependencies>
+
+ <build>
+  <plugins>
+   <plugin>
+     <groupId>org.apache.maven.plugins</groupId>
+     <artifactId>maven-compiler-plugin</artifactId>
+     <configuration>
+       <source>1.5</source> 
+       <target>1.5</target>
+       <debug>true</debug>
+       <encoding>UTF-8</encoding>
+     </configuration>
+    </plugin>
+  </plugins>
+ </build>
+ 
+ </project>

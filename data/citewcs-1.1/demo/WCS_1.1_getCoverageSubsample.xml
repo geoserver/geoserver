@@ -1,0 +1,23 @@
+<!-- Performs a get coverage.  Feel free to play with the elements,        -->
+<!-- to get different results.                                             -->
+<wcs:GetCoverage service="WCS" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1  file:///C:/progetti/opengis/schemas/wcs1.1/wcs/1.1.1/wcsAll.xsd"
+  version="1.1.1" >
+  <ows:Identifier>topp:tazbm</ows:Identifier>
+  <wcs:DomainSubset>
+    <ows:BoundingBox crs="urn:ogc:def:crs:EPSG:6.6:4326">
+      <ows:LowerCorner>-90 -180</ows:LowerCorner>
+      <ows:UpperCorner>90 180</ows:UpperCorner>
+    </ows:BoundingBox>
+  </wcs:DomainSubset>
+  <wcs:Output format="image/png">
+    <wcs:GridCRS>
+      <wcs:GridBaseCRS>urn:ogc:def:crs:EPSG:6.6:4326</wcs:GridBaseCRS>
+      <wcs:GridType>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</wcs:GridType>
+      <wcs:GridOffsets>0.1 0.1</wcs:GridOffsets>
+    </wcs:GridCRS>
+  </wcs:Output>
+</wcs:GetCoverage>
+

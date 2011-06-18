@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
+    <constructor-arg>
+      <bean id="file" class="java.io.File">
+        <constructor-arg value="target"/>
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="myPropertyConfigurer" class="org.geoserver.config.GeoServerPropertyConfigurer">
+    <constructor-arg ref="dataDirectory"/>
+    <property name="location" value="file:foo.properties"/>
+    <property name="properties">
+      <props>
+        <prop key="prop1">value1</prop>
+        <prop key="prop2">value2</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="myBean" class="org.geoserver.config.GeoServerPropertyConfigurerTest$Foo">
+    <property name="bar" value="${prop1}"/>
+    <property name="baz" value="${prop2}"/>
+  </bean>
+  
+</beans>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+	<annotation>
+		<appinfo source="urn:ogc:specification:xlinks 2005-09-12">xlinks.xsd</appinfo>
+		<documentation>This document is now deprecated. Instead, please reference the xlinks.xsd file stored at the location http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd.
+		This modified xlink.xsd document is provided because some existing XML Schema Documents might still reference it at this location. In the future, this file will be made invalid so that any documents referencing it will no longer validate as expected. Subsequent to that, this file will be deleted from this location. This strategy is designed to smooth transition from the many xlinks.xsd files previously distributed throughout the OGC schema repository, to having only one official xlink.xsd document stored at http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd.
+		All references to xlinks.xsd documents, in existing XML Schema Documents within the OGC schema repository, have been modified to reference the xlinks.xsd file stored at http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd. All include and import statements have also been changed to use relative paths to this xlinks.xsd document. Any new XML Schema documents shall also point to the new xlink/xlinks.xsd file and shall use a relative path. </documentation>
+	</annotation>
+	<include schemaLocation="../../../xlink/1.0.0/xlinks.xsd"/>
+</schema>

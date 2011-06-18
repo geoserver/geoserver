@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://example.com" xmlns:ex="http://example.com" xmlns:gml="http://www.opengis.net/gml"
+    xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="1.0">
+
+    <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    
+    <complexType name="MyTestFeatureType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType" >
+                <sequence>
+                    <element name="geometry" type="gml:GeometryPropertyType" minOccurs="1" nillable="false" />
+                    <element name="curve" type="gml:CurvePropertyType" minOccurs="1" nillable="false"/>
+                    <element name="point" type="gml:PointPropertyType" minOccurs="1" nillable="false"/>
+                    <element name="linestring" type="gml:LineStringPropertyType" minOccurs="1" nillable="false"/>
+                    <element name="surface" type="gml:SurfacePropertyType" minOccurs="1" nillable="false"/>
+                    <element name="polygon" type="gml:PolygonPropertyType" minOccurs="1" nillable="false" />                                      
+                    <element name="multicurve" type="gml:MultiCurvePropertyType" minOccurs="1" nillable="false" />
+                    <element name="multipoint" type="gml:MultiPointPropertyType" minOccurs="1" nillable="false" />
+                    <element name="multilinestring" type="gml:MultiLineStringPropertyType" minOccurs="1" nillable="false"/>
+                    <element name="multisurface" type="gml:MultiSurfacePropertyType" minOccurs="1" nillable="false"/>
+                    <element name="multipolygon" type="gml:MultiPolygonPropertyType" minOccurs="1" nillable="false"/>
+
+                    <element name="geometryref" type="gml:GeometryPropertyType" minOccurs="1" nillable="false" />
+                    <element name="curveref" type="gml:CurvePropertyType" minOccurs="1" nillable="false"/>
+                    <element name="pointref" type="gml:PointPropertyType" minOccurs="1" nillable="false"/>
+                    <element name="linestringref" type="gml:LineStringPropertyType" minOccurs="1" nillable="false"/>
+                    <element name="surfaceref" type="gml:SurfacePropertyType" minOccurs="1" nillable="false"/>
+                    <element name="polygonref" type="gml:PolygonPropertyType" minOccurs="1" nillable="false" />                                      
+                    <element name="multicurveref" type="gml:MultiCurvePropertyType" minOccurs="1" nillable="false" />
+                    <element name="multipointref" type="gml:MultiPointPropertyType" minOccurs="1" nillable="false" />
+                    <element name="multilinestringref" type="gml:MultiLineStringPropertyType" minOccurs="1" nillable="false"/>
+                    <element name="multisurfaceref" type="gml:MultiSurfacePropertyType" minOccurs="1" nillable="false"/>
+                    <element name="multipolygonref" type="gml:MultiPolygonPropertyType" minOccurs="1" nillable="false"/>
+                   
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    
+    <element name="MyTestFeature" type="ex:MyTestFeatureType"/>
+    
+
+</schema>

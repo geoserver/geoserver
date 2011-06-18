@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd::3.1.1">geometryBasic2d.xsd</appinfo>
+		<documentation>Subset of geometryBasic2d.xsd for GML 3.1.1 CRS Support profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2005-10-11 
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- =========================================================== -->
+	<include schemaLocation="geometryBasic0d1d.xsd"/>
+	<!-- =========================================================== -->
+	<!-- primitive geometry objects (2-dimensional) -->
+	<!-- =========================================================== -->
+	<complexType name="AbstractSurfaceType">
+		<annotation>
+			<documentation>An abstraction of a surface to support the different levels of complexity. A surface is always a continuous region of a plane.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricPrimitiveType"/>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="PolygonType">
+		<annotation>
+			<documentation>A Polygon is a special surface that is defined by a single surface patch. The boundary of this patch is coplanar and the polygon uses planar interpolation in its interior. It is backwards compatible with the Polygon of GML 2, GM_Polygon of ISO 19107 is implemented by PolygonPatch.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractSurfaceType">
+				<sequence>
+					<element ref="gml:exterior" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- rings (closed curves for surface boundaries) -->
+	<!-- =========================================================== -->
+	<element name="_Ring" type="gml:AbstractRingType" abstract="true" substitutionGroup="gml:_Geometry">
+		<annotation>
+			<documentation>The "_Ring" element is the abstract head of the substituition group for all closed boundaries of a surface patch.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="AbstractRingType" abstract="true">
+		<annotation>
+			<documentation>An abstraction of a ring to support surface boundaries of different complexity.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType"/>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="exterior" type="gml:AbstractRingPropertyType">
+		<annotation>
+			<documentation>A boundary of a surface consists of a number of rings. In the normal 2D case, one of these rings is distinguished as being the exterior boundary. In a general manifold this is not always possible, in which case all boundaries shall be listed as interior boundaries, and the exterior will be empty.</documentation>
+		</annotation>
+	</element>
+	<!-- =========================================================== -->
+	<complexType name="AbstractRingPropertyType">
+		<annotation>
+			<documentation>Encapsulates a ring to represent the surface boundary property of a surface.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:_Ring"/>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="LinearRing" type="gml:LinearRingType" substitutionGroup="gml:_Ring"/>
+	<!-- =========================================================== -->
+	<complexType name="LinearRingType">
+		<annotation>
+			<documentation>A LinearRing is defined by four or more coordinate tuples, with linear interpolation between them; the first and last coordinates must be coincident.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractRingType">
+				<sequence>
+					<element ref="gml:posList">
+						<annotation>
+							<documentation>The "posList" element provides a compact way to specifiy the coordinates of the control points, assuming all control points are in the same coordinate reference systems. The number of direct positions in the list must be at least four.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

@@ -1,0 +1,64 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">Generic sortable/filterable/pageable table</wicket:message></title>
+</head>
+<body>
+<wicket:panel>
+    <!--  the pager/filter top block -->
+	<form wicket:id="filterForm">
+	        <div class="leftwise">
+	            <span wicket:id="navigatorTop">1|2|3|...</span>
+            </div>
+            <div class="rightwise">
+                <input id="filter" wicket:id="filter" class="rigthwise search" type="text" size="35" title="Search"></input>
+	            <input wicket:id="submit" class="noshow" type="submit" value="Search"/>
+	            <script type="text/javascript">
+	              //<![CDATA[
+                  // this one works when the page is loading for the first time
+	              jQuery(document).ready(function() {$('#filter').inlineInfoTextify();});
+                  // this one in ajax popups where the content to textify is generated on the fly 
+                  // after the page has been loaded
+	              $('#filter').inlineInfoTextify();
+	              //]]>
+	            </script>
+            </div>
+	</form>
+	
+	<!--  the table -->
+	<table wicket:id="listContainer" class="clearBoth">
+		<thead>
+			<tr>
+			  <!-- The select all checkbox -->
+			  <th wicket:id="selectAllContainer"><input type="checkbox" wicket:id="selectAll"/></th>
+			  <!-- This is a repeater, will generate one th for each property -->
+			  <th wicket:id="sortableLinks"><div wicket:id="header"></div></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="items">
+			  <!-- The select row checkbox -->
+			  <th wicket:id="selectItemContainer" class="selection"><input type="checkbox" wicket:id="selectItem"/></th>
+			  <!-- This is a repeater, will generate one td for each property -->
+			  <td wicket:id="itemProperties"><span wicket:id="component"></span></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<!-- the bottom pager -->
+    <span wicket:id="navigatorBottom">1|2|3|...</span>
+	
+	<!-- Sortable header fragments -->
+	<wicket:fragment wicket:id="sortableHeader">
+		<a href="#" wicket:id="link"><span wicket:id="label"></span></a>
+	</wicket:fragment>
+	
+	<!-- Pagination fragment -->
+	<wicket:fragment wicket:id="pagingFragment">
+           <span class="paginator" wicket:id="navigator">1|2|3|...</span>
+           <span wicket:id="filterMatch">Matched xxx out of yyy</span>
+	</wicket:fragment>
+	
+	<wicket:child></wicket:child>
+</wicket:panel>
+</body>
+</html>

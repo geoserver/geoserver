@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by Peter Schut (Agriculture & Agri-Food Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" targetNamespace="http://www.opengis.net/wps/1.0.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+	<annotation>
+		<appinfo>$Id: ProcessBriefType.xsd 2007-10-09 $</appinfo>
+		<documentation>
+			<description>Brief description of a Process, designed for Process discovery. </description>
+			<copyright>Copyright (c) 2007 OGC, All Rights Reserved. 
+For conditions, see OGC Software Notice http://www.opengeospatial.org/ogc/software</copyright>
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		Import or include schema
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../../ows/1.1.0/owsAll.xsd"/>
+	<include schemaLocation="DescriptionType.xsd"/>
+	<include schemaLocation="ProcessVersion.xsd"/>
+	<include schemaLocation="WSDL.xsd"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<complexType name="ProcessBriefType">
+		<complexContent>
+			<extension base="wps:DescriptionType">
+				<sequence>
+					<element name="Profile" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Optional unordered list of application profiles to which this process complies.</documentation>
+						</annotation>
+					</element>
+					<element ref="wps:WSDL" minOccurs="0">
+						<annotation>
+							<documentation>Location of a WSDL document which describes this process.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+				<attribute ref="wps:processVersion" use="required"/>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

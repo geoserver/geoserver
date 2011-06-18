@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/wms?request=getcapabilities&amp;service=wms&amp;version=1.1.1</value>
+ <value key="updatesequence">auto_updatesequence</value>
+ <value key="VAR_HIGH_UPDATESEQUENCE">2</value>
+ <value key="VAR_LOW_UPDATESEQUENCE">0</value>
+ <value key="CERT_PROFILE">queryable_profile</value>
+ <value key="recommended">recommended</value>
+ <value key="testgml">testgml</value>
+ <value key="free">free</value>
+ <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+</values>

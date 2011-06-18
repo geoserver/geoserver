@@ -1,0 +1,23 @@
+<assembly>
+  <id>teradata-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gt-jdbc-teradata-*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/extensions/teradata</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCapabilities xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGetCapabilities.xsd" 
+service="WCS"/>
+<!-- Minimum example for WCS. Primary editor: Arliss Whiteside. Last updated 2007-06-05-->

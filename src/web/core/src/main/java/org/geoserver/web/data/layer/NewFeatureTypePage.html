@@ -1,0 +1,44 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="layerList">Layer list</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+
+    <form wicket:id="form">
+
+    <ul>
+        <li><label for="name"><wicket:message key="name">Name</wicket:message></label> <input
+            id="name" class="text" type="text" wicket:id="name"></input></li>
+        <li>
+            <label for="attributes"><wicket:message key="attributes">atts</wicket:message></label>
+            <div wicket:id="attributes"></div>
+        </li>
+    </ul>
+
+    <div class="button-group selfclear"><a href="#" wicket:id="save"><wicket:message
+        key="save">Save</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
+        key="cancel">Cancel</wicket:message></a></div>
+    </form>
+
+
+    <!-- Fragments used to build the page -->
+	
+	<wicket:fragment wicket:id="nameFragment">
+		<a href="#" wicket:id="link"><span wicket:id="name"></span></a>
+	</wicket:fragment>
+    
+    <wicket:fragment wicket:id="header">
+      <ul>
+        <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+        <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+      </ul>
+    </wicket:fragment>
+    
+    <wicket:fragment wicket:id="upDown">
+       <span wicket:id="up"></span>
+       <span wicket:id="down"></span>
+    </wicket:fragment>
+</wicket:extend>
+</body>
+</html>

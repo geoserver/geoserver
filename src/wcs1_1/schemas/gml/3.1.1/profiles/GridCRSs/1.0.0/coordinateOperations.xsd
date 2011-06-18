@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:coordinateOperations:3.1.1"/>
+		<documentation>Subset of coordinateOperations.xsd for GML 3.1.1 GridCRSs profile. Primary editor: Arliss Whiteside. Last updated 2005-11-15 
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="../../CommonCRSs/1.0.0/gmlCommonCRSsProfile.xsd"/>
+	<include schemaLocation="dataQuality.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="ConcatenatedOperation" type="gml:ConcatenatedOperationType" substitutionGroup="gml:_CoordinateOperation"/>
+	<!-- =================================================== -->
+	<complexType name="ConcatenatedOperationType">
+		<annotation>
+			<documentation>An ordered sequence of two or more single coordinate operations. The sequence of operations is constrained by the requirement that the source coordinate reference system of step (n+1) must be the same as the target coordinate reference system of step (n). The source coordinate reference system of the first step and the target coordinate reference system of the last step are the source and target coordinate reference system associated with the concatenated operation. Instead of a forward operation, an inverse operation may be used for one or more of the operation steps mentioned above, if the inverse operation is uniquely defined by the forward operation.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCoordinateOperationType">
+				<sequence>
+					<element ref="gml:usesSingleOperation" minOccurs="2" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Ordered sequence of associations to the two or more single operations used by this concatenated operation. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="usesSingleOperation" type="gml:SingleOperationRefType">
+		<annotation>
+			<documentation>Association to a single operation. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="SingleOperationRefType">
+		<annotation>
+			<documentation>Association to a single operation, either referencing or containing the definition of that single operation. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_SingleOperation"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="PassThroughOperation" type="gml:PassThroughOperationType" substitutionGroup="gml:_SingleOperation"/>
+	<!-- =================================================== -->
+	<complexType name="PassThroughOperationType">
+		<annotation>
+			<documentation>A pass-through operation specifies that a subset of a coordinate tuple is subject to a specific coordinate operation. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCoordinateOperationType">
+				<sequence>
+					<element ref="gml:modifiedCoordinate" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Ordered sequence of positive integers defining the positions in a coordinate tuple of the coordinates affected by this pass-through operation. </documentation>
+						</annotation>
+					</element>
+					<element ref="gml:usesOperation"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="modifiedCoordinate" type="positiveInteger">
+		<annotation>
+			<documentation>A positive integer defining a position in a coordinate tuple. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesOperation" type="gml:OperationRefType">
+		<annotation>
+			<documentation>Association to the operation applied to the specified ordinates. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="OperationRefType">
+		<annotation>
+			<documentation>Association to an abstract operation, either referencing or containing the definition of that operation. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_Operation"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- =================================================== -->
+	<!-- =================================================== -->
+	<element name="_GeneralTransformation" type="gml:AbstractGeneralTransformationType" abstract="true" substitutionGroup="gml:_Operation"/>
+	<!-- =================================================== -->
+	<complexType name="AbstractGeneralTransformationType" abstract="true">
+		<annotation>
+			<documentation>An abstract operation on coordinates that usually includes a change of Datum. The parameters of a coordinate transformation are empirically derived from data containing the coordinates of a series of points in both coordinate reference systems. This computational process is usually "over-determined", allowing derivation of error (or accuracy) estimates for the transformation. Also, the stochastic nature of the parameters may result in multiple (different) versions of the same coordinate transformation.
+
+This abstract complexType is expected to be extended for well-known operation methods with many Transformation instances, in Application Schemas that define operation-method-specialized value element names and contents. This transformation uses an operation method with associated parameter values. However, operation methods and parameter values are directly associated with concrete subtypes, not with this abstract type. All concrete types derived from this type shall extend this type to include a "usesMethod" element that references one "OperationMethod" element. Similarly, all concrete types derived from this type shall extend this type to include one or more elements each named "uses...Value" that each use the type of an element substitutable for the "_generalParameterValue" element. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:AbstractCoordinateOperationType">
+				<sequence>
+					<element ref="gml:coordinateOperationName"/>
+					<element ref="gml:coordinateOperationID" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:remarks" minOccurs="0"/>
+					<element ref="gml:operationVersion"/>
+					<element ref="gml:validArea" minOccurs="0"/>
+					<element ref="gml:scope" minOccurs="0"/>
+					<element ref="gml:_positionalAccuracy" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:sourceCRS"/>
+					<element ref="gml:targetCRS"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="Transformation" type="gml:TransformationType" substitutionGroup="gml:_GeneralTransformation"/>
+	<!-- =================================================== -->
+	<complexType name="TransformationType">
+		<annotation>
+			<documentation>A concrete operation on coordinates that usually includes a change of datum. The parameters of a coordinate transformation are empirically derived from data containing the coordinates of a series of points in both coordinate reference systems. This computational process is usually "over-determined", allowing derivation of error (or accuracy) estimates for the transformation. Also, the stochastic nature of the parameters may result in multiple (different) versions of the same coordinate transformation.
+
+This concrete complexType can be used for all operation methods, without using an Application Schema that defines operation-method-specialized element names and contents, especially for methods with only one Transformation instance. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeneralTransformationType">
+				<sequence>
+					<element ref="gml:usesMethod"/>
+					<element ref="gml:usesValue" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Unordered set of composition associations to the set of parameter values used by this transformation operation. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+</schema>

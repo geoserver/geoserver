@@ -1,0 +1,5 @@
+<namespace>
+    <id>gsml_namespace</id>
+    <prefix>gsml</prefix>
+    <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+</namespace>

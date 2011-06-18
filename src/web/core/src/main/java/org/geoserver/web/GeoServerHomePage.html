@@ -1,0 +1,70 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+<div id="welcome">
+<p>
+<wicket:message key="GeoServerHomePage.belongsTo">This GeoServer belongs to</wicket:message> <a wicket:id="contactURL"><span wicket:id="contactName"></span></a>.
+</p>
+<p>
+<div wicket:id="catalogLinks"></div>
+</p>
+<p>
+<wicket:fragment wicket:id="contributedContent">
+      <span wicket:id="contentList"/>
+</wicket:fragment>
+</p>
+<p>
+  <span wicket:id="footerMessage"></span>
+</p>
+</div>
+<div id="capabilities">
+  <ul>
+    <li class="navigation-tab">
+      <div class="navigation-tab-header">
+        <span><wicket:message key="serviceCapabilities">Service Capabilities</wicket:message></span>
+      </div>
+      <div>
+        <ul class="navigation-tab-content plain">
+          <li wicket:id="providedCaps" class="selfclear">
+            <span wicket:id="capsList"/>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<wicket:fragment wicket:id="catalogLinksFragment">
+	<table>
+	 <thead>
+	 <tr>
+	   <th colspan="2"></th>
+	 </tr>
+	 </thead>
+	 <tr class="odd">
+	   <td>
+	     <a wicket:id="layersLink"><span wicket:id="nlayers"></span> <wicket:message key="layers">layers</wicket:message></a>
+	   </td>
+	   <td><a class="add-link" wicket:id="addLayerLink"><wicket:message key="addLayers">Add layers</wicket:message></a></td>
+	 </tr>
+	 <tr class="even">
+	   <td>
+	     <a wicket:id="storesLink"><span wicket:id="nstores"></span> <wicket:message key="stores">stores</wicket:message></a>
+	   </td>
+	   <td><a class="add-link" wicket:id="addStoreLink"><wicket:message key="addStores">Add stores</wicket:message></a></td>
+	 </tr>
+	 <tr class="odd">
+	   <td>
+	     <a wicket:id="workspacesLink"><span wicket:id="nworkspaces"></span> <wicket:message key="workspaces">workspaces</wicket:message></a>
+	   </td>
+	   <td><a class="add-link" wicket:id="addWorkspaceLink"><wicket:message key="addWorkspaces">Create workspaces</wicket:message></a></td>
+	 </tr>
+	</table>
+</wicket:fragment>
+
+</wicket:extend>
+
+
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+   <bean id="wcsServicePage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="wcs"/>
+    <property name="titleKey" value="wcs.title"/>
+    <property name="descriptionKey" value="wcs.description"/>
+    <property name="componentClass" value="org.geoserver.wcs.web.WCSAdminPage"/> 
+    <property name="icon" value="server_raster.png"/>
+    <property name="category" ref="servicesCategory"/>
+  </bean>
+  
+  <bean id="wcsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="wcsResourceConfig"/>
+    <property name="titleKey" value="data.resource.config.wcs"/>
+    <property name="componentClass" value="org.geoserver.wcs.web.publish.WCSLayerConfig"/>
+    <property name="supportedTypes">
+      <list>  
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
+  </bean>
+  
+   <bean id="wcsRequestBuilder" class="org.geoserver.web.DemoLinkInfo">
+      <property name="id" value="wcsRequestBuilder" />
+      <property name="titleKey" value="WCSRequestBuilder.title" />
+      <property name="descriptionKey" value="WCSRequestBuilder.shortDescription" />
+      <property name="componentClass" value="org.geoserver.wcs.web.demo.WCSRequestBuilder" />
+    </bean>
+</beans>

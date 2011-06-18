@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <style type="text/css">
+      <#include "geoserver.css" parse=false/>
+      <#include "style.css" parse=false/>
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+       <tr>
+         <th width="100px">Id</th>
+         <th width="100px">Status</th>
+         <th>Server</th>
+         <th>Method</th>
+         <th>Path</th>
+         <th>Query</th>
+       </tr>
+      </thead>
+      <#assign i = 0>
+      <#list values as v>
+        <#if i % 2 = 0>
+          <tr class="even">
+        <#else>
+          <tr class="odd">
+        </#if>
+            <td><a href="${page.pageURI('/' + v.properties.id + '.html')}">${v.properties.id}</a></td>
+            <td>${v.properties.status}</td>
+            <td>${v.properties.host}</td>
+            <td>${v.properties.httpMethod}</td>
+            <#if v.properties.path?length gte 50>
+              <td title="${v.properties.path}">${v.properties.path?substring(0,50)}</td>
+            <#else>
+              <td>${v.properties.path}</td>
+            </#if>
+            
+            <#if v.properties.queryString?length gte 50> 
+              <td title="${v.properties.queryString}">${v.properties.queryString?substring(0,50)}</td>
+            <#else>
+              <td>${v.properties.queryString}</td>
+            </#if>
+        </tr>
+        <#assign i = i+1>
+      </#list>
+    </table>
+  </body>
+</html>

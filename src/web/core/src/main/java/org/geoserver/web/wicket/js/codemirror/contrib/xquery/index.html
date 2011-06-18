@@ -1,0 +1,551 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="../../js/codemirror.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <title>CodeMirror: XQuery highlighting demonstration</title>
+    <style type="text/css">
+      .CodeMirror-line-numbers {
+        width: 2.2em;
+        color: #aaa;
+        background-color: #eee;
+        text-align: right;
+        padding-right: .3em;
+        font-size: 10pt;
+        font-family: monospace;
+        padding-top: .4em;
+      }
+      body {
+          font-family: helvetica;
+          font-weight:bold;
+          max-width:4000px;
+      }
+      a {
+          color: #EB1D1D;
+          text-decoration: none;
+      }     
+      a:hover {
+          text-decoration: underline;
+      }
+      div.border {
+        border: 1px solid black;
+      }
+      .css-switch {
+          margin-right:15px;
+          padding-bottom:5px;
+      }
+    </style>
+  </head>
+  <body style="padding: 20px;">
+
+<div style="margin:auto; width:920px; border-width:1px;">
+<h2>XQuery Syntax Support for CodeMirror</h2>
+<p style="text-align: justify;  word-spacing: 3px;">This is a demonstration of the XQuery highlighting module
+for <a href="index.html">CodeMirror</a>. The formatting is CSS driven and very easy to customize to your liking.
+There are three sample styles sets below.
+You can edit or paste in any code below to give it a test run.
+</p>
+
+<a href="#" rel="xqcolors.css" class="css-switch">Light 1</a>  <a href="#" rel="xqcolors2.css" class="css-switch">Light 2</a> <a href="#" rel="xqcolors-dark.css" class="css-switch">Dark</a> 
+
+<div class="border">
+<textarea id="code" cols="120" rows="50">
+xquery version &quot;1.0-ml&quot;;
+(: this is
+ : a 
+   "comment" :)
+let $let := &lt;x attr=&quot;value&quot;&gt;&quot;test&quot;&lt;/x&gt;
+let $joe:=1
+return element element {
+  attribute attribute { 1 },
+  element test { &#39;a&#39; }, 
+  attribute foo { &quot;bar&quot; },
+  fn:doc()[ foo/@bar eq $let ],
+  //x }    
+  
+  
+  module namespace comoms-dls = &quot;http://marklogic.com/comoms-dls&quot;;
+  import module namespace dls = &quot;http://marklogic.com/xdmp/dls&quot; at &quot;/MarkLogic/dls.xqy&quot;;
+  import module namespace comoms-util = &quot;http://marklogic.com/comoms-util&quot; at &quot;/lib/comoms-util.xqy&quot;;
+  import module namespace comoms-user = &quot;http://marklogic.com/comoms-user&quot; at &quot;/lib/comoms-user.xqy&quot;;
+
+
+
+
+  (:~
+   : Make a call to insert and Manage. This IS NOT DONE WITHIN AN EVAL becuase
+   : haven&#39;t figured out how to pass the permissions variable through to be bound
+   :)
+  declare function comoms-dls:insert($uri as xs:string, $doc as node(),  $note as xs:string){
+      let $log := xdmp:log(&quot;in comoms-dls:insert.&quot;)
+      let $collection := &quot;DRAFTS&quot;
+      let $permissions := (xdmp:permission(&#39;mkp-admin&#39;, &#39;update&#39;), xdmp:permission(&#39;mkp-admin&#39;, &#39;read&#39;)) 
+      return dls:document-insert-and-manage($uri, fn:false(), $doc, $note, $permissions, $collection)
+
+      (:
+      let $collection := &quot;DRAFTS&quot;
+      return
+          xdmp:eval(
+              fn:concat(
+                  comoms-dls:_import(), 
+                  &quot;
+                  declare variable $uri as xs:string external;
+                  declare variable $doc as node() external;
+                  declare variable $collection as xs:string external;
+                  declare variable $note as xs:string external;
+                  dls:document-insert-and-manage($uri, fn:true(), $doc, $note, 
+                      (xdmp:permission(&#39;mkp-anon&#39;, &#39;read&#39;), xdmp:permission(&#39;mkp-admin&#39;, &#39;update&#39;)) , $collection)
+                  &quot;
+              ),
+              (xs:QName(&quot;uri&quot;), $uri, xs:QName(&quot;doc&quot;), $doc, xs:QName(&quot;note&quot;), $note, xs:QName(&quot;collection&quot;), $collection)
+          )    
+      :)    
+
+  };
+
+
+
+  declare function comoms-dls:manage($uri, $manageNote){
+      let $log := xdmp:log(&quot;in comoms-dls:manage with note.&quot;)
+      return (
+          xdmp:eval(
+              fn:concat(
+                  comoms-dls:_import(), 
+                  &quot;
+                  declare variable $uri as xs:string external;
+                  declare variable $manageNote as xs:string external;
+                  dls:document-manage($uri, fn:false(), $manageNote)
+                  &quot;
+              ),
+              (xs:QName(&quot;uri&quot;), $uri, xs:QName(&quot;manageNote&quot;), $manageNote)
+          )
+      )    
+  };
+
+  declare function comoms-dls:update($uri as xs:string, $doc as node(), $note as xs:string){
+
+      xdmp:eval(
+          fn:concat(
+              comoms-dls:_import(), 
+              &quot;
+              declare variable $uri as xs:string external;
+              declare variable $doc as node() external;
+              declare variable $note as xs:string external;
+              dls:document-update($uri, $doc, $note, fn:true(), (xdmp:permission(&#39;mkp-admin&#39;, &#39;update&#39;), xdmp:permission(&#39;mkp-admin&#39;, &#39;read&#39;)) )
+              &quot;
+          ),
+          (xs:QName(&quot;uri&quot;), $uri, xs:QName(&quot;doc&quot;), $doc, xs:QName(&quot;note&quot;), $note)
+      )
+
+  };
+
+
+  declare function comoms-dls:manage($uri){
+      let $log := xdmp:log(&quot;in comoms-dls:manage without note.&quot;)
+      return (xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-manage(&#39;&quot;, $uri, &quot;&#39;, fn:false())&quot;))
+      )
+  };
+
+  declare function comoms-dls:unmanageAndDelete($uris){
+      for $uri in $uris
+      let $unpublish := (xdmp:eval(
+          fn:concat(comoms-dls:_import(), 
+              &quot;import module namespace comoms-dls = &#39;http://marklogic.com/comoms-dls&#39; at &#39;/lib/comoms-dls.xqy&#39;; comoms-dls:unpublish(&#39;&quot;, 
+              $uri, &quot;&#39;)&quot;)))
+      let $unmanage :=  (xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-unmanage(&#39;&quot;, $uri, &quot;&#39;, fn:false(), fn:true())&quot;))
+      )
+      return
+          xdmp:document-delete($uri)
+  };
+
+
+  declare function comoms-dls:checkout($uri) {
+      xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-checkout(&#39;&quot;, $uri, &quot;&#39;, fn:false())&quot;))
+  }; 
+
+  declare function comoms-dls:checkin($uri) {
+      xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-checkin(&#39;&quot;, $uri, &quot;&#39;, fn:false())&quot;))
+  }; 
+
+
+  declare function comoms-dls:add($uri) {
+      xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-manage(&#39;&quot;, $uri, &quot;&#39;, fn:false())&quot;)
+      )    
+  }; 
+
+
+  declare function comoms-dls:documentHistory($uri) {
+      xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-history(&#39;&quot;, $uri, &quot;&#39;)&quot;)
+      )
+  };
+
+  declare function comoms-dls:checkoutStatus($uri) {
+      xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;dls:document-checkout-status(&#39;&quot;, $uri, &quot;&#39;)&quot;)
+      )
+  };
+
+  (:~
+   : call fn:doc but wrapped in an eval 
+   :)
+  declare function comoms-dls:docInEval($uri) {
+      xdmp:eval(
+          fn:concat(comoms-dls:_import(), &quot;fn:doc(&#39;&quot;, $uri, &quot;&#39;)&quot;)
+      )
+  };
+
+  (: ########################################################################### :)
+  (: PUBLISHING FUNCTIONS :)
+  (: ########################################################################### :)
+
+  (:~
+   : Given a sequence of version URIs, publish all of these versions of each document
+   : If there is a version of the same document already published, unpublish it 1st
+   : 
+   : When &quot;publish&quot; is referred to, we mean that it is put into the PUBLISHED collection
+   : unpublish removes content from this collection
+   : @param $version_uris - sequence of uris of versions of managed documents to publish
+   :)
+  declare function comoms-dls:publish($version_uris as item()*) {
+      for $uri in $version_uris
+      let $doc := fn:doc($uri)
+      let $managed_base_uri := $doc/node()/property::dls:version/dls:document-uri/text()
+      let $existing :=  comoms-dls:publishedDoc($managed_base_uri)
+      let $unpublishExisting := if($existing) then comoms-dls:unpublishVersion((xdmp:node-uri($existing)))  else ()
+      let $addPermissions := dls:document-add-permissions($uri, (xdmp:permission(&#39;mkp-anon&#39;, &#39;read&#39;)))
+      return
+          dls:document-add-collections($uri, (&quot;PUBLISHED&quot;))    
+  };
+
+  declare function comoms-dls:publishLatest($uri) {
+      (: TODO check if it&#39;s in the draft collection probably :)
+
+      let $latest_version_uri := comoms-dls:latestVersionUri($uri)
+      let $log:= xdmp:log(fn:concat(&quot;latest: &quot;, $latest_version_uri))    
+      let $log:= xdmp:log(fn:concat(&quot;uri: &quot;, $uri))            
+      return comoms-dls:publish($latest_version_uri)    
+
+  };
+
+  declare function comoms-dls:latestVersionUri($uri) {
+      let $latest_version_num :=
+          (
+          for $version in dls:document-history($uri)/dls:version
+          order by fn:number($version//dls:version-id/text()) descending
+          return $version//dls:version-id/text()
+          )[1]
+
+
+      return dls:document-version-uri($uri, $latest_version_num)
+  };
+
+  declare function comoms-dls:unpublish($uris as item()*) {
+      for $uri in $uris
+      return
+          let $published_doc := comoms-dls:publishedDoc($uri)
+          return
+              if($published_doc) then
+                  let $published_version_uri := xdmp:node-uri($published_doc)
+                  return comoms-dls:unpublishVersion($published_version_uri)        
+              else
+                  ()
+  };
+
+  declare function comoms-dls:latestPublishedDocAuthor($uri) {
+      let $author_id := doc($uri)/property::dls:version/dls:author/text()
+      return
+          if($author_id) then
+              comoms-user:getUsername($author_id)
+          else 
+              ()
+
+  };
+
+  (:~
+   : Given a sequence of version URIs, unpublish all of these versions of each document
+   :)
+  declare function comoms-dls:unpublishVersion($version_uris as item()*) {
+      for $uri in $version_uris
+      return
+          let $removePermissions := dls:document-remove-permissions($uri, (xdmp:permission(&#39;mkp-anon&#39;, &#39;read&#39;)))
+          return dls:document-remove-collections($uri, (&quot;PUBLISHED&quot;))        
+  };
+
+  (:~
+   : Given the base URI of a managed piece of content, return the document of the node
+   : of the version that is published
+   :)
+  declare function comoms-dls:publishedDoc($uri) {
+      fn:collection(&quot;PUBLISHED&quot;)[property::dls:version/dls:document-uri = $uri] 
+  };
+
+
+  (:~
+   : Test if any version of the managed document is published
+   :)
+  declare function comoms-dls:isPublished($uri) {
+      if( comoms-dls:publishedDoc($uri)) then
+          fn:true()
+      else
+          fn:false()
+  };
+
+
+  declare function comoms-dls:publishedState($uri) {
+      let $doc := comoms-dls:publishedDoc($uri)
+      let $published_uri := if($doc) then xdmp:node-uri($doc) else ()
+      let $latest := comoms-dls:latestVersionUri($uri)
+      return
+          if($doc) then
+              if($latest ne $published_uri) then
+                  &quot;stale&quot;
+              else
+                  &quot;published&quot;
+          else
+              &quot;unpublished&quot;
+  };
+
+
+  declare function comoms-dls:getManagedDocUri($uri) {
+      let $doc := fn:doc($uri)
+      let $managed_uri := $doc/property::dls:version/dls:document-uri/text()
+      let $managed_uri := if($managed_uri) then $managed_uri else $uri
+      return $managed_uri
+  };
+
+  (:~
+   : Given a manage content url (e.g. /content/123456.xml) return the appropriate
+   : version of the document based on what stage collection is being viewed and 
+   : what&#39;s published
+   :
+   : @param $uri a manage content url (e.g. /content/123456.xml) - NOT A VERSIONED URI
+   :)
+  declare function comoms-dls:doc($uri) {
+      let $doc := fn:root(comoms-dls:collection()[property::dls:version/dls:document-uri = $uri][1])
+      return
+          if($doc) then 
+              $doc 
+          else 
+              let $managedDocInCollection := comoms-dls:collection-name() = xdmp:document-get-collections($uri)
+              return
+                  if($managedDocInCollection) then
+                      fn:doc($uri)
+                  else
+                      ()
+  };
+
+  (:~ 
+   : Get the collection to be used when querying for content
+   : THIS or comoms-dls:collection-name() SHOULD BE USED WHEN BUILDING ANY QUERY FOR MANAGED CONTENT
+   :)
+  declare function comoms-dls:collection()  {
+      fn:collection( comoms-dls:collection-name() )
+  };
+
+  (:~ 
+   : Get the collection nameto be used when querying for content
+   : THIS or comoms-dls:collection() SHOULD BE USED WHEN BUILDING ANY QUERY FOR MANAGED CONTENT 
+   :)
+  declare function comoms-dls:collection-name() as xs:string {
+      let $default_collection := &quot;PUBLISHED&quot;
+      return
+          if(comoms-user:isAdmin()) then 
+              let $pub_stage_collection_cookie := comoms-util:getCookie(&quot;COMOMS_COLLECTION&quot;)
+              return
+                  if($pub_stage_collection_cookie) then
+                      $pub_stage_collection_cookie
+                  else
+                      $default_collection
+          else
+              $default_collection
+  };
+
+  (:~
+   : Check if the published collection is being viewed
+   :)
+  declare function comoms-dls:isViewingPublished() {
+      if(comoms-dls:collection-name() = &quot;PUBLISHED&quot;) then
+          fn:true()
+      else
+          fn:false()
+  };
+
+  (:~
+   : Get the best URL for the content URI. 
+   : This is either the default URI based on detail type or should also take
+   : into account friendly urls and navigation structures to figure out the 
+   : best choice
+   :)
+  declare function comoms-dls:contentUrl($uri) {
+
+      (: TODO: add friendly URL and nav structure logic 1st :)
+
+      let $doc := fn:doc($uri)
+      let $managedDocUri := $doc/property::dls:version/dls:document-uri
+      let $uri := if($managedDocUri) then $managedDocUri else $uri
+      let $type := $doc/node()/fn:name()
+      let $content_id := fn:tokenize( fn:tokenize($uri, &quot;/&quot;)[3], &quot;\.&quot;)[1]
+      return
+          fn:concat(&quot;/&quot;, $type, &quot;/&quot;, $content_id)
+  };
+
+  (:
+   :
+   :  gets list of doc versions and uri. 
+   :
+   :)
+  declare function comoms-dls:versionHistory($uri) {
+      let $published_doc := comoms-dls:publishedDoc($uri)
+      let $published_uri := if($published_doc) then xdmp:node-uri($published_doc) else ()
+      return
+      &lt;versions&gt;
+          {
+          for $version in dls:document-history($uri)/dls:version
+            let $version_num := $version/dls:version-id/text()
+            let $created := $version/dls:created/text()
+            let $author_id := $version/dls:author/text()
+            let $author := comoms-user:getUsername($author_id)
+
+
+            let $note := $version/dls:annotation/text()
+            let $version_uri := xdmp:node-uri(dls:document-version($uri, $version_num))
+            let $published := $published_uri eq $version_uri
+            return 
+              &lt;version&gt;
+                  &lt;version-number&gt;{$version_num}&lt;/version-number&gt;
+                  &lt;created&gt;{$created}&lt;/created&gt;                
+                  &lt;author&gt;{$author}&lt;/author&gt;
+                  &lt;published&gt;{$published}&lt;/published&gt;
+                  &lt;version-uri&gt;{$version_uri}&lt;/version-uri&gt;
+              &lt;/version&gt;  
+          }        
+      &lt;/versions&gt;
+  };
+
+
+
+
+  (: ########################################################################### :)
+  (: PRIVATE FUNCTIONS :)
+  (: ########################################################################### :)
+
+  declare function comoms-dls:_import() {
+      &quot;xquery version &#39;1.0-ml&#39;;
+       import module namespace dls = &#39;http://marklogic.com/xdmp/dls&#39; at &#39;/MarkLogic/dls.xqy&#39;; &quot; 
+  };  
+  
+  (: CODE SAMPLE BELOW BORROWED FROM PARTICK WIED :)
+  declare function local:document-move-forest($uri as xs:string, $forest-ids as xs:unsignedLong*)
+  {
+    xdmp:document-insert(
+      $uri,
+      fn:doc($uri),
+      xdmp:document-get-permissions($uri),
+      xdmp:document-get-collections($uri),
+      xdmp:document-get-quality($uri),
+      $forest-ids
+    )
+  };
+
+  let $xml :=
+    &lt;xml att=&quot;blah&quot; att2=&quot;blah&quot;&gt;
+      sdasd&lt;b&gt;asdasd&lt;/b&gt;
+    &lt;/xml&gt;
+  (: -------- :)
+  for $d in fn:doc(&quot;depts.xml&quot;)/depts/deptno
+  let $e := fn:doc(&quot;emps.xml&quot;)/emps/emp[deptno = $d]
+  where fn:count($e) &gt;= 10
+  order by fn:avg($e/salary) descending
+  return
+     &lt;big-dept&gt;
+        {
+        $d,
+        &lt;headcount&gt;{fn:count($e)}&lt;/headcount&gt;,
+        &lt;avgsal&gt;{fn:avg($e/salary)}&lt;/avgsal&gt;
+        }
+     &lt;/big-dept&gt;
+  (: -------- :)
+  declare function local:depth($e as node()) as xs:integer
+  {
+     (: A node with no children has depth 1 :)
+     (: Otherwise, add 1 to max depth of children :)
+     if (fn:empty($e/*)) then 1
+     else fn:max(for $c in $e/* return local:depth($c)) + 1
+  };
+
+  local:depth(fn:doc(&quot;partlist.xml&quot;))
+
+  (: -------- :)
+  &lt;html&gt;&lt;head/&gt;&lt;body&gt;
+  {
+    for $act in doc(&quot;hamlet.xml&quot;)//ACT
+    let $speakers := distinct-values($act//SPEAKER)
+    return
+      &lt;div&gt;{ string($act/TITLE) }&lt;/h1&gt;
+        &lt;ul&gt;
+        {
+          for $speaker in $speakers
+          return &lt;li&gt;{ $speaker }&lt;/li&gt;
+        }
+        &lt;/ul&gt;
+      &lt;/div&gt;
+  }
+  &lt;/body&gt;&lt;/html&gt;
+  (: -------- :)
+  {
+          for $book in doc(&quot;books.xml&quot;)//book
+          return
+          if (contains($book/author/text(),&quot;Herbert&quot;) or contains($book/author/text(),&quot;Asimov&quot;))
+                  then $book
+          else $book/text()
+
+          let $let := &lt;x&gt;&quot;test&quot;&lt;/x&gt;
+          return element element {
+          attribute attribute { 1 },
+          element test { &#39;a&#39; },
+          attribute foo { &quot;bar&quot; },
+          fn:doc()[ foo/@bar eq $let ],
+          //x }
+  }
+  (: -------- :)
+  &lt;bib&gt;
+   {
+    for $b in doc(&quot;http://bstore1.example.com/bib.xml&quot;)/bib/book
+    where $b/publisher = &quot;Addison-Wesley&quot; and $b/@year &gt; 1991
+    return
+      &lt;book year=&quot;{ $b/@year }&quot;&gt;
+       { $b/title }
+      &lt;/book&gt;
+   }
+  &lt;/bib&gt;
+  (: -------- :)
+</textarea>
+</div>
+<div style="width:100%;text-align:center;padding-top:15px;">
+    Developed by <a href="http://mike.brevoort.com">Mike Brevoort</a> (<a href="http://twitter.com">@mbrevoort</a>) 
+    <br/><small><a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</a></small></div>
+
+</div>
+<script type="text/javascript">
+  var editor = CodeMirror.fromTextArea('code', {
+    height: "550px",
+    parserfile: ["../contrib/xquery/js/tokenizexquery.js", "../contrib/xquery/js/parsexquery.js" ],
+    stylesheet: ["css/xqcolors.css"],
+    path: "../../js/",
+    continuousScanning: false, //500,
+    lineNumbers: true
+  });
+  
+  $(document).ready(function() {
+      $(".css-switch").click(function() {
+         editor.setStylesheet("css/" + $(this).attr("rel"));
+      });
+  });
+</script>
+  </body>
+</html>

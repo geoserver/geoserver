@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<MapbuilderConfig version="0.2.1" id="referenceTemplate" xmlns="http://mapbuilder.sourceforge.net/mapbuilder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mapbuilder.sourceforge.net/mapbuilder ../../mapbuilder/lib/schemas/config.xsd">
+  <!--
+    Description: This configuration file determines what components from the
+                 Mapbuilder library are to be included in a Main Mapbuilder web
+                 page.
+    Licence:     GPL as per: http://www.gnu.org/copyleft/gpl.html 
+  -->
+  <models>
+    <Context id="tasmaniaMap">
+      <defaultModelUrl>demo/wfs-t/tasmania.xml</defaultModelUrl>
+      <widgets>
+        <MapPane id="tasmaniaMapWidget">
+          <htmlTagId>tasmaniaMapPane</htmlTagId>
+          <mapContainerId>tasmaniaMapContainer</mapContainerId>
+          <fixedWidth>220</fixedWidth>
+        </MapPane>
+      </widgets>
+    </Context>
+    <Context id="citeMap">
+      <defaultModelUrl>demo/cite/cite.xml</defaultModelUrl>
+      <widgets>
+        <MapPane id="citeMapWidget">
+          <htmlTagId>citeMapPane</htmlTagId>
+          <mapContainerId>citeMapContainer</mapContainerId>
+          <fixedWidth>220</fixedWidth>
+        </MapPane>
+      </widgets>
+    </Context>
+  </models>
+  <skinDir>./lib/skin/default</skinDir>
+</MapbuilderConfig>
+

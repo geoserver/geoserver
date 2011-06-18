@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:coordinateReferenceSystems:3.1.1"/>
+		<documentation>Subset of coordinateReferenceSystems.xsd for GML 3.1.1 common CRSs profile. Primary editor: Arliss Whiteside. Last updated 2005-10-11 
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<include schemaLocation="coordinateSystems.xsd"/>
+	<include schemaLocation="datums.xsd"/>
+	<include schemaLocation="coordinateOperations.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="_CoordinateReferenceSystem" type="gml:AbstractReferenceSystemType" abstract="true" substitutionGroup="gml:_CRS">
+		<annotation>
+			<documentation>A coordinate reference system consists of an ordered sequence of coordinate system axes that are related to the earth through a datum. A coordinate reference system is defined by one datum and by one coordinate system. Most coordinate reference system do not move relative to the earth, except for engineering coordinate reference systems defined on moving platforms such as cars, ships, aircraft, and spacecraft. For further information, see OGC Abstract Specification Topic 2.
+
+Coordinate reference systems are commonly divided into sub-types. The common classification criterion for sub-typing of coordinate reference systems is the way in which they deal with earth curvature. This has a direct effect on the portion of the earth's surface that can be covered by that type of CRS with an acceptable degree of error. The exception to the rule is the subtype "Temporal" which has been added by analogy. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<complexType name="CoordinateReferenceSystemRefType">
+		<annotation>
+			<documentation>Association to a coordinate reference system, either referencing or containing the definition of that reference system. </documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_CoordinateReferenceSystem"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="CompoundCRS" type="gml:CompoundCRSType" substitutionGroup="gml:_CRS"/>
+	<!-- =================================================== -->
+	<complexType name="CompoundCRSType">
+		<annotation>
+			<documentation>A coordinate reference system describing the position of points through two or more independent coordinate reference systems. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractReferenceSystemType">
+				<sequence>
+					<element ref="gml:includesCRS" minOccurs="2" maxOccurs="unbounded">
+						<annotation>
+							<documentation>Ordered sequence of associations to all the component coordinate reference systems included in this compound coordinate reference system. </documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="includesCRS" type="gml:CoordinateReferenceSystemRefType">
+		<annotation>
+			<documentation>An association to a component coordinate reference system included in this compound coordinate reference system. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="GeographicCRS" type="gml:GeographicCRSType" substitutionGroup="gml:_CoordinateReferenceSystem"/>
+	<!-- =================================================== -->
+	<complexType name="GeographicCRSType">
+		<annotation>
+			<documentation>A coordinate reference system based on an ellipsoidal approximation of the geoid; this provides an accurate representation of the geometry of geographic features for a large portion of the earth's surface.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractReferenceSystemType">
+				<sequence>
+					<element ref="gml:usesEllipsoidalCS"/>
+					<element ref="gml:usesGeodeticDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="usesEllipsoidalCS" type="gml:EllipsoidalCSRefType">
+		<annotation>
+			<documentation>Association to the ellipsoidal coordinate system used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesGeodeticDatum" type="gml:GeodeticDatumRefType">
+		<annotation>
+			<documentation>Association to the geodetic datum used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="VerticalCRS" type="gml:VerticalCRSType" substitutionGroup="gml:_CoordinateReferenceSystem"/>
+	<!-- =================================================== -->
+	<complexType name="VerticalCRSType">
+		<annotation>
+			<documentation>A 1D coordinate reference system used for recording heights or depths. Vertical CRSs make use of the direction of gravity to define the concept of height or depth, but the relationship with gravity may not be straightforward. By implication, ellipsoidal heights (h) cannot be captured in a vertical coordinate reference system. Ellipsoidal heights cannot exist independently, but only as an inseparable part of a 3D coordinate tuple defined in a geographic 3D coordinate reference system. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractReferenceSystemType">
+				<sequence>
+					<element ref="gml:usesVerticalCS"/>
+					<element ref="gml:usesVerticalDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="usesVerticalCS" type="gml:VerticalCSRefType">
+		<annotation>
+			<documentation>Association to the vertical coordinate system used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesVerticalDatum" type="gml:VerticalDatumRefType">
+		<annotation>
+			<documentation>Association to the vertical datum used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesCartesianCS" type="gml:CartesianCSRefType">
+		<annotation>
+			<documentation>Association to the Cartesian coordinate system used by this CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="_GeneralDerivedCRS" type="gml:AbstractGeneralDerivedCRSType" abstract="true" substitutionGroup="gml:_CoordinateReferenceSystem"/>
+	<!-- =================================================== -->
+	<complexType name="AbstractGeneralDerivedCRSType" abstract="true">
+		<annotation>
+			<documentation>A coordinate reference system that is defined by its coordinate conversion from another coordinate reference system (not by a datum). This abstract complexType shall not be used, extended, or restricted, in an Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractReferenceSystemType">
+				<sequence>
+					<element ref="gml:baseCRS"/>
+					<element ref="gml:definedByConversion"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<element name="baseCRS" type="gml:CoordinateReferenceSystemRefType">
+		<annotation>
+			<documentation>Association to the coordinate reference system used by this derived CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="definedByConversion" type="gml:GeneralConversionRefType">
+		<annotation>
+			<documentation>Association to the coordinate conversion used to define this derived CRS. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="ProjectedCRS" type="gml:ProjectedCRSType" substitutionGroup="gml:_GeneralDerivedCRS"/>
+	<!-- =================================================== -->
+	<complexType name="ProjectedCRSType">
+		<annotation>
+			<documentation>A 2D coordinate reference system used to approximate the shape of the earth on a planar surface, but in such a way that the distortion that is inherent to the approximation is carefully controlled and known. Distortion correction is commonly applied to calculated bearings and distances to produce values that are a close match to actual field values. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeneralDerivedCRSType">
+				<sequence>
+					<element ref="gml:usesCartesianCS"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+</schema>

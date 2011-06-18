@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+  <namespaces>
+    <Namespace>
+      <prefix>gml</prefix>
+      <uri>http://www.opengis.net/gml</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>gsml</prefix>
+      <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>gss</prefix>
+      <uri>http://www.xxx.yyy.zzz/erd/gss</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>soapenv</prefix>
+      <uri>http://schemas.xmlsoap.org/soap/envelope/</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>xlink</prefix>
+      <uri>http://www.w3.org/1999/xlink</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>qaz</prefix>
+      <uri>http://www.xxx.yyy.zzz/testWebService/</uri>
+    </Namespace>  
+    <Namespace>
+      <prefix>erd</prefix>
+      <uri>http://www.xxx.yyy.zzz/erd</uri>
+    </Namespace>       
+  </namespaces>
+  <sourceDataStores>
+    <DataStore>
+      <id>ws</id>
+      <parameters>         
+  		<Parameter><name>DATA_FILE_DIRECTORY_PARAM_KEY</name><value>./src/test/resources/test-data/cpXmlResponse.xml</value></Parameter>
+      </parameters>
+    </DataStore>    
+  </sourceDataStores>
+  <catalog>mappedPolygons.oasis.xml</catalog>
+  <targetTypes>
+    <FeatureType>
+      <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+    </FeatureType>
+  </targetTypes>
+  <typeMappings>
+    <FeatureTypeMapping>
+      <mappingName>COMPOSITION</mappingName>
+      <sourceDataStore>ws</sourceDataStore>     
+      <sourceType>gss:GEOLOGICALUNIT_250K_POLY</sourceType>
+      <targetElement>gsml:CompositionPart</targetElement>
+      <itemXpath>/soapenv:Envelope/soapenv:Body/qaz:getGeologicalFeaturesByFilterStringResponse/qaz:out/qaz:item</itemXpath>
+      <isXmlDataStore>true</isXmlDataStore> 
+      <attributeMappings>           	
+               
+        <AttributeMapping>
+          <label>gsml:composition</label>       
+          <targetAttribute>gsml:CompositionPart</targetAttribute>
+          <instancePath>gss:geologicalUnit/gss:GeologicalUnit</instancePath>
+        </AttributeMapping>                      
+       
+       <AttributeMapping>       
+          <parentLabel>gsml:composition</parentLabel>
+          <targetAttribute>FEATURE_LINK</targetAttribute>     
+          <sourceExpression><inputAttribute>@id</inputAttribute></sourceExpression>
+        </AttributeMapping> 
+         
+        <AttributeMapping>        
+          <label>gsml:lithology</label>
+          <parentLabel>gsml:composition</parentLabel>          
+          <targetAttribute>gsml:lithology/gsml:ControlledConcept</targetAttribute>  
+          <idExpression><inputAttribute>erd:TermValue/erd:value/erd:ClassificationCode/@id</inputAttribute></idExpression>          
+          <instancePath>gss:rank</instancePath>
+        </AttributeMapping>   
+                            
+        <AttributeMapping>
+           <parentLabel>gsml:lithology</parentLabel> 
+           <targetAttribute>gsml:lithology/gsml:ControlledConcept/gml:name[1]</targetAttribute>            
+           <sourceExpression>
+           		<inputAttribute>erd:TermValue/erd:value/erd:ClassificationCode/erd:name</inputAttribute>        		
+           </sourceExpression>   
+        </AttributeMapping>
+        
+        <AttributeMapping>           
+           <parentLabel>gsml:lithology</parentLabel> 
+           <targetAttribute>gsml:lithology/gsml:ControlledConcept/gml:name[2]</targetAttribute>            
+           <sourceExpression>
+           		<inputAttribute>erd:TermValue/erd:value/erd:ClassificationCode/erd:urn</inputAttribute>           		
+           </sourceExpression>            
+         </AttributeMapping>
+         
+         <AttributeMapping>           
+           <parentLabel>gsml:lithology</parentLabel> 
+           <targetAttribute>gsml:lithology/gsml:ControlledConcept/gml:description</targetAttribute>            
+           <sourceExpression>
+           		<inputAttribute>erd:TermValue/erd:value/erd:ClassificationCode/erd:description</inputAttribute>           		
+           </sourceExpression>            
+         </AttributeMapping>
+ 		</attributeMappings>
+    </FeatureTypeMapping>
+  </typeMappings>
+</as:AppSchemaDataAccess>

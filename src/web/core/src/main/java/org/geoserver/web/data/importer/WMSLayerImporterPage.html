@@ -1,0 +1,23 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+
+    <form wicket:id="form">
+        <div wicket:id="layerChooser"></div>
+        <wicket:fragment wicket:id="iconFragment">
+          <img wicket:id="layerIcon" />
+        </wicket:fragment>        
+        <p/>
+        <div class="button-group selfclear">
+            <a href="#" wicket:id="importAll"><wicket:message key="importAll">Select all</wicket:message></a>
+            <a href="#" wicket:id="import"><wicket:message key="import">Import</wicket:message></a>
+        </div>
+    </form>
+    
+    <wicket:fragment wicket:id="labelIcon">
+      <img wicket:id="icon">&nbsp;</img><span wicket:id="label"></span>
+    </wicket:fragment>    
+    
+</wicket:extend>
+</body>
+</html>

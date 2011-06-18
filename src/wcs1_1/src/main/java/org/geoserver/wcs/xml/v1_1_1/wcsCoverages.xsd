@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:ows="http://www.opengis.net/ows/1.1" 
+	xmlns="http://www.w3.org/2001/XMLSchema" 
+	elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsCoverages.xsd 2007-07-01</appinfo>
+		<documentation>This XML Schema Document specifies types and elements for groups of coverages, allowing each coverage to include or reference multiple files. 
+		Copyright (c) 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- ==========================================================
+		Types and elements
+	    ========================================================== -->
+	<element name="Coverages" type="wcs:CoveragesType"/>
+	<!-- ========================================================== -->
+	<complexType name="CoveragesType">
+		<annotation>
+			<documentation>Group of coverages that can be used as the response from the WCS GetCoverage operation, allowing each coverage to include or reference multiple files. This Coverages element may also be used for outputs from, or inputs to, other OWS operations. </documentation>
+		</annotation>
+		<sequence>
+			<element ref="wcs:Coverage" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<!-- ========================================================== -->
+	<element name="Coverage" type="ows:ReferenceGroupType" substitutionGroup="ows:ReferenceGroup">
+		<annotation>
+			<documentation>Complete data for one coverage, referencing each coverage file either remotely or locally in the same message. </documentation>
+		</annotation>
+	</element>
+	<!-- ========================================================== -->
+</schema>

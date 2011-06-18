@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="genericGDALStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="genericGDALRaster"/>
+    <property name="factoryClass" value="org.geotools.coverageio.gdal.BaseGDALGridFormat"/>
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+    <property name="icon" value="img/icons/geosilk/page_white_raster.png"/>
+    <property name="componentClass" value="org.geoserver.web.data.store.raster.FileRasterEditPanel"/>
+  </bean>
+
+</beans>

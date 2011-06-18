@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://example.com" xmlns:ex="http://example.com" xmlns:gml="http://www.opengis.net/gml"
+    xmlns:sa="http://www.opengis.net/sampling/1.0" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="1.0">
+
+    <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <import namespace="http://www.opengis.net/sampling/1.0" schemaLocation="http://schemas.opengis.net/sampling/1.0.0/sampling.xsd" />
+
+    <complexType name="shapeFeatureType">
+        <complexContent>
+            <extension base="sa:SamplingCurveType" />
+        </complexContent>
+    </complexType>
+
+    <element name="ShapeContent" substitutionGroup="gml:_Feature" type="ex:shapeFeatureType" />
+
+</schema>

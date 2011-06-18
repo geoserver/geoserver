@@ -1,0 +1,16 @@
+<!-- Gets the WFS capabilities. For WMS capabilities, see WMS_getCapabilities demo-->
+<!--
+
+      This will briefly describe all the layers (FeatureTypes) in that you have
+      in your WFS server, plus more generic information about what your server
+      supports.
+      
+      For more information about a particular FeatureType, use the 
+      WFS_describeFeatureType.xml demo!
+      
+  -->
+<GetCapabilities
+  service="WFS"
+  xmlns="http://www.opengis.net/wfs"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>

@@ -1,0 +1,35 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+  <wicket:fragment wicket:id="header">
+    <ul>
+      <li><a href="gwc"><wicket:message key="GWCSettingsPage.gwcHome" /></a></li>
+      <li><a href="gwc/demo"><wicket:message key="GWCSettingsPage.gwcDemos" /></a></li>
+    </ul>
+  </wicket:fragment>
+  <form wicket:id="form">
+    <ul>
+      <li>&nbsp;</li>
+      <li>
+        <div wicket:id="gwcServicesPanel"></div>
+      </li>
+      <li>
+        <div wicket:id="cachingOptionsPanel"></div>
+      </li>
+      <li>
+        <div wicket:id="diskQuotaPanel"></div>
+      </li>
+    </ul>
+    <div>
+      <ul>
+        <li class="button-group selfclear">
+          <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+          <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+        </li>
+      </ul>
+    </div>
+  </form>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/examples" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:ex="http://www.opengis.net/examples" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" xml:lang="en">
+	<annotation>
+		<appinfo>transverseMercator.xsd</appinfo>
+		<documentation>How to encode definition of specific Transverse Mercator conversion. Example Application Schema to encode the data needed to define a specific Transverse Mercator type of map projection, which is a coordinate conversion. Written in the "ex" namespace. 
+		This schema encodes a draft Transverse Mercator package that builds on the Coordinate Operation (CC_) package of the extended UML Model for OGC Abstract Specification Topic 2: Spatial Referencing by Coordinates. That draft package defines restricted subtypes of the CC_Conversion and CC_ParameterValue classes as needed for the Transverse Mercator map projection conversion. 
+		Reference: Guidance Note Number 7 "Coordinate Conversions and Transformations including Formulas" (available through http://www.epsg.org/), especially Section 1.4.6 "Transverse Mercator". 
+		Primary editor: Arliss Whiteside. Last updated 2005-11-15
+		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved.
+</documentation>
+	</annotation>
+	<!-- ======================================================
+       includes and imports
+	====================================================== -->
+	<import namespace="http://www.opengis.net/gml" schemaLocation="../../gmlCommonCRSsProfile.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../../../../../../xlink/1.0.1/xlinks.xsd"/>
+	<!-- ======================================================
+       elements and types
+	====================================================== -->
+	<element name="TransverseMercatorConversion" type="ex:TransverseMercatorConversionType" substitutionGroup="gml:_GeneralConversion"/>
+	<!-- =================================================== -->
+	<complexType name="TransverseMercatorConversionType">
+		<annotation>
+			<documentation>Specific Transverse Mercator map projection. Uses the AbstractGeneralConversionType with restricted values for included elements, including elements in the coordinateOperationID element with the IdentifierType. If appropriate, the "codeSpace" element should have the string value "EPSG", and the "code" element should then have the appropriate EPSG code value. The other elements in the IdentifierType can be omitted. The "coordinateOperationName" element shall have a string value that names a specific Transverse Mercator map projection. The "_PositionalAccuracy" and "metaDataProperty" elements can be omitted. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeneralConversionType">
+				<sequence>
+					<element ref="ex:usesTransverseMercatorMethod"/>
+					<element ref="ex:usesLatitudeOfNaturalOriginValue"/>
+					<element ref="ex:usesLongitudeOfNaturalOriginValue"/>
+					<element ref="ex:usesScaleFactorAtNaturalOriginValue"/>
+					<element ref="ex:usesFalseEastingValue"/>
+					<element ref="ex:usesFalseNorthingValue"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<!-- =================================================== -->
+	<element name="usesTransverseMercatorMethod">
+		<annotation>
+			<documentation>Reference to Transverse Mercator operation method. </documentation>
+		</annotation>
+		<complexType>
+			<sequence/>
+			<attribute ref="xlink:href" use="required" fixed="urn:ogc:def:method:EPSG:6.3:9807"/>
+		</complexType>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesLatitudeOfNaturalOriginValue" type="ex:AngleValueType" substitutionGroup="gml:_generalParameterValue">
+		<annotation>
+			<documentation>Value of the Latitude of the natural origin parameter for a specific coordinate conversion. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesLongitudeOfNaturalOriginValue" type="ex:AngleValueType" substitutionGroup="gml:_generalParameterValue">
+		<annotation>
+			<documentation>Value of the Longitude of the natural origin (or central meridian) parameter for a specific coordinate conversion. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesScaleFactorAtNaturalOriginValue" type="ex:ScaleValueType" substitutionGroup="gml:_generalParameterValue">
+		<annotation>
+			<documentation>Value of the scale factor at the natural origin (on the central meridian) parameter for a specific coordinate conversion. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesFalseEastingValue" type="ex:LengthValueType" substitutionGroup="gml:_generalParameterValue">
+		<annotation>
+			<documentation>Value of the false Easting coordinate of the origin parameter for a specific coordinate conversion. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="usesFalseNorthingValue" type="ex:LengthValueType" substitutionGroup="gml:_generalParameterValue">
+		<annotation>
+			<documentation>Value of the false Northing coordinate of the origin parameter for a specific coordinate conversion. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<!-- =================================================== -->
+	<complexType name="AngleValueType">
+		<annotation>
+			<documentation>Angle measure operation parameter value. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeneralParameterValueType">
+				<sequence>
+					<choice>
+						<element ref="ex:angleValue"/>
+					</choice>
+					<element ref="gml:valueOfParameter"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<complexType name="ScaleValueType">
+		<annotation>
+			<documentation>Scale measure operation parameter value. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeneralParameterValueType">
+				<sequence>
+					<element ref="ex:scaleValue"/>
+					<element ref="gml:valueOfParameter"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<complexType name="LengthValueType">
+		<annotation>
+			<documentation>Length measure operation parameter value. </documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeneralParameterValueType">
+				<sequence>
+					<element ref="ex:lengthValue"/>
+					<element ref="gml:valueOfParameter"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =================================================== -->
+	<!-- =================================================== -->
+	<element name="angleValue" type="gml:AngleType" substitutionGroup="gml:value">
+		<annotation>
+			<documentation>Angle value of an operation parameter, recorded as a single number, with a unit of measure suitable for an angle, such as degrees or radians. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="scaleValue" type="gml:ScaleType" substitutionGroup="gml:value">
+		<annotation>
+			<documentation>Scale factor value of an operation parameter, with a unit of measure suitable for a scale factor, such as percent, permil, or parts-per-million. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+	<element name="lengthValue" type="gml:LengthType" substitutionGroup="gml:value">
+		<annotation>
+			<documentation>Length value of an operation parameter, with a unit of measure suitable for a length, such as metres or feet. </documentation>
+		</annotation>
+	</element>
+	<!-- =================================================== -->
+</schema>

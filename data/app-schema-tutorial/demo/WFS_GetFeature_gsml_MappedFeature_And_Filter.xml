@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature service="WFS" version="1.1.0" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+    xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <wfs:Query typeName="gsml:MappedFeature">
+        <ogc:Filter>
+            <ogc:And>
+                <ogc:BBOX>
+                    <ogc:PropertyName>gsml:shape</ogc:PropertyName>
+                    <gml:Envelope srsName="EPSG:4283">
+                        <gml:lowerCorner>140 -75</gml:lowerCorner>
+                        <gml:upperCorner>145 -20</gml:upperCorner>
+                    </gml:Envelope>
+                </ogc:BBOX>
+                <ogc:PropertyIsEqualTo>
+                    <ogc:PropertyName>gml:name</ogc:PropertyName>
+                    <ogc:Literal>Some basalt</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
+            </ogc:And>
+        </ogc:Filter>
+    </wfs:Query>
+</wfs:GetFeature>

@@ -1,0 +1,362 @@
+Spatialite Output Format Documentation (For Windows Seven 64 bits)
+
+For manage SpatiaLite Library, first we need import sqlite JDBC.
+	#ref = http://www.gaia-gis.it/spatialite-2.4.0-4/splite-jdbc.html
+
+As we know (like a lot of other issues), Windows Seven (64 bits) doesn't have a sqlite-JDBC, so... we need to build it ourselves from the source.
+	#ref = http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC#BuildfromSource
+The steps to build the JDBC are listed below:
+	- Install and configure (Check if the directory is in the PATH environment variable) Maven2 (or highter). #url = http://maven.apache.org/
+	- Install and configure (Check if the directory is in the PATH environment variable) Mercurial (hg). #url = http://mercurial.selenic.com
+	- Download the repository from Mercurial:
+		* hg clone https://sqlite-jdbc.googlecode.com/hg/ sqlite-jdbc
+	- Go inside the root of sqlite-jdbc and:
+		* mvn install
+	- When finish, go inside "target" directory and search for "sqlite-jdbc.($version)-SNAPSHOT.jar" (This one is the JDBC for our SO).
+
+Well, we have the JDBC for sqlite, and now we need the library "SpatiaLite" for import it through "SELECT load_extension('libspatialite.dll')",
+and once again, we need to build the appropriate libraries for Windows 64-bits. The steps to do that are listed below.
+
+	We need:
+	- minGW(with MSYS shell): http://sourceforge.net/projects/mingw/files/Automated%20MinGW%20Installer/mingw-get/
+				* Just download the lastest version.
+				* Execute the installer.
+				* In repository catalogues, check "Download lastest repository"
+				* In select components select all options exept "MinGW Developer Toolkit"
+	- PROJ.4 Library: #url = http://trac.osgeo.org/proj/
+	- GEOS Library: #url = http://trac.osgeo.org/geos/
+	- LIBICONV Library: #url = http://gnuwin32.sourceforge.net/packages/libiconv.htm (Only Binaries and Developer Files)
+	- and of course the SPATIALITE-AMALGAMATION Library: #url = http://www.gaia-gis.it/spatialite-2.4.0-4/sources.html
+
+	And now we let's start to build libraries:
+		#ref = http://www.gaia-gis.it/spatialite-2.4.0/mingw_how_to.html (Steps 1, 6, 8 and 9)
+	- First of all, we need to execute MSYS.bat, located at /path/to/mingw/msys/1.0/msys.bat.
+	- Building PROJ.4 :
+		* just follow #ref = http://www.gaia-gis.it/spatialite-2.4.0/mingw_how_to.html#libproj
+	- Building GEOS :
+		* just follow #ref = http://www.gaia-gis.it/spatialite-2.4.0/mingw_how_to.html#libgeos
+	- including LIBICONV :
+		* just copy the ziped files (Binaries and Developer) into /path/to/minwg/msys/1.0/local
+	- Building LIBSPATIALITE : 
+		* just follow #ref = http://www.gaia-gis.it/spatialite-2.4.0/mingw_how_to.html#libspatialite
+	- Finally go to /path/to/mingw/msys/1.0/local/bin and you will see the appropiate librearies.
+	
+Now we will check if all of this work, and for that, just check the following example:
+	#ref = http://www.gaia-gis.it/spatialite-2.4.0-4/splite-jdbc.html
+	
+1)Create a new folder, and name it "example".
+	Inside this, create the next structure:
+
+		***********************************************
+		****INSIDE LIB PUT AL DLLS GENERATED ABOVE*****
+		***********************************************
+
+		example -> lib - libgeos_c-1.dll
+					   - libgeos-3-3-0.dll
+					   - libproj-0.dll
+					   - libspatialite-2.dll
+					   
+				- SpatialiteSample.java
+				- sqlite-jdbc($version).jar (I changed the name to "sqlite-jdbc.jar")
+
+*NOTE: In this example we assume that the example directory is in 'c:/'
+*NOTE: In this example we assume that java is alredy installed
+
+2)Copy this code inside SpatialiteSample.java:
+
+#######################################################
+############# SpatialiteSample.java BEGIN #############
+#######################################################
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
+import org.sqlite.SQLiteConfig;
+
+public class SpatialiteSample
+{
+  public static void main(String[] args) throws ClassNotFoundException
+  {
+    try
+	{
+	// load the sqlite-JDBC driver using the current class loader
+    Class.forName("org.sqlite.JDBC");
+    Connection conn = null;
+	try
+    {
+      // enabling dynamic extension loading
+      // absolutely required by SpatiaLite
+      SQLiteConfig config = new SQLiteConfig();
+      config.enableLoadExtension(true);
+	  
+      // create a database connection
+      conn = DriverManager.getConnection("jdbc:sqlite:spatialiteSample.sqlite",config.toProperties());
+      Statement stmt = conn.createStatement();
+      stmt.setQueryTimeout(30); // set timeout to 30 sec.
+	  try
+		  //load the proj and geos libraries
+		  {
+		  Runtime.getRuntime().load("C:/example/lib/libgeos-3-3-0.dll");
+		  Runtime.getRuntime().load("C:/example/lib/libgeos_c-1.dll");
+		  Runtime.getRuntime().load("C:/example/lib/libproj-0.dll");
+		  }
+		  //errors while loading the libraries
+		  catch(SecurityException e)
+		  {
+			System.err.println(e.getMessage());
+		  }
+		  catch(UnsatisfiedLinkError e)
+		  {
+			System.err.println(e.getMessage());
+		  }
+		  catch(NullPointerException e)
+		  {
+			System.err.println(e.getMessage());
+		  }
+	  stmt.execute("SELECT load_extension('lib/libspatialite-2.dll')");
+      // enabling Spatial Metadata
+      //this automatically initializes SPATIAL_REF_SYS, GEOMETRY_COLUMNS and load one SRID Value (4326)
+	  String sql = "SELECT InitSpatialMetaData();";
+	  stmt.execute(sql);
+	  
+// ****** BEGIN EXAMPLE QUERYS ******
+		
+	  // creating a POINT table
+      sql = "CREATE TABLE test_pt (";
+      sql += "id INTEGER NOT NULL PRIMARY KEY,";
+      sql += "name TEXT NOT NULL)";
+      stmt.execute(sql);
+      // creating a POINT Geometry column
+      sql = "SELECT AddGeometryColumn('test_pt', ";
+      sql += "'geom', 4326, 'POINT', 'XY')"; // 'XY' supported from libspatialite 2.4 or highter
+      stmt.execute(sql);
+
+      // creating a LINESTRING table
+      sql = "CREATE TABLE test_ln (";
+      sql += "id INTEGER NOT NULL PRIMARY KEY,";
+      sql += "name TEXT NOT NULL)";
+      stmt.execute(sql);
+      // creating a LINESTRING Geometry column
+      sql = "SELECT AddGeometryColumn('test_ln', ";
+      sql += "'geom', 4326, 'LINESTRING', 'XY')"; 
+      stmt.execute(sql);
+
+      // creating a POLYGON table
+      sql = "CREATE TABLE test_pg (";
+      sql += "id INTEGER NOT NULL PRIMARY KEY,";
+      sql += "name TEXT NOT NULL)";
+      stmt.execute(sql);
+      // creating a POLYGON Geometry column
+      sql = "SELECT AddGeometryColumn('test_pg', ";
+      sql += "'geom', 4326, 'POLYGON', 'XY')";
+      stmt.execute(sql);
+
+      // inserting some POINTs
+      conn.setAutoCommit(false);
+      int i;
+      for (i = 0; i < 100; i++)
+      {
+        // for POINTs we'll use full text sql statements
+        sql = "INSERT INTO test_pt (id, name, geom) VALUES (";
+        sql += i + 1;
+        sql += ", 'test POINT #";
+        sql += i + 1;
+        sql += "', GeomFromText('POINT(";
+        sql += i / 1000.0;
+        sql += " ";
+        sql += i / 1000.0;
+        sql += ")', 4326))";
+        stmt.executeUpdate(sql);
+      }
+      conn.commit();
+
+      // checking POINTs
+      sql = "SELECT DISTINCT Count(*), GeometryType(geom), ";
+      sql += "Srid(geom) FROM test_pt";
+      ResultSet rs = stmt.executeQuery(sql);
+      while(rs.next())
+      {
+        // read the result set
+        String msg = "> Inserted ";
+        msg += rs.getInt(1);
+        msg += " entities of type ";
+        msg += rs.getString(2);
+        msg += " SRID=";
+        msg += rs.getInt(3);
+        System.out.println(msg);
+      }
+
+      // inserting some LINESTRINGs
+      // this time we'll use a Prepared Statement
+      sql = "INSERT INTO test_ln (id, name, geom) ";
+      sql += "VALUES (?, ?, GeomFromText(?, 4326))";
+      PreparedStatement ins_stmt = conn.prepareStatement(sql);
+      conn.setAutoCommit(false);
+      for (i = 0; i < 100000; i++)
+      {
+        // setting up values / binding
+        String name = "test LINESTRING #";
+        name += i + 1;
+        String geom = "LINESTRING (";
+        if ((i%2) == 1)
+        {
+          // odd row: five points
+          geom += "-180.0 -90.0, ";
+          geom += -10.0 - (i / 1000.0);
+          geom += " ";
+          geom += -10.0 - (i / 1000.0);
+          geom += ", ";
+          geom += -10.0 - (i / 1000.0);
+          geom += " ";
+          geom += 10.0 + (i / 1000.0);
+          geom += ", ";
+          geom += 10.0 + (i / 1000.0);
+          geom += " ";
+          geom += 10.0 + (i / 1000.0);
+          geom += ", 180.0 90.0";
+        }
+        else
+        {
+          // even row: two points
+          geom += -10.0 - (i / 1000.0);
+          geom += " ";
+          geom += -10.0 - (i / 1000.0);
+          geom += ", ";
+          geom += 10.0 + (i / 1000.0);
+          geom += " ";
+          geom += 10.0 + (i / 1000.0);
+        }
+        geom += ")";
+        ins_stmt.setInt(1, i+1);
+        ins_stmt.setString(2, name);
+        ins_stmt.setString(3, geom);
+        ins_stmt.executeUpdate();
+      }
+      conn.commit();
+
+      // checking LINESTRINGs
+      sql = "SELECT DISTINCT Count(*), GeometryType(geom), ";
+      sql += "Srid(geom) FROM test_ln";
+      rs = stmt.executeQuery(sql);
+      while(rs.next())
+      {
+        // read the result set
+        String msg = "> Inserted ";
+        msg += rs.getInt(1);
+        msg += " entities of type ";
+        msg += rs.getString(2);
+        msg += " SRID=";
+        msg += rs.getInt(3);
+        System.out.println(msg);
+      }
+
+      // inserting some POLYGONs
+      // this time too we'll use a Prepared Statement
+      sql = "INSERT INTO test_pg (id, name, geom) ";
+      sql += "VALUES (?, ?, GeomFromText(?, 4326))";
+      ins_stmt = conn.prepareStatement(sql);
+      conn.setAutoCommit(false);
+      for (i = 0; i < 100000; i++)
+      {
+        // setting up values / binding
+        String name = "test POLYGON #";
+        name += i + 1;
+        ins_stmt.setInt(1, i+1);
+        ins_stmt.setString(2, name);
+        String geom = "POLYGON((";
+        geom += -10.0 - (i / 1000.0);
+        geom += " ";
+        geom += -10.0 - (i / 1000.0);
+        geom += ", ";
+        geom += 10.0 + (i / 1000.0);
+        geom += " ";
+        geom += -10.0 - (i / 1000.0);
+        geom += ", ";
+        geom += 10.0 + (i / 1000.0);
+        geom += " ";
+        geom += 10.0 + (i / 1000.0);
+        geom += ", ";
+        geom += -10.0 - (i / 1000.0);
+        geom += " ";
+        geom += 10.0 + (i / 1000.0);
+        geom += ", ";
+        geom += -10.0 - (i / 1000.0);
+        geom += " ";
+        geom += -10.0 - (i / 1000.0);
+        geom += "))";
+        ins_stmt.setInt(1, i+1);
+        ins_stmt.setString(2, name);
+        ins_stmt.setString(3, geom);
+        ins_stmt.executeUpdate();
+      }
+      conn.commit();
+
+      // checking POLYGONs
+      sql = "SELECT DISTINCT Count(*), GeometryType(geom), ";
+      sql += "Srid(geom) FROM test_pg";
+      rs = stmt.executeQuery(sql);
+      while(rs.next())
+      {
+        // read the result set
+        String msg = "> Inserted ";
+        msg += rs.getInt(1);
+        msg += " entities of type ";
+        msg += rs.getString(2);
+        msg += " SRID=";
+        msg += rs.getInt(3);
+        System.out.println(msg);
+      }
+	  
+// ****** FINISH EXAMPLE QUERYS ******
+	}
+    catch(SQLException e)
+    {
+      // if the error message is "out of memory",
+      // it probably means no database file is found
+      System.err.println(e.getMessage());
+    }
+    finally
+    {
+      try
+      {
+        if(conn != null)
+          conn.close();
+      }
+      catch(SQLException e)
+      {
+        // connection close failed.
+        System.err.println(e);
+      }
+    }
+	}
+	catch(RuntimeException e)
+	{
+		System.err.println(e.getMessage());
+	}
+  }
+}
+###############################################################
+################## SpatialiteSample.java END ##################
+###############################################################
+
+3) Finally open cmd.exe, navigate to c:/example
+   and there execute the following commands:
+		> javac -classpath ".;sqlite-jdbc.jar" SpatialiteSample.java
+		> java -classpath ".;sqlite-jdbc.jar" SpatialiteSample
+	
+	The output (if all is right) should be:
+		> Inserted 100 entities of type POINT SRID = 4326
+		> Inserted 100000 entities of type LINESTRING SRID = 4326
+		> Inserted 100000 entities of type POLYGON SRID = 4326
+	
+For some reason, this give me a Runtime fatal error, but this only happen when the execution finish.
+You can check inside "example" directory for a new database file called "spatialiteSample.sqlite" and open it whit "spatialite-gui" to see the records inside.
+
+*NOTE: If you try to execute an INSERT INTO some_geom_table (id, name, geom) VALUES ('some id', 'some name', GeomFromText('Some geom', SRID)) 
+	   from "spatialite-gui" you will get an error (This is coz we created the db whit spatialite 2.4 and "spatialite-gui" actually runs 2.3.1)
+
+
+

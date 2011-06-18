@@ -1,0 +1,33 @@
+
+   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+   <head>
+       <title>GeoServer Configuration</title>
+   </head>
+   <body>
+   
+   Layers:
+   <ul>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/giant_polygon.html">giant_polygon</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/poi.html">poi</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/poly_landmarks.html">poly_landmarks</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/tiger_roads.html">tiger_roads</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/archsites.html">archsites</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/bugsites.html">bugsites</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/restricted.html">restricted</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/roads.html">roads</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/streams.html">streams</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/states.html">states</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/tasmania_cities.html">tasmania_cities</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/tasmania_roads.html">tasmania_roads</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/tasmania_state_boundaries.html">tasmania_state_boundaries</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/tasmania_water_bodies.html">tasmania_water_bodies</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/Arc_Sample.html">Arc_Sample</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/Pk50095.html">Pk50095</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/mosaic.html">mosaic</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/sfdem.html">sfdem</a></li>
+     <li><a href="http://localhost:8080/geoserver/rest/layers/Img_Sample.html">Img_Sample</a></li>
+   </ul>
+   </body>
+   </html>

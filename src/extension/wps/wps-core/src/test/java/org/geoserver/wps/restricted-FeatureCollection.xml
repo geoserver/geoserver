@@ -1,0 +1,39 @@
+<wfs:FeatureCollection numberOfFeatures="1"
+  timeStamp="2011-03-12T18:49:01.199+01:00"
+  xmlns:sf="http://geoserver.sf.net" xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <gml:featureMembers>
+    <sf:restricted gml:id="restricted.1">
+      <sf:the_geom>
+        <gml:MultiSurface srsDimension="2"
+          srsName="urn:x-ogc:def:crs:EPSG:26713">
+          <gml:surfaceMember>
+            <gml:Polygon>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>591954.3359385637 4925859.483293386
+                    591957.3824433011 4925860.249209468
+                    591996.9678179699 4925842.719067588
+                    592066.2434228227 4925813.759259981
+                    592235.2420918944 4925738.302342218
+                    592551.8201372348 4925671.437550496
+                    592560.7822126707 4925327.905382568
+                    591595.3483009903 4925296.068594761
+                    591593.0136062276 4925322.439424193 591587.74604609
+                    4925412.531691931 591618.2329452335
+                    4925451.495549678 591630.4333543724
+                    4925475.174502224 591801.1266256558
+                    4925645.575178106 591930.6806241288
+                    4925789.2201092215 591954.3359385637
+                    4925859.483293386</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gml:surfaceMember>
+        </gml:MultiSurface>
+      </sf:the_geom>
+      <sf:cat>1</sf:cat>
+    </sf:restricted>
+  </gml:featureMembers>
+</wfs:FeatureCollection>

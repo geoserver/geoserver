@@ -1,0 +1,196 @@
+.. _maven_guide:
+
+Maven Guide
+===========
+
+A reference for building GeoServer with Maven.
+
+Installing Maven
+----------------
+
+See :ref:`tools`.
+
+Running Maven
+-------------
+
+Maven provides a wide range of commands used to do everything from compiling a 
+module to generating test coverage reports. Most maven commands can be run from
+the root the source tree, or from a particular module.
+
+  .. note::
+
+     When attempting to run a maven command from the root of the source tree 
+     remember to change directory from the root the checkout into the ``src``
+     directory.
+
+When running a command from the root of the source tree, or from a directory 
+that contains other modules the command will be run for all modules. When 
+running the command from a single module, it is run only for that module.
+
+Building
+--------
+
+The most commonly maven command used with GeoServer is the install command::
+
+  mvn clean install
+
+While the ``clean`` command is not necessary, it is recommented. Running this
+command does the following:
+
+ * compiles source code
+ * runs unit tests
+ * installs artifacts into the local maven repository
+
+Skipping tests
+--------------
+
+Often it is useful to skip unit tests when performing a build. Adding the flag
+``-DskipTests`` to the build command will only compile unit tests, but not run
+them::
+
+  mvn -DskipTests clean install
+
+Building offline
+----------------
+
+Maven operates by automatically downloading any dependencies declared by a 
+module being built. When dealing with SNAPSHOT dependencies this can be 
+problematic. Each time Maven performs its first build of the day it tries to 
+update any SNAPSHOT dependencies it occurs.  
+
+This can be a problem as GeoServer depends on SNAPSHOT versions of the GeoTools
+library. The end result is maven downloading a lot of updates GeoTools modules
+and an increased built time. Which if you built geotools locally, is unecessary.
+
+This can be remedied by running maven in "offline mode"::
+
+  mvn -o clean install
+
+In offline mode Maven will not attempt to download any external dependencies, 
+and will not attempt to update any SNAPSHOT dependencies.
+
+Building extensions
+-------------------
+
+By default, extensions are not included in the build. They are added to the 
+build explicitly via :ref:`profiles <profiles>`. For example the following 
+command adds the ``restconfig`` extension to the build::
+
+  mvn clean install -P restconfig 
+
+Multiple extensions can be enabled simultaneously::
+
+  mvn clean install -P restconfig,oracle
+
+A special profile named ``allExtensions`` enables all extensions::
+
+  mvn clean install -P allExtensions
+
+.. _profiles:
+
+Profiles
+--------
+
+Additional profiles are defined in the pom.xml files providing optional build steps. Profiles are directly enabled with the \-P flag, others are automatically activated based on platform used or a \-D property being defined.
+
+To build the release module as part of your build::
+
+   -Drelease
+   
+To include remote tests::
+
+   -PremoteOwsTests
+
+Profiles are also used manage optional extensions community plugins::
+
+   -Pproxy
+   -Poracle
+   -Pupload
+   -Pwps
+
+Additional profiles are defined in the pom.xml files providing optional build steps. Profiles are directly enabled with the \-P flag, others are automatically activated based on platform used or a \-D property being defined.
+
+To build javadocs with UML graph::
+
+   -Duml
+   
+To build the release module as part of your build::
+
+   -Drelease
+   
+To include the legacy moduled::
+
+   -Plegacy
+   
+To include remote tests::
+
+   -PremoteOwsTests
+
+Profiles are also used manage several of the optional community plugins::
+
+   -Pupload
+   -Pwps
+   -Pproxy
+
+Eclipse
+-------
+
+The maven eclipse plugin is used to generate eclipse projects for a set of 
+modules::
+
+  mvn eclipse:eclipse
+
+After which the modules can be imported into an eclipse workspace.
+
+A useful feature of the plugin is the ability to download associated source code
+for third party dependencies. This is done with the ``downloadSources`` flag::
+
+  mvn -DdownloadSources eclipse:eclipse
+
+.. warning::
+
+  The first time you enable the ``downloadSources`` flag the build will take a 
+  long time as it will attempt to download the sources for every single library
+  GeoServer depends on.
+
+Building the web module
+-----------------------
+
+When the ``web`` module is installed, it does so with a particular configuration
+built in. By default this is the ``minimal`` configuration. However this can be
+customized to build in any configuration via the ``configId`` and 
+``configDirectory`` flags. For example::
+
+  mvn clean install -DconfigId=release -DconfigDirectory=/home/jdeolive/geoserver_1.7.x/data
+
+The above command builds the web module against the release configuration that
+is shipped with GeoServer. The ``configId`` is the name of the configuration 
+directory to include, and the ``configDirectory`` is the parent directory of the
+configuration directory to include. The ``configDirectory`` can either be 
+specified as an absolute path like in the above example, or it can be specified
+relative to the web module itself::
+
+  mvn clean install -DconfigId=release -DconfigDirectory=../../../data
+
+The above command does the same as the first, however references the 
+configDirectory relative to the web module. This path, ``../../../data``, can be 
+used if the GeoServer checkout has the standard layout.
+
+Running the web module with Jetty
+---------------------------------
+
+The maven jetty plugin can be used to run modules which are web based in an 
+embedded Jetty container::
+
+  cd geoserver_2.0.x/src/web/app
+  mvn jetty:run
+
+.. note::
+
+   This command must be run from the web/app module, it will fail if run from 
+   elsewhere.
+
+The above command will run GeoServer with the built in data directory. To 
+specify a different data directory the ``GEOSERVER_DATA_DIR`` flag is used:: 
+
+  mvn -DGEOSERVER_DATA_DIR=/path/to/datadir jetty:run

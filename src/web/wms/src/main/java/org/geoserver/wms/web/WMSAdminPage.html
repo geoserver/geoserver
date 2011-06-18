@@ -1,0 +1,133 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+  <wicket:extend>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="limitedSRSList">LimitedSRSlist</wicket:message></span></legend>
+        <ul>
+          <li>
+            <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="rasterRenderingOptions">Raster Rendering Options</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="defaultInterpolation">Default Interpolation</wicket:message></label>
+            <select wicket:id="interpolation" class="field"/>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="kmlOptions">KML Options</wicket:message></span></legend>
+        <ul>
+         <li>
+            <label><wicket:message key="defaultReflectorMode">reflector Mode</wicket:message></label>
+            <select wicket:id="kml.defaultReflectorMode"></select>
+         </li>
+         <li>
+            <label><wicket:message key="superoverlayMode">superoverlay Mode</wicket:message></label>
+            <select wicket:id="kml.superoverlayMode"></select>
+         </li>
+         <li>
+            <input class="field checkbox" type="checkbox" wicket:id="kml.kmattr"></input>
+            <label class="choice"><wicket:message key="kmattr">Show vector placemarks</wicket:message></label>
+         </li>
+         <li>
+            <input class="field checkbox" type="checkbox" wicket:id="kml.kmlplacemark"></input>
+            <label class="choice"><wicket:message key="kmlplacemark">Show raster placemarks</wicket:message></label>
+         </li>
+         <li>
+            <label><wicket:message key="kmScore">Raster/vector threshold (0-100, default 40)</wicket:message></label>
+            <input type="text" class="field" wicket:id="kml.kmscore"/>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="resourceLimits">ResourceConsumptionLimits</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="maxRequestMemory">Max rendering memory</wicket:message></label>
+            <input type="text" wicket:id="maxRequestMemory" class="field text"/>
+          </li>
+          <li>
+            <label><wicket:message key="maxRenderingTime">Max rendering time</wicket:message></label>
+            <input type="text" wicket:id="maxRenderingTime" class="field text"/>
+          </li>
+          <li>
+            <label><wicket:message key="maxRenderingErrors">Max rendering errors</wicket:message></label>
+            <input type="text" wicket:id="maxRenderingErrors" class="field text"/>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="watermarkSettings">Watermark Settings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <input class="field checkbox" type="checkbox" wicket:id="watermark.enabled"></input>
+            <label class="choice"><wicket:message key="enableWatermark">Enable Watermark</wicket:message></label>
+          </li>
+          <li>
+            <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
+            <input wicket:id="watermark.uRL" class="field text" type="text"></input>
+          </li>
+          <li>
+            <label><wicket:message key="watermarkTransparency">Watermark Transparency (0 - 100)</wicket:message></label>
+            <input wicket:id="watermark.transparency" class="field text" type="text"></input>
+          </li>
+          <li>
+            <label><wicket:message key="watermarkPosition">Watermark Position</wicket:message></label>
+            <select wicket:id="watermark.position"></select>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="pngOptions">PNG Options</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="pngCompression">Compression level (0-100, default 25)</wicket:message></label>
+            <input class="field" type="text" wicket:id="png.compression"></input>
+          </li>
+        </ul>
+      </fieldset>
+    </li>    
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="jpegOptions">JPEG Options</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="jpegCompression">Compression level (0-100, default 25)</wicket:message></label>
+            <input class="field" type="text" wicket:id="jpeg.compression"></input>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="svgOptions">SVG Options</wicket:message></span></legend>
+        <ul>
+         <li>
+            <label><wicket:message key="svgProducer">SVG producer</wicket:message></label>
+            <select wicket:id="svg.producer"></select>
+          </li>
+          <li>
+            <input class="field checkbox" type="checkbox" wicket:id="svg.antialias"></input>
+            <label class="choice"><wicket:message key="enableAntialiasing">Enable antialiasing</wicket:message></label>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+  </wicket:extend>
+</body>
+</html>

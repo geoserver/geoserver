@@ -1,0 +1,7 @@
+Test file origins.
+
+* tazbm.tiff: a Tasmanian section of the Bluemarble NG (from ecw files downloaded from gis torrents)
+* tazdem.tiff: a Tasmanian section of the GTOPO30 global dem
+* rotated.tiff: a CAD design, with the property that the original raster had a rotation in the tfw file
+
+ 

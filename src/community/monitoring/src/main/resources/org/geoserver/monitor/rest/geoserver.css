@@ -1,0 +1,1023 @@
+/*-----------------------
+General styles
+-----------------------*/
+body {
+background: #fff;
+color: #0076a1;
+font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+text-align:left !important; /* override blueprint's ie.css */
+}
+
+h1, 
+h2, 
+h3, 
+h4, 
+h5, 
+h6 {
+color: #0082b6;
+font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+height: auto; /* override blueprint's screen.css */
+}
+
+h1 { /* override blueprint.css */
+font-size: 2.1em;
+}
+
+strong, 
+em,
+dt, 
+b, 
+i {
+font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+}
+
+a {
+color: #0076a1;
+text-decoration: none;
+outline: none !important; /* avoid ugly dotted border for Firefox */
+}
+
+a:hover {
+color: #cc6d00;
+text-decoration: underline;
+}
+
+a img {
+border: none; 
+}
+
+div {
+outline: none !important; /* avoid ugly dotted border for Firefox, when listeners are added via js */
+}
+
+.error, 
+.notice, 
+.success { /* override blueprint.css */
+border: 0 none transparent;
+margin-bottom: 0;
+padding: 0;
+background: transparent;
+border-color: transparent;
+}
+
+input,
+textarea,
+select {
+background: #fff;
+color: #000;
+}
+
+
+
+/*-----------------------
+Utility Classes
+-----------------------*/
+.selfclear:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+.selfclear {
+display: inline-block; /* IE 7 */
+}
+
+.selfclear {
+display: block;
+}
+
+* html .selfclear {
+height: 1px; /* IE < 7 */
+}
+
+/* Alpha transparency for IE6 */
+* html .pngfix {
+zoom: 1;
+behavior: expression((this.runtimeStyle.behavior="none")&&(this.pngSet?this.pngSet=true:(this.nodeName == "IMG" && this.src.toLowerCase().indexOf('.png')>-1 ?  (this.runtimeStyle.backgroundImage = "none", this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')", this.src = "/img/transparent.gif") : (this.origBg = this.origBg ? this.origBg :  this.currentStyle.backgroundImage.toString().replace('url("','').replace('")',''), this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.origBg + "', sizingMethod='" + (this.currentStyle.backgroundRepeat=='no-repeat' ? 'crop' : 'scale') +"')", this.runtimeStyle.backgroundImage = "none")),this.pngSet=true));
+}
+
+.leftwise {
+float:left;
+}
+
+.rightwise {
+float:right;
+}
+
+.clearBoth {
+clear:both;
+}
+
+.nobreak {
+white-space: nowrap;
+}
+
+.noshow {
+display: none;
+}
+
+.wrap {
+width: 82em;
+min-width: 80%;
+margin: 0; 
+padding: 0;
+position: relative;
+}
+
+ul.plain {
+margin-left: 0;
+margin-right: 0;
+list-style-type: none;
+}
+
+/*-----------------------
+Feedback Message Styles
+-----------------------*/
+#feedback ul {
+margin: 0;
+}
+
+#feedback li {
+padding: 0.2em 0.5em;
+margin: 0 auto 1em;
+width: 80%;
+border: 1px solid #ccccb8;
+list-style-type: none;
+}
+
+.feedbackPanelINFO {
+color: #000;
+background: #c6ff8e;
+}
+
+.feedbackPanelINFO a {
+color: #6a993d;
+}
+
+.feedbackPanelINFO a:hover {
+color: #007a99;
+}
+
+.feedbackPanelWARNING {
+color: #000;
+background: #ffec8e;
+}
+
+.feedbackPanelWARNING a {
+color: #cc872e;
+}
+
+.feedbackPanelWARNING a:hover {
+color: #dd7c14;
+}
+
+.feedbackPanelERROR {
+color: #fff;
+background: #f24e50;
+}
+
+.feedbackPanelERROR a {
+color: #801a1b;
+}
+
+.feedbackPanelERROR a:hover {
+color: #660002;
+}
+
+/*-----------------------
+Structural Elements
+-----------------------*/
+#header {
+background: #fff;
+padding: 5px;
+}
+
+#main {
+border-top: 2px solid #c6e09b;
+background: url(../img/main-bg.png) repeat-x;
+}
+
+#sidebar, 
+#page {
+text-align: left; /* IE */
+}
+
+#sidebar {
+position: absolute;
+top: 0;
+left: 0;
+width: 17em;
+padding: 38px 20px 0;
+} 
+
+#page {
+margin: 0 0 -250px 19em;
+color: #262523;
+padding: 0 0 250px 19px;
+}
+
+#ajaxFeedback {
+  position: fixed; right: 20px; top: 10px;
+}
+
+/*-----------------------
+Tables
+-----------------------*/
+table {
+margin-bottom: 0.3em; /* override blueprint's settings */
+margin-top: 0.3em; /* override blueprint's settings */
+}
+
+th {
+background: transparent; /* override blueprint's settings */
+}
+
+thead th {
+background: #c6e09b;
+border: 1px solid #0076a1;
+border-width: 0 0 1px;
+}
+
+tr:hover td,
+tbody tr:hover th {
+background: #f4f9eb;
+}
+
+tr.even td,
+tr.even th {
+background: #e2efcd; /* override blueprint's settings */
+}
+
+tr.even:hover td,
+tr.even:hover th {
+background: #f4f9eb;
+}
+
+th.actions,
+td.actions {
+width: 13em;
+}
+
+th.selection {
+	width: 1%; /* use as few space as possible */
+}
+
+/*-----------------------
+Forms
+-----------------------*/
+form ul,
+ul.form-data {
+margin: 0; /* override blueprint's settings for unordered lists */
+list-style-type: none;
+}
+
+form li,
+ul.form-data li {
+display: block;
+margin: 0 0 0.3em;
+padding: 4px 5px 2px 0;
+position: relative;
+}
+
+form ul ul {
+margin: 0;
+}
+
+form li li {
+padding: 0;
+margin: 0.3em 0;
+}
+
+fieldset { /* override blueprint's settings */
+padding: 0;
+margin: 0 0 2em;
+border: 1px solid #c6e09b;
+border-width: 1px 0 0;
+width: 45em;
+position: relative;
+}
+
+legend {
+border: 0 none transparent;
+}
+
+legend span { 
+position: absolute;
+width: 29.2em;
+top: -1.5em;
+left: 0;
+}
+
+label, span.fieldname {
+border: medium none;
+color: #222;
+display: block;
+font-size: 0.95em;
+font-weight: bold;
+line-height: 1.5em;
+padding: 0 0 1px;
+}
+
+label.choice {
+color: #222;
+display: block;
+font-weight: normal;
+font-size: 100%;
+line-height: 1.5em;
+margin: -1.65em 0 0 25px;
+padding: 0.44em 0 0.5em;
+width: 90%;
+}
+
+textarea.medium {
+height: 10em;
+}
+
+input.large, select.large, textarea.large {
+width: 100%;
+}
+
+input.text, input.file {
+padding: 2px 0;
+}
+
+input.text:focus, 
+input.title:focus, 
+textarea:focus {
+background: #fbf8dc;
+}
+
+select:focus {
+background: #fbfaf1;
+}
+
+input.text, textarea.textarea, .firefox select.select {
+border: 1px solid #7c7c7c;
+border-color: #7c7c7c #c3c3c3 #ddd;
+padding: 0.2em;
+width: 25em;
+}
+
+/* standard ul inside form */
+form ul.plain-ul {
+	margin: 0 1.5em 1.5em;
+	list-style-type: disc;
+}
+
+form ul.plain-ul li {
+	display: list-item;
+	list-style-type: disc;
+	display: list-item;
+}
+
+/* search button inside text field */
+.search {
+border: 1px solid #BFBFBF;
+background-image: url(../img/icons/silk/magnifier.png);
+background-repeat: no-repeat;
+background-position: 4px 2px;
+padding-left: 24px;
+height: 18px;
+}
+
+textarea.textarea {
+font-family: "Lucida Grande",Tahoma,Arial,sans-serif;
+height: 15em;
+width: 33em;
+}
+
+input.text, input.file, textarea.textarea, select.select {
+color: #333;
+font-size: 1em;
+margin: 0;
+}
+
+input.checkbox, input.radio {
+display: block;
+height: 13px;
+line-height: 1.5em;
+margin: 0.6em 0 0 3px;
+width: 13px;
+}
+
+input.btTxt {
+overflow: visible;
+padding: 0 7px;
+width: auto;
+}
+
+div.value,
+div.value-wide {
+border: 1px solid #7c7c7c;
+border-color: #7c7c7c #c3c3c3 #ddd;
+background: #f1f1f1;
+padding: 0.2em;
+width: 25em;
+}
+
+div.value-wide {
+width: 100%;
+}
+
+div.value pre,
+div.value-wide pre { /* override blueprint's settings */
+margin: 0;
+}
+
+/*-----------------------
+Button  Styles
+-----------------------*/
+.button-group a,
+.button-group button,
+input.btnTxt {
+background: #c6e09b url(../img/button-gradient.png) top left repeat-x;
+border: 1px solid #c6e09b;
+font-size: 0.9em;
+font-weight: bold;
+text-decoration: none;
+color: #0076a1;
+cursor: pointer;
+padding: 5px 10px 5px 7px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
+}
+
+/* Alpha transparency for IE6 
+Redundant to .pngfix but added as otherwise
+we have to declare "pngfix" on every button
+*/
+* html .button-group a,
+* html .button-group button,
+* html input.btnTxt {
+zoom: 1;
+behavior: expression((this.runtimeStyle.behavior="none")&&(this.pngSet?this.pngSet=true:(this.nodeName == "IMG" && this.src.toLowerCase().indexOf('.png')>-1 ?  (this.runtimeStyle.backgroundImage = "none", this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')", this.src = "img/transparent.gif") : (this.origBg = this.origBg ? this.origBg :  this.currentStyle.backgroundImage.toString().replace('url("','').replace('")',''), this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.origBg + "', sizingMethod='" + (this.currentStyle.backgroundRepeat=='no-repeat' ? 'crop' : 'scale') +"')", this.runtimeStyle.backgroundImage = "none")),this.pngSet=true));
+}
+
+.button-group button {
+width: auto;
+overflow: visible;
+}
+
+*:first-child+html button[type],
+*:first-child+html input.btnTxt {
+padding: 4px 10px 3px 10px; /* IE7 */
+}
+
+* html .button-group button,
+* html input.btnTxt {
+padding: 4px 10px 3px 7px; /* IE6 */
+}
+
+.button-group a:hover,
+.button-group button:hover,
+input.btnTxt:hover {
+background-color: #e3f0ce;
+color: #004f6c;
+}
+
+.button-group a.icon,
+.button-group button.icon { /* assumption is that the contained div will have padding applied */
+padding-top: 0;
+padding-bottom: 0;
+}
+
+.button-group a.icon div,
+.button-group button.icon div { /* assumption is that the contained div will have padding applied */
+padding-top: 5px;
+padding-bottom: 5px;
+background-position: 0 50%;
+background-repeat: no-repeat;
+}
+
+*:first-child+html .button-group a.icon div, /* IE7 */
+* html .button-group button a.icon div { /*IE6 */
+padding-top: 4px;
+padding-bottom: 3px;
+}
+
+.button-group input {
+margin-right: 5px;
+}
+
+.button-group .button-login div {
+background-image: url(../img/icons/silk/door_in.png);
+padding-left: 25px;
+}
+
+.button-group .button-logout span {
+background: url(../img/icons/silk/door_out.png) no-repeat;
+display: block;
+margin: 5px;
+padding-left: 25px;
+}
+
+.button-group .button-save div {
+background-image: url(../img/icons/silk/disk.png);
+padding-left: 18px;
+}
+
+.button-group .button-revert div {
+background-image: url(../img/icons/silk/arrow_redo.png);
+padding-left: 25px;
+}
+
+.button-group a img,
+button img {
+vertical-align: middle;
+margin: -1px 0.3em -1px 0;
+}
+
+.button-group a,
+.button-group button {
+float: left;
+margin: 0 0.58em 0 0;
+}
+
+
+/*-----------------------
+Header
+-----------------------*/
+
+#header .wrap {
+text-align: right;
+}
+
+#header h2 {
+margin: 0;
+font-size: 1.76em;
+}
+
+#header h2 a {
+float: left;
+width: 220px;
+height: 67px;
+background: url(../img/logo.png) no-repeat;
+overflow: hidden;
+text-indent: -9999em;
+text-align: left;
+margin: 0 0 -23px;
+}
+
+* html #header h2 a {
+cursor: pointer;
+position: relative;
+}
+
+#header .button-group {
+padding: 0.5em 0 0;
+}
+
+#header form {
+}
+
+span.username {
+}
+
+#header label.shown {
+display: inline;
+font-weight: normal;
+}
+
+#header input {
+margin: 0 0.2em;
+padding: 0.2em 0.3em;
+font-size: 0.9em;
+min-height: 16px;
+}
+
+#header .button-group a,
+#header .button-group button {
+margin: 0 0.2em;
+font-size: 0.9em;
+float: none;
+}
+
+#header .button-group a.button-logout {
+float: right;
+margin: -5px 0 0 1em;
+}
+
+/*-----------------------
+Sidebar
+-----------------------*/
+
+ul#navigation {
+margin: 10px 0 6px;
+list-style-type: none;
+}
+
+ul#navigation a {
+text-decoration: none;
+}
+
+ul#navigation a:hover {
+text-decoration: underline;
+}
+
+.navigation-tab {
+margin: 3px 0;
+border-bottom: 2px ridge #ebf5dd;
+}
+
+.navigation-tab-header {
+padding: 2px 5px;
+}
+
+.navigation-tab-single,
+.navigation-tab-content {
+padding: 3px 5px 7px;
+}
+
+.navigation-tab-single,
+.navigation-tab-header {
+font-weight: bold;
+color: #0076a1;
+}
+
+.navigation-tab-content {
+border-top: none;
+}
+
+.navigation-tab-single a,
+.navigation-tab-header a,
+.navigation-tab-content a {
+display: block;
+color: #0076a1;
+}
+
+li.nav-administer-service {
+clear: left;
+}
+
+li.nav-administer-service img {
+float: left;
+margin-right: 0.5em;
+height: 16px;
+width: 16px;
+}
+
+/*-----------------------
+Welcome / Overview
+-------------------------*/
+#welcome {
+float: left;
+max-width: 500px;
+}
+#welcome table {
+margin-bottom: 1em;
+}
+
+/*-----------------------
+Capabilities
+-------------------------*/
+
+#capabilities {
+float: right;
+padding-right: 50px;
+}
+
+div#capabilities ul {
+list-style-type: none;
+}
+
+/*-----------------------
+Rounded corners for content
+-----------------------*/
+#main .wrap {
+background: url(../img/main-wrap-bg.png) 100% 0 no-repeat;
+padding: 0 19px 250px 0;
+margin: 0 0 -250px 0;
+}
+
+* html #main .wrap { /* IE6 */
+background-position: 100% -2px;
+}
+
+*:first-child+html #main .wrap { /* IE7 */
+background-position: 100% -2px;
+}
+
+#page {
+background: #fff url(../img/page-bg.png) no-repeat;
+}
+
+* html #page { /* IE6 */
+background-position: 0 -2px;
+}
+
+*:first-child+html #page { /* IE7 */
+background-position: 0 -2px;
+}
+
+.page-header {
+background: #fff url(../img/page-header-bg.png) repeat-x;
+margin-bottom: 1em;
+}
+
+* html .page-header { /* IE6 */
+background-position: 0 -2px;
+}
+
+*:first-child+html .page-header { /* IE7 */
+background-position: 0 -2px;
+}
+/*-----------------------
+Targeted Styles
+-----------------------*/
+.module-info {
+margin: 1em 0;
+}
+
+.module-header {
+margin: 0 0 0.75em;
+}
+
+.module-header h2 {
+margin: 0 20px 0 0;
+float: left;
+}
+
+.status-bar {
+margin: 1.2em 0 0;
+float: left;
+width: 200px;
+height: 10px;
+background-color: #e8e6e6;
+border: 1px solid #555;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
+}
+
+.status-bar span {
+display: block;
+background-image: url(../img/status-bar-bg.png);
+background-repeat: no-repeat;
+height: 10px;
+overflow: hidden;
+text-indent: -9999em;
+}
+
+.mini-bar {
+height: 2px;
+width: 50px;
+background-color: #e8e6e6;
+border: 1px solid #555;
+}
+
+.mini-bar span {
+display: block;
+background-image: url(../img/status-bar-bg.png);
+background-repeat: no-repeat;
+height: 2px;
+overflow: hidden;
+text-indent: -9999em;
+}
+
+.common-mime-types,
+.uncommon-mime-types {
+float: left;
+margin: 0;
+}
+
+.common-mime-types dd,
+.uncommon-mime-types dd {
+margin: 0.5em 0;
+border: 1px solid #edf0ed;
+background: #fbfbfb;
+}
+
+.common-mime-types ul,
+.uncommon-mime-types ul {
+width: 10em;
+float: left;
+margin: 0;
+}
+
+.uncommon-mime-types ul {
+margin: 0 -1px 0 0;
+border: 1px solid #edf0ed;
+border-width: 0 1px 0 0;
+}
+
+.uncommon-mime-types {
+margin: 0 0 0 3em;
+}
+
+.common-mime-types li,
+.uncommon-mime-types li {
+display: inline;
+}
+
+.common-mime-types li a,
+.uncommon-mime-types li a {
+display: block;
+padding: 0.2em 1em 0.2em 0.5em;
+}
+
+.common-mime-types li a:hover,
+.uncommon-mime-types li a:hover {
+background: #fff;
+}
+
+
+/* Page */
+
+.page-header {
+padding: 20px 0 20px 0;
+}
+
+.page-header h2 {
+margin-bottom: 0;
+}
+
+.page-pane {
+background: #fff;
+}
+
+.page-pane-content {
+padding: 10px;
+margin-bottom: 10px;
+overflow: auto;
+border: 1px solid #ccc;
+}
+
+div.progress-bar {
+-moz-border-radius-bottomleft:5px;
+-moz-border-radius-bottomright:5px;
+-moz-border-radius-topleft:5px;
+-moz-border-radius-topright:5px;
+background-color:#E8E6E6;
+border:1px solid #555555;
+float:none;
+height:16px;
+margin:1.2em auto;
+width:50%;
+}
+
+div.progress-bar span.bar {
+background-image: url(../img/status-bar-bg.png);
+background-repeat:repeat.x;
+display:block;
+height:16px;
+overflow:hidden;
+text-indent:-9999em;
+}
+
+
+/* Data page styles */
+span.command {
+margin-left: 2px;
+font-style: italic;
+}
+
+span.unconfiguredLayer {
+font-style: italic;
+}
+
+/* Pagination */
+.paginator {
+padding: 1em 0;
+}
+
+.paginator a,
+.paginator em {
+padding: 2px 6px;
+border: 1px solid #c6e09b;
+background: #fff;
+text-decoration: none;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
+}
+
+*:first-child+html .paginator a, /* IE7 */
+*:first-child+html .paginator em, /* IE7 */
+* html .paginator a, /* IE6 */
+* html .paginator em { /*IE6 */
+padding: 0 6px
+}
+
+.paginator em {
+color: #aaa;
+}
+
+.paginator a:hover {
+background: #0076a1;
+color: #fff;
+}
+
+
+/* Tabs */
+.tab-row {
+border: 1px solid #bbb;
+border-width: 0 0 1px;
+height: 2.1em;
+margin: 1.5em 0 2.5em;
+}
+
+.tab-row ul {
+list-style-type: none;
+margin: 0;
+float: left;
+}
+
+.tab-row li {
+float: left;
+margin: 0 0.2em 0 0;
+padding: 0;
+}
+
+.tab-row a {
+display: block;
+color: #222;
+text-decoration: none;
+font-weight: bold;
+background: #ddd;
+margin: 0 0 -1px;
+padding: 0.25em 1em;
+border-top: 1px solid #ccc;
+border-right: 1px solid #aaa;
+border-bottom: 1px solid #bbb;
+border-left: 1px solid #ccc;
+}
+
+.tab-row .selected a:link,
+.tab-row .selected a:visited {
+background: #fff;
+border-bottom: 1px solid #fff;
+}
+
+.tab-row a:hover,
+.tab-row a:active {
+background: #eee;
+}
+
+.tab-row .selected a:hover,
+.tab-row .selected a:active {
+background: #fefefb;
+}
+
+/* redundant to .selfclear, but with the default wicket tab functionality we don't have the markup control we'd need to avoid this */
+.tab-row ul:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+.tab-row ul {
+display: inline-block; /* IE 7 */
+}
+
+.tab-row ul {
+display: block;
+}
+
+* html .tab-row ul {
+height: 1px; /* IE < 7 */
+}
+
+.devtoolbar {
+	background-color: #EEEEEE;
+}
+
+/*-----------
+Add/remove icons for add/remove links
+-------------*/
+.add-link {
+background: transparent url(../img/icons/silk/add.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+.remove-link {
+background: transparent url(../img/icons/silk/delete.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+.warning-link {
+background: transparent url(../img/icons/silk/error.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+.computeLink { 
+display: block;
+margin-bottom: 1em;
+}
+
+/*----------------
+  Page header
+-----------------*/
+
+.page-header p {
+margin-bottom: 0px;
+}
+
+.page-header ul {
+margin: 0.2em; /* override blueprint's settings for unordered lists */
+list-style-type: none;
+}

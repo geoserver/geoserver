@@ -1,0 +1,79 @@
+
+   <layers>
+     <layer>
+       <name>giant_polygon</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/giant_polygon.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>poi</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/poi.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>poly_landmarks</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/poly_landmarks.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>tiger_roads</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/tiger_roads.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>archsites</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/archsites.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>bugsites</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/bugsites.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>restricted</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/restricted.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>roads</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/roads.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>streams</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/streams.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>states</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/states.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>tasmania_cities</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/tasmania_cities.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>tasmania_roads</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/tasmania_roads.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>tasmania_state_boundaries</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/tasmania_state_boundaries.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>tasmania_water_bodies</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/tasmania_water_bodies.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>Arc_Sample</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/Arc_Sample.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>Pk50095</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/Pk50095.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>mosaic</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/mosaic.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>sfdem</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/sfdem.xml" type="application/xml"/>
+     </layer>
+     <layer>
+       <name>Img_Sample</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/Img_Sample.xml" type="application/xml"/>
+     </layer>
+   </layers>

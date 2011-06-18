@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CartesianCS xmlns="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:xlink="http://www.w3.org/1999/xlink" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/gml ../gmlCommonCRSsProfile.xsd" 
+gml:id="Grid2dSquareCS">
+	<!-- Primary editor: Arliss Whiteside. Last updated 2005-11-15-->
+	<csName>2D square-cell grid based coordinate system</csName>
+	<csID>
+		<name codeSpace="urn:ogc:def:cs:OGC:1.0:">Grid2dSquareCS</name>
+	</csID>
+	<remarks>2D grid-based coordinate system for use by an image or other continuous grid coverage. It can be used for a grid of any size, since no grid size is defined. This coordinate system specifies that each row coordinate value will be listed before the column coordinate value. The grid cells are assumed to be square, with the same grid spacing or pixel spacing in each direction. 
+
+In a grid coverage file, the "row" axis shall be the first axis by which grid points are sequenced, and the "column" axis shall be the second axis, as could be specified by the "scanDirection : Sequence(CharacterString)" attribute of the CV_SequenceRule class in Clause 8 of ISO 19123. With linear sequencing, the grid points in the first row shall be listed first, followed by other rows, with the grid points in each row listed in column number order. This relationship between the "row" and "column" names and the first grid points shall apply whether this Grid2dSquareCS is associated with a grid file before or after that file is recorded.
+
+The "row" and "column" axis names are used here although the "scanDirection : Sequence(CharacterString)" attribute may provide other axis names. Use of other axis names would require defining different CartesianCSs for other names, or adding other names as additional axisID values. The following XML includes the axis names "line" and "sample" as additional axisID values.
+
+If not otherwise identified in an image file, the "row" axis shall be the first axis whose number of pixels is identified, and the "column" axis shall be the second axis, as could be specified by the "extent[0..1] : CV_GridEnvelope" attribute of the CV_Grid class in Clause 8 of ISO 19123. In either case, the first point in the grid coverage file is assumed to be numbered (1, 1), meaning row 1, column 1. 
+
+The first row in a grid is sometimes called the "top" row, the first column is sometimes called the "left" column, and the first grid point is then called the "upperLeft" point. If desired, those names can be used with this Grid2dSquareCS. However other names can also be used, since this Grid2dSquareCS has been defined so that it does not depend on such left/right, top/bottom, and up/down names. </remarks>
+	<usesAxis xlink:href="urn:ogc:def:axis:OGC:1.0:Row"/>
+	<usesAxis xlink:href="urn:ogc:def:axis:OGC:1.0:Column"/>
+</CartesianCS>

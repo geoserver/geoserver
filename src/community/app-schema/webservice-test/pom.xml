@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geoserver</groupId>
+		<artifactId>app-schema-community</artifactId>
+		<version>2.2-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver</groupId>
+	<artifactId>webservice-test</artifactId>
+	<name>Web Service with Application Schema Integration Test</name>
+
+	<dependencies>       
+	    <dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+			<classifier>tests</classifier>
+		</dependency>		
+		<dependency>
+			<!--
+				wfs required to get applicationContext.xml. Without it, code will
+				compile but will not run.
+			-->
+			<groupId>org.geoserver</groupId>
+			<artifactId>wfs</artifactId>
+		</dependency>
+		<dependency>
+			<!-- required for complex feature WFS output (see GML3OutputFormat) -->
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>app-schema-test</artifactId>
+			<version>${project.version}</version>
+			<classifier>tests</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-webservice</artifactId>
+			<version>${gt.version}</version>
+		</dependency>	  		
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-webservice</artifactId>
+			<version>${gt.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>  
+	    <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>ows</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-jdbc</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+	     <dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+	    </dependency> 
+	    <dependency>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+			<scope>test</scope>
+		</dependency>
+	     <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-app-schema</artifactId>
+			<version>${gt.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>  
+        <!--
+            maven-eclipse-plugin does not correctly add transitive test dependencies
+            geosciml-2.0 and earthresourceml-1.1 should be included by depending on
+            gt-app-schema tests
+        -->
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>geosciml-2.0</artifactId>
+            <version>2.0.2-4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>wfs-1.1</artifactId>
+            <version>1.1.2-2</version>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>
+
+	<build>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+					<include>**/*.ftl</include>
+				</includes>
+			</testResource>
+		</testResources>
+	</build>
+
+</project>

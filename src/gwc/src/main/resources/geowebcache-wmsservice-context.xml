@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-wms module
+  </description>
+  <!-- WMS based services -->
+  <bean id="gwcServiceWMS" 
+    	class="org.geowebcache.service.wms.WMSService">
+    <constructor-arg ref="gwcStorageBroker"/>
+	<constructor-arg ref="gwcTLDispatcher"/>
+	<constructor-arg ref="gwcRuntimeStats"/>
+	<!-- Set the next line to true to enable full WMS support,
+	     i.e. recombining tiles to serve arbitrary WMS requests -->
+    <property name="fullWMS"><value>FALSE</value></property>
+    <!-- Proxy unknown requests -->
+    <property name="proxyRequests"><value>TRUE</value></property>
+  </bean>
+</beans>

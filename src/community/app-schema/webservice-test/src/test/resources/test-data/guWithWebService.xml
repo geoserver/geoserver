@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+  <namespaces>
+    <Namespace>
+      <prefix>gml</prefix>
+      <uri>http://www.opengis.net/gml</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>gsml</prefix>
+      <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>gss</prefix>
+      <uri>http://www.xxx.yyy.zzz/erd/gss</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>soapenv</prefix>
+      <uri>http://schemas.xmlsoap.org/soap/envelope/</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>xlink</prefix>
+      <uri>http://www.w3.org/1999/xlink</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>qaz</prefix>
+      <uri>http://www.xxx.yyy.zzz/testWebService/</uri>
+    </Namespace>  
+    <Namespace>
+      <prefix>erd</prefix>
+      <uri>http://www.xxx.yyy.zzz/erd</uri>
+    </Namespace>       
+  </namespaces>
+  <sourceDataStores>
+    <DataStore>
+      <id>ws</id>
+      <parameters>         
+  		<Parameter><name>DATA_FILE_DIRECTORY_PARAM_KEY</name><value>./src/test/resources/test-data/guXmlResponse.xml</value></Parameter>
+      </parameters>
+    </DataStore>    
+  </sourceDataStores>
+  <catalog>mappedPolygons.oasis.xml</catalog>
+  <targetTypes>
+    <FeatureType>
+      <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+    </FeatureType>
+  </targetTypes>
+  <typeMappings>
+    <FeatureTypeMapping>
+      <mappingName>chainedGU</mappingName>
+      <sourceDataStore>ws</sourceDataStore>     
+      <sourceType>gss:GEOLOGICALUNIT_250K_POLY</sourceType>
+      <targetElement>gsml:GeologicUnit</targetElement>
+      <itemXpath>/soapenv:Envelope/soapenv:Body/qaz:getGeologicalFeaturesByFilterStringResponse/qaz:out/qaz:item</itemXpath>
+      <isXmlDataStore>true</isXmlDataStore> 
+      <attributeMappings>  
+            	
+        <AttributeMapping>
+          <label>gsml:GeologicUnit</label>          
+          <targetAttribute>gsml:GeologicUnit</targetAttribute>          
+          <idExpression><inputAttribute>@gmlID</inputAttribute></idExpression>
+        </AttributeMapping>                  
+                    
+        <AttributeMapping>
+           <parentLabel>gsml:GeologicUnit</parentLabel>
+           <targetAttribute>FEATURE_LINK</targetAttribute>            
+           <sourceExpression>
+           		<inputAttribute>@id</inputAttribute>        		
+           </sourceExpression>   
+        </AttributeMapping>
+        
+        <AttributeMapping>           
+           <parentLabel>gsml:GeologicUnit</parentLabel>
+           <targetAttribute>gml:description</targetAttribute>            
+           <sourceExpression>
+           		<inputAttribute>gss:textDescription</inputAttribute>           		
+           </sourceExpression>            
+         </AttributeMapping>
+         
+         <AttributeMapping>  
+           <parentLabel>gsml:GeologicUnit</parentLabel>         
+           <targetAttribute>gml:name[1]</targetAttribute>          
+           <sourceExpression>
+           		<inputAttribute>gss:formattedName</inputAttribute>           		
+           	</sourceExpression>
+           <ClientProperty>
+           	<name>codeSpace</name>
+           	<value>'gsv:NameSpace'</value>
+         	</ClientProperty> 
+         </AttributeMapping>
+         
+         <AttributeMapping>           
+           <parentLabel>gsml:GeologicUnit</parentLabel>
+           <targetAttribute>gml:name[2]</targetAttribute>          
+           <sourceExpression>
+           		<inputAttribute>gss:urn[@domain='GSV']</inputAttribute>           		
+           	</sourceExpression>
+           <ClientProperty>
+           	<name>codeSpace</name>
+           	<value>'gsv:NameSpace'</value>
+         	</ClientProperty>
+         </AttributeMapping>    
+
+         <AttributeMapping>
+            <parentLabel>gsml:GeologicUnit</parentLabel>          
+            <targetAttribute>gsml:observationMethod/gsml:CGI_TermValue/gsml:value</targetAttribute>
+            <sourceExpression>
+            	<OCQL>'CONSTANT'</OCQL>            	
+            </sourceExpression> 
+            <ClientProperty>
+            	<name>codeSpace</name>
+            	<value>'gsv:NameSpace'</value>
+          	</ClientProperty>       
+         </AttributeMapping>
+            
+  		 <AttributeMapping>           
+  		    <parentLabel>gsml:GeologicUnit</parentLabel> 
+            <targetAttribute>gsml:purpose</targetAttribute>            
+            <sourceExpression>
+            	<OCQL>'CONSTANT'</OCQL>            	
+            </sourceExpression>            
+         </AttributeMapping>
+    
+         <AttributeMapping>
+            <parentLabel>gsml:GeologicUnit</parentLabel>            
+            <targetAttribute>gsml:rank</targetAttribute>         
+            <ClientProperty>
+            	<name>xlink:href</name>
+    	      	<value>gss:geologicalUnit/gss:GeologicalUnit/gss:rank/erd:TermValue/erd:value/erd:ClassificationCode/erd:urn[@domain='GSV']</value>
+          	</ClientProperty> 
+         </AttributeMapping>          
+ 		</attributeMappings>
+    </FeatureTypeMapping>
+  </typeMappings>
+</as:AppSchemaDataAccess>

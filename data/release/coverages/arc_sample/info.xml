@@ -1,0 +1,62 @@
+<coverage format = "arcGridSample" >
+  <name>Arc_Sample</name>
+  <label>A sample ArcGrid file</label>
+  <description>Generated from arcGridSample</description>
+  <wmspath>/</wmspath>
+  <metadataLink about = "" type = "" metadataType = "" >
+    null
+  </metadataLink>
+  <keywords>WCS,arcGridSample,arcGridSample_Coverage</keywords>
+  <!--
+    the default style this CoverageInfoDTO can be represented by.
+    at least must contain the "default" attribute
+  -->
+  <styles default = "rain">
+    <style>raster</style>
+  </styles>
+  <envelope crs = "GEOGCS['WGS 84', 
+  DATUM['World Geodetic System 1984', 
+    SPHEROID['WGS 84', 6378137.0, 298.257223563, AUTHORITY['EPSG','7030']], 
+    AUTHORITY['EPSG','6326']], 
+  PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+  UNIT['degree', 0.017453292519943295], 
+  AXIS['Geodetic longitude', EAST], 
+  AXIS['Geodetic latitude', NORTH], 
+  AUTHORITY['EPSG','4326']]" srsName = "EPSG:4326" >
+    <pos>-180.0 -90.0</pos>
+    <pos>180.0 90.0</pos>
+  </envelope>
+  <grid dimension = "2" >
+    <low>0 0 </low>
+    <high>720 360 </high>
+    <axisName>precip30min</axisName>
+    <geoTransform >
+      <scaleX>0.5</scaleX>
+      <scaleY>-0.5</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>-179.75</translateX>
+      <translateY>89.75</translateY>
+    </geoTransform>
+  </grid>
+  <CoverageDimension >
+    <name>precip30min</name>
+    <description>GridSampleDimension[-9999.0,8849.000000000002]</description>
+    <interval >
+      <min>-9999.0</min>
+      <max>8849.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <supportedCRSs >
+    <requestCRSs>EPSG:4326</requestCRSs>
+    <responseCRSs>EPSG:4326</responseCRSs>
+  </supportedCRSs>
+  <supportedFormats nativeFormat = "ArcGrid" >
+    <formats>ARCGRID,ARCGRID-GZIP,GEOTIFF,PNG,GIF,TIFF</formats>
+  </supportedFormats>
+  <supportedInterpolations default = "nearest neighbor" >
+    <interpolationMethods>nearest neighbor</interpolationMethods>
+  </supportedInterpolations>
+</coverage>

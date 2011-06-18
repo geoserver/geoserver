@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities version="1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wfs"
+	xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc"	
+	xmlns:gml="http://www.opengis.net/gml"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"	
+	updateSequence="0">
+	<ogc:Filter_Capabilities>
+		<!-- dummy spatial capabilities. Included only because it a compulsory field. -->	
+		<ogc:Spatial_Capabilities>
+			<ogc:GeometryOperands><ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand> </ogc:GeometryOperands>
+			<ogc:SpatialOperators><ogc:SpatialOperator/></ogc:SpatialOperators>
+		</ogc:Spatial_Capabilities>
+		<ogc:Scalar_Capabilities>
+		    <ogc:Logical_Operators/>
+			<ogc:ComparisonOperators>
+				<ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+        		<ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+        		<ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+        		<ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+        	<!-- 	<ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator> -->
+        		<ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+        		<ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+        		<ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+         		<ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>       		
+			</ogc:ComparisonOperators>
+		</ogc:Scalar_Capabilities>
+		<ogc:Id_Capabilities><ogc:EID/></ogc:Id_Capabilities>
+	</ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GridCRS xmlns="http://www.opengis.net/wcs/1.1.1" 
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsGridCRS.xsd">
+	<GridBaseCRS>urn:ogc:def:crs:EPSG:6.6:4326</GridBaseCRS>
+	<GridOffsets>0.1 0.2</GridOffsets>
+</GridCRS>

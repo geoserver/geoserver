@@ -1,0 +1,83 @@
+
+   <styles>
+     <style>
+       <name>burg</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/burg.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>giant_polygon</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/giant_polygon.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>capitals</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/capitals.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>simple_streams</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/simple_streams.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>pophatch</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/pophatch.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>restricted</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/restricted.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>tiger_roads</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/tiger_roads.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>poly_landmarks</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/poly_landmarks.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>green</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/green.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>rain</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/rain.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>simple_roads</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/simple_roads.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>dem</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/dem.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>population</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/population.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>line</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/line.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>raster</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/raster.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>polygon</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/polygon.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>grass</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/grass.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>point</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/point.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>poi</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/poi.xml" type="application/xml"/>
+     </style>
+     <style>
+       <name>cite_lakes</name>
+       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/cite_lakes.xml" type="application/xml"/>
+     </style>
+   </styles>

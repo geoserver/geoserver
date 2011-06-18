@@ -1,0 +1,1 @@
+wms?request=GetMap&layers=bc_roads&bbox=489153,5433000,529000,5460816&width=800&height=400&srs=EPSG:27354&styles=normal&Format=image/svg+xml

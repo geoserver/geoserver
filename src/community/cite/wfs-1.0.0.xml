@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="VAR_WFS_CAPABILITIES_URL">http://localhost:8080/geoserver/wfs?request=getcapabilities&amp;service=wfs&amp;version=1.0.0</value>
+ <value key="all">all</value>
+</values>

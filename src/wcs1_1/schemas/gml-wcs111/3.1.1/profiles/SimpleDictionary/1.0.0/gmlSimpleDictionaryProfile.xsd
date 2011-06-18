@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml"
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.0.0">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:gml:3.1.1">gml.xsd</appinfo>
+		<documentation>GML 3.1.1 profile for Dictionary. Primary editor: Arliss Whiteside. Last updated 2005-10-11
+		Copyright (c) Open Geospatial Consortium, Inc. (2005) </documentation>
+	</annotation>
+	<!-- ============================================================== -->
+	<include schemaLocation="dictionary.xsd"/>
+	<!-- ============================================================== -->
+</schema>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://example.com" xmlns:ex="http://example.com"  xmlns:ex2="http://example.com/2" xmlns:gml="http://www.opengis.net/gml"
+    xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="1.0">
+
+    <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+         
+    <complexType name="MyTestFeatureType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType" >
+                <sequence>
+                    <element ref="ex:name" minOccurs="0" />
+                    
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    
+    <element name="MyTestFeature" type="ex:MyTestFeatureType"/>
+    
+    <element name="name" type="gml:CodeType" />    
+
+</schema>

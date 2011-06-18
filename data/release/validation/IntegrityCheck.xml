@@ -1,0 +1,29 @@
+<suite xmlns:gml = "http://www.opengis.net/gml" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "testSuiteSchema" xsi:schemaLocation = "testSuiteSchema /data/capabilities/validate/testSuiteSchema.xsd" >
+<name>IntegrityCheck</name>
+<description>Integrity Check Description</description>
+<test>
+<name>Is Valid Geometry</name>
+<description>Is Valid Geometry</description>
+<plugin>Is Valid Geometry</plugin>
+<argument >
+<name>typeRef</name>
+<string>*</string>
+
+</argument>
+</test>
+<test>
+<name>FID Uniqueness</name>
+<description>Checks all Features for ID Uniqueness</description>
+<plugin>UniqueFID</plugin>
+<argument >
+<name>attributeName</name>
+<string>id</string>
+
+</argument>
+<argument >
+<name>typeRef</name>
+<string>*</string>
+
+</argument>
+</test>
+</suite>

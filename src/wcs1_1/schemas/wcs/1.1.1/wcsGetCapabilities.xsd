@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/1.1.1" 
+xmlns:wcs="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.1" xml:lang="en">
+	<annotation>
+		<appinfo>wcsGetCapabilities.xsd 2007-06-05</appinfo>
+		<documentation>This XML Schema Document encodes the GetCapabilities operation request and response used by the OGC Web Coverage Service (WCS). 
+		Copyright (c) 2007 Open Geospatial Consortium, Inc, All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="wcsContents.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<element name="GetCapabilities">
+		<annotation>
+			<documentation>Request to a WCS server to perform the GetCapabilities operation. This operation allows a client to retrieve a Capabilities XML document providing metadata for the specific WCS server. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="ows:GetCapabilitiesType">
+					<sequence/>
+					<attribute name="service" type="ows:ServiceType" use="required" fixed="WCS"/>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+	<element name="Capabilities">
+		<annotation>
+			<documentation>XML encoded WCS GetCapabilities operation response. The Capabilities document provides clients with service metadata about a specific service instance, including metadata about the coverages served. If the server does not implement the updateSequence parameter, the server shall always return the Capabilities document, without the updateSequence parameter. When the server implements the updateSequence parameter and the GetCapabilities operation request included the updateSequence parameter with the current value, the server shall return this element with only the "version" and "updateSequence" attributes. Otherwise, all optional sections shall be included or not depending on the actual value of the Contents parameter in the GetCapabilities operation request. </documentation>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="ows:CapabilitiesBaseType">
+					<sequence>
+						<element ref="wcs:Contents" minOccurs="0"/>
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<!-- =========================================================== -->
+</schema>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!--  This is to test polymorphism in app-schema (http://jira.codehaus.org/browse/GEOT-2674) -->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>ex</prefix>
+            <uri>http://example.com</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+    </namespaces>
+    <includedTypes>
+        <Include>CGITermValue.xml</Include>
+    </includedTypes>
+    <sourceDataStores>
+        <DataStore>
+            <id>PropertyFiles</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>polymorphism.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>PropertyFiles</sourceDataStore>
+            <sourceType>PolymorphicFeature</sourceType>
+            <targetElement>ex:PolymorphicFeature</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <!-- Test feature chaining and polymorphism -->
+                    <targetAttribute>ex:firstValue</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>VALUE_ID</OCQL>
+                        <linkElement>
+						    Recode(CLASS_TEXT, 'numeric', 'NumericType', 'literal', toXlinkHref(strConcat('urn:value::', VALUE_ID)))
+						</linkElement>
+                        <linkField>FEATURE_LINK</linkField>
+                    </sourceExpression>
+                    <isMultiple>true</isMultiple>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <!-- Test polymorphism with no feature chaining i.e. no linkField -->
+                    <targetAttribute>ex:secondValue</targetAttribute>
+                    <sourceExpression>
+                        <linkElement>
+						    if_then_else(isNull(CLASS_TEXT), Expression.NIL,
+						       if_then_else(equalTo(CLASS_TEXT, 'numeric'), 'NumericType', 'TermValue2'))
+						</linkElement>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <!-- Test polymorphism using normal feature chaining with no conditions -->
+                    <targetAttribute>ex:thirdValue</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>VALUE_ID</OCQL>
+                        <linkElement>NumericType</linkElement>
+                        <linkField>FEATURE_LINK</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <!-- See above -->
+                    <targetAttribute>ex:thirdValue</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>VALUE_ID</OCQL>
+                        <linkElement>gsml:CGI_TermValue</linkElement>
+                        <linkField>FEATURE_LINK</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <!-- Test referential polymorphism -->
+                    <targetAttribute>ex:fourthValue</targetAttribute>
+                    <sourceExpression>
+                        <linkElement>
+						    if_then_else(lessEqualThan(NUMERIC_VALUE, 999), toXlinkHref('urn:ogc:def:nil:OGC::missing'),
+						        'NumericType')
+						</linkElement>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <!-- Test polymorphism with anyType  -->
+                    <targetAttribute>ex:anyValue</targetAttribute>
+                    <sourceExpression>
+                        <linkElement>
+						   Recode(CLASS_TEXT, Expression.NIL, toXlinkHref('urn:ogc:def:nil:OGC::missing'),
+						       'numeric', toXlinkHref(strConcat('urn:numeric-value::', NUMERIC_VALUE)),
+						       'literal', 'TermValue2')
+						</linkElement>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>TermValue2</mappingName>
+            <sourceDataStore>PropertyFiles</sourceDataStore>
+            <sourceType>PolymorphicFeature</sourceType>
+            <targetElement>gsml:CGI_TermValue</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gsml:CGI_TermValue</targetAttribute>
+                    <idExpression><OCQL>strConcat('termvalue_', getID())</OCQL></idExpression>
+                    <!-- GEOT-3304: Test client property with polymorphism -->
+                    <ClientProperty>
+                        <name>gsml:qualifier</name>
+                        <value>'approximate'</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:value</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>NUMERIC_VALUE</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>NumericType</mappingName>
+            <sourceDataStore>PropertyFiles</sourceDataStore>
+            <sourceType>PolymorphicFeature</sourceType>
+            <targetElement>gsml:CGI_NumericValue</targetElement>
+            <attributeMappings>
+                 <AttributeMapping>
+                    <targetAttribute>gsml:CGI_NumericValue</targetAttribute>
+                    <idExpression><OCQL>strConcat('numericvalue_', getID())</OCQL></idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>gsml:principalValue</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>NUMERIC_VALUE</OCQL>
+                    </sourceExpression>
+                    <ClientProperty>
+                        <name>uom</name>
+                        <value>'m'</value>
+                    </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>
+			            FEATURE_LINK
+  		            </targetAttribute>
+                    <sourceExpression>
+                        <OCQL>strTrim(getId())</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

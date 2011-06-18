@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/ogc"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified">
+
+   <xsd:element name="ServiceExceptionReport">
+      <xsd:annotation>
+         <xsd:documentation>
+            The ServiceExceptionReport element contains one
+            or more ServiceException elements that describe
+            a service exception.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="ServiceException"
+                         type="ogc:ServiceExceptionType"
+                         minOccurs="0" maxOccurs="unbounded">
+               <xsd:annotation>
+                  <xsd:documentation>
+                     The Service exception element is used to describe 
+                     a service exception.
+                  </xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attribute name="version" type="xsd:string" fixed="1.2.0"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:complexType name="ServiceExceptionType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The ServiceExceptionType type defines the ServiceException
+            element.  The content of the element is an exception message
+            that the service wished to convey to the client application.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:string">
+            <xsd:attribute name="code" type="xsd:string">
+               <xsd:annotation>
+                  <xsd:documentation>
+                     A service may associate a code with an exception
+                     by using the code attribute.
+                  </xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="locator" type="xsd:string">
+               <xsd:annotation>
+                  <xsd:documentation>
+                     The locator attribute may be used by a service to
+                     indicate to a client where in the client's request
+                     an exception was encountered.  If the request included
+                     a 'handle' attribute, this may be used to identify the
+                     offending component of the request.  Otherwise the 
+                     service may try to use other means to locate the 
+                     exception such as line numbers or byte offset from the
+                     begining of the request, etc ...
+                  </xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+</xsd:schema>

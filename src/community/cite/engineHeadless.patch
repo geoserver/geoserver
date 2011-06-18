@@ -1,0 +1,58 @@
+Index: apps/engine/src/java/com/occamlab/te/SwingForm.java
+===================================================================
+--- apps/engine/src/java/com/occamlab/te/SwingForm.java	(revision 416)
++++ apps/engine/src/java/com/occamlab/te/SwingForm.java	(working copy)
+@@ -23,6 +23,10 @@
+ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+ import javax.xml.parsers.DocumentBuilder;
+ import javax.xml.parsers.DocumentBuilderFactory;
++import javax.xml.transform.Transformer;
++import javax.xml.transform.TransformerFactory;
++import javax.xml.transform.dom.DOMSource;
++import javax.xml.transform.stream.StreamResult;
+ 
+ import org.w3c.dom.Document;
+ import org.w3c.dom.Element;
+@@ -140,6 +144,8 @@
+                     //System.out.println("key|value: "+key+"|"+value);
+                 } while (start < end);
+ 
++                TransformerFactory.newInstance().newTransformer().transform(
++                        new DOMSource(doc), new StreamResult(System.out));
+                 core.setFormResults(doc);
+                 if (popupForm != null) {
+                     popupForm.setVisible(false);
+Index: apps/engine/src/java/com/occamlab/te/TECore.java
+===================================================================
+--- apps/engine/src/java/com/occamlab/te/TECore.java	(revision 416)
++++ apps/engine/src/java/com/occamlab/te/TECore.java	(working copy)
+@@ -1342,15 +1342,20 @@
+ //System.out.println(this.formHtml);
+ 
+         if (!web) {
+-            int width = 700;
+-            int height = 500;
+-            attr = (Attr) attrs.getNamedItem("width");
+-            if (attr != null)
+-                width = Integer.parseInt(attr.getValue());
+-            attr = (Attr) attrs.getNamedItem("height");
+-            if (attr != null)
+-                height = Integer.parseInt(attr.getValue());
+-            SwingForm.create(name, width, height, this);
++            if (System.getProperty("cite.headless") != null) {
++                new HeadlessForm(this);
++            }
++            else {
++                int width = 700;
++                int height = 500;
++                attr = (Attr) attrs.getNamedItem("width");
++                if (attr != null)
++                    width = Integer.parseInt(attr.getValue());
++                attr = (Attr) attrs.getNamedItem("height");
++                if (attr != null)
++                    height = Integer.parseInt(attr.getValue());
++                SwingForm.create(name, width, height, this);
++            }
+         }
+ 
+         while (formResults == null) {

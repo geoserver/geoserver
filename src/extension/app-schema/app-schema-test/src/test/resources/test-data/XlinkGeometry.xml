@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>ex</prefix>
+            <uri>http://example.com</uri>
+        </Namespace>
+        <Namespace>
+			<prefix>gml</prefix>
+			<uri>http://www.opengis.net/gml</uri>
+		</Namespace>
+         <Namespace>
+            <prefix>xlink</prefix>
+            <uri>http://www.w3.org/1999/xlink</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>XlinkGeometry</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>XlinkGeometry.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>XlinkGeometry</sourceDataStore>
+            <sourceType>XlinkGeometry</sourceType>
+            <targetElement>
+				ex:MyTestFeature
+			</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>
+						ex:MyTestFeature
+					</targetAttribute>
+                </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>ex:geometry</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID1</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:curve</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID2</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:point</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID3</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOINT</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:linestring</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID4</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:surface</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID5</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                 <AttributeMapping>
+                    <targetAttribute>ex:polygon</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID6</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>            
+                                          
+                <AttributeMapping>
+                    <targetAttribute>ex:multicurve</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID7</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:multipoint</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID8</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOINT</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:multilinestring</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID9</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:multisurface</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID10</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>                
+                
+                 <AttributeMapping>
+                    <targetAttribute>ex:multipolygon</targetAttribute>  
+                    <idExpression>
+                        <OCQL>GEOID11</OCQL>
+                    </idExpression>     
+                    <sourceExpression>
+                        <OCQL>GEOPOLYGON</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>   
+                
+                
+                <AttributeMapping>
+                <targetAttribute>ex:geometryref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue1'</value>
+                    </ClientProperty>   
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:curveref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue2'</value>
+                    </ClientProperty>  
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:pointref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue3'</value>
+                    </ClientProperty>    
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:linestringref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue4'</value>
+                    </ClientProperty>  
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:surfaceref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue5'</value>
+                    </ClientProperty>  
+                </AttributeMapping>                
+                
+                 <AttributeMapping>
+                    <targetAttribute>ex:polygonref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue6'</value>
+                    </ClientProperty>   
+                </AttributeMapping>            
+                                          
+                <AttributeMapping>
+                    <targetAttribute>ex:multicurveref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue7'</value>
+                    </ClientProperty>  
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:multipointref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue8'</value>
+                    </ClientProperty>   
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:multilinestringref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue9'</value>
+                    </ClientProperty>   
+                </AttributeMapping>                
+                
+                <AttributeMapping>
+                    <targetAttribute>ex:multisurfaceref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue10'</value>
+                    </ClientProperty>   
+                </AttributeMapping>                
+                
+                 <AttributeMapping>
+                    <targetAttribute>ex:multipolygonref</targetAttribute>  
+                    <ClientProperty>
+                    <name>xlink:href</name>
+                    <value>'xlinkvalue11'</value>
+                    </ClientProperty>    
+                </AttributeMapping>           
+                    
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

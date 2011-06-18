@@ -1,0 +1,31 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+  </head>
+  <body>
+    <h3><wicket:message key="title">Styling</wicket:message></h3>
+    <wicket:panel>
+       <div wicket:id="map"></div>
+       <form wicket:id="form">
+         <ul>
+           <li style="display: inline;">
+              <label for="layers" style="display: inline;">Layer</label>
+              <select wicket:id="layers" style="display: inline;"></select>
+           </li>
+           <li style="display: inline;">
+              <label for="name" style="display: inline;">Style</label>
+              <select wicket:id="styles" style="display: inline;"></select>
+           </li>
+            <li class="buttongroup rightwise">
+               <button wicket:id="save">Save</button>
+               <button wicket:id="revert">Revert</button>
+            </li>
+         </ul>
+         <ul>
+           <li>
+             <textarea wicket:id="editor" style="width: 100%;"></textarea>  
+           </li>
+        </ul>
+       </form>
+    </wicket:panel>
+  </body>
+</html>

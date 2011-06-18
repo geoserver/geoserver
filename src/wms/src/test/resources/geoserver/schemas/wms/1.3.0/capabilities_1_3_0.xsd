@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wms="http://www.opengis.net/wms" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.3.0 2010-02-03">
+	
+	<!--
+		WMS is an OGC Standard.
+		Copyright (c) 2004,2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+		To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+	-->
+
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+	<!-- ********************************************************************* -->
+	<!-- **  The Top-Level Element.                                         ** -->
+	<!-- ********************************************************************* -->
+	<element name="WMS_Capabilities">
+		<annotation>
+			<documentation>
+        A WMS_Capabilities document is returned in response to a
+        GetCapabilities request made on a WMS.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Service"/>
+				<element ref="wms:Capability"/>
+			</sequence>
+			<attribute name="version" type="string" fixed="1.3.0"/>
+			<attribute name="updateSequence" type="string"/>
+		</complexType>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  Elements Used In Multiple Places.                              ** -->
+	<!-- ********************************************************************* -->
+	<element name="Name" type="string">
+		<annotation>
+			<documentation>
+        The Name is typically for machine-to-machine communication.
+      </documentation>
+		</annotation>
+	</element>
+	<element name="Title" type="string">
+		<annotation>
+			<documentation>
+        The Title is for informative display to a human.
+      </documentation>
+		</annotation>
+	</element>
+	<element name="Abstract" type="string">
+		<annotation>
+			<documentation>
+        The abstract is a longer narrative description of an object.
+      </documentation>
+		</annotation>
+	</element>
+	<element name="KeywordList">
+		<annotation>
+			<documentation>
+        List of keywords or keyword phrases to help catalog searching.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Keyword" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="Keyword">
+		<annotation>
+			<documentation>
+        A single keyword or phrase.
+      </documentation>
+		</annotation>
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="vocabulary" type="string"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+	<element name="OnlineResource">
+		<annotation>
+			<documentation>
+        An OnlineResource is typically an HTTP URL.  The URL is placed in
+        the xlink:href attribute, and the value "simple" is placed in the
+        xlink:type attribute.
+      </documentation>
+		</annotation>
+		<complexType>
+			<attributeGroup ref="xlink:simpleLink"/>
+		</complexType>
+	</element>
+	<element name="Format" type="string">
+		<annotation>
+			<documentation>
+        A container for listing an available format's MIME type.
+      </documentation>
+		</annotation>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  General Service Metadata.                                      ** -->
+	<!-- ********************************************************************* -->
+	<element name="Service">
+		<annotation>
+			<documentation>
+        General service metadata.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="Name">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="WMS"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<element ref="wms:Title"/>
+				<element ref="wms:Abstract" minOccurs="0"/>
+				<element ref="wms:KeywordList" minOccurs="0"/>
+				<element ref="wms:OnlineResource"/>
+				<element ref="wms:ContactInformation" minOccurs="0"/>
+				<element ref="wms:Fees" minOccurs="0"/>
+				<element ref="wms:AccessConstraints" minOccurs="0"/>
+				<element ref="wms:LayerLimit" minOccurs="0"/>
+				<element ref="wms:MaxWidth" minOccurs="0"/>
+				<element ref="wms:MaxHeight" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="ContactInformation">
+		<annotation>
+			<documentation>
+        Information about a contact person for the service.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:ContactPersonPrimary" minOccurs="0"/>
+				<element ref="wms:ContactPosition" minOccurs="0"/>
+				<element ref="wms:ContactAddress" minOccurs="0"/>
+				<element ref="wms:ContactVoiceTelephone" minOccurs="0"/>
+				<element ref="wms:ContactFacsimileTelephone" minOccurs="0"/>
+				<element ref="wms:ContactElectronicMailAddress" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="ContactPersonPrimary">
+		<complexType>
+			<sequence>
+				<element ref="wms:ContactPerson"/>
+				<element ref="wms:ContactOrganization"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="ContactPerson" type="string"/>
+	<element name="ContactOrganization" type="string"/>
+	<element name="ContactPosition" type="string"/>
+	<element name="ContactAddress">
+		<complexType>
+			<sequence>
+				<element ref="wms:AddressType"/>
+				<element ref="wms:Address"/>
+				<element ref="wms:City"/>
+				<element ref="wms:StateOrProvince"/>
+				<element ref="wms:PostCode"/>
+				<element ref="wms:Country"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="AddressType" type="string"/>
+	<element name="Address" type="string"/>
+	<element name="City" type="string"/>
+	<element name="StateOrProvince" type="string"/>
+	<element name="PostCode" type="string"/>
+	<element name="Country" type="string"/>
+	<element name="ContactVoiceTelephone" type="string"/>
+	<element name="ContactFacsimileTelephone" type="string"/>
+	<element name="ContactElectronicMailAddress" type="string"/>
+	<element name="Fees" type="string"/>
+	<element name="AccessConstraints" type="string"/>
+	<element name="LayerLimit" type="positiveInteger"/>
+	<element name="MaxWidth" type="positiveInteger"/>
+	<element name="MaxHeight" type="positiveInteger"/>
+	<!-- ********************************************************************* -->
+	<!-- **  The Capability Element.                                        ** -->
+	<!-- ********************************************************************* -->
+	<element name="Capability">
+		<annotation>
+			<documentation>
+        A Capability lists available request types, how exceptions may be
+        reported, and whether any extended capabilities are defined.
+        It also includes an optional list of map layers available from this
+        server.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Request"/>
+				<element ref="wms:Exception"/>
+				<element ref="wms:_ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:Layer" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  The Request Element.                                           ** -->
+	<!-- ********************************************************************* -->
+	<element name="Request">
+		<annotation>
+			<documentation>
+        Available WMS Operations are listed in a Request element.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:GetCapabilities"/>
+				<element ref="wms:GetMap"/>
+				<element ref="wms:GetFeatureInfo" minOccurs="0"/>
+				<element ref="wms:_ExtendedOperation" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="GetCapabilities" type="wms:OperationType"/>
+	<element name="GetMap" type="wms:OperationType"/>
+	<element name="GetFeatureInfo" type="wms:OperationType"/>
+	<element name="_ExtendedOperation" type="wms:OperationType" abstract="true"/>
+	<complexType name="OperationType">
+		<annotation>
+			<documentation>
+        For each operation offered by the server, list the available output
+        formats and the online resource.
+      </documentation>
+		</annotation>
+		<sequence>
+			<element ref="wms:Format" maxOccurs="unbounded"/>
+			<element ref="wms:DCPType" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<element name="DCPType">
+		<annotation>
+			<documentation>
+        Available Distributed Computing Platforms (DCPs) are listed here.
+        At present, only HTTP is defined.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:HTTP"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="HTTP">
+		<annotation>
+			<documentation>
+        Available HTTP request methods.  At least "Get" shall be supported.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Get"/>
+				<element ref="wms:Post" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="Get">
+		<annotation>
+			<documentation>
+        The URL prefix for the HTTP "Get" request method.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="Post">
+		<annotation>
+			<documentation>
+        The URL prefix for the HTTP "Post" request method.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  The Exception Element.                                         ** -->
+	<!-- ********************************************************************* -->
+	<element name="Exception">
+		<annotation>
+			<documentation>
+        An Exception element indicates which error-reporting formats are
+        supported.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  Extended Capabilities.                                         ** -->
+	<!-- ********************************************************************* -->
+	<element name="_ExtendedCapabilities" abstract="true">
+		<annotation>
+			<documentation>
+        Individual service providers may use this element to report extended
+        capabilities.
+      </documentation>
+		</annotation>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  The Layer Element.                                             ** -->
+	<!-- ********************************************************************* -->
+	<element name="Layer">
+		<annotation>
+			<documentation>
+        Nested list of zero or more map Layers offered by this server.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Name" minOccurs="0"/>
+				<element ref="wms:Title"/>
+				<element ref="wms:Abstract" minOccurs="0"/>
+				<element ref="wms:KeywordList" minOccurs="0"/>
+				<element ref="wms:CRS" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:EX_GeographicBoundingBox" minOccurs="0"/>
+				<element ref="wms:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:Dimension" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:Attribution" minOccurs="0"/>
+				<element ref="wms:AuthorityURL" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:Identifier" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:MetadataURL" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:DataURL" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:FeatureListURL" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:Style" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:MinScaleDenominator" minOccurs="0"/>
+				<element ref="wms:MaxScaleDenominator" minOccurs="0"/>
+				<element ref="wms:Layer" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute name="queryable" type="boolean" default="0"/>
+			<attribute name="cascaded" type="nonNegativeInteger"/>
+			<attribute name="opaque" type="boolean" default="0"/>
+			<attribute name="noSubsets" type="boolean" default="0"/>
+			<attribute name="fixedWidth" type="nonNegativeInteger"/>
+			<attribute name="fixedHeight" type="nonNegativeInteger"/>
+		</complexType>
+	</element>
+	<element name="CRS" type="string">
+		<annotation>
+			<documentation>
+        Identifier for a single Coordinate Reference System (CRS).
+      </documentation>
+		</annotation>
+	</element>
+	<element name="EX_GeographicBoundingBox">
+		<annotation>
+			<documentation>
+        The EX_GeographicBoundingBox attributes indicate the limits of the enclosing
+        rectangle in longitude and latitude decimal degrees.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="westBoundLongitude" type="wms:longitudeType"/>
+				<element name="eastBoundLongitude" type="wms:longitudeType"/>
+				<element name="southBoundLatitude" type="wms:latitudeType"/>
+				<element name="northBoundLatitude" type="wms:latitudeType"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="BoundingBox">
+		<annotation>
+			<documentation>
+        The BoundingBox attributes indicate the limits of the bounding box
+        in units of the specified coordinate reference system.
+      </documentation>
+		</annotation>
+		<complexType>
+			<attribute name="CRS" type="string" use="required"/>
+			<attribute name="minx" type="double" use="required"/>
+			<attribute name="miny" type="double" use="required"/>
+			<attribute name="maxx" type="double" use="required"/>
+			<attribute name="maxy" type="double" use="required"/>
+			<attribute name="resx" type="double"/>
+			<attribute name="resy" type="double"/>
+		</complexType>
+	</element>
+	<element name="Dimension">
+		<annotation>
+			<documentation>
+        The Dimension element declares the existence of a dimension and indicates what
+        values along a dimension are valid.
+      </documentation>
+		</annotation>
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="name" type="string" use="required"/>
+					<attribute name="units" type="string" use="required"/>
+					<attribute name="unitSymbol" type="string"/>
+					<attribute name="default" type="string"/>
+					<attribute name="multipleValues" type="boolean"/>
+					<attribute name="nearestValue" type="boolean"/>
+					<attribute name="current" type="boolean"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+	<element name="Attribution">
+		<annotation>
+			<documentation>
+        Attribution indicates the provider of a Layer or collection of Layers.
+        The provider's URL, descriptive title string, and/or logo image URL
+        may be supplied.  Client applications may choose to display one or
+        more of these items.  A format element indicates the MIME type of
+        the logo image located at LogoURL.  The logo image's width and height
+        assist client applications in laying out space to display the logo.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Title" minOccurs="0"/>
+				<element ref="wms:OnlineResource" minOccurs="0"/>
+				<element ref="wms:LogoURL" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="LogoURL">
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+			<attribute name="width" type="positiveInteger"/>
+			<attribute name="height" type="positiveInteger"/>
+		</complexType>
+	</element>
+	<element name="MetadataURL">
+		<annotation>
+			<documentation>
+        A Map Server may use zero or more MetadataURL elements to offer
+        detailed, standardized metadata about the data underneath a
+        particular layer. The type attribute indicates the standard to which
+        the metadata complies.  The format element indicates how the metadata is structured.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+			<attribute name="type" type="NMTOKEN" use="required"/>
+		</complexType>
+	</element>
+	<element name="AuthorityURL">
+		<annotation>
+			<documentation>
+        A Map Server may use zero or more Identifier elements to list ID
+        numbers or labels defined by a particular Authority.  For example,
+        the Global Change Master Directory (gcmd.gsfc.nasa.gov) defines a
+        DIF_ID label for every dataset.  The authority name and explanatory
+        URL are defined in a separate AuthorityURL element, which may be
+        defined once and inherited by subsidiary layers.  Identifiers
+        themselves are not inherited.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+			<attribute name="name" type="NMTOKEN" use="required"/>
+		</complexType>
+	</element>
+	<element name="Identifier">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="authority" type="string" use="required"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+	<element name="DataURL">
+		<annotation>
+			<documentation>
+        A Map Server may use DataURL offer a link to the underlying data represented
+        by a particular layer.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="FeatureListURL">
+		<annotation>
+			<documentation>
+        A Map Server may use FeatureListURL to point to a list of the
+        features represented in a Layer.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="Style">
+		<annotation>
+			<documentation>
+        A Style element lists the name by which a style is requested and a
+        human-readable title for pick lists, optionally (and ideally)
+        provides a human-readable description, and optionally gives a style
+        URL.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Name"/>
+				<element ref="wms:Title"/>
+				<element ref="wms:Abstract" minOccurs="0"/>
+				<element ref="wms:LegendURL" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="wms:StyleSheetURL" minOccurs="0"/>
+				<element ref="wms:StyleURL" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="LegendURL">
+		<annotation>
+			<documentation>
+        A Map Server may use zero or more LegendURL elements to provide an
+        image(s) of a legend relevant to each Style of a Layer.  The Format
+        element indicates the MIME type of the legend. Width and height
+        attributes may be provided to assist client applications in laying out
+        space to display the legend.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+			<attribute name="width" type="positiveInteger"/>
+			<attribute name="height" type="positiveInteger"/>
+		</complexType>
+	</element>
+	<element name="StyleSheetURL">
+		<annotation>
+			<documentation>
+        StyleSheeetURL provides symbology information for each Style of a Layer.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="StyleURL">
+		<annotation>
+			<documentation>
+        A Map Server may use StyleURL to offer more information about the
+        data or symbology underlying a particular Style. While the semantics
+        are not well-defined, as long as the results of an HTTP GET request
+        against the StyleURL are properly MIME-typed, Viewer Clients and
+        Cascading Map Servers can make use of this. A possible use could be
+        to allow a Map Server to provide legend information.
+      </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="wms:Format"/>
+				<element ref="wms:OnlineResource"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="MinScaleDenominator" type="double">
+		<annotation>
+			<documentation>
+        Minimum scale denominator for which it is appropriate to
+        display this layer.
+      </documentation>
+		</annotation>
+	</element>
+	<element name="MaxScaleDenominator" type="double">
+		<annotation>
+			<documentation>
+        Maximum scale denominator for which it is appropriate to
+        display this layer.
+      </documentation>
+		</annotation>
+	</element>
+	<!-- ********************************************************************* -->
+	<!-- **  Type Definitions.                                              ** -->
+	<!-- ********************************************************************* -->
+	<simpleType name="longitudeType">
+		<restriction base="double">
+			<minInclusive value="-180"/>
+			<maxInclusive value="180"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="latitudeType">
+		<restriction base="double">
+			<minInclusive value="-90"/>
+			<maxInclusive value="90"/>
+		</restriction>
+	</simpleType>
+</schema>

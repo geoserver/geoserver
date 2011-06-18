@@ -1,0 +1,96 @@
+<coverage format = "img_sample2" >
+  <name>Pk50095</name>
+  <label>Pk50095 is a A raster file accompanied by a spatial data file</label>
+  <description>Generated from img_sample2</description>
+  <wmspath>/</wmspath>
+  <keywords>WCS,img_sample2,Pk50095</keywords>
+  <!--
+    the default style this CoverageInfoDTO can be represented by.
+    at least must contain the "default" attribute
+  -->
+  <styles default = "raster" />
+  <!--
+    crs: native CRS definition, srsName: user defined CRS identifier
+  -->
+  <envelope crs = "PROJCS['WGS 84 / UTM zone 33N', 
+  GEOGCS['WGS 84', 
+    DATUM['World Geodetic System 1984', 
+      SPHEROID['WGS 84', 6378137.0, 298.257223563, AUTHORITY['EPSG','7030']], 
+      AUTHORITY['EPSG','6326']], 
+    PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+    UNIT['degree', 0.017453292519943295], 
+    AXIS['Geodetic longitude', EAST], 
+    AXIS['Geodetic latitude', NORTH], 
+    AUTHORITY['EPSG','4326']], 
+  PROJECTION['Transverse_Mercator'], 
+  PARAMETER['central_meridian', 15.0], 
+  PARAMETER['latitude_of_origin', 0.0], 
+  PARAMETER['scale_factor', 0.9996], 
+  PARAMETER['false_easting', 500000.0], 
+  PARAMETER['false_northing', 0.0], 
+  UNIT['m', 1.0], 
+  AXIS['Easting', EAST], 
+  AXIS['Northing', NORTH], 
+  AUTHORITY['EPSG','32633']]" srsName = "EPSG:32633" >
+    <pos>347649.93086859107 5176214.082539256</pos>
+    <pos>370725.976428591 5196961.352859256</pos>
+  </envelope>
+  <grid dimension = "2" >
+    <low>0 0 </low>
+    <high>545 490 </high>
+    <axisName>Red band</axisName>
+    <axisName>Green band</axisName>
+    <axisName>Blue band</axisName>
+    <geoTransform >
+      <scaleX>42.34136799999989</scaleX>
+      <scaleY>-42.34136800000026</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>347671.1015525911</translateX>
+      <translateY>5196940.182175256</translateY>
+    </geoTransform>
+  </grid>
+  <CoverageDimension >
+    <name>Red band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>Green band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>Blue band</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <supportedCRSs >
+    <requestCRSs>EPSG:32633</requestCRSs>
+    <responseCRSs>EPSG:32633</responseCRSs>
+  </supportedCRSs>
+  <supportedFormats nativeFormat = "WorldImage" >
+    <formats>GIF,PNG,JPEG,TIFF,GTOPO30,GEOTIFF,IMAGEMOSAIC,ARCGRID</formats>
+  </supportedFormats>
+  <supportedInterpolations default = "nearest neighbor" >
+    <interpolationMethods>nearest neighbor,bilinear,bicubic,bicubic_2</interpolationMethods>
+  </supportedInterpolations>
+  <parameters >
+    <parameter value = "" name = "ReadGridGeometry2D" />
+  </parameters>
+</coverage>

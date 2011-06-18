@@ -1,0 +1,68 @@
+Index: engine/apps/manager/web/WEB-INF/web.xml
+===================================================================
+--- engine/apps/manager/web/WEB-INF/web.xml	(revision 402)
++++ engine/apps/manager/web/WEB-INF/web.xml	(working copy)
+@@ -19,10 +19,10 @@
+ 		<servlet-name>deleteSession</servlet-name>
+ 		<servlet-class>com.occamlab.te.web.DeleteSessionServlet</servlet-class>
+ 	</servlet>
+-	<servlet>
++	<!--servlet>
+ 		<servlet-name>renameSession</servlet-name>
+ 		<servlet-class>com.occamlab.te.web.RenameSessionServlet</servlet-class>
+-	</servlet>
++	</servlet-->
+ 	<servlet>
+ 		<servlet-name>downloadLog</servlet-name>
+ 		<servlet-class>com.occamlab.te.web.DownloadLogServlet</servlet-class>
+@@ -51,14 +51,14 @@
+ 			<param-value>approver@example.com</param-value>
+ 		</init-param>
+ 	</servlet>	
+-	<servlet>
++	<!--servlet>
+ 		<servlet-name>userProfile</servlet-name>
+ 		<servlet-class>com.occamlab.te.web.UserProfileServlet</servlet-class>
+ 	</servlet>
+ 	<servlet>
+ 		<servlet-name>complianceTesting</servlet-name>
+ 		<servlet-class>com.occamlab.te.web.ComplianceTestingServlet</servlet-class>
+-	</servlet>
++	</servlet-->
+ 	<servlet-mapping>
+ 		<servlet-name>test</servlet-name>
+ 		<url-pattern>/test</url-pattern>
+@@ -75,10 +75,10 @@
+ 		<servlet-name>deleteSession</servlet-name>
+ 		<url-pattern>/deleteSession</url-pattern>
+ 	</servlet-mapping>
+-	<servlet-mapping>
++	<!--servlet-mapping>
+ 		<servlet-name>renameSession</servlet-name>
+ 		<url-pattern>/renameSession</url-pattern>
+-	</servlet-mapping>
++	</servlet-mapping-->
+ 	<servlet-mapping>
+ 		<servlet-name>downloadLog</servlet-name>
+ 		<url-pattern>/downloadLog</url-pattern>
+@@ -87,10 +87,10 @@
+ 		<servlet-name>emailLog</servlet-name>
+ 		<url-pattern>/emailLog</url-pattern>
+ 	</servlet-mapping>
+-	<servlet-mapping>
++	<!--servlet-mapping>
+ 		<servlet-name>userProfile</servlet-name>
+ 		<url-pattern>/userProfile</url-pattern>
+-	</servlet-mapping>
++	</servlet-mapping-->
+ 	<security-constraint>
+ 		<web-resource-collection>
+ 			<web-resource-name>user-specific</web-resource-name>
+@@ -117,6 +117,7 @@
+ 	</security-constraint>
+ 	<login-config>
+ 		<auth-method>FORM</auth-method>
++		<realm-name>user</realm-name>
+ 		<form-login-config>
+ 			<form-login-page>/login.jsp</form-login-page>
+ 			<form-error-page>/login.jsp?error=true</form-error-page>

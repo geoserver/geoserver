@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-tms module
+  </description>
+  <bean id="gwcServiceTMS"
+	class="org.geowebcache.service.tms.TMSService">
+	<constructor-arg ref="gwcStorageBroker"/>
+	<constructor-arg ref="gwcTLDispatcher"/>
+	<constructor-arg ref="gwcGridSetBroker"/>
+	<constructor-arg ref="gwcRuntimeStats"/>
+	<!-- Optionally you can set the base URL for the service -->
+	<!-- <property name="baseURL" value="http://localhost:8080/geowebcache" /> -->
+  </bean>
+	
+</beans>

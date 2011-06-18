@@ -1,0 +1,132 @@
+/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
+
+/**
+ * RangeSet parser definition
+ */
+
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false;
+  VISITOR=true;
+  LOOKAHEAD=3;
+  FORCE_LA_CHECK=true;
+  VISITOR=true;
+  NODE_EXTENDS="AbstractContentNode";
+  MULTI=true;
+}
+ 
+PARSER_BEGIN(RangeSubsetParser) 
+package org.geoserver.wcs.kvp.rangesubset;
+
+public class RangeSubsetParser {
+  public static void main(String args[]) {
+    System.out.println("Reading from standard input...");
+    System.out.print("Enter an rangeset expression (wcs 1.1.1 standard):");
+    try {
+      SimpleNode n = new RangeSubsetParser(System.in).RangeSubset();
+      n.dump("");
+      System.out.println("Thank you.");
+    } catch (Exception e) {
+      System.out.println("Oops.");
+      System.out.println(e.getMessage());
+    }
+  }
+}
+PARSER_END(RangeSubsetParser)
+
+/*
+The grammar speficied in the WCS 1.1.1 spec is:
+
+RangeSubset = FieldSubset *( “;” FieldSubset )
+FieldSubset = FieldId [ ":" Interpolation ] [ "[" AxisSubsets "]" ]
+AxisSubsets = AxisSubset *( "," AxisSubset )
+AxisSubset = AxisId "[" Keys "]"
+Keys = Key *( "," Key )
+FieldId = <field identifier, as defined in Subclause 9.3.1.3 and Table 17>
+AxisId = <axis identifier, as defined in Subclause 9.3.1.3 and Table 18>
+Key = <key, as defined in Subclause 9.3.1.3 and Table 19>
+Interpolation = <interpolation type identifier, as defined in Table I.7
+*/
+
+SKIP : /* WHITE SPACE */
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN : /* SEPARATORS */
+{
+  < LP: "[">
+| < RP: "]">
+| < COMMA: ",">
+| < SEMICOLON: ";">
+| < COLON: ":">
+}
+TOKEN : /* IDENTIFIERS: the grammar says at least one char, or any type */
+{
+  < IDENTIFIER: (~[",",";",":","[","]"])+ >
+}
+
+
+SimpleNode RangeSubset() : {}
+{
+  FieldSubset() (<SEMICOLON> FieldSubset())* <EOF>
+  { return jjtThis; }
+}
+
+void FieldSubset() : {}
+{
+  FieldId() (<COLON> Interpolation())? (<LP> AxisSubsets() <RP>)?
+}
+
+void AxisSubsets() #void : {}
+{
+	AxisSubset() (<COMMA> AxisSubset())*
+}
+
+void AxisSubset() : {}
+{
+	AxisId() <LP> Keys() <RP>
+}
+
+void Keys() #void : {}
+{
+	Key() (<COMMA> Key())*
+}
+
+void FieldId() : {
+	Token t;
+}
+{
+	t = <IDENTIFIER> 
+	{jjtThis.setContent(t.image.trim());}
+}
+
+void AxisId() : {
+	Token t;
+}
+{
+	t = <IDENTIFIER> 
+	{jjtThis.setContent(t.image.trim());}
+}
+
+void Interpolation() : {
+	Token t;
+}
+{
+	t = <IDENTIFIER> 
+	{jjtThis.setContent(t.image.trim());}
+}
+
+void Key() : {
+	Token t;
+}
+{
+	t = <IDENTIFIER> 
+	{jjtThis.setContent(t.image.trim());}
+}

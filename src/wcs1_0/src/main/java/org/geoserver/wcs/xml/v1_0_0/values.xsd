@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+xmlns:wcs="http://www.opengis.net/wcs" 
+xmlns:gml="http://www.opengis.net/gml" 
+targetNamespace="http://www.opengis.net/wcs" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified" 
+version="1.0.1" xml:lang="en">
+ <annotation>
+  <appinfo>values.xsd v1.0.1 2005-07-18</appinfo>
+  <documentation> This schema defines the values and enumeration elements and types used by the OGC Web Coverage Service (WCS). </documentation>
+  <documentation>JDE 2003-07-30 Removed empty "sequence" from valueEnumType</documentation>
+  <documentation>AEW 2005-07-15 Edited almost all documentation elements to remove TBRs and TBDs and to make them clearer. However, I do not know enough to resolve the TBD in the documentation of the "atomic" attribute in the valueRangeType. I also added documentation elements where I thought they were needed. </documentation>
+ </annotation>
+ <!-- ==============================================================
+		elements and types 		
+	============================================================== -->
+ <complexType name="valueEnumType">
+  <annotation>
+   <documentation>List of all the valid values and/or intervals of values for this variable. For numeric variables, signed values shall be ordered from negative infinity to positive infinity. For intervals, the type and semantic attributes are inherited by children elements, but can be superceded here. </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:valueEnumBaseType">
+    <attribute ref="wcs:type" use="optional">
+     <annotation>
+      <documentation>Should be included if the data type is not string, and the valueEnumBaseType does not include any "interval" elements that include this attribute. </documentation>
+     </annotation>
+    </attribute>
+    <attribute ref="wcs:semantic" use="optional">
+     <annotation>
+      <documentation>Should be included if the semantics or meaning is not clearly specified elsewhere, and the valueEnumBaseType does not include any "interval" elements that include this attribute. </documentation>
+     </annotation>
+    </attribute>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- ========================================================== -->
+ <complexType name="valueEnumBaseType">
+  <annotation>
+   <documentation>List of all the valid values and/or ranges of values for this variable. For numeric variables, signed values shall be ordered from negative infinity to positive infinity. For intervals, the "type" and "semantic" attributes are inherited by children elements, but can be superceded by them. </documentation>
+  </annotation>
+  <choice maxOccurs="unbounded">
+   <element ref="wcs:interval"/>
+   <element ref="wcs:singleValue"/>
+  </choice>
+ </complexType>
+ <!-- ========================================================== -->
+ <element name="singleValue" type="wcs:TypedLiteralType">
+  <annotation>
+   <documentation>A single value for a quantity. </documentation>
+  </annotation>
+ </element>
+ <!-- ========================================================== -->
+ <element name="interval" type="wcs:intervalType"/>
+ <!-- ========================================================== -->
+ <complexType name="intervalType">
+  <annotation>
+   <documentation>An interval of values of a numeric quantity. This interval can be continuous or discrete, defined by a fixed spacing between adjacent valid values. Note that the "type" and "semantic" attributes for min/max and "res" may be different (timeInstant and duration). </documentation>
+  </annotation>
+  <complexContent>
+   <extension base="wcs:valueRangeType">
+    <sequence>
+     <element name="res" type="wcs:TypedLiteralType" minOccurs="0">
+      <annotation>
+       <documentation>The regular distance or spacing between the allowed values in this interval. Shall be included when the allowed values are NOT continuous in this interval. Shall not be included when the allowed values are continuous in this interval. </documentation>
+      </annotation>
+     </element>
+    </sequence>
+   </extension>
+  </complexContent>
+ </complexType>
+ <!-- ========================================================== -->
+ <complexType name="valueRangeType">
+  <annotation>
+   <documentation>The range of an interval. If the "min" or "max" element is not included, there is no value limit in that direction. Inclusion of the specified minimum and maximum values in the range shall be defined by the "closure". (The interval can be bounded or semi-bounded with different closures.) The data type and the semantic of the values are inherited by children and may be superceded by them. This range may be qualitative, i.e., nominal (age range) or qualitative (percentage) meaning that a value between min/max can be queried. </documentation>
+  </annotation>
+  <sequence>
+   <element name="min" type="wcs:TypedLiteralType" minOccurs="0">
+    <annotation>
+     <documentation>Minimum value of this numeric parameter. </documentation>
+    </annotation>
+   </element>
+   <element name="max" type="wcs:TypedLiteralType" minOccurs="0">
+    <annotation>
+     <documentation>Maximum value of this numeric parameter. </documentation>
+    </annotation>
+   </element>
+  </sequence>
+  <attribute ref="wcs:type" use="optional">
+   <annotation>
+    <documentation>Can be omitted when the datatype of values in this interval is string, or the "type" attribute is included in an enclosing element. </documentation>
+   </annotation>
+  </attribute>
+  <attribute ref="wcs:semantic" use="optional">
+   <annotation>
+    <documentation>Can be omitted when the semantics or meaning of values in this interval is clearly specified elsewhere, or the "semantic" attribute is included in an enclosing element. </documentation>
+   </annotation>
+  </attribute>
+  <attribute name="atomic" type="boolean" use="optional" default="false">
+   <annotation>
+    <documentation>What does this attribute mean? Is it useful and not redundant? When should this attribute be included or omitted? TBD. </documentation>
+   </annotation>
+  </attribute>
+  <attribute ref="wcs:closure" use="optional">
+   <annotation>
+    <documentation>Shall be included unless the default value applies. </documentation>
+   </annotation>
+  </attribute>
+ </complexType>
+ <!-- ========================================================== -->
+ <attribute name="closure" default="closed">
+  <annotation>
+   <documentation>Specifies which of the minimum and maximum values are included in the range. Note that plus and minus infinity are considered closed bounds. </documentation>
+  </annotation>
+  <simpleType>
+   <restriction base="NMTOKENS">
+    <enumeration value="closed">
+     <annotation>
+      <documentation>The specified minimum and maximum values are included in this range. </documentation>
+     </annotation>
+    </enumeration>
+    <enumeration value="open">
+     <annotation>
+      <documentation>The specified minimum and maximum values are NOT included in this range. </documentation>
+     </annotation>
+    </enumeration>
+    <enumeration value="open-closed">
+     <annotation>
+      <documentation>The specified minimum value is NOT included in this range, and the specified maximum value IS included in this range. </documentation>
+     </annotation>
+    </enumeration>
+    <enumeration value="closed-open">
+     <annotation>
+      <documentation>The specified minimum value IS included in this range, and the specified maximum value is NOT included in this range. </documentation>
+     </annotation>
+    </enumeration>
+   </restriction>
+  </simpleType>
+ </attribute>
+ <!-- ============================================================ -->
+ <complexType name="TypedLiteralType">
+  <annotation>
+   <documentation>A single value for a variable, encoded as a string. This type can be used for one value, for a spacing between allowed values, or for the default value of a parameter. The "type" attribute indicates the datatype of this value (default is a string). The value for a typed literal is found by applying the datatype mapping associated with the datatype URI to the lexical form string. </documentation>
+  </annotation>
+  <simpleContent>
+   <extension base="string">
+    <attribute ref="wcs:type" use="optional">
+     <annotation>
+      <documentation>Should be included unless the datatype is string, or this "type" attribute is included in an enclosing element. </documentation>
+     </annotation>
+    </attribute>
+   </extension>
+  </simpleContent>
+ </complexType>
+ <!-- =========================================================== -->
+ <attribute name="type" type="anyURI">
+  <annotation>
+   <documentation>Datatype of a typed literal value. This URI typically references XSD simple types. It has the same semantic as rdf:datatype. </documentation>
+  </annotation>
+ </attribute>
+ <!-- =========================================================== -->
+ <attribute name="semantic" type="anyURI">
+  <annotation>
+   <documentation>Definition of the semantics or meaning of the values in the XML element it belongs to. The value of this "semantic" attribute can be a RDF Property or Class of a taxonomy or ontology. </documentation>
+  </annotation>
+ </attribute>
+</schema>

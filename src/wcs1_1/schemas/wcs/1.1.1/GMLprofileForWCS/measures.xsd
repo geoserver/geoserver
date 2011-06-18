@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.1.1" xml:lang="en" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-measures:3.1.1"/>
+		<documentation>Subset of measures.xsd for WCS 1.2 profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2007-05-15 
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ==============================================================
+       includes and imports
+	============================================================== -->
+	<include schemaLocation="units.xsd"/>
+	<!-- ==============================================================
+       elements and types
+	============================================================== -->
+	<!-- This schema uses the gml:MeasureType defined in basicTypes.xsd with the modified meaning:
+			<documentation>Value of a quantity, with its units. This element uses the XML Schema primitive data type "double" because it supports both decimal and scientific notation, and thus offers flexibility and precision. However, there is no requirement to store values using any particular format, and applications receiving elements of this type may choose to coerce the data to any other type as convenient. The XML attribute uom references the units or scale by which the amount should be multiplied. For a reference within the same XML document, the abbreviated XPointer prefix "#" symbol should be used, followed by a text abbreviation of the unit name. However, the "#" symbol may be optional, and still may be interpreted as a reference. </documentation> -->
+	<!-- =========================================================== -->
+	<element name="measure" type="gml:MeasureType"/>
+	<!-- =========================================================== -->
+	<complexType name="LengthType">
+		<annotation>
+			<documentation>Value of a length (or distance) quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a length, such as metres or feet.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="ScaleType">
+		<annotation>
+			<documentation>Value of a scale factor (or ratio) that has no physical unit. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a scale factor, such as percent, permil, or parts-per-million.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="TimeType">
+		<annotation>
+			<documentation>Value of a time or temporal quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a time value, such as seconds or weeks.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="GridLengthType">
+		<annotation>
+			<documentation>Value of a length (or distance) quantity in a grid, where the grid spacing does not have any associated physical units, or does not have a constant physical spacing. This grid length will often be used in a digital image grid, where the base units are likely to be pixel spacings. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for length along the axes of a grid, such as pixel spacings or grid spacings.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="AreaType">
+		<annotation>
+			<documentation>Value of a spatial area quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for an area, such as square metres or square miles.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="VolumeType">
+		<annotation>
+			<documentation>Value of a spatial volume quantity, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a volume, such as cubic metres or cubic feet.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="SpeedType">
+		<annotation>
+			<documentation>Value of a speed, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a velocity, such as metres per second or miles per hour.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<complexType name="AngleChoiceType">
+		<annotation>
+			<documentation>Value of an angle quantity provided in either degree-minute-second format or single value format.</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:angle"/>
+			<!-- <element ref="gml:dmsAngle"/> -->
+		</choice>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="angle" type="gml:MeasureType"/>
+	<!-- =========================================================== -->
+	<complexType name="AngleType">
+		<annotation>
+			<documentation>Value of an angle quantity recorded as a single number, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for an angle, such as degrees or radians.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:MeasureType"/>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- <element name="dmsAngle" type="gml:DMSAngleType"/> -->
+	<!-- =========================================================== -->
+	<!-- <complexType name="DMSAngleType">
+		<annotation>
+			<documentation>Angle value provided in degree-minute-second or degree-minute format.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:degrees"/>
+			<choice minOccurs="0">
+				<element ref="gml:decimalMinutes"/>
+				<sequence>
+					<element ref="gml:minutes"/>
+					<element ref="gml:seconds" minOccurs="0"/>
+				</sequence>
+			</choice>
+		</sequence>
+	</complexType> -->
+	<!-- =========================================================== -->
+	<!-- <element name="degrees" type="gml:DegreesType"/> -->
+	<!-- =========================================================== -->
+	<!-- <complexType name="DegreesType">
+		<annotation>
+			<documentation>Integer number of degrees, plus the angle direction. This element can be used for geographic Latitude and Longitude. For Latitude, the XML attribute direction can take the values "N" or "S", meaning North or South of the equator. For Longitude, direction can take the values "E" or "W", meaning East or West of the prime meridian. This element can also be used for other angles. In that case, the direction can take the values "+" or "-" (of SignType), in the specified rotational direction from a specified reference direction.</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:DegreeValueType">
+				<attribute name="direction">
+					<simpleType>
+						<union>
+							<simpleType>
+								<restriction base="string">
+									<enumeration value="N"/>
+									<enumeration value="E"/>
+									<enumeration value="S"/>
+									<enumeration value="W"/>
+								</restriction>
+							</simpleType>
+							<simpleType>
+								<restriction base="gml:SignType"/>
+							</simpleType>
+						</union>
+					</simpleType>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType> -->
+	<!-- =========================================================== -->
+	<!-- <simpleType name="DegreeValueType">
+		<annotation>
+			<documentation>Integer number of degrees in a degree-minute-second or degree-minute angular value, without indication of direction.</documentation>
+		</annotation>
+		<restriction base="nonNegativeInteger">
+			<maxInclusive value="359"/>
+		</restriction>
+	</simpleType> -->
+	<!-- =========================================================== -->
+	<!-- <element name="decimalMinutes" type="gml:DecimalMinutesType"/> -->
+	<!-- =========================================================== -->
+	<!-- <simpleType name="DecimalMinutesType">
+		<annotation>
+			<documentation>Decimal number of arc-minutes in a degree-minute angular value.</documentation>
+		</annotation>
+		<restriction base="decimal">
+			<minInclusive value="0.00"/>
+			<maxExclusive value="60.00"/>
+		</restriction>
+	</simpleType> -->
+	<!-- =========================================================== -->
+	<!-- <element name="minutes" type="gml:ArcMinutesType"/> -->
+	<!-- =========================================================== -->
+	<!-- <simpleType name="ArcMinutesType">
+		<annotation>
+			<documentation>Integer number of arc-minutes in a degree-minute-second angular value.</documentation>
+		</annotation>
+		<restriction base="nonNegativeInteger">
+			<maxInclusive value="59"/>
+		</restriction>
+	</simpleType> -->
+	<!-- =========================================================== -->
+	<!-- <element name="seconds" type="gml:ArcSecondsType"/> -->
+	<!-- =========================================================== -->
+	<!-- <simpleType name="ArcSecondsType">
+		<annotation>
+			<documentation>Number of arc-seconds in a degree-minute-second angular value.</documentation>
+		</annotation>
+		<restriction base="decimal">
+			<minInclusive value="0.00"/>
+			<maxExclusive value="60.00"/>
+		</restriction>
+	</simpleType> -->
+	<!-- =========================================================== -->
+</schema>

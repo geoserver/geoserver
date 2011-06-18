@@ -1,0 +1,43 @@
+/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.config;
+
+import java.util.List;
+
+/**
+ * Adapter for ConfigurationListener.
+ * <p>
+ * Configuration listeners can implement this class to pick and choose the events they wish to 
+ * handle.
+ *  </p>
+ * @author Justin Deoliveira, OpenGeo
+ */
+public class ConfigurationListenerAdapter implements ConfigurationListener {
+
+    public void handleGlobalChange(GeoServerInfo global, List<String> propertyNames,
+            List<Object> oldValues, List<Object> newValues) {
+    }
+
+    public void handlePostGlobalChange(GeoServerInfo global) {
+    }
+
+    public void handleLoggingChange(LoggingInfo logging, List<String> propertyNames,
+            List<Object> oldValues, List<Object> newValues) {
+    }
+    
+    public void handlePostLoggingChange(LoggingInfo logging) {
+    }
+    
+    public void handlePostServiceChange(ServiceInfo service) {
+    }
+
+    public void handleServiceChange(ServiceInfo service, List<String> propertyNames,
+            List<Object> oldValues, List<Object> newValues) {
+    }
+
+    public void reloaded() {
+    }
+
+}

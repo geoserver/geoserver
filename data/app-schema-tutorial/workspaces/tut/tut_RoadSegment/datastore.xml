@@ -1,0 +1,13 @@
+<dataStore>
+    <id>tut_RoadSegment_datastore</id>
+    <name>tut_RoadSegment</name>
+    <enabled>true</enabled>
+    <workspace>
+        <id>tut_workspace</id>
+    </workspace>
+    <connectionParameters>
+        <entry key="namespace">http://example.org/tutorial</entry>
+        <entry key="url">file:workspaces/tut/tut_RoadSegment/roadsegments.xml</entry>
+        <entry key="dbtype">app-schema</entry>
+    </connectionParameters>
+</dataStore>

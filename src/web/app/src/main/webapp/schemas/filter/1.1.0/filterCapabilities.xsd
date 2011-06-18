@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/ogc"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="1.1.0">
+   <xsd:annotation>
+      <xsd:documentation>
+         This XML Schema defines OGC query filter capabilities documents.
+         Copyright (c) 2002, 2003, 2004 OpenGIS, All Rights Reserved. 
+      </xsd:documentation>
+   </xsd:annotation>
+   <xsd:element name="Filter_Capabilities">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="Spatial_Capabilities"
+                         type="ogc:Spatial_CapabilitiesType"/>
+            <xsd:element name="Scalar_Capabilities"
+                         type="ogc:Scalar_CapabilitiesType"/>
+            <xsd:element name="Id_Capabilities"
+                         type="ogc:Id_CapabilitiesType"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:complexType name="Spatial_CapabilitiesType">
+      <xsd:sequence>
+         <xsd:element name="GeometryOperands"
+                      type="ogc:GeometryOperandsType"/>
+         <xsd:element name="SpatialOperators"
+                      type="ogc:SpatialOperatorsType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="GeometryOperandsType">
+      <xsd:sequence>
+         <xsd:element name="GeometryOperand"
+                      type="ogc:GeometryOperandType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="GeometryOperandType">
+      <xsd:restriction base="xsd:QName">
+         <xsd:enumeration value="gml:Envelope"/>
+         <xsd:enumeration value="gml:Point"/>
+         <xsd:enumeration value="gml:LineString"/>
+         <xsd:enumeration value="gml:Polygon"/>
+         <xsd:enumeration value="gml:ArcByCenterPoint"/>
+         <xsd:enumeration value="gml:CircleByCenterPoint"/>
+         <xsd:enumeration value="gml:Arc"/>
+         <xsd:enumeration value="gml:Circle"/>
+         <xsd:enumeration value="gml:ArcByBulge"/>
+         <xsd:enumeration value="gml:Bezier"/>
+         <xsd:enumeration value="gml:Clothoid"/>
+         <xsd:enumeration value="gml:CubicSpline"/>
+         <xsd:enumeration value="gml:Geodesic"/>
+         <xsd:enumeration value="gml:OffsetCurve"/>
+         <xsd:enumeration value="gml:Triangle"/>
+         <xsd:enumeration value="gml:PolyhedralSurface"/>
+         <xsd:enumeration value="gml:TriangulatedSurface"/>
+         <xsd:enumeration value="gml:Tin"/>
+         <xsd:enumeration value="gml:Solid"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="SpatialOperatorsType">
+      <xsd:sequence>
+         <xsd:element name="SpatialOperator"
+                      type="ogc:SpatialOperatorType"
+                      maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="SpatialOperatorType">
+      <xsd:sequence>
+         <xsd:element name="GeometryOperands"
+                      type="ogc:GeometryOperandsType"
+                      minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="ogc:SpatialOperatorNameType"/>
+   </xsd:complexType>
+   <xsd:simpleType name="SpatialOperatorNameType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="BBOX"/>
+         <xsd:enumeration value="Equals"/>
+         <xsd:enumeration value="Disjoint"/>
+         <xsd:enumeration value="Intersects"/>
+         <xsd:enumeration value="Touches"/>
+         <xsd:enumeration value="Crosses"/>
+         <xsd:enumeration value="Within"/>
+         <xsd:enumeration value="Contains"/>
+         <xsd:enumeration value="Overlaps"/>
+         <xsd:enumeration value="Beyond"/>
+         <xsd:enumeration value="DWithin"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="Scalar_CapabilitiesType">
+      <xsd:sequence>
+         <xsd:element ref="ogc:LogicalOperators"
+                      minOccurs="0" maxOccurs="1"/>
+         <xsd:element name="ComparisonOperators"
+                      type="ogc:ComparisonOperatorsType"
+                      minOccurs="0" maxOccurs="1"/>
+         <xsd:element name="ArithmeticOperators"
+                      type="ogc:ArithmeticOperatorsType"
+                      minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="LogicalOperators">
+      <xsd:complexType/>
+   </xsd:element>
+   <xsd:complexType name="ComparisonOperatorsType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element name="ComparisonOperator"
+                      type="ogc:ComparisonOperatorType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="ComparisonOperatorType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="LessThan"/>
+         <xsd:enumeration value="GreaterThan"/>
+         <xsd:enumeration value="LessThanEqualTo"/>
+         <xsd:enumeration value="GreaterThanEqualTo"/>
+         <xsd:enumeration value="EqualTo"/>
+         <xsd:enumeration value="NotEqualTo"/>
+         <xsd:enumeration value="Like"/>
+         <xsd:enumeration value="Between"/>
+         <xsd:enumeration value="NullCheck"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="ArithmeticOperatorsType">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element ref="ogc:SimpleArithmetic"/>
+         <xsd:element name="Functions" type="ogc:FunctionsType"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:element name="SimpleArithmetic">
+      <xsd:complexType/>
+   </xsd:element>
+   <xsd:complexType name="FunctionsType">
+      <xsd:sequence>
+         <xsd:element name="FunctionNames" type="ogc:FunctionNamesType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FunctionNamesType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element name="FunctionName" type="ogc:FunctionNameType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FunctionNameType">
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:string">
+            <xsd:attribute name="nArgs" type="xsd:string" use="required"/>
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:complexType name="Id_CapabilitiesType">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element ref="ogc:EID"/>
+         <xsd:element ref="ogc:FID"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:element name="EID">
+      <xsd:complexType/>
+   </xsd:element>
+   <xsd:element name="FID">
+      <xsd:complexType/>
+   </xsd:element>
+</xsd:schema>

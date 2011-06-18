@@ -1,0 +1,87 @@
+<coverage format = "mosaic" >
+  <name>mosaic</name>
+  <label>Sample PNG mosaic</label>
+  <description>Subsampled satellite imagery loaded as a mosaic of PNG images</description>
+  <wmspath>/</wmspath>
+  <metadataLink about = "" type = "" metadataType = "" >
+    null
+  </metadataLink>
+  <keywords>WCS,mosaic,mosaic</keywords>
+  <!--
+    the default style this CoverageInfoDTO can be represented by.
+    at least must contain the "default" attribute
+  -->
+  <styles default = "raster" />
+  <envelope crs = "GEOGCS['WGS 84', 
+  DATUM['World Geodetic System 1984', 
+    SPHEROID['WGS 84', 6378137.0, 298.257223563, AUTHORITY['EPSG','7030']], 
+    AUTHORITY['EPSG','6326']], 
+  PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+  UNIT['degree', 0.017453292519943295], 
+  AXIS['Geodetic longitude', EAST], 
+  AXIS['Geodetic latitude', NORTH], 
+  AUTHORITY['EPSG','4326']]" srsName = "EPSG:4326" >
+    <pos>6.34617490847439 36.4917718219401</pos>
+    <pos>20.8296831527815 46.5907669751351</pos>
+  </envelope>
+  <grid dimension = "2" >
+    <low>0 0 </low>
+    <high>250 250 </high>
+    <axisName>mosaic [0 ... 255]</axisName>
+    <axisName>mosaic [0 ... 255]</axisName>
+    <axisName>mosaic [0 ... 255]</axisName>
+    <geoTransform >
+      <scaleX>0.057934032977228433</scaleX>
+      <scaleY>-0.04039598061277999</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>6.375141924963005</translateX>
+      <translateY>46.570568984828704</translateY>
+    </geoTransform>
+  </grid>
+  <CoverageDimension >
+    <name>mosaic [0 ... 255]</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>mosaic [0 ... 255]</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <CoverageDimension >
+    <name>mosaic [0 ... 255]</name>
+    <description>GridSampleDimension[0.0,255.0]</description>
+    <interval >
+      <min>0.0</min>
+      <max>255.0</max>
+    </interval>
+    <nullValues >
+    </nullValues>
+  </CoverageDimension>
+  <supportedCRSs >
+    <requestCRSs>EPSG:4326</requestCRSs>
+    <responseCRSs>EPSG:4326</responseCRSs>
+  </supportedCRSs>
+  <supportedFormats nativeFormat = "ImageMosaic" >
+    <formats>GTOPO30,GEOTIFF,IMAGEMOSAIC,ARCGRID,GIF,PNG,JPEG,TIFF</formats>
+  </supportedFormats>
+  <supportedInterpolations default = "nearest neighbor" >
+    <interpolationMethods>nearest neighbor,bilinear,bicubic,bicubic_2</interpolationMethods>
+  </supportedInterpolations>
+  <parameters >
+    <parameter name = "InputTransparentColor" value = "" />
+    <parameter name = "OutputTransparentColor" value = "#000000" />
+    <parameter name = "InputImageThresholdValue" value = "NaN" />
+  </parameters>
+</coverage>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+
+<!-- ==================================== Data Source Configuration -->
+
+<!-- ======================================== Form Bean Definitions -->
+
+    <form-beans>
+        <!--
+          form-bean: maps ActionForm instances
+          name: name of of form bean
+          type: class of form bean
+        -->
+
+    	<form-bean
+    		name="wfsDescriptionForm"
+    		type="org.vfny.geoserver.form.wfs.WFSDescriptionForm"/>
+    		
+    	<form-bean
+    		name="wfsContentForm"
+    		type="org.vfny.geoserver.form.wfs.WFSContentForm"/>
+
+    	<form-bean
+    		name="dataDataStoresSelectForm"
+    		type="org.vfny.geoserver.form.data.DataDataStoresSelectForm"/>
+    	<form-bean
+    		name="dataDataStoresNewForm"
+    		type="org.vfny.geoserver.form.data.DataDataStoresNewForm"/>
+    	<form-bean
+    		name="dataDataStoresEditorForm"
+    		type="org.vfny.geoserver.form.data.DataDataStoresEditorForm"/>
+
+		<!-- DATA FeatureType -->
+    	<form-bean
+    		name="dataFeatureTypesSelectForm"
+    		type="org.vfny.geoserver.form.data.DataFeatureTypesSelectForm"/>
+    	<form-bean
+    		name="dataFeatureTypesNewForm"
+    		type="org.vfny.geoserver.form.data.DataFeatureTypesNewForm"/>
+    	<form-bean
+    		name="typesEditorForm"
+    		type="org.vfny.geoserver.form.data.TypesEditorForm"/>
+   		<form-bean
+    		name="typesEditorNewSLDForm"
+    		type="org.vfny.geoserver.form.data.TypesEditorNewSLDForm"/>
+    	<form-bean
+    		name="validationTestSuiteSelectForm"
+    		type="org.vfny.geoserver.form.validation.ValidationTestSuiteSelectForm"/>
+    	<form-bean
+    		name="validationTestSelectForm"
+    		type="org.vfny.geoserver.form.validation.ValidationTestSelectForm"/>
+    	<form-bean
+    		name="validationTestNewForm"
+    		type="org.vfny.geoserver.form.validation.ValidationTestNewForm"/>
+    	<form-bean
+    		name="validationTestEditorForm"
+    		type="org.vfny.geoserver.form.validation.ValidationTestEditorForm"/>
+    	<form-bean
+    		name="validationTestSuiteNewForm"
+	   		type="org.vfny.geoserver.form.validation.ValidationTestSuiteNewForm"/>
+
+    </form-beans>
+
+<!-- ================================= Global Exception Definitions -->
+
+    <global-exceptions>
+    </global-exceptions>
+
+<!-- =================================== Global Forward Definitions -->
+
+    <global-forwards>
+        <!-- CONFIG validation -->
+        <forward
+        	name="config.validation"
+        	path="/config/validation/suite.do"/>
+        <forward
+        	name="config.validation.suite"
+        	path="/config/validation/suite.do"/>
+       	<forward
+       		name="config.validation.suite.doit"
+       		path="/config/validation/suiteRun.do"/>
+        <forward
+        	name="suite"
+        	path="/config/validation/suite.do"/>
+        <forward
+        	name="validationTest"
+        	path="/config/validation/testSelect.do"/>
+        <forward
+        	name="config.validation.test"
+        	path="/config/validation/testSelect.do"/>
+       	<forward
+       		name="config.validation.test.doit"
+       		path="/config/validation/suiteRun.do"/>
+       	<forward
+       		name="config.validation.test.doitStop"
+       		path="/config/validation/suiteStop.do"/>       		
+        <forward
+        	name="validationTestEditor"
+        	path="/config/validation/testEdit.do"/>
+        <forward
+        	name="config.validation.displayResults"
+        	path="/config/validation/displayResults.do"/>
+        	
+        <!-- CONFIG wfs -->
+        
+       	<forward
+       		name="config.wfs"
+       		path="/config/wfs/index.do"/>
+        <forward
+       		name="config.wfs.description"
+       		path="/config/wfs/description.do"/>
+       	<forward
+       		name="config.wfs.content"
+       		path="/config/wfs/content.do"/>
+       		
+       	<forward
+       		name="wfsConfigDescription"
+       		path="/config/wfs/description.do"/>
+       	<forward
+       		name="wfsConfigContent"
+       		path="/config/wfs/content.do"/>
+
+        <!-- CONFIG data store -->
+       	<forward
+       		name="config.data.store"
+       		path="/config/data/store.do"/>
+       	<forward
+       		name="config.data.store.new"
+       		path="/config/data/storeNew.do"/>
+       	<forward
+       		name="config.data.store.editor"
+       		path="/config/data/storeEditor.do"/>
+       		
+        <!-- CONFIG data type -->       		
+       	<forward
+       		name="config.data.type"
+       		path="/config/data/typeSelect.do"/>
+       	<forward
+       		name="config.data.type.new"
+       		path="/config/data/typeNew.do"/>
+       	<forward
+       		name="config.data.type.editor"
+       		path="/config/data/typeEditor.do"/>
+       		
+    </global-forwards>
+
+<!-- =================================== Action Mapping Definitions -->
+
+    <action-mappings>
+        <!-- CONFIG VALIDATION -->
+        <action
+        	path="/config/validation/index"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.validation.suite"/>
+        <action
+        	path="/config/validation"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.validation.suite"/>
+
+        <action
+        	path="/config/validation/suite"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.validation.suite"/>
+        	        	
+        <action
+        	path="/config/validation/testSelect"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.validation.test"/>
+        	
+        <action
+        	path="/config/validation/testEdit"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.validation.test.editor"/>
+
+        <action
+        	path="/config/validation/displayResults"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.validation.displayResults"/>
+        	        	
+        <!-- CONFIG WFS -->        	
+        <action
+        	path="/config/wfs/index"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.wfs"/>    	
+        <action
+        	path="/config/wfs"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.wfs"/>
+
+        <action
+        	path="/config/wfs/description"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.wfs.description"/>
+
+        <action
+        	path="/config/wfs/content"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.wfs.content"/>
+        	
+       <!-- DATA STORES -->
+        <action
+        	path="/config/data/store"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.data.store"/>
+        <action	
+        	path="/config/data/storeNew"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.data.store.new"/>
+        <action
+        	path="/config/data/storeEditor"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.data.store.editor"/>        	
+        	
+		<!-- DATA featuretypes -->
+        <action
+        	path="/config/data/typeSelect"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.data.type"/>
+        <action
+        	path="/config/data/typeNew"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.data.type.new"/>
+        <action
+        	path="/config/data/typeEditor"
+        	type="org.apache.struts.actions.ForwardAction"
+        	parameter="config.data.type.editor"/>        	        	
+
+<!-- Submit Actions -->    
+		 <!-- DATA Validation -->
+ 
+         <action
+        	path="/config/validation/testSuiteSelect"
+        	type="org.vfny.geoserver.action.validation.ValidationTestSuiteSelectAction"
+        	name="validationTestSuiteSelectForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/testSuiteSelect.do"/>
+
+         <action
+        	path="/config/validation/testSuiteNew"
+        	type="org.vfny.geoserver.action.validation.ValidationTestSuiteNewAction"
+        	name="validationTestSuiteNewForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/testSuiteSelect.do"/>
+
+         <action
+        	path="/config/validation/test"
+        	type="org.vfny.geoserver.action.validation.ValidationTestSelectAction"
+        	name="validationTestSelectForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/test.do"/>
+        	
+         <action
+			path="/config/validation/testNew"
+        	type="org.vfny.geoserver.action.validation.ValidationTestNewAction"
+        	name="validationTestNewForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/testNew.do"/>
+        	        	
+         <action
+        	path="/config/validation/testEditor"
+        	type="org.vfny.geoserver.action.validation.ValidationTestEditorAction"
+        	name="validationTestEditorForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/testEditor.do"/>
+        	
+        <action
+        	path ="/config/validation/suiteRun"
+        	type="org.vfny.geoserver.action.validation.ValidationTestDoIt"
+        	name="validationTestDoIt"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/suite.do"/>
+
+        <action	
+        	path="/config/validation/suiteStop"
+        	type="org.vfny.geoserver.action.validation.ValidationTestDoIt"
+        	parameter="stop"
+        	name="validationTestDoIt"
+        	scope="request"
+        	validate="true"
+        	input="/config/validation/suite.do"/>
+        	
+       	<!-- WFS Actions -->
+        <action
+        	path="/config/wfs/descriptionSubmit"
+        	type="org.vfny.geoserver.action.wfs.WFSDescriptionAction"
+        	name="wfsDescriptionForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/wfs/description.do"/>
+        	
+        <action
+        	path="/config/wfs/contentSubmit"
+        	type="org.vfny.geoserver.action.wfs.WFSContentAction"
+        	name="wfsContentForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/wfs/content.do"/>
+
+       	<!-- DATA Stores Actions -->
+        <action
+        	path="/config/data/storeSubmit"
+        	type="org.vfny.geoserver.action.data.DataDataStoresEditorAction"
+        	name="dataDataStoresEditorForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/data/storeEditor.do"/>
+        	
+        <action
+        	path="/config/data/storeSelectSubmit"
+        	type="org.vfny.geoserver.action.data.DataDataStoresSelectAction"
+        	name="dataDataStoresSelectForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/data/storeEditor.do"/>
+
+        <action
+        	path="/config/data/storeNewSubmit"
+        	type="org.vfny.geoserver.action.data.DataDataStoresNewAction"
+        	name="dataDataStoresNewForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/data/storeNew.do"/>        	
+      
+		<!-- DATA FeatureType Actions -->
+        <action
+        	path="/config/data/typeSelectSubmit"
+        	type="org.vfny.geoserver.action.data.DataFeatureTypesSelectAction"
+        	name="dataFeatureTypesSelectForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/data/typeSelect.do"/>
+         <action
+        	path="/config/data/typeNewSubmit"
+        	type="org.vfny.geoserver.action.data.DataFeatureTypesNewAction"
+        	name="dataFeatureTypesNewForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/data/typeNew.do"/>        	
+        <action
+        	path="/config/data/typeEditorSubmit"
+        	type="org.vfny.geoserver.action.data.TypesEditorAction"
+        	name="typesEditorForm"
+        	scope="request"
+        	validate="true"
+        	input="/config/data/typeEditor.do"/>
+
+<!-- End Submit Actions -->
+
+    </action-mappings>
+    
+</struts-config>

@@ -1,0 +1,57 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+   <ul>
+      <li>
+        <fieldset>
+          <legend><span><wicket:message key="process">choose process</wicket:message></span></legend>
+          <ul>
+            <li>
+              <!--  <label for="name"><wicket:message key="name">process</wicket:message></label> -->
+              <select wicket:id="process"></select> 
+              <p wicket:id="descriptionContainer"> <span wicket:id="processDescription"/> 
+              	(<a href="#" wicket:id="describeProcess"><wicket:message key="describe">describe</wicket:message></a>)</p>
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li wicket:id="inputContainer">
+        <fieldset>
+          <legend><span><wicket:message key="inputs">inputs</wicket:message></span></legend>
+          <ul>
+            <li wicket:id="inputs" style="margin-bottom: 1em">
+              <label wicket:id="param"></label>
+              <span wicket:id="paramDescription"></span><br/>
+              <span wicket:id="paramValue"></span>
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li wicket:id="outputContainer">
+        <fieldset>
+          <legend><span><wicket:message key="outputs">outputs</wicket:message></span></legend>
+          <ul>
+            <li wicket:id="outputs" style="margin-bottom: 1em">
+              <label wicket:id="param"></label>
+              <span wicket:id="paramDescription"></span><br/>
+              <input class="field checkbox" style="display:inline" type="checkbox" wicket:id="include"/> Generate <select wicket:id="mime"></select>
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+    </ul>
+    
+    <div wicket:id="feedback"></div>
+  
+    <div wicket:id="responseWindow"></div>
+  
+    <wicket:fragment wicket:id="unknown">
+      <span style="color:red">Unknown data type, can't provide an editor</span>
+    </wicket:fragment>
+	
+    <wicket:fragment wicket:id="literal">
+	  <input type="text" wicket:id="literalValue"></input>
+    </wicket:fragment>
+</wicket:panel>
+</body>
+</html>

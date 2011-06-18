@@ -1,0 +1,4 @@
+<session id="wms-1.3.0" sourcesId="OGC_WMS_1.3.0_@DATE@">
+<suite>{http://www.opengis.net/wms}main_wms-1.3.0</suite>
+<description>wms-1.3.0</description>
+</session>

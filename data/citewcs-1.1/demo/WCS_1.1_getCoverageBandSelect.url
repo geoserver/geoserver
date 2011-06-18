@@ -1,0 +1,1 @@
+wcs?service=WCS&version=1.1.1&request=GetCoverage&identifier=topp:tazbm&format=image/debug&boundingbox=-44,147,-43.9,147.1,urn:ogc:def:crs:EPSG:6.6:4326&rangeSubset=contents:nearest[Bands[Red_band]]

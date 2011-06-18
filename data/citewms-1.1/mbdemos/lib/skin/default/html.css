@@ -1,0 +1,23 @@
+h2 {
+  color: red;
+  background-color: silver;
+}
+
+
+INPUT.bareinput {
+  border: 0px blue none;
+  font: 8pt Verdana, geneva, arial, sans-serif;
+  color: #000000;
+  background-color: transparent;
+}
+
+#mainMapContainer {
+  border: 1px solid olive;
+  cursor: crosshair;
+}
+
+#legend {
+	font-size: 70%; 
+  font-family: cursive;
+  background-color: silver;
+}

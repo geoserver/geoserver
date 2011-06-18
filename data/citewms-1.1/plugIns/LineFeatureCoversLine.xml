@@ -1,0 +1,5 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" >
+<name>Line Feature Covers Line</name>
+<description> A line is covered by a line feature.</description>
+<class>org.geotools.validation.spatial.LineCoveredByFeatureLineValidation</class>
+</plugin>

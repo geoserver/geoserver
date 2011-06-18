@@ -1,0 +1,21 @@
+# diff from Arliss 2007-09-28 
+# The original was the approved and this change adds a new line
+--- coordinateSystems.xsd.orig	2006-10-20 12:50:28.000000000 -0400
++++ gml/3.1.1/profiles/CommonCRSs/1.0.0/coordinateSystems.xsd	2007-10-08 15:17:19.000000000 -0400
+@@ -5,7 +5,7 @@
+ elementFormDefault="qualified" version="3.1.1" xml:lang="en">
+ 	<annotation>
+ 		<appinfo source="urn:opengis:specification:gml:schema-xsd:coordinateSystems:3.1.1"/>
+-		<documentation>Subset of coordinateSystems.xsd for GML 3.1.1 common CRSs profile. Primary editor: Arliss Whiteside. Last updated 2005-11-14. 
++		<documentation>Subset of coordinateSystems.xsd for GML 3.1.1 common CRSs profile. Primary editor: Arliss Whiteside. Last updated 2007-09-28. 
+ 		Copyright © 2005 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+ 	</annotation>
+ 	<!-- ======================================================
+@@ -24,6 +24,7 @@
+ 		<complexContent>
+ 			<restriction base="gml:DefinitionType">
+ 				<sequence>
++					<element ref="gml:description" minOccurs="0" maxOccurs="0"/>
+ 					<element ref="gml:name">
+ 						<annotation>
+ 							<documentation>The name by which this coordinate system axis is identified. </documentation>

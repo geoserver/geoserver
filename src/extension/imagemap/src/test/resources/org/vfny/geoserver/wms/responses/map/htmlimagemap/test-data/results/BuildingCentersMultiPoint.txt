@@ -1,0 +1,5 @@
+<map name="BuildingCentersMultiPoint">
+<area shape="circle" id="BuildingCenters.1107531643027.0"  coords="0,600,6" title="ADDRESS: 123 Main Street"/>
+<area shape="circle" id="BuildingCenters.1107531643027.1"  coords="500,300,6" title="ADDRESS: 123 Main Street"/>
+<area shape="circle" id="BuildingCenters.1107531643028.0"  coords="600,0,6" title="ADDRESS: 215 Main Street"/>
+</map>

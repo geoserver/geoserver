@@ -1,0 +1,147 @@
+   <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+    <sld:NamedLayer>
+     <sld:Name>population</sld:Name>
+     <sld:UserStyle>
+      <sld:Name>population</sld:Name>
+      <sld:Title>Population in the United States</sld:Title>
+      <sld:Abstract>A sample filter that filters the United States into three
+           categories of population, drawn in different colors</sld:Abstract>
+      <sld:FeatureTypeStyle>
+       <sld:Name>name</sld:Name>
+       <sld:Title>title</sld:Title>
+       <sld:Abstract>abstract</sld:Abstract>
+       <sld:FeatureTypeName>Feature</sld:FeatureTypeName>
+       <sld:SemanticTypeIdentifier>generic:geometry</sld:SemanticTypeIdentifier>
+       <sld:Rule>
+        <sld:Title>&lt; 2M</sld:Title>
+        <ogc:Filter>
+         <ogc:PropertyIsLessThan>
+          <ogc:PropertyName>PERSONS</ogc:PropertyName>
+          <ogc:Literal>2000000</ogc:Literal>
+         </ogc:PropertyIsLessThan>
+        </ogc:Filter>
+        <sld:PolygonSymbolizer>
+         <sld:Fill>
+          <sld:CssParameter name="fill">
+           <ogc:Literal>#4DFF4D</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="fill-opacity">
+           <ogc:Literal>0.7</ogc:Literal>
+          </sld:CssParameter>
+         </sld:Fill>
+        </sld:PolygonSymbolizer>
+       </sld:Rule>
+       <sld:Rule>
+        <sld:Title>2M - 4M</sld:Title>
+        <ogc:Filter>
+         <ogc:PropertyIsBetween>
+          <ogc:PropertyName>PERSONS</ogc:PropertyName>
+          <ogc:LowerBoundary>
+           <ogc:Literal>2000000</ogc:Literal>
+          </ogc:LowerBoundary>
+          <ogc:UpperBoundary>
+           <ogc:Literal>4000000</ogc:Literal>
+          </ogc:UpperBoundary>
+         </ogc:PropertyIsBetween>
+        </ogc:Filter>
+        <sld:PolygonSymbolizer>
+         <sld:Fill>
+          <sld:CssParameter name="fill">
+           <ogc:Literal>#FF4D4D</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="fill-opacity">
+           <ogc:Literal>0.7</ogc:Literal>
+          </sld:CssParameter>
+         </sld:Fill>
+        </sld:PolygonSymbolizer>
+       </sld:Rule>
+       <sld:Rule>
+        <sld:Title>&gt; 4M</sld:Title>
+        <ogc:Filter>
+         <ogc:PropertyIsGreaterThan>
+          <ogc:PropertyName>PERSONS</ogc:PropertyName>
+          <ogc:Literal>4000000</ogc:Literal>
+         </ogc:PropertyIsGreaterThan>
+        </ogc:Filter>
+        <sld:PolygonSymbolizer>
+         <sld:Fill>
+          <sld:CssParameter name="fill">
+           <ogc:Literal>#4D4DFF</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="fill-opacity">
+           <ogc:Literal>0.7</ogc:Literal>
+          </sld:CssParameter>
+         </sld:Fill>
+        </sld:PolygonSymbolizer>
+       </sld:Rule>
+       <sld:Rule>
+        <sld:Title>Boundary</sld:Title>
+        <sld:LineSymbolizer>
+         <sld:Stroke>
+          <sld:CssParameter name="stroke">
+           <ogc:Literal>#000000</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="stroke-linecap">
+           <ogc:Literal>butt</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="stroke-linejoin">
+           <ogc:Literal>miter</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="stroke-opacity">
+           <ogc:Literal>1</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="stroke-width">
+           <ogc:Literal>1</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="stroke-dashoffset">
+           <ogc:Literal>0</ogc:Literal>
+          </sld:CssParameter>
+         </sld:Stroke>
+        </sld:LineSymbolizer>
+        <sld:TextSymbolizer>
+         <sld:Label>
+          <ogc:PropertyName>STATE_ABBR</ogc:PropertyName>
+         </sld:Label>
+         <sld:Font>
+          <sld:CssParameter name="font-family">
+           <ogc:Literal>Times New Roman</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="font-size">
+           <ogc:Literal>14</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="font-style">
+           <ogc:Literal>Normal</ogc:Literal>
+          </sld:CssParameter>
+          <sld:CssParameter name="font-weight">
+           <ogc:Literal>normal</ogc:Literal>
+          </sld:CssParameter>
+         </sld:Font>
+         <sld:LabelPlacement>
+          <sld:PointPlacement>
+           <sld:AnchorPoint>
+            <sld:AnchorPointX>
+             <ogc:Literal>0.5</ogc:Literal>
+            </sld:AnchorPointX>
+            <sld:AnchorPointY>
+             <ogc:Literal>0.5</ogc:Literal>
+            </sld:AnchorPointY>
+           </sld:AnchorPoint>
+           <sld:Displacement>
+            <sld:DisplacementX>
+             <ogc:Literal>0</ogc:Literal>
+            </sld:DisplacementX>
+            <sld:DisplacementY>
+             <ogc:Literal>0</ogc:Literal>
+            </sld:DisplacementY>
+           </sld:Displacement>
+           <sld:Rotation>
+            <ogc:Literal>0.0</ogc:Literal>
+           </sld:Rotation>
+          </sld:PointPlacement>
+         </sld:LabelPlacement>
+        </sld:TextSymbolizer>
+       </sld:Rule>
+      </sld:FeatureTypeStyle>
+     </sld:UserStyle>
+    </sld:NamedLayer>
+   </sld:StyledLayerDescriptor>

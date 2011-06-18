@@ -1,0 +1,4 @@
+<map name="BuildingCenters">
+<area shape="circle" id="BuildingCenters.1107531643027"  coords="0,600,10" title="ADDRESS: 123 Main Street"/>
+<area shape="circle" id="BuildingCenters.1107531643028"  coords="600,0,10" title="ADDRESS: 215 Main Street"/>
+</map>

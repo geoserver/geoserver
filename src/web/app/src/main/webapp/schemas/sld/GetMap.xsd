@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.opengis.net/ows"
+	xmlns:ogc="http://www.opengis.net/ows"
+	xmlns:sld="http://www.opengis.net/sld"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	
+
+
+<xs:import namespace="http://www.opengis.net/gml"
+	schemaLocation="../gml/2.1.2.1/geometry.xsd"/>
+
+<xs:import namespace="http://www.opengis.net/sld"
+	schemaLocation="StyledLayerDescriptor.xsd"/>
+
+<xs:annotation>
+	<xs:documentation xml:lang="en">
+		XML Schema for OGC Web Map Service GetMap request.
+	</xs:documentation>
+</xs:annotation>
+
+
+<xs:element name="GetMap">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="sld:StyledLayerDescriptor" />
+			<xs:element name="BoundingBox" type="gml:BoxType"/>
+			<xs:element name="Output">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Format" type="ogc:FormatType"/>
+						<xs:element name="Transparent" type="xs:boolean" minOccurs="0"/>
+						<xs:element name="BGcolor" type="xs:string" minOccurs="0"/>
+						<xs:element name="Size">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Width" type="xs:positiveInteger"/>
+									<xs:element name="Height" type="xs:positiveInteger"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element><!--Size-->
+						<xs:element name="Buffer" type="xs:int" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element><!--Output-->
+			<xs:element name="Exceptions" type="ogc:ExceptionsType" minOccurs="0"/>
+			<xs:element name="Vendor" type="ogc:VendorType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="version" type="xs:string" use="required"/>
+		<xs:attribute name="service" type="ogc:OWSType" use="required"/>
+	</xs:complexType>
+</xs:element><!--GetMap-->
+<!--Type definitions-->
+<xs:simpleType name="ExceptionsType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="application/vnd.ogc.se+inimage"/>
+		<xs:enumeration value="application/vnd.ogc.se+xml"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="FormatType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="image/gif"/>
+		<xs:enumeration value="image/jpg"/>
+		<xs:enumeration value="image/jpeg"/>
+		<xs:enumeration value="image/png"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="OWSType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="WMS"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:complexType name="VendorType"/>
+<!--not sure how to define vendor-specific area in open manner-->
+</xs:schema>

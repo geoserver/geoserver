@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<InterpolationMethods xmlns="http://www.opengis.net/wcs/1.1.1" 
+xmlns:ows="http://www.opengis.net/ows" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 ../wcsInterpolationMethod.xsd">
+	<InterpolationMethod>linear</InterpolationMethod>
+	<Default>nearest</Default>
+</InterpolationMethods>

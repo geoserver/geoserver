@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:geometryBasic0d1d:v3.1.1"/>
+		<documentation>Subset of geometryBasic0d1d.xsd for WCS 1.2 profile. Primary editor: Primary editor: Arliss Whiteside. Last updated 2007-04-23 
+		Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved. </documentation>
+	</annotation>
+	<!-- ============================================================ -->
+	<include schemaLocation="measures.xsd"/>
+	<!-- ============================================================ -->
+	<!-- ===========  abstract supertype for geometry objects =================== -->
+	<!-- ============================================================ -->
+	<element name="_Geometry" type="gml:AbstractGeometryType" abstract="true" substitutionGroup="gml:_GML">
+		<annotation>
+			<documentation>The "_Geometry" element is the abstract head of the substituition group for all geometry elements of GML 3. This includes pre-defined and user-defined geometry elements. Any geometry element must be a direct or indirect extension/restriction of AbstractGeometryType and must be directly or indirectly in the substitution group of "_Geometry".</documentation>
+		</annotation>
+	</element>
+	<!-- ============================================================ -->
+	<complexType name="AbstractGeometryType" abstract="true">
+		<annotation>
+			<documentation>All geometry elements are derived directly or indirectly from this abstract supertype. A geometry element may have an identifying attribute ("gml:id"), a name (attribute "name") and a description (attribute "description"). It may be associated with a spatial reference system (attribute "srsName"). The following rules shall be adhered: - Every geometry type shall derive from this abstract type. - Every geometry element (i.e. an element of a geometry type) shall be directly or indirectly in the substitution group of _Geometry.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<attributeGroup ref="gml:SRSReferenceGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ============================================================ -->
+	<attributeGroup name="SRSReferenceGroup">
+		<annotation>
+			<documentation>Optional reference to the CRS used by this geometry.</documentation>
+		</annotation>
+		<attribute name="srsName" type="anyURI" use="optional">
+			<annotation>
+				<documentation>In general this reference points to a CRS instance of gml:CoordinateReferenceSystemType (see coordinateReferenceSystems.xsd). For well known references it is not required that the CRS description exists at the location the URI points to.</documentation>
+			</annotation>
+		</attribute>
+	</attributeGroup>
+	<!-- ============================================================ -->
+	<element name="_GeometricPrimitive" type="gml:AbstractGeometricPrimitiveType" abstract="true" substitutionGroup="gml:_Geometry">
+		<annotation>
+			<documentation>The "_GeometricPrimitive" element is the abstract head of the substituition group for all (pre- and user-defined) geometric primitives.</documentation>
+		</annotation>
+	</element>
+	<!-- ============================================================== -->
+	<complexType name="AbstractGeometricPrimitiveType" abstract="true">
+		<annotation>
+			<documentation>This is the abstract root type of the geometric primitives. A geometric primitive is a geometric object that is not decomposed further into other primitives in the system. All primitives are oriented in the direction implied by the sequence of their coordinate tuples.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType"/>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- positions -->
+	<!-- =========================================================== -->
+	<element name="pos" type="gml:DirectPositionType"/>
+	<!-- =========================================================== -->
+	<complexType name="DirectPositionType">
+		<annotation>
+			<documentation>DirectPosition instances hold the coordinates for a position within some coordinate reference system (CRS). Since DirectPositions, as data types, will often be included in larger objects (such as geometry elements) that have references to CRS, the "srsName" attribute will in general be missing, if this particular DirectPosition is included in a larger element with such a reference to a CRS. In this case, the CRS is implicitly assumed to take on the value of the containing object's CRS.</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:doubleList">
+				<attributeGroup ref="gml:SRSReferenceGroup"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="posList" type="gml:DirectPositionListType"/>
+	<!-- =========================================================== -->
+	<complexType name="DirectPositionListType">
+		<annotation>
+			<documentation>DirectPositionList instances hold the coordinates for a sequence of direct positions within the same coordinate reference system (CRS).</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:doubleList">
+				<attributeGroup ref="gml:SRSReferenceGroup"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<!-- Envelope -->
+	<!-- =========================================================== -->
+	<element name="Envelope" type="gml:EnvelopeType"/>
+	<!-- =========================================================== -->
+	<complexType name="EnvelopeType">
+		<annotation>
+			<documentation>Envelope defines an extent using a pair of positions defining opposite corners in arbitrary dimensions. The first direct position is the "lower corner" (a coordinate position consisting of all the minimal ordinates for each dimension for all points within the envelope), the second one the "upper corner" (a coordinate position consisting of all the maximal ordinates for each dimension for all points within the envelope).</documentation>
+		</annotation>
+		<choice>
+			<sequence>
+				<element name="lowerCorner" type="gml:DirectPositionType"/>
+				<element name="upperCorner" type="gml:DirectPositionType"/>
+			</sequence>
+		</choice>
+		<attributeGroup ref="gml:SRSReferenceGroup"/>
+	</complexType>
+	<!-- =========================================================== -->
+</schema>

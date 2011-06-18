@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:2.0:policy:schema:os http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd"	
+	PolicyId="org:geoserver:policy:role:geoserver"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+	<Target>
+		<Subjects>
+			<Subject>
+				<SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:anyURI-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#anyURI">ROLE_GEOSERVER</AttributeValue>					                                                                         
+					<SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role"
+						DataType="http://www.w3.org/2001/XMLSchema#anyURI" />
+				</SubjectMatch>			 	
+			</Subject>
+		</Subjects>
+		<Resources>
+			<Resource>
+				<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">Catalog</AttributeValue>
+					<ResourceAttributeDesignator
+							AttributeId="org:geoserver:resource:type:CatalogType" DataType="http://www.w3.org/2001/XMLSchema#string" />							             
+				</ResourceMatch>
+			</Resource>
+		</Resources>		
+	</Target>
+	<Rule Effect="Permit" RuleId="org:geoserver:rule:CatalogAccessModeRule">	
+	</Rule>
+	<Obligations>
+		<Obligation FulfillOn="Permit" ObligationId="org:geoserver:obligation:CatalogMode">
+			<AttributeAssignment DataType="http://www.w3.org/2001/XMLSchema#string" 
+			  AttributeId="org:geoserver:obligation:CatalogMode:assignment:Mode">MIXED</AttributeAssignment>
+				<!-- possible values HIDE or CHALLENGE or MIXED > -->			
+		</Obligation>
+	</Obligations>
+			
+</Policy>

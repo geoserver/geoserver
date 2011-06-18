@@ -1,0 +1,70 @@
+<pluginMetadata>
+  <mojos>
+    <mojo>
+      <goal>config</goal>
+      <call>config</call> 
+      <requiresProject>true</requiresProject>
+
+      <description>
+			Unpacks a geoserver configuration archive into the server.
+      </description>
+
+  		<parameters>
+
+        <parameter>
+          <name>configId</name>
+          <property>configId</property>
+          <required>true</required>
+          <type>java.lang.String</type>
+          <description>
+					The id of the configuration, used to locate the archive under the 
+directory specified by ${configDirectory}.
+          </description>
+        </parameter>
+
+        <parameter>
+          <name>configDirectory</name>
+          <property>configDirectory</property>
+          <required>false</required>
+          <type>java.io.File</type>
+          <defaultValue>${basedir}</defaultValue>
+          <description>
+					The directory which contains configurations. 
+          </description>
+        </parameter>
+       
+        <parameter>
+          <name>webappSourceDirectory</name>
+          <property>webappSourceDirectory</property>
+          <required>true</required>
+          <type>java.io.File</type>
+					<defaultValue>${basedir}/src/main/webapp</defaultValue>
+          <description>
+					The webapp directory, same as from the maven war plugin.
+          </description>
+        </parameter>
+
+			</parameters>
+
+		</mojo>
+
+		<mojo>
+      <goal>clean</goal>
+      <call>clean</call> 
+      <requiresProject>true</requiresProject>
+
+			<parameters>
+  			<parameter>
+          <name>webappSourceDirectory</name>
+          <property>webappSourceDirectory</property>
+          <required>true</required>
+          <type>java.io.File</type>
+          <defaultValue>${basedir}/src/main/webapp</defaultValue>
+          <description>
+          The webapp directory, same as from the maven war plugin.
+          </description>
+        </parameter>
+			</parameters>
+		</mojo>
+	</mojos>
+</pluginMetadata>

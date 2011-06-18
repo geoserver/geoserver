@@ -1,0 +1,5 @@
+<plugin xmlns:gml = "http://www.opengis.net/gml" xsi:schemaLocation = "pluginSchema /data/capabilities/validate/pluginSchema.xsd" xmlns:ogc = "http://www.opengis.net/ogc" xmlns = "pluginSchema" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" >
+<name>Polygon Not Overlapping Line</name>
+<description>One polygon cannot overlap the line.</description>
+<class>org.geotools.validation.spatial.PolygonNotOverlappingLineValidation</class>
+</plugin>

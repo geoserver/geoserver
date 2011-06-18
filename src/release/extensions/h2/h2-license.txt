@@ -1,0 +1,2 @@
+This plugin is licensed under the GNU General Public License (GPL). See GPL.txt
+in the GeoServer distribution for details.

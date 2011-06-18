@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>GeoServer Global</title>
+</head>
+
+<body>
+
+Maintains the GeoServer applicaiton state (This is the Application).
+
+<p>
+Common state used by the GeoServer Servlets is maintained by this package.
+</p>
+
+Features:
+<ul>
+<li>
+Contains the actual server state - that is WMS reflects the state of the
+Web Map Server
+</li>
+<li>
+These classes should be saved in the Web Container
+(rather than the current singletons)
+</li>
+<li>
+Application set up is provided using Data Transfer Objects from the global.dto
+package. Both the initial loading the initial XML configuration files and the
+dynamic configuraiton systems are handled in this manner.
+</li>
+<li>
+Data contains "real" GeoTools2 DataStores with JDBC connections (and implements the
+GeoTools2 Catalog Interface)
+</li>
+</ul>
+<center>
+<img src="doc-files/GeoServerStateDiagram.gif">
+<br>
+<b>GeoServer State Diagram</b>
+</center>
+<p>
+We would like to bootstrap this process using the STRUTS plug-in interface and
+store the GeoServer application state in the Web Container. Currently this
+information is accessed by a singleton, and bootstraped by the first GeoServer
+servlet request (JG - I think ).
+</p>
+
+</body>
+
+</html>

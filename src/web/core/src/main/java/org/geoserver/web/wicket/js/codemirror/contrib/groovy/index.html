@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="../../js/codemirror.js" type="text/javascript"></script>
+    <title>CodeMirror: Groovy demonstration</title>
+    <link rel="stylesheet" type="text/css" href="../../css/docs.css"/>
+  </head>
+  <body style="padding: 20px;">
+
+<p>Demonstration of <a href="../../index.html">CodeMirror</a>'s Groovy highlighter.</p>
+
+<p>Created by eXo Platform SAS (<a href="http://www.opensource.org/licenses/lgpl-2.1.php">license</a>).</p>
+
+<p>Note that the files for this parser aren't included in the CodeMirror repository, but have to fetched from <a href="http://svn.exoplatform.org/">svn.exoplatform.org</a>:</p>
+
+<ul>
+ <li><a href="http://svn.exoplatform.org/projects/gwt/trunk/exo-gwtframework-editor/src/main/resources/org/exoplatform/gwtframework/editor/public/codemirror/js/tokenizegroovy.js">tokenizegroovy.js</a></li>
+ <li><a href="http://svn.exoplatform.org/projects/gwt/trunk/exo-gwtframework-editor/src/main/resources/org/exoplatform/gwtframework/editor/public/codemirror/js/parsegroovy.js">parsegroovy.js</a></li>
+ <li><a href="http://svn.exoplatform.org/projects/gwt/trunk/exo-gwtframework-editor/src/main/resources/org/exoplatform/gwtframework/editor/public/codemirror/css/groovycolors.css">groovy.colors.css</a></li>
+</ul>
+
+<div class="border">
+<textarea id="code" cols="120" rows="50">
+// simple groovy script
+import javax.ws.rs.Path
+import javax.ws.rs.GET
+import javax.ws.rs.PathParam
+import javax.ws.rs.POST
+
+@Path("/")
+public class HelloWorld {
+  @GET
+  @Path("helloworld/{name}")
+  public String hello(@PathParam("name") String name) {
+    return "Hello " + name
+  }
+  
+  @POST
+  @Path("helloworld/{name}")
+  public String hello2(@PathParam("name") String name) {
+    return "Hello " + name
+  }
+}
+</textarea>
+</div>
+
+<script type="text/javascript">
+  var editor = CodeMirror.fromTextArea('code', {
+    height: "450px",
+    parserfile: ["http://svn.exoplatform.org/projects/gwt/trunk/exo-gwtframework-editor/src/main/resources/org/exoplatform/gwtframework/editor/public/codemirror/js/parsegroovy.js", "http://svn.exoplatform.org/projects/gwt/trunk/exo-gwtframework-editor/src/main/resources/org/exoplatform/gwtframework/editor/public/codemirror/js/tokenizegroovy.js"],
+    stylesheet: "http://svn.exoplatform.org/projects/gwt/trunk/exo-gwtframework-editor/src/main/resources/org/exoplatform/gwtframework/editor/public/codemirror/css/groovycolors.css",
+    path: "../../js/",
+    textWrapping: false
+  });
+</script>
+
+</body>
+</html>

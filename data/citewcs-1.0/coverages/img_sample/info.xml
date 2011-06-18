@@ -1,0 +1,70 @@
+<coverage format = "usa" >
+<name>usa</name>
+<label>usa is a A raster file accompanied by a spatial data file</label>
+<description>Generated from usa</description>
+<wmspath>/</wmspath>
+<metadataLink about = "http://www.geotools.org/WorldImageReader+formats" metadataType = "other" >
+null
+</metadataLink>
+<keywords>WCS,usa,usa</keywords>
+<!--
+the default style this CoverageInfoDTO can be represented by.
+at least must contain the "default" attribute 
+-->
+<styles default = "raster"  />
+<envelope crs = "GEOGCS['WGS 84', 
+  DATUM['World Geodetic System 1984', 
+    SPHEROID['WGS 84', 6378137.0, 298.257223563, AUTHORITY['EPSG','7030']], 
+    AUTHORITY['EPSG','6326']], 
+  PRIMEM['Greenwich', 0.0, AUTHORITY['EPSG','8901']], 
+  UNIT['degree', 0.017453292519943295], 
+  AXIS['Geodetic longitude', EAST], 
+  AXIS['Geodetic latitude', NORTH], 
+  AUTHORITY['EPSG','4326']]" srsName = "EPSG:4326" >
+<pos>-130.85168 20.7052</pos>
+<pos>-62.0054 54.1141</pos>
+</envelope>
+<grid dimension = "2" >
+<low>0 0 </low>
+<high>983 598 </high>
+<axisName>Geodetic longitude</axisName>
+<axisName>Geodetic latitude</axisName>
+</grid>
+<CoverageDimension>
+<name>Red band</name>
+<description>GridSampleDimension[0.0,255.0]</description>
+<interval>
+<min>0.0</min>
+<max>255.0</max>
+</interval>
+</CoverageDimension>
+<CoverageDimension>
+<name>Green band</name>
+<description>GridSampleDimension[0.0,255.0]</description>
+<interval>
+<min>0.0</min>
+<max>255.0</max>
+</interval>
+</CoverageDimension>
+<CoverageDimension>
+<name>Blue band</name>
+<description>GridSampleDimension[0.0,255.0]</description>
+<interval>
+<min>0.0</min>
+<max>255.0</max>
+</interval>
+</CoverageDimension>
+<supportedCRSs>
+<requestCRSs>EPSG:4326</requestCRSs>
+<responseCRSs>EPSG:4326</responseCRSs>
+</supportedCRSs>
+<supportedFormats nativeFormat = "WorldImage" >
+<formats>GIF,PNG,JPEG,TIFF,GEOTIFF</formats>
+</supportedFormats>
+<supportedInterpolations default = "nearest neighbor" >
+<interpolationMethods>nearest neighbor,bilinear,bicubic</interpolationMethods>
+</supportedInterpolations>
+<parameters>
+<parameter value = "" name = "ReadGridGeometry2D"  />
+</parameters>
+</coverage>

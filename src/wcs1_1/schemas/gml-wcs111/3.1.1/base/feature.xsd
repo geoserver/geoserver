@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" version="3.1.1">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:feature:v3.1.1"/>
+		<documentation>GML Feature schema. 		      
+    Copyright (c) 2001-2005 OGC, All Rights Reserved.
+	For conditions, see OGC Software Notice http://www.opengeospatial.org/about/?page=ipr</documentation>
+	</annotation>
+	<!-- ============================================================== -->
+	<!-- ==================        includes and imports  ======================= -->
+	<!-- ============================================================== -->
+	<include schemaLocation="geometryBasic2d.xsd"/>
+	<include schemaLocation="temporal.xsd"/>
+	<!-- ============================================================== -->
+	<element name="_Feature" type="gml:AbstractFeatureType" abstract="true" substitutionGroup="gml:_GML"/>
+	<!-- =========================================================== -->
+	<complexType name="AbstractFeatureType" abstract="true">
+		<annotation>
+			<documentation>An abstract feature provides a set of common properties, including id, metaDataProperty, name and description inherited from AbstractGMLType, plus boundedBy.    A concrete feature type must derive from this type and specify additional  properties in an application schema. A feature must possess an identifying attribute ('id' - 'fid' has been deprecated).</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:boundedBy" minOccurs="0"/>
+					<element ref="gml:location" minOccurs="0">
+						<annotation>
+							<appinfo>deprecated</appinfo>
+							<documentation>deprecated in GML version 3.1</documentation>
+						</annotation>
+					</element>
+					<!-- additional properties must be specified in an application schema -->
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ============================================================== -->
+	<!-- =========================================================== -->
+	<element name="boundedBy" type="gml:BoundingShapeType"/>
+	<!-- ====================================================================== -->
+	<complexType name="BoundingShapeType">
+		<annotation>
+			<documentation>Bounding shape.</documentation>
+		</annotation>
+		<sequence>
+			<choice>
+				<element ref="gml:Envelope"/>
+				<element ref="gml:Null"/>
+			</choice>
+		</sequence>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="EnvelopeWithTimePeriod" type="gml:EnvelopeWithTimePeriodType" substitutionGroup="gml:Envelope"/>
+	<!-- ====================================================================== -->
+	<complexType name="EnvelopeWithTimePeriodType">
+		<annotation>
+			<documentation>Envelope that includes also a temporal extent.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:EnvelopeType">
+				<sequence>
+					<element ref="gml:timePosition" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+				<attribute name="frame" type="anyURI" use="optional" default="#ISO-8601"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ====================================================================== -->
+	<!-- ===== property for feature association ==== -->
+	<element name="featureMember" type="gml:FeaturePropertyType"/>
+	<element name="featureProperty" type="gml:FeaturePropertyType"/>
+	<!-- ============================================================== -->
+	<complexType name="FeaturePropertyType">
+		<annotation>
+			<documentation>Container for a feature - follow gml:AssociationType pattern.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:_Feature"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ============================================================== -->
+	<!-- ===== property for association of an array of features ===== -->
+	<element name="featureMembers" type="gml:FeatureArrayPropertyType"/>
+	<!-- =========================================================== -->
+	<complexType name="FeatureArrayPropertyType">
+		<annotation>
+			<documentation>Container for features - follow gml:ArrayAssociationType pattern.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:_Feature" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<!-- ============================================================== -->
+	<!-- =========================================================== -->
+	<element name="_FeatureCollection" type="gml:AbstractFeatureCollectionType" abstract="true" substitutionGroup="gml:_Feature"/>
+	<!-- ===========================================================   -->
+	<complexType name="AbstractFeatureCollectionType" abstract="true">
+		<annotation>
+			<documentation>A feature collection contains zero or more features.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element ref="gml:featureMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:featureMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="FeatureCollection" type="gml:FeatureCollectionType" substitutionGroup="gml:_Feature"/>
+	<!-- =========================================================== -->
+	<complexType name="FeatureCollectionType">
+		<annotation>
+			<documentation>Concrete generic feature collection.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractFeatureCollectionType"/>
+		</complexContent>
+	</complexType>
+	<!-- ============================================================== -->
+	<!-- ============================================================== -->
+	<element name="LocationKeyWord" type="gml:CodeType"/>
+	<element name="LocationString" type="gml:StringOrRefType"/>
+	<!-- =========================================================== -->
+	<!-- ============= common aliases for geometry properties =============== -->
+	<element name="centerOf" type="gml:PointPropertyType"/>
+	<element name="position" type="gml:PointPropertyType"/>
+	<element name="edgeOf" type="gml:CurvePropertyType"/>
+	<element name="centerLineOf" type="gml:CurvePropertyType"/>
+	<element name="extentOf" type="gml:SurfacePropertyType"/>
+	<!-- =========================================================== -->
+	<!-- ================= deprecated components  =========================== -->
+	<complexType name="BoundedFeatureType" abstract="true">
+		<annotation>
+			<documentation>Makes boundedBy mandatory</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:AbstractFeatureType">
+				<sequence>
+					<group ref="gml:StandardObjectProperties"/>
+					<element ref="gml:boundedBy"/>
+					<element ref="gml:location" minOccurs="0">
+						<annotation>
+							<appinfo>deprecated</appinfo>
+							<documentation>deprecated in GML version 3.1</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!-- =========================================================== -->
+	<element name="location" type="gml:LocationPropertyType">
+		<annotation>
+			<documentation>Deprecated in GML 3.1.0</documentation>
+		</annotation>
+	</element>
+	<!-- ============================================================== -->
+	<complexType name="LocationPropertyType">
+		<annotation>
+			<documentation>Convenience property for generalised location.  
+      A representative location for plotting or analysis.  
+      Often augmented by one or more additional geometry properties with more specific semantics.</documentation>
+			<documentation>Deprecated in GML 3.1.0</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<choice>
+				<element ref="gml:_Geometry"/>
+				<element ref="gml:LocationKeyWord"/>
+				<element ref="gml:LocationString"/>
+				<element ref="gml:Null"/>
+			</choice>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!-- ============================================================== -->
+	<element name="priorityLocation" type="gml:PriorityLocationPropertyType" substitutionGroup="gml:location">
+		<annotation>
+			<documentation>Deprecated in GML 3.1.0</documentation>
+		</annotation>
+	</element>
+	<!-- ============================================================== -->
+	<complexType name="PriorityLocationPropertyType">
+		<annotation>
+			<documentation>G-XML component</documentation>
+			<documentation>Deprecated in GML 3.1.0</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:LocationPropertyType">
+				<attribute name="priority" type="string" use="optional"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- ============================================================== -->
+</schema>

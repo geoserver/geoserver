@@ -6,6 +6,7 @@ package org.geoserver.wms.map;
 
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -63,13 +64,16 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         if ("image/png8".equalsIgnoreCase(format) || (mapContext.getPaletteInverter() != null)) {
             InverseColorMapOp paletteInverter = mapContext.getPaletteInverter();
             image = forceIndexed8Bitmask(image, paletteInverter);
-
         }
 
         Boolean PNGNativeAcc = wms.getPNGNativeAcceleration();
         float quality = (100 - wms.getPngCompression()) / 100.0f;
+        SampleModel sm = image.getSampleModel();
+        int numBits = sm.getSampleSize(0);
+        // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
+        boolean nativeAcceleration = PNGNativeAcc.booleanValue() && (numBits == 2 || numBits == 8);
         new ImageWorker(image).writePNG(outStream, "FILTERED", quality,
-                PNGNativeAcc.booleanValue(), image.getColorModel() instanceof IndexColorModel);
+                nativeAcceleration, image.getColorModel() instanceof IndexColorModel);
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing png image ... done!");

@@ -17,18 +17,24 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
+        
+        // this also adds the raster style
+        dataDirectory.addWcs10Coverages();
+
+        
         dataDirectory.addStyle("indexed",
                 GetMapIntegrationTest.class.getResource("indexed.sld"));
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "indexed", MockData.SF_PREFIX),
                 GetMapIntegrationTest.class.getResource("indexed.tif"), "tif", "indexed");
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX),
                 GetMapIntegrationTest.class.getResource("paletted.tif"), "tif", "raster");
-        
-        // this also adds the raster style
-        dataDirectory.addWcs10Coverages();
-        
+        // a filterable mosaic
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
                 getClass().getResource("../raster-filter-test.zip"), null, "raster");
+        // a 4 bits world image
+        dataDirectory.addCoverage(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
+                MockData.class.getResource("fourbits.zip"), null, "raster");
+
     }
     
     
@@ -99,5 +105,15 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // solid pixel in the lower right corner
         image.getData().getPixel(255, 255, rgba);
         assertEquals(255, (int) rgba[3]);
+    }
+    
+    public void testFourBits() throws Exception {
+        String request = "wms?LAYERS=sf:fourbits&STYLES=&FORMAT=image/png" +
+        		"&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4269" +
+        		"&BBOX=-118.58930224611,45.862378906251,-118.33030957033,45.974688476563" +
+        		"&WIDTH=761&HEIGHT=330";
+        
+        MockHttpServletResponse response = getAsServletResponse(request);
+        assertEquals("image/png", response.getContentType());
     }
 }

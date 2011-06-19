@@ -7,6 +7,7 @@ package org.geoserver.filters;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,10 +66,10 @@ public class AlternativesResponseStream extends ServletOutputStream {
 //        }
 
         if (type != null && isCompressible(type)){
-//            logger.info("Compressing output for mimetype: " + type);
+            logger.log(Level.FINE, "Compressing output for mimetype: {0}", type);
             myStream = new GZIPResponseStream(myResponse);
         } else {
-//            logger.info("Not compressing output for mimetype: " + type);
+            logger.log(Level.FINE, "Not compressing output for mimetype: {0}", type);
             myStream = myResponse.getOutputStream();
         }
 

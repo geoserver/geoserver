@@ -65,6 +65,49 @@ characters themselves must also be prefixed.  For example, ``'\\\''`` is a
 string value consisting of a single backslash followed by a single single quote
 character.
 
+
+Labels
+------
+
+While labels aren't really a special type of value, they deserve a special
+mention since labels are more likely to require special string manipulation
+than other CSS values.
+
+If a label is a simple string value, then it works like any other string
+would::
+
+   [lanes > 20] {
+       label: "Serious Freaking Highway";
+   }
+
+However, if a label has multiple values, all of those values will be
+concatenated to form a single label::
+
+   [lanes > 20] {
+      label: "Serious " "Freaking " "Highway";
+   }
+
+Note the whitespace within the label strings here; *no whitespace is added*
+when concatenating strings, so you must be explicit about where you want it
+included.  You can also mix CQL expressions in with literal string values
+here::
+
+   states {
+      label: [STATE_NAME] " (" [STATE_ABBR] ")";
+   }
+
+.. note::
+
+    This automatic concatenation is currently a special feature only provided
+    for labels.  However, string concatenation is also supported directly in
+    CQL expressions by using the ``strConcat`` filter function::
+
+        * { fill: [strConcat('#', color_hex)]; }
+
+    This form of concatenation works with any property that supports
+    expressions.
+
+
 Colors
 ------
 

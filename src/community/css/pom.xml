@@ -90,7 +90,7 @@
     <dependency>
       <groupId>org.geoscript</groupId>
       <artifactId>geocss_${scala.version}</artifactId>
-      <version>0.7.0</version>
+      <version>0.7.1</version>
     </dependency>
   </dependencies>
   <properties>

@@ -27,17 +27,15 @@
   <verbose>false</verbose>
   <gml>
     <entry>
-      <org.geoserver.wfs.WFSInfo_-Version>V_11</org.geoserver.wfs.WFSInfo_-Version>
-      <org.geoserver.wfs.GMLInfoImpl>
-        <srsNameStyle>URN</srsNameStyle>
-        <overrideGMLAttributes>false</overrideGMLAttributes>
-      </org.geoserver.wfs.GMLInfoImpl>
-    </entry>
-    <entry>
       <org.geoserver.wfs.WFSInfo_-Version>V_10</org.geoserver.wfs.WFSInfo_-Version>
       <org.geoserver.wfs.GMLInfoImpl>
         <srsNameStyle>XML</srsNameStyle>
-        <overrideGMLAttributes>true</overrideGMLAttributes>
+      </org.geoserver.wfs.GMLInfoImpl>
+    </entry>
+    <entry>
+      <org.geoserver.wfs.WFSInfo_-Version>V_11</org.geoserver.wfs.WFSInfo_-Version>
+      <org.geoserver.wfs.GMLInfoImpl>
+        <srsNameStyle>URN</srsNameStyle>
       </org.geoserver.wfs.GMLInfoImpl>
     </entry>
   </gml>

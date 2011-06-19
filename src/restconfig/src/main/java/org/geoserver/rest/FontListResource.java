@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Class to retrieve the list of fonts available in GeoServer
  *
- * @author Jose Garc’a
+ * @author Jose Garca
  */
 public class FontListResource extends MapResource {
 

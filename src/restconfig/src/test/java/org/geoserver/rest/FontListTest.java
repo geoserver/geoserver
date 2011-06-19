@@ -11,7 +11,7 @@ import net.sf.json.JSONArray;
 /**
  * Class with FontListResource tests
  *
- * @author Jose Garc’a
+ * @author Jose Garca
  */
 public class FontListTest extends GeoServerTestSupport {
     public void testGetAsXML() throws Exception {

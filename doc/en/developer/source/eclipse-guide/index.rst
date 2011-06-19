@@ -94,7 +94,7 @@ so there is no need to modify that file. No Jetty-specific information is
 required inside the GeoServer ``web-app`` module or data directory, so JNDI 
 resources can be tested under Jetty for later deployment under Tomcat.
 See also the tutorial `Setting up a JNDI connection pool with Tomcat
-<http://docs.geoserver.org/1.7.x/user/tutorials/tomcat-jndi/tomcat-jndi.html>`_
+<http://docs.geoserver.org/stable/en/user/tutorials/tomcat-jndi/tomcat-jndi.html>`_
 in the GeoServer User Manual.
 
 Eclipse preferences

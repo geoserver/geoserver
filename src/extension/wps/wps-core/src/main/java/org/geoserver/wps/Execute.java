@@ -51,9 +51,12 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.Ows11Util;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
@@ -493,10 +496,10 @@ public class Execute {
         // perform GetCoverage
         if(getCoverage instanceof GetCoverageType) {
             WebCoverageService111 wcs = (WebCoverageService111) context.getBean("wcs111ServiceTarget");
-            return wcs.getCoverage((net.opengis.wcs11.GetCoverageType) ref.getBody())[0];
+            return wcs.getCoverage((net.opengis.wcs11.GetCoverageType) getCoverage)[0];
         } else if(getCoverage instanceof net.opengis.wcs10.GetCoverageType) {
             WebCoverageService100 wcs = (WebCoverageService100) context.getBean("wcs100ServiceTarget");
-            return wcs.getCoverage((net.opengis.wcs10.GetCoverageType) ref.getBody())[0];
+            return wcs.getCoverage((net.opengis.wcs10.GetCoverageType) getCoverage)[0];
         } else {
             throw new WPSException("Unrecognized request type " + getCoverage);
         }
@@ -634,6 +637,13 @@ public class Execute {
             throw new WPSException("Failed to parse KVP request", errors.get(0));
         }
 
+        // hack to allow wcs filters to work... we should really upgrade the WCS models instead...
+        Request r = Dispatcher.REQUEST.get();
+        if(r != null) {
+            Map kvp = new HashMap(r.getKvp());
+            r.setKvp(new CaseInsensitiveMap(parsed));
+        }
+        
         return reader.read(reader.createRequest(), parsed, original);
     }
     

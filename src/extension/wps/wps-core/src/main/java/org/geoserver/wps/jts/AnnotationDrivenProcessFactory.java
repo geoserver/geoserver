@@ -23,11 +23,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.geotools.data.Parameter;
@@ -103,13 +100,12 @@ public abstract class AnnotationDrivenProcessFactory implements ProcessFactory {
             if (annotation instanceof DescribeResult) {
                 DescribeResult info = (DescribeResult) annotation;
                 // see if a type has been declared, otherwise use the annotation
-                Class resultType = info.type();
-                if (Object.class.equals(resultType)) {
-                    resultType = method.getReturnType();
+                addResult(method, result, info);
+            } else if(annotation instanceof DescribeResults) {
+                DescribeResults info = (DescribeResults) annotation;
+                for (DescribeResult dr : info.value()) {
+                    addResult(method, result, dr);
                 }
-                Parameter<?> resultParam = new Parameter(info.name(), resultType, info.name(), info
-                        .description());
-                result.put(resultParam.key, resultParam);
             }
         }
         // if annotation is not found, return a generic description using
@@ -122,6 +118,19 @@ public abstract class AnnotationDrivenProcessFactory implements ProcessFactory {
             }
         }
         return result;
+    }
+
+    private void addResult(Method method, Map<String, Parameter<?>> result, DescribeResult info) {
+        Class resultType = info.type();
+        if (Object.class.equals(resultType)) {
+            resultType = method.getReturnType();
+        }
+        
+        int min = info.primary() ? 0 : 1;
+        Parameter resultParam = new Parameter(info.name(), resultType, new SimpleInternationalString(info.name()),
+                new SimpleInternationalString(info.description()), min > 0, min, 1, null,
+                null);
+        result.put(resultParam.key, resultParam);
     }
 
     public InternationalString getTitle(Name name) {
@@ -317,18 +326,38 @@ public abstract class AnnotationDrivenProcessFactory implements ProcessFactory {
 
                     if (annotation instanceof DescribeResult) {
                         DescribeResult info = (DescribeResult) annotation;
-                        if (info.type().isInstance(obj)) {
-                            result.put(info.name(), obj);
-                        } else {
-                            throw new IllegalArgumentException(method.getName()
-                                    + " unable to encode result " + obj + " as " + info.type());
+                        addResult(result, obj, info);
+                    }
+                    if (annotation instanceof DescribeResults) {
+                        DescribeResults info = (DescribeResults) annotation;
+                        for (DescribeResult dr : info.value()) {
+                            addResult(result, obj, dr);
                         }
                     }
                 }
                 return result;
             } else if (value instanceof Map) {
-                // handle the case where a map was used instead
-                return (Map<String, Object>) value;
+                Map<String, Object> result = new LinkedHashMap<String, Object>();
+                Map<String, Object> map = (Map<String, Object>) value;
+                for (Annotation annotation : method.getAnnotations()) {
+                    if (annotation instanceof DescribeResult) {
+                        DescribeResult info = (DescribeResult) annotation;
+                        Object resultValue = map.get(info.name());
+                        if(resultValue != null) {
+                            addResult(result, resultValue, info);
+                        }
+                    }
+                    if (annotation instanceof DescribeResults) {
+                        DescribeResults info = (DescribeResults) annotation;
+                        for (DescribeResult dr : info.value()) {
+                            Object resultValue = map.get(dr.name());
+                            if(resultValue != null) {
+                                addResult(result, resultValue, dr);
+                            }
+                        }
+                    }
+                }
+                return result;
             } else if (!Void.class.equals(method.getReturnType())) {
                 // handle the single result case
                 Map<String, Object> result = new LinkedHashMap<String, Object>();
@@ -342,6 +371,15 @@ public abstract class AnnotationDrivenProcessFactory implements ProcessFactory {
             }
             // handle the case where the method returns void
             return null;
+        }
+
+        private void addResult(Map<String, Object> result, Object obj, DescribeResult info) {
+            if (info.type().isInstance(obj)) {
+                result.put(info.name(), obj);
+            } else {
+                throw new IllegalArgumentException(method.getName()
+                        + " unable to encode result " + obj + " as " + info.type());
+            }
         }
 
         protected Object[] buildProcessArguments(Method method, Map<String, Object> input, ProgressListener monitor, boolean skip)

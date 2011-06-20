@@ -169,6 +169,10 @@
       <property name="resourceManager" ref="wpsResourceManager" />
     </bean>
     
+    <bean id="getFullCoverage" class="org.geoserver.wps.gs.GetFullCoverage">
+      <constructor-arg index="0" ref="catalog"/>
+    </bean>
+    
     <!-- 
        ==================================================================
        Deal with temporary files

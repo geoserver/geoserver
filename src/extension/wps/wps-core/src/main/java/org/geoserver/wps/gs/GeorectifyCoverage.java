@@ -35,6 +35,7 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.jts.DescribeParameter;
 import org.geoserver.wps.jts.DescribeProcess;
 import org.geoserver.wps.jts.DescribeResult;
+import org.geoserver.wps.jts.DescribeResults;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -53,7 +54,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * TODO: could we probably also extend a TaskExecutionProcess superclass
+ * Georectifies a GridCoverage based on GCPs using gdal_warp under covers
  * 
  * @author Daniele Romagnoli, GeoSolutions SAS
  * @author Andrea Aime, GeoSolutions SAS
@@ -84,8 +85,11 @@ public class GeorectifyCoverage implements GeoServerProcess {
 
     }
 
-    @DescribeResult(name = "result", description = "The GridCoverage2D coming from the georectification process")
-    public GridCoverage2D execute(
+    @DescribeResults({
+        @DescribeResult(name = "result", description = "The GridCoverage2D coming from the georectification process", type=GridCoverage2D.class),
+        @DescribeResult(name = "path", description = "The server side path to the generated coverage", type=String.class)
+    })
+    public Map<String, Object> execute(
             @DescribeParameter(name = "data", description = "The input raster to transform") GridCoverage2D coverage,
             @DescribeParameter(name = "gcp", description = "The Ground Control Points list in the form ") String gcps,
             @DescribeParameter(name = "bbox", description = "The destination bounding box", min = 0) Envelope bbox,
@@ -93,7 +97,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
             @DescribeParameter(name = "width", description = "The final image width", min = 0) Integer width,
             @DescribeParameter(name = "height", description = "The final image height", min = 0) Integer height,
             @DescribeParameter(name = "warpOrder", min = 0, description = "The order of the warping polynomial (optional)") Integer warpOrder,
-            @DescribeParameter(name = "transparent", min = 0, description = "Force the output image to have transparent background") Boolean transparent)
+            @DescribeParameter(name = "transparent", min = 0, description = "Force the output image to have transparent background") Boolean transparent,
+            @DescribeParameter(name = "store", min = 0, description = "Don't remove the output file once done") Boolean store)
             throws IOException {
 
         GeoTiffReader reader = null;
@@ -182,7 +187,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             }
 
             // mark the output file for deletion at the end of request
-            if (resourceManager != null) {
+            if (resourceManager != null && !Boolean.TRUE.equals(store)) {
                 resourceManager.addResource(new WPSFileResource(warpedFile));
             }
 
@@ -193,7 +198,12 @@ public class GeorectifyCoverage implements GeoServerProcess {
             // //
             reader = new GeoTiffReader(warpedFile);
             GridCoverage2D cov = addLocationProperty(reader.read(null), warpedFile);
-            return cov;
+            
+            
+            Map<String, Object> result = new HashMap<String, Object>();
+            result.put("result", cov);
+            result.put("path", warpedFile.getAbsolutePath());
+            return result;
         } finally {
             if (reader != null) {
                 try {

@@ -22,16 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * DescribeProcess information for publication by DEMProcessFactory.
- * <p>
- * Annotation is used to mark a method for publication via DEMProcessFactory
- * @author Jody
+ * Used to report multiple outputs out of a process
+ * @author Andrea
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DescribeResult {
-    String name() default "result";
-    Class<?> type() default Object.class;
-    String description() default "[undescribed]";
-    boolean primary() default false;
+public @interface DescribeResults {
+    DescribeResult[] value();
 }

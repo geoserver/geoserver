@@ -160,7 +160,8 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
 
     /**
      * Test content of GetFeature response for GeologicUnit with web service backend. It feature
-     * chains CompositionPart with is a normal app-schema data access with property files backend.
+     * chains observationMethod which is a normal app-schema data access with property files backend.
+     * It also feature chains CompositionPart which is another app-schema data access with web service.
      */
     public void testGeologicUnit() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:GeologicUnit");

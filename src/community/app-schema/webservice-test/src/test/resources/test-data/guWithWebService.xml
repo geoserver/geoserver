@@ -60,15 +60,13 @@
         <AttributeMapping>
           <label>gsml:GeologicUnit</label>          
           <targetAttribute>gsml:GeologicUnit</targetAttribute>          
-          <idExpression><inputAttribute>@gmlID</inputAttribute></idExpression>
+          <idExpression><OCQL>asXpath('@gmlID')</OCQL></idExpression>
         </AttributeMapping>                  
                     
         <AttributeMapping>
            <parentLabel>gsml:GeologicUnit</parentLabel>
            <targetAttribute>FEATURE_LINK</targetAttribute>            
-           <sourceExpression>
-           		<inputAttribute>@id</inputAttribute>        		
-           </sourceExpression>   
+           <sourceExpression><OCQL>asXpath('@id')</OCQL></sourceExpression>   
         </AttributeMapping>
         
         <AttributeMapping>           
@@ -95,7 +93,7 @@
            <parentLabel>gsml:GeologicUnit</parentLabel>
            <targetAttribute>gml:name[2]</targetAttribute>          
            <sourceExpression>
-           		<inputAttribute>gss:urn[@domain='GSV']</inputAttribute>           		
+           		<OCQL>asXpath('gss:urn[@domain=''GSV'']')</OCQL>           		
            	</sourceExpression>
            <ClientProperty>
            	<name>codeSpace</name>
@@ -128,7 +126,7 @@
             <targetAttribute>gsml:rank</targetAttribute>         
             <ClientProperty>
             	<name>xlink:href</name>
-    	      	<value>gss:geologicalUnit/gss:GeologicalUnit/gss:rank/erd:TermValue/erd:value/erd:ClassificationCode/erd:urn[@domain='GSV']</value>
+    	      	<value>asXpath('gss:geologicalUnit/gss:GeologicalUnit/gss:rank/erd:TermValue/erd:value/erd:ClassificationCode/erd:urn[@domain=''GSV'']')</value>
           	</ClientProperty> 
          </AttributeMapping>          
  		</attributeMappings>

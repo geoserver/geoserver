@@ -63,7 +63,7 @@
         <AttributeMapping>
           <label>gsml:GeologicUnit</label>          
           <targetAttribute>gsml:GeologicUnit</targetAttribute>          
-          <idExpression><inputAttribute>@gmlID</inputAttribute></idExpression>
+          <idExpression><OCQL>asXpath('@gmlID')</OCQL></idExpression>
         </AttributeMapping>  
         
         <AttributeMapping>           
@@ -79,7 +79,7 @@
             <parentLabel>gsml:GeologicUnit</parentLabel>          
             <targetAttribute>gsml:observationMethod</targetAttribute>
             <sourceExpression>
-            	<inputAttribute>gss:geologicalUnit/gss:GeologicalUnit/@id</inputAttribute>  
+            	<OCQL>asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id')</OCQL>  
             	<linkElement>observationMethodMapping</linkElement>
             	<linkField>FEATURE_LINK</linkField>      	
             </sourceExpression> 
@@ -89,7 +89,7 @@
          <AttributeMapping>
           <parentLabel>gsml:GeologicUnit</parentLabel>          
           <targetAttribute>FEATURE_LINK</targetAttribute>     
-          <sourceExpression><inputAttribute>gss:geologicalUnit/gss:GeologicalUnit/@id</inputAttribute></sourceExpression>
+          <sourceExpression><OCQL>asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id')</OCQL></sourceExpression>
         </AttributeMapping>   
             
          <!-- Feature chaining to another web service backend --> 
@@ -98,7 +98,7 @@
             <targetAttribute>gsml:composition</targetAttribute>            
             <sourceExpression>
                 <!-- link by geologic unit id -->
-            	<inputAttribute>gss:geologicalUnit/gss:GeologicalUnit/@id</inputAttribute>
+            	<OCQL>asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id')</OCQL>
             	<linkElement>COMPOSITION</linkElement>
             	<linkField>FEATURE_LINK</linkField>    
             </sourceExpression>                           

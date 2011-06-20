@@ -66,14 +66,14 @@
        <AttributeMapping>       
           <parentLabel>gsml:composition</parentLabel>
           <targetAttribute>FEATURE_LINK</targetAttribute>     
-          <sourceExpression><inputAttribute>@id</inputAttribute></sourceExpression>
+          <sourceExpression><OCQL>asXpath('@id')</OCQL></sourceExpression>
         </AttributeMapping> 
          
         <AttributeMapping>        
           <label>gsml:lithology</label>
           <parentLabel>gsml:composition</parentLabel>          
           <targetAttribute>gsml:lithology/gsml:ControlledConcept</targetAttribute>  
-          <idExpression><inputAttribute>erd:TermValue/erd:value/erd:ClassificationCode/@id</inputAttribute></idExpression>          
+          <idExpression><OCQL>asXpath('erd:TermValue/erd:value/erd:ClassificationCode/@id')</OCQL></idExpression>          
           <instancePath>gss:rank</instancePath>
         </AttributeMapping>   
                             

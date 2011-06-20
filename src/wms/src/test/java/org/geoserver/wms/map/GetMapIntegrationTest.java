@@ -30,32 +30,33 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 GetMapIntegrationTest.class.getResource("paletted.tif"), "tif", "raster");
         // a filterable mosaic
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-                getClass().getResource("../raster-filter-test.zip"), null, "raster");
+                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
         // a 4 bits world image
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
                 MockData.class.getResource("fourbits.zip"), null, "raster");
-
     }
     
     
     public void testIndexed() throws Exception {
-    	MockHttpServletResponse response = getAsServletResponse("wms?LAYERS=sf:indexed&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
-    			"&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150");
-    	
-    	assertEquals("image/png", response.getContentType());
-    	
-    	RenderedImage image = ImageIO.read(getBinaryInputStream(response));
-    	ImageAssert.assertEquals(new File("src/test/resources/org/geoserver/wms/map/indexed-expected.png"), image, 0);
+        MockHttpServletResponse response = getAsServletResponse("wms?LAYERS=sf:indexed&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150");
+
+        assertEquals("image/png", response.getContentType());
+
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+        ImageAssert.assertEquals(new File(
+                "src/test/resources/org/geoserver/wms/map/indexed-expected.png"), image, 0);
     }
-    
+
     public void testIndexedBlackBG() throws Exception {
-    	MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:indexed&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
-    			"&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150&transparent=false");
-    	
-    	assertEquals("image/png", response.getContentType());
-    	
-    	RenderedImage image = ImageIO.read(getBinaryInputStream(response));
-    	ImageAssert.assertEquals(new File("src/test/resources/org/geoserver/wms/map/indexed-bg-expected.png"), image, 0);
+        MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:indexed&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150&transparent=false");
+
+        assertEquals("image/png", response.getContentType());
+
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+        ImageAssert.assertEquals(new File(
+                "src/test/resources/org/geoserver/wms/map/indexed-bg-expected.png"), image, 0);
     }
     
     public void testRasterFilterRed() throws Exception {

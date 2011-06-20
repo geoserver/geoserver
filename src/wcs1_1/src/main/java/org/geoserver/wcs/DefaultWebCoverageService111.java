@@ -58,6 +58,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
@@ -396,6 +397,15 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             // guesses the grid size using the information contained in CoverageInfo)
             WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);
             
+            // 
+            // Check if we have a filter among the params
+            //
+            Filter filter = WCSUtils.getRequestFilter();
+            if(filter != null) {
+                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
+                        readParameters, filter, "FILTER", "Filter");
+            }
+            
             //
             // perform Read ...
             //
@@ -506,9 +516,16 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             throws Exception {
         BoundingBoxType bbox = domainSubset.getBoundingBox();
         
+        // domain subset should actually be always specified, but we try to be more lenient 
+        // (we should probably have a "strict cite" behavior
+        if(bbox == null) {
+            return;
+        }
+        
         // workaround for http://jira.codehaus.org/browse/GEOT-1710
-        if("urn:ogc:def:crs:OGC:1.3:CRS84".equals(bbox.getCrs()))
+        if("urn:ogc:def:crs:OGC:1.3:CRS84".equals(bbox.getCrs())) {
             bbox.setCrs("EPSG:4326");
+        }
         
         CoordinateReferenceSystem bboxCRs = CRS.decode(bbox.getCrs());
         Envelope gridEnvelope = meta.getGridCoverage(null, WCSUtils.getReaderHints(wcs)).getEnvelope();

@@ -5,9 +5,14 @@
 package org.geoserver.wcs.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -16,6 +21,8 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.wcs.WCSInfo;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
  * Base support class for wcs tests.
@@ -69,5 +76,19 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     @Override
     protected boolean isMemoryCleanRequired() {
         return IS_WINDOWS;
+    }
+    
+    /**
+     * Parses a multipart message from the response
+     * @param response
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    protected Multipart getMultipart(MockHttpServletResponse response) throws MessagingException,
+            IOException {
+        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
+        Multipart multipart = (Multipart) body.getContent();
+        return multipart;
     }
 }

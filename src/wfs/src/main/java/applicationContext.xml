@@ -225,7 +225,7 @@
 	     may not find out the one to use) -->
 	<bean id="filter1_1_0_KvpParserDefault" class="org.geoserver.wfs.kvp.Filter_1_1_0_KvpParser"/>
 
-    <bean id="cqlKvpParser" class="org.geoserver.wfs.kvp.CQLFilterKvpParser"/>
+    <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
 	<bean id="propertyNameKvpParser" class="org.geoserver.ows.NestedKvpParser">
 		<constructor-arg index="0" value="propertyName"/>
 		<constructor-arg index="1" value="java.lang.String"/>

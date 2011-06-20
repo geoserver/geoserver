@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,8 @@ import javax.media.jai.Interpolation;
 
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -35,6 +38,7 @@ import org.geotools.util.NumberRange;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridGeometry;
+import org.opengis.filter.Filter;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -473,5 +477,36 @@ public class WCSUtils {
         hints.put(Hints.DECIMATION_POLICY, wcs.isSubsamplingEnabled() ? DecimationPolicy.ALLOW
                 : DecimationPolicy.DISALLOW);
         return hints;
+    }
+    
+    /**
+     * Returns an eventual filter included among the parsed kvp map of the current
+     * request. Will work for CQL_FILTER, FILTER and FEATURE_ID
+     * @return
+     */
+    public static Filter getRequestFilter() {
+        Request request = Dispatcher.REQUEST.get();
+        if(request == null) {
+            return null;
+        }
+        Object filter = request.getKvp().get("FILTER");
+        if(!(filter instanceof Filter)) {
+            filter = request.getKvp().get("CQL_FILTER");
+            if(filter instanceof List) {
+                List list = (List) filter;
+                if(list.size() > 0) {
+                    filter = list.get(0);
+                }
+            }
+        }
+        if(!(filter instanceof Filter)) {
+            filter = request.getKvp().get("FEATURE_ID");
+        }
+        
+        if(filter instanceof Filter) {
+            return (Filter) filter;
+        } else {
+            return null;
+        }
     }
 }

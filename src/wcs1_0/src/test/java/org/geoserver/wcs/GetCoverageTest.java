@@ -2,11 +2,17 @@ package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 
+import java.awt.image.RenderedImage;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
 import javax.servlet.ServletResponse;
+import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 import junit.textui.TestRunner;
@@ -14,6 +20,7 @@ import net.opengis.wcs10.GetCoverageType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
@@ -50,6 +57,8 @@ public class GetCoverageTest extends WCSTestSupport {
     private WcsXmlReader xmlReader;
 
     private Catalog catalog;
+    
+    private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -67,6 +76,17 @@ public class GetCoverageTest extends WCSTestSupport {
         catalog=(Catalog)applicationContext.getBean("catalog");
         xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
     }
+    
+    @Override
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        super.populateDataDirectory(dataDirectory);
+        
+        // this also adds the raster style
+        dataDirectory.addCoverage(MOSAIC, 
+                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
+    }
+
+
 
     @Override
     protected String getLogConfiguration() {
@@ -265,6 +285,46 @@ public class GetCoverageTest extends WCSTestSupport {
         AbstractGridCoverage2DReader reader = format.getReader(getBinaryInputStream(response));
         
         assertEquals(CRS.decode("EPSG:3857"), reader.getOriginalEnvelope().getCoordinateReferenceSystem());
+    }
+    
+    public void testRasterFilterGreen() throws Exception {
+        String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
+                "&service=wcs&version=1.0.0&&format=image/tiff&crs=EPSG:4326" + 
+                "&bbox=0,0,1,1&CQL_FILTER=location like 'green%25'&width=150&height=150";
+        
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(getBinaryInputStream(response)));
+        RenderedImage image = reader.read(0);
+        
+        // check the pixel
+        int[] pixel = new int[3];
+        image.getData().getPixel(0, 0, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(255, pixel[1]);
+        assertEquals(0, pixel[2]);
+    }
+    
+    public void testRasterFilterRed() throws Exception {
+        String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
+                "&service=wcs&version=1.0.0&format=image/tiff&crs=EPSG:4326" + 
+                "&bbox=0,0,1,1&CQL_FILTER=location like 'red%25'&width=150&height=150";
+        
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(getBinaryInputStream(response)));
+        RenderedImage image = reader.read(0);
+        
+        // check the pixel
+        int[] pixel = new int[3];
+        image.getData().getPixel(0, 0, pixel);
+        assertEquals(255, pixel[0]);
+        assertEquals(0, pixel[1]);
+        assertEquals(0, pixel[2]);
     }
 
     private void setInputLimit(int kbytes) {

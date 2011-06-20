@@ -84,13 +84,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         checkOws11Exception(dom);
     }
 
-    private Multipart getMultipart(MockHttpServletResponse response) throws MessagingException,
-            IOException {
-        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
-        Multipart multipart = (Multipart) body.getContent();
-        return multipart;
-    }
-
     private GridCoverage2D readCoverage(InputStream is) throws Exception {
         GeoTiffReader reader = new GeoTiffReader(is);
         GridCoverage2D coverage = (GridCoverage2D) reader.read(null);

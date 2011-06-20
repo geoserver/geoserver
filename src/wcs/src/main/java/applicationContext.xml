@@ -33,4 +33,6 @@
       <constructor-arg value="wcs"/>
     </bean>
     
+    <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
+    
 </beans>

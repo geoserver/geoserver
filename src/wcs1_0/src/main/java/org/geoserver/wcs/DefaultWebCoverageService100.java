@@ -61,6 +61,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.CRSUtilities;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
@@ -428,6 +429,15 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (hasElevation)
                 readParametersClone[readParameters.length + addedParams--] = elevation;
             readParameters = readParametersClone;
+            
+            // 
+            // Check if we have a filter among the params
+            //
+            Filter filter = WCSUtils.getRequestFilter();
+            if(filter != null) {
+                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
+                        readParameters, filter, "FILTER", "Filter");
+            }
             
             // Check we're not going to read too much data
             WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);

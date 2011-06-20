@@ -6,10 +6,8 @@ package org.geoserver.wms.wms_1_1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
-import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 
-import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
@@ -19,8 +17,6 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
     
@@ -59,7 +55,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         
         // this also adds the raster style
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-                getClass().getResource("../raster-filter-test.zip"), null, "raster");
+               MockData.class.getResource("raster-filter-test.zip"), null, "raster");
     }
     
     /**

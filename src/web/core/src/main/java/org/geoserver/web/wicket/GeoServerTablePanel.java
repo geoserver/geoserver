@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     WebMarkupContainer listContainer;
 
+    PagerDelegate pagerDelegate;
+    
     Pager navigatorTop;
 
     Pager navigatorBottom;
@@ -194,6 +197,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
         // add the paging navigator and set the items per page
         dataView.setItemsPerPage(DEFAULT_ITEMS_PER_PAGE);
+        pagerDelegate = new PagerDelegate();
+        
         filterForm.add(navigatorTop = new Pager("navigatorTop"));
         navigatorTop.setOutputMarkupId(true);
         add(navigatorBottom = new Pager("navigatorBottom"));
@@ -469,6 +474,75 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         return new ParamResourceModel("matchedXOutOfY", this, first, last, size, fullSize);
     }
 
+    protected class PagerDelegate implements Serializable {
+        int fullSize, size, first, last;
+        
+        public PagerDelegate() {
+            updateMatched();
+        }
+        
+        /**
+         * Updates the label given the current page and filtering status
+         */
+        void updateMatched() {
+            fullSize = dataProvider.fullSize();
+            first = first(fullSize);
+            last = last(fullSize);
+            if (dataProvider.getKeywords() != null) {
+                size = dataProvider.size();
+            }
+        }
+        
+        public IModel model() {
+            if (dataProvider.getKeywords() == null) {
+                return showingAllRecords(first, last, fullSize);
+            } else {
+                return matchedXOutOfY(first, last, size, fullSize);
+            }
+        }
+        
+        /**
+         * User oriented index of the first item in the current page
+         */
+        int first(int fullSize) {
+            int size = fullSize;
+            if (dataProvider.getKeywords() != null) {
+                size = dataView.getDataProvider().size();
+            }
+            if (size > 0)
+                return dataView.getItemsPerPage() * dataView.getCurrentPage() + 1;
+            else
+                return 0;
+        }
+
+        /**
+         * User oriented index of the last item in the current page
+         */
+        int last(int fullSize) {
+            
+            int count = dataProvider.getKeywords() != null ? 
+                    dataView.getPageCount() : optGetPageCount(fullSize);
+            int page = dataView.getCurrentPage();
+            if (page < (count - 1))
+                return dataView.getItemsPerPage() * (page + 1);
+            else {
+                return dataProvider.getKeywords() != null ? dataView.getDataProvider().size() : fullSize;
+            }
+        }
+        
+        int optGetPageCount(int total) {
+            int page = dataView.getItemsPerPage();
+            int count = total / page;
+
+            if (page * count < total)
+            {
+                    count++;
+            }
+
+            return count;
+        }
+        
+    }
     /**
      * The two pages in the table panel. Includes a paging navigator and a status label telling the
      * user what she is seeing
@@ -496,6 +570,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 protected void onAjaxEvent(AjaxRequestTarget target) {
                     super.onAjaxEvent(target);
                     setSelection(false);
+                    pagerDelegate.updateMatched();
                     navigatorTop.updateMatched();
                     navigatorBottom.updateMatched();
                     target.addComponent(navigatorTop);
@@ -508,34 +583,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
          * Updates the label given the current page and filtering status
          */
         void updateMatched() {
-            if (dataProvider.getKeywords() == null) {
-                matched.setDefaultModel(showingAllRecords(first(), last(), dataProvider.fullSize()));
-            } else {
-                matched.setDefaultModel(matchedXOutOfY(first(), last(), dataProvider.size(), dataProvider.fullSize()));
-            }
-        }
-
-        /**
-         * User oriented index of the first item in the current page
-         */
-        int first() {
-            if (dataView.getDataProvider().size() > 0)
-                return dataView.getItemsPerPage() * dataView.getCurrentPage() + 1;
-            else
-                return 0;
-        }
-
-        /**
-         * User oriented index of the last item in the current page
-         */
-        int last() {
-            int count = dataView.getPageCount();
-            int page = dataView.getCurrentPage();
-            if (page < (count - 1))
-                return dataView.getItemsPerPage() * (page + 1);
-            else
-                return dataView.getDataProvider().size();
-
+            matched.setDefaultModel(pagerDelegate.model());
         }
     }
     

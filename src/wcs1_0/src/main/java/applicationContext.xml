@@ -58,6 +58,10 @@
   </bean>
 
   <bean id="wcs100SectionKvpParser" class="org.geoserver.wcs.kvp.SectionKvpParser" />
+  
+  <bean id="wcs100TimeKvpParser" class="org.geoserver.ows.kvp.TimeKvpParser">
+    <constructor-arg value="TIME"/>
+  </bean>
 
   <!-- kvp request readers -->
   <bean id="wcs100GetCapabilitiesKvpReader"

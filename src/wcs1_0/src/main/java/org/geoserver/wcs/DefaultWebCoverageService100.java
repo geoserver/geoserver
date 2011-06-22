@@ -4,7 +4,7 @@
  */
 package org.geoserver.wcs;
 
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.*;
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,8 +21,8 @@ import javax.media.jai.Interpolation;
 import net.opengis.gml.CodeType;
 import net.opengis.gml.DirectPositionType;
 import net.opengis.gml.RectifiedGridType;
+import net.opengis.gml.TimePositionType;
 import net.opengis.gml.VectorType;
-import net.opengis.gml.impl.TimePositionTypeImpl;
 import net.opengis.wcs10.AxisSubsetType;
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.DomainSubsetType;
@@ -34,12 +33,15 @@ import net.opengis.wcs10.IntervalType;
 import net.opengis.wcs10.OutputType;
 import net.opengis.wcs10.RangeSubsetType;
 import net.opengis.wcs10.SpatialSubsetType;
+import net.opengis.wcs10.TimePeriodType;
 import net.opengis.wcs10.TimeSequenceType;
 import net.opengis.wcs10.TypedLiteralType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.ows.util.RequestUtils;
@@ -51,14 +53,12 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.DecimationPolicy;
-import org.geotools.coverage.grid.io.OverviewPolicy;
-import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.CRSUtilities;
+import org.geotools.util.DateRange;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.Filter;
@@ -269,85 +269,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                         InvalidParameterValue, null);
 
             //
-            // ELEVATION SUPPORT VIA A SPECIFIC AXIS ELEVATION
-            // 
-
-            double[] elevations = null;
-            // extract elevation values
-            List axisSubset = null;
-            if (request.getRangeSubset() != null) {
-                axisSubset = request.getRangeSubset().getAxisSubset();
-                if (axisSubset.size() > 0) {
-                    for (int a = 0; a < axisSubset.size(); a++) {
-                        AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
-
-                        String axisName = axis.getName();
-                        if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
-                            if (axis.getSingleValue().size() > 0) {
-                                elevations = new double[axis.getSingleValue().size()];
-                                for (int s = 0; s < axis.getSingleValue().size(); s++) {
-                                    elevations[s] = Double.parseDouble(((TypedLiteralType) axis
-                                            .getSingleValue().get(s)).getValue());
-                                }
-                            } else if (axis.getInterval().size() > 0) {
-                                IntervalType interval = (IntervalType) axis.getInterval().get(0);
-                                int min = Integer.parseInt(interval.getMin().getValue());
-                                int max = Integer.parseInt(interval.getMax().getValue());
-                                int res = (interval.getRes() != null ? Integer.parseInt(interval
-                                        .getRes().getValue()) : 1);
-
-                                elevations = new double[(int) (Math.floor(max - min) / res + 1)];
-                                for (int b = 0; b < elevations.length; b++)
-                                    elevations[b] = (min + b * res);
-                            }
-                        }
-                    }
-                }
-            }
-            // if(dimension==3&&elevationLevels>0)
-            // {
-            // // compute the elevation levels, we have elevationLevels values
-            // elevations=new double[elevationLevels];
-            //
-            // elevations[0]=requestedEnvelope.getLowerCorner().getOrdinate(2); // TODO put the
-            // extrema
-            // elevations[elevationLevels-1]=requestedEnvelope.getUpperCorner().getOrdinate(2);
-            // if(elevationLevels>2){
-            // final int adjustedLevelsNum=elevationLevels-1;
-            // double step = (elevations[elevationLevels-1]-elevations[0])/adjustedLevelsNum;
-            // for(int i=1;i<adjustedLevelsNum;i++)
-            // elevations[i]=elevations[i-1]+step;
-            // }
-            // }
-
-            //
-            // TIME
-            //
-            final List<Date> timeValues = new LinkedList<Date>();
-            // sequence of timepositions
-            if (temporalSubset != null && temporalSubset.getTimePosition() != null
-                    && temporalSubset.getTimePosition().size() > 0) {
-                final EList timePositionLists = temporalSubset.getTimePosition();
-                for (Iterator it = timePositionLists.iterator(); it.hasNext();) {
-                    TimePositionTypeImpl tp = (TimePositionTypeImpl) it.next();
-                    timeValues.add((Date) tp.getValue());
-                }
-            }
-            // else if (temporalSubset!=null&&temporalSubset.getTimePeriod() != null
-            // &&temporalSubset.getTimePeriod().size() > 0) {
-            // final EList timePeriodLists =temporalSubset.getTimePeriod();
-            // for (Iterator it =domainSubset.getTemporalSubset().getTimePeriod().iterator();
-            // it.hasNext(); ) {
-            // TimePeriodType tp = (TimePeriodType) it.next();
-            // Date beginning = (Date)tp.getBeginPosition().getValue();
-            // Date ending = (Date)tp.getEndPosition().getValue();
-            //                    
-            // timeValues.add(beginning);
-            // timeValues.add(ending);
-            // }
-            // }
-
-            //
             // SETTING COVERAGE READING PARAMS
             //
             // get the group of parameters tha this reader supports
@@ -361,7 +282,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // read grid geometry
             final GridGeometry2D requestedGridGeometry;
             if (destinationSize != null)
-                // we have been asked to support a specific raster size, we will se the grid2world
+                // we have been asked to support a specific raster size, we will set the grid2world
                 // accordingly
                 requestedGridGeometry = new GridGeometry2D(new GridEnvelope2D(destinationSize),
                         getHorizontalEnvelope(requestedEnvelope));
@@ -382,53 +303,79 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
              */
             final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
                     .getDescriptor().descriptors();
-            ParameterValue time = null;
-            boolean hasTime = timeValues.size() > 0;
-            ParameterValue elevation = null;
-            boolean hasElevation = elevations != null && !Double.isNaN(elevations[0]);
 
-            if (hasElevation || hasTime) {
-                for (GeneralParameterDescriptor pd : parameterDescriptors) {
-
-                    final String code = pd.getName().getCode();
-
-                    //
-                    // TIME
-                    //
-                    if (code.equalsIgnoreCase("TIME")) {
-                        time = (ParameterValue) pd.createValue();
-                        time.setValue(timeValues);
+            //
+            // TIME
+            //
+            DimensionInfo timeDimension = meta.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+            if(timeDimension != null && timeDimension.isEnabled()) {
+                final List<Object> timeValues = new ArrayList<Object>();
+                if (temporalSubset != null && temporalSubset.getTimePosition() != null) {
+                    // grab the time positions
+                    final EList timePosition = temporalSubset.getTimePosition();
+                    for (Iterator it = timePosition.iterator(); it.hasNext();) {
+                        TimePositionType tp = (TimePositionType) it.next();
+                        timeValues.add((Date) tp.getValue());
                     }
-
-                    //
-                    // ELEVATION
-                    //
-                    if (code.equalsIgnoreCase(WCSUtils.ELEVATION)) {
-                        elevation = (ParameterValue) pd.createValue();
-                        elevation.setValue(elevations[0]);
+                    // grab the time intervals
+                    final EList timePeriods = temporalSubset.getTimePeriod();
+                    for (Iterator it = timePeriods.iterator(); it.hasNext();) {
+                        TimePeriodType tp = (TimePeriodType) it.next();
+                        Date begin = (Date) tp.getBeginPosition().getValue();
+                        Date end = (Date) tp.getEndPosition().getValue();
+                        timeValues.add(new DateRange(begin, end));
                     }
-
-                    // leave?
-                    if ((hasElevation && elevation != null && hasTime && time != null)
-                            || !hasElevation && hasTime && time != null || hasElevation
-                            && elevation != null && !hasTime)
-                        break;
+                }
+                
+                if(!timeValues.isEmpty()) {
+                    readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
+                            readParameters, timeValues, "TIME", "Time");
                 }
             }
+            
             //
-            // add read parameters
+            // ELEVATION SUPPORT VIA A SPECIFIC AXIS ELEVATION
             //
-            int addedParams = 1 + (hasTime ? 1 : 0) + (hasElevation ? 1 : 0);
-            // add to the list
-            GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length
-                    + addedParams--];
-            System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
-            readParametersClone[readParameters.length + addedParams--] = requestedGridGeometryParam;
-            if (hasTime)
-                readParametersClone[readParameters.length + addedParams--] = time;
-            if (hasElevation)
-                readParametersClone[readParameters.length + addedParams--] = elevation;
-            readParameters = readParametersClone;
+            DimensionInfo elevationDimension = meta.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+            if(elevationDimension != null && elevationDimension.isEnabled()) {
+                List<Double> elevations = new ArrayList<Double>();
+                // extract elevation values
+                List axisSubset = null;
+                if (request.getRangeSubset() != null) {
+                    axisSubset = request.getRangeSubset().getAxisSubset();
+                    if (axisSubset.size() > 0) {
+                        for (int a = 0; a < axisSubset.size(); a++) {
+                            AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
+
+                            String axisName = axis.getName();
+                            if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
+                                if (axis.getSingleValue().size() > 0) {
+                                    for (int s = 0; s < axis.getSingleValue().size(); s++) {
+                                        elevations.add(Double.parseDouble(((TypedLiteralType) axis
+                                                .getSingleValue().get(s)).getValue()));
+                                    }
+                                } else if (axis.getInterval().size() > 0) {
+                                    IntervalType interval = (IntervalType) axis.getInterval().get(0);
+                                    int min = Integer.parseInt(interval.getMin().getValue());
+                                    int max = Integer.parseInt(interval.getMax().getValue());
+                                    int res = (interval.getRes() != null ? Integer.parseInt(interval
+                                            .getRes().getValue()) : 1);
+
+                                    int count = (int) (Math.floor(max - min) / res + 1);
+                                    for (int b = 0; b < count; b++) {
+                                        elevations.add(new Double(min + b * res));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if(!elevations.isEmpty()) {
+                    readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
+                            readParameters, elevations, "ELEVATION", "Elevation");
+                }
+            }
             
             // 
             // Check if we have a filter among the params
@@ -467,7 +414,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 interpolationType = request.getInterpolationMethod().getLiteral();
 
                 // extract the band indexes
-                axisSubset = request.getRangeSubset().getAxisSubset();
+                EList axisSubset = request.getRangeSubset().getAxisSubset();
                 if (axisSubset.size() > 0) {
                     for (int a = 0; a < axisSubset.size(); a++) {
                         AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
@@ -561,21 +508,22 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
     }
 
-    private static Envelope getHorizontalEnvelope(GeneralEnvelope requestedEnvelope) {
-        if(requestedEnvelope == null) {
-            return null;
+    private static Envelope getHorizontalEnvelope(GeneralEnvelope originalEnvelope) throws FactoryException, TransformException  {
+        
+        final CoordinateReferenceSystem originalCRS = originalEnvelope.getCoordinateReferenceSystem();
+        final CoordinateReferenceSystem horizontalCRS = CRS.getHorizontalCRS(originalEnvelope.getCoordinateReferenceSystem());
+        if(CRS.equalsIgnoreMetadata(originalCRS, horizontalCRS)) {
+            return originalEnvelope;
         }
         
-        final CoordinateReferenceSystem nativeCRS = CRS.getHorizontalCRS(requestedEnvelope
-                .getCoordinateReferenceSystem());
+        // create transformation and check that it is not the identity again
+        final MathTransform transform= CRS.findMathTransform(originalCRS, horizontalCRS);
+        if(transform.isIdentity()) {
+            return originalEnvelope;
+        }
 
-        GeneralEnvelope horizontalRequestedEnvelope = new GeneralEnvelope(nativeCRS);
-        horizontalRequestedEnvelope.setEnvelope(requestedEnvelope.getLowerCorner().getOrdinate(0),
-                requestedEnvelope.getLowerCorner().getOrdinate(1), requestedEnvelope
-                        .getUpperCorner().getOrdinate(0), requestedEnvelope.getUpperCorner()
-                        .getOrdinate(1));
-
-        return horizontalRequestedEnvelope;
+        // do the actual transform
+        return CRS.transform(transform,originalEnvelope);
     }
 
     private static GeneralEnvelope computeIntersectionEnvelope(

@@ -10,6 +10,8 @@ import java.util.List;
 
 import junit.framework.Test;
 
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,7 +25,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     public static Test suite() {
         return new OneTimeTestSetup(new DescribeCoverageTest());
     }
-
+    
     // @Override
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
@@ -230,7 +232,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals(1, dom.getElementsByTagName("wcs:interval").getLength());
     }
     
-    public void testWorksapceQualified() throws Exception {
+    public void testWorkspaceQualified() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + // 
                 "<wcs:DescribeCoverage service=\"WCS\" " + //
                 "xmlns:ows=\"http://www.opengis.net/ows/1.1\"\r\n" + // 
@@ -261,4 +263,81 @@ public class DescribeCoverageTest extends WCSTestSupport {
         dom = postAsDOM("wcs/DEM/wcs", request);
         assertEquals("wcs:CoverageDescription", dom.getDocumentElement().getNodeName());
     }
+    
+    public void testTimeCoverageList() throws Exception {
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                + getLayerId(WATTEMP));
+        // print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        
+        // check the envelopes
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[2]", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[2]", dom);
+        
+        // check the temporal domain
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:temporalDomain/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:temporalDomain/gml:timePosition[2]", dom);
+    }
+    
+    public void testTimeCoverageContinousInterval() throws Exception {
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.CONTINUOUS_INTERVAL, null);
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                + getLayerId(WATTEMP));
+        print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        
+        // check the envelopes
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[2]", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[2]", dom);
+        
+        // check the temporal domain
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod/wcs:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod/wcs:endPosition", dom);
+    }
+    
+    public void testTimeCoverageDiscreteInterval() throws Exception {
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.DISCRETE_INTERVAL, new Double(1000 * 60 * 60));
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                + getLayerId(WATTEMP));
+        // print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        
+        // check the envelopes
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[2]", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[2]", dom);
+        
+        // check the temporal domain
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod/wcs:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod/wcs:endPosition", dom);
+        assertXpathEvaluatesTo("PT1H", "//wcs:temporalDomain/wcs:timePeriod/wcs:timeResolution", dom);
+    }
+    
+    public void testElevationList() throws Exception {
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                + getLayerId(WATTEMP));
+        print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+
+        // check the elevation list (it's the only way we can present it)
+        assertXpathEvaluatesTo("0.0", "//wcs:AxisDescription[wcs:name = 'ELEVATION']/wcs:values/wcs:singleValue[1]", dom);
+        assertXpathEvaluatesTo("100.0", "//wcs:AxisDescription[wcs:name = 'ELEVATION']/wcs:values/wcs:singleValue[2]", dom);
+        assertXpathEvaluatesTo("0.0", "//wcs:AxisDescription[wcs:name = 'ELEVATION']/wcs:values/wcs:default", dom);
+    }
+    
 }

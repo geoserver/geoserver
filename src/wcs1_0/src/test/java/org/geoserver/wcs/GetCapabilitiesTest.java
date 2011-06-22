@@ -3,6 +3,8 @@ package org.geoserver.wcs;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import junit.framework.Test;
 
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
@@ -158,5 +160,18 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         
         dom = getAsDOM("wcs/World/wcs?request=GetCapabilities&service=WCS&version=1.0.0");
         assertEquals( 1, xpath.getMatchingNodes("//wcs:CoverageOfferingBrief", dom).getLength());
+    }
+    
+    public void testTimeCoverage() throws Exception {
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
+        // print(dom);
+        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+        
+        // check the envelopes
+        String base = "//wcs:CoverageOfferingBrief[wcs:name='wcs:watertemp']//wcs:lonLatEnvelope";
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", base + "/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", base + "/gml:timePosition[2]", dom);
     }
 }

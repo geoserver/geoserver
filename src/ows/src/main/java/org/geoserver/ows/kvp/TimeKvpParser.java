@@ -254,9 +254,10 @@ public class TimeKvpParser extends KvpParser {
      */
     private static Date getDate(final String value) throws ParseException {
     	
-    	// special handling for current keyword
-    	if(value.equalsIgnoreCase("current"))
+    	// special handling for current keyword (we accept both wms and wcs ways)
+    	if(value.equalsIgnoreCase("current") || value.equalsIgnoreCase("now")) {
     		return null;
+    	}
         for (int i=0; i<PATTERNS.length; i++) {
             // rebuild formats at each parse, date formats are not thread safe
             SimpleDateFormat format = new SimpleDateFormat(PATTERNS[i], Locale.CANADA);

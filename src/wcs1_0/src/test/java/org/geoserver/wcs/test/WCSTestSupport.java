@@ -7,6 +7,7 @@ package org.geoserver.wcs.test;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,12 @@ import javax.xml.validation.SchemaFactory;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.TestData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -70,6 +77,15 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         }
         IS_WINDOWS = windows;
     }
+    
+    @Override
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        super.populateDataDirectory(dataDirectory);
+        
+        // add a raster mosaic with time and elevation
+        dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
+                        null, "raster");
+    }
 
     @Override
     protected void oneTimeSetUp() throws Exception {
@@ -99,5 +115,17 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
 
         Node root = xpath.getMatchingNodes("/ServiceExceptionReport", dom).item(0);
         assertNotNull(root);
+    }
+    
+    protected void setupRasterDimension(String metadata, DimensionPresentation presentation, Double resolution) {
+        CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setPresentation(presentation);
+        if(resolution != null) {
+            di.setResolution(new BigDecimal(resolution));
+        }
+        info.getMetadata().put(metadata, di);
+        getCatalog().save(info);
     }
 }

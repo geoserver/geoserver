@@ -228,7 +228,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals("image/tiff;subtype=\"geotiff\"", coveragePart.getContentType());
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
         
-        // salva
+        // save
         File tiffFile = File.createTempFile("wcs", "", new File("target"));
         IOUtils.copy(coveragePart.getInputStream(), new FileOutputStream(tiffFile));
 
@@ -253,6 +253,9 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(originalEnv.getMinY(), actualEnv.getMinX(), 1e-6);
         assertEquals(originalEnv.getMaxX(), actualEnv.getMaxY(), 1e-6);
         assertEquals(originalEnv.getMaxY(), actualEnv.getMaxX(), 1e-6);
+        
+        // cleanup
+        tiffFile.delete();
     }
 
     public void testInputLimits() throws Exception {

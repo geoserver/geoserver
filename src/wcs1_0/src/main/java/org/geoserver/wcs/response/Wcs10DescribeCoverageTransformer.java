@@ -8,8 +8,12 @@ import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import net.opengis.wcs10.DescribeCoverageType;
@@ -24,8 +29,11 @@ import net.opengis.wcs10.DescribeCoverageType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
@@ -33,6 +41,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -243,31 +252,22 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             if(reader == null)
                 throw new WcsException("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
 
-            final String[] metadataNames = reader.getMetadataNames();
-            
-
-            String timeMetadata = null;
-            if (metadataNames != null && metadataNames.length > 0) {
-                // TIME DIMENSION
-                timeMetadata = reader.getMetadataValue("TIME_DOMAIN");
-                                
-            }
-
             if (referencedEnvelope != null) {
                 AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "srsName", "srsName", "", /* "WGS84(DD)" */ "urn:ogc:def:crs:OGC:1.3:CRS84");
 
                 start("wcs:lonLatEnvelope", attributes);
 
-                final StringBuilder minCP = new StringBuilder(Double.toString(referencedEnvelope.getMinX())).append(" ").append(referencedEnvelope.getMinY());
-                final StringBuilder maxCP = new StringBuilder(Double.toString(referencedEnvelope.getMaxX())).append(" ").append(referencedEnvelope.getMaxY());
+                final String minCP = referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
+                final String maxCP = referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
                 element("gml:pos", minCP.toString());
                 element("gml:pos", maxCP.toString());
-
-                if (timeMetadata != null && timeMetadata.length() > 0) {
-                    String[] timePositions = timeMetadata.split(",");
-                    element("gml:timePosition", timePositions[0]);
-                    element("gml:timePosition", timePositions[timePositions.length - 1]);
+                
+                // are we going to report time?
+                DimensionInfo timeInfo = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                if (timeInfo != null && timeInfo.isEnabled()) {
+                    element("gml:timePosition", reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MINIMUM));
+                    element("gml:timePosition", reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM));
                 }
 
                 end("wcs:lonLatEnvelope");
@@ -296,9 +296,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         }
 
         private void handleDomain(CoverageInfo ci) throws Exception {
-            String timeMetadata = null;
-            String elevationMetadata = null;
-
             CoverageStoreInfo csinfo = ci.getStore();
             
             if(csinfo == null)
@@ -314,24 +311,14 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             if(reader == null)
                 throw new WcsException("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
 
-            final String[] metadataNames = reader.getMetadataNames();
-            
-            if (metadataNames != null && metadataNames.length > 0) {
-                // TIME DIMENSION
-                timeMetadata = reader.getMetadataValue("TIME_DOMAIN");
-                
-                
-            }
-
+            DimensionInfo timeInfo = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
             start("wcs:domainSet");
             start("wcs:spatialDomain");
-                handleBoundingBox(ci.getSRS(), ci.getNativeBoundingBox(), timeMetadata);
-                handleGrid(ci);
+            handleBoundingBox(ci.getSRS(), ci.getNativeBoundingBox(), timeInfo, reader);
+            handleGrid(ci);
             end("wcs:spatialDomain");
-            if (timeMetadata != null && timeMetadata.length() > 0) {
-                start("wcs:temporalDomain");
-                    handleTemporalDomain(ci, timeMetadata);
-                end("wcs:temporalDomain");
+            if (timeInfo != null && timeInfo.isEnabled()) {
+                handleTemporalDomain(ci, timeInfo, reader);
             }
             end("wcs:domainSet");
         }
@@ -345,28 +332,34 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * @param set2
          * @param set
          */
-        private void handleBoundingBox(String srsName, ReferencedEnvelope referencedEnvelope, String timeMetadata) {
+        private void handleBoundingBox(String srsName, ReferencedEnvelope referencedEnvelope, DimensionInfo timeInfo,
+                AbstractGridCoverage2DReader reader) {
             if (referencedEnvelope != null) {
                 AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "srsName", "srsName", "", srsName);
 
-                final StringBuilder minCP = new StringBuilder(Double.toString(referencedEnvelope.getMinX())).append(" ").append(referencedEnvelope.getMinY());
-                final StringBuilder maxCP = new StringBuilder(Double.toString(referencedEnvelope.getMaxX())).append(" ").append(referencedEnvelope.getMaxY());
-
+                final String minCP = referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
+                final String maxCP = referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
                 
-                if (timeMetadata != null && timeMetadata.length() > 0) {
+                String minTime = null;
+                String maxTime = null;
+                if(timeInfo != null && timeInfo.isEnabled()) {
+                    minTime = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MINIMUM);
+                    maxTime = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM);
+                }
+                
+                if (minTime != null && maxTime != null) {
                     start("gml:EnvelopeWithTimePeriod", attributes);
-                        element("gml:pos", minCP.toString());
-                        element("gml:pos", maxCP.toString());
+                        element("gml:pos", minCP);
+                        element("gml:pos", maxCP);
 
-                        final String[] timePositions = timeMetadata.split(",");
-                        element("gml:timePosition", timePositions[0]);
-                        element("gml:timePosition", timePositions[timePositions.length - 1]);
+                        element("gml:timePosition", minTime);
+                        element("gml:timePosition", maxTime);
                     end("gml:EnvelopeWithTimePeriod");
                 } else {
                     start("gml:Envelope", attributes);
-                        element("gml:pos", minCP.toString());
-                        element("gml:pos", maxCP.toString());
+                        element("gml:pos", minCP);
+                        element("gml:pos", maxCP);
                     end("gml:Envelope");
                 }
             }
@@ -379,13 +372,40 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * @param timeMetadata
          * @param elevationMetadata
          */
-        private void handleTemporalDomain(CoverageInfo ci, String timeMetadata) {
-            if (timeMetadata != null && timeMetadata.length() > 0) {
+        private void handleTemporalDomain(CoverageInfo ci, DimensionInfo timeInfo, AbstractGridCoverage2DReader reader) {
+            start("wcs:temporalDomain");
+            if(timeInfo.getPresentation() == DimensionPresentation.LIST) {
+                String timeMetadata = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN);
                 final String[] timePositions = timeMetadata.split(",");
                 for (String timePosition : timePositions) {
                     element("gml:timePosition", timePosition);
                 }
+            } else {
+                String minTime = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MINIMUM);
+                String maxTime = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM);
+                start("wcs:timePeriod");
+                element("wcs:beginPosition", minTime);
+                element("wcs:endPosition", maxTime);
+                if(timeInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
+                    BigDecimal resolution = timeInfo.getResolution();
+                    if(resolution == null) {
+                        try {
+                            final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            Date min = df.parse(minTime);
+                            Date max = df.parse(maxTime);
+                            resolution = new BigDecimal(max.getTime() - min.getTime());
+                        } catch(ParseException e) {
+                            throw new WcsException("Failed to parse min and max time reported " +
+                            		"by the reader: " + minTime + ", " + maxTime, e);
+                        }
+                    }
+                    // this will format the time period properly
+                    element("wcs:timeResolution", new DefaultPeriodDuration(resolution.longValue()).toString());
+                }
+                end("wcs:timePeriod");
             }
+            end("wcs:temporalDomain");
         }
         
         /**
@@ -490,45 +510,50 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("wcs:values");
 
             end("wcs:AxisDescription");
+            end("wcs:axisDescription");
             
             // 
             // ELEVATION
             //
             // now get possible elevation
-            AbstractGridCoverage2DReader reader = null;
-            try {
-                reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
-            } catch (IOException e) {
-                LOGGER.severe("Unable to acquire a reader for this coverage with format: " + ci.getStore().getFormat().getName());
-            }            
-            if(reader == null)
-                throw new WcsException("Unable to acquire a reader for this coverage with format: " + ci.getStore().getFormat().getName());
-
-            final String[] metadataNames = reader.getMetadataNames();
-            String elevationMetadata=null;
-            if (metadataNames != null && metadataNames.length > 0) {
-                // TIME DIMENSION
-                elevationMetadata = reader.getMetadataValue("ELEVATION_DOMAIN"); 
+            DimensionInfo elevationInfo = ci.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+            if(elevationInfo != null && elevationInfo.isEnabled()) {
+                AbstractGridCoverage2DReader reader = null;
+                try {
+                    reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                } catch (IOException e) {
+                    LOGGER.severe("Unable to acquire a reader for this coverage with format: " + ci.getStore().getFormat().getName());
+                }            
+                if(reader == null)
+                    throw new WcsException("Unable to acquire a reader for this coverage with format: " + ci.getStore().getFormat().getName());
                 
-                start("wcs:AxisDescription");
-                element("wcs:name", "ELEVATION");
-                element("wcs:label", "ELEVATION");
-                start("wcs:values");
-                
-                final String [] values=elevationMetadata.split(",");
-                for(String s:values){
-                	element("wcs:singleValue", s);
+                final String[] metadataNames = reader.getMetadataNames();
+                String elevationMetadata=null;
+                if (metadataNames != null && metadataNames.length > 0) {
+                    // we can only report values one at a time here, there is no interval concept
+                    elevationMetadata = reader.getMetadataValue(AbstractGridCoverage2DReader.ELEVATION_DOMAIN); 
+                    
+                    start("wcs:axisDescription");
+                    start("wcs:AxisDescription");
+                    element("wcs:name", "ELEVATION");
+                    element("wcs:label", "ELEVATION");
+                    start("wcs:values");
+                    
+                    final String[] values=elevationMetadata.split(",");
+                    for(String s:values){
+                    	element("wcs:singleValue", s);
+                    }
+                    element("wcs:default", values[0]);
+                   
+                   
+                    end("wcs:values");
+    
+                    end("wcs:AxisDescription");
+                    end("wcs:axisDescription");
+                    
                 }
-                element("wcs:default", values[0]);
-               
-               
-                end("wcs:values");
-
-                end("wcs:AxisDescription");
-                
             }
-                        
-            end("wcs:axisDescription");
+                            
             end("wcs:RangeSet");
             end("wcs:rangeSet");
         }

@@ -5,6 +5,7 @@
 package org.geoserver.rest;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +53,11 @@ public class RESTDispatcher extends AbstractController {
     Router myRouter;
     
     /**
+     * rest request callbacks
+     */
+    List<DispatcherCallback> callbacks;
+    
+    /**
      * geoserver configuration
      */
     GeoServer gs;
@@ -66,8 +72,11 @@ public class RESTDispatcher extends AbstractController {
     protected void initApplicationContext() throws BeansException {
         super.initApplicationContext();
 
-        myConverter = new ServletConverter(getServletContext());
+        myConverter = new GeoServerServletConverter(getServletContext());
         myConverter.setTarget(createRoot());
+        
+        callbacks = 
+            GeoServerExtensions.extensions(DispatcherCallback.class, getApplicationContext());
     }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp)
@@ -137,6 +146,7 @@ public class RESTDispatcher extends AbstractController {
     public Restlet createRoot() {
         if (myRouter == null){
             myRouter = new Router() {
+                
                 @Override
                 protected synchronized void init(Request request,
                         Response response) {
@@ -172,7 +182,44 @@ public class RESTDispatcher extends AbstractController {
                     pageInfo.setExtension( extension );
                     request.getAttributes().put( PageInfo.KEY, pageInfo );
                     
+                    for (DispatcherCallback callback : callbacks) {
+                        callback.init(request, response);
+                    }
                 }
+                
+                @Override
+                public Restlet getNext(Request request, Response response) {
+                    Restlet next = super.getNext(request, response);
+                    if (next != null) {
+                        for (DispatcherCallback callback : callbacks) {
+                            callback.dispatched(request, response, next);
+                        }
+                    }
+                    return next;
+                };
+                
+                @Override
+                public void handle(Request request, Response response) {
+                    try {
+                        super.handle(request, response);
+                    }
+                    catch(Exception e) {
+                        //execute the exception callback
+                        for (DispatcherCallback callback : callbacks) {
+                            callback.exception(request, response, e);
+                        }
+                        if (e instanceof RuntimeException) {
+                            throw (RuntimeException) e;
+                        }
+                        throw new RuntimeException(e);
+                    }
+                    finally {
+                        //execute the finished callback
+                        for (DispatcherCallback callback : callbacks) {
+                            callback.finished(request, response);
+                        }
+                    }
+                };
             };
 
             //load all the rest mappings and register them with the router

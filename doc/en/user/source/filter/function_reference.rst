@@ -402,8 +402,8 @@ String functions
      - ``string``:String, ``pattern``:String
      - Returns true if the string matches the specified regular expression. For the full syntax of the pattern specification see the `Java Pattern class javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_
    * - strReplace
-     - ``string``:String, ``pattern``:String
-     - Returns true if the string matches the specified regular expression. For the full syntax of the pattern specification see the `Java Pattern class javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_
+     - ``string``:String, ``pattern``:String, ``replacement``:String, ``global``: boolean
+     - Returns the string with the pattern replaced with the given replacement text.  If the ``global`` argument is ``true`` then all occurrences of the pattern will be replaced, otherwise only the first. For the full syntax of the pattern specification see the `Java Pattern class javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_
    * - strStartsWith
      - ``string``:String, ``prefix``:String
      - Returns true if ``string`` starts with ``prefix``

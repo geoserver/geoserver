@@ -82,6 +82,10 @@ public class GetCoverageTest extends WCSTestSupport {
         configuration = new WCSConfiguration();
         catalog=(Catalog)applicationContext.getBean("catalog");
         xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
+        
+        // enable dimensions on the water temperature layer
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
     }
     
     @Override
@@ -325,8 +329,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
     
     public void testTimeFirstPOST() throws Exception {
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        
         String request = getWaterTempTimeRequest("2008-10-31T00:00:00.000Z");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -334,6 +336,9 @@ public class GetCoverageTest extends WCSTestSupport {
     }
     
     public void testTimeFirstKVP() throws Exception {
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        
         String queryString ="request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff" +
         		"&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=2008-10-31T00:00:00.000Z" +
         		"&coverage=" + getLayerId(WATTEMP);
@@ -395,8 +400,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
     
     public void testTimeSecond() throws Exception {
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        
         String request = getWaterTempTimeRequest("2008-11-01T00:00:00.000Z");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -404,9 +407,16 @@ public class GetCoverageTest extends WCSTestSupport {
         checkTimeCurrent(response);
     }
     
-    public void testElevationFirst() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+    public void testTimeKVPNow() throws Exception {
+        String queryString ="request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff" +
+                        "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=now" +
+                        "&coverage=" + getLayerId(WATTEMP);
+        MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
         
+        checkTimeCurrent(response);
+    }
+    
+    public void testElevationFirst() throws Exception {
         String request = getWaterTempElevationRequest("0.0");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -417,8 +427,6 @@ public class GetCoverageTest extends WCSTestSupport {
     }
     
     public void testElevationSecond() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        
         String request = getWaterTempElevationRequest("100.0");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);

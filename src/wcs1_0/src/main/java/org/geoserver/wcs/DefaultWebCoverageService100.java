@@ -9,10 +9,12 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -315,7 +317,15 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     final EList timePosition = temporalSubset.getTimePosition();
                     for (Iterator it = timePosition.iterator(); it.hasNext();) {
                         TimePositionType tp = (TimePositionType) it.next();
-                        timeValues.add((Date) tp.getValue());
+                        Date date = (Date) tp.getValue();
+                        if(date == null) {
+                            // "now"
+                            final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            String max = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM);
+                            date = df.parse(max);
+                        }
+                        timeValues.add(date);
                     }
                     // grab the time intervals
                     final EList timePeriods = temporalSubset.getTimePeriod();
@@ -327,10 +337,19 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     }
                 }
                 
-                if(!timeValues.isEmpty()) {
-                    readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
-                            readParameters, timeValues, "TIME", "Time");
+                if(timeValues.isEmpty()) {
+                    // "now" 
+                    // TODO: create a ReaderDimensionAccessor that centralizes all this parsing, now
+                    // sadly spread around the code base
+                    final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    String max = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM);
+                    Date date = df.parse(max);
+                    timeValues.add(date);
                 }
+                
+                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
+                        readParameters, timeValues, "TIME", "Time");
             }
             
             //
@@ -371,10 +390,13 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     }
                 }
                 
-                if(!elevations.isEmpty()) {
-                    readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
-                            readParameters, elevations, "ELEVATION", "Elevation");
+                if(elevations.isEmpty()) {
+                    String max = reader.getMetadataValue(AbstractGridCoverage2DReader.ELEVATION_DOMAIN_MINIMUM);
+                    elevations.add(Double.parseDouble(max));
                 }
+                
+                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
+                        readParameters, elevations, "ELEVATION", "Elevation");
             }
             
             // 

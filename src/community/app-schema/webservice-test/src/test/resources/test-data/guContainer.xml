@@ -79,7 +79,7 @@
             <parentLabel>gsml:GeologicUnit</parentLabel>          
             <targetAttribute>gsml:observationMethod</targetAttribute>
             <sourceExpression>
-            	<OCQL>asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id')</OCQL>  
+            	<OCQL>strConcat('observation.', asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id'))</OCQL>  
             	<linkElement>observationMethodMapping</linkElement>
             	<linkField>FEATURE_LINK</linkField>      	
             </sourceExpression> 
@@ -98,7 +98,7 @@
             <targetAttribute>gsml:composition</targetAttribute>            
             <sourceExpression>
                 <!-- link by geologic unit id -->
-            	<OCQL>asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id')</OCQL>
+            	<OCQL>strConcat('composition.', asXpath('gss:geologicalUnit/gss:GeologicalUnit/@id'))</OCQL>
             	<linkElement>COMPOSITION</linkElement>
             	<linkField>FEATURE_LINK</linkField>    
             </sourceExpression>                           

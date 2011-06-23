@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.net.URL;
 import java.util.logging.Level;
 
@@ -113,6 +113,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 GetMapIntegrationTest.class.getResource("Population.sld"));
         dataDirectory.addPropertiesType(new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
                 getClass().getResource("states.properties"), null);
+        
+        
+        // add a parametric style to the mix
+        dataDirectory.addStyle("parametric", WMSTestSupport.class.getResource("map/parametric.sld"));
     }
 
     // protected String getDefaultLogConfiguration() {
@@ -232,6 +236,38 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&layers=Ponds&width=100&height=100&format=image/png"
                 + "&srs=epsg:4326&bbox=-180,-90,180,90");
         assertEquals("image/png", response.getContentType());
+    }
+    
+    public void testEnvDefault() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=parametric&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        assertEquals("image/png", response.getContentType());
+        
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+
+        int[] rgba = new int[3];
+        // fully black pixel in the middle of the map
+        image.getData().getPixel(250, 125, rgba);
+        assertEquals(0, rgba[0]);
+        assertEquals(0, rgba[1]);
+        assertEquals(0, rgba[2]);
+    }
+    
+    public void testEnvRed() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=parametric&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&env=color:0xFF0000");
+        assertEquals("image/png", response.getContentType());
+        
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+
+        int[] rgba = new int[3];
+        // fully red pixel in the middle of the map
+        image.getData().getPixel(250, 125, rgba);
+        assertEquals(255, rgba[0]);
+        assertEquals(0, rgba[1]);
+        assertEquals(0, rgba[2]);
     }
 
 }

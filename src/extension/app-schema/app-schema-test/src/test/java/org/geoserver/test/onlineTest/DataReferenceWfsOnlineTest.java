@@ -1580,6 +1580,31 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         assertTrue(this.isEqualGeometry(actual, expected, 5));
         
     }
-    
+
+    public void testReprojectionInFeatureChaining() {
+      
+        String path = "wfs?request=GetFeature&srsName=urn:x-ogc:def:crs:EPSG:4326&typename=gsml:GeologicUnit&featureid=gsml.geologicunit.16777549126930540";
+        Document doc = getAsDOM(path);
+        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126930540']/gsml:occurrence/gsml:MappedFeature[@gml:id='gsml.mappedfeature.191322']/gsml:shape/gml:MultiSurface/@srsName", doc);
+        assertXpathEvaluatesTo("2",
+                "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126930540']/gsml:occurrence/gsml:MappedFeature[@gml:id='gsml.mappedfeature.191322']/gsml:shape/gml:MultiSurface/@srsDimension", doc);
+
+        String expected = "-36.91391191948047 144.0478089083333 -36.91535066114876 144.04748426666666 -36.915274969482006 144.04633634166666 -36.91504654448175"
+                + " 144.0451942 -36.91510365281515 144.04405205833336 -36.91510365281515 144.04290991666667 -36.91476101114809 144.04211040833334" 
+                + " -36.91418048614744 144.04222736666668 -36.91336111114652 144.04308674166666 -36.912202486145226 144.04339155 -36.91174298614471" 
+                + " 144.04447269166667 -36.91133763614426 144.04556750833333 -36.91071870281022 144.04663162500003 -36.910000569476075 144.047540275" 
+                + " -36.90946055280882 144.048551125 -36.90943138614211 144.04873191666667 -36.909494336142174" 
+                + " 144.04969045833334 -36.9095378778089 144.04975733333333 -36.910296377809736 144.050369725" 
+                + " -36.91135182781094 144.04991965833332 -36.91220002781188 144.04912606666667 -36.913342494479835" 
+                + " 144.04889391666663 -36.91391191948047 144.0478089083333";
+        String orig = evaluate(
+                "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126930540']/gsml:occurrence/gsml:MappedFeature[@gml:id='gsml.mappedfeature.191322']/gsml:shape/gml:MultiSurface/gml:surfaceMember/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                doc);
+        assertTrue(isEqualGeometry(orig, expected, 5));
+        
+    }
    
 }

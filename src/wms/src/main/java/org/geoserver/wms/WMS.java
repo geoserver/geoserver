@@ -6,8 +6,6 @@ package org.geoserver.wms;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,7 +13,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +29,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
@@ -708,6 +706,7 @@ public class WMS implements ApplicationContextAware {
         MetadataMap metadata = coverage.getMetadata();
         GeneralParameterValue[] readParameters = CoverageUtils.getParameters(
                 readParametersDescriptor, coverage.getParameters(), readGeom);
+        ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
 
         // pass down time
         final DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
@@ -718,7 +717,7 @@ public class WMS implements ApplicationContextAware {
             List<Object> fixedTimes = new ArrayList<Object>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if(fixedTimes.get(i) == null) {
-                    fixedTimes.set(i, getCurrentTime(coverage, reader));
+                    fixedTimes.set(i, getCurrentTime(coverage, dimensions));
                 }
             }
             // pass down the parameters
@@ -733,7 +732,7 @@ public class WMS implements ApplicationContextAware {
             List<Object> fixedElevations = new ArrayList<Object>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if(fixedElevations.get(i) == null) {
-                    fixedElevations.set(i, getDefaultElevation(coverage, reader));
+                    fixedElevations.set(i, getDefaultElevation(coverage, dimensions));
                 }
             }
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
@@ -863,7 +862,7 @@ public class WMS implements ApplicationContextAware {
     /**
      * Returns the current time for the specified coverage 
      */
-    public Date getCurrentTime(CoverageInfo coverage, AbstractGridCoverage2DReader reader) throws IOException {
+    Date getCurrentTime(CoverageInfo coverage, ReaderDimensionsAccessor dimensions) throws IOException {
         // check the time metadata
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         String name = coverage.getPrefixedName();
@@ -873,17 +872,7 @@ public class WMS implements ApplicationContextAware {
         }
 
         // get and parse the current time
-        final String currentTime = reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM);
-        if(currentTime == null) {
-            return null;
-        }
-        final SimpleDateFormat df= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try {
-            return df.parse(currentTime);
-        } catch (ParseException e) {
-            throw (IOException) new IOException("Failed to get CURRENT time for layer " + name).initCause(e);
-        }
+        return dimensions.getMaxTime();
     }
     
     /**
@@ -917,7 +906,7 @@ public class WMS implements ApplicationContextAware {
      * @param typeInfo
      * @return
      */
-    Double getDefaultElevation(CoverageInfo coverage, AbstractGridCoverage2DReader reader) throws IOException {
+    Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions) throws IOException {
         // check the time metadata
         DimensionInfo elevation = coverage.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
@@ -927,16 +916,7 @@ public class WMS implements ApplicationContextAware {
         }
 
         // get and parse the lowest elevation
-        final String minElevation = reader.getMetadataValue(AbstractGridCoverage2DReader.ELEVATION_DOMAIN_MINIMUM);
-        if(minElevation == null) {
-            return null;
-        }
-        try {
-            return Double.parseDouble(minElevation);
-        } catch (NumberFormatException e) {
-            throw (IOException) new IOException("Failed to get default elevation for " 
-                    + coverage.getPrefixedName()).initCause(e);
-        }
+        return dimensions.getMinElevation();
     }
 
     /**

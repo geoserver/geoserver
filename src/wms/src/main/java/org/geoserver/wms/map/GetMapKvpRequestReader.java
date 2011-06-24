@@ -31,6 +31,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
@@ -425,12 +426,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         boolean hasElevation = false;
         for (MapLayerInfo layer : getMap.getLayers()) {
             if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
-            	MetadataMap metadata = layer.getFeature().getMetadata();
-				DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
+                MetadataMap metadata = layer.getResource().getMetadata();
+		DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
                 hasElevation |= elevationInfo != null && elevationInfo.isEnabled();
-				DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
+                DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
                 hasTime |= timeInfo != null && timeInfo.isEnabled();
             } else if (layer.getType() == MapLayerInfo.TYPE_RASTER) {
+                MetadataMap metadata = layer.getResource().getMetadata();
                 //
                 // Adding a coverage layer
                 //
@@ -441,34 +443,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                     throw new ServiceException(e);
                 }
                 if (reader != null) {
-                    // get the supported dimensions
-                    final String[] metadataNames = reader.getMetadataNames();
-                    if (metadataNames != null)
-                        for (String metadataDomain : metadataNames) {
-                            // ELEVATION
-                            if (metadataDomain.equalsIgnoreCase("ELEVATION_DOMAIN"))
-                                if (reader.getMetadataValue("HAS_ELEVATION_DOMAIN") != null
-                                        && Boolean.parseBoolean(reader
-                                                .getMetadataValue("HAS_ELEVATION_DOMAIN")))
-                                    hasElevation = true;
-
-                            // TIME
-                            if (metadataDomain.equalsIgnoreCase("TIME_DOMAIN"))
-                                if (reader.getMetadataValue("HAS_TIME_DOMAIN") != null
-                                        && Boolean.parseBoolean(reader
-                                                .getMetadataValue("HAS_TIME_DOMAIN")))
-                                    hasTime = true;
-
-                            // if both are true, leave
-                            if (hasTime && hasElevation)
-                                break;
-                        }
-
+                    ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
+                    DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
+                    hasElevation |= elevationInfo != null && elevationInfo.isEnabled() && dimensions.hasElevation();
+                    DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
+                    hasTime |= timeInfo != null && timeInfo.isEnabled() && dimensions.hasTime();
                 }
-
-                // if both are true, leave
-                if (hasTime && hasElevation)
-                    break;
             }
         }
         

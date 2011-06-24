@@ -6,13 +6,8 @@ package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -26,6 +21,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
@@ -146,62 +142,38 @@ abstract class DimensionHelper {
         	 LOGGER.log(Level.SEVERE, "Unable to acquire a reader for this coverage with format: "
         			 + csinfo.getFormat().getName(), t);
         }
-
-        if (reader == null)
+        if (reader == null) {
             throw new ServiceException("Unable to acquire a reader for this coverage with format: "
                     + csinfo.getFormat().getName());
+        }
+        ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
         
         if (mode == Mode.WMS11) {
             declareWMS11Dimensions(hasTime, hasElevation);
         }
+        
 
         // timeDimension
-        String hasTimeDomain = reader.getMetadataValue("HAS_TIME_DOMAIN");
-        hasTime = hasTime & "true".equalsIgnoreCase(hasTimeDomain);
-        if (hasTime) {
-            handleTimeDimensionRaster(timeInfo, reader);
+        if (hasTime && dimensions.hasTime()) {
+            handleTimeDimensionRaster(timeInfo, dimensions);
         }
 
         // elevationDomain
-        String haselevationDomain = reader.getMetadataValue("HAS_ELEVATION_DOMAIN");
-        hasElevation = hasElevation & "true".equalsIgnoreCase(haselevationDomain);
-        if (hasElevation) {
-            handleElevationDimensionRaster(elevInfo, reader);
+        if (hasElevation && dimensions.hasElevation()) {
+            handleElevationDimensionRaster(elevInfo, dimensions);
         }
     }
 
-    private void handleElevationDimensionRaster(DimensionInfo elevInfo,
-            AbstractGridCoverage2DReader reader) {
-        // parse the values from the reader, they are exposed as strings...
-        String[] elevationValues = reader.getMetadataValue("ELEVATION_DOMAIN").split(",");
-        List<Double> elevations = new LinkedList<Double>();
-        for (String val : elevationValues) {
-            try {
-                elevations.add(Double.parseDouble(val));
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
+    private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) {
+        TreeSet<Double> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
 
         writeElevationDimension(elevations, elevationMetadata);
     }
 
-    private void handleTimeDimensionRaster(DimensionInfo timeInfo,
-            AbstractGridCoverage2DReader reader) {
-        // parse the dates coming from the readers, they come out as strings... ugh...
-        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String[] timeInstants = reader.getMetadataValue("TIME_DOMAIN").split(",");
-        Set<Date> values = new TreeSet<Date>();
-        for (String tp : timeInstants) {
-            try {
-                values.add(df.parse(tp));
-            } catch (ParseException e) {
-                LOGGER.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-        String timeMetadata = getTemporalDomainRepresentation(timeInfo, (TreeSet<Date>) values);
+    private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) {
+        TreeSet<Date> temporalDomain = dimension.getTimeDomain();
+        String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
 
         writeTimeDimension(timeMetadata);
     }
@@ -227,7 +199,7 @@ abstract class DimensionHelper {
         }
     }
 
-    protected String getZDomainRepresentation(DimensionInfo dimension, List<Double> values) {
+    protected String getZDomainRepresentation(DimensionInfo dimension, TreeSet<Double> values) {
         String elevationMetadata = null;
 
         final StringBuilder buff = new StringBuilder();
@@ -240,21 +212,21 @@ abstract class DimensionHelper {
             elevationMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[",
                     "").replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.get(0));
+            buff.append(values.first());
             buff.append("/");
 
-            buff.append(values.get(values.size() - 1));
+            buff.append(values.last());
             buff.append("/");
 
-            Double resolution = values.get(values.size() - 1) - values.get(0);
+            Double resolution = values.last() - values.first();
             buff.append(resolution);
 
             elevationMetadata = buff.toString();
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.get(0));
+            buff.append(values.first());
             buff.append("/");
 
-            buff.append(values.get(values.size() - 1));
+            buff.append(values.last());
             buff.append("/");
 
             BigDecimal resolution = dimension.getResolution();
@@ -368,7 +340,7 @@ abstract class DimensionHelper {
     
     private void handleElevationDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
         
-        List<Double> elevations = new ArrayList<Double>(wms.getFeatureTypeElevations(typeInfo));
+        TreeSet<Double> elevations = new TreeSet<Double>(wms.getFeatureTypeElevations(typeInfo));
         DimensionInfo di = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         final String elevationMetadata = getZDomainRepresentation(di, elevations);
@@ -390,15 +362,15 @@ abstract class DimensionHelper {
         }
     }
 
-    private void writeElevationDimension(List<Double> elevations, final String elevationMetadata) {
+    private void writeElevationDimension(TreeSet<Double> elevations, final String elevationMetadata) {
         AttributesImpl elevDim = new AttributesImpl();
         if (mode == Mode.WMS11) {
             elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(elevations.get(0)));
+            elevDim.addAttribute("", "default", "default", "", Double.toString(elevations.first()));
             element("Extent", elevationMetadata, elevDim);
         } else {
             elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(elevations.get(0)));
+            elevDim.addAttribute("", "default", "default", "", Double.toString(elevations.first()));
             elevDim.addAttribute("", "units", "units", "", "EPSG:5030");
             elevDim.addAttribute("", "unitSymbol", "unitSymbol", "", "m");
             element("Dimension", elevationMetadata, elevDim);

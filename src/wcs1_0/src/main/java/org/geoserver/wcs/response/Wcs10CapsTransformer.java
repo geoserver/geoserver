@@ -30,6 +30,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -547,7 +548,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
          * 
          * @param referencedEnvelope
          */
-        private void handleEnvelope(ReferencedEnvelope referencedEnvelope, DimensionInfo timeInfo, AbstractGridCoverage2DReader reader) {
+        private void handleEnvelope(ReferencedEnvelope referencedEnvelope, DimensionInfo timeInfo, 
+                ReaderDimensionsAccessor dimensions) {
             AttributesImpl attributes = new AttributesImpl();
 
             attributes.addAttribute("", "srsName", "srsName", "", /* "WGS84(DD)" */ "urn:ogc:def:crs:OGC:1.3:CRS84");
@@ -561,8 +563,9 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
             // are we going to report time?
             if (timeInfo != null && timeInfo.isEnabled()) {
-                element("gml:timePosition", reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MINIMUM));
-                element("gml:timePosition", reader.getMetadataValue(AbstractGridCoverage2DReader.TIME_DOMAIN_MAXIMUM));
+                SimpleDateFormat timeFormat = dimensions.getTimeFormat();
+                element("gml:timePosition", timeFormat.format(dimensions.getMinTime()));
+                element("gml:timePosition", timeFormat.format(dimensions.getMaxTime()));
             }
             
             end("wcs:lonLatEnvelope");
@@ -747,7 +750,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
                     throw new WcsException("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
 
                 DimensionInfo timeInfo = cv.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-                handleEnvelope(cv.getLatLonBoundingBox(), timeInfo, reader);
+                ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
+                handleEnvelope(cv.getLatLonBoundingBox(), timeInfo, dimensions);
                 handleKeywords(cv.getKeywords());
 
                 end("wcs:CoverageOfferingBrief");

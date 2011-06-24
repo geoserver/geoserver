@@ -4,6 +4,7 @@
 <beans>
 
   <bean id="GWCCapabilitiesHomePageProvider" class="org.geoserver.gwc.web.GWCCapabilitiesHomePageProvider">
+    <constructor-arg ref="gwcFacade"/>
   </bean>
 
   <bean id="gwcSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.CapabilitiesHomePageLinkProvider;
 import org.geoserver.web.CapabilitiesHomePagePanel;
 import org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo;
@@ -24,6 +26,17 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  */
 public class GWCCapabilitiesHomePageProvider implements CapabilitiesHomePageLinkProvider {
 
+    private final GWC gwcFacade;
+
+    /**
+     * @param gwc
+     *            provides access to the {@link GWCConfig configuration} in order to show/hide
+     *            getcaps links based on service enablement.
+     */
+    public GWCCapabilitiesHomePageProvider(GWC gwc) {
+        this.gwcFacade = gwc;
+    }
+
     /**
      * Adds capabilities links for WMS-C, WMTS and TMS, as long as they're available.
      * 
@@ -34,24 +47,30 @@ public class GWCCapabilitiesHomePageProvider implements CapabilitiesHomePageLink
 
         List<CapsInfo> gwcCaps = new ArrayList<CapsInfo>();
 
-        GeoServerApplication app = GeoServerApplication.get();
+        final GeoServerApplication app = GeoServerApplication.get();
+        final GWCConfig gwcConfig = gwcFacade.getConfig();
+
         try {
-            app.getBean("gwcServiceWMS");
-            gwcCaps.add(new CapsInfo("WMS-C", new Version("1.1.1"),
-                    "../gwc/service/wms?request=GetCapabilities&version=1.1.1&tiled=true"));
+            if (gwcConfig.isWMSCEnabled() && null != app.getBean("gwcServiceWMS")) {
+                gwcCaps.add(new CapsInfo("WMS-C", new Version("1.1.1"),
+                        "../gwc/service/wms?request=GetCapabilities&version=1.1.1&tiled=true"));
+            }
+        } catch (NoSuchBeanDefinitionException e) {
+            // service not found, ignore exception
+        }
+
+        try {
+            if (gwcConfig.isWMTSEnabled() && null != app.getBean("gwcServiceWMTS")) {
+                gwcCaps.add(new CapsInfo("WMTS", new Version("1.0.0"),
+                        "../gwc/service/wmts?REQUEST=GetCapabilities"));
+            }
         } catch (NoSuchBeanDefinitionException e) {
             // service not found, ignore exception
         }
         try {
-            app.getBean("gwcServiceWMTS");
-            gwcCaps.add(new CapsInfo("WMTS", new Version("1.0.0"),
-                    "../gwc/service/wmts?REQUEST=GetCapabilities"));
-        } catch (NoSuchBeanDefinitionException e) {
-            // service not found, ignore exception
-        }
-        try {
-            app.getBean("gwcServiceTMS");
-            gwcCaps.add(new CapsInfo("TMS", new Version("1.0.0"), "../gwc/service/tms/1.0.0"));
+            if (gwcConfig.isTMSEnabled() && null != app.getBean("gwcServiceTMS")) {
+                gwcCaps.add(new CapsInfo("TMS", new Version("1.0.0"), "../gwc/service/tms/1.0.0"));
+            }
         } catch (NoSuchBeanDefinitionException e) {
             // service not found, ignore exception
         }

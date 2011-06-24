@@ -237,7 +237,6 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
                 File intermediate = writeToDisk(tempGS, curCollection);
 
                 // convert with ogr2ogr
-                String epsgCode = null;
                 final SimpleFeatureType schema = curCollection.getSchema();
                 final CoordinateReferenceSystem crs = schema.getCoordinateReferenceSystem();
                 outputFile = wrapper.convert(intermediate, tempOGR, schema.getTypeName(), format, crs);
@@ -303,8 +302,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
             // let's invoke the transformer
             FeatureTransformer ft = new FeatureTransformer();
             ft.setNumDecimals(16);
-            ft.setNamespaceDeclarationEnabled(false);
-            ft.getFeatureNamespaces().declarePrefix("topp",
+            ft.getFeatureNamespaces().declarePrefix("gs",
                     originalSchema.getName().getNamespaceURI());
             ft.transform(curCollection, os);
         } finally {

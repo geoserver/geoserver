@@ -60,6 +60,7 @@ import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.GWCTask.TYPE;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
+import org.geowebcache.service.Service;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileRange;
@@ -801,6 +802,10 @@ public class GWC implements DisposableBean, InitializingBean {
         } catch (StorageException e) {
             log.log(Level.WARNING, e.getMessage(), e);
         }
+    }
+
+    public boolean isServiceEnabled(final Service service) {
+        return getConfig().isEnabled(service.getPathName());
     }
 
 }

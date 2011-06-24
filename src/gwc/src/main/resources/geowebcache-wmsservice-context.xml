@@ -5,7 +5,7 @@
    Bean configuration file for the gwc-wms module
   </description>
   <!-- WMS based services -->
-  <bean id="gwcServiceWMS" 
+  <bean id="gwcServiceWMSTarget" 
     	class="org.geowebcache.service.wms.WMSService">
     <constructor-arg ref="gwcStorageBroker"/>
 	<constructor-arg ref="gwcTLDispatcher"/>
@@ -16,4 +16,17 @@
     <!-- Proxy unknown requests -->
     <property name="proxyRequests"><value>TRUE</value></property>
   </bean>
+  <bean id="gwcServiceWMSProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetName">
+      <value>gwcServiceWMSTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+          <!-- allow any other advise defined elsewhere and named "gwcServiceWMSInterceptor*" 
+               to be added to the interceptors list -->
+          <value>gwcServiceWMSInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gwcServiceWMSProxy" alias="gwcServiceWMS"/>
 </beans>

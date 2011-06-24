@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.util.Assert;
+
 public class GWCConfig implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 3287178222706781438L;
@@ -245,5 +247,19 @@ public class GWCConfig implements Cloneable, Serializable {
         clone.setDefaultOtherCacheFormats(getDefaultOtherCacheFormats());
 
         return clone;
+    }
+
+    public boolean isEnabled(final String serviceId) {
+        Assert.notNull(serviceId);
+        if ("wms".equals(serviceId)) {
+            return isWMSCEnabled();
+        }
+        if ("wmts".equals(serviceId)) {
+            return isWMTSEnabled();
+        }
+        if ("tms".equals(serviceId)) {
+            return isTMSEnabled();
+        }
+        return true;
     }
 }

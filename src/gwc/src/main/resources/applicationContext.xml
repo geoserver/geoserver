@@ -49,4 +49,27 @@
       <value>getMap</value>
     </property>
   </bean>
+  
+  <bean id="gwcServiceWMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceTMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcWMTSServiceInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceVEInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceKMLInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceMGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  
 </beans>

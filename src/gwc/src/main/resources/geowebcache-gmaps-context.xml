@@ -4,16 +4,43 @@
   <description>
    Bean configuration file for the gwc-gmaps module
   </description>
-  <bean id="gwcServiceGMaps"
+  <bean id="gwcServiceGMapsTarget"
 	class="org.geowebcache.service.gmaps.GMapsConverter">
 	<constructor-arg ref="gwcStorageBroker"/>
 	<constructor-arg ref="gwcTLDispatcher"/>
 	<constructor-arg ref="gwcGridSetBroker"/>
   </bean>
-  <bean id="gwcServiceMGMaps"
+  <bean id="gwcServiceGMapsProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetName">
+      <value>gwcServiceGMapsTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+          <!-- allow any other advise defined elsewhere and named "gwcServiceGMapsInterceptor*" 
+               to be added to the interceptors list -->
+          <value>gwcServiceGMapsterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gwcServiceGMapsProxy" alias="gwcServiceGMaps"/>
+  
+  <bean id="gwcServiceMGMapsTarget"
 	class="org.geowebcache.service.mgmaps.MGMapsConverter">
 	<constructor-arg ref="gwcStorageBroker"/>
 	<constructor-arg ref="gwcTLDispatcher"/>
 	<constructor-arg ref="gwcGridSetBroker"/>
   </bean>
+  <bean id="gwcServiceMGMapsProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetName">
+      <value>gwcServiceMGMapsTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+          <!-- allow any other advise defined elsewhere and named "gwcServiceMGMapsInterceptor*" 
+               to be added to the interceptors list -->
+          <value>gwcServiceMGMapsterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gwcServiceMGMapsProxy" alias="gwcServiceMGMaps"/>
 </beans>

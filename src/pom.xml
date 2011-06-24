@@ -1075,7 +1075,7 @@
            On the win32 build box the compiler oom's due to the compiler accumulating
            too many classes in the permanent generation, similar to GEOT-2462  
        -->
-      <fork>true</fork> 
+       <fork>${fork.javac}</fork> 
      </configuration>
    </plugin>
 
@@ -1101,7 +1101,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -enableassertions -Djava.awt.headless=${java.awt.headless} -DremoteOwsTests=${remoteOwsTests}</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -DremoteOwsTests=${remoteOwsTests}</argLine>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
     </configuration>
@@ -1381,6 +1381,7 @@
   <spring.security.version>3.0.5.RELEASE</spring.security.version> 
   <wicket.version>1.4.12</wicket.version>
   <java.awt.headless>true</java.awt.headless>
+  <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>
   <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
   <test.maxHeapSize>512M</test.maxHeapSize>
@@ -1388,6 +1389,7 @@
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
+  <fork.javac>true</fork.javac>
  </properties>
 
  <profiles>

@@ -17,19 +17,24 @@
           </label>
         </li>
         <li>
+          <div style="width: 50%">
+            <label><wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message></label>
+          </div>
           <div>
-          <wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message>
-          <select class="select" id="metaTilingX" wicket:id="metaTilingX"></select>
-          <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
-          <select class="select" id="metaTilingY" wicket:id="metaTilingY"></select>
-          <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
+            <select class="select" id="metaTilingX" wicket:id="metaTilingX"></select>
+            <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
+            <select class="select" id="metaTilingY" wicket:id="metaTilingY"></select>
+            <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
           </div>
         </li>
         <li>
-          <div>
-          <wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message>
-          <select class="select" id="gutter" wicket:id="gutter"></select>
+          <div style="width: 50%">
+            <label><wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message></label>
           </div>
+          <div>
+            <select class="select" id="gutter" wicket:id="gutter"></select>
+          </div>
+          <br>
         </li>
         <li>
           <label><wicket:message key="GWCSettingsPage.defaultCacheFormats">Default Cache Formats</wicket:message></label>

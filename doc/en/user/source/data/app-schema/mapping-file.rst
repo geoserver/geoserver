@@ -218,20 +218,56 @@ See :ref:`app-schema.feature-chaining` for a comprehensive discussion.
 For special cases, ``linkElement`` could be an OCQL function, and ``linkField`` could be omitted. 
 See :ref:`app-schema.polymorphism` for further information.
 
+..  _app-schema.mapping-file.targetAttributeNode:
 
 targetAttributeNode (optional)
 ``````````````````````````````
+``targetAttributeNode`` is required wherever a property type contains an abstract element and app-schema cannot determine the type of the enclosed attribute. 
 
-``targetAttributeNode`` is required wherever a property type contains an abstract element and app-schema cannot determine the type of the enclosed attribute. This mapping must come before the mapping for the enclosed elements. In this example, ``gsml:positionalAccuracy`` is a ``gsml:CGI_ValuePropertyType`` which contains a ``gsml:CGI_Value``, which is abstract. In this case, ``targetAttributeNode`` must be used to set the type of the property type to a type that encloses a non-abstract element::
+In this example, ``om:result`` is of ``xs:anyType``, which is abstract. We can use ``targetAttributeNode`` to set the type of the property type to a type that encloses a non-abstract element::
 
     <AttributeMapping>
-        <targetAttribute>gsml:positionalAccuracy</targetAttribute>
-        <targetAttributeNode>gsml:CGI_TermValuePropertyType</targetAttributeNode>
+          <targetAttribute>om:result</targetAttribute>
+          <targetAttributeNode>gml:MeasureType<targetAttributeNode>
+          <sourceExpression>
+              <OCQL>TOPAGE</OCQL>
+          </sourceExpression>
+          <ClientProperty>
+              <name>xsi:type</name>
+              <value>'gml:MeasureType'</value>
+          </ClientProperty>
+          <ClientProperty>
+              <name>uom</name> 
+              <value>'http://www.opengis.net/def/uom/UCUM/0/Ma'</value>
+          </ClientProperty> 
     </AttributeMapping>
 
-Note that the GML encoding rules require that complex types are never the direct property of another complex type; they are always contained in a property type to ensure that their type is encoded in a surrounding element. Encoded GML is always type/property/type/property. This is also known as the GML "striping" rule. The consequence of this for app-schema mapping files is that ``targetAttributeNode`` must be applied to the property and the type must be set to the XSD property type, not to the type of the contained attribute (``gsml:CGI_TermValuePropertyType`` not ``gsml:CGI_TermValueType``).
+If the casting type is complex, the specific type is implicitly determined by the XPath in targetAttribute and targetAttributeNode is not required.
+E.g., in this example ``om:result`` is automatically specialised as a MappedFeatureType::
 
-Because the XPath refers to a property type not the encoded content, ``targetAttributeNode`` often appears in a mapping with ``targetAttribute`` and no other elements.
+    <AttributeMapping>
+          <targetAttribute>om:result/gsml:MappedFeature/gml:name</targetAttribute>
+          <sourceExpression>
+              <OCQL>NAME</OCQL>
+          </sourceExpression>
+    </AttributeMapping>
+
+Although it is not required, we may still specify targetAttributeNode for the root node, and map the children attributes as per normal. 
+This mapping must come before the mapping for the enclosed elements. By doing this, app-schema will report an exception if a mapping is specified for any of the children attributes that violates the type in targetAttributeNode.
+E.g.::
+
+    <AttributeMapping>
+          <targetAttribute>om:result</targetAttribute>
+          <targetAttributeNode>gsml:MappedFeatureType<targetAttributeNode>
+    </AttributeMapping> 
+    <AttributeMapping>
+          <targetAttribute>om:result/gsml:MappedFeature/gml:name</targetAttribute>
+          <sourceExpression>
+              <OCQL>NAME</OCQL>
+          </sourceExpression>
+    </AttributeMapping>
+
+Note that the GML encoding rules require that complex types are never the direct property of another complex type; they are always contained in a property type to ensure that their type is encoded in a surrounding element. Encoded GML is always type/property/type/property. This is also known as the GML "striping" rule. The consequence of this for app-schema mapping files is that ``targetAttributeNode`` must be applied to the property and the type must be set to the XSD property type, not to the type of the contained attribute (``gsml:CGI_TermValuePropertyType`` not ``gsml:CGI_TermValueType``). Because the XPath refers to a property type not the encoded content, ``targetAttributeNode`` appears in a mapping with ``targetAttribute`` and no other elements when using with complex types.
 
 
 isMultiple (optional)

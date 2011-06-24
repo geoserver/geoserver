@@ -252,11 +252,12 @@ To encode an attribute as xlink:href that represents missing value on the top le
 Any type 
 --------
 Having xs:anyType as the attribute type itself infers that it is polymorphic, since they can be encoded as any type.
-If the type is pre-determined and would always be the same, we just need to specify targetAttributeNode.
+
+If the type is pre-determined and would always be the same, we might need to specify :ref:`app-schema.mapping-file.targetAttributeNode`.
 E.g.::
 
     <AttributeMapping>
-	  <targetAttribute>om:result</targetAttribute>
+          <targetAttribute>om:result</targetAttribute>
           <targetAttributeNode>gml:MeasureType<targetAttributeNode>
           <sourceExpression>
               <OCQL>TOPAGE</OCQL>
@@ -271,20 +272,15 @@ E.g.::
           </ClientProperty> 
     </AttributeMapping>
 
-If the casting type is complex, we need to specify targetAttributeNode for the root node, and map the children attributes as per normal. 
-E.g.::
+If the casting type is complex, this is not a requirement as app-schema is able to automatically determine the type from the XPath in targetAttribute.
+E.g., in this example ``om:result`` is automatically specialised as a MappedFeatureType::
 
-    <AttributeMapping>
-	  <targetAttribute>om:result</targetAttribute>
-          <targetAttributeNode>gsml:MappedFeatureType<targetAttributeNode>
-    </AttributeMapping>	
     <AttributeMapping>
           <targetAttribute>om:result/gsml:MappedFeature/gml:name</targetAttribute>
           <sourceExpression>
               <OCQL>NAME</OCQL>
           </sourceExpression>
     </AttributeMapping>
-
 
 Alternatively, we can use feature chaining. For the same example above, the mapping would be::
 

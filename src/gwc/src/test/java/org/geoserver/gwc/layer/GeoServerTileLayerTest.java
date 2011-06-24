@@ -41,7 +41,6 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
@@ -326,7 +325,7 @@ public class GeoServerTileLayerTest extends TestCase {
         assertEquals("newDefault", layerInfoTileLayer.getStyles());
     }
 
-    public void testGetGridSubsets() throws Exception{
+    public void testGetGridSubsets() throws Exception {
         layerInfoTileLayer = new GeoServerTileLayer(catalogConfig, layerInfo);
         Map<String, GridSubset> gridSubsets = layerInfoTileLayer.getGridSubsets();
         assertNotNull(gridSubsets);
@@ -339,7 +338,7 @@ public class GeoServerTileLayerTest extends TestCase {
         gridSubsets = layerInfoTileLayer.getGridSubsets();
         assertNotNull(gridSubsets);
         assertEquals(1, gridSubsets.size());
-        
+
         layerGroup.setBounds(layerInfo.getResource().getLatLonBoundingBox());
         layerGroupInfoTileLayer = new GeoServerTileLayer(catalogConfig, layerGroup);
         gridSubsets = layerGroupInfoTileLayer.getGridSubsets();

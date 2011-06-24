@@ -62,7 +62,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         final int numTileSets = numLayers * numCRSs * numFormats;
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
-        //print(dom);
+        // print(dom);
 
         String tileSetPath = "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";
         assertXpathEvaluatesTo(String.valueOf(numTileSets), "count(" + tileSetPath + ")", dom);

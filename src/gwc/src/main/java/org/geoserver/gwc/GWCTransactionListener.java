@@ -293,7 +293,7 @@ public class GWCTransactionListener implements TransactionPlugin {
             layerName = prefix + ":" + localName;
         } else {
             LayerInfo layerInfo = catalog.getLayerByName(localName);
-            if(layerInfo == null){
+            if (layerInfo == null) {
                 log.info("Can't find layer " + localName + ". Cache not truncated");
                 throw new NoSuchElementException("Layer not found: " + localName);
             }

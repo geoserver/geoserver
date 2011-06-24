@@ -106,7 +106,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         for (TileLayer layer : tileLayers) {
 
             Map<String, GridSubset> gridSubsets = layer.getGridSubsets();
-            
+
             Collection<GridSubset> layerGrids = gridSubsets.values();
 
             for (GridSubset grid : layerGrids) {

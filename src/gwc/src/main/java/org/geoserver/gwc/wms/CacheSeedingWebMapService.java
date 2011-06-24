@@ -60,7 +60,8 @@ public class CacheSeedingWebMapService implements MethodInterceptor {
         WebMap map = (WebMap) invocation.proceed();
 
         final Map<String, String> rawKvp = request.getRawKvp();
-        boolean isSeedingRequest = rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
+        boolean isSeedingRequest = rawKvp != null
+                && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
         if (isSeedingRequest) {
             GeoServerTileLayer.WEB_MAP.set(map);
             // returning null makes the Dispatcher ignore further processing the request

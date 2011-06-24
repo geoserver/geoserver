@@ -41,7 +41,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
         this.parameterMap = parameterMap;
         this.cookies = cookies;
     }
-    
+
     public FakeHttpServletRequest(String wmsParams, Cookie[] cookies) {
         log.finer("Constructing from " + wmsParams);
 

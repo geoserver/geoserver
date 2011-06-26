@@ -27,6 +27,7 @@ import javax.xml.namespace.QName;
 
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.InsertElementType;
+import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
@@ -115,7 +116,8 @@ public class GWCTransactionListener implements TransactionPlugin {
      * @see org.geoserver.wfs.TransactionPlugin#afterTransaction(net.opengis.wfs.TransactionType,
      *      boolean)
      */
-    public void afterTransaction(final TransactionType request, boolean committed) {
+    public void afterTransaction(TransactionType request, TransactionResponseType result,
+            boolean committed) {
         try {
             afterTransactionInternal(request, committed);
         } catch (RuntimeException e) {
@@ -303,4 +305,5 @@ public class GWCTransactionListener implements TransactionPlugin {
 
         return layerName;
     }
+
 }

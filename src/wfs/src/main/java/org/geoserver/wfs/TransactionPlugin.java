@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs;
 
+import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 
 
@@ -25,12 +26,18 @@ public interface TransactionPlugin extends TransactionListener {
 
     /**
      * Notification the transaction ended
-     *
+     * 
+     * @param request
+     *            the originating transaction request
+     * @param result
+     *            {@code null} if {@code committed == false}, the transaction result object to be
+     *            sent back to the client otherwise.
+     * 
      * @param committed
-     *            true if the transaction was successful, false if the
-     *            transaction was aborted for any reason
+     *            true if the transaction was successful, false if the transaction was aborted for
+     *            any reason
      */
-    void afterTransaction(TransactionType request, boolean committed);
+    void afterTransaction(TransactionType request, TransactionResponseType result, boolean committed);
 
     /**
      * Aspects gets called in a specific order. State your priority, the higher

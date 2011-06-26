@@ -7,10 +7,12 @@ package org.geoserver.wfs;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
@@ -239,14 +241,17 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         return InsertElementType.class;
     }
 
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
+     */
+    @SuppressWarnings("unchecked")
     public QName[] getTypeNames(EObject element) throws WFSTransactionException {
         InsertElementType insert = (InsertElementType) element;
-        List typeNames = new ArrayList();
+        Set<QName> typeNames = new HashSet<QName>();
 
         if (!insert.getFeature().isEmpty()) {
-            for (Iterator f = insert.getFeature().iterator(); f.hasNext();) {
-                SimpleFeature feature = (SimpleFeature) f.next();
-
+            Iterable<SimpleFeature> features = insert.getFeature();
+            for (SimpleFeature feature : features) {
                 String name = feature.getFeatureType().getTypeName();
                 String namespaceURI = feature.getFeatureType().getName().getNamespaceURI();
 

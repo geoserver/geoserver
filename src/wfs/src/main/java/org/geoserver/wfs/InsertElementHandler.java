@@ -164,7 +164,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
                     //fire pre insert event
                     TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_INSERT,
-                            elementName, collection);
+                            request, elementName, collection);
                     event.setSource( insert );
                     
                     listener.dataStoreChange( event );

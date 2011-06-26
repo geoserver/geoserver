@@ -20,11 +20,14 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.XMLConstants;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.layer.CatalogLayerEventListener;
@@ -243,7 +246,7 @@ public class GWC implements DisposableBean, InitializingBean {
         final SRS srs = gridSet.getSRS();
         final CoordinateReferenceSystem gridSetCrs;
         try {
-            gridSetCrs = CRS.decode("EPSG:" + srs.getNumber());
+            gridSetCrs = CRS.decode("EPSG:" + srs.getNumber(), true);
         } catch (Exception e) {
             throw new RuntimeException("Can't decode SRS for layer '" + layerName + "': ESPG:"
                     + srs.getNumber());
@@ -808,4 +811,52 @@ public class GWC implements DisposableBean, InitializingBean {
         return getConfig().isEnabled(service.getPathName());
     }
 
+    /**
+     * @return {@code true} if there's a TileLayer named {@code layerName}
+     */
+    public boolean tileLayerExists(final String layerName) {
+        return tld.layerExists(layerName);
+    }
+
+    /**
+     * @param namespaceURI
+     *            the feature type namespace
+     * @param typeName
+     *            the feature type name
+     * @return the set of TileLayer names (from LayerInfos and LayerGroupInfos) affected by the
+     *         feature type, may be empty
+     */
+    public Set<String> getTileLayersByFeatureType(final String namespaceURI, final String typeName) {
+        NamespaceInfo namespace;
+        if (namespaceURI == null || XMLConstants.DEFAULT_NS_PREFIX.equals(namespaceURI)) {
+            namespace = getCatalog().getDefaultNamespace();
+        } else {
+            namespace = getCatalog().getNamespaceByURI(namespaceURI);
+        }
+
+        final FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(namespace, typeName);
+        final List<LayerInfo> layers = getCatalog().getLayers(typeInfo);
+
+        Set<String> affectedLayers = new HashSet<String>();
+
+        for (LayerInfo layer : layers) {
+            // this is redundant now but I'm still hoping for the infamous resource/publish split
+            if (tileLayerExists(layer.getResource().getPrefixedName())) {
+                affectedLayers.add(layer.getResource().getPrefixedName());
+            }
+        }
+
+        for (LayerGroupInfo lgi : getLayerGroups()) {
+            if (!tileLayerExists(lgi.getName())) {
+                continue;
+            }
+            for (LayerInfo li : lgi.getLayers()) {
+                ResourceInfo resource = li.getResource();
+                if (typeInfo.equals(resource)) {
+                    affectedLayers.add(lgi.getName());
+                }
+            }
+        }
+        return affectedLayers;
+    }
 }

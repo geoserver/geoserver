@@ -41,7 +41,6 @@
   </bean>
 
   <bean id="gwcTransactionListener" class="org.geoserver.gwc.GWCTransactionListener">
-    <constructor-arg ref="catalog" /> <!-- GeoServer -->
     <constructor-arg ref="gwcFacade" />
   </bean>
 

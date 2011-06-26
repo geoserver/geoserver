@@ -7,22 +7,14 @@
  */
 package org.geoserver.gwc;
 
-import static org.geoserver.wfs.TransactionEventType.POST_UPDATE;
-import static org.geoserver.wfs.TransactionEventType.PRE_DELETE;
-import static org.geoserver.wfs.TransactionEventType.PRE_INSERT;
-import static org.geoserver.wfs.TransactionEventType.PRE_UPDATE;
-
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import net.opengis.wfs.DeleteElementType;
@@ -32,11 +24,9 @@ import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionPlugin;
@@ -45,6 +35,9 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
 
 /**
@@ -65,27 +58,17 @@ import org.springframework.util.Assert;
  */
 public class GWCTransactionListener implements TransactionPlugin {
 
-    private static Logger log = Logging.getLogger("org.geoserver.gwc.GWCTransactionListener");
-
-    final private Catalog catalog;
+    private static Logger log = Logging.getLogger(GWCTransactionListener.class);
 
     final private GWC gwc;
 
+    private static final String GWC_TRANSACTION_INFO_PLACEHOLDER = "GWC_TRANSACTION_INFO_PLACEHOLDER";
+
     /**
-     * Keeps track of the pre-transaction affected bounds on a per
-     * {@link TransactionEvent#getSource() transaction request} basis, so that the
-     * {@code POST_UPDATE|INSERT|DELETE} bounds are aggregated to these ones before issuing a cache
-     * truncation.
+     * @param gwc
      */
-    private final Map<EObject, ReferencedEnvelope> affectedBounds;
-
-    private final Map<EObject, Set<String>> affectedLayers;
-
-    public GWCTransactionListener(final Catalog cat, final GWC gwc) {
-        this.catalog = cat;
+    public GWCTransactionListener(final GWC gwc) {
         this.gwc = gwc;
-        this.affectedBounds = new ConcurrentHashMap<EObject, ReferencedEnvelope>();
-        this.affectedLayers = new ConcurrentHashMap<EObject, Set<String>>();
     }
 
     /**
@@ -113,11 +96,13 @@ public class GWCTransactionListener implements TransactionPlugin {
      * If transaction's succeeded then truncate the affected layers at the transaction affected
      * bounds
      * 
-     * @see org.geoserver.wfs.TransactionPlugin#afterTransaction(net.opengis.wfs.TransactionType,
-     *      boolean)
+     * @see org.geoserver.wfs.TransactionPlugin#afterTransaction
      */
-    public void afterTransaction(TransactionType request, TransactionResponseType result,
+    public void afterTransaction(final TransactionType request, TransactionResponseType result,
             boolean committed) {
+        if (!committed) {
+            return;
+        }
         try {
             afterTransactionInternal(request, committed);
         } catch (RuntimeException e) {
@@ -126,42 +111,57 @@ public class GWCTransactionListener implements TransactionPlugin {
         }
     }
 
-    private void afterTransactionInternal(final TransactionType request, boolean committed) {
-        final List<EObject> transactionElements = getTransactionElements(request);
+    private void afterTransactionInternal(final TransactionType transaction, boolean committed) {
 
-        ReferencedEnvelope affectedBounds;
-        Set<String> affectedLayers;
-
-        for (EObject transactionElement : transactionElements) {
-            affectedBounds = this.affectedBounds.remove(transactionElement);
-            affectedLayers = this.affectedLayers.remove(transactionElement);
-
-            if (committed && affectedBounds != null) {
-                Assert.notNull(affectedLayers);
-                if (affectedBounds.isEmpty()) {
-                    continue;
-                }
-                for (String layerName : affectedLayers) {
-                    try {
-                        gwc.truncate(layerName, affectedBounds);
-                    } catch (GeoWebCacheException e) {
-                        e.printStackTrace();
-                    }
-                }
+        final Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions = getByLayerDirtyRegions(transaction);
+        if (byLayerDirtyRegions.isEmpty()) {
+            return;
+        }
+        for (String tileLayerName : byLayerDirtyRegions.keySet()) {
+            List<ReferencedEnvelope> dirtyList = byLayerDirtyRegions.get(tileLayerName);
+            ReferencedEnvelope dirtyRegion;
+            try {
+                dirtyRegion = merge(tileLayerName, dirtyList);
+            } catch (Exception e) {
+                log.log(Level.WARNING, e.getMessage(), e);
+                continue;
+            }
+            if (dirtyRegion == null) {
+                continue;
+            }
+            try {
+                gwc.truncate(tileLayerName, dirtyRegion);
+            } catch (GeoWebCacheException e) {
+                log.warning("Error truncating tile layer " + tileLayerName
+                        + " for transaction affected bounds " + dirtyRegion);
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private List<EObject> getTransactionElements(TransactionType request) {
-        List<InsertElementType> insert = request.getInsert();
-        List<UpdateElementType> update = request.getUpdate();
-        List<DeleteElementType> delete = request.getDelete();
-        List<EObject> allTransactionElements = new ArrayList<EObject>();
-        allTransactionElements.addAll(insert);
-        allTransactionElements.addAll(update);
-        allTransactionElements.addAll(delete);
-        return allTransactionElements;
+    private ReferencedEnvelope merge(final String tileLayerName,
+            final List<ReferencedEnvelope> dirtyList) throws TransformException, FactoryException {
+        if (dirtyList.size() == 0) {
+            return null;
+        }
+
+        final CoordinateReferenceSystem declaredCrs = getCrs(tileLayerName);
+        ReferencedEnvelope merged = new ReferencedEnvelope(declaredCrs);
+        for (ReferencedEnvelope env : dirtyList) {
+            ReferencedEnvelope transformedDirtyRegion = env.transform(declaredCrs, true);
+            merged.expandToInclude(transformedDirtyRegion);
+        }
+        return merged;
+    }
+
+    private CoordinateReferenceSystem getCrs(final String tileLayerName) {
+        GeoServerTileLayer layer = (GeoServerTileLayer) gwc.getTileLayerByName(tileLayerName);
+        LayerInfo layerInfo = layer.getLayerInfo();
+        if (layerInfo != null) {
+            return layerInfo.getResource().getCRS();
+        }
+        LayerGroupInfo layerGroupInfo = layer.getLayerGroupInfo();
+        ReferencedEnvelope bounds = layerGroupInfo.getBounds();
+        return bounds.getCoordinateReferenceSystem();
     }
 
     /**
@@ -173,137 +173,76 @@ public class GWCTransactionListener implements TransactionPlugin {
     }
 
     /**
+     * Collects the per TileLayer affected bounds
      * 
      * @see org.geoserver.wfs.TransactionListener#dataStoreChange(org.geoserver.wfs.TransactionEvent)
      */
     public void dataStoreChange(final TransactionEvent event) throws WFSException {
-
+        log.info("DataStoreChange: " + event.getLayerName() + " " + event.getType());
         try {
             dataStoreChangeInternal(event);
         } catch (RuntimeException e) {
             // Do never make the transaction fail due to a GWC error. Yell on the logs though
             log.log(Level.WARNING, "Error pre computing the transaction's affected area", e);
         }
-
     }
 
     private void dataStoreChangeInternal(final TransactionEvent event) {
         final Object source = event.getSource();
-        Assert.isTrue(source instanceof InsertElementType || source instanceof UpdateElementType
-                || source instanceof DeleteElementType);
-
-        final EObject originatingTransactionRequest = (EObject) source;
-
-        Assert.notNull(originatingTransactionRequest);
-
-        final TransactionEventType type = event.getType();
-        final SimpleFeatureCollection affectedFeatures = event.getAffectedFeatures();
-
-        if (isIgnorablePostEvent(originatingTransactionRequest, type)) {
-            // if its a post event and there's no corresponding pre event bbox no need to
-            // proceed(Saves some cpu cycles and a catalog lookup for findAffectedCachedLayers).
+        if (!(source instanceof InsertElementType || source instanceof UpdateElementType || source instanceof DeleteElementType)) {
             return;
         }
 
-        final Set<String> affectedLayers = findAffectedCachedLayers(event);
-        if (affectedLayers.isEmpty()) {
+        final EObject originatingTransactionRequest = (EObject) source;
+        Assert.notNull(originatingTransactionRequest);
+        final TransactionEventType type = event.getType();
+        if (TransactionEventType.POST_INSERT.equals(type)) {
+            // no need to compute the bounds, they're the same than for PRE_INSERT
+            return;
+        }
+        final QName featureTypeName = event.getLayerName();
+        final Set<String> affectedTileLayers = gwc.getTileLayersByFeatureType(
+                featureTypeName.getNamespaceURI(), featureTypeName.getLocalPart());
+        if (affectedTileLayers.isEmpty()) {
             // event didn't touch a cached layer
             return;
         }
 
-        if (PRE_INSERT == type || PRE_UPDATE == type || PRE_DELETE == type) {
-            ReferencedEnvelope preBounds = affectedFeatures.getBounds();
+        final SimpleFeatureCollection affectedFeatures = event.getAffectedFeatures();
+        final ReferencedEnvelope affectedBounds = affectedFeatures.getBounds();
 
-            this.affectedLayers.put(originatingTransactionRequest, affectedLayers);
-            this.affectedBounds.put(originatingTransactionRequest, preBounds);
+        final TransactionType transaction = event.getRequest();
 
-        } else if (POST_UPDATE == type && affectedFeatures != null) {
-
-            final ReferencedEnvelope bounds = affectedBounds.get(originatingTransactionRequest);
-
-            // only truncate if the request didn't fail
-            ReferencedEnvelope postBounds = affectedFeatures.getBounds();
-            Assert.isTrue(bounds.getCoordinateReferenceSystem().equals(
-                    postBounds.getCoordinateReferenceSystem()));
-            bounds.expandToInclude(postBounds);
-
-        } else {
-            throw new IllegalArgumentException("Unrecognized transaction event type: " + type);
+        for (String tileLayerName : affectedTileLayers) {
+            addLayerDirtyRegion(transaction, tileLayerName, affectedBounds);
         }
     }
 
-    private boolean isIgnorablePostEvent(final Object originatingTransactionRequest,
-            final TransactionEventType type) {
+    @SuppressWarnings("unchecked")
+    private Map<String, List<ReferencedEnvelope>> getByLayerDirtyRegions(
+            final TransactionType transaction) {
 
-        if (POST_UPDATE == type) {
-            if (!affectedBounds.containsKey(originatingTransactionRequest)) {
-                return true;
-            }
+        final Map<Object, Object> extendedProperties = transaction.getExtendedProperties();
+        Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions;
+        byLayerDirtyRegions = (Map<String, List<ReferencedEnvelope>>) extendedProperties
+                .get(GWC_TRANSACTION_INFO_PLACEHOLDER);
+        if (byLayerDirtyRegions == null) {
+            byLayerDirtyRegions = new HashMap<String, List<ReferencedEnvelope>>();
+            extendedProperties.put(GWC_TRANSACTION_INFO_PLACEHOLDER, byLayerDirtyRegions);
         }
-        return false;
+        return byLayerDirtyRegions;
     }
 
-    /**
-     * Finds out which cached layers are affected by the given transaction event and returns their
-     * names, or an empty set if no cached layer is affected by the transaction.
-     * <p>
-     * NOTE: so far it will always include a plain layer and any LayerGroup the layer is part of,
-     * since the geoserver/gwc integration works by automatically making all geoserver layers
-     * cacheable. But this might change in the near future, having the options to opt-out of caching
-     * on a per layer basis, so beware this method may need to get smarter.
-     * </p>
-     */
-    private Set<String> findAffectedCachedLayers(final TransactionEvent event) {
+    private void addLayerDirtyRegion(final TransactionType transaction, final String tileLayerName,
+            final ReferencedEnvelope affectedBounds) {
 
-        final String layerName = getQualifiedLayerName(event);
+        Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions = getByLayerDirtyRegions(transaction);
 
-        Set<String> affectedLayers = findLayerGroupsOf(layerName);
-
-        affectedLayers.add(layerName);
-
-        return affectedLayers;
-    }
-
-    private Set<String> findLayerGroupsOf(String layerName) {
-        Set<String> affectedLayerGroups = new HashSet<String>();
-
-        for (LayerGroupInfo lgi : catalog.getLayerGroups()) {
-            for (LayerInfo li : lgi.getLayers()) {
-                if (li.getResource().getPrefixedName().equals(layerName)) {
-                    affectedLayerGroups.add(lgi.getName());
-                    break;
-                }
-            }
+        List<ReferencedEnvelope> layerDirtyRegion = byLayerDirtyRegions.get(tileLayerName);
+        if (layerDirtyRegion == null) {
+            layerDirtyRegion = new ArrayList<ReferencedEnvelope>(2);
+            byLayerDirtyRegions.put(tileLayerName, layerDirtyRegion);
         }
-
-        return affectedLayerGroups;
+        layerDirtyRegion.add(affectedBounds);
     }
-
-    private String getQualifiedLayerName(final TransactionEvent event) {
-        final String layerName;
-
-        final QName name = event.getLayerName();
-        final String namespaceURI = name.getNamespaceURI();
-        final String localName = name.getLocalPart();
-        if (!XMLConstants.NULL_NS_URI.equals(namespaceURI)) {
-            NamespaceInfo namespaceInfo = catalog.getNamespaceByURI(namespaceURI);
-            if (namespaceInfo == null) {
-                log.info("Can't find namespace info for layer " + name + ". Cache not truncated");
-                throw new NoSuchElementException("Layer not found: " + name);
-            }
-            String prefix = namespaceInfo.getPrefix();
-            layerName = prefix + ":" + localName;
-        } else {
-            LayerInfo layerInfo = catalog.getLayerByName(localName);
-            if (layerInfo == null) {
-                log.info("Can't find layer " + localName + ". Cache not truncated");
-                throw new NoSuchElementException("Layer not found: " + localName);
-            }
-            ResourceInfo resource = layerInfo.getResource();
-            layerName = resource.getPrefixedName();
-        }
-
-        return layerName;
-    }
-
 }

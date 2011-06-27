@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+	xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+	
+	<namespaces>
+		<Namespace>
+			<prefix>gsml</prefix>
+			<uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+		</Namespace>
+		<Namespace>
+                        <prefix>gwml</prefix>
+                        <uri>http://www.nrcan.gc.ca/xml/gwml/1</uri>
+                </Namespace>
+		<Namespace>
+			<prefix>gml</prefix>
+			<uri>http://www.opengis.net/gml</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>xlink</prefix>
+			<uri>http://www.w3.org/1999/xlink</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>sa</prefix>
+			<uri>http://www.opengis.net/sampling/1.0</uri>
+		</Namespace>
+	</namespaces>
+	<sourceDataStores>
+		<DataStore>
+			<id>datastore</id>
+			<parameters>
+				<Parameter>
+					<name>directory</name>
+					<value>file:./</value>
+				</Parameter>
+			</parameters>
+		</DataStore>
+	</sourceDataStores>
+    <includedTypes>
+        <Include>HydrostratigraphicUnit.xml</Include>
+    </includedTypes>
+	<targetTypes>
+		<FeatureType>
+			<schemaUri>HydrogeologicUnit.xsd</schemaUri>
+		</FeatureType>
+	</targetTypes>
+	<typeMappings>
+
+		<FeatureTypeMapping>
+			<sourceDataStore>datastore</sourceDataStore>
+			<sourceType>mappedinterval</sourceType>
+			<targetElement>gsml:MappedInterval</targetElement>
+			<groupBy/>
+			<attributeMappings>
+				<AttributeMapping>
+					<targetAttribute>gsml:MappedInterval</targetAttribute>
+					<idExpression>
+						<OCQL>MAPPED_INTERVAL_ID</OCQL>
+					</idExpression>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:description</targetAttribute>
+					<sourceExpression>
+						<OCQL>INTERVAL_TYPE</OCQL>
+					</sourceExpression>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:name</targetAttribute>
+					<sourceExpression>
+						<OCQL>strConcat('mappedinterval.uri.', MAPPED_INTERVAL_ID)</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'borehole.codespace1'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gsml:observationMethod/gsml:CGI_TermValue/gsml:value</targetAttribute>
+					<sourceExpression>
+						<OCQL>'http://www.opengis.net/def/nil/OGC/0/unknown'</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'borehole.codespace1'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gsml:positionalAccuracy</targetAttribute>
+					<targetAttributeNode>gsml:CGI_TermValuePropertyType</targetAttributeNode>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gsml:positionalAccuracy/gsml:CGI_TermValue/gsml:value</targetAttribute>
+					<sourceExpression>
+						<OCQL>'http://www.opengis.net/def/nil/OGC/0/unknown'</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'borehole.codespace1'</value>
+					</ClientProperty>
+				</AttributeMapping>
+                
+			   <AttributeMapping>
+                    <targetAttribute>gsml:specification</targetAttribute>
+                    <targetAttributeNode>gwml:HydrostratigraphicUnitPropertyType</targetAttributeNode>
+                </AttributeMapping>   
+				<AttributeMapping>
+					<targetAttribute>gsml:specification</targetAttribute>
+                    <idExpression>
+                        <OCQL>'testz'</OCQL>
+                    </idExpression>
+					<sourceExpression>
+						<linkElement>
+					  	    Recode(INTERVAL_TYPE, 'aquifer', 'Aquifer', 'lithology', 'Lithology')		
+						</linkElement>
+					</sourceExpression>
+				</AttributeMapping>
+
+				</attributeMappings>
+		</FeatureTypeMapping>
+	</typeMappings>
+</as:AppSchemaDataAccess>

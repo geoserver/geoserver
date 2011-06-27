@@ -19,6 +19,7 @@ import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -58,15 +59,21 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         super(gs);
     }
 
-    public Class getElementClass() {
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
+     */
+    public Class<DeleteElementType> getElementClass() {
         return DeleteElementType.class;
     }
 
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
+     */
     public QName[] getTypeNames(EObject element) throws WFSTransactionException {
         return new QName[] { ((DeleteElementType) element).getTypeName() };
     }
 
-    public void checkValidity(EObject element, Map featureTypeInfos)
+    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
         throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_DELETE)) {
             throw new WFSException("Transaction Delete support is not enabled");
@@ -81,9 +88,13 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
-    public void execute(EObject element, TransactionType request, Map featureStores,
-        TransactionResponseType response, TransactionListener listener)
-        throws WFSTransactionException {
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#execute(org.eclipse.emf.ecore.EObject, net.opengis.wfs.TransactionType, java.util.Map, net.opengis.wfs.TransactionResponseType, org.geoserver.wfs.TransactionListener)
+     */
+    public void execute(EObject element, TransactionType request,
+            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
+            TransactionResponseType response, TransactionListener listener)
+            throws WFSTransactionException {
         DeleteElementType delete = (DeleteElementType) element;
         QName elementName = delete.getTypeName();
         String handle = delete.getHandle();

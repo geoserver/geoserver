@@ -26,6 +26,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTransactionException;
 import org.geotools.data.FeatureDiff;
 import org.geotools.data.FeatureDiffReader;
+import org.geotools.data.FeatureStore;
 import org.geotools.data.VersioningFeatureSource;
 import org.geotools.data.VersioningFeatureStore;
 import org.opengis.filter.Filter;
@@ -47,7 +48,8 @@ public class RollbackElementHandler implements TransactionElementHandler {
         this.filterFactory = filterFactory;
     }
 
-    public void checkValidity(EObject element, Map featureTypeInfos) throws WFSTransactionException {
+    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
+            throws WFSTransactionException {
         // let's check we can perfom inserts, updates and deletes
         if (!wfs.getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_INSERT)) {
             throw new WFSException("Transaction INSERT support is not enabled "
@@ -84,7 +86,8 @@ public class RollbackElementHandler implements TransactionElementHandler {
         // we don't have an authentication subsystem
     }
 
-    public void execute(EObject element, TransactionType request, Map featureStores,
+    public void execute(EObject element, TransactionType request,
+            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
             TransactionResponseType response, TransactionListener listener)
             throws WFSTransactionException {
         RollbackType rollback = (RollbackType) element;
@@ -184,10 +187,16 @@ public class RollbackElementHandler implements TransactionElementHandler {
         }
     }
 
-    public Class getElementClass() {
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
+     */
+    public Class<RollbackType> getElementClass() {
         return RollbackType.class;
     }
 
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
+     */
     public QName[] getTypeNames(EObject element) throws WFSTransactionException {
         RollbackType rollback = (RollbackType) element;
 

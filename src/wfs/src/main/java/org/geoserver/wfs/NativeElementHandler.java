@@ -14,6 +14,8 @@ import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.data.FeatureStore;
 
 
 /**
@@ -33,7 +35,7 @@ public class NativeElementHandler implements TransactionElementHandler {
      */
     protected static final QName[] EMPTY_QNAMES = new QName[0];
 
-    public void checkValidity(EObject element, Map featureTypeInfos)
+    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
         throws WFSTransactionException {
         NativeType nativ = (NativeType) element;
 
@@ -43,16 +45,24 @@ public class NativeElementHandler implements TransactionElementHandler {
         }
     }
 
-    public void execute(EObject element, TransactionType request, Map featureSources,
-        TransactionResponseType response, TransactionListener listener)
-        throws WFSTransactionException {
+    public void execute(EObject element, TransactionType request,
+            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureSources,
+            TransactionResponseType response, TransactionListener listener)
+            throws WFSTransactionException {
         // nothing to do, we just ignore if possible
     }
 
-    public Class getElementClass() {
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
+     */
+    public Class<NativeType> getElementClass() {
         return NativeType.class;
     }
 
+    /**
+     * @return an empty array.
+     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
+     */
     public QName[] getTypeNames(EObject element) throws WFSTransactionException {
         // we don't handle this
         return EMPTY_QNAMES;

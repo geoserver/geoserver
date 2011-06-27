@@ -3,6 +3,10 @@
 
 <beans>
 
+  <bean id="GWCCapabilitiesHomePageProvider" class="org.geoserver.gwc.web.GWCCapabilitiesHomePageProvider">
+    <constructor-arg ref="gwcFacade"/>
+  </bean>
+
   <bean id="gwcSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="gwc.settings"/>
     <property name="titleKey" value="geowebcache"/>
@@ -13,4 +17,13 @@
     <property name="order" value="35"/>
   </bean>
   
+  <bean id="cachedLayersMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="cachedLayers"/>
+    <property name="titleKey" value="CachedLayersPage.title"/>
+    <property name="descriptionKey" value="CachedLayersPage.description"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.CachedLayersPage"/>
+    <property name="category" ref="dataCategory"/>
+    <property name="icon" value="geowebcache-16.png"/>
+    <property name="order" value="30"/>
+  </bean>
 </beans>

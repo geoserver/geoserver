@@ -5,7 +5,7 @@
  * 
  * @author Arne Kepp / OpenGeo
  */
-package org.geowebcache.layer.wms;
+package org.geoserver.gwc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -28,20 +27,39 @@ import javax.servlet.http.HttpSession;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.util.ServletUtils;
 
-public class FakeHttpServletRequest implements HttpServletRequest {
+@SuppressWarnings("rawtypes")
+class FakeHttpServletRequest implements HttpServletRequest {
     private static Logger log = Logging.getLogger(HttpServletRequest.class.toString());
+
+    private String wmsParams;
 
     private Map<String, String> parameterMap = new HashMap<String, String>(10);
 
     private Cookie[] cookies;
 
-    public FakeHttpServletRequest(Map<String, String> wmsParams, Cookie[] cookies) {
-    	if(log.isLoggable(Level.FINER)){
-    		log.finer("Constructing from " + wmsParams);
-    	}
-
-        this.parameterMap = wmsParams;
+    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
+        this.parameterMap = parameterMap;
         this.cookies = cookies;
+    }
+
+    public FakeHttpServletRequest(String wmsParams, Cookie[] cookies) {
+        log.finer("Constructing from " + wmsParams);
+
+        this.wmsParams = wmsParams;
+        this.cookies = cookies;
+
+        // This is a bit stupid... refactor parameters in GWC, again?
+        String[] pairs = this.wmsParams.split("&");
+        for (int i = 0; i < pairs.length; i++) {
+            // log.finest(pairs[i]);
+            String[] key_value = pairs[i].split("=");
+            if (key_value.length < 2) {
+                parameterMap.put(key_value[0], "");
+            } else {
+                parameterMap.put(key_value[0], ServletUtils.URLDecode(key_value[1], "UTF-8"));
+            }
+
+        }
     }
 
     /**

@@ -28,4 +28,48 @@
     </property>
   </bean>
 
+  <bean id="seedingWebMapService" class="org.geoserver.gwc.wms.CacheSeedingWebMapService">
+    <description>
+      org.geoserver.wms.WebMapService.getMap() method interceptor to
+      check whether the requested map
+      corresponds to a cached or cacheable tile and if so return the GWC version of the image.
+    </description>
+  </bean>
+
+  <bean id="wmsServiceInterceptor_SeedingWMS" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+    <description>
+      Before advise to engage on the WMS service getMap method invocation.
+      The bean name follows the WMS
+      module convention of starting with "wmsServiceInterceptor" to be automatically engaged
+    </description>
+    <property name="advice">
+      <ref bean="seedingWebMapService" />
+    </property>
+    <property name="mappedName">
+      <value>getMap</value>
+    </property>
+  </bean>
+  
+  <bean id="gwcServiceWMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceTMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcWMTSServiceInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceVEInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceKMLInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  <bean id="gwcServiceMGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
+      <constructor-arg ref="gwcFacade"/>
+  </bean>
+  
 </beans>

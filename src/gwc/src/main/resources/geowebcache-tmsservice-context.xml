@@ -13,5 +13,17 @@
 	<!-- Optionally you can set the base URL for the service -->
 	<!-- <property name="baseURL" value="http://localhost:8080/geowebcache" /> -->
   </bean>
-	
+  <bean id="gwcServiceTMSProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetName">
+      <value>gwcServiceWMTSTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+          <!-- allow any other advise defined elsewhere and named "gwcServiceTMSInterceptor*" 
+               to be added to the interceptors list -->
+          <value>gwcServiceTMSInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gwcServiceTMSProxy" alias="gwcServiceTMS"/>
 </beans>

@@ -9,27 +9,26 @@
     </ul>
   </wicket:fragment>
   <form wicket:id="form">
-  <ul>
-    <li><br />
-    </li>
-    <li>
-    <fieldset>
-      <legend><span><wicket:message key="WMSIntegration">WMS Integration</wicket:message></span></legend>
+    <ul>
+      <li>&nbsp;</li>
+      <li>
+        <div wicket:id="gwcServicesPanel"></div>
+      </li>
+      <li>
+        <div wicket:id="cachingOptionsPanel"></div>
+      </li>
+      <li>
+        <div wicket:id="diskQuotaPanel"></div>
+      </li>
+    </ul>
+    <div>
       <ul>
-        <li><input id="enableWMSIntegration" class="field checkbox" type="checkbox" wicket:id="enableWMSIntegration" />
-        <label for="enableWMSIntegration" class="choice"><wicket:message
-          key="GWCSettingsPage.enableWMSIntegration">Enable GWC</wicket:message></label></li>
+        <li class="button-group selfclear">
+          <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
+          <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+        </li>
       </ul>
-    </fieldset>
-    </li>
-    <li>
-      <div wicket:id="diskQuotaConfigPanel"></div>
-    </li>
-    <li class="button-group selfclear">
-    <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
-    <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
-    </li>
-  </ul>
+    </div>
   </form>
 </wicket:extend>
 </body>

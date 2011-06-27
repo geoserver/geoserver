@@ -5,8 +5,9 @@
  * 
  * @author Arne Kepp / OpenGeo
  */
-package org.geowebcache.layer.wms;
+package org.geoserver.gwc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -21,58 +22,72 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geotools.util.logging.Logging;
 
-public class FakeHttpServletResponse implements HttpServletResponse {
-    
+class FakeHttpServletResponse implements HttpServletResponse {
+
     private static Logger log = Logging.getLogger(HttpServletResponse.class.toString());
-    
+
+    private static class FakeServletOutputStream extends ServletOutputStream {
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(20480);
+
+        public void write(int b) throws IOException {
+            outputStream.write(b);
+        }
+
+        public byte[] getBytes() {
+            return outputStream.toByteArray();
+        }
+    }
+
     private FakeServletOutputStream fos = new FakeServletOutputStream();
-    
+
     private String contentType;
-    
-    private HashMap<String,String> headers = new HashMap<String,String>();
-    
+
+    private HashMap<String, String> headers = new HashMap<String, String>();
+
     private List<Cookie> cookies;
-    
+
     private int responseCode = 200;
-    
+
     public byte[] getBytes() {
         return fos.getBytes();
     }
-    
+
     public Cookie[] getCachedCookies() {
         return cookies == null ? new Cookie[0] : cookies.toArray(new Cookie[cookies.size()]);
     }
-    
+
     /**
-     * Returns the response code (usually 200, but might be 204 or another one) 
+     * Returns the response code (usually 200, but might be 204 or another one)
+     * 
      * @return
      */
     public int getResponseCode() {
         return responseCode;
     }
-    
+
     /**
      * @see javax.servlet.http.HttpServletResponse#addCookie(javax.servlet.http.Cookie)
      */
     public void addCookie(Cookie cookie) {
-        if(cookies == null){
+        if (cookies == null) {
             cookies = new ArrayList<Cookie>(2);
         }
         cookies.add(cookie);
     }
 
     public void addDateHeader(String arg0, long arg1) {
-        log.finer("Added date header: "+arg0 + " : " + arg1);
+        log.finer("Added date header: " + arg0 + " : " + arg1);
         headers.put(arg0, Long.toString(arg1));
     }
 
     public void addHeader(String arg0, String arg1) {
-        log.finer("Added string header: "+arg0 + " : " + arg1);
-        headers.put(arg0, arg1); 
+        log.finer("Added string header: " + arg0 + " : " + arg1);
+        headers.put(arg0, arg1);
     }
 
     public void addIntHeader(String arg0, int arg1) {
-        log.finer("Added integer header: "+arg0 + " : " + arg1);
+        log.finer("Added integer header: " + arg0 + " : " + arg1);
         headers.put(arg0, Integer.toString(arg1));
     }
 
@@ -163,27 +178,27 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
     public void reset() {
         throw new ServletDebugException();
-        
+
     }
 
     public void resetBuffer() {
         throw new ServletDebugException();
-        
+
     }
 
     public void setBufferSize(int arg0) {
         throw new ServletDebugException();
-        
+
     }
 
     public void setCharacterEncoding(String arg0) {
         throw new ServletDebugException();
-        
+
     }
 
     public void setContentLength(int arg0) {
         throw new ServletDebugException();
-        
+
     }
 
     public void setContentType(String arg0) {
@@ -193,7 +208,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
     public void setLocale(Locale arg0) {
         throw new ServletDebugException();
-        
+
     }
 
 }

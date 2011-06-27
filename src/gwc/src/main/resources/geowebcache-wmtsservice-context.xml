@@ -4,12 +4,25 @@
   <description>
    Bean configuration file for the gwc-wmts module
   </description>
-  <bean id="gwcServiceWMTS"
+  <bean id="gwcServiceWMTSTarget"
 	class="org.geowebcache.service.wmts.WMTSService">
 	<constructor-arg ref="gwcStorageBroker"/>
 	<constructor-arg ref="gwcTLDispatcher"/>
 	<constructor-arg ref="gwcGridSetBroker"/>
 	<constructor-arg ref="gwcRuntimeStats"/>
   </bean>
+  <bean id="gwcServiceWMTSProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetName">
+      <value>gwcServiceWMTSTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+          <!-- allow any other advise defined elsewhere and named "gwcWMTSServiceInterceptor*" 
+               to be added to the interceptors list -->
+          <value>gwcWMTSServiceInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gwcServiceWMTSProxy" alias="gwcServiceWMTS"/>
 	
 </beans>

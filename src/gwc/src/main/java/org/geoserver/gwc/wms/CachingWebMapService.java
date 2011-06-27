@@ -4,7 +4,10 @@
  */
 package org.geoserver.gwc.wms;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
+import java.nio.channels.Channels;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +24,8 @@ import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.conveyor.ConveyorTile;
+import org.geowebcache.io.ByteArrayResource;
+import org.geowebcache.io.Resource;
 import org.springframework.util.Assert;
 
 /**
@@ -47,7 +52,7 @@ public class CachingWebMapService implements MethodInterceptor {
      * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
     public WebMap invoke(MethodInvocation invocation) throws Throwable {
-        if (!gwc.isWMSIntegrationEnabled()) {
+        if (!gwc.getConfig().isDirectWMSIntegrationEnabled()) {
             return (WebMap) invocation.proceed();
         }
 
@@ -62,29 +67,43 @@ public class CachingWebMapService implements MethodInterceptor {
 
         final GetMapRequest request = (GetMapRequest) arguments[0];
         boolean tiled = request.isTiled();
-        if (tiled) {
-            ConveyorTile cachedTile = gwc.dispatch(request);
-            if (cachedTile != null) {
-                if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.finest("GetMap request intercepted, serving cached content: " + request);
-                }
-                // Handle Etags
-                final String ifNoneMatch = request.getHttpRequestHeader("If-None-Match");
-                final String hexTag = Long.toHexString(cachedTile.getTSCreated());
-                if (hexTag.equals(ifNoneMatch)) {
-                    // Client already has the current version
-                    LOGGER.finer("ETag matches, returning 304");
-                    throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);
-                }
-
-                LOGGER.finer("No matching ETag, returning cached tile");
-                final byte[] mapContents = cachedTile.getContent();
-                final String mimeType = cachedTile.getMimeType().getMimeType();
-                RawMap map = new RawMap(null, mapContents, mimeType);
-                map.setResponseHeader("Cache-Control", "no-cache");
-                map.setResponseHeader("ETag", Long.toHexString(cachedTile.getTSCreated()));
-                return map;
+        if (!tiled) {
+            return (WebMap) invocation.proceed();
+        }
+        ConveyorTile cachedTile = gwc.dispatch(request);
+        if (cachedTile != null) {
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.finest("GetMap request intercepted, serving cached content: " + request);
             }
+            // Handle Etags
+            final String ifNoneMatch = request.getHttpRequestHeader("If-None-Match");
+            final String hexTag = Long.toHexString(cachedTile.getTSCreated());
+
+            if (hexTag.equals(ifNoneMatch)) {
+                // Client already has the current version
+                LOGGER.finer("ETag matches, returning 304");
+                throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);
+            }
+
+            LOGGER.finer("No matching ETag, returning cached tile");
+            final String mimeType = cachedTile.getMimeType().getMimeType();
+
+            RawMap map;
+            final Resource mapContents = cachedTile.getBlob();
+            if (mapContents instanceof ByteArrayResource) {
+                byte[] mapBytes;
+                mapBytes = ((ByteArrayResource) mapContents).getContents();
+                map = new RawMap(null, mapBytes, mimeType);
+            } else {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                mapContents.transferTo(Channels.newChannel(out));
+                map = new RawMap(null, out, mimeType);
+            }
+            map.setResponseHeader("Cache-Control", "no-cache");
+            map.setResponseHeader("ETag", Long.toHexString(cachedTile.getTSCreated()));
+            map.setResponseHeader("geowebcache-tile-index",
+                    Arrays.toString(cachedTile.getTileIndex()));
+            return map;
         }
 
         return (WebMap) invocation.proceed();

@@ -4,11 +4,24 @@
   <description>
    Bean configuration file for the gwc-kml module
   </description>
-  <bean id="gwcServiceKML"
+  <bean id="gwcServiceKMLTarget"
 	class="org.geowebcache.service.kml.KMLService">
 	<constructor-arg ref="gwcStorageBroker"/>
 	<constructor-arg ref="gwcTLDispatcher"/>
 	<constructor-arg ref="gwcGridSetBroker"/>
 	<constructor-arg ref="gwcRuntimeStats"/>
   </bean>
+  <bean id="gwcServiceKMLProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetName">
+      <value>gwcServiceKMLTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+          <!-- allow any other advise defined elsewhere and named "gwcServiceKMLInterceptor*" 
+               to be added to the interceptors list -->
+          <value>gwcServiceKMLInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gwcServiceKMLProxy" alias="gwcServiceKML"/>
 </beans>

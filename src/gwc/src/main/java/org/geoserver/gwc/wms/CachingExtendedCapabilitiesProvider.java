@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
@@ -99,11 +100,14 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
             return;
         }
 
-        List<TileLayer> tileLayers = gwc.getLayers(request.getNamespace());
+        String namespacePrefixFilter = request.getNamespace();
+        Iterable<TileLayer> tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
 
         for (TileLayer layer : tileLayers) {
 
-            Collection<GridSubset> layerGrids = layer.getGridSubsets().values();
+            Map<String, GridSubset> gridSubsets = layer.getGridSubsets();
+
+            Collection<GridSubset> layerGrids = gridSubsets.values();
 
             for (GridSubset grid : layerGrids) {
                 for (MimeType mime : layer.getMimeTypes()) {

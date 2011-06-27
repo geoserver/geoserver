@@ -2,19 +2,38 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean id="gwcCatalogConfiguration" class="org.geoserver.gwc.CatalogConfiguration">
-    <constructor-arg ref="gwcGridSetBroker" />
-    <constructor-arg ref="rawCatalog" /> <!-- GeoServer -->
-    <constructor-arg ref="dispatcher" /> <!-- GeoServer -->
+  <bean id="gwcGeoServervConfigPersister" class="org.geoserver.gwc.config.GWCConfigPersister">
+    <constructor-arg ref="xstreamPersisterFactory" />
+    <constructor-arg ref="resourceLoader">
+      <description>
+        GeoServer's resource loader to locate the root configuration
+        directory where to store gwc-gs.xml
+      </description>
+    </constructor-arg>
   </bean>
 
-  <bean id="gwcFacade" class="org.geoserver.gwc.GWC">
+  <bean id="gwcInitializer" class="org.geoserver.gwc.config.GWCInitializer">
+    <constructor-arg ref="gwcGeoServervConfigPersister" />
+    <constructor-arg ref="rawCatalog" />
+  </bean>
+
+  <bean id="gwcCatalogConfiguration" class="org.geoserver.gwc.layer.CatalogConfiguration">
+    <constructor-arg ref="rawCatalog" />
+    <constructor-arg ref="gwcGeoServervConfigPersister" />
+    <constructor-arg ref="gwcGridSetBroker" />
+    <constructor-arg ref="wms" />
+  </bean>
+
+  <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions">
+    <constructor-arg ref="gwcGeoServervConfigPersister"/>
     <constructor-arg ref="gwcStorageBroker" />
     <constructor-arg ref="gwcTLDispatcher" />
+    <constructor-arg ref="gwcGridSetBroker" />
     <constructor-arg ref="gwcTileBreeder" />
-    <constructor-arg ref="gwcCatalogConfiguration" />
-    <constructor-arg ref="geoServer" />
-    <constructor-arg ref="DiskQuotaStore"/>
+    <constructor-arg ref="DiskQuotaStore" />
+    <constructor-arg ref="DiskQuotaMonitor" />
+    <constructor-arg ref="dispatcher" />
+    <constructor-arg ref="catalog" />
   </bean>
 
   <bean id="gwcWMSExtendedCapabilitiesProvider" class="org.geoserver.gwc.wms.CachingExtendedCapabilitiesProvider">
@@ -22,27 +41,7 @@
   </bean>
 
   <bean id="gwcTransactionListener" class="org.geoserver.gwc.GWCTransactionListener">
-    <constructor-arg ref="rawCatalog" /> <!-- GeoServer -->
     <constructor-arg ref="gwcFacade" />
   </bean>
-
-  <bean id="gwcCatalogListener" class="org.geoserver.gwc.GWCCatalogListener">
-    <constructor-arg ref="rawCatalog" /> <!-- GeoServer -->
-    <constructor-arg ref="gwcFacade" />
-  </bean>
-
-  <!-- For each configuration bean above, add them below to activate -->
-  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher">
-    <constructor-arg ref="gwcGridSetBroker" />
-    <constructor-arg>
-      <list>
-        <ref bean="gwcCatalogConfiguration" />
-        <ref bean="gwcXmlConfig" />
-      </list>
-    </constructor-arg>
-    <!-- loadDelay < -1 forces gwc to load configuration in the main thread -->
-    <constructor-arg value="-1"/>
-  </bean>
-
 
 </beans>

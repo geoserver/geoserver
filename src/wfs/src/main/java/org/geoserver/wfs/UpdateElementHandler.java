@@ -218,7 +218,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             LOGGER.finer("Preprocess to remember modification as a set of fids");
             
             SimpleFeatureCollection features = store.getFeatures(filter);
-            TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_UPDATE, elementName, features);
+            TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_UPDATE, request,
+                    elementName, features);
             event.setSource( update );
             
             listener.dataStoreChange( event );
@@ -271,7 +272,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                 SimpleFeatureCollection changed = store.getFeatures(modified);
                 listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_UPDATE,
-                        elementName, changed, update));
+                        request, elementName, changed, update));
             }
 
             // update the update counter

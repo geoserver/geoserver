@@ -400,7 +400,7 @@ public class Transaction {
         // inform plugins we're done
         for (Iterator it = transactionPlugins.iterator(); it.hasNext();) {
             TransactionPlugin tp = (TransactionPlugin) it.next();
-            tp.afterTransaction(request, committed);
+            tp.afterTransaction(request, committed? result : null, committed);
         }
 
         //        

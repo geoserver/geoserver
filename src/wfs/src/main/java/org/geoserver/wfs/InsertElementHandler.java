@@ -24,6 +24,7 @@ import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.WfsFactory;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.feature.ReprojectingFeatureCollection;
 import org.geotools.data.DataUtilities;
@@ -62,17 +63,17 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         this.filterFactory = filterFactory;
     }
 
-    public void checkValidity(EObject element, Map featureTypeInfos)
+    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
         throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains( WFSInfo.Operation.TRANSACTION_INSERT)) {
             throw new WFSException("Transaction INSERT support is not enabled");
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void execute(EObject element, TransactionType request, Map featureStores,
-        TransactionResponseType response, TransactionListener listener)
-        throws WFSTransactionException {
+    public void execute(EObject element, TransactionType request,
+            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
+            TransactionResponseType response, TransactionListener listener)
+            throws WFSTransactionException {
         LOGGER.finer("Transasction Insert:" + element);
 
         InsertElementType insert = (InsertElementType) element;
@@ -237,7 +238,10 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
-    public Class getElementClass() {
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
+     */
+    public Class<InsertElementType> getElementClass() {
         return InsertElementType.class;
     }
 

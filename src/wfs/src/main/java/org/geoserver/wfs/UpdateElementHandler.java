@@ -68,7 +68,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         super(gs);
     }
 
-    public void checkValidity(EObject element, Map typeInfos)
+    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> typeInfos)
         throws WFSTransactionException {
         // check inserts are enabled
         if (!getInfo().getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_UPDATE) ) {
@@ -81,7 +81,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         UpdateElementType update = (UpdateElementType) element;
 
         try {
-            FeatureTypeInfo meta = (FeatureTypeInfo) typeInfos.values().iterator().next();
+            FeatureTypeInfo meta = typeInfos.values().iterator().next();
             FeatureType featureType = meta.getFeatureType();
 
             for (Iterator prop = update.getProperty().iterator(); prop.hasNext();) {
@@ -124,9 +124,10 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
-    public void execute(EObject element, TransactionType request, Map featureStores,
-        TransactionResponseType response, TransactionListener listener)
-        throws WFSTransactionException {
+    public void execute(EObject element, TransactionType request,
+            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
+            TransactionResponseType response, TransactionListener listener)
+            throws WFSTransactionException {
         UpdateElementType update = (UpdateElementType) element;
         final QName elementName = update.getTypeName();
         String handle = update.getHandle();
@@ -289,10 +290,16 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         response.getTransactionSummary().setTotalUpdated(BigInteger.valueOf(updated));
     }
 
-    public Class getElementClass() {
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
+     */
+    public Class<UpdateElementType> getElementClass() {
         return UpdateElementType.class;
     }
 
+    /**
+     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
+     */
     public QName[] getTypeNames(EObject element) throws WFSTransactionException {
         return new QName[] { ((UpdateElementType) element).getTypeName() };
     }

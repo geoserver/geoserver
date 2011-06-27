@@ -147,10 +147,10 @@ public class RollbackElementHandler implements TransactionElementHandler {
 
             // notify pre-update and pre-delete
             
-            listener.dataStoreChange(new TransactionEvent(TransactionEventType.PRE_UPDATE, layerName,
-                    vstore.getFeatures(updatedFilter), rollback));
-            listener.dataStoreChange(new TransactionEvent(TransactionEventType.PRE_DELETE, layerName, 
-                    vstore.getFeatures(deletedFilter), rollback));
+            listener.dataStoreChange(new TransactionEvent(TransactionEventType.PRE_UPDATE, request,
+                    layerName, vstore.getFeatures(updatedFilter), rollback));
+            listener.dataStoreChange(new TransactionEvent(TransactionEventType.PRE_DELETE, request,
+                    layerName, vstore.getFeatures(deletedFilter), rollback));
 
             // now do the actual rollback
             try {
@@ -161,10 +161,10 @@ public class RollbackElementHandler implements TransactionElementHandler {
             }
 
             // notify post update and post insert
-            listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_INSERT, layerName,
-                    vstore.getFeatures(insertedFilter)));
-            listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_UPDATE, layerName,
-                    vstore.getFeatures(updatedFilter)));
+            listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_INSERT,
+                    request, layerName, vstore.getFeatures(insertedFilter)));
+            listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_UPDATE,
+                    request, layerName, vstore.getFeatures(updatedFilter)));
 
             // update summary information
             response.getTransactionSummary().setTotalInserted(BigInteger.valueOf(inserted));

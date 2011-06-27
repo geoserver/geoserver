@@ -39,7 +39,6 @@ import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
 import javax.media.jai.operator.BandMergeDescriptor;
 import javax.media.jai.operator.ConstantDescriptor;
-import javax.media.jai.operator.CropDescriptor;
 import javax.media.jai.operator.LookupDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 
@@ -1060,14 +1059,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea) && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking operation but a crop!
-                // reduce the image to the actually required size
-                image= CropDescriptor.create(
-                        image, 
-                        (float)0, 
-                        (float)0, 
-                        (float)mapWidth,
-                        (float)mapHeight,
-                         null);
+                ImageWorker iw = new ImageWorker(image);
+                iw.crop(0, 0, mapWidth, mapHeight);
+                image = iw.getRenderedImage();
             }
         }
         

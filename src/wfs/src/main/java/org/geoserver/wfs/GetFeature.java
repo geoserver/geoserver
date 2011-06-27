@@ -370,7 +370,15 @@ public class GetFeature {
                 LOGGER.fine("Query is " + query + "\n To gt2: " + gtQuery);
 
                 FeatureCollection<? extends FeatureType, ? extends Feature> features = getFeatures(request, source, gtQuery);
-                
+                // For complex features, we need the targetCrs and version in scenario where we have
+                // a top level feature that does not contain a geometry(therefore no crs) and has a
+                // nested feature that contains geometry as its property.Furthermore it is possible
+                // for each nested feature to have different crs hence we need to reproject on each
+                // feature accordingly.
+                if (!(meta.getFeatureType() instanceof SimpleFeatureType)) {
+                    features.getSchema().getUserData().put("targetCrs", query.getSrsName());
+                    features.getSchema().getUserData().put("targetVersion", request.getVersion());
+                }
                 // optimization: WFS 1.0 does not require count unless we have multiple query elements
                 // and we are asked to perform a global limit on the results returned
                 if(("1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion())) && 

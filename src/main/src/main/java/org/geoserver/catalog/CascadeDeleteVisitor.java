@@ -126,7 +126,8 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         List<LayerInfo> layer = catalog.getLayers();
         for (LayerInfo li : layer) {
             // if it's the default style, reset it to the default one
-            if (li.getDefaultStyle().equals(style)) {
+            StyleInfo ds = li.getDefaultStyle();
+            if (ds != null && ds.equals(style)) {
                 try {
                     li.setDefaultStyle(new CatalogBuilder(catalog).getDefaultStyle(li.getResource()));
                     catalog.save(li);
@@ -139,8 +140,9 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                 }
             }
             // remove it also from the associated styles
-            if(li.getStyles().remove(style))
+            if(li.getStyles().remove(style)) {
                 catalog.save(li);
+            }
         }
 
         // groups can also refer styles, reset each reference to the

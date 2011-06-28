@@ -15,6 +15,8 @@ import javax.xml.namespace.QName;
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
+import org.geoserver.wfs.GMLInfo;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
@@ -40,9 +42,16 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
         Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
+        
+        // setup buffer
         WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
         wmsInfo.setMaxBuffer(50);
         getGeoServer().save(wmsInfo);
+        
+        // force feature bounding in WFS
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        wfsInfo.setFeatureBounding(true);
+        getGeoServer().save(wfsInfo);
     }
 
     @Override
@@ -63,7 +72,23 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     }
     
     /**
-     * Tests a simple GetFeatureInfo works, and that the result contains the
+     * Tests GML output does not break when asking for an area that has no data with
+     * GML feature bounding enabled
+     * 
+     * @throws Exception
+     */
+    public void testGMLNoData() throws Exception {
+        String layer = getLayerId(MockData.PONDS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format=application/vnd.ogc.gml&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=20&y=20";
+        Document dom = getAsDOM(request);
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", dom);
+        assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
+    }
+    
+    /**
+     * Tests GML outside of 
      * expected polygon
      * 
      * @throws Exception

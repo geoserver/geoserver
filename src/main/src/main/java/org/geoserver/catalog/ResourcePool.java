@@ -930,6 +930,10 @@ public class ResourcePool {
         throws IOException {
         
         final AbstractGridFormat gridFormat = info.getFormat();
+        if(gridFormat == null) {
+            throw new IOException("Could not find the raster plugin for format " + info.getType());
+        }
+        
         GridCoverageReader reader = null;
         Object key;
         if ( hints != null ) {

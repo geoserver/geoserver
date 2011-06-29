@@ -8,9 +8,11 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
 
 import org.apache.commons.io.IOUtils;
@@ -22,11 +24,17 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
+import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
+import org.geotools.image.ImageWorker;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.EngineeringCRS;
+
+import com.sun.media.jai.operator.ImageReadDescriptor;
 
 /**
  * Decodes/encodes a GeoTIFF file
@@ -76,6 +84,9 @@ public class GeoTiffPPIO extends BinaryPPIO {
     public void encode(Object value, OutputStream os) throws Exception {
         GridCoverage2D coverage = (GridCoverage2D) value;
         
+        CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
+        boolean unreferenced = crs == null || crs instanceof EngineeringCRS;
+        
         // did we get lucky and all we need to do is to copy a file over?
         final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
         if (fileSource != null && fileSource instanceof String) {
@@ -84,8 +95,18 @@ public class GeoTiffPPIO extends BinaryPPIO {
                 GeoTiffReader reader = null;
                 FileInputStream fis = null;
                 try {
-                    reader = new GeoTiffReader(file);
-                    reader.read(null);
+                    // geotiff reader won't read unreferenced tiffs unless we tell it to
+                    if(unreferenced) {
+                        // just check if it has the proper extension for the moment, until
+                        // we get a more reliable way to check if it's a tiff
+                        String name = file.getName().toLowerCase();
+                        if(!name.endsWith(".tiff") && !name.endsWith(".tif")) {
+                            throw new IOException("Not a tiff");
+                        }
+                    } else {
+                        reader = new GeoTiffReader(file);
+                        reader.read(null);
+                    }
                     // ooh, a geotiff already!
                     fis = new FileInputStream(file);
                     IOUtils.copyLarge(fis, os);
@@ -104,31 +125,35 @@ public class GeoTiffPPIO extends BinaryPPIO {
         }
 
         // ok, encode in geotiff
-        GeoTiffFormat format = new GeoTiffFormat();
-        final GeoTiffFormat wformat = new GeoTiffFormat();
-        final GeoTiffWriteParams wp = new GeoTiffWriteParams();
-        wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
-        wp.setCompressionType("LZW");
-        wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
-        wp.setTiling(256, 256);
-        final ParameterValueGroup wparams = wformat.getWriteParameters();
-        wparams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
-                .setValue(wp);
-        
-        final GeneralParameterValue[] wps = (GeneralParameterValue[]) wparams.values().toArray(
-                new GeneralParameterValue[1]);
-        // write out the coverage
-        AbstractGridCoverageWriter writer = (AbstractGridCoverageWriter) format.getWriter(os);
-        if (writer == null)
-            throw new WPSException(
-                    "Could not find the GeoTIFF writer, please check it's in the classpath");
-        try {
-            writer.write(coverage, wps);
-        } finally {
+        if(unreferenced) {
+            new ImageWorker(coverage.getRenderedImage()).writeTIFF(os, "LZW", 0.75f, 256, 256);
+        } else {
+            GeoTiffFormat format = new GeoTiffFormat();
+            final GeoTiffFormat wformat = new GeoTiffFormat();
+            final GeoTiffWriteParams wp = new GeoTiffWriteParams();
+            wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+            wp.setCompressionType("LZW");
+            wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
+            wp.setTiling(256, 256);
+            final ParameterValueGroup wparams = wformat.getWriteParameters();
+            wparams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+                    .setValue(wp);
+            
+            final GeneralParameterValue[] wps = (GeneralParameterValue[]) wparams.values().toArray(
+                    new GeneralParameterValue[1]);
+            // write out the coverage
+            AbstractGridCoverageWriter writer = (AbstractGridCoverageWriter) format.getWriter(os);
+            if (writer == null)
+                throw new WPSException(
+                        "Could not find the GeoTIFF writer, please check it's in the classpath");
             try {
-                writer.dispose();
-            } catch (Exception e) {
-                // swallow
+                writer.write(coverage, wps);
+            } finally {
+                try {
+                    writer.dispose();
+                } catch (Exception e) {
+                    // swallow
+                }
             }
         }
     }

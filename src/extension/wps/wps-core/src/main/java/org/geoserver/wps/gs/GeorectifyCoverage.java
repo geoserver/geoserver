@@ -98,7 +98,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
             @DescribeParameter(name = "height", description = "The final image height", min = 0) Integer height,
             @DescribeParameter(name = "warpOrder", min = 0, description = "The order of the warping polynomial (optional)") Integer warpOrder,
             @DescribeParameter(name = "transparent", min = 0, description = "Force the output image to have transparent background") Boolean transparent,
-            @DescribeParameter(name = "store", min = 0, description = "Don't remove the output file once done") Boolean store)
+            @DescribeParameter(name = "store", min = 0, description = "Don't remove the output file once done") Boolean store,
+            @DescribeParameter(name = "outputPath", min = 0, description = "Full path where the output file has to be stored") String outputPath)
             throws IOException {
 
         GeoTiffReader reader = null;
@@ -186,10 +187,34 @@ public class GeorectifyCoverage implements GeoServerProcess {
                 warpedFile = expandRgba(warpedFile.getAbsolutePath());
             }
 
-            // mark the output file for deletion at the end of request
-            if (resourceManager != null && !Boolean.TRUE.equals(store)) {
-                resourceManager.addResource(new WPSFileResource(warpedFile));
+            // if we have the output path move the final file there
+            if(Boolean.TRUE.equals(store) && outputPath != null) {
+                File output = new File(outputPath);
+                if(output.exists()) {
+                    if(!output.delete()) {
+                        throw new WPSException("Output file " + outputPath + " exists but cannot be overwritten");
+                    }
+                } else {
+                    File parent = output.getParentFile();
+                    if(!parent.exists()) {
+                        if(!parent.mkdirs()) {
+                            throw new WPSException("Output file parent directory " 
+                                    + parent.getAbsolutePath() + " does not exist and cannot be created");
+                        }
+                    }
+                }
+                if(!warpedFile.renameTo(output)) {
+                    throw new WPSException("Could not move " 
+                            + warpedFile.getAbsolutePath() + " to " + outputPath 
+                            + ", it's likely a permission issue");
+                }
+                warpedFile = output;
             }
+                
+             // mark the output file for deletion at the end of request
+                if (resourceManager != null && !Boolean.TRUE.equals(store)) {
+                    resourceManager.addResource(new WPSFileResource(warpedFile));
+                }
 
             // //
             //

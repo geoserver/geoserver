@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -183,7 +184,7 @@ public class TimeKvpParser extends KvpParser {
                         final Date end   = getDate(period[1]);
                         addPeriod(result,new DateRange(begin, end));
                 } else {
-                    throw new ParseException("Invalid time period: " + period, 0);
+                    throw new ParseException("Invalid time period: " + Arrays.toString(period), 0);
                 }
             }
         }

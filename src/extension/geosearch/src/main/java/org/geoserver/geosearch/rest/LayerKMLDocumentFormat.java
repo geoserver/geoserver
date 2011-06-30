@@ -19,8 +19,8 @@ import org.springframework.util.Assert;
 
 public class LayerKMLDocumentFormat extends StreamDataFormat {
 
-    private static final MediaType MEDIA_TYPE = new MediaType("application/vnd.google-earth.kml",
-            "Keyhole Markup Language");
+    private static final MediaType MEDIA_TYPE = new MediaType(
+            "application/vnd.google-earth.kml+xml", "Keyhole Markup Language");
     static {
         MediaTypes.registerExtension("kml", MEDIA_TYPE);
     }

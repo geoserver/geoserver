@@ -21,11 +21,12 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.geosearch.rest.Properties;
 import org.geoserver.test.GeoServerTestSupport;
 import org.w3c.dom.Document;
 
-public class SiteMapTest extends GeoServerTestSupport {
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
+public class GeoSearchIntegrationTest extends GeoServerTestSupport {
 
     static QName[] indexed = { MockData.BASIC_POLYGONS, MockData.BRIDGES };
 
@@ -33,7 +34,7 @@ public class SiteMapTest extends GeoServerTestSupport {
      * This is a READ ONLY TEST so we can use one time setup
      */
     public static Test suite() {
-        return new OneTimeTestSetup(new SiteMapTest());
+        return new OneTimeTestSetup(new GeoSearchIntegrationTest());
     }
 
     @Override
@@ -102,7 +103,8 @@ public class SiteMapTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo(global.getContact().getContactPerson(),
                 "/kml:kml/kml:Document/atom:author", kml);
 
-        assertXpathEvaluatesTo(global.getOnlineResource(), "/kml:kml/kml:Document/atom:link/@href", kml);
+        assertXpathEvaluatesTo(global.getOnlineResource(), "/kml:kml/kml:Document/atom:link/@href",
+                kml);
 
         assertXpathEvaluatesTo(ft.getAbstract(), "/kml:kml/kml:Document/kml:description", kml);
 
@@ -110,4 +112,9 @@ public class SiteMapTest extends GeoServerTestSupport {
                 "/kml:kml/kml:Document/kml:NetworkLink/kml:name", kml);
     }
 
+    public void testKmlResponseHeaders() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("/geosearch/cite%3ABasicPolygons.kml");
+        assertEquals(200, response.getStatusCode());
+        assertEquals("application/vnd.google-earth.kml+xml", response.getContentType());
+    }
 }

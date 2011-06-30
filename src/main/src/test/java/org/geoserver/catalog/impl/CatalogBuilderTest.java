@@ -203,7 +203,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
             
             // create the lot of files
             byte[] bytes = bos.toByteArray();
-            for(int i = 0; i < 1025; i++) {
+            for(int i = 0; i < 100; i++) {
                 String pad = "";
                 if(i < 10) {
                     pad = "000";

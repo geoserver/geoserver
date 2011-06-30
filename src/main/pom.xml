@@ -174,7 +174,6 @@
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-imagemosaic</artifactId>
-   <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>

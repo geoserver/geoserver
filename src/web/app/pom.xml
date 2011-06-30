@@ -612,6 +612,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>geosync</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>geosync</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>gdal</id>
       <dependencies>
         <dependency>

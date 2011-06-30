@@ -24,7 +24,6 @@ import org.geotools.map.MapLayer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -109,7 +108,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
                     .getOnlineResource());
             element("atom:link", null, href);
 
-            String abstract1 = mapContext.getAbstract();
+            String abstract1 = buildDescription(mapContext);
             element("description", abstract1);
             // encodeBbox(mapContext.getAreaOfInterest());
 
@@ -118,7 +117,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             networkLinkTransformer.setInline(true);
             networkLinkTransformer.setIndentation(getIndentation());
             networkLinkTransformer.setOmitXMLDeclaration(true);
-            networkLinkTransformer.setEncodeAsRegion(true);
+            networkLinkTransformer.setEncodeAsRegion(false);
             // start("Folder");
             // element("name", "Full Online Content");
             networkLinkTransformer.createTranslator(contentHandler).encode(mapContext);
@@ -134,8 +133,8 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
                 }
             }
             if (includeSampleData) {
-                start("Folder");
-                element("name", "Sample data");
+                // start("Folder");
+                // element("name", "Sample data");
                 // for every layer specified in the request
                 for (int i = 0; i < layers.length; i++) {
                     // layer and info
@@ -151,7 +150,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
                         encodeRasterLayer(mapContext, layer, lookAtOpts);
                     }
                 }
-                end("Folder");
+                // end("Folder");
             }
 
             end("Document");
@@ -166,6 +165,22 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
         // element("west", String.valueOf(latlonbbox.getMinX()));
         // end("LatLonBox");
         // }
+
+        private String buildDescription(WMSMapContext mapContext) {
+            StringBuilder sb = new StringBuilder();
+            if (null != mapContext.getAbstract()) {
+                sb.append(mapContext.getAbstract());
+            }
+            if (null != mapContext.getKeywords()) {
+                sb.append("\n");
+                for (String kw : mapContext.getKeywords()) {
+                    if (null != kw) {
+                        sb.append(kw).append(" ");
+                    }
+                }
+            }
+            return sb.toString();
+        }
 
         /**
          * Encodes a vector layer as kml.
@@ -193,7 +208,8 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             KMLVectorTransformer tx = createVectorTransformer(mapContext, layer, lookAtOpts);
             initTransformer(tx);
             tx.setScaleDenominator(scaleDenominator);
-            tx.createTranslator(contentHandler).encode(features);
+            Translator kmlTranslator = tx.createTranslator(contentHandler);
+            kmlTranslator.encode(features);
         }
 
         /**
@@ -225,6 +241,9 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
          */
         protected void encodeRasterLayer(WMSMapContext mapContext, MapLayer layer,
                 KMLLookAt lookAtOpts) {
+
+            GetMapRequest request = mapContext.getRequest();
+            request.getFormatOptions().put("superoverlay", Boolean.TRUE);
             KMLRasterTransformer tx = createRasterTransfomer(mapContext, lookAtOpts);
             initTransformer(tx);
 

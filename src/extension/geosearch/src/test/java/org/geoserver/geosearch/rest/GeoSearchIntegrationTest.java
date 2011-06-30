@@ -91,7 +91,7 @@ public class GeoSearchIntegrationTest extends GeoServerTestSupport {
     public void testKml() throws Exception {
 
         Document kml = getAsDOM("/geosearch/cite%3ABasicPolygons.kml");
-        // print(kml);
+        print(kml);
 
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(BASIC_POLYGONS.getNamespaceURI(),
                 BASIC_POLYGONS.getLocalPart());
@@ -106,7 +106,7 @@ public class GeoSearchIntegrationTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo(global.getOnlineResource(), "/kml:kml/kml:Document/atom:link/@href",
                 kml);
 
-        assertXpathEvaluatesTo(ft.getAbstract(), "/kml:kml/kml:Document/kml:description", kml);
+        assertXpathExists("/kml:kml/kml:Document/kml:description", kml);
 
         assertXpathEvaluatesTo("cite:BasicPolygons",
                 "/kml:kml/kml:Document/kml:NetworkLink/kml:name", kml);

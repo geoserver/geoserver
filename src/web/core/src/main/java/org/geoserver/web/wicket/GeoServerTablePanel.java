@@ -307,7 +307,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         return sa;
     }
     
-    CheckBox selectOneCheckbox(Item item) {
+    protected CheckBox selectOneCheckbox(Item item) {
         CheckBox cb = new CheckBox("selectItem", new SelectionModel(item.getIndex()));
         cb.setOutputMarkupId(true);
         cb.add(new AjaxFormComponentUpdatingBehavior("onclick") {

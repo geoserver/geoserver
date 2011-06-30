@@ -24,7 +24,9 @@ import org.geotools.map.MapLayer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Transformer to create a KML document from a {@link WMSMapContext}.
@@ -101,7 +103,12 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             element("open", "1");
             GeoServerInfo geoServerInfo = wms.getGeoServer().getGlobal();
             element("atom:author", geoServerInfo.getContact().getContactPerson());
-            element("atom:link", wms.getGeoServer().getGlobal().getOnlineResource());
+
+            AttributesImpl href = new AttributesImpl();
+            href.addAttribute("", "href", "href", "", wms.getGeoServer().getGlobal()
+                    .getOnlineResource());
+            element("atom:link", null, href);
+
             String abstract1 = mapContext.getAbstract();
             element("description", abstract1);
             // encodeBbox(mapContext.getAreaOfInterest());

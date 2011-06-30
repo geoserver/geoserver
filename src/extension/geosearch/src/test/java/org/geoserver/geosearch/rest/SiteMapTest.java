@@ -102,7 +102,7 @@ public class SiteMapTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo(global.getContact().getContactPerson(),
                 "/kml:kml/kml:Document/atom:author", kml);
 
-        assertXpathEvaluatesTo(global.getOnlineResource(), "/kml:kml/kml:Document/atom:link", kml);
+        assertXpathEvaluatesTo(global.getOnlineResource(), "/kml:kml/kml:Document/atom:link/@href", kml);
 
         assertXpathEvaluatesTo(ft.getAbstract(), "/kml:kml/kml:Document/kml:description", kml);
 

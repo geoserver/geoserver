@@ -138,13 +138,16 @@ public class CatalogIconFactory implements Serializable {
         } 
         
         Class geom = gd.getType().getBinding();
-        if(Point.class.isAssignableFrom(geom) 
-                || MultiPoint.class.isAssignableFrom(geom)) {
+        return getVectorIcon(geom);
+    }
+
+    public ResourceReference getVectorIcon(Class geom) {
+        if (Point.class.isAssignableFrom(geom) || MultiPoint.class.isAssignableFrom(geom)) {
             return POINT_ICON;
-        } else if(LineString.class.isAssignableFrom(geom) 
+        } else if (LineString.class.isAssignableFrom(geom)
                 || MultiLineString.class.isAssignableFrom(geom)) {
             return LINE_ICON;
-        } else if(Polygon.class.isAssignableFrom(geom) 
+        } else if (Polygon.class.isAssignableFrom(geom)
                 || MultiPolygon.class.isAssignableFrom(geom)) {
             return POLYGON_ICON;
         } else {

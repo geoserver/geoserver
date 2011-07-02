@@ -7,7 +7,7 @@ import java.util.Set;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 
 public class PythonVectorGetMapOutputFormat implements GetMapOutputFormat {
@@ -26,9 +26,9 @@ public class PythonVectorGetMapOutputFormat implements GetMapOutputFormat {
         return Collections.singleton(adapter.getName());
     }
     
-    public WebMap produceMap(WMSMapContext mapContext) throws ServiceException,
+    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException,
             IOException {
-        return new PythonWebMap(mapContext, adapter);
+        return new PythonWebMap(mapContent, adapter);
     }
     
     public MapProducerCapabilities getCapabilities(String format) {

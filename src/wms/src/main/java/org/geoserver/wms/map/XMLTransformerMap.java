@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.map;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geotools.xml.transform.TransformerBase;
 
@@ -30,9 +30,9 @@ public class XMLTransformerMap extends WebMap {
      * @param mimeType
      *            the MIME-Type to be declared in the response
      */
-    public XMLTransformerMap(final WMSMapContext mapContext, final TransformerBase transformer,
+    public XMLTransformerMap(final WMSMapContent mapContent, final TransformerBase transformer,
             final Object subject, final String mimeType) {
-        super(mapContext);
+        super(mapContent);
         this.transformer = transformer;
         this.transformerSubject = subject;
         setMimeType(mimeType);

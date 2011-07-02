@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.palette.InverseColorMapOp;
 
@@ -62,13 +62,13 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      *             if encoding to <code>outStream</code> fails.
      */
     public void formatImageOutputStream(RenderedImage originalImage, OutputStream outStream,
-            WMSMapContext mapContext) throws ServiceException, IOException {
+            WMSMapContent mapContent) throws ServiceException, IOException {
         // /////////////////////////////////////////////////////////////////
         //
         // Now the magic
         //
         // /////////////////////////////////////////////////////////////////
-        InverseColorMapOp paletteInverter = mapContext.getPaletteInverter();
+        InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
         RenderedImage renderedImage = super.forceIndexed8Bitmask(originalImage, paletteInverter);
         ImageWorker imageWorker = new ImageWorker(renderedImage);
         imageWorker.writeGIF(outStream, "LZW", 0.75f);

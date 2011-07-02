@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -191,28 +191,28 @@ public class MapDecorationLayout {
          * automatically detemrined size from the MapDecoration
          *
          * @param g2d the Graphics2D context into which the MapDecoration will be rendered
-         * @param mapContext the WMSMapContext for the request being handled
+         * @param mapContent the WMSMapContext for the request being handled
          */
-        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext) {
+        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
             return (dimension != null) 
                 ? dimension 
-                : decoration.findOptimalSize(g2d, mapContext);
+                : decoration.findOptimalSize(g2d, mapContent);
         }
 
         /**
          * Draw this Block.  Sizing and positioning will be handled by the findBounds method.
          * @param g2d the Graphics2D context where the Block should be drawn
          * @param rect the current drawable area
-         * @param mapContext the map context for the current map request
+         * @param mapContent the map context for the current map request
          */
-        public void paint(Graphics2D g2d, Rectangle rect, WMSMapContext mapContext) 
+        public void paint(Graphics2D g2d, Rectangle rect, WMSMapContent mapContent) 
         throws Exception {
-            Dimension desiredSize = findOptimalSize(g2d, mapContext);
+            Dimension desiredSize = findOptimalSize(g2d, mapContent);
 
             Rectangle box = findBounds(position, rect, desiredSize, offset);
             Shape oldClip = g2d.getClip();
             g2d.setClip(box);
-            decoration.paint(g2d, box, mapContext);
+            decoration.paint(g2d, box, mapContent);
             g2d.setClip(oldClip);
         }
     }
@@ -328,14 +328,14 @@ public class MapDecorationLayout {
      *
      * @param g2d the Graphics2D context in which the Blocks will be rendered
      * @param paintArea the drawable area
-     * @param mapContext the WMSMapContext for the current map request
+     * @param mapContent the WMSMapContext for the current map request
      *
      * @see {Block#paint}
      */
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext mapContext) { 
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) { 
         for (Block b : blocks) {
             try {
-                b.paint(g2d, paintArea, mapContext);
+                b.paint(g2d, paintArea, mapContent);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "couldn't paint due to: ", e);
             }

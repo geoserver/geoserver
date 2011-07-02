@@ -28,7 +28,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.kml.KMZMapResponse.KMZMap;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -42,7 +42,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class KMLTransformerTest extends WMSTestSupport {
-    WMSMapContext mapContext;
+    WMSMapContent mapContent;
 
     Layer layer;
 
@@ -59,14 +59,14 @@ public class KMLTransformerTest extends WMSTestSupport {
 
         layer = createMapLayer(MockData.BASIC_POLYGONS);
 
-        mapContext = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
-        mapContext.addLayer(layer);
+        mapContent = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        mapContent.addLayer(layer);
     }
 
     @Override
     protected void tearDownInternal() {
-        mapContext.dispose();
-        // mapContext.clearLayerList();
+        mapContent.dispose();
+        // mapContent.clearLayerList();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     public void testVectorTransformer() throws Exception {
-        KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext, layer);
+        KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContent, layer);
         transformer.setIndentation(2);
 
         SimpleFeatureSource featureSource = DataUtilities.simple((FeatureSource) layer
@@ -113,17 +113,17 @@ public class KMLTransformerTest extends WMSTestSupport {
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
         featureSource = (SimpleFeatureSource) Layer.getFeatureSource();
         int nfeatures = featureSource.getFeatures().size();
-        WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.POINTS));
+        WMSMapContent mapContent = new WMSMapContent(createGetMapRequest(MockData.POINTS));
         try {
-            mapContext.addLayer(Layer);
-            KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
+            mapContent.addLayer(Layer);
+            KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContent,
                     Layer);
             transformer.setIndentation(2);
 
             // print(document);
             document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
         } finally {
-            mapContext.dispose();
+            mapContent.dispose();
         }
         // make sure we are generating icon styles, but that we're not sticking a color onto them
         XMLAssert.assertXpathEvaluatesTo("" + nfeatures, "count(//Style/IconStyle/Icon/href)",
@@ -144,17 +144,17 @@ public class KMLTransformerTest extends WMSTestSupport {
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
         featureSource = (SimpleFeatureSource) layer.getFeatureSource();
 
-        WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.POINTS));
+        WMSMapContent mapContent = new WMSMapContent(createGetMapRequest(MockData.POINTS));
         Document document;
         try {
-            mapContext.addLayer(layer);
-            KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
+            mapContent.addLayer(layer);
+            KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContent,
                     layer);
             transformer.setIndentation(2);
             // print(document);
             document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
         } finally {
-            mapContext.dispose();
+            mapContent.dispose();
         }
         // make sure we are generating icon styles with the subdir path
         XMLAssert.assertXpathEvaluatesTo(
@@ -181,19 +181,19 @@ public class KMLTransformerTest extends WMSTestSupport {
                     .getFeatureSource();
             int nfeatures = featureSource.getFeatures().size();
 
-            WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.POINTS));
+            WMSMapContent mapContent = new WMSMapContent(createGetMapRequest(MockData.POINTS));
             Document document;
 
             try {
-                mapContext.addLayer(layer);
-                KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
+                mapContent.addLayer(layer);
+                KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContent,
                         layer);
                 transformer.setIndentation(2);
 
                 document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
                 // print(document);
             } finally {
-                mapContext.dispose();
+                mapContent.dispose();
             }
             // make sure we are using the proxy base URL
             XMLAssert.assertXpathEvaluatesTo("http://myhost:9999/gs/styles/bridge.png",
@@ -211,17 +211,17 @@ public class KMLTransformerTest extends WMSTestSupport {
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
         featureSource = (SimpleFeatureSource) layer.getFeatureSource();
 
-        WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
+        WMSMapContent mapContent = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         Document document;
         try {
-            mapContext.addLayer(layer);
+            mapContent.addLayer(layer);
 
-            KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
+            KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContent,
                     layer);
             transformer.setIndentation(2);
             document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
         } finally {
-            mapContext.dispose();
+            mapContent.dispose();
         }
         Element element = document.getDocumentElement();
         assertEquals("kml", element.getNodeName());
@@ -234,15 +234,15 @@ public class KMLTransformerTest extends WMSTestSupport {
     // transformer.setIndentation(2);
     //
     // ByteArrayOutputStream output = new ByteArrayOutputStream();
-    // transformer.transform(mapContext, output);
-    // transformer.transform(mapContext,System.out);
+    // transformer.transform(mapContent, output);
+    // transformer.transform(mapContent,System.out);
     // DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     // Document doc1 = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
     //
-    // mapContext.setCoordinateReferenceSystem(CRS.decode("EPSG:3005"));
+    // mapContent.setCoordinateReferenceSystem(CRS.decode("EPSG:3005"));
     // output = new ByteArrayOutputStream();
-    // transformer.transform(mapContext, output);
-    // transformer.transform(mapContext,System.out);
+    // transformer.transform(mapContent, output);
+    // transformer.transform(mapContent,System.out);
     // Document doc2 = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
     //
     // NodeList docs1 = doc1.getDocumentElement().getElementsByTagName("Document");
@@ -273,38 +273,38 @@ public class KMLTransformerTest extends WMSTestSupport {
     // }
 
     public void testRasterTransformerInline() throws Exception {
-        KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContext);
+        KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContent);
         transformer.setInline(true);
 
         Document document = WMSTestSupport.transform(layer, transformer);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
 
-        assertEquals(mapContext.getLayerCount(), document.getElementsByTagName("Folder")
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("Folder")
                 .getLength());
-        assertEquals(mapContext.getLayerCount(), document.getElementsByTagName("GroundOverlay")
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("GroundOverlay")
                 .getLength());
 
-        assertEquals(mapContext.getLayerCount(), document.getElementsByTagName("href").getLength());
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("href").getLength());
 
         Element href = (Element) document.getElementsByTagName("href").item(0);
         assertEquals("images/layer_0.png", href.getFirstChild().getNodeValue());
     }
 
     public void testRasterTransformerNotInline() throws Exception {
-        KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContext);
+        KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContent);
         transformer.setInline(false);
 
         Document document = WMSTestSupport.transform(layer, transformer);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
 
-        assertEquals(mapContext.getLayerCount(), document.getElementsByTagName("Folder")
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("Folder")
                 .getLength());
-        assertEquals(mapContext.getLayerCount(), document.getElementsByTagName("GroundOverlay")
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("GroundOverlay")
                 .getLength());
 
-        assertEquals(mapContext.getLayerCount(), document.getElementsByTagName("href").getLength());
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("href").getLength());
 
         Element href = (Element) document.getElementsByTagName("href").item(0);
         assertTrue(href.getFirstChild().getNodeValue().startsWith("http://localhost"));
@@ -325,15 +325,15 @@ public class KMLTransformerTest extends WMSTestSupport {
         formatOptions.put("kmscore", new Integer(0));
         getMapRequest.setFormatOptions(formatOptions);
 
-        WMSMapContext mapContext = new WMSMapContext(getMapRequest);
-        mapContext.addLayer(layer);
-        mapContext.setMapHeight(1024);
-        mapContext.setMapWidth(1024);
+        WMSMapContent mapContent = new WMSMapContent(getMapRequest);
+        mapContent.addLayer(layer);
+        mapContent.setMapHeight(1024);
+        mapContent.setMapWidth(1024);
 
         // create the map producer
         KMZMapOutputFormat mapProducer = new KMZMapOutputFormat(getWMS());
         KMZMapResponse mapEncoder = new KMZMapResponse(getWMS());
-        KMZMap kmzMap = mapProducer.produceMap(mapContext);
+        KMZMap kmzMap = mapProducer.produceMap(mapContent);
         try {
             // create the kmz
             File tempDir = IOUtils.createRandomDirectory("./target", "kmplacemark", "test");
@@ -390,10 +390,10 @@ public class KMLTransformerTest extends WMSTestSupport {
 
     public void testSuperOverlayTransformer() throws Exception {
         KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
-                mapContext);
+                mapContent);
         transformer.setIndentation(2);
 
-        mapContext.setAreaOfInterest(new ReferencedEnvelope(-180.0, 180.0, -90.0, 90.0,
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180.0, 180.0, -90.0, 90.0,
                 DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -409,14 +409,14 @@ public class KMLTransformerTest extends WMSTestSupport {
 
     public void testStyleConverter() throws Exception {
         KMLTransformer transformer = new KMLTransformer(getWMS());
-        mapContext.removeLayer(mapContext.getLayer(0));
-        mapContext.addLayer(createMapLayer(MockData.BASIC_POLYGONS, "allsymbolizers"));
-        mapContext.setAreaOfInterest(new ReferencedEnvelope(-180, 0, -90, 90,
+        mapContent.removeLayer(mapContent.layers().get(0));
+        mapContent.addLayer(createMapLayer(MockData.BASIC_POLYGONS, "allsymbolizers"));
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 0, -90, 90,
                 DefaultGeographicCRS.WGS84));
-        mapContext.setMapHeight(256);
-        mapContext.setMapWidth(256);
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
 
-        Document document = WMSTestSupport.transform(mapContext, transformer, false);
+        Document document = WMSTestSupport.transform(mapContent, transformer, false);
         // print(document);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
@@ -434,14 +434,14 @@ public class KMLTransformerTest extends WMSTestSupport {
      */
     public void testDynamicSymbolizer() throws Exception {
         KMLTransformer transformer = new KMLTransformer(getWMS());
-        mapContext.removeLayer(mapContext.getLayer(0));
-        mapContext.addLayer(createMapLayer(MockData.STREAMS, "dynamicsymbolizer"));
-        mapContext.setAreaOfInterest(new ReferencedEnvelope(-180, 0, -90, 90,
+        mapContent.removeLayer(mapContent.layers().get(0));
+        mapContent.addLayer(createMapLayer(MockData.STREAMS, "dynamicsymbolizer"));
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 0, -90, 90,
                 DefaultGeographicCRS.WGS84));
-        mapContext.setMapHeight(256);
-        mapContext.setMapWidth(256);
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
 
-        Document document = WMSTestSupport.transform(mapContext, transformer, false);
+        Document document = WMSTestSupport.transform(mapContent, transformer, false);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
         assertEquals(1, document.getElementsByTagName("Style").getLength());
@@ -452,7 +452,7 @@ public class KMLTransformerTest extends WMSTestSupport {
     public void testTransformer() throws Exception {
         KMLTransformer transformer = new KMLTransformer(getWMS());
 
-        Document document = WMSTestSupport.transform(mapContext, transformer);
+        Document document = WMSTestSupport.transform(mapContent, transformer);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
     }

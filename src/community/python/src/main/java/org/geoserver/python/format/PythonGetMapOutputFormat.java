@@ -8,7 +8,7 @@ import java.util.Set;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 
 public class PythonGetMapOutputFormat implements GetMapOutputFormat {
@@ -27,8 +27,8 @@ public class PythonGetMapOutputFormat implements GetMapOutputFormat {
         return Collections.singleton(adapter.getName());
     }
     
-    public WebMap produceMap(WMSMapContext mapContext) throws ServiceException, IOException {
-        return new PythonWebMap(mapContext, adapter);
+    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+        return new PythonWebMap(mapContent, adapter);
     }
 
     public MapProducerCapabilities getCapabilities(String format) {

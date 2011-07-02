@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.xml.transform.Translator;
@@ -45,7 +45,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
         }
 
         public void encode(Object o) throws IllegalArgumentException {
-            WMSMapContext map = (WMSMapContext) o;
+            WMSMapContent map = (WMSMapContent) o;
 
             start("feed");
 
@@ -74,7 +74,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
             end("feed");
         }
 
-        void encodeEntries(WMSMapContext map) throws IOException{
+        void encodeEntries(WMSMapContent map) throws IOException{
             List featureCollections = loadFeatureCollections(map);
             for (Iterator f = featureCollections.iterator(); f.hasNext();) {
                 SimpleFeatureCollection features = (SimpleFeatureCollection) f.next();
@@ -102,7 +102,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
             }
         }
 
-        void encodeEntry(SimpleFeature feature, WMSMapContext map) {
+        void encodeEntry(SimpleFeature feature, WMSMapContent map) {
             start("entry");
 
             //title

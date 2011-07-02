@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 
 /**
  * Handles a GetMap request that spects a map in PDF format.
@@ -38,12 +38,12 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
 
     public static class PDFMap extends org.geoserver.wms.WebMap {
 
-        public PDFMap(final WMSMapContext mapContext) {
-            super(mapContext);
+        public PDFMap(final WMSMapContent mapContent) {
+            super(mapContent);
         }
 
-        public WMSMapContext getContext() {
-            return mapContext;
+        public WMSMapContent getContext() {
+            return mapContent;
         }
     }
 
@@ -52,12 +52,12 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public PDFMap produceMap(final WMSMapContext mapContext) throws ServiceException, IOException {
+    public PDFMap produceMap(final WMSMapContent mapContent) throws ServiceException, IOException {
 
-        PDFMap result = new PDFMap(mapContext);
-        result.setContentDispositionHeader(mapContext, ".pdf");
+        PDFMap result = new PDFMap(mapContent);
+        result.setContentDispositionHeader(mapContent, ".pdf");
         result.setMimeType(MIME_TYPE);
         return result;
     }

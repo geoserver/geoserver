@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.renderer.lite.RendererUtilities;
 
 public class ScaleLineDecoration implements MapDecoration {
@@ -82,7 +82,7 @@ public class ScaleLineDecoration implements MapDecoration {
         if (tmp != null) fgcolor = tmp;
     }
 
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext){
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
     	FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
     	return new Dimension(
             suggestedWidth, 8 + (int)((metrics.getHeight() + metrics.getDescent()) * 2)
@@ -108,7 +108,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	return (int)(barLength * pow10);
     }
 
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext mapContext) 
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 
     throws Exception {
     	Color oldColor = g2d.getColor();
     	Stroke oldStroke = g2d.getStroke();
@@ -119,8 +119,8 @@ public class ScaleLineDecoration implements MapDecoration {
     	g2d.setFont(oldFont.deriveFont(this.fontSize));
     	
     	double scaleDenominator = RendererUtilities.calculateOGCScale(
-            mapContext.getAreaOfInterest(),
-            mapContext.getRequest().getWidth(),
+            mapContent.getRenderingArea(),
+            mapContent.getRequest().getWidth(),
             new HashMap()
         );
     	

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.OutputStream;
 
 import org.geoserver.python.Python;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.python.core.Py;
 import org.python.core.PyObject;
 
@@ -19,9 +19,9 @@ public class PythonMapFormatAdapter extends PythonFormatAdapter {
         return "__map_format__";
     }
 
-    public void write(WMSMapContext mapContext, OutputStream output) throws Exception {
+    public void write(WMSMapContent mapContent, OutputStream output) throws Exception {
         PyObject obj = pyObject();
-        obj.__call__(Py.javas2pys(mapContext, output));
+        obj.__call__(Py.javas2pys(mapContent, output));
         
         output.flush();
     }

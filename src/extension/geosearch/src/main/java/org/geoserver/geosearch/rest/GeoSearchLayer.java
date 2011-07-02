@@ -27,7 +27,7 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geoserver.wms.map.XMLTransformerMap;
@@ -100,13 +100,13 @@ public class GeoSearchLayer extends AbstractResource {
             keywords = getKeyWords(lgi);
         }
 
-        WMSMapContext context = new WMSMapContext(getMapRequest);
+        WMSMapContent context = new WMSMapContent(getMapRequest);
         context.setTitle(title);
         context.setAbstract(description);
         context.setKeywords(keywords);
         context.setMapWidth(getMapRequest.getWidth());
         context.setMapHeight(getMapRequest.getHeight());
-        context.setAreaOfInterest((ReferencedEnvelope) getMapRequest.getBbox());
+        context.getViewport().setBounds((ReferencedEnvelope) getMapRequest.getBbox());
 
         WebMap webMap;
         try {

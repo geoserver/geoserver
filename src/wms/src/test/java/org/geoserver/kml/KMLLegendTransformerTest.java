@@ -16,7 +16,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSMockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -44,9 +44,9 @@ public class KMLLegendTransformerTest extends TestCase {
 
     /**
      * The map context for the transformer constructor. It shouldn't be needed, see the comment at
-     * {@link KMLLegendTransformer#KMLLegendTransformer(WMSMapContext)}
+     * {@link KMLLegendTransformer#KMLLegendTransformer(WMSMapContent)}
      */
-    private WMSMapContext mapContext;
+    private WMSMapContent mapContent;
 
     /**
      * The layer to encode the legend url for
@@ -74,7 +74,7 @@ public class KMLLegendTransformerTest extends TestCase {
         // XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
         MapLayerInfo layer = mockData.addFeatureTypeLayer("TestPoints", Point.class);
-        mapContext = new WMSMapContext();
+        mapContent = new WMSMapContent();
         GetMapRequest request = mockData.createRequest();
         request.setLayers(Collections.singletonList(layer));
 
@@ -87,7 +87,7 @@ public class KMLLegendTransformerTest extends TestCase {
         httpreq.setServerName("geoserver.org");
         httpreq.setServerPort(8181);
         httpreq.setContextPath("/geoserver");
-        mapContext.setRequest(request);
+        mapContent.setRequest(request);
     }
 
     /**
@@ -99,7 +99,7 @@ public class KMLLegendTransformerTest extends TestCase {
 
     /**
      * Test method for
-     * {@link KMLLegendTransformer#KMLLegendTransformer(org.geoserver.wms.WMSMapContext)}.
+     * {@link KMLLegendTransformer#KMLLegendTransformer(org.geoserver.wms.WMSMapContent)}.
      * 
      * @throws Exception
      */
@@ -108,7 +108,7 @@ public class KMLLegendTransformerTest extends TestCase {
                 .newCollection();
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
-        KMLLegendTransformer transformer = new KMLLegendTransformer(mapContext);
+        KMLLegendTransformer transformer = new KMLLegendTransformer(mapContent);
         transformer.setIndentation(2);
         Document dom = WMSTestSupport.transform(Layer, transformer);
         assertXpathEvaluatesTo("Legend", "//kml/ScreenOverlay/name", dom);

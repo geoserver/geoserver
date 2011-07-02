@@ -15,7 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
 
     public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed", MockData.SF_PREFIX);
-    WMSMapContext mapContext;
+    WMSMapContent mapContent;
     Layer Layer;
 
     /**
@@ -42,8 +42,8 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
 
         Layer = createMapLayer(DISPERSED_FEATURES);
         
-        mapContext = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
-        mapContext.addLayer(Layer);
+        mapContent = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        mapContent.addLayer(Layer);
     }
     
     @Override
@@ -66,10 +66,10 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
      * Verify that two overlay tiles are produced for a request that encompasses the world.
      */
     public void testWorldBoundsSuperOverlay() throws Exception {
-        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(), mapContext);
+        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(), mapContent);
         transformer.setIndentation(2);
 
-        mapContext.setAreaOfInterest(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         transformer.transform(Layer, output);
@@ -87,10 +87,10 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
      * Verify that when a tile smaller than one hemisphere is requested, four subtiles are included in the result.
      */
     public void testSubtileSuperOverlay() throws Exception {
-        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(), mapContext);
+        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(), mapContent);
         transformer.setIndentation(2);
 
-        mapContext.setAreaOfInterest(new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         transformer.transform(Layer, output);

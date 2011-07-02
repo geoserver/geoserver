@@ -19,7 +19,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.util.logging.Logging;
@@ -85,7 +85,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
      *             if the image writing fails.
      */
     public void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-            WMSMapContext mapContext) throws ServiceException, IOException {
+            WMSMapContent mapContent) throws ServiceException, IOException {
         // getting a writer
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Getting a writer for tiff");
@@ -105,12 +105,12 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
         }
 
         // get the one required by the GetMapRequest
-        GetMapRequest request = mapContext.getRequest();
+        GetMapRequest request = mapContent.getRequest();
         final String format = request.getFormat();
 
         // do we want it to be 8 bits?
-        if (format.equalsIgnoreCase(IMAGE_TIFF8) || (mapContext.getPaletteInverter() != null)) {
-            InverseColorMapOp paletteInverter = mapContext.getPaletteInverter();
+        if (format.equalsIgnoreCase(IMAGE_TIFF8) || (mapContent.getPaletteInverter() != null)) {
+            InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
             image = forceIndexed8Bitmask(image, paletteInverter);
         }
 

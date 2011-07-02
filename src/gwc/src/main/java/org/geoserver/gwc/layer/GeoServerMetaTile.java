@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.geoserver.ows.Response;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
@@ -70,13 +70,13 @@ public class GeoServerMetaTile extends MetaTile {
             final RenderedImage tile = createTile(tileDim.x, tileDim.y, tileDim.width,
                     tileDim.height);
             final String mimeType = webMap.getMimeType();
-            final WMSMapContext tileContext;
+            final WMSMapContent tileContext;
             {
-                final WMSMapContext metaTileContext = ((RenderedImageMap) webMap).getMapContext();
+                final WMSMapContent metaTileContext = ((RenderedImageMap) webMap).getMapContext();
                 // do not create tileContext with metaTileContext.getLayers() as the layer list.
                 // It is not needed at this stage and the constructor would force a
                 // MapLayer.getBounds() that might fail
-                tileContext = new WMSMapContext();
+                tileContext = new WMSMapContent();
                 tileContext.setRequest(metaTileContext.getRequest());
                 tileContext.setBgColor(metaTileContext.getBgColor());
                 tileContext.setMapWidth(tileDim.width);
@@ -89,7 +89,7 @@ public class GeoServerMetaTile extends MetaTile {
                         metaTileContext.getCoordinateReferenceSystem());
                 tilebbox.init(tileBounds.getMinX(), tileBounds.getMaxX(), tileBounds.getMinY(),
                         tileBounds.getMaxY());
-                tileContext.setAreaOfInterest(tilebbox);
+                tileContext.getViewport().setBounds(tilebbox);
             }
             tileMap = new RenderedImageMap(tileContext, tile, mimeType);
         }

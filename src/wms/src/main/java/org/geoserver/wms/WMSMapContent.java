@@ -8,11 +8,12 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.palette.InverseColorMapOp;
-import org.geotools.map.GraphicEnhancedMapContext;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.RendererUtilities;
 
 /**
@@ -34,7 +35,7 @@ import org.geotools.renderer.lite.RendererUtilities;
  * @author Simone Giannecchini - GeoSolutions SAS
  * @version $Id$
  */
-public class WMSMapContext extends GraphicEnhancedMapContext {
+public class WMSMapContent extends MapContent {
     /** requested map image width in output units (pixels) */
     private int mapWidth;
 
@@ -76,18 +77,21 @@ public class WMSMapContext extends GraphicEnhancedMapContext {
 
     // (request URL etc...)
 
-    public WMSMapContext() {
+    public WMSMapContent() {
         super();
     }
 
-    public WMSMapContext(GetMapRequest req) {
+    public WMSMapContent(GetMapRequest req) {
         super();
         request = req;
     }
 
 
-    public WMSMapContext(MapLayer[] layers) {
-        super(layers);
+    public WMSMapContent(Layer[] layers) {
+        super();
+        for (Layer layer : layers) {
+            addLayer(layer);
+        }
     }
 
     public Color getBgColor() {
@@ -167,7 +171,7 @@ public class WMSMapContext extends GraphicEnhancedMapContext {
      */
     public AffineTransform getRenderingTransform() {
         Rectangle paintArea = new Rectangle(0, 0, getMapWidth(), getMapHeight());
-        ReferencedEnvelope dataArea = getAreaOfInterest();
+        ReferencedEnvelope dataArea = getViewport().getBounds();
         AffineTransform tx;
         if (getAngle() != 0.0) {
             tx = new AffineTransform();
@@ -188,10 +192,10 @@ public class WMSMapContext extends GraphicEnhancedMapContext {
      * @return
      */
     public ReferencedEnvelope getRenderingArea() {
+        ReferencedEnvelope dataArea = getViewport().getBounds(); 
         if (getAngle() == 0)
-            return getAreaOfInterest();
+            return dataArea;
 
-        ReferencedEnvelope dataArea = getAreaOfInterest();
         AffineTransform tx = new AffineTransform();
         double offsetX = dataArea.getMinX() + dataArea.getWidth() / 2;
         double offsetY = dataArea.getMinY() + dataArea.getHeight() / 2;
@@ -201,8 +205,87 @@ public class WMSMapContext extends GraphicEnhancedMapContext {
         Rectangle2D dataAreaShape = new Rectangle2D.Double(dataArea.getMinX(), dataArea.getMinY(),
                 dataArea.getWidth(), dataArea.getHeight());
         Rectangle2D transformedBounds = tx.createTransformedShape(dataAreaShape).getBounds2D();
-        return new ReferencedEnvelope(transformedBounds, getAreaOfInterest()
-                .getCoordinateReferenceSystem());
+        return new ReferencedEnvelope(transformedBounds, dataArea.getCoordinateReferenceSystem());
+    }
+    
+    /**
+     * Get the contact information associated with this context, returns an empty string if
+     * contactInformation has not been set.
+     * 
+     * @return the ContactInformation or an empty string if not present
+     */
+    public String getContactInformation(){
+        String contact =  (String) getUserData().get("contact");
+        return contact == null ? "" : contact;
+    }
+
+    /**
+     * Set contact information associated with this class.
+     * 
+     * @param contactInformation
+     *            the ContactInformation.
+     */
+    public void setContactInformation(final String contactInformation){
+        getUserData().put("contact", contactInformation);
+    }
+
+    
+    /**
+     * Get an array of keywords associated with this context, returns an empty array if no keywords
+     * have been set. The array returned is a copy, changes to the returned array won't influence
+     * the MapContextState
+     * 
+     * @return array of keywords
+     */
+    public String[] getKeywords(){
+        Object obj = getUserData().get("keywords");
+        if (obj == null) {
+            return new String[0];
+        } else if (obj instanceof String) {
+            String keywords = (String) obj;
+            return keywords.split(",");
+        } else if (obj instanceof String[]) {
+            String keywords[] = (String[]) obj;
+            String[] copy = new String[keywords.length];
+            System.arraycopy(keywords, 0, copy, 0, keywords.length);
+            return copy;
+        } else if (obj instanceof Collection) {
+            Collection<String> keywords = (Collection) obj;
+            return keywords.toArray(new String[keywords.size()]);
+        } else {
+            return new String[0];
+        }
+    }
+
+    /**
+     * Set an array of keywords to associate with this context.
+     * 
+     * @param keywords
+     *            the Keywords.
+     */
+    public void setKeywords(final String[] keywords){
+        getUserData().put("keywords", keywords);
+    }
+    
+    /**
+     * Get the abstract which describes this interface, returns an empty string if this has not been
+     * set yet.
+     * 
+     * @return The Abstract or an empty string if not present
+     */
+    public String getAbstract(){
+        String description = (String) getUserData().get("abstract");
+        return description == null ? "" : description;
+    }
+
+    /**
+     * Set an abstract which describes this context.
+     * 
+     * @param conAbstract
+     *            the Abstract.
+     */
+    public void setAbstract(final String contextAbstract){
+        getUserData().put("abstract", contextAbstract);
     }
 
 }

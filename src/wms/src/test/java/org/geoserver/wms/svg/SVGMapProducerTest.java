@@ -16,13 +16,14 @@ import junit.framework.Test;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -70,15 +71,15 @@ public class SVGMapProducerTest extends WMSTestSupport {
 
         FeatureSource fs = ds.getFeatureSource("test");
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(new ReferencedEnvelope(-250, 250, -250, 250, null));
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(new ReferencedEnvelope(-250, 250, -250, 250, null));
         map.setMapWidth(300);
         map.setMapHeight(300);
         map.setBgColor(Color.red);
         map.setTransparent(false);
 
         Style basicStyle = getCatalog().getStyleByName("Default").getStyle();
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         SVGStreamingMapOutputFormat producer = new SVGStreamingMapOutputFormat();
         StreamingSVGMap encodeSVG = producer.produceMap(map);

@@ -11,7 +11,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -48,7 +48,7 @@ public class NativeSortRegionatingStrategy extends
     FeatureSource fs;
 
     @Override
-    protected String getDatabaseName(WMSMapContext con, Layer layer)
+    protected String getDatabaseName(WMSMapContent con, Layer layer)
             throws Exception {
         fs = layer.getFeatureSource();
         SimpleFeatureType type = (SimpleFeatureType) fs.getSchema();

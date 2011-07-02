@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultQuery;
@@ -59,10 +59,10 @@ public class EncodeHTMLImageMap extends WebMap{
     /**
      * Creates a new EncodeHTMLImageMap object.
      *
-     * @param mapContext current wms context
+     * @param mapContent current wms context
      */
-    public EncodeHTMLImageMap(WMSMapContext mapContext) {
-        super(mapContext);
+    public EncodeHTMLImageMap(WMSMapContent mapContent) {
+        super(mapContent);
     }
 
 
@@ -75,7 +75,7 @@ public class EncodeHTMLImageMap extends WebMap{
      */
     public void encode(final OutputStream out) throws IOException {
         // initializes the writer
-        this.writer = new HTMLImageMapWriter(out, mapContext);
+        this.writer = new HTMLImageMapWriter(out, mapContent);
         
         long t = System.currentTimeMillis();
 
@@ -250,7 +250,7 @@ public class EncodeHTMLImageMap extends WebMap{
     		Rule rule=rules[count];
     		double scaleDenominator;
 			try {
-				scaleDenominator = RendererUtilities.calculateScale(mapContext.getAreaOfInterest(), mapContext.getMapWidth(), mapContext.getMapHeight(),90);
+				scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(), mapContent.getMapWidth(), mapContent.getMapHeight(),90);
 			
 	            //is this rule within scale?
 	            if (EncodeHTMLImageMap.isWithInScale(rule,scaleDenominator)) {
@@ -278,7 +278,7 @@ public class EncodeHTMLImageMap extends WebMap{
      */
     @SuppressWarnings("unchecked")
 	private void writeLayers() throws IOException, AbortedException {
-        for(Layer layer:mapContext.layers()){    
+        for(Layer layer:mapContent.layers()){    
         	SimpleFeatureSource fSource;
             fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
@@ -286,7 +286,7 @@ public class EncodeHTMLImageMap extends WebMap{
             FeatureType schema = fSource.getSchema();*/
 
             try {
-            	ReferencedEnvelope aoi = mapContext.getAreaOfInterest();
+            	ReferencedEnvelope aoi = mapContent.getRenderingArea();
                 
                 CoordinateReferenceSystem sourceCrs = schema.getGeometryDescriptor().getCoordinateReferenceSystem();
 
@@ -335,7 +335,7 @@ public class EncodeHTMLImageMap extends WebMap{
                 SimpleFeatureCollection fColl = null;//fSource.getFeatures(q);
                 //FeatureCollection fColl=null;
                 if ( reproject ) {
-                	fColl=new ReprojectFeatureResults( fSource.getFeatures(q),mapContext.getCoordinateReferenceSystem() );
+                	fColl=new ReprojectFeatureResults( fSource.getFeatures(q),mapContent.getCoordinateReferenceSystem() );
                 } else
                 	fColl=fSource.getFeatures(q);
                 

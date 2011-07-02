@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import junit.framework.TestCase;
 
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -22,6 +22,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.SLDParser;
@@ -161,14 +162,14 @@ public class HTMLImageMapTest extends TestCase {
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = ds.getFeatureSource("states");
         final ReferencedEnvelope env = new ReferencedEnvelope(fs.getBounds(), WGS84);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("Population.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap imageMap = this.mapProducer.produceMap(map);
 
@@ -183,14 +184,14 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("default.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("BasicPolygons", result);
@@ -205,14 +206,14 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("default.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("PolygonWithHoles", result);
@@ -226,14 +227,14 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("default.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("PolygonWithSkippedHoles", result);
@@ -248,7 +249,7 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for ProjectedPolygon with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
+        final WMSMapContent map = new WMSMapContent();
 
         CoordinateReferenceSystem sourceCrs = CRS.decode("EPSG:3004");
         CoordinateReferenceSystem targetCrs = CRS.decode("EPSG:3003");
@@ -257,16 +258,16 @@ public class HTMLImageMapTest extends TestCase {
         Envelope projEnv = JTS.transform(env, transform);
         ReferencedEnvelope refEnv = new ReferencedEnvelope(projEnv, targetCrs);
 
-        map.setAreaOfInterest(refEnv);
+        map.getViewport().setBounds(refEnv);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         map.setBgColor(Color.red);
         map.setTransparent(false);
 
-        map.setCoordinateReferenceSystem(targetCrs);
+        map.getViewport().setCoordinateReferenceSystem(targetCrs);
         Style basicStyle = getTestStyle("BasicPolygons.sld");
 
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("ProjectedPolygon", result);
@@ -280,15 +281,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for RoadSegments with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("RoadSegments.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("RoadSegments", result);
@@ -308,15 +309,15 @@ public class HTMLImageMapTest extends TestCase {
         LOGGER.info("about to create map ctx for RoadSegments with filter on name and bounds "
                 + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("RoadSegmentsFiltered.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("RoadSegmentsFiltered", result);
@@ -331,15 +332,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BuildingCenters with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("BuildingCenters.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("BuildingCenters", result);
@@ -354,15 +355,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BuildingCenters with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("BuildingCenters2.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("BuildingCenters2", result);
@@ -375,15 +376,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BuildingCenters with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         
         map.setTransparent(false);
                 
         Style basicStyle = getTestStyle("BuildingCenters3.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         
         assertTestResult("BuildingCenters3", result);
@@ -398,15 +399,15 @@ public class HTMLImageMapTest extends TestCase {
         
         LOGGER.info("about to create map ctx for BuildingCenters with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
         
         map.setTransparent(false);
                 
         Style basicStyle = getTestStyle("BuildingCenters3.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         
         assertTestResult("BuildingCenters4", result);
@@ -421,15 +422,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for BuildingCentersMultiPoint with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("BuildingCenters.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("BuildingCentersMultiPoint", result);
@@ -444,15 +445,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for RoadSegments with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("CollectionSample.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("CollectionSample", result);
@@ -466,15 +467,15 @@ public class HTMLImageMapTest extends TestCase {
 
         LOGGER.info("about to create map ctx for NamedPlaces with bounds " + env);
 
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(env);
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
         map.setMapWidth(mapWidth);
         map.setMapHeight(mapHeight);
 
         map.setTransparent(false);
 
         Style basicStyle = getTestStyle("NamedPlaces.sld");
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("NoCoords", result);

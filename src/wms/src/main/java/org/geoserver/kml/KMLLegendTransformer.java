@@ -4,7 +4,7 @@
  */
 package org.geoserver.kml;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.map.Layer;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
@@ -17,10 +17,10 @@ import org.xml.sax.ContentHandler;
  *
  */
 public class KMLLegendTransformer extends KMLTransformerBase {
-    WMSMapContext mapContext;
+    WMSMapContent mapContent;
 
-    public KMLLegendTransformer(WMSMapContext mapContext) {
-        this.mapContext = mapContext;
+    public KMLLegendTransformer(WMSMapContent mapContent) {
+        this.mapContent = mapContent;
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -56,12 +56,12 @@ public class KMLLegendTransformer extends KMLTransformerBase {
             start("Icon");
 
             //reference the image as a remote wms call
-            String legendOptions = (String) mapContext.getRequest().getRawKvp().get("LEGEND_OPTIONS");
+            String legendOptions = (String) mapContent.getRequest().getRawKvp().get("LEGEND_OPTIONS");
             String[] kvpArray = null;
             if (legendOptions != null) {
                 kvpArray = new String[] { "LEGEND_OPTIONS", legendOptions };
             }
-            element("href", KMLUtils.getLegendGraphicUrl(mapContext, Layer, kvpArray));
+            element("href", KMLUtils.getLegendGraphicUrl(mapContent, Layer, kvpArray));
 
             end("Icon");
 

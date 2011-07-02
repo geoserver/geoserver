@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.ImageWorker;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
@@ -57,7 +57,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
 
     @Override
     public void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-            WMSMapContext mapContext) throws IOException {
+            WMSMapContent mapContent) throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("About to write a JPEG image.");
         }

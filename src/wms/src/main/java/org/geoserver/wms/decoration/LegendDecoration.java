@@ -24,7 +24,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.legendgraphic.LegendUtils;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -104,21 +104,21 @@ public class LegendDecoration implements MapDecoration {
         if (tmp != null) this.fgcolor = tmp;
     }
 
-    Catalog findCatalog(WMSMapContext mapContext){
+    Catalog findCatalog(WMSMapContent mapContent){
         return wms.getGeoServer().getCatalog();
     }
     
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext){
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
         int x = 0, y = 0;
-        Catalog catalog = findCatalog(mapContext);
+        Catalog catalog = findCatalog(mapContent);
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont().deriveFont(Font.BOLD));
         double scaleDenominator = RendererUtilities.calculateOGCScale(
-                mapContext.getAreaOfInterest(),
-                mapContext.getRequest().getWidth(),
+                mapContent.getRenderingArea(),
+                mapContent.getRequest().getWidth(),
                 null
                 );
 
-        for (Layer layer : mapContext.layers()){
+        for (Layer layer : mapContent.layers()){
             SimpleFeatureType type = (SimpleFeatureType)layer.getFeatureSource().getSchema();
             if (!isGridLayer(type)) {
                 try {
@@ -143,14 +143,14 @@ public class LegendDecoration implements MapDecoration {
         return new Dimension(x, y);
     }
 
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext mapContext) 
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 
     throws Exception {
     	Catalog catalog = wms.getGeoServer().getCatalog();
-        Dimension d = findOptimalSize(g2d, mapContext);
+        Dimension d = findOptimalSize(g2d, mapContent);
         Rectangle bgRect = new Rectangle(0, 0, d.width, d.height);
         double scaleDenominator = RendererUtilities.calculateOGCScale(
-            mapContext.getAreaOfInterest(),
-            mapContext.getRequest().getWidth(),
+            mapContent.getRenderingArea(),
+            mapContent.getRequest().getWidth(),
             new HashMap()
         );
 
@@ -176,7 +176,7 @@ public class LegendDecoration implements MapDecoration {
         g2d.fill(bgRect);
         g2d.setColor(fgcolor);
 
-        for (Layer layer : mapContext.layers()){
+        for (Layer layer : mapContent.layers()){
             SimpleFeatureType type = (SimpleFeatureType)layer.getFeatureSource().getSchema();
             if (!isGridLayer(type)) {
                 try { 

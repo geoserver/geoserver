@@ -17,7 +17,7 @@ import java.util.Set;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 
 public class DDSMapResponse extends RenderedImageMapResponse {
@@ -37,7 +37,7 @@ public class DDSMapResponse extends RenderedImageMapResponse {
 	}
 
 	public void formatImageOutputStream(RenderedImage img, OutputStream os, 
-			WMSMapContext mapContext)
+	        WMSMapContent mapContent)
 			throws ServiceException, IOException {	
 			BufferedImage bimg = convertRenderedImage(img);
 			ByteBuffer bb = DDSConverter.convertToDxt3(bimg);

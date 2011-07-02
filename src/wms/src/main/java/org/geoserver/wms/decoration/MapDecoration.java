@@ -9,7 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Map;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 
 /**
  * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a 
@@ -30,11 +30,11 @@ public interface MapDecoration {
     /**
      * Determine the 'best' size for this decoration, given the request parameters.
      * @param g2d the Graphics2D context in which this Decoration will be rendered
-     * @param mapContext the map context for the request
+     * @param mapContent the map context for the request
      *
      * @throws InvalidStateException if loadOptions() has not been called yet
      */
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext);
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent);
 
     /**
      * Render the contents of this decoration onto the provided graphics object within the 
@@ -43,8 +43,8 @@ public interface MapDecoration {
      *
      * @param g2d the Graphics2D object onto which the decoration should be drawn
      * @param paintArea the bounds within the graphics object where the decoration should be drawn
-     * @param context the mapContext for the image being rendered
+     * @param context the mapContent for the image being rendered
      * @throws InvalidStateException if loadOptions() has not been called yet
      */
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext context) throws Exception;
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent context) throws Exception;
 }

@@ -8,7 +8,7 @@ import java.awt.image.RenderedImage;
 import java.util.Collections;
 import java.util.List;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geotools.coverage.grid.GridCoverage2D;
 
@@ -23,9 +23,9 @@ public class RenderedImageMap extends WebMap {
 
     private List<GridCoverage2D> renderedCoverages;
 
-    public RenderedImageMap(final WMSMapContext mapContext, final RenderedImage image,
+    public RenderedImageMap(final WMSMapContent mapContent, final RenderedImage image,
             final String mimeType) {
-        super(mapContext);
+        super(mapContent);
         this.image = image;
         setMimeType(mimeType);
     }
@@ -62,8 +62,8 @@ public class RenderedImageMap extends WebMap {
     /**
      * Access to the map's context this map is created for
      */
-    public WMSMapContext getMapContext() {
-        return mapContext;
+    public WMSMapContent getMapContext() {
+        return mapContent;
     }
 
 }

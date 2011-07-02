@@ -19,7 +19,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSMockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.FeatureSource;
@@ -43,7 +43,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
      */
     private GetMapRequest request;
 
-    private WMSMapContext mapContext;
+    private WMSMapContent mapContent;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -65,11 +65,11 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         request.setFormatOptions(Collections.singletonMap("relLinks", "true"));
         request.setBaseUrl("http://geoserver.org:8181/geoserver");
 
-        mapContext = new WMSMapContext(request);
+        mapContent = new WMSMapContent(request);
         FeatureSource source = layer.getFeatureSource(true);
         Style layerStyle = mockData.getDefaultStyle().getStyle();
         Layer Layer = new FeatureLayer(source, layerStyle);
-        mapContext.addLayer(Layer);
+        mapContent.addLayer(Layer);
     }
 
     /**
@@ -95,7 +95,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
 
         request.setBbox(new Envelope(-1, 1, -10, 10));
 
-        Document dom = WMSTestSupport.transform(mapContext, transformer);
+        Document dom = WMSTestSupport.transform(mapContent, transformer);
         assertXpathEvaluatesTo("1", "count(//kml/Folder)", dom);
         assertXpathEvaluatesTo("1", "count(//kml/Folder/NetworkLink)", dom);
         assertXpathEvaluatesTo("1", "count(//kml/Folder/LookAt)", dom);
@@ -152,7 +152,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
 
         request.setBbox(new Envelope(-1, 1, -10, 10));
 
-        Document dom = WMSTestSupport.transform(mapContext, transformer);
+        Document dom = WMSTestSupport.transform(mapContent, transformer);
         assertXpathEvaluatesTo("1", "count(//kml/Folder)", dom);
         assertXpathEvaluatesTo("1", "count(//kml/Folder/NetworkLink)", dom);
         assertXpathEvaluatesTo("1", "count(//kml/Folder/LookAt)", dom);
@@ -204,7 +204,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
 
         request.setFormatOptions(formatOptions);
 
-        Document dom = WMSTestSupport.transform(mapContext, transformer);
+        Document dom = WMSTestSupport.transform(mapContent, transformer);
         assertXpathEvaluatesTo("1", "count(//kml/Folder/LookAt)", dom);
 
         // explicit lookAt properties as set by FORMAT_OPTIONS

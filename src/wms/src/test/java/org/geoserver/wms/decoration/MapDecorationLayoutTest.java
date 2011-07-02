@@ -13,7 +13,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 
 public class MapDecorationLayoutTest extends TestCase {
    // public static TestSuite suite() { return new TestSuite(MapDecorationLayout.class); }
@@ -29,11 +29,11 @@ public class MapDecorationLayoutTest extends TestCase {
 
         public void loadOptions(Map<String,String> options) {}
 
-        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext) {
+        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
             return this.request;
         }
 
-        public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext mapContext) 
+        public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 
         throws Exception {
             assertEquals("Calculated width matches expected", expect.width, paintArea.width);
             assertEquals("Calculated height matches expected", expect.height, paintArea.height);

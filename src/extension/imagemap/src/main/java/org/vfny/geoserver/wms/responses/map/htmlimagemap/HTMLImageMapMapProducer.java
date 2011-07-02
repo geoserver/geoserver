@@ -11,7 +11,7 @@ import java.util.Set;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.springframework.util.Assert;
 
 /**
@@ -37,12 +37,12 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      * 
      * @throws ServiceException
      *             if an error occurs during rendering
-     * @see GetMapOutputFormat#produceMap(WMSMapContext)
+     * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
-    public EncodeHTMLImageMap produceMap(WMSMapContext mapContext) throws ServiceException,
+    public EncodeHTMLImageMap produceMap(WMSMapContent mapContent) throws ServiceException,
             IOException {
-        Assert.notNull(mapContext, "mapContext is not set");
-        return new EncodeHTMLImageMap(mapContext);
+        Assert.notNull(mapContent, "mapContent is not set");
+        return new EncodeHTMLImageMap(mapContent);
     }
 
     /**

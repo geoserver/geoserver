@@ -7,7 +7,7 @@ package org.geoserver.wms.decoration;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 
 /**
  * The MetatiledMapDecorationLayout class customizes the {MapDecorationLayout} to handle the special
@@ -31,11 +31,11 @@ public class MetatiledMapDecorationLayout extends MapDecorationLayout {
      *
      * @param g2d the Graphics2D context in which the Blocks will be rendered
      * @param paintArea the drawable area
-     * @param mapContext the WMSMapContext for the current map request
+     * @param mapContent the WMSMapContext for the current map request
      *
      * @see {Block#paint}
      */
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext mapContext) { 
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) { 
         int width = paintArea.width / tileSize;
         int height = paintArea.height / tileSize;
 
@@ -44,7 +44,7 @@ public class MetatiledMapDecorationLayout extends MapDecorationLayout {
                 int x = paintArea.x + (paintArea.width * i / tileSize);
                 int y = paintArea.y + (paintArea.height * j / tileSize);
                 Rectangle tileArea = new Rectangle(x, y, width, height);
-                super.paint(g2d, tileArea, mapContext);
+                super.paint(g2d, tileArea, mapContent);
             }
         }
     }

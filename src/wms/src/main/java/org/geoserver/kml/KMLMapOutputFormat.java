@@ -16,7 +16,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.XMLTransformerMap;
 import org.geotools.util.logging.Logging;
 
@@ -68,9 +68,9 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
      *            WMSMapContext describing what layers, styles, area of interest etc are to be used
      *            when producing the map.
      * 
-     * @see GetMapOutputFormat#produceMap(WMSMapContext)
+     * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
-    public XMLTransformerMap produceMap(WMSMapContext mapContext) throws ServiceException,
+    public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException,
             IOException {
 
         KMLTransformer transformer = new KMLTransformer(wms);
@@ -80,9 +80,9 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
         Charset encoding = wms.getCharSet();
         transformer.setEncoding(encoding);
 
-        XMLTransformerMap map = new XMLTransformerMap(mapContext, transformer, mapContext,
+        XMLTransformerMap map = new XMLTransformerMap(mapContent, transformer, mapContent,
                 MIME_TYPE);
-        map.setContentDispositionHeader(mapContext, ".kml");
+        map.setContentDispositionHeader(mapContent, ".kml");
         return map;
     }
 

@@ -15,7 +15,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.jdbc.JDBCUtils;
@@ -85,7 +85,7 @@ public class ExternalSortRegionatingStrategy extends
     }
     
     @Override
-    protected final String getDatabaseName(WMSMapContext con, Layer layer)
+    protected final String getDatabaseName(WMSMapContent con, Layer layer)
             throws Exception {
         fs = layer.getFeatureSource();
         SimpleFeatureType ft = (SimpleFeatureType) fs.getSchema();
@@ -102,7 +102,7 @@ public class ExternalSortRegionatingStrategy extends
         return super.getDatabaseName(cfg) + "_" + checkAttribute(cfg);
     }
 
-    protected void checkAttribute(WMSMapContext con, SimpleFeatureType ft) {
+    protected void checkAttribute(WMSMapContent con, SimpleFeatureType ft) {
         // find out which attribute we're going to use
         Map options = con.getRequest().getFormatOptions();
         attribute = (String) options.get("regionateAttr");

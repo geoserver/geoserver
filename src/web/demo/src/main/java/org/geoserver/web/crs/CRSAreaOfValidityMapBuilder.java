@@ -201,17 +201,17 @@ class CRSAreaOfValidityMapBuilder {
             throws IOException {
 
         Geometry geographicBoundingBox = getGeographicBoundingBox(crs);
-        MapContext mapContext = getMapContext(crs, geographicBoundingBox, areaOfInterest);
+        MapContext mapContent = getMapContext(crs, geographicBoundingBox, areaOfInterest);
 
         graphics.setColor(new Color(153, 179, 204));
         graphics.fillRect(0, 0, mapWidth, mapHeight);
 
         Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
 
-        mapContext.setAreaOfInterest(areaOfInterest, crs);
+        mapContent.setAreaOfInterest(areaOfInterest, crs);
 
         GTRenderer renderer = new StreamingRenderer();
-        renderer.setContext(mapContext);
+        renderer.setContext(mapContent);
         RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -257,7 +257,7 @@ class CRSAreaOfValidityMapBuilder {
     private MapContext getMapContext(CoordinateReferenceSystem crs, Geometry geographicBoundingBox,
             com.vividsolutions.jts.geom.Envelope areaOfInterest) throws IOException {
 
-        DefaultMapContext mapContext = new DefaultMapContext();
+        DefaultMapContext mapContent = new DefaultMapContext();
 
         Style style;
         URL shpfile;
@@ -266,21 +266,21 @@ class CRSAreaOfValidityMapBuilder {
         shpfile = getClass().getResource("TM_WORLD_BORDERS.shp");
         source = getFeatureSource(shpfile);
         style = getStyle("TM_WORLD_BORDERS.sld");
-        mapContext.addLayer(new DefaultMapLayer(source, style));
+        mapContent.addLayer(new DefaultMapLayer(source, style));
 
         source = getLatLonFeatureSource();
         style = getStyle("latlon.sld");
-        mapContext.addLayer(new DefaultMapLayer(source, style));
+        mapContent.addLayer(new DefaultMapLayer(source, style));
 
         shpfile = getClass().getResource("cities.shp");
         source = getFeatureSource(shpfile);
         style = getStyle("cities.sld");
-        mapContext.addLayer(new DefaultMapLayer(source, style));
+        mapContent.addLayer(new DefaultMapLayer(source, style));
 
         Layer layer = createCrsLayer(geographicBoundingBox, crs);
-        mapContext.addLayer(layer);
+        mapContent.addLayer(layer);
 
-        return mapContext;
+        return mapContent;
     }
 
     private SimpleFeatureSource getLatLonFeatureSource() {

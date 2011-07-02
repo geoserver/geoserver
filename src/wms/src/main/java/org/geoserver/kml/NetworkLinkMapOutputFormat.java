@@ -12,7 +12,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geoserver.wms.map.XMLTransformerMap;
 
@@ -41,30 +41,30 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
      * writeTo(). This way the output can be streamed directly to the output response and not
      * written to disk first, then loaded in and then sent to the response.
      * 
-     * @param mapContext
+     * @param mapContent
      *            WMSMapContext describing what layers, styles, area of interest etc are to be used
      *            when producing the map.
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     @SuppressWarnings("rawtypes")
-    public XMLTransformerMap produceMap(WMSMapContext mapContext) throws ServiceException,
+    public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException,
             IOException {
         KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
         transformer.setIndentation(3);
         Charset encoding = wms.getCharSet();
         transformer.setEncoding(encoding);
-        Map fo = mapContext.getRequest().getFormatOptions();
+        Map fo = mapContent.getRequest().getFormatOptions();
         Boolean superoverlay = (Boolean) fo.get("superoverlay");
         if (superoverlay == null) {
             superoverlay = Boolean.FALSE;
         }
         transformer.setEncodeAsRegion(superoverlay);
-        GetMapRequest request = mapContext.getRequest();
+        GetMapRequest request = mapContent.getRequest();
         boolean cachedMode = "cached".equals(KMLUtils.getSuperoverlayMode(request, wms));
         transformer.setCachedMode(cachedMode);
 
         String mimeType = request.getFormat();
-        XMLTransformerMap wmsResponse = new XMLTransformerMap(mapContext, transformer, mapContext,
+        XMLTransformerMap wmsResponse = new XMLTransformerMap(mapContent, transformer, mapContent,
                 mimeType);
         return wmsResponse;
     }

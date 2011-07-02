@@ -20,7 +20,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSMockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -75,11 +75,11 @@ public class KMLVectorTransformerTest extends TestCase {
         Style style = mockData.getDefaultStyle().getStyle();
         Layer layer = new FeatureLayer(features, style);
 
-        WMSMapContext mapContext = new WMSMapContext();
+        WMSMapContent mapContent = new WMSMapContent();
         GetMapRequest request = mockData.createRequest();
-        mapContext.setRequest(request);
+        mapContent.setRequest(request);
 
-        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, layer);
+        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContent, layer);
 
         Document document;
 
@@ -124,10 +124,10 @@ public class KMLVectorTransformerTest extends TestCase {
         request.setStartIndex(2);
         request.setFormatOptions(Collections.singletonMap("relLinks", "true"));
         request.setBaseUrl("baseurl");
-        WMSMapContext mapContext = new WMSMapContext();
-        mapContext.setRequest(request);
+        WMSMapContent mapContent = new WMSMapContent();
+        mapContent.setRequest(request);
 
-        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, layer);
+        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContent, layer);
         transformer.setStandAlone(false);
         transformer.setIndentation(2);
 

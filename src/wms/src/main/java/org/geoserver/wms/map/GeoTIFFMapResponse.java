@@ -16,7 +16,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -71,24 +71,24 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
 
     @Override
     public void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-            WMSMapContext mapContext) throws ServiceException, IOException {
+            WMSMapContent mapContent) throws ServiceException, IOException {
         // tiff
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing tiff image ...");
         }
 
         // get the one required by the GetMapRequest
-        GetMapRequest request = mapContext.getRequest();
+        GetMapRequest request = mapContent.getRequest();
         final String format = request.getFormat();
         // do we want it to be 8 bits?
-        InverseColorMapOp paletteInverter = mapContext.getPaletteInverter();
+        InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
         if (IMAGE_GEOTIFF8.equalsIgnoreCase(format) || (paletteInverter != null)) {
             image = forceIndexed8Bitmask(image, paletteInverter);
         }
         
         // crating a grid coverage
         final GridCoverage2D gc = factory.create("geotiff", image,
-                new GeneralEnvelope(mapContext.getAreaOfInterest()));
+                new GeneralEnvelope(mapContent.getRenderingArea()));
 
         // writing it out
         final ImageOutputStream imageOutStream = ImageIOExt.createImageOutputStream(image, outStream);

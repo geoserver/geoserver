@@ -18,7 +18,7 @@ import org.geoserver.kml.KMLVectorTransformer;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.Layer;
@@ -30,10 +30,10 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Transformer to create a KML document from a {@link WMSMapContext}.
+ * Transformer to create a KML document from a {@link WMSMapContent}.
  * <p>
  * The document is meant as a "metadata" document, and contains title and abstract taken from the
- * {@link WMSMapContext#getTitle()} and {@link WMSMapContext#getAbstract()} respectively, and a
+ * {@link WMSMapContent#getTitle()} and {@link WMSMapContent#getAbstract()} respectively, and a
  * networklink to the live kml contents.
  */
 class KMLMetadataDocumentTransformer extends TransformerBase {
@@ -75,9 +75,9 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
 
         public void encode(Object o) throws IllegalArgumentException {
 
-            final WMSMapContext mapContext = (WMSMapContext) o;
-            final GetMapRequest request = mapContext.getRequest();
-            final List<Layer> layers = mapContext.layers();
+            final WMSMapContent mapContent = (WMSMapContent) o;
+            final GetMapRequest request = mapContent.getRequest();
+            final List<Layer> layers = mapContent.layers();
 
             final KMLLookAt lookAtOpts = new KMLLookAt(request.getFormatOptions());
             // start("kml");
@@ -90,15 +90,15 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             // calculate scale denominator
             scaleDenominator = 1;
             try {
-                scaleDenominator = RendererUtilities.calculateScale(mapContext.getAreaOfInterest(),
-                        mapContext.getMapWidth(), mapContext.getMapHeight(), null);
+                scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(),
+                        mapContent.getMapWidth(), mapContent.getMapHeight(), null);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error calculating scale denominator", e);
             }
             LOGGER.log(Level.FINE, "scale denominator = " + scaleDenominator);
 
             start("Document");
-            String title = mapContext.getTitle();
+            String title = mapContent.getTitle();
             element("name", title);
             element("visibility", "1");
             element("open", "1");
@@ -110,9 +110,9 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
                     .getOnlineResource());
             element("atom:link", null, href);
 
-            String abstract1 = buildDescription(mapContext);
+            String abstract1 = buildDescription(mapContent);
             element("description", abstract1);
-            // encodeBbox(mapContext.getAreaOfInterest());
+            // encodeBbox(mapContent.getAreaOfInterest());
 
             KMLNetworkLinkTransformer networkLinkTransformer = new KMLNetworkLinkTransformer(wms);
             networkLinkTransformer.setStandalone(false);
@@ -122,13 +122,13 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             networkLinkTransformer.setEncodeAsRegion(false);
             // start("Folder");
             // element("name", "Full Online Content");
-            networkLinkTransformer.createTranslator(contentHandler).encode(mapContext);
+            networkLinkTransformer.createTranslator(contentHandler).encode(mapContent);
             // end("Folder");
 
             boolean includeSampleData = false;
             for (int i = 0; i < layers.size(); i++) {
                 // layer and info
-                MapLayerInfo layerInfo = mapContext.getRequest().getLayers().get(i);
+                MapLayerInfo layerInfo = mapContent.getRequest().getLayers().get(i);
                 final int type = layerInfo.getType();
                 if (MapLayerInfo.TYPE_VECTOR == type || MapLayerInfo.TYPE_REMOTE_VECTOR == type) {
                     includeSampleData = true;
@@ -141,15 +141,15 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
                 for (int i = 0; i < layers.size(); i++) {
                     // layer and info
                     Layer layer = layers.get(i);
-                    MapLayerInfo layerInfo = mapContext.getRequest().getLayers().get(i);
+                    MapLayerInfo layerInfo = mapContent.getRequest().getLayers().get(i);
 
-                    // encodeSuperOverlayLayer(mapContext, layer);
+                    // encodeSuperOverlayLayer(mapContent, layer);
                     if (layerInfo.getType() != MapLayerInfo.TYPE_RASTER) {
                         // vector
-                        encodeVectorLayer(mapContext, layer, lookAtOpts);
+                        encodeVectorLayer(mapContent, layer, lookAtOpts);
                     } else {
                         // encode as normal ground overlay
-                        encodeRasterLayer(mapContext, layer, lookAtOpts);
+                        encodeRasterLayer(mapContent, layer, lookAtOpts);
                     }
                 }
                 // end("Folder");
@@ -168,14 +168,14 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
         // end("LatLonBox");
         // }
 
-        private String buildDescription(WMSMapContext mapContext) {
+        private String buildDescription(WMSMapContent mapContent) {
             StringBuilder sb = new StringBuilder();
-            if (null != mapContext.getAbstract()) {
-                sb.append(mapContext.getAbstract());
+            if (null != mapContent.getAbstract()) {
+                sb.append(mapContent.getAbstract());
             }
-            if (null != mapContext.getKeywords()) {
+            if (null != mapContent.getKeywords()) {
                 sb.append("\n");
-                for (String kw : mapContext.getKeywords()) {
+                for (String kw : mapContent.getKeywords()) {
                     if (null != kw) {
                         sb.append(kw).append(" ");
                     }
@@ -187,14 +187,14 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
         /**
          * Encodes a vector layer as kml.
          */
-        protected void encodeVectorLayer(WMSMapContext mapContext, Layer layer,
+        protected void encodeVectorLayer(WMSMapContent mapContent, Layer layer,
                 KMLLookAt lookAtOpts) {
             // get the data
             SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureCollection features = null;
 
             try {
-                features = KMLUtils.loadFeatureCollection(featureSource, layer, mapContext, wms,
+                features = KMLUtils.loadFeatureCollection(featureSource, layer, mapContent, wms,
                         scaleDenominator);
                 if (features == null) {
                     // it means no features need to be depicted with this style/scale denominator
@@ -207,7 +207,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             }
 
             // kmz not selected, just do straight vector
-            KMLVectorTransformer tx = createVectorTransformer(mapContext, layer, lookAtOpts);
+            KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts);
             initTransformer(tx);
             tx.setScaleDenominator(scaleDenominator);
             Translator kmlTranslator = tx.createTranslator(contentHandler);
@@ -217,36 +217,36 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
         /**
          * Factory method, allows subclasses to inject their own version of the raster transfomer
          * 
-         * @param mapContext
+         * @param mapContent
          * @param lookAtOpts
          * @return
          */
-        protected KMLRasterTransformer createRasterTransfomer(WMSMapContext mapContext,
+        protected KMLRasterTransformer createRasterTransfomer(WMSMapContent mapContent,
                 KMLLookAt lookAtOpts) {
-            return new KMLRasterTransformer(wms, mapContext, lookAtOpts);
+            return new KMLRasterTransformer(wms, mapContent, lookAtOpts);
         }
 
         /**
          * Factory method, allows subclasses to inject their own version of the vector transfomer
          * 
-         * @param mapContext
+         * @param mapContent
          * @param lookAtOpts
          * @return
          */
-        protected KMLVectorTransformer createVectorTransformer(WMSMapContext mapContext,
+        protected KMLVectorTransformer createVectorTransformer(WMSMapContent mapContent,
                 Layer layer, KMLLookAt lookAtOpts) {
-            return new KMLVectorTransformer(wms, mapContext, layer, lookAtOpts);
+            return new KMLVectorTransformer(wms, mapContent, layer, lookAtOpts);
         }
 
         /**
          * Encodes a raster layer as kml.
          */
-        protected void encodeRasterLayer(WMSMapContext mapContext, Layer layer,
+        protected void encodeRasterLayer(WMSMapContent mapContent, Layer layer,
                 KMLLookAt lookAtOpts) {
 
-            GetMapRequest request = mapContext.getRequest();
+            GetMapRequest request = mapContent.getRequest();
             request.getFormatOptions().put("superoverlay", Boolean.TRUE);
-            KMLRasterTransformer tx = createRasterTransfomer(mapContext, lookAtOpts);
+            KMLRasterTransformer tx = createRasterTransfomer(mapContent, lookAtOpts);
             initTransformer(tx);
 
             tx.createTranslator(contentHandler).encode(layer);

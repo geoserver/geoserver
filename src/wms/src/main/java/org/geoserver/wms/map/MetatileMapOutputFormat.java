@@ -27,7 +27,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -67,9 +67,9 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
 
     /**
      * 
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public WebMap produceMap(WMSMapContext mapContext) throws ServiceException, IOException {
+    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         // get the key that identifies the meta tile. The cache will make sure
         // two threads asking
         // for the same tile will get the same key, and thus will synchronize
@@ -96,22 +96,22 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
 
                 // alter the map definition so that we build a meta-tile instead
                 // of just the tile
-                ReferencedEnvelope origEnv = mapContext.getAreaOfInterest();
-                mapContext.setAreaOfInterest(new ReferencedEnvelope(key.getMetaTileEnvelope(),
+                ReferencedEnvelope origEnv = mapContent.getRenderingArea();
+                mapContent.getViewport().setBounds(new ReferencedEnvelope(key.getMetaTileEnvelope(),
                         origEnv.getCoordinateReferenceSystem()));
-                mapContext.setMapWidth(key.getTileSize() * key.getMetaFactor());
-                mapContext.setMapHeight(key.getTileSize() * key.getMetaFactor());
-                mapContext.setTileSize(key.getTileSize());
+                mapContent.setMapWidth(key.getTileSize() * key.getMetaFactor());
+                mapContent.setMapHeight(key.getTileSize() * key.getMetaFactor());
+                mapContent.setTileSize(key.getTileSize());
 
-                RenderedImageMap metaTileMap = delegate.produceMap(mapContext);
+                RenderedImageMap metaTileMap = delegate.produceMap(mapContent);
 
                 RenderedImage metaTile = metaTileMap.getImage();
-                RenderedImage[] tiles = split(key, metaTile, mapContext);
+                RenderedImage[] tiles = split(key, metaTile, mapContent);
                 tileCache.storeTiles(key, tiles);
                 tile = tileCache.getTile(key, request, tiles);
                 renderedCoverages = metaTileMap.getRenderedCoverages();
             }
-            RenderedImageMap tileMap = new RenderedImageMap(mapContext, tile, getMimeType());
+            RenderedImageMap tileMap = new RenderedImageMap(mapContent, tile, getMimeType());
             tileMap.setRenderedCoverages(renderedCoverages);
             return tileMap;
         }
@@ -170,7 +170,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      * @param map
      * @return
      */
-    private RenderedImage[] split(MetaTileKey key, RenderedImage metaTile, WMSMapContext map) {
+    private RenderedImage[] split(MetaTileKey key, RenderedImage metaTile, WMSMapContent map) {
         final int metaFactor = key.getMetaFactor();
         final RenderedImage[] tiles = new RenderedImage[key.getMetaFactor() * key.getMetaFactor()];
         final int tileSize = key.getTileSize();

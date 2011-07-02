@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.util.logging.Logging;
@@ -63,7 +63,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
      * @see RasterMapOutputFormat#formatImageOutputStream(RenderedImage, OutputStream)
      */
     public void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-            WMSMapContext mapContext) throws ServiceException, IOException {
+            WMSMapContent mapContent) throws ServiceException, IOException {
         // /////////////////////////////////////////////////////////////////
         //
         // Reformatting this image for png
@@ -74,9 +74,9 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         }
 
         // get the one required by the GetMapRequest
-        final String format = mapContext.getRequest().getFormat();
-        if ("image/png8".equalsIgnoreCase(format) || (mapContext.getPaletteInverter() != null)) {
-            InverseColorMapOp paletteInverter = mapContext.getPaletteInverter();
+        final String format = mapContent.getRequest().getFormat();
+        if ("image/png8".equalsIgnoreCase(format) || (mapContent.getPaletteInverter() != null)) {
+            InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
             image = forceIndexed8Bitmask(image, paletteInverter);
         }
 

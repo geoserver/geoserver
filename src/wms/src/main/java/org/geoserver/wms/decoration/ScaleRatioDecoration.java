@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.renderer.lite.RendererUtilities;
 
 public class ScaleRatioDecoration implements MapDecoration {
@@ -27,27 +27,27 @@ public class ScaleRatioDecoration implements MapDecoration {
     public void loadOptions(Map<String, String> options) {
     }
 
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext){
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
-        return new Dimension(metrics.stringWidth(getScaleText(mapContext)), metrics.getHeight());
+        return new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
     }
 
-    public String getScaleText(WMSMapContext mapContext) {
+    public String getScaleText(WMSMapContent mapContent) {
         return String.format(
             "1 : %0$1.0f", 
             RendererUtilities.calculateOGCScale(
-                mapContext.getAreaOfInterest(),
-                mapContext.getRequest().getWidth(),
+                mapContent.getRenderingArea(),
+                mapContent.getRequest().getWidth(),
                 new HashMap()
             )
         );
     }
 
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext mapContext) 
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 
     throws Exception {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
         Dimension d = 
-            new Dimension(metrics.stringWidth(getScaleText(mapContext)), metrics.getHeight());
+            new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
         Color oldColor = g2d.getColor();
         Stroke oldStroke = g2d.getStroke();
 
@@ -63,7 +63,7 @@ public class ScaleRatioDecoration implements MapDecoration {
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(1));
 
-        g2d.drawString(getScaleText(mapContext), x, y);
+        g2d.drawString(getScaleText(mapContent), x, y);
         g2d.draw(bgRect);
 
         g2d.setColor(oldColor);

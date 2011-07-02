@@ -8,11 +8,11 @@ import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.python.Python;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.map.FeatureLayer;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.python.core.Py;
 import org.python.core.PyObject;
 
@@ -38,12 +38,11 @@ public class PythonVectorFormatAdapter extends PythonFormatAdapter {
         output.flush();
     }
     
-    public void write(WMSMapContext mapContext, OutputStream output) throws Exception {
+    public void write(WMSMapContent mapContent, OutputStream output) throws Exception {
         List features = new ArrayList();
-        for (int i = 0; i < mapContext.getLayerCount(); i++) {
-            MapLayer l = mapContext.getLayer(i);
-            if (l.toLayer() instanceof FeatureLayer) {
-                FeatureSource source = mapContext.getLayer(i).getFeatureSource();
+        for (Layer l : mapContent.layers()) {
+            if (l instanceof FeatureLayer) {
+                FeatureSource source = l.getFeatureSource();
                 features.add(source.getFeatures(l.getQuery()));
             }
         }

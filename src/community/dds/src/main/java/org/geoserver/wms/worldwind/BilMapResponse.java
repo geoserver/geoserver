@@ -29,7 +29,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geoserver.wms.worldwind.util.BilWCSUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -92,10 +92,10 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     
 	@Override
 	public void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-			WMSMapContext mapContext) throws ServiceException, IOException {
+	        WMSMapContent mapContent) throws ServiceException, IOException {
 		//TODO: Write reprojected terrain tile
 		// TODO Get request tile size
-		GetMapRequest request = mapContext.getRequest();
+		GetMapRequest request = mapContent.getRequest();
 		
 		String bilEncoding = (String) request.getFormat();
 		

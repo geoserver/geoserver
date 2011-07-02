@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
@@ -51,16 +51,16 @@ public class StreamingSVGMap extends WebMap {
     /**
      * Creates a new EncodeSVG object.
      * 
-     * @param mapContext
+     * @param mapContent
      * 
      */
-    public StreamingSVGMap(WMSMapContext mapContext) {
-        super(mapContext);
+    public StreamingSVGMap(WMSMapContent mapContent) {
+        super(mapContent);
     }
 
     public void encode(final OutputStream out) throws IOException {
-        Envelope env = this.mapContext.getAreaOfInterest();
-        this.writer = new SVGWriter(out, mapContext.getAreaOfInterest());
+        Envelope env = this.mapContent.getRenderingArea();
+        this.writer = new SVGWriter(out, mapContent.getRenderingArea());
         writer.setMinCoordDistance(env.getWidth() / 1000);
 
         long t = System.currentTimeMillis();
@@ -78,7 +78,7 @@ public class StreamingSVGMap extends WebMap {
     }
 
     public String createViewBox() {
-        Envelope referenceSpace = mapContext.getAreaOfInterest();
+        Envelope referenceSpace = mapContent.getRenderingArea();
         String viewBox = writer.getX(referenceSpace.getMinX()) + " "
                 + (writer.getY(referenceSpace.getMinY()) - referenceSpace.getHeight()) + " "
                 + referenceSpace.getWidth() + " " + referenceSpace.getHeight();
@@ -91,8 +91,8 @@ public class StreamingSVGMap extends WebMap {
         // a configuration option wether to include it or not.
         String viewBox = createViewBox();
         String header = SVG_HEADER.replaceAll("_viewBox_", viewBox);
-        header = header.replaceAll("_width_", String.valueOf(mapContext.getMapWidth()));
-        header = header.replaceAll("_height_", String.valueOf(mapContext.getMapHeight()));
+        header = header.replaceAll("_width_", String.valueOf(mapContent.getMapWidth()));
+        header = header.replaceAll("_height_", String.valueOf(mapContent.getMapHeight()));
         writer.write(header);
     }
 
@@ -115,7 +115,7 @@ public class StreamingSVGMap extends WebMap {
      * @task TODO: respect layer filtering given by their Styles
      */
     private void writeLayers() throws IOException {
-        List<Layer> layers = mapContext.layers();
+        List<Layer> layers = mapContent.layers();
         int nLayers = layers.size();
 
         // FeatureTypeInfo layerInfo = null;
@@ -131,8 +131,8 @@ public class StreamingSVGMap extends WebMap {
             SimpleFeatureType schema = fSource.getSchema();
 
             try {
-                Expression bboxExpression = fFac.createBBoxExpression(mapContext
-                        .getAreaOfInterest());
+                Expression bboxExpression = fFac.createBBoxExpression(mapContent
+                        .getRenderingArea());
                 GeometryFilter bboxFilter = fFac
                         .createGeometryFilter(FilterType.GEOMETRY_INTERSECTS);
                 bboxFilter.addLeftGeometry(fFac.createAttributeExpression(schema, schema

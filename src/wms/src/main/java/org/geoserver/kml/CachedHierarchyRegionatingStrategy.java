@@ -22,7 +22,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.jdbc.JDBCUtils;
 import org.geotools.factory.CommonFactoryFinder;
@@ -129,7 +129,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
         this.gs = gs;
     }
     
-    public Filter getFilter(WMSMapContext context, Layer layer) {
+    public Filter getFilter(WMSMapContent context, Layer layer) {
         Catalog catalog = gs.getCatalog();
         Set<String> featuresInTile = Collections.emptySet();
         try {
@@ -155,8 +155,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
 
             // make sure the request is within the data bounds, allowing for a
             // small error
-            ReferencedEnvelope requestedEnvelope = context.getAreaOfInterest()
-                    .transform(WGS84, true);
+            ReferencedEnvelope requestedEnvelope = context.getRenderingArea().transform(WGS84, true);
             LOGGER.log(Level.FINE, "Requested tile: {0}", requestedEnvelope);
             dataEnvelope = featureType.getLatLonBoundingBox(); 
 
@@ -544,9 +543,9 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * @param layer
      * @return
      */
-    protected String getDatabaseName(WMSMapContext con, Layer layer)
+    protected String getDatabaseName(WMSMapContent con, Layer layer)
         throws Exception {
-            int index = Arrays.asList(con.getLayers()).indexOf(layer);
+            int index =  con.layers().indexOf(layer);
             return getDatabaseName(featureType);
     }
 

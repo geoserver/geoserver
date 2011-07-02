@@ -28,7 +28,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -37,6 +37,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.FeatureSourceMapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
@@ -92,8 +93,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
 
         GetMapRequest request = new GetMapRequest();
-        final WMSMapContext map = new WMSMapContext();
-        map.setAreaOfInterest(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
         map.setMapWidth(300);
         map.setMapHeight(300);
         map.setBgColor(Color.red);
@@ -102,7 +103,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         StyleInfo styleByName = catalog.getStyleByName("Default");
         Style basicStyle = styleByName.getStyle();
-        map.addLayer(fs, basicStyle);
+        map.addLayer(new FeatureLayer(fs, basicStyle));
 
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
@@ -132,7 +133,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 env.getMaxY() + shift);
 
         GetMapRequest request = new GetMapRequest();
-        final WMSMapContext map = new WMSMapContext();
+        final WMSMapContent map = new WMSMapContent();
         int w = 400;
         int h = (int) Math.round((env.getHeight() * w) / env.getWidth());
         map.setMapWidth(w);
@@ -152,7 +153,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         addToMap(map, MockData.BRIDGES);
         addToMap(map, MockData.MAP_NEATLINE);
 
-        map.setAreaOfInterest(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
 
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
@@ -161,7 +162,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testBlueLake", image);
     }
 
-    private void addToMap(final WMSMapContext map, final QName typeName) throws IOException {
+    private void addToMap(final WMSMapContent map, final QName typeName) throws IOException {
         final FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
                 typeName.getNamespaceURI(), typeName.getLocalPart());
 
@@ -169,7 +170,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         StyleInfo defaultStyle = layers.get(0).getDefaultStyle();
         Style style = defaultStyle.getStyle();
 
-        map.addLayer(new FeatureSourceMapLayer(ftInfo.getFeatureSource(null, null), style));
+        map.addLayer(new FeatureLayer(ftInfo.getFeatureSource(null, null), style));
     }
 
     private void testDefaultStyle(FeatureSource fSource) throws Exception {
@@ -189,11 +190,11 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift,
                 env.getMaxY() + shift);
 
-        WMSMapContext map = new WMSMapContext();
+        WMSMapContent map = new WMSMapContent();
         GetMapRequest request = new GetMapRequest();
         map.setRequest(request);
-        map.addLayer(fSource, style);
-        map.setAreaOfInterest(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
+        map.addLayer(new FeatureLayer(fSource, style));
+        map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
         map.setMapWidth(w);
         map.setMapHeight(h);
         map.setBgColor(BG_COLOR);
@@ -264,13 +265,13 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             throws Exception {
 
         GetMapRequest request = new GetMapRequest();
-        final WMSMapContext map = new WMSMapContext();
+        final WMSMapContent map = new WMSMapContent();
         map.setMapWidth(100);
         map.setMapHeight(100);
         map.setRequest(request);
         final ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180, -90, 90,
                 DefaultGeographicCRS.WGS84);
-        map.setAreaOfInterest(bounds);
+        map.getViewport().setBounds(bounds);
 
         final FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(STREAMS.getNamespaceURI(),
                 STREAMS.getLocalPart());
@@ -289,7 +290,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         };
 
         StyleInfo someStyle = getCatalog().getStyles().get(0);
-        map.addLayer(source, someStyle.getStyle());
+        map.addLayer(new FeatureLayer(source, someStyle.getStyle()));
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         BufferedImage image = (BufferedImage) imageMap.getImage();

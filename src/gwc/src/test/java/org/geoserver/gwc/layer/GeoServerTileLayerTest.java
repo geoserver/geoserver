@@ -36,7 +36,7 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.gwc.config.GWCConfig;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
@@ -446,7 +446,7 @@ public class GeoServerTileLayerTest extends TestCase {
                 .thenReturn(mockResult);
 
         BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
-        RenderedImageMap fakeDispatchedMap = new RenderedImageMap(new WMSMapContext(), image,
+        RenderedImageMap fakeDispatchedMap = new RenderedImageMap(new WMSMapContent(), image,
                 "image/png");
 
         RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);

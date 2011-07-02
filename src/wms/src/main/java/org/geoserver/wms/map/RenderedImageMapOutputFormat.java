@@ -50,9 +50,9 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSMapContext;
-import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
@@ -223,49 +223,49 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public final RenderedImageMap produceMap(WMSMapContext mapContext) throws ServiceException {
-        return produceMap(mapContext, false);
+    public final RenderedImageMap produceMap(WMSMapContent mapContent) throws ServiceException {
+        return produceMap(mapContent, false);
     }
 
     /**
      * Actually produces the map image, careing about meta tiling if {@code tiled == true}.
      * 
-     * @param mapContext
+     * @param mapContent
      * @param tiled
      *            Indicates whether metatiling is activated for this map producer.
      */
-    public RenderedImageMap produceMap(final WMSMapContext mapContext, final boolean tiled)
+    public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
             throws ServiceException {
         
         System.setProperty("tolerance", "0.333");
 
-        final MapDecorationLayout layout = findDecorationLayout(mapContext, tiled);
+        final MapDecorationLayout layout = findDecorationLayout(mapContent, tiled);
 
-        Rectangle paintArea = new Rectangle(0, 0, mapContext.getMapWidth(),
-                mapContext.getMapHeight());
+        Rectangle paintArea = new Rectangle(0, 0, mapContent.getMapWidth(),
+                mapContent.getMapHeight());
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("setting up " + paintArea.width + "x" + paintArea.height + " image");
         }
 
         // extra antialias setting
-        final GetMapRequest request = mapContext.getRequest();
+        final GetMapRequest request = mapContent.getRequest();
         String antialias = (String) request.getFormatOptions().get("antialias");
         if (antialias != null)
             antialias = antialias.toUpperCase();
 
         // figure out a palette for buffered image creation
         IndexColorModel palette = null;
-        final InverseColorMapOp paletteInverter = mapContext.getPaletteInverter();
-        final boolean transparent = mapContext.isTransparent() && isTransparencySupported();
-        final Color bgColor = mapContext.getBgColor();
+        final InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
+        final boolean transparent = mapContent.isTransparent() && isTransparencySupported();
+        final Color bgColor = mapContent.getBgColor();
         if (paletteInverter != null && AA_NONE.equals(antialias)) {
             palette = paletteInverter.getIcm();
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
-            List<Layer> layers = mapContext.layers();
+            List<Layer> layers = mapContent.layers();
             for (int i = 0; i < layers.size(); i++) {
                 pe.visit(layers.get(i).getStyle());
                 if (!pe.canComputePalette())
@@ -284,7 +284,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // .. use a fake streaming renderer to evaluate the extra back buffers used when rendering
         // multiple featureTypeStyles against the same layer
         StreamingRenderer testRenderer = new StreamingRenderer();
-        testRenderer.setContext(mapContext);
+        testRenderer.setMapContent(mapContent);
         memory += testRenderer.getMaxBackBufferMemory(paintArea.width, paintArea.height);
         if (maxMemory > 0 && memory > maxMemory) {
             long kbUsed = memory / KB;
@@ -303,18 +303,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         RenderedImage image = null;
         // fast path for pure coverage rendering
         if (DefaultWebMapService.isDirectRasterPathEnabled() && 
-                mapContext.getLayerCount() == 1 
-                && mapContext.getAngle() == 0.0
+                mapContent.layers().size() == 1 
+                && mapContent.getAngle() == 0.0
                 && (layout == null || layout.isEmpty())) {
             List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
             try {
-                image = directRasterRender(mapContext, 0, renderedCoverages);
+                image = directRasterRender(mapContent, 0, renderedCoverages);
             } catch (Exception e) {
                 throw new ServiceException("Error rendering coverage on the fast path", e);
             }
 
             if (image != null) {
-                RenderedImageMap result = new RenderedImageMap(mapContext, image, getMimeType());
+                RenderedImageMap result = new RenderedImageMap(mapContent, image, getMimeType());
                 result.setRenderedCoverages(renderedCoverages);
                 return result;
             }
@@ -386,13 +386,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             sr.setThreadPool(DefaultWebMapService.getRenderingPool());
             renderer = sr;
         }
-        renderer.setContext(mapContext);
+        renderer.setMapContent(mapContent);
         renderer.setJava2DHints(hints);
 
         // setup the renderer hints
         Map<Object, Object> rendererParams = new HashMap<Object, Object>();
         rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-        rendererParams.put("renderingBuffer", new Integer(mapContext.getBuffer()));
+        rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(ShapefileRenderer.SCALE_COMPUTATION_METHOD_KEY,
                 ShapefileRenderer.SCALE_OGC);
@@ -414,14 +414,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         // see if the user specified a dpi
-        if (mapContext.getRequest().getFormatOptions().get("dpi") != null) {
-            rendererParams.put(StreamingRenderer.DPI_KEY, ((Integer) mapContext.getRequest()
+        if (mapContent.getRequest().getFormatOptions().get("dpi") != null) {
+            rendererParams.put(StreamingRenderer.DPI_KEY, ((Integer) mapContent.getRequest()
                     .getFormatOptions().get("dpi")));
         }
 
         boolean kmplacemark = false;
-        if (mapContext.getRequest().getFormatOptions().get("kmplacemark") != null)
-            kmplacemark = ((Boolean) mapContext.getRequest().getFormatOptions().get("kmplacemark"))
+        if (mapContent.getRequest().getFormatOptions().get("kmplacemark") != null)
+            kmplacemark = ((Boolean) mapContent.getRequest().getFormatOptions().get("kmplacemark"))
                     .booleanValue();
         if (kmplacemark) {
             // create a StyleVisitor that copies a style, but removes the
@@ -432,7 +432,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // layers' Styles to prevent their rendering on the
             // raster image. Both are better served with the
             // placemarks.
-            List<Layer> layers = mapContext.layers();
+            List<Layer> layers = mapContent.layers();
             for (int i = 0; i < layers.size(); i++) {
                 if (layers.get(i) instanceof StyleLayer) {
                     StyleLayer layer = (StyleLayer) layers.get(i);
@@ -468,13 +468,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         timeout.start();
         try {
             // finally render the image;
-            renderer.paint(graphic, paintArea, mapContext.getRenderingArea(),
-                    mapContext.getRenderingTransform());
+            renderer.paint(graphic, paintArea, mapContent.getRenderingArea(),
+                    mapContent.getRenderingTransform());
 
             // apply watermarking
             if (layout != null) {
                 try {
-                    layout.paint(graphic, paintArea, mapContext);
+                    layout.paint(graphic, paintArea, mapContent);
                 } catch (Exception e) {
                     throw new ServiceException("Problem occurred while trying to watermark data", e);
                 }
@@ -511,14 +511,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             image = preparedImage;
         // }
 
-        RenderedImageMap map = new RenderedImageMap(mapContext, image, getMimeType());
+        RenderedImageMap map = new RenderedImageMap(mapContent, image, getMimeType());
         return map;
     }
 
-    protected MapDecorationLayout findDecorationLayout(WMSMapContext mapContext, final boolean tiled) {
+    protected MapDecorationLayout findDecorationLayout(WMSMapContent mapContent, final boolean tiled) {
         String layoutName = null;
-        if (mapContext.getRequest().getFormatOptions() != null) {
-            layoutName = (String) mapContext.getRequest().getFormatOptions().get("layout");
+        if (mapContent.getRequest().getFormatOptions() != null) {
+            layoutName = (String) mapContent.getRequest().getFormatOptions().get("layout");
         }
 
         MapDecorationLayout layout = null;
@@ -700,7 +700,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * Java2D machinery and using a pure JAI chain of transformations instead. This considerably
      * improves both scalability and performance
      * 
-     * @param mapContext
+     * @param mapContent
      *            The map definition (used for map size and transparency/color management)
      * @param layerIndex
      *            the layer that is supposed to contain a coverage
@@ -710,13 +710,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @return the result of rendering the coverage, or null if there was no coverage, or the
      *         coverage could not be renderer for some reason
      */
-    private RenderedImage directRasterRender(WMSMapContext mapContext, int layerIndex,
+    private RenderedImage directRasterRender(WMSMapContent mapContent, int layerIndex,
             List<GridCoverage2D> renderedCoverages) throws IOException {
         
         //
         // extract the raster symbolizers 
         //
-        List<RasterSymbolizer> symbolizers = getRasterSymbolizers(mapContext, 0);
+        List<RasterSymbolizer> symbolizers = getRasterSymbolizers(mapContent, 0);
         if (symbolizers.size() != 1)
             return null;
         RasterSymbolizer symbolizer = symbolizers.get(0);
@@ -724,27 +724,27 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // Get a reader
         //
-        final Feature feature = mapContext.getLayer(0).getFeatureSource().getFeatures().features().next();
+        final Feature feature = mapContent.layers().get(0).getFeatureSource().getFeatures().features().next();
         final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) feature.getProperty("grid").getValue();
         final Object params = feature.getProperty("params").getValue();
 
         // if there is a output tile size hint, use it, otherwise use the output size itself
         final int tileSizeX;
         final int tileSizeY;
-        if (mapContext.getTileSize() != -1) {
-            tileSizeX = tileSizeY = mapContext.getTileSize();
+        if (mapContent.getTileSize() != -1) {
+            tileSizeX = tileSizeY = mapContent.getTileSize();
         } else {
-            tileSizeX = mapContext.getMapWidth();
-            tileSizeY = mapContext.getMapHeight();
+            tileSizeX = mapContent.getMapWidth();
+            tileSizeY = mapContent.getMapHeight();
         }
         
         //
         // dimensions
         //
-        final int mapWidth = mapContext.getMapWidth();
-        final int mapHeight= mapContext.getMapHeight();
-        final ReferencedEnvelope mapEnvelope = mapContext.getAreaOfInterest();
-        final CoordinateReferenceSystem mapCRS=mapContext.getCoordinateReferenceSystem();        
+        final int mapWidth = mapContent.getMapWidth();
+        final int mapHeight= mapContent.getMapHeight();
+        final ReferencedEnvelope mapEnvelope = mapContent.getRenderingArea();
+        final CoordinateReferenceSystem mapCRS=mapContent.getCoordinateReferenceSystem();        
         final Rectangle mapRasterArea = new Rectangle(0, 0, mapWidth,mapHeight);
         final AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(mapEnvelope, mapRasterArea);        
          
@@ -752,8 +752,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // Check transparency and bg color
         //
-        final boolean transparent = mapContext.isTransparent() && isTransparencySupported();
-        Color bgColor = mapContext.getBgColor();
+        final boolean transparent = mapContent.isTransparent() && isTransparencySupported();
+        Color bgColor = mapContent.getBgColor();
         // set transparency
         if (transparent) {
             bgColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 0);
@@ -882,7 +882,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     
                     // create a solid color empty image
                     image = gcr.renderImage(coverage, symbolizer, interpolation,
-                            mapContext.getBgColor(), tileSizeX, tileSizeY);
+                            mapContent.getBgColor(), tileSizeX, tileSizeY);
                 }
             } finally {
                 // once the final image is rendered we need to clean up the planar image chain
@@ -1153,7 +1153,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews
      * as necessary
      * 
-     * @param mapContext
+     * @param mapContent
      * @param reader
      * @param params
      * @param requestedRasterArea
@@ -1296,8 +1296,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param layerIndex
      * @return
      */
-    static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContext mc, int layerIndex) {
-        double scaleDenominator = RendererUtilities.calculateOGCScale(mc.getAreaOfInterest(),
+    static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContent mc, int layerIndex) {
+        double scaleDenominator = RendererUtilities.calculateOGCScale(mc.getRenderingArea(),
                 mc.getMapWidth(), null);
         Layer layer = mc.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();

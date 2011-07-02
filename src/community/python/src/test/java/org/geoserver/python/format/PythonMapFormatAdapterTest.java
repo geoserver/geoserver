@@ -5,27 +5,22 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.python.Python;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
@@ -85,12 +80,12 @@ public class PythonMapFormatAdapterTest {
         b.add("one");
         features2.add(b.buildFeature("fid.1"));
         
-        WMSMapContext context = new WMSMapContext();
-        context.addLayer(new MapLayer(DataUtilities.source(features1), null));
-        context.addLayer(new MapLayer(DataUtilities.source(features2), null));
+        WMSMapContent context = new WMSMapContent();
+        context.addLayer(new FeatureLayer(DataUtilities.source(features1), null));
+        context.addLayer(new FeatureLayer(DataUtilities.source(features2), null));
         context.setMapWidth(500);
         context.setMapHeight(500);
-        context.setAreaOfInterest(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        context.getViewport().setBounds(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         adapter.write(context, out);

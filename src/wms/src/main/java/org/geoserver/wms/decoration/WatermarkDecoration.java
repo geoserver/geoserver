@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.util.SoftValueHashMap;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
@@ -57,9 +57,9 @@ public class WatermarkDecoration implements MapDecoration {
         }
     }
 
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext){
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
         try{
-            BufferedImage logo = getLogo(mapContext);
+            BufferedImage logo = getLogo(mapContent);
             return new Dimension(logo.getWidth(), logo.getHeight());
         } catch (Exception e) {
             return new Dimension(20, 20);
@@ -75,9 +75,9 @@ public class WatermarkDecoration implements MapDecoration {
      * @throws ClassCastException
      * @throws MalformedURLException
      */
-    public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContext mapContext) 
+    public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContent mapContent) 
     throws MalformedURLException, ClassCastException, IOException {
-        BufferedImage logo = getLogo(mapContext);
+        BufferedImage logo = getLogo(mapContent);
 
         if (logo != null) {
             Composite oldComposite = g2D.getComposite();
@@ -99,7 +99,7 @@ public class WatermarkDecoration implements MapDecoration {
         }
     }
 
-    protected BufferedImage getLogo(WMSMapContext mapContext) throws IOException {
+    protected BufferedImage getLogo(WMSMapContent mapContent) throws IOException {
         BufferedImage logo = null;
 
         // fully resolve the url (consider data dir)

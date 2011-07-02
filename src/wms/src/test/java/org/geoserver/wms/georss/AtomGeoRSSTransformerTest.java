@@ -13,7 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.Query;
 import org.w3c.dom.Document;
@@ -22,7 +22,7 @@ import org.w3c.dom.NodeList;
 
 
 public class AtomGeoRSSTransformerTest extends WMSTestSupport {
-    static WMSMapContext map;
+    static WMSMapContent map;
     
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -34,7 +34,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
 
-        map = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
     }
 

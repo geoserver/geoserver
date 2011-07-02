@@ -5,7 +5,7 @@
 package org.geoserver.kml;
 
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.gml.producer.GeometryTransformer;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.Attributes;
@@ -33,7 +33,7 @@ public class KMLGeometryTransformer extends GeometryTransformer {
         "clampToGround" 
     };
 
-    public Translator createTranslator(ContentHandler handler, WMSMapContext context) {
+    public Translator createTranslator(ContentHandler handler, WMSMapContent context) {
         return new KMLGeometryTranslator(handler, numDecimals, useDummyZ, context);
     }
 
@@ -60,7 +60,7 @@ public class KMLGeometryTransformer extends GeometryTransformer {
                 ContentHandler handler, 
                 int numDecimals,
                 boolean useDummyZ,
-                WMSMapContext context
+                WMSMapContent context
                 ) {
             //super(handler, "kml", "http://earth.google.com/kml/2.0" );
             super(handler, null, null, numDecimals, useDummyZ, 3);

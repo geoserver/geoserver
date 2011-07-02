@@ -6,7 +6,7 @@ package org.geoserver.kml;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -36,7 +36,7 @@ public class BestGuessRegionatingStrategy implements RegionatingStrategy {
         this.gs = gs;
     }
     
-    public Filter getFilter(WMSMapContext context, Layer layer) {
+    public Filter getFilter(WMSMapContent context, Layer layer) {
         SimpleFeatureType type = 
             ((SimpleFeatureSource)layer.getFeatureSource()).getSchema();
         Class geomtype = type.getGeometryDescriptor().getType().getBinding();

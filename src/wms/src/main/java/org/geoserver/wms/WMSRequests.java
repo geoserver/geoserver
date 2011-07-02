@@ -39,14 +39,14 @@ public class WMSRequests {
      * <p>
      * The tile cache location is determined from {@link GeoServer#getTileCache()}. If the above
      * method returns null this method falls back to the behaviour of
-     * {@link #getGetMapUrl(WMSMapContext, MapLayer, Envelope, String[])}.
+     * {@link #getGetMapUrl(WMSMapContent, MapLayer, Envelope, String[])}.
      * </p>
      * <p>
      * If the <tt>layer</tt> argument is <code>null</code>, the request is made including all layers
      * in the <tt>mapContexT</tt>.
      * </p>
      * <p>
-     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContext#getAreaOfInterest()}
+     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()}
      * is used for the bbox parameter.
      * </p>
      * 
@@ -133,7 +133,7 @@ public class WMSRequests {
      * in the <tt>mapContexT</tt>.
      * </p>
      * <p>
-     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContext#getAreaOfInterest()}
+     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()}
      * is used for the bbox parameter.
      * </p>
      * 
@@ -171,7 +171,7 @@ public class WMSRequests {
      * <code>null</code>, then the default style for that layer is used.
      * </p>
      * <p>
-     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContext#getAreaOfInterest()}
+     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()}
      * is used for the bbox parameter.
      * </p>
      * 

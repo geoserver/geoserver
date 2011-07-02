@@ -27,7 +27,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.WMSLayer;
@@ -129,21 +129,21 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public RawMap produceMap(WMSMapContext mapContext)
+    public RawMap produceMap(WMSMapContent mapContent)
             throws ServiceException, IOException {
         try {
             // create the template
             Template template = cfg.getTemplate("OpenLayersMapTemplate.ftl");
             HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("context", mapContext);
-            map.put("pureCoverage", hasOnlyCoverages(mapContext));
-            map.put("styles", styleNames(mapContext));
-            map.put("request", mapContext.getRequest());
-            map.put("maxResolution", new Double(getMaxResolution(mapContext.getAreaOfInterest())));
+            map.put("context", mapContent);
+            map.put("pureCoverage", hasOnlyCoverages(mapContent));
+            map.put("styles", styleNames(mapContent));
+            map.put("request", mapContent.getRequest());
+            map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
 
-            String baseUrl = mapContext.getRequest().getBaseUrl();
+            String baseUrl = mapContent.getRequest().getBaseUrl();
             map.put("baseUrl", canonicUrl(baseUrl));
 
             // TODO: replace service path with call to buildURL since it does this
@@ -157,11 +157,11 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             }
             map.put("servicePath", servicePath);
 
-            map.put("parameters", getLayerParameter(mapContext.getRequest().getRawKvp()));
-            map.put("units", getOLUnits(mapContext.getRequest()));
+            map.put("parameters", getLayerParameter(mapContent.getRequest().getRawKvp()));
+            map.put("units", getOLUnits(mapContent.getRequest()));
 
-            if (mapContext.getLayerCount() == 1) {
-                map.put("layerName", mapContext.getLayer(0).getTitle());
+            if (mapContent.layers().size() == 1) {
+                map.put("layerName", mapContent.layers().get(0).getTitle());
             } else {
                 map.put("layerName", "Geoserver layers");
             }
@@ -169,7 +169,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             template.setOutputEncoding("UTF-8");
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             template.process(map, new OutputStreamWriter(buff, Charset.forName("UTF-8")));
-            RawMap result = new RawMap(mapContext, buff, MIME_TYPE);
+            RawMap result = new RawMap(mapContent, buff, MIME_TYPE);
             return result;
         } catch (TemplateException e) {
             throw new ServiceException(e);
@@ -180,11 +180,11 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * Guesses if the map context is made only of coverage layers by looking at the wrapping feature
      * type. Ugly, if you come up with better means of doing so, fix it.
      * 
-     * @param mapContext
+     * @param mapContent
      * @return
      */
-    private boolean hasOnlyCoverages(WMSMapContext mapContext) {
-        for (Layer layer : mapContext.layers()) {
+    private boolean hasOnlyCoverages(WMSMapContent mapContent) {
+        for (Layer layer : mapContent.layers()) {
             FeatureType schema = layer.getFeatureSource().getSchema();
             boolean grid = schema.getName().getLocalPart().equals("GridCoverage")
                     && schema.getDescriptor("geom") != null && schema.getDescriptor("grid") != null
@@ -195,11 +195,11 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         return true;
     }
 
-    private List<String> styleNames(WMSMapContext mapContext) {
-        if (mapContext.getLayerCount() != 1 || mapContext.getRequest() == null)
+    private List<String> styleNames(WMSMapContent mapContent) {
+        if (mapContent.layers().size() != 1 || mapContent.getRequest() == null)
             return Collections.emptyList();
 
-        MapLayerInfo info = mapContext.getRequest().getLayers().get(0);
+        MapLayerInfo info = mapContent.getRequest().getLayers().get(0);
         return info.getOtherStyleNames();
     }
 

@@ -16,7 +16,7 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.XMLTransformerMap;
 
 public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
@@ -56,9 +56,9 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public XMLTransformerMap produceMap(WMSMapContext map) throws ServiceException, IOException {
+    public XMLTransformerMap produceMap(WMSMapContent map) throws ServiceException, IOException {
 
         RSSGeoRSSTransformer tx = new RSSGeoRSSTransformer(wms);
         GetMapRequest request = map.getRequest();

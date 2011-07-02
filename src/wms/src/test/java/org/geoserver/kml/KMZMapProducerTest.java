@@ -15,7 +15,7 @@ import junit.framework.Test;
 import org.geoserver.data.test.MockData;
 import org.geoserver.kml.KMZMapResponse.KMZMap;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 
 public class KMZMapProducerTest extends WMSTestSupport {
@@ -34,20 +34,20 @@ public class KMZMapProducerTest extends WMSTestSupport {
         super.setUpInternal();
 
         // create a map context
-        WMSMapContext mapContext = new WMSMapContext();
-        mapContext.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
-        mapContext.addLayer(createMapLayer(MockData.BUILDINGS));
-        mapContext.setMapHeight(256);
-        mapContext.setMapWidth(256);
+        WMSMapContent mapContent = new WMSMapContent();
+        mapContent.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
+        mapContent.addLayer(createMapLayer(MockData.BUILDINGS));
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
 
         GetMapRequest getMapRequest = createGetMapRequest(new QName[] { MockData.BASIC_POLYGONS,
                 MockData.BUILDINGS });
-        mapContext.setRequest(getMapRequest);
+        mapContent.setRequest(getMapRequest);
 
         // create hte map producer
         mapProducer = new KMZMapOutputFormat(getWMS());
         mapEncoder = new KMZMapResponse(getWMS());
-        producedMap = mapProducer.produceMap(mapContext);
+        producedMap = mapProducer.produceMap(mapContent);
     }
 
     public void test() throws Exception {

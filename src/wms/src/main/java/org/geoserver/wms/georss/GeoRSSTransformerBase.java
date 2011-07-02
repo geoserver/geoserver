@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import org.geoserver.feature.ReprojectingFeatureCollection;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -254,8 +254,8 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         }
         
         @SuppressWarnings("unchecked")
-        protected List loadFeatureCollections(WMSMapContext map) throws IOException {
-            ReferencedEnvelope mapArea = map.getAreaOfInterest();
+        protected List loadFeatureCollections(WMSMapContent map) throws IOException {
+            ReferencedEnvelope mapArea = map.getRenderingArea();
             CoordinateReferenceSystem wgs84 = null;
             FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
             try {

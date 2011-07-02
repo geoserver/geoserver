@@ -1,12 +1,12 @@
 package org.geoserver.wms.svg;
 
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 
 public class BatikSVGMap extends org.geoserver.wms.WebMap {
     private SVGGraphics2D graphics;
 
-    BatikSVGMap(WMSMapContext context, SVGGraphics2D graphics) {
+    BatikSVGMap(WMSMapContent context, SVGGraphics2D graphics) {
         super(context);
         this.graphics = graphics;
         setMimeType(SVG.MIME_TYPE);

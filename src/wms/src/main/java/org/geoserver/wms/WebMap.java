@@ -15,14 +15,14 @@ public abstract class WebMap {
 
     private java.util.Map<String, String> responseHeaders;
 
-    protected final WMSMapContext mapContext;
+    protected final WMSMapContent mapContent;
 
     /**
      * @param context
      *            the map context, can be {@code null} is there's _really_ no context around
      */
-    public WebMap(final WMSMapContext context) {
-        this.mapContext = context;
+    public WebMap(final WMSMapContent context) {
+        this.mapContent = context;
     }
 
     /**
@@ -31,19 +31,19 @@ public abstract class WebMap {
      * This method is meant to be called right after the map is no longer needed. That generally
      * happens at the end of a {@link Response#write} operation, and is meant to free any resource
      * the map implementation might be holding, specially if it contains a refrerence to
-     * {@link WMSMapContext}, in which case it's mandatory that the map context's
-     * {@link WMSMapContext#dispose()} method is called.
+     * {@link WMSMapContent}, in which case it's mandatory that the map context's
+     * {@link WMSMapContent#dispose()} method is called.
      * </p>
      */
     public final void dispose() {
-        if (mapContext != null) {
-            mapContext.dispose();
+        if (mapContent != null) {
+            mapContent.dispose();
         }
         disposeInternal();
     }
 
     /**
-     * Hook for Map concrete subclasses to dispose any other resource than the {@link WMSMapContext}
+     * Hook for Map concrete subclasses to dispose any other resource than the {@link WMSMapContent}
      */
     protected void disposeInternal() {
         // default implementation does nothing
@@ -89,10 +89,9 @@ public abstract class WebMap {
      * extension will be ".pdf"
      * </p>
      */
-    public void setContentDispositionHeader(final WMSMapContext mapContext, final String extension) {
+    public void setContentDispositionHeader(final WMSMapContent mapContent, final String extension) {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < mapContext.getLayerCount(); i++) {
-            Layer layer = mapContext.layers().get(i);
+        for (Layer layer : mapContent.layers()) {
             String title = layer.getTitle();
             if (title != null && !title.equals("")) {
                 sb.append(title).append("_");

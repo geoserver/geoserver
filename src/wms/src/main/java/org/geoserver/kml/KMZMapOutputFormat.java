@@ -11,7 +11,7 @@ import org.geoserver.kml.KMZMapResponse.KMZMap;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 
 /**
@@ -48,12 +48,12 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
      * writeTo(). This way the output can be streamed directly to the output response and not
      * written to disk first, then loaded in and then sent to the response.
      * 
-     * @param mapContext
+     * @param mapContent
      *            WMSMapContext describing what layers, styles, area of interest etc are to be used
      *            when producing the map.
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public KMZMap produceMap(WMSMapContext mapContext) throws ServiceException, IOException {
+    public KMZMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         KMLTransformer transformer = new KMLTransformer(wms);
         transformer.setKmz(true);
         Charset encoding = wms.getCharSet();
@@ -61,8 +61,8 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
         // TODO: use GeoServer.isVerbose() to determine if we should indent?
         transformer.setIndentation(3);
 
-        KMZMap map = new KMZMap(mapContext, transformer, MIME_TYPE);
-        map.setContentDispositionHeader(mapContext, ".kmz");
+        KMZMap map = new KMZMap(mapContent, transformer, MIME_TYPE);
+        map.setContentDispositionHeader(mapContent, ".kmz");
 
         return map;
     }

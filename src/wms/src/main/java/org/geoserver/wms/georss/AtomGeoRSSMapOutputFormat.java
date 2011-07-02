@@ -16,7 +16,7 @@ import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.XMLTransformerMap;
 
 public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
@@ -55,13 +55,13 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public XMLTransformerMap produceMap(WMSMapContext mapContext) throws ServiceException,
+    public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException,
             IOException {
 
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(wms);
-        GetMapRequest request = mapContext.getRequest();
+        GetMapRequest request = mapContent.getRequest();
 
         String geometryEncoding = (String) request.getFormatOptions().get("encoding");
         if ("gml".equals(geometryEncoding)) {
@@ -75,7 +75,7 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
         Charset encoding = wms.getCharSet();
         tx.setEncoding(encoding);
 
-        XMLTransformerMap result = new XMLTransformerMap(mapContext, tx, mapContext, getMimeType());
+        XMLTransformerMap result = new XMLTransformerMap(mapContent, tx, mapContent, getMimeType());
         return result;
     }
 

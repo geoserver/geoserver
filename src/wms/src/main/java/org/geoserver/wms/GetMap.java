@@ -40,10 +40,10 @@ import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.filter.Filters;
 import org.geotools.filter.function.EnvFunction;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.WMSLayer;
-import org.geotools.map.WMSMapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -107,17 +107,17 @@ public class GetMap {
         // JD/GR:hold a reference in order to release resources later. mapcontext can leak memory --
         // we make sure we done (see
         // finally block)
-        WMSMapContext mapContext = new WMSMapContext(request);
+        WMSMapContent mapContent = new WMSMapContent(request);
         try {
-            return run(request, mapContext);
+            return run(request, mapContent);
         } catch (ServiceException e) {
-            mapContext.dispose();
+            mapContent.dispose();
             throw e;
         } catch (RuntimeException e) {
-            mapContext.dispose();
+            mapContent.dispose();
             throw (RuntimeException) e;
         } catch (Exception e) {
-            mapContext.dispose();
+            mapContent.dispose();
             throw new ServiceException("Internal error ", e);
         }
     }
@@ -127,7 +127,7 @@ public class GetMap {
      * names one can infer what's going on... but get a decent test coverage on it first as to avoid
      * regressions as much as possible
      */
-    public WebMap run(final GetMapRequest request, WMSMapContext mapContext)
+    public WebMap run(final GetMapRequest request, WMSMapContent mapContent)
             throws ServiceException, IOException {
         assertMandatory(request);
 
@@ -180,32 +180,32 @@ public class GetMap {
             WebMap map = null;
             List<RenderedImage> images = new ArrayList<RenderedImage>();
             for (Object currentTime : times){
-                map = executeInternal(mapContext, request, delegate, Arrays.asList(currentTime), elevations);
+                map = executeInternal(mapContent, request, delegate, Arrays.asList(currentTime), elevations);
                 
                 // remove layers to start over again
-                mapContext.clearLayerList();
+                mapContent.layers().clear();
                 
                 // collect the layer
                 images.add(((RenderedImageMap)map).getImage());
             }
             RenderedImageList imageList = new RenderedImageList(images);
-            return new  RenderedImageMap(mapContext, imageList , map.getMimeType());
+            return new  RenderedImageMap(mapContent, imageList , map.getMimeType());
         } else if(numElevations > 1 && isMultivaluedSupported) {
             WebMap map = null;
             List<RenderedImage> images = new ArrayList<RenderedImage>();
             for (Object currentElevation : elevations){
-                map = executeInternal(mapContext, request, delegate, times, Arrays.asList(currentElevation));
+                map = executeInternal(mapContent, request, delegate, times, Arrays.asList(currentElevation));
                 
                 // remove layers to start over again
-                mapContext.clearLayerList();
+                mapContent.layers().clear();
                 
                 // collect the layer
                 images.add(((RenderedImageMap)map).getImage());
             }
             RenderedImageList imageList = new RenderedImageList(images);
-            return new  RenderedImageMap(mapContext, imageList , map.getMimeType());
+            return new  RenderedImageMap(mapContent, imageList , map.getMimeType());
         } else {
-            return executeInternal(mapContext, request, delegate, times, elevations);    
+            return executeInternal(mapContent, request, delegate, times, elevations);    
         }
 
     }
@@ -214,13 +214,13 @@ public class GetMap {
      * Actually computes the WebMap, either in a single shot, or for a particular
      * time/elevation value should there be a list of them
      * @param request
-     * @param mapContext
+     * @param mapContent
      * @param delegate
      * @param env
      * @return
      * @throws IOException
      */
-    WebMap executeInternal(WMSMapContext mapContext, final GetMapRequest request,
+    WebMap executeInternal(WMSMapContent mapContent, final GetMapRequest request,
             GetMapOutputFormat delegate, List<Object> times, List<Object> elevations) throws IOException {
         final Envelope envelope = request.getBbox();       
         final List<MapLayerInfo> layers = request.getLayers();
@@ -234,18 +234,18 @@ public class GetMap {
 
         // DJB: added this to be nicer about the "NONE" srs.
         if (mapcrs != null) {
-            mapContext.setAreaOfInterest(envelope, mapcrs);
+            mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, mapcrs));
         } else {
-            mapContext.setAreaOfInterest(envelope, DefaultGeographicCRS.WGS84);
+            mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, DefaultGeographicCRS.WGS84));
         }
 
-        mapContext.setMapWidth(request.getWidth());
-        mapContext.setMapHeight(request.getHeight());
-        mapContext.setAngle(request.getAngle());
-        mapContext.setBgColor(request.getBgColor());
-        mapContext.setTransparent(request.isTransparent());
-        mapContext.setBuffer(request.getBuffer());
-        mapContext.setPaletteInverter(request.getPalette());
+        mapContent.setMapWidth(request.getWidth());
+        mapContent.setMapHeight(request.getHeight());
+        mapContent.setAngle(request.getAngle());
+        mapContent.setBgColor(request.getBgColor());
+        mapContent.setTransparent(request.isTransparent());
+        mapContent.setBuffer(request.getBuffer());
+        mapContent.setPaletteInverter(request.getPalette());
 
         // //
         //
@@ -254,8 +254,8 @@ public class GetMap {
         //
         // ///
         if ((request.getWidth() <= 0) || (request.getHeight() <= 0)
-                || (mapContext.getAreaOfInterest().getLength(0) <= 0)
-                || (mapContext.getAreaOfInterest().getLength(1) <= 0)) {
+                || (mapContent.getRenderingArea().getSpan(0) <= 0)
+                || (mapContent.getRenderingArea().getSpan(1) <= 0)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("We are not going to render anything because either the area is null or the dimensions are not positive.");
             }
@@ -301,7 +301,7 @@ public class GetMap {
                 definitionQuery.setMaxFeatures(maxFeatures);
                 featureLayer.setQuery(definitionQuery);
                 
-                mapContext.addLayer(featureLayer);
+                mapContent.addLayer(featureLayer);
                 
                 layer = featureLayer;
             } else if (layerType == MapLayerInfo.TYPE_VECTOR) {
@@ -371,7 +371,7 @@ public class GetMap {
                 definitionQuery.setMaxFeatures(maxFeatures);
 
                 featureLayer.setQuery(definitionQuery);
-                mapContext.addLayer(featureLayer);
+                mapContent.addLayer(featureLayer);
                 
                 layer = featureLayer;
             } else if (layerType == MapLayerInfo.TYPE_RASTER) {
@@ -398,7 +398,7 @@ public class GetMap {
 
                         layer.setTitle(mapLayerInfo.getCoverage().getPrefixedName());
 
-                        mapContext.addLayer(layer);
+                        mapContent.addLayer(layer);
                     } catch (IllegalArgumentException e) {
                         if (LOGGER.isLoggable(Level.SEVERE)) {
                             LOGGER.log(
@@ -423,8 +423,8 @@ public class GetMap {
 
                 // see if we can merge this layer with the previous one
                 boolean merged = false;
-                if (mapContext.getLayerCount() > 0) {
-                    org.geotools.map.Layer lastLayer = mapContext.layers().get(mapContext.getLayerCount() - 1);
+                if (mapContent.layers().size() > 0) {
+                    org.geotools.map.Layer lastLayer = mapContent.layers().get(mapContent.layers().size() - 1);
                     if (lastLayer instanceof WMSLayer) {
                         WMSLayer lastWMS = (WMSLayer) lastLayer;
                         WebMapServer otherWMS = lastWMS.getWebMapServer();
@@ -435,9 +435,9 @@ public class GetMap {
                     }
                 }
                 if (!merged) {
-                    WMSMapLayer Layer = new WMSMapLayer(wms, gt2Layer);
+                    WMSLayer Layer = new WMSLayer(wms, gt2Layer);
                     Layer.setTitle(wmsLayer.getPrefixedName());
-                    mapContext.addLayer(Layer);
+                    mapContent.addLayer(Layer);
                 }
             } else {
                 throw new IllegalArgumentException("Unkown layer type " + layerType);
@@ -446,11 +446,11 @@ public class GetMap {
 
         // setup the SLD variable substitution environment
         Map envMap = new HashMap(request.getEnv());
-        envMap.put("wms_bbox", mapContext.getAreaOfInterest());
-        envMap.put("wms_crs", mapContext.getAreaOfInterest().getCoordinateReferenceSystem());
-        envMap.put("wms_srs", mapContext.getRequest().getSRS());
-        envMap.put("wms_width", mapContext.getMapWidth());
-        envMap.put("wms_height", mapContext.getMapHeight());
+        envMap.put("wms_bbox", mapContent.getRenderingArea());
+        envMap.put("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
+        envMap.put("wms_srs", mapContent.getRequest().getSRS());
+        envMap.put("wms_width", mapContent.getMapWidth());
+        envMap.put("wms_height", mapContent.getMapHeight());
         EnvFunction.setLocalValues(envMap);
 
         WebMap map;
@@ -459,14 +459,14 @@ public class GetMap {
             // in this map
             // GR: question: does setupRenderingBuffer need EnvFunction.setLocalValues to be already
             // set? otherwise move this call out of the try block and above setLovalValues
-            setupRenderingBuffer(mapContext, layers);
+            setupRenderingBuffer(mapContent, layers);
 
             // /////////////////////////////////////////////////////////
             //
             // Producing the map in the requested format.
             //
             // /////////////////////////////////////////////////////////
-            map = delegate.produceMap(mapContext);
+            map = delegate.produceMap(mapContent);
 
         } finally {
             EnvFunction.clearLocalValues();
@@ -494,7 +494,7 @@ public class GetMap {
      * @param map
      * @param layers
      */
-    public static void setupRenderingBuffer(WMSMapContext map, List<MapLayerInfo> layers) {
+    public static void setupRenderingBuffer(WMSMapContent map, List<MapLayerInfo> layers) {
         // easy case, the buffer is already set in the call
         if (map.getBuffer() > 0) {
             return;
@@ -524,7 +524,7 @@ public class GetMap {
             for (int i = 0; i < layers.size(); i++) {
                 int layerBuffer = layerBuffers[i];
                 if (layerBuffer == 0) {
-                    layerBuffer = computeLayerBuffer(map.getLayer(i).getStyle(), scaleDenominator);
+                    layerBuffer = computeLayerBuffer(map.layers().get(i).getStyle(), scaleDenominator);
                 }
                 if (layerBuffer > buffer) {
                     buffer = layerBuffer;
@@ -564,7 +564,7 @@ public class GetMap {
      * @param map
      * @return
      */
-    static double getRequestScale(WMSMapContext map) {
+    static double getRequestScale(WMSMapContent map) {
         java.util.Map hints = new HashMap();
         if (map.getRequest().getFormatOptions().get("dpi") != null) {
             hints.put(StreamingRenderer.DPI_KEY, ((Integer) map.getRequest().getFormatOptions()

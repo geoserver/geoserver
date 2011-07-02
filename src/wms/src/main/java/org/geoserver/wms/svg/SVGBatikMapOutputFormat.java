@@ -24,14 +24,12 @@ import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.MaxErrorEnforcer;
 import org.geoserver.wms.map.RenderExceptionStrategy;
-import org.geotools.map.MapContext;
+import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.w3c.dom.Document;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Renders svg using the Batik SVG Toolkit. An SVG context is created for a map and then passed of
@@ -79,12 +77,12 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
     /**
      * 
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public BatikSVGMap produceMap(WMSMapContext mapContext) throws ServiceException, IOException {
+    public BatikSVGMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
 
-        StreamingRenderer renderer = setUpRenderer(mapContext);
-        SVGGraphics2D g = createSVGMap(renderer, mapContext);
+        StreamingRenderer renderer = setUpRenderer(mapContent);
+        SVGGraphics2D g = createSVGMap(renderer, mapContent);
         renderer = null;
 
         // This method of output does not output the DOCTYPE definiition
@@ -94,10 +92,10 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         // XMLSerializer serializer = new XMLSerializer(new OutputStreamWriter(out, "UTF-8"),
         // format);
 
-        return new BatikSVGMap(mapContext, g);
+        return new BatikSVGMap(mapContent, g);
     }
 
-    private StreamingRenderer setUpRenderer(WMSMapContext mapContext) {
+    private StreamingRenderer setUpRenderer(WMSMapContent mapContent) {
         StreamingRenderer renderer;
         renderer = new StreamingRenderer();
 
@@ -109,39 +107,31 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
         // render everything in vector form if possible
         rendererParams.put(StreamingRenderer.VECTOR_RENDERING_KEY, Boolean.TRUE);
-        rendererParams.put("renderingBuffer", new Integer(mapContext.getBuffer()));
+        rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
         }
         renderer.setRendererHints(rendererParams);
-        renderer.setContext(mapContext);
+        renderer.setMapContent(mapContent);
         return renderer;
     }
 
     public SVGGraphics2D createSVGMap(final StreamingRenderer renderer,
-            final WMSMapContext mapContext) throws ServiceException, IOException {
+            final WMSMapContent mapContent) throws ServiceException, IOException {
         try {
-            MapContext map = renderer.getContext();
+            MapContent map = renderer.getMapContent();
             double width = -1;
             double height = -1;
 
-            if (map instanceof WMSMapContext) {
-                WMSMapContext wmsMap = (WMSMapContext) map;
+            if (map instanceof WMSMapContent) {
+                WMSMapContent wmsMap = (WMSMapContent) map;
                 width = wmsMap.getMapWidth();
                 height = wmsMap.getMapHeight();
             } else {
-                // guess a width and height based on the envelope
-                Envelope area = map.getAreaOfInterest();
-
-                if ((area.getHeight() > 0) && (area.getWidth() > 0)) {
-                    if (area.getHeight() >= area.getWidth()) {
-                        height = 600;
-                        width = height * (area.getWidth() / area.getHeight());
-                    } else {
-                        width = 800;
-                        height = width * (area.getHeight() / area.getWidth());
-                    }
-                }
+                // get fromt he map content
+                Rectangle screenArea = map.getViewport().getScreenArea();
+                width = screenArea.getWidth();
+                height = screenArea.getHeight();
             }
 
             if ((height == -1) || (width == -1)) {
@@ -173,8 +163,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
             renderer.addRenderListener(nonIgnorableExceptionListener);
 
-            renderer.paint(g, new Rectangle(g.getSVGCanvasSize()), mapContext.getRenderingArea(),
-                    mapContext.getRenderingTransform());
+            renderer.paint(g, new Rectangle(g.getSVGCanvasSize()), mapContent.getRenderingArea(),
+                    mapContent.getRenderingTransform());
 
             // check if too many errors occurred
             if (errorChecker.exceedsMaxErrors()) {

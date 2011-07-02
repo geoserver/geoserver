@@ -17,7 +17,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.resources.image.ImageUtilities;
@@ -89,7 +89,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      * @throws IOException
      */
     public abstract void formatImageOutputStream(RenderedImage image, OutputStream outStream,
-            WMSMapContext mapContext) throws ServiceException, IOException;
+            WMSMapContent mapContent) throws ServiceException, IOException;
 
     /**
      * Writes the image to the given destination.
@@ -97,7 +97,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      * @param value
      *            must be a {@link RenderedImageMap}
      * @see GetMapOutputFormat#write(org.geoserver.wms.WebMap, OutputStream)
-     * @see #formatImageOutputStream(RenderedImage, OutputStream, WMSMapContext)
+     * @see #formatImageOutputStream(RenderedImage, OutputStream, WMSMapContent)
      */
     @Override
     public final void write(final Object value, final OutputStream output, final Operation operation)
@@ -109,9 +109,9 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
         try {
             final RenderedImage image = imageMap.getImage();
             final List<GridCoverage2D> renderedCoverages = imageMap.getRenderedCoverages();
-            final WMSMapContext mapContext = imageMap.getMapContext();
+            final WMSMapContent mapContent = imageMap.getMapContext();
             try {
-                formatImageOutputStream(image, output, mapContext);
+                formatImageOutputStream(image, output, mapContent);
                 output.flush();
             } finally {
                 // let go of the coverages created for rendering

@@ -19,7 +19,7 @@ import java.util.TimeZone;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.map.Layer;
@@ -84,7 +84,7 @@ public final class AtomUtils {
     }
 
     //TODO: use an html based output format
-    public static String getEntryURL(WMS wms, SimpleFeature feature, WMSMapContext context){
+    public static String getEntryURL(WMS wms, SimpleFeature feature, WMSMapContent context){
         String nsUri = feature.getType().getName().getNamespaceURI();
         String nsPrefix = wms.getNameSpacePrefix(nsUri);
 
@@ -99,7 +99,7 @@ public final class AtomUtils {
              URLType.SERVICE);
     }
 
-    public static String getEntryURI(WMS wms, SimpleFeature feature, WMSMapContext context){
+    public static String getEntryURI(WMS wms, SimpleFeature feature, WMSMapContent context){
         return getEntryURL(wms, feature, context);
     }
 
@@ -119,15 +119,15 @@ public final class AtomUtils {
         }
     }
 
-    public static String getFeedURL(WMSMapContext context){
+    public static String getFeedURL(WMSMapContent context){
         return WMSRequests.getGetMapUrl(context.getRequest(), null, 0, null, null).replace(' ', '+');
     }
 
-    public static String getFeedURI(WMSMapContext context){
+    public static String getFeedURI(WMSMapContent context){
         return getFeedURL(context);
     }
 
-    public static String getFeedTitle(WMSMapContext context){
+    public static String getFeedTitle(WMSMapContent context){
         StringBuffer title = new StringBuffer();
         for( Layer layer : context.layers() ){
             title.append(layer.getTitle()).append(",");
@@ -137,7 +137,7 @@ public final class AtomUtils {
     }
 
 
-    private static String commaSeparatedLayers(WMSMapContext con){
+    private static String commaSeparatedLayers(WMSMapContent con){
         StringBuilder layers = new StringBuilder();
         List<Layer> mapLayers = con.layers();
         for (int i = 0; i < mapLayers.size(); i++){

@@ -14,7 +14,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -113,7 +113,7 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
         }
 
         public void encode(Object o) throws IllegalArgumentException {
-            final WMSMapContext context = (WMSMapContext) o;
+            final WMSMapContent context = (WMSMapContent) o;
             final GetMapRequest request = context.getRequest();
             // restore target mime type for the network links
             if (NetworkLinkMapOutputFormat.KML_MIME_TYPE.equals(request.getFormat())) {
@@ -159,7 +159,7 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
          * @return the aggregated bounds for all the requested layers, taking into account whether
          *         the whole layer or filtered bounds is used for each layer
          */
-        private ReferencedEnvelope computePerLayerQueryBounds(final WMSMapContext context,
+        private ReferencedEnvelope computePerLayerQueryBounds(final WMSMapContent context,
                 final List<ReferencedEnvelope> target, final KMLLookAt lookAt) {
 
             // no need to compute queried bounds if request explicitly specified the view area

@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.Layer;
@@ -23,7 +23,7 @@ import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 
 /**
- * Transformer to create a KML document from a {@link WMSMapContext}.
+ * Transformer to create a KML document from a {@link WMSMapContent}.
  * 
  * @author Justin Deoliveira
  * 
@@ -75,9 +75,9 @@ public class KMLTransformer extends TransformerBase {
 
         public void encode(Object o) throws IllegalArgumentException {
 
-            final WMSMapContext mapContext = (WMSMapContext) o;
-            final GetMapRequest request = mapContext.getRequest();
-            final List<Layer> layers = mapContext.layers();
+            final WMSMapContent mapContent = (WMSMapContent) o;
+            final GetMapRequest request = mapContent.getRequest();
+            final List<Layer> layers = mapContent.layers();
 
             final KMLLookAt lookAtOpts = new KMLLookAt(request.getFormatOptions());
             // start("kml");
@@ -90,8 +90,8 @@ public class KMLTransformer extends TransformerBase {
             // calculate scale denominator
             scaleDenominator = 1;
             try {
-                scaleDenominator = RendererUtilities.calculateScale(mapContext.getAreaOfInterest(),
-                        mapContext.getMapWidth(), mapContext.getMapHeight(), null);
+                scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(),
+                        mapContent.getMapWidth(), mapContent.getMapHeight(), null);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error calculating scale denominator", e);
             }
@@ -116,23 +116,23 @@ public class KMLTransformer extends TransformerBase {
             for (int i = 0; i < layers.size(); i++) {
                 // layer and info
                 Layer layer = layers.get(i);
-                MapLayerInfo layerInfo = mapContext.getRequest().getLayers().get(i);
+                MapLayerInfo layerInfo = mapContent.getRequest().getLayers().get(i);
 
                 // was a super overlay requested?
-                Boolean superoverlay = (Boolean) mapContext.getRequest().getFormatOptions()
+                Boolean superoverlay = (Boolean) mapContent.getRequest().getFormatOptions()
                         .get("superoverlay");
                 superoverlay = (superoverlay == null ? Boolean.FALSE : superoverlay);
                 if (superoverlay) {
                     // encode as super overlay
-                    encodeSuperOverlayLayer(mapContext, layer);
+                    encodeSuperOverlayLayer(mapContent, layer);
                 } else {
                     // figure out which type of layer this is, raster or vector
                     if (layerInfo.getType() != MapLayerInfo.TYPE_RASTER) {
                         // vector
-                        encodeVectorLayer(mapContext, layer, lookAtOpts);
+                        encodeVectorLayer(mapContent, layer, lookAtOpts);
                     } else {
                         // encode as normal ground overlay
-                        encodeRasterLayer(mapContext, layer, lookAtOpts);
+                        encodeRasterLayer(mapContent, layer, lookAtOpts);
                     }
                 }
             }
@@ -143,7 +143,7 @@ public class KMLTransformer extends TransformerBase {
                 for (int i = 0; i < layers.size(); i++) {
                     // layer and info
                     Layer layer = layers.get(i);
-                    encodeLegend(mapContext, layer);
+                    encodeLegend(mapContent, layer);
                 }
             }
 
@@ -157,14 +157,14 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Encodes a vector layer as kml.
          */
-        protected void encodeVectorLayer(WMSMapContext mapContext, Layer layer,
+        protected void encodeVectorLayer(WMSMapContent mapContent, Layer layer,
                 KMLLookAt lookAtOpts) {
             // get the data
             SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureCollection features = null;
 
             try {
-                features = KMLUtils.loadFeatureCollection(featureSource, layer, mapContext, wms,
+                features = KMLUtils.loadFeatureCollection(featureSource, layer, mapContent, wms,
                         scaleDenominator);
                 if (features == null) {
                     // it means no features need to be depicted with this style/scale denominator
@@ -181,7 +181,7 @@ public class KMLTransformer extends TransformerBase {
                 // calculate kmscore to determine if we shoud write as vectors
                 // or pre-render
                 int kmscore = wms.getKmScore();
-                Object kmScoreObj = mapContext.getRequest().getFormatOptions().get("kmscore");
+                Object kmScoreObj = mapContent.getRequest().getFormatOptions().get("kmscore");
                 if (kmScoreObj != null) {
                     kmscore = (Integer) kmScoreObj;
                 }
@@ -189,12 +189,12 @@ public class KMLTransformer extends TransformerBase {
 
                 if (useVector) {
                     // encode
-                    KMLVectorTransformer tx = createVectorTransformer(mapContext, layer, lookAtOpts);
+                    KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts);
                     initTransformer(tx);
                     tx.setScaleDenominator(scaleDenominator);
                     tx.createTranslator(contentHandler).encode(features);
                 } else {
-                    KMLRasterTransformer tx = createRasterTransfomer(mapContext, lookAtOpts);
+                    KMLRasterTransformer tx = createRasterTransfomer(mapContent, lookAtOpts);
                     initTransformer(tx);
 
                     // set inline to true to have the transformer reference images
@@ -204,7 +204,7 @@ public class KMLTransformer extends TransformerBase {
                 }
             } else {
                 // kmz not selected, just do straight vector
-                KMLVectorTransformer tx = createVectorTransformer(mapContext, layer, lookAtOpts);
+                KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts);
                 initTransformer(tx);
                 tx.setScaleDenominator(scaleDenominator);
                 tx.createTranslator(contentHandler).encode(features);
@@ -214,33 +214,33 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Factory method, allows subclasses to inject their own version of the raster transfomer
          * 
-         * @param mapContext
+         * @param mapContent
          * @param lookAtOpts
          * @return
          */
-        protected KMLRasterTransformer createRasterTransfomer(WMSMapContext mapContext,
+        protected KMLRasterTransformer createRasterTransfomer(WMSMapContent mapContent,
                 KMLLookAt lookAtOpts) {
-            return new KMLRasterTransformer(wms, mapContext, lookAtOpts);
+            return new KMLRasterTransformer(wms, mapContent, lookAtOpts);
         }
 
         /**
          * Factory method, allows subclasses to inject their own version of the vector transfomer
          * 
-         * @param mapContext
+         * @param mapContent
          * @param lookAtOpts
          * @return
          */
-        protected KMLVectorTransformer createVectorTransformer(WMSMapContext mapContext,
+        protected KMLVectorTransformer createVectorTransformer(WMSMapContent mapContent,
                 Layer layer, KMLLookAt lookAtOpts) {
-            return new KMLVectorTransformer(wms, mapContext, layer, lookAtOpts);
+            return new KMLVectorTransformer(wms, mapContent, layer, lookAtOpts);
         }
 
         /**
          * Encodes a raster layer as kml.
          */
-        protected void encodeRasterLayer(WMSMapContext mapContext, Layer layer,
+        protected void encodeRasterLayer(WMSMapContent mapContent, Layer layer,
                 KMLLookAt lookAtOpts) {
-            KMLRasterTransformer tx = createRasterTransfomer(mapContext, lookAtOpts);
+            KMLRasterTransformer tx = createRasterTransfomer(mapContent, lookAtOpts);
             initTransformer(tx);
 
             tx.setInline(kmz);
@@ -250,8 +250,8 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Encodes a layer as a super overlay.
          */
-        protected void encodeSuperOverlayLayer(WMSMapContext mapContext, Layer layer) {
-            KMLSuperOverlayTransformer tx = new KMLSuperOverlayTransformer(wms, mapContext);
+        protected void encodeSuperOverlayLayer(WMSMapContent mapContent, Layer layer) {
+            KMLSuperOverlayTransformer tx = new KMLSuperOverlayTransformer(wms, mapContent);
             initTransformer(tx);
             tx.createTranslator(contentHandler).encode(layer);
         }
@@ -259,8 +259,8 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Encodes the legend for a maper layer as a scree overlay.
          */
-        protected void encodeLegend(WMSMapContext mapContext, Layer layer) {
-            KMLLegendTransformer tx = new KMLLegendTransformer(mapContext);
+        protected void encodeLegend(WMSMapContent mapContent, Layer layer) {
+            KMLLegendTransformer tx = new KMLLegendTransformer(mapContent);
             initTransformer(tx);
             tx.createTranslator(contentHandler).encode(layer);
         }
@@ -271,15 +271,15 @@ public class KMLTransformer extends TransformerBase {
             delegate.setStandAlone(false);
         }
 
-        double computeScaleDenominator(Layer layer, WMSMapContext mapContext) {
-            Rectangle paintArea = new Rectangle(mapContext.getMapWidth(), mapContext.getMapHeight());
+        double computeScaleDenominator(Layer layer, WMSMapContent mapContent) {
+            Rectangle paintArea = new Rectangle(mapContent.getMapWidth(), mapContent.getMapHeight());
             AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(
-                    mapContext.getAreaOfInterest(), paintArea);
+                    mapContent.getRenderingArea(), paintArea);
 
             try {
                 // 90 = OGC standard DPI (see SLD spec page 37)
-                return RendererUtilities.calculateScale(mapContext.getAreaOfInterest(),
-                        mapContext.getCoordinateReferenceSystem(), paintArea.width,
+                return RendererUtilities.calculateScale(mapContent.getRenderingArea(),
+                        mapContent.getCoordinateReferenceSystem(), paintArea.width,
                         paintArea.height, 90);
             } catch (Exception e) {
                 // probably either (1) no CRS (2) error xforming, revert to

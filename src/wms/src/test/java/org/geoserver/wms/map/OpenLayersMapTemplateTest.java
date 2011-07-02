@@ -19,7 +19,7 @@ import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -49,16 +49,16 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         assertNotNull(template);
 
         GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
-        WMSMapContext mapContext = new WMSMapContext();
-        mapContext.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
-        mapContext.setRequest(request);
-        mapContext.setMapWidth(256);
-        mapContext.setMapHeight(256);
+        WMSMapContent mapContent = new WMSMapContent();
+        mapContent.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
+        mapContent.setRequest(request);
+        mapContent.setMapWidth(256);
+        mapContent.setMapHeight(256);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         HashMap map = new HashMap();
-        map.put("context", mapContext);
-        map.put("request", mapContext.getRequest());
+        map.put("context", mapContent);
+        map.put("request", mapContent.getRequest());
         map.put("maxResolution", new Double(0.0005)); // just a random number
         map.put("baseUrl", "http://localhost:8080/geoserver/wms");
         map.put("parameters", new ArrayList());

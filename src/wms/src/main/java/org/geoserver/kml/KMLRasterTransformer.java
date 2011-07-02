@@ -10,7 +10,7 @@ import java.util.logging.Level;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -69,12 +69,12 @@ public class KMLRasterTransformer extends KMLMapTransformer {
     boolean inline = false;
     private KMLLookAt lookAtOpts;
 
-    public KMLRasterTransformer(WMS wms, WMSMapContext mapContext) {
-        this(wms, mapContext, null);
+    public KMLRasterTransformer(WMS wms, WMSMapContent mapContent) {
+        this(wms, mapContent, null);
     }
 
-    public KMLRasterTransformer(WMS wms, WMSMapContext mapContext, KMLLookAt lookAtOpts) {
-        super(wms, mapContext, null);
+    public KMLRasterTransformer(WMS wms, WMSMapContent mapContent, KMLLookAt lookAtOpts) {
+        super(wms, mapContent, null);
         this.lookAtOpts = lookAtOpts;
         setNamespaceDeclarationEnabled(false);
     }
@@ -94,14 +94,14 @@ public class KMLRasterTransformer extends KMLMapTransformer {
 
         public void encode(Object o) throws IllegalArgumentException {
             Layer layer = (Layer) o;
-            int mapLayerOrder = mapContext.layers().indexOf(layer);
+            int mapLayerOrder = mapContent.layers().indexOf(layer);
 
             if (isStandAlone()) {
                 start("kml");
             }
 
             //get the lat lon bbox
-            ReferencedEnvelope box = new ReferencedEnvelope(mapContext.getAreaOfInterest());
+            ReferencedEnvelope box = new ReferencedEnvelope(mapContent.getRenderingArea());
             boolean reprojectBBox = (box.getCoordinateReferenceSystem() != null)
                     && !CRS.equalsIgnoreMetadata(box.getCoordinateReferenceSystem(),
                             DefaultGeographicCRS.WGS84);
@@ -157,13 +157,13 @@ public class KMLRasterTransformer extends KMLMapTransformer {
             end("GroundOverlay");
 
             // if the kmplacemark format option is true, add placemarks to the output
-            boolean kmplacemark = KMLUtils.getKmplacemark(mapContext.getRequest(), wms);
+            boolean kmplacemark = KMLUtils.getKmplacemark(mapContent.getRequest(), wms);
             if (kmplacemark) {
                 SimpleFeatureCollection features = null;
                 try {
                     features = KMLUtils.loadFeatureCollection(
                             (SimpleFeatureSource) layer.getFeatureSource(), layer,
-                            mapContext, wms, scaleDenominator);
+                            mapContent, wms, scaleDenominator);
                 } catch (Exception ex) {
                     String msg = "Error getting features.";
                     LOGGER.log(Level.WARNING, msg, ex);
@@ -174,7 +174,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
                     Geometry centroidGeom = null;
 
                     // get geometry of the area of interest
-                    Envelope aoi = mapContext.getAreaOfInterest();
+                    Envelope aoi = mapContent.getRenderingArea();
                     GeometryFactory factory = new GeometryFactory();
                     Geometry displayGeom = factory.toGeometry(new Envelope(aoi.getMinX(), aoi
                             .getMaxX(), aoi.getMinY(), aoi.getMaxY()));
@@ -230,13 +230,13 @@ public class KMLRasterTransformer extends KMLMapTransformer {
             if (inline) {
                 // inline means reference the image "inline" as in kmz
                 // use the mapLayerOrder
-                int mapLayerOrder = mapContext.layers().indexOf(layer);
+                int mapLayerOrder = mapContent.layers().indexOf(layer);
                 element("href", "images/layer_" + mapLayerOrder + ".png");
             } else {
                 // reference the image as a remote wms call
                 element("href",
-                        WMSRequests.getGetMapUrl(mapContext.getRequest(), layer, 0,
-                                mapContext.getAreaOfInterest(), new String[] { "format",
+                        WMSRequests.getGetMapUrl(mapContent.getRequest(), layer, 0,
+                                mapContent.getRenderingArea(), new String[] { "format",
                                         "image/png", "transparent", "true" }));
             }
         }

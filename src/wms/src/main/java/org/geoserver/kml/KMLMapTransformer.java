@@ -32,7 +32,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureHeightTemplate;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geoserver.wms.featureinfo.FeatureTimeTemplate;
@@ -119,7 +119,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
     /**
      * The map context
      */
-    protected WMSMapContext mapContext;
+    protected WMSMapContent mapContent;
 
     /**
      * The map layer being transformed
@@ -186,12 +186,12 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
 
     }
 
-    public KMLMapTransformer(WMS wms, WMSMapContext mapContext, Layer mapLayer) {
+    public KMLMapTransformer(WMS wms, WMSMapContent mapContent, Layer mapLayer) {
         this.wms = wms;
-        this.mapContext = mapContext;
+        this.mapContent = mapContent;
         this.mapLayer = mapLayer;
 
-        this.vectorNameDescription = KMLUtils.getKMAttr(mapContext.getRequest(), wms);
+        this.vectorNameDescription = KMLUtils.getKMAttr(mapContent.getRequest(), wms);
     }
 
     public abstract class KMLMapTranslatorSupport extends KMLTranslatorSupport {
@@ -668,7 +668,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                         }
 
                         if (file != null && styles != null) {
-                            iconHref = ResponseUtils.buildURL(mapContext.getRequest().getBaseUrl(),
+                            iconHref = ResponseUtils.buildURL(mapContent.getRequest().getBaseUrl(),
                                     "styles/" + styles.toURI().relativize(graphicFile.toURI()),
                                     null, URLType.RESOURCE);
                         }
@@ -887,9 +887,9 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                 }
             }
 
-            String selfLinks = (String) mapContext.getRequest().getFormatOptions().get("selfLinks");
+            String selfLinks = (String) mapContent.getRequest().getFormatOptions().get("selfLinks");
             if (selfLinks != null && selfLinks.equalsIgnoreCase("true")) {
-                GetMapRequest request = mapContext.getRequest();
+                GetMapRequest request = mapContent.getRequest();
                 String link = "";
 
                 try {
@@ -960,7 +960,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
             NamespaceInfo ns = catalog.getNamespaceByURI(nsUri);
             String featureTypeName = mapLayer.getFeatureSource().getSchema().getName()
                     .getLocalPart();
-            GetMapRequest request = mapContext.getRequest();
+            GetMapRequest request = mapContent.getRequest();
             String baseURL = request.getBaseUrl();
             String prefix = ns.getPrefix();
             return buildURL(baseURL, appendPath("rest", prefix, featureTypeName), null,
@@ -1194,11 +1194,11 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
             }
 
             // rprojection done in KMLTransformer
-            // if (!CRS.equalsIgnoreMetadata(sourceCrs, mapContext.getCoordinateReferenceSystem()))
+            // if (!CRS.equalsIgnoreMetadata(sourceCrs, mapContent.getCoordinateReferenceSystem()))
             // {
             // try {
             // MathTransform transform = CRS.findMathTransform(sourceCrs,
-            // mapContext.getCoordinateReferenceSystem(), true);
+            // mapContent.getCoordinateReferenceSystem(), true);
             // geom = JTS.transform(geom, transform);
             // } catch (MismatchedDimensionException e) {
             // LOGGER.severe(e.getLocalizedMessage());

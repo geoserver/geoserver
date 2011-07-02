@@ -19,7 +19,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
@@ -105,11 +105,11 @@ public class KMLUtils {
      * made including all layers in the <tt>mapContexT</tt>.
      * </p>
      * <p>
-     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContext#getAreaOfInterest()}
+     * If the <tt>bbox</tt> argument is <code>null</code>. {@link WMSMapContent#getAreaOfInterest()}
      * is used for the bbox parameter.
      * </p>
      *
-     * @param mapContext The map context.
+     * @param mapContent The map context.
      * @param layer The Map layer, may be <code>null</code>.
      * @param layerIndex The index of the layer in the request.
      * @param bbox The bounding box of the request, may be <code>null</code>.
@@ -118,10 +118,10 @@ public class KMLUtils {
      * @param geoserver 
      *
      * @return The full url for a getMap request.
-     * @deprecated use {@link WMSRequests#getGetMapUrl(WMSMapContext, Layer, Envelope, String[])}
+     * @deprecated use {@link WMSRequests#getGetMapUrl(WMSMapContent, Layer, Envelope, String[])}
      */
     public static String getMapUrl(
-            WMSMapContext mapContext,
+            WMSMapContent mapContent,
             Layer layer,
             int layerIndex,
             Envelope bbox,
@@ -129,12 +129,12 @@ public class KMLUtils {
             boolean tile, GeoServer geoserver) {
        
         if ( tile ) {
-            org.geoserver.wms.GetMapRequest request = mapContext.getRequest();
+            org.geoserver.wms.GetMapRequest request = mapContent.getRequest();
             return WMSRequests.getTiledGetMapUrl(geoserver, request, layer, layerIndex, bbox, kvp );
         }
         
         return WMSRequests.getGetMapUrl( 
-                    mapContext.getRequest(),
+                    mapContent.getRequest(),
                     layer,
                     layerIndex,
                     bbox,
@@ -148,7 +148,7 @@ public class KMLUtils {
      * If the <tt>Layer</tt> argument is <code>null</code>, the request is
      * made including all layers in the <tt>mapContexT</tt>.
      * </p>
-     * @param mapContext The map context.
+     * @param mapContent The map context.
      * @param layer The Map layer, may be <code>null</code>
      * @param layerIndex The index of the layer in the request.
      * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
@@ -156,25 +156,25 @@ public class KMLUtils {
      * @param geoserver 
      *
      * @return The full url for a getMap request.
-     * @deprecated use {@link WMSRequests#getGetMapUrl(WMSMapContext, Layer, int, Envelope, String[])}
+     * @deprecated use {@link WMSRequests#getGetMapUrl(WMSMapContent, Layer, int, Envelope, String[])}
      */
-    public static String getMapUrl(WMSMapContext mapContext, Layer layer, int layerIndex, boolean tile, GeoServer geoserver) {
-        return getMapUrl(mapContext, layer, layerIndex, mapContext.getAreaOfInterest(), null, tile, geoserver);
+    public static String getMapUrl(WMSMapContent mapContent, Layer layer, int layerIndex, boolean tile, GeoServer geoserver) {
+        return getMapUrl(mapContent, layer, layerIndex, mapContent.getRenderingArea(), null, tile, geoserver);
     }
 
     /**
      * Encodes the url for a GetLegendGraphic request from a map context + map layer.
      *
-     * @param mapContext The map context.
+     * @param mapContent The map context.
      * @param layer The map layer.
      * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
      *
      * @return A map containing all the key value pairs for a GetLegendGraphic request.
-     * @deprecated use {@link WMSRequests#getGetLegendGraphicUrl(WMSMapContext, Layer, String[])
+     * @deprecated use {@link WMSRequests#getGetLegendGraphicUrl(WMSMapContent, Layer, String[])
      */
-    public static String getLegendGraphicUrl(WMSMapContext mapContext, Layer layer,
+    public static String getLegendGraphicUrl(WMSMapContent mapContent, Layer layer,
         String[] kvp) {
-        return WMSRequests.getGetLegendGraphicUrl(mapContext.getRequest(), layer, kvp);
+        return WMSRequests.getGetLegendGraphicUrl(mapContent.getRequest(), layer, kvp);
     }
 
     /**
@@ -416,7 +416,7 @@ public class KMLUtils {
      * If no feature is going to be returned a null feature collection will be returned instead
      * @param featureSource
      * @param layer
-     * @param mapContext
+     * @param mapContent
      * @param wms
      * @param scaleDenominator
      * @return
@@ -424,11 +424,11 @@ public class KMLUtils {
      */
     public static SimpleFeatureCollection loadFeatureCollection(
             SimpleFeatureSource featureSource,
-            Layer layer, WMSMapContext mapContext, WMS wms, double scaleDenominator) throws Exception {
+            Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator) throws Exception {
         SimpleFeatureType schema = featureSource.getSchema();
 
-        Envelope envelope = mapContext.getAreaOfInterest();
-        ReferencedEnvelope aoi = new ReferencedEnvelope(envelope, mapContext
+        Envelope envelope = mapContent.getRenderingArea();
+        ReferencedEnvelope aoi = new ReferencedEnvelope(envelope, mapContent
                 .getCoordinateReferenceSystem());
         CoordinateReferenceSystem sourceCrs = schema
                 .getCoordinateReferenceSystem();
@@ -465,7 +465,7 @@ public class KMLUtils {
 
         // check the regionating strategy
         RegionatingStrategy regionatingStrategy = null;
-        String stratname = (String) mapContext.getRequest().getFormatOptions()
+        String stratname = (String) mapContent.getRequest().getFormatOptions()
                 .get("regionateBy");
         if (("auto").equals(stratname)) {
             Catalog catalog = wms.getGeoServer().getCatalog();
@@ -495,7 +495,7 @@ public class KMLUtils {
         Filter regionatingFilter = Filter.INCLUDE;
 
         if (regionatingStrategy != null)
-            regionatingFilter = regionatingStrategy.getFilter(mapContext, layer);
+            regionatingFilter = regionatingStrategy.getFilter(mapContent, layer);
 
         Filter ruleFilter = summarizeRuleFilters(getLayerRules(featureSource
                 .getSchema(), layer.getStyle()), scaleDenominator);
@@ -668,7 +668,7 @@ public class KMLUtils {
     
     /**
      * Returns the the kmattr value (either specified in the request, or the default one) 
-     * @param mapContext
+     * @param mapContent
      * @return
      */
     public static boolean getKMAttr(GetMapRequest request, WMS wms) {
@@ -682,7 +682,7 @@ public class KMLUtils {
     
     /**
      * Returns the the kmplacemark value (either specified in the request, or the default one) 
-     * @param mapContext
+     * @param mapContent
      * @return
      */
     public static boolean getKmplacemark(GetMapRequest request, WMS wms) {
@@ -696,7 +696,7 @@ public class KMLUtils {
     
     /**
      * Returns the the kmscore value (either specified in the request, or the default one) 
-     * @param mapContext
+     * @param mapContent
      * @return
      */
     public static int getKmScore(GetMapRequest request, WMS wms ) {
@@ -711,7 +711,7 @@ public class KMLUtils {
     
     /**
      * Returns true if the request is GWC compatible
-     * @param mapContext
+     * @param mapContent
      * @return
      */
     public static boolean isRequestGWCCompatible(GetMapRequest request, int layerIndex, WMS wms) {
@@ -781,14 +781,14 @@ public class KMLUtils {
     
     /**
      * Returns true if the request is GWC compatible
-     * @param mapContext
+     * @param mapContent
      * @return
      */
-    public static boolean isRequestGWCCompatible(WMSMapContext mapContext, Layer layer, WMS wms) {
-        List<Layer> layers = mapContext.layers();
+    public static boolean isRequestGWCCompatible(WMSMapContent mapContent, Layer layer, WMS wms) {
+        List<Layer> layers = mapContent.layers();
         for(int i = 0; i < layers.size(); i++) {
             if(layers.get(i) == layer) {
-                return isRequestGWCCompatible(mapContext.getRequest(), i, wms);
+                return isRequestGWCCompatible(mapContent.getRequest(), i, wms);
             }
         }
         LOGGER.warning("Could not find map layer " + layer.getTitle() + " in the map context");

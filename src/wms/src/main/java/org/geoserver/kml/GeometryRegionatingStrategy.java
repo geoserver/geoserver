@@ -11,7 +11,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
@@ -37,7 +37,7 @@ public class GeometryRegionatingStrategy extends
     }
 
     @Override
-    protected void checkAttribute(WMSMapContext con, SimpleFeatureType ft) {
+    protected void checkAttribute(WMSMapContent con, SimpleFeatureType ft) {
         // find out which attribute we're going to use
         Map options = con.getRequest().getFormatOptions();
         attribute = (String) options.get("regionateAttr");

@@ -18,7 +18,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.map.PDFMapOutputFormat.PDFMap;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -75,10 +75,10 @@ public class PDFMapResponse extends AbstractMapResponse {
             ServiceException {
 
         Assert.isInstanceOf(PDFMap.class, value);
-        WMSMapContext mapContext = ((PDFMap) value).getContext();
+        WMSMapContent mapContent = ((PDFMap) value).getContext();
 
-        final int width = mapContext.getMapWidth();
-        final int height = mapContext.getMapHeight();
+        final int width = mapContent.getMapWidth();
+        final int height = mapContent.getMapHeight();
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("setting up " + width + "x" + height + " image");
@@ -113,8 +113,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             PdfGraphics2D graphic = (PdfGraphics2D) tp.createGraphics(width, height, mapper);
 
             // we set graphics options
-            if (!mapContext.isTransparent()) {
-                graphic.setColor(mapContext.getBgColor());
+            if (!mapContent.isTransparent()) {
+                graphic.setColor(mapContent.getBgColor());
                 graphic.fillRect(0, 0, width, height);
             } else {
                 if (LOGGER.isLoggable(Level.FINE)) {
@@ -124,9 +124,9 @@ public class PDFMapResponse extends AbstractMapResponse {
                 int type = AlphaComposite.SRC;
                 graphic.setComposite(AlphaComposite.getInstance(type));
 
-                Color c = new Color(mapContext.getBgColor().getRed(), mapContext.getBgColor()
-                        .getGreen(), mapContext.getBgColor().getBlue(), 0);
-                graphic.setBackground(mapContext.getBgColor());
+                Color c = new Color(mapContent.getBgColor().getRed(), mapContent.getBgColor()
+                        .getGreen(), mapContent.getBgColor().getBlue(), 0);
+                graphic.setBackground(mapContent.getBgColor());
                 graphic.setColor(c);
                 graphic.fillRect(0, 0, width, height);
 
@@ -137,7 +137,7 @@ public class PDFMapResponse extends AbstractMapResponse {
             Rectangle paintArea = new Rectangle(width, height);
 
             StreamingRenderer renderer = new StreamingRenderer();
-            renderer.setContext(mapContext);
+            renderer.setMapContent(mapContent);
             // TODO: expose the generalization distance as a param
             // ((StreamingRenderer) renderer).setGeneralizationDistance(0);
 
@@ -149,7 +149,7 @@ public class PDFMapResponse extends AbstractMapResponse {
             // if we set it to true then it does it all twice...
             java.util.Map rendererParams = new HashMap();
             rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-            rendererParams.put("renderingBuffer", new Integer(mapContext.getBuffer()));
+            rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
             // we need the renderer to draw everything on the batik provided graphics object
             rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
             // render everything in vector form if possible
@@ -159,7 +159,7 @@ public class PDFMapResponse extends AbstractMapResponse {
             }
             renderer.setRendererHints(rendererParams);
 
-            Envelope dataArea = mapContext.getAreaOfInterest();
+            Envelope dataArea = mapContent.getRenderingArea();
 
             // enforce no more than x rendering errors
             int maxErrors = wms.getMaxRenderingErrors();
@@ -177,8 +177,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             PDFMaxSizeEnforcer memoryChecker = new PDFMaxSizeEnforcer(renderer, graphic, maxMemory);
 
             // render the map
-            renderer.paint(graphic, paintArea, mapContext.getRenderingArea(),
-                    mapContext.getRenderingTransform());
+            renderer.paint(graphic, paintArea, mapContent.getRenderingArea(),
+                    mapContent.getRenderingTransform());
 
             // render the watermark
             MapDecorationLayout.Block watermark = RenderedImageMapOutputFormat.getWatermark(wms
@@ -186,7 +186,7 @@ public class PDFMapResponse extends AbstractMapResponse {
 
             if (watermark != null) {
                 MapDecorationLayout layout = new MapDecorationLayout();
-                layout.paint(graphic, paintArea, mapContext);
+                layout.paint(graphic, paintArea, mapContent);
             }
 
             // check if a non ignorable error occurred

@@ -7,6 +7,7 @@ package org.geoserver.kml;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -15,7 +16,7 @@ import javax.xml.transform.TransformerException;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapResponse;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.PNGMapResponse;
@@ -44,8 +45,8 @@ public class KMZMapResponse extends AbstractMapResponse {
     private WMS wms;
 
     public static class KMZMap extends XMLTransformerMap {
-        public KMZMap(final WMSMapContext mapContext, TransformerBase transformer, String mimeType) {
-            super(mapContext, transformer, mapContext, mimeType);
+        public KMZMap(final WMSMapContent mapContent, TransformerBase transformer, String mimeType) {
+            super(mapContent, transformer, mapContent, mimeType);
         }
     }
 
@@ -61,7 +62,7 @@ public class KMZMapResponse extends AbstractMapResponse {
      * 
      * @param value
      *            a {@link XMLTransformerMap} as produced by this class'
-     *            {@link #produceMap(WMSMapContext)}
+     *            {@link #produceMap(WMSMapContent)}
      * @param out
      *            OutputStream to stream the map to.
      * 
@@ -76,7 +77,7 @@ public class KMZMapResponse extends AbstractMapResponse {
         final XMLTransformerMap map = (XMLTransformerMap) value;
         try {
             final KMLTransformer transformer = (KMLTransformer) map.getTransformer();
-            final WMSMapContext mapContext = (WMSMapContext) map.getTransformerSubject();
+            final WMSMapContent mapContent = (WMSMapContent) map.getTransformerSubject();
 
             // wrap the output stream in a zipped one
             ZipOutputStream zip = new ZipOutputStream(output);
@@ -86,7 +87,7 @@ public class KMZMapResponse extends AbstractMapResponse {
             zip.putNextEntry(entry);
 
             try {
-                transformer.transform(mapContext, zip);
+                transformer.transform(mapContent, zip);
                 zip.closeEntry();
             } catch (TransformerException e) {
                 throw (IOException) new IOException().initCause(e);
@@ -100,21 +101,22 @@ public class KMZMapResponse extends AbstractMapResponse {
             zip.putNextEntry(images);
             
             // write the images
-            for (int i = 0; i < mapContext.getLayerCount(); i++) {
-                Layer mapLayer = mapContext.layers().get(i);
+            CopyOnWriteArrayList<Layer> layers = mapContent.layers();
+            for (int i = 0; i < layers.size(); i++) {
+                Layer mapLayer = layers.get(i);
 
                 // create a context for this single layer
-                WMSMapContext subContext = new WMSMapContext();
+                WMSMapContent subContext = new WMSMapContent();
                 subContext.addLayer(mapLayer);
-                subContext.setRequest(mapContext.getRequest());
-                subContext.setMapHeight(mapContext.getMapHeight());
-                subContext.setMapWidth(mapContext.getMapWidth());
-                subContext.setAreaOfInterest(mapContext.getAreaOfInterest());
-                subContext.setBgColor(mapContext.getBgColor());
-                subContext.setBuffer(mapContext.getBuffer());
-                subContext.setContactInformation(mapContext.getContactInformation());
-                subContext.setKeywords(mapContext.getKeywords());
-                subContext.setAbstract(mapContext.getAbstract());
+                subContext.setRequest(mapContent.getRequest());
+                subContext.setMapHeight(mapContent.getMapHeight());
+                subContext.setMapWidth(mapContent.getMapWidth());
+                subContext.getViewport().setBounds(mapContent.getRenderingArea());
+                subContext.setBgColor(mapContent.getBgColor());
+                subContext.setBuffer(mapContent.getBuffer());
+                subContext.setContactInformation(mapContent.getContactInformation());
+                subContext.setKeywords(mapContent.getKeywords());
+                subContext.setAbstract(mapContent.getAbstract());
                 subContext.setTransparent(true);
 
                 // render the map

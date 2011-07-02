@@ -194,11 +194,11 @@ public class WMSMockData {
         }
 
         /**
-         * @see org.geoserver.wms.map.RasterMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+         * @see org.geoserver.wms.map.RasterMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
          */
-        public WebMap produceMap(WMSMapContext mapContext) throws ServiceException, IOException {
+        public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
             produceMapCalled = true;
-            return new WebMap(mapContext) {
+            return new WebMap(mapContent) {
             };
         }
 

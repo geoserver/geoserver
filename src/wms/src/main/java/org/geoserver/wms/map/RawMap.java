@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 
 /**
@@ -23,15 +23,15 @@ public class RawMap extends WebMap {
 
     private ByteArrayOutputStream buffer;
 
-    public RawMap(final WMSMapContext mapContext, final byte[] mapContents, final String mimeType) {
-        super(mapContext);
+    public RawMap(final WMSMapContent mapContent, final byte[] mapContents, final String mimeType) {
+        super(mapContent);
         this.mapContents = mapContents;
         setMimeType(mimeType);
     }
 
-    public RawMap(final WMSMapContext mapContext, final ByteArrayOutputStream buff,
+    public RawMap(final WMSMapContent mapContent, final ByteArrayOutputStream buff,
             final String mimeType) {
-        super(mapContext);
+        super(mapContent);
         this.buffer = buff;
         setMimeType(mimeType);
     }

@@ -17,7 +17,7 @@ import javax.xml.transform.TransformerException;
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.georss.GeoRSSTransformerBase.GeometryEncoding;
 import org.geotools.data.Query;
@@ -44,7 +44,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     }
 
     public void testLatLongInternal() throws Exception {
-        WMSMapContext map = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
 
         Document document;
@@ -92,7 +92,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     }
     
     public void testSimpleInternal() throws Exception {
-        WMSMapContext map = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
 
         Document document;
@@ -161,7 +161,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
 
     public void testFilter() throws Exception {
         // Set up a map context with a filtered layer
-        WMSMapContext map = new WMSMapContext(createGetMapRequest(MockData.BUILDINGS));
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BUILDINGS));
         Document document;
         try {
         	FeatureLayer layer = createMapLayer(MockData.BUILDINGS);
@@ -179,7 +179,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     
     public void testReproject() throws Exception {
         // Set up a map context with a projected layer
-        WMSMapContext map = new WMSMapContext(createGetMapRequest(MockData.LINES));
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.LINES));
         map.addLayer(createMapLayer(MockData.LINES));
         
         Document document;
@@ -210,7 +210,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     /**
      * Returns a DOM given a map context and a geometry encoder
      */
-    Document getRSSResponse(WMSMapContext map, GeometryEncoding encoding)
+    Document getRSSResponse(WMSMapContent map, GeometryEncoding encoding)
             throws TransformerException, ParserConfigurationException, FactoryConfigurationError,
             SAXException, IOException {
         RSSGeoRSSTransformer tx = new RSSGeoRSSTransformer(getWMS());

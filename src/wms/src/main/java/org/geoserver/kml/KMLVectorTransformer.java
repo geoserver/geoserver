@@ -10,7 +10,7 @@ import java.util.logging.Level;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -39,13 +39,13 @@ public class KMLVectorTransformer extends KMLMapTransformer {
 
     private KMLLookAt lookAtOpts;
 
-    public KMLVectorTransformer(WMS wms, WMSMapContext mapContext, Layer mapLayer) {
-        this(wms, mapContext, mapLayer, null);
+    public KMLVectorTransformer(WMS wms, WMSMapContent mapContent, Layer mapLayer) {
+        this(wms, mapContent, mapLayer, null);
     }
 
-    public KMLVectorTransformer(WMS wms, WMSMapContext mapContext, Layer mapLayer,
+    public KMLVectorTransformer(WMS wms, WMSMapContent mapContent, Layer mapLayer,
             KMLLookAt lookAtOpts) {
-        super(wms, mapContext, mapLayer);
+        super(wms, mapContent, mapLayer);
 
         setNamespaceDeclarationEnabled(false);
         this.lookAtOpts = lookAtOpts;
@@ -80,7 +80,7 @@ public class KMLVectorTransformer extends KMLMapTransformer {
             geometryTransformer.setNumDecimals(config.getGlobal().getNumDecimals());
 
             geometryTranslator = (KMLGeometryTransformer.KMLGeometryTranslator) geometryTransformer
-                    .createTranslator(contentHandler, mapContext);
+                    .createTranslator(contentHandler, mapContent);
         }
 
         public void setRegionatingStrategy(RegionatingStrategy rs) {
@@ -110,9 +110,9 @@ public class KMLVectorTransformer extends KMLMapTransformer {
                 }
             }
             
-            String relLinks = (String) mapContext.getRequest().getFormatOptions().get("relLinks");
+            String relLinks = (String) mapContent.getRequest().getFormatOptions().get("relLinks");
             // Add prev/next links if requested
-            if (mapContext.getRequest().getMaxFeatures() != null && relLinks != null
+            if (mapContent.getRequest().getMaxFeatures() != null && relLinks != null
                     && relLinks.equalsIgnoreCase("true")) {
 
                 String linkbase = "";
@@ -123,8 +123,8 @@ public class KMLVectorTransformer extends KMLMapTransformer {
                     throw new RuntimeException(ioe);
                 }
 
-                int maxFeatures = mapContext.getRequest().getMaxFeatures();
-                int startIndex = (mapContext.getRequest().getStartIndex() == null) ? 0 : mapContext
+                int maxFeatures = mapContent.getRequest().getMaxFeatures();
+                int startIndex = (mapContent.getRequest().getStartIndex() == null) ? 0 : mapContent
                         .getRequest().getStartIndex().intValue();
                 int prevStart = startIndex - maxFeatures;
                 int nextStart = startIndex + maxFeatures;

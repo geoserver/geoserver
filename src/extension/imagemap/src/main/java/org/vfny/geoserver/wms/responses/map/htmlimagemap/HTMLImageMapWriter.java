@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMSMapContext;
+import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -75,7 +75,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
     /** map of geometry class to writer */
     private Map<Class<?>,HTMLImageMapFeatureWriter> writers;
     
-    WMSMapContext mapContext=null;
+    WMSMapContent mapContent=null;
     
     /** rect representing screen coordinates space **/
     Rectangle mapArea=null;
@@ -96,19 +96,19 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * @throws ClassCastException 
      * @throws UnsupportedEncodingException 
      */
-    public HTMLImageMapWriter(OutputStream out, WMSMapContext mapContext) throws UnsupportedEncodingException, ClassCastException {    	
-    	super(out, guessCharset(mapContext));
+    public HTMLImageMapWriter(OutputStream out, WMSMapContent mapContent) throws UnsupportedEncodingException, ClassCastException {    	
+    	super(out, guessCharset(mapContent));
     	
-        this.mapContext=mapContext;        
-        mapEnv = mapContext.getAreaOfInterest();
+        this.mapContent=mapContent;        
+        mapEnv = mapContent.getRenderingArea();
         clippingBox=envToGeometry(mapEnv);
-        mapArea=new Rectangle(mapContext.getMapWidth(),mapContext.getMapHeight());
+        mapArea=new Rectangle(mapContent.getMapWidth(),mapContent.getMapHeight());
         worldToScreen=RendererUtilities.worldToScreenTransform(mapEnv, mapArea);
         initWriters();
     }
 
-    private static String guessCharset(WMSMapContext mapContext) {
-        GetMapRequest request = mapContext.getRequest();
+    private static String guessCharset(WMSMapContent mapContent) {
+        GetMapRequest request = mapContent.getRequest();
         if (request != null && request.getRequestCharset() != null) {
             String requestCharset = request.getRequestCharset();
             return requestCharset;
@@ -247,7 +247,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
 			/*
             double scaleDenominator;
 			try {
-				scaleDenominator = RendererUtilities.calculateScale(mapContext.getAreaOfInterest(), mapContext.getMapWidth(), mapContext.getMapHeight(),100);
+				scaleDenominator = RendererUtilities.calculateScale(mapContent.getAreaOfInterest(), mapContent.getMapWidth(), mapContent.getMapHeight(),100);
 			
 	            //is this rule within scale?
 	            if ( !EncodeHTMLImageMap.isWithInScale(rule,scaleDenominator)) {

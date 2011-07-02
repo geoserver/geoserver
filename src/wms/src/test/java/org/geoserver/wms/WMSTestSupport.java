@@ -35,8 +35,9 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.data.FeatureSource;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.FeatureSourceMapLayer;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
@@ -121,7 +122,7 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
      * 
      * @return A new map layer.
      */
-    protected MapLayer createMapLayer(QName layerName) throws IOException {
+    protected FeatureLayer createMapLayer(QName layerName) throws IOException {
         return createMapLayer(layerName, null);
     }
 
@@ -138,7 +139,7 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
      * 
      * @return A new map layer.
      */
-    protected MapLayer createMapLayer(QName layerName, String styleName) throws IOException {
+    protected FeatureLayer createMapLayer(QName layerName, String styleName) throws IOException {
         // TODO: support coverages
         Catalog catalog = getCatalog();
         org.geoserver.catalog.FeatureTypeInfo info = catalog.getFeatureTypeByName(
@@ -152,7 +153,7 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
         featureSource = info.getFeatureSource(null, null);
 
-        MapLayer layer = new FeatureSourceMapLayer(featureSource, style);
+        FeatureLayer layer = new FeatureLayer(featureSource, style);
         layer.setTitle(layer.getTitle());
 
         return layer;

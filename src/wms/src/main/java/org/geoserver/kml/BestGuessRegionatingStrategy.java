@@ -8,7 +8,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
@@ -36,7 +36,7 @@ public class BestGuessRegionatingStrategy implements RegionatingStrategy {
         this.gs = gs;
     }
     
-    public Filter getFilter(WMSMapContext context, MapLayer layer) {
+    public Filter getFilter(WMSMapContext context, Layer layer) {
         SimpleFeatureType type = 
             ((SimpleFeatureSource)layer.getFeatureSource()).getSchema();
         Class geomtype = type.getGeometryDescriptor().getType().getBinding();

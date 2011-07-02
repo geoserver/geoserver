@@ -27,7 +27,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.map.DefaultMapLayer;
-import org.geotools.map.MapLayer;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
@@ -72,13 +73,13 @@ public class KMLVectorTransformerTest extends TestCase {
         SimpleFeatureCollection features = FeatureCollections
                 .newCollection();
         Style style = mockData.getDefaultStyle().getStyle();
-        MapLayer mapLayer = new DefaultMapLayer(features, style);
+        Layer layer = new FeatureLayer(features, style);
 
         WMSMapContext mapContext = new WMSMapContext();
         GetMapRequest request = mockData.createRequest();
         mapContext.setRequest(request);
 
-        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, mapLayer);
+        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, layer);
 
         Document document;
 
@@ -100,8 +101,8 @@ public class KMLVectorTransformerTest extends TestCase {
      * @see GetMapRequest#getStartIndex()
      */
     public void testEncodeWithPaging() throws Exception {
-        MapLayerInfo layer = mockData.addFeatureTypeLayer("TestPoints", Point.class);
-        FeatureTypeInfo typeInfo = layer.getFeature();
+        MapLayerInfo mli = mockData.addFeatureTypeLayer("TestPoints", Point.class);
+        FeatureTypeInfo typeInfo = mli.getFeature();
         SimpleFeatureType featureType = (SimpleFeatureType) typeInfo.getFeatureType();
         mockData.addFeature(featureType, new Object[] { "name1", "POINT(1 1)" });
         mockData.addFeature(featureType, new Object[] { "name2", "POINT(2 2)" });
@@ -113,11 +114,11 @@ public class KMLVectorTransformerTest extends TestCase {
         SimpleFeatureCollection features = fs.getFeatures();
 
         Style style = mockData.getDefaultStyle().getStyle();
-        MapLayer mapLayer = new DefaultMapLayer(features, style);
-        mapLayer.setTitle("TestPointsTitle");
+        Layer layer = new FeatureLayer(features, style);
+        layer.setTitle("TestPointsTitle");
 
         GetMapRequest request = mockData.createRequest();
-        request.setLayers(Collections.singletonList(layer));
+        request.setLayers(Collections.singletonList(mli));
 
         request.setMaxFeatures(2);
         request.setStartIndex(2);
@@ -126,7 +127,7 @@ public class KMLVectorTransformerTest extends TestCase {
         WMSMapContext mapContext = new WMSMapContext();
         mapContext.setRequest(request);
 
-        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, mapLayer);
+        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, layer);
         transformer.setStandAlone(false);
         transformer.setIndentation(2);
 

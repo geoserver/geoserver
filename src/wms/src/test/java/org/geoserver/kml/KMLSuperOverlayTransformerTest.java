@@ -18,7 +18,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.w3c.dom.Document;
 
@@ -27,7 +27,7 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
 
     public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed", MockData.SF_PREFIX);
     WMSMapContext mapContext;
-    MapLayer mapLayer;
+    Layer Layer;
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -40,10 +40,10 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-        mapLayer = createMapLayer(DISPERSED_FEATURES);
+        Layer = createMapLayer(DISPERSED_FEATURES);
         
         mapContext = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
-        mapContext.addLayer(mapLayer);
+        mapContext.addLayer(Layer);
     }
     
     @Override
@@ -72,7 +72,7 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         mapContext.setAreaOfInterest(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        transformer.transform(mapLayer, output);
+        transformer.transform(Layer, output);
         
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
@@ -93,7 +93,7 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         mapContext.setAreaOfInterest(new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        transformer.transform(mapLayer, output);
+        transformer.transform(Layer, output);
         
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));

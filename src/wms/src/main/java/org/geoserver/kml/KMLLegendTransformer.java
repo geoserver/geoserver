@@ -5,7 +5,7 @@
 package org.geoserver.kml;
 
 import org.geoserver.wms.WMSMapContext;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 
@@ -37,7 +37,7 @@ public class KMLLegendTransformer extends KMLTransformerBase {
          * Encodes a KML ScreenOverlay wihch depicts the legend of a map.
          */
         public void encode(Object o) throws IllegalArgumentException {
-            MapLayer mapLayer = (MapLayer) o;
+            Layer Layer = (Layer) o;
 
             if ( isStandAlone() ) {
                 start( "kml" );
@@ -61,7 +61,7 @@ public class KMLLegendTransformer extends KMLTransformerBase {
             if (legendOptions != null) {
                 kvpArray = new String[] { "LEGEND_OPTIONS", legendOptions };
             }
-            element("href", KMLUtils.getLegendGraphicUrl(mapContext, mapLayer, kvpArray));
+            element("href", KMLUtils.getLegendGraphicUrl(mapContext, Layer, kvpArray));
 
             end("Icon");
 

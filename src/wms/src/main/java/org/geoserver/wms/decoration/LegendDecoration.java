@@ -29,7 +29,7 @@ import org.geoserver.wms.legendgraphic.LegendUtils;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.LiteShape2;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.renderer.style.SLDStyleFactory;
@@ -118,7 +118,7 @@ public class LegendDecoration implements MapDecoration {
                 null
                 );
 
-        for (MapLayer layer : mapContext.getLayers()){
+        for (Layer layer : mapContext.layers()){
             SimpleFeatureType type = (SimpleFeatureType)layer.getFeatureSource().getSchema();
             if (!isGridLayer(type)) {
                 try {
@@ -176,7 +176,7 @@ public class LegendDecoration implements MapDecoration {
         g2d.fill(bgRect);
         g2d.setColor(fgcolor);
 
-        for (MapLayer layer : mapContext.getLayers()){
+        for (Layer layer : mapContext.layers()){
             SimpleFeatureType type = (SimpleFeatureType)layer.getFeatureSource().getSchema();
             if (!isGridLayer(type)) {
                 try { 
@@ -209,7 +209,7 @@ public class LegendDecoration implements MapDecoration {
         g2d.setColor(oldColor);
     }
 
-    private String findTitle(MapLayer layer, Catalog catalog) {
+    private String findTitle(Layer layer, Catalog catalog) {
         String[] nameparts = layer.getTitle().split(":");
 
         ResourceInfo resource = nameparts.length > 1 

@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.geoserver.ows.URLMangler.URLType;
@@ -21,7 +22,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**
@@ -128,9 +129,7 @@ public final class AtomUtils {
 
     public static String getFeedTitle(WMSMapContext context){
         StringBuffer title = new StringBuffer();
-
-        for (int i = 0; i < context.getLayerCount(); i++) {
-            MapLayer layer = context.getLayer(i);
+        for( Layer layer : context.layers() ){
             title.append(layer.getTitle()).append(",");
         }
         title.setLength(title.length()-1);
@@ -140,10 +139,10 @@ public final class AtomUtils {
 
     private static String commaSeparatedLayers(WMSMapContext con){
         StringBuilder layers = new StringBuilder();
-        MapLayer[] mapLayers = con.getLayers();
-        for (int i = 0; i < mapLayers.length; i++){
-            layers.append(mapLayers[i].getTitle());
-            if (i < mapLayers.length - 1) layers.append(",");
+        List<Layer> mapLayers = con.layers();
+        for (int i = 0; i < mapLayers.size(); i++){
+            layers.append(mapLayers.get(i).getTitle());
+            if (i < mapLayers.size() - 1) layers.append(",");
         }
         return layers.toString();
     }

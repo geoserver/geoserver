@@ -22,7 +22,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.FeatureTypeStyle;
@@ -278,12 +278,8 @@ public class EncodeHTMLImageMap extends WebMap{
      */
     @SuppressWarnings("unchecked")
 	private void writeLayers() throws IOException, AbortedException {
-        MapLayer[] layers = mapContext.getLayers();
-        int nLayers = layers.length;       
-
-        for (int i = 0; i < nLayers; i++) {
-            MapLayer layer = layers[i];
-            SimpleFeatureSource fSource;
+        for(Layer layer:mapContext.layers()){    
+        	SimpleFeatureSource fSource;
             fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
             /*FeatureSource fSource = layer.getFeatureSource();

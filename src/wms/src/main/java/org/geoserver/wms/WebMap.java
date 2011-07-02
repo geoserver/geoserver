@@ -7,7 +7,7 @@ package org.geoserver.wms;
 import java.util.HashMap;
 
 import org.geoserver.ows.Response;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 
 public abstract class WebMap {
 
@@ -92,7 +92,7 @@ public abstract class WebMap {
     public void setContentDispositionHeader(final WMSMapContext mapContext, final String extension) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < mapContext.getLayerCount(); i++) {
-            MapLayer layer = mapContext.getLayer(i);
+            Layer layer = mapContext.layers().get(i);
             String title = layer.getTitle();
             if (title != null && !title.equals("")) {
                 sb.append(title).append("_");

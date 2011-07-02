@@ -23,7 +23,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.map.DefaultMapLayer;
-import org.geotools.map.MapLayer;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -50,7 +51,7 @@ public class KMLLegendTransformerTest extends TestCase {
     /**
      * The layer to encode the legend url for
      */
-    private MapLayer mapLayer;
+    private Layer Layer;
     
     private MockHttpServletRequest httpreq;
 
@@ -80,7 +81,7 @@ public class KMLLegendTransformerTest extends TestCase {
         SimpleFeatureSource featureSource;
         featureSource = (SimpleFeatureSource) ((FeatureTypeInfo)layer.getFeature()).getFeatureSource(null, null);
         
-        mapLayer = new DefaultMapLayer(featureSource, mockData.getDefaultStyle().getStyle());
+        Layer = new FeatureLayer(featureSource, mockData.getDefaultStyle().getStyle());
 
         httpreq.setScheme("http");
         httpreq.setServerName("geoserver.org");
@@ -109,7 +110,7 @@ public class KMLLegendTransformerTest extends TestCase {
 
         KMLLegendTransformer transformer = new KMLLegendTransformer(mapContext);
         transformer.setIndentation(2);
-        Document dom = WMSTestSupport.transform(mapLayer, transformer);
+        Document dom = WMSTestSupport.transform(Layer, transformer);
         assertXpathEvaluatesTo("Legend", "//kml/ScreenOverlay/name", dom);
         assertXpathEvaluatesTo("0", "//kml/ScreenOverlay/overlayXY/@x", dom);
         assertXpathEvaluatesTo("0", "//kml/ScreenOverlay/overlayXY/@y", dom);

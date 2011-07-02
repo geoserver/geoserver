@@ -21,7 +21,7 @@ import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.XMLTransformerMap;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.xml.transform.TransformerBase;
 import org.springframework.util.Assert;
 
@@ -101,7 +101,7 @@ public class KMZMapResponse extends AbstractMapResponse {
             
             // write the images
             for (int i = 0; i < mapContext.getLayerCount(); i++) {
-                MapLayer mapLayer = mapContext.getLayer(i);
+                Layer mapLayer = mapContext.layers().get(i);
 
                 // create a context for this single layer
                 WMSMapContext subContext = new WMSMapContext();

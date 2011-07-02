@@ -4,6 +4,7 @@
  */
 package org.geoserver.geosearch.rest;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +21,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.Layer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -75,7 +77,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
 
             final WMSMapContext mapContext = (WMSMapContext) o;
             final GetMapRequest request = mapContext.getRequest();
-            final MapLayer[] layers = mapContext.getLayers();
+            final List<Layer> layers = mapContext.layers();
 
             final KMLLookAt lookAtOpts = new KMLLookAt(request.getFormatOptions());
             // start("kml");
@@ -124,7 +126,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             // end("Folder");
 
             boolean includeSampleData = false;
-            for (int i = 0; i < layers.length; i++) {
+            for (int i = 0; i < layers.size(); i++) {
                 // layer and info
                 MapLayerInfo layerInfo = mapContext.getRequest().getLayers().get(i);
                 final int type = layerInfo.getType();
@@ -136,9 +138,9 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
                 // start("Folder");
                 // element("name", "Sample data");
                 // for every layer specified in the request
-                for (int i = 0; i < layers.length; i++) {
+                for (int i = 0; i < layers.size(); i++) {
                     // layer and info
-                    MapLayer layer = layers[i];
+                    Layer layer = layers.get(i);
                     MapLayerInfo layerInfo = mapContext.getRequest().getLayers().get(i);
 
                     // encodeSuperOverlayLayer(mapContext, layer);
@@ -185,7 +187,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
         /**
          * Encodes a vector layer as kml.
          */
-        protected void encodeVectorLayer(WMSMapContext mapContext, MapLayer layer,
+        protected void encodeVectorLayer(WMSMapContext mapContext, Layer layer,
                 KMLLookAt lookAtOpts) {
             // get the data
             SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
@@ -232,14 +234,14 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
          * @return
          */
         protected KMLVectorTransformer createVectorTransformer(WMSMapContext mapContext,
-                MapLayer layer, KMLLookAt lookAtOpts) {
+                Layer layer, KMLLookAt lookAtOpts) {
             return new KMLVectorTransformer(wms, mapContext, layer, lookAtOpts);
         }
 
         /**
          * Encodes a raster layer as kml.
          */
-        protected void encodeRasterLayer(WMSMapContext mapContext, MapLayer layer,
+        protected void encodeRasterLayer(WMSMapContext mapContext, Layer layer,
                 KMLLookAt lookAtOpts) {
 
             GetMapRequest request = mapContext.getRequest();

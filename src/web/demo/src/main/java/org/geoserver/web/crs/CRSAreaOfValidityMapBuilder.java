@@ -34,8 +34,9 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.DefaultMapLayer;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContext;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -242,14 +243,14 @@ class CRSAreaOfValidityMapBuilder {
         return feature;
     }
 
-    private MapLayer createCrsLayer(Geometry geom, CoordinateReferenceSystem crs) {
+    private Layer createCrsLayer(Geometry geom, CoordinateReferenceSystem crs) {
         SimpleFeatureCollection collection = FeatureCollections
                 .newCollection();
         collection.add(createCrsBoundsFeature(geom, crs));
 
         Style style = getStyle("crs.sld");
 
-        DefaultMapLayer ml = new DefaultMapLayer(collection, style);
+        FeatureLayer ml = new FeatureLayer(collection, style);
         return ml;
     }
 
@@ -276,7 +277,7 @@ class CRSAreaOfValidityMapBuilder {
         style = getStyle("cities.sld");
         mapContext.addLayer(new DefaultMapLayer(source, style));
 
-        MapLayer layer = createCrsLayer(geographicBoundingBox, crs);
+        Layer layer = createCrsLayer(geographicBoundingBox, crs);
         mapContext.addLayer(layer);
 
         return mapContext;

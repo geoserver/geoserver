@@ -66,7 +66,8 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.palette.InverseColorMapOp;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.StyleLayer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -264,9 +265,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             palette = paletteInverter.getIcm();
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
-            MapLayer[] layers = mapContext.getLayers();
-            for (int i = 0; i < layers.length; i++) {
-                pe.visit(layers[i].getStyle());
+            List<Layer> layers = mapContext.layers();
+            for (int i = 0; i < layers.size(); i++) {
+                pe.visit(layers.get(i).getStyle());
                 if (!pe.canComputePalette())
                     break;
             }
@@ -431,12 +432,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // layers' Styles to prevent their rendering on the
             // raster image. Both are better served with the
             // placemarks.
-            MapLayer[] layers = mapContext.getLayers();
-            for (int i = 0; i < layers.length; i++) {
-                Style style = layers[i].getStyle();
-                style.accept(dupVisitor);
-                Style copy = (Style) dupVisitor.getCopy();
-                layers[i].setStyle(copy);
+            List<Layer> layers = mapContext.layers();
+            for (int i = 0; i < layers.size(); i++) {
+                if (layers.get(i) instanceof StyleLayer) {
+                    StyleLayer layer = (StyleLayer) layers.get(i);
+                    Style style = layer.getStyle();
+                    style.accept(dupVisitor);
+                    Style copy = (Style) dupVisitor.getCopy();
+                    layer.setStyle(copy);
+                }
             }
         }
         renderer.setRendererHints(rendererParams);
@@ -1295,7 +1299,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContext mc, int layerIndex) {
         double scaleDenominator = RendererUtilities.calculateOGCScale(mc.getAreaOfInterest(),
                 mc.getMapWidth(), null);
-        MapLayer layer = mc.getLayer(layerIndex);
+        Layer layer = mc.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();
 

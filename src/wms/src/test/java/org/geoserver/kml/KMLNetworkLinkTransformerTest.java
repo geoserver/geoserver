@@ -23,8 +23,8 @@ import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WMSMockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.FeatureSource;
-import org.geotools.map.DefaultMapLayer;
-import org.geotools.map.MapLayer;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.w3c.dom.Document;
 
@@ -68,8 +68,8 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         mapContext = new WMSMapContext(request);
         FeatureSource source = layer.getFeatureSource(true);
         Style layerStyle = mockData.getDefaultStyle().getStyle();
-        MapLayer mapLayer = new DefaultMapLayer(source, layerStyle);
-        mapContext.addLayer(mapLayer);
+        Layer Layer = new FeatureLayer(source, layerStyle);
+        mapContext.addLayer(Layer);
     }
 
     /**

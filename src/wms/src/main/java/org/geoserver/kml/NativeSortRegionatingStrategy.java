@@ -17,7 +17,7 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -48,7 +48,7 @@ public class NativeSortRegionatingStrategy extends
     FeatureSource fs;
 
     @Override
-    protected String getDatabaseName(WMSMapContext con, MapLayer layer)
+    protected String getDatabaseName(WMSMapContext con, Layer layer)
             throws Exception {
         fs = layer.getFeatureSource();
         SimpleFeatureType type = (SimpleFeatureType) fs.getSchema();

@@ -6,6 +6,7 @@ package org.geoserver.kml;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +16,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -76,7 +77,7 @@ public class KMLTransformer extends TransformerBase {
 
             final WMSMapContext mapContext = (WMSMapContext) o;
             final GetMapRequest request = mapContext.getRequest();
-            final MapLayer[] layers = mapContext.getLayers();
+            final List<Layer> layers = mapContext.layers();
 
             final KMLLookAt lookAtOpts = new KMLLookAt(request.getFormatOptions());
             // start("kml");
@@ -98,12 +99,12 @@ public class KMLTransformer extends TransformerBase {
 
             // if we have more than one layer ( or a legend was requested ),
             // use the name "GeoServer" to group them
-            boolean group = (layers.length > 1) || request.getLegend();
+            boolean group = (layers.size() > 1) || request.getLegend();
 
             if (group) {
                 StringBuffer sb = new StringBuffer();
-                for (int i = 0; i < layers.length; i++) {
-                    sb.append(layers[i].getTitle() + ",");
+                for (int i = 0; i < layers.size(); i++) {
+                    sb.append(layers.get(i).getTitle() + ",");
                 }
                 sb.setLength(sb.length() - 1);
 
@@ -112,9 +113,9 @@ public class KMLTransformer extends TransformerBase {
             }
 
             // for every layer specified in the request
-            for (int i = 0; i < layers.length; i++) {
+            for (int i = 0; i < layers.size(); i++) {
                 // layer and info
-                MapLayer layer = layers[i];
+                Layer layer = layers.get(i);
                 MapLayerInfo layerInfo = mapContext.getRequest().getLayers().get(i);
 
                 // was a super overlay requested?
@@ -139,9 +140,9 @@ public class KMLTransformer extends TransformerBase {
             // legend suppoer
             if (request.getLegend()) {
                 // for every layer specified in the request
-                for (int i = 0; i < layers.length; i++) {
+                for (int i = 0; i < layers.size(); i++) {
                     // layer and info
-                    MapLayer layer = layers[i];
+                    Layer layer = layers.get(i);
                     encodeLegend(mapContext, layer);
                 }
             }
@@ -156,7 +157,7 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Encodes a vector layer as kml.
          */
-        protected void encodeVectorLayer(WMSMapContext mapContext, MapLayer layer,
+        protected void encodeVectorLayer(WMSMapContext mapContext, Layer layer,
                 KMLLookAt lookAtOpts) {
             // get the data
             SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
@@ -230,14 +231,14 @@ public class KMLTransformer extends TransformerBase {
          * @return
          */
         protected KMLVectorTransformer createVectorTransformer(WMSMapContext mapContext,
-                MapLayer layer, KMLLookAt lookAtOpts) {
+                Layer layer, KMLLookAt lookAtOpts) {
             return new KMLVectorTransformer(wms, mapContext, layer, lookAtOpts);
         }
 
         /**
          * Encodes a raster layer as kml.
          */
-        protected void encodeRasterLayer(WMSMapContext mapContext, MapLayer layer,
+        protected void encodeRasterLayer(WMSMapContext mapContext, Layer layer,
                 KMLLookAt lookAtOpts) {
             KMLRasterTransformer tx = createRasterTransfomer(mapContext, lookAtOpts);
             initTransformer(tx);
@@ -249,7 +250,7 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Encodes a layer as a super overlay.
          */
-        protected void encodeSuperOverlayLayer(WMSMapContext mapContext, MapLayer layer) {
+        protected void encodeSuperOverlayLayer(WMSMapContext mapContext, Layer layer) {
             KMLSuperOverlayTransformer tx = new KMLSuperOverlayTransformer(wms, mapContext);
             initTransformer(tx);
             tx.createTranslator(contentHandler).encode(layer);
@@ -258,7 +259,7 @@ public class KMLTransformer extends TransformerBase {
         /**
          * Encodes the legend for a maper layer as a scree overlay.
          */
-        protected void encodeLegend(WMSMapContext mapContext, MapLayer layer) {
+        protected void encodeLegend(WMSMapContext mapContext, Layer layer) {
             KMLLegendTransformer tx = new KMLLegendTransformer(mapContext);
             initTransformer(tx);
             tx.createTranslator(contentHandler).encode(layer);
@@ -270,7 +271,7 @@ public class KMLTransformer extends TransformerBase {
             delegate.setStandAlone(false);
         }
 
-        double computeScaleDenominator(MapLayer layer, WMSMapContext mapContext) {
+        double computeScaleDenominator(Layer layer, WMSMapContext mapContext) {
             Rectangle paintArea = new Rectangle(mapContext.getMapWidth(), mapContext.getMapHeight());
             AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(
                     mapContext.getAreaOfInterest(), paintArea);

@@ -24,7 +24,7 @@ import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -85,7 +85,7 @@ public class ExternalSortRegionatingStrategy extends
     }
     
     @Override
-    protected final String getDatabaseName(WMSMapContext con, MapLayer layer)
+    protected final String getDatabaseName(WMSMapContext con, Layer layer)
             throws Exception {
         fs = layer.getFeatureSource();
         SimpleFeatureType ft = (SimpleFeatureType) fs.getSchema();

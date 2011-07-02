@@ -20,7 +20,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.vfny.geoserver.util.Requests;
 
@@ -64,7 +64,7 @@ public class WMSRequests {
      * 
      * @return The full url for a getMap request.
      */
-    public static String getTiledGetMapUrl(GeoServer geoserver, GetMapRequest req, MapLayer layer,
+    public static String getTiledGetMapUrl(GeoServer geoserver, GetMapRequest req, Layer layer,
             int layerIndex, Envelope bbox, String[] kvp) {
 
         HashMap<String,String> params = getGetMapParams(req, layer.getTitle(), layerIndex, layer.getStyle().getName(), bbox, kvp);
@@ -150,7 +150,7 @@ public class WMSRequests {
      * 
      * @return The full url for a getMap request.
      */
-    public static String getGetMapUrl(GetMapRequest req, MapLayer layer, int layerIndex,
+    public static String getGetMapUrl(GetMapRequest req, Layer layer, int layerIndex,
             Envelope bbox, String[] kvp) {
 
         String layerName = layer != null ? layer.getTitle() : null;
@@ -208,7 +208,7 @@ public class WMSRequests {
      * 
      * @return The full url for a getMap request.
      */
-    public static String getGetLegendGraphicUrl(WMSRequest req, MapLayer layer, String[] kvp) {
+    public static String getGetLegendGraphicUrl(WMSRequest req, Layer layer, String[] kvp) {
         // parameters
         HashMap<String,String> params = new HashMap<String,String>();
 

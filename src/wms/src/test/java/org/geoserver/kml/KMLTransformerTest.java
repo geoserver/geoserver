@@ -34,7 +34,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -44,7 +44,7 @@ import org.w3c.dom.Element;
 public class KMLTransformerTest extends WMSTestSupport {
     WMSMapContext mapContext;
 
-    MapLayer mapLayer;
+    Layer layer;
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -57,10 +57,10 @@ public class KMLTransformerTest extends WMSTestSupport {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-        mapLayer = createMapLayer(MockData.BASIC_POLYGONS);
+        layer = createMapLayer(MockData.BASIC_POLYGONS);
 
         mapContext = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
-        mapContext.addLayer(mapLayer);
+        mapContext.addLayer(layer);
     }
 
     @Override
@@ -85,10 +85,10 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     public void testVectorTransformer() throws Exception {
-        KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext, mapLayer);
+        KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext, layer);
         transformer.setIndentation(2);
 
-        SimpleFeatureSource featureSource = DataUtilities.simple((FeatureSource) mapLayer
+        SimpleFeatureSource featureSource = DataUtilities.simple((FeatureSource) layer
                 .getFeatureSource());
         int nfeatures = featureSource.getFeatures().size();
 
@@ -107,17 +107,17 @@ public class KMLTransformerTest extends WMSTestSupport {
      */
     public void testExternalGraphicBackround() throws Exception {
 
-        MapLayer mapLayer = createMapLayer(MockData.POINTS, "Bridge");
+        Layer Layer = createMapLayer(MockData.POINTS, "Bridge");
         Document document;
 
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
-        featureSource = (SimpleFeatureSource) mapLayer.getFeatureSource();
+        featureSource = (SimpleFeatureSource) Layer.getFeatureSource();
         int nfeatures = featureSource.getFeatures().size();
         WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.POINTS));
         try {
-            mapContext.addLayer(mapLayer);
+            mapContext.addLayer(Layer);
             KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
-                    mapLayer);
+                    Layer);
             transformer.setIndentation(2);
 
             // print(document);
@@ -139,17 +139,17 @@ public class KMLTransformerTest extends WMSTestSupport {
      */
     public void testExternalGraphicSubdir() throws Exception {
 
-        MapLayer mapLayer = createMapLayer(MockData.POINTS, "BridgeSubdir");
+        Layer layer = createMapLayer(MockData.POINTS, "BridgeSubdir");
 
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
-        featureSource = (SimpleFeatureSource) mapLayer.getFeatureSource();
+        featureSource = (SimpleFeatureSource) layer.getFeatureSource();
 
         WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.POINTS));
         Document document;
         try {
-            mapContext.addLayer(mapLayer);
+            mapContext.addLayer(layer);
             KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
-                    mapLayer);
+                    layer);
             transformer.setIndentation(2);
             // print(document);
             document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
@@ -175,9 +175,9 @@ public class KMLTransformerTest extends WMSTestSupport {
             info.setProxyBaseUrl("http://myhost:9999/gs");
             gs.save(info);
 
-            MapLayer mapLayer = createMapLayer(MockData.POINTS, "Bridge");
+            Layer layer = createMapLayer(MockData.POINTS, "Bridge");
             FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
-            featureSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) mapLayer
+            featureSource = (FeatureSource<SimpleFeatureType, SimpleFeature>) layer
                     .getFeatureSource();
             int nfeatures = featureSource.getFeatures().size();
 
@@ -185,9 +185,9 @@ public class KMLTransformerTest extends WMSTestSupport {
             Document document;
 
             try {
-                mapContext.addLayer(mapLayer);
+                mapContext.addLayer(layer);
                 KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
-                        mapLayer);
+                        layer);
                 transformer.setIndentation(2);
 
                 document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
@@ -206,18 +206,18 @@ public class KMLTransformerTest extends WMSTestSupport {
     }
 
     public void testFilteredData() throws Exception {
-        MapLayer mapLayer = createMapLayer(MockData.BASIC_POLYGONS, "SingleFeature");
+        Layer layer = createMapLayer(MockData.BASIC_POLYGONS, "SingleFeature");
 
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
-        featureSource = (SimpleFeatureSource) mapLayer.getFeatureSource();
+        featureSource = (SimpleFeatureSource) layer.getFeatureSource();
 
         WMSMapContext mapContext = new WMSMapContext(createGetMapRequest(MockData.BASIC_POLYGONS));
         Document document;
         try {
-            mapContext.addLayer(mapLayer);
+            mapContext.addLayer(layer);
 
             KMLVectorTransformer transformer = new KMLVectorTransformer(getWMS(), mapContext,
-                    mapLayer);
+                    layer);
             transformer.setIndentation(2);
             document = WMSTestSupport.transform(featureSource.getFeatures(), transformer);
         } finally {
@@ -276,7 +276,7 @@ public class KMLTransformerTest extends WMSTestSupport {
         KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContext);
         transformer.setInline(true);
 
-        Document document = WMSTestSupport.transform(mapLayer, transformer);
+        Document document = WMSTestSupport.transform(layer, transformer);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
 
@@ -295,7 +295,7 @@ public class KMLTransformerTest extends WMSTestSupport {
         KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContext);
         transformer.setInline(false);
 
-        Document document = WMSTestSupport.transform(mapLayer, transformer);
+        Document document = WMSTestSupport.transform(layer, transformer);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
 
@@ -326,7 +326,7 @@ public class KMLTransformerTest extends WMSTestSupport {
         getMapRequest.setFormatOptions(formatOptions);
 
         WMSMapContext mapContext = new WMSMapContext(getMapRequest);
-        mapContext.addLayer(mapLayer);
+        mapContext.addLayer(layer);
         mapContext.setMapHeight(1024);
         mapContext.setMapWidth(1024);
 
@@ -397,7 +397,7 @@ public class KMLTransformerTest extends WMSTestSupport {
                 DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        transformer.transform(mapLayer, output);
+        transformer.transform(layer, output);
 
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));

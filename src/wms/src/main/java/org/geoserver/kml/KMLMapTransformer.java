@@ -39,7 +39,7 @@ import org.geoserver.wms.featureinfo.FeatureTimeTemplate;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.type.DateUtil;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.renderer.style.LineStyle2D;
 import org.geotools.renderer.style.MarkStyle2D;
@@ -124,7 +124,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
     /**
      * The map layer being transformed
      */
-    protected final MapLayer mapLayer;
+    protected final Layer mapLayer;
 
     /**
      * Whether vector name and description should be generated or not
@@ -186,7 +186,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
 
     }
 
-    public KMLMapTransformer(WMS wms, WMSMapContext mapContext, MapLayer mapLayer) {
+    public KMLMapTransformer(WMS wms, WMSMapContext mapContext, Layer mapLayer) {
         this.wms = wms;
         this.mapContext = mapContext;
         this.mapLayer = mapLayer;

@@ -29,7 +29,8 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
+import org.geotools.map.WMSLayer;
 import org.geotools.map.WMSMapLayer;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -183,11 +184,11 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * @return
      */
     private boolean hasOnlyCoverages(WMSMapContext mapContext) {
-        for (MapLayer layer : mapContext.getLayers()) {
+        for (Layer layer : mapContext.layers()) {
             FeatureType schema = layer.getFeatureSource().getSchema();
             boolean grid = schema.getName().getLocalPart().equals("GridCoverage")
                     && schema.getDescriptor("geom") != null && schema.getDescriptor("grid") != null
-                    && !(layer instanceof WMSMapLayer);
+                    && !(layer instanceof WMSLayer);
             if (!grid)
                 return false;
         }

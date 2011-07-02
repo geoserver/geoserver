@@ -23,7 +23,8 @@ import org.geoserver.wms.georss.GeoRSSTransformerBase.GeometryEncoding;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
-import org.geotools.map.MapLayer;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
@@ -163,7 +164,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         WMSMapContext map = new WMSMapContext(createGetMapRequest(MockData.BUILDINGS));
         Document document;
         try {
-            MapLayer layer = createMapLayer(MockData.BUILDINGS);
+        	FeatureLayer layer = createMapLayer(MockData.BUILDINGS);
             Filter f = ff.equals(ff.property("ADDRESS"), ff.literal("215 Main Street"));
             layer.setQuery(new Query(MockData.BUILDINGS.getLocalPart(), f));
             map.addLayer(layer);

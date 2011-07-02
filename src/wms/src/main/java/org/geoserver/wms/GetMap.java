@@ -40,15 +40,14 @@ import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.filter.Filters;
 import org.geotools.filter.function.EnvFunction;
-import org.geotools.map.DefaultMapLayer;
-import org.geotools.map.FeatureSourceMapLayer;
-import org.geotools.map.MapLayer;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.GridReaderLayer;
+import org.geotools.map.WMSLayer;
 import org.geotools.map.WMSMapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.FeatureTypeConstraint;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -285,14 +284,14 @@ public class GetMap {
             final Style layerStyle = styles[i];
             final Filter layerFilter = filters[i];
 
-            final MapLayer layer;
+            final org.geotools.map.Layer layer;
 
             int layerType = mapLayerInfo.getType();
             if (layerType == MapLayerInfo.TYPE_REMOTE_VECTOR) {
 
                 final SimpleFeatureSource source = mapLayerInfo.getRemoteFeatureSource();
-                layer = new DefaultMapLayer(source, layerStyle);
-                layer.setTitle(mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName());
+                FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
+                featureLayer.setTitle(mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName());
 
                 final Query definitionQuery = new Query(source.getSchema().getTypeName());
                 definitionQuery.setFilter(layerFilter);
@@ -300,9 +299,11 @@ public class GetMap {
                 int maxFeatures = request.getMaxFeatures() != null ? request.getMaxFeatures()
                         : Integer.MAX_VALUE;
                 definitionQuery.setMaxFeatures(maxFeatures);
-
-                layer.setQuery(definitionQuery);
-                mapContext.addLayer(layer);
+                featureLayer.setQuery(definitionQuery);
+                
+                mapContext.addLayer(featureLayer);
+                
+                layer = featureLayer;
             } else if (layerType == MapLayerInfo.TYPE_VECTOR) {
                 FeatureSource<? extends FeatureType, ? extends Feature> source;
                 // /////////////////////////////////////////////////////////
@@ -335,9 +336,8 @@ public class GetMap {
 
                     throw new ServiceException("Internal error", exp);
                 }
-
-                layer = new FeatureSourceMapLayer(source, layerStyle);
-                layer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
+                FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
+                featureLayer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
                 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter = wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
@@ -370,8 +370,10 @@ public class GetMap {
                         : Integer.MAX_VALUE;
                 definitionQuery.setMaxFeatures(maxFeatures);
 
-                layer.setQuery(definitionQuery);
-                mapContext.addLayer(layer);
+                featureLayer.setQuery(definitionQuery);
+                mapContext.addLayer(featureLayer);
+                
+                layer = featureLayer;
             } else if (layerType == MapLayerInfo.TYPE_RASTER) {
 
                 // /////////////////////////////////////////////////////////
@@ -389,14 +391,13 @@ public class GetMap {
                     try {
 
                         try {
-                            layer = new DefaultMapLayer(FeatureUtilities.wrapGridCoverageReader(
-                                    reader, readParameters), layerStyle);
+                            layer = new GridReaderLayer( reader, layerStyle,  readParameters);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
 
                         layer.setTitle(mapLayerInfo.getCoverage().getPrefixedName());
-                        layer.setQuery(Query.ALL);
+
                         mapContext.addLayer(layer);
                     } catch (IllegalArgumentException e) {
                         if (LOGGER.isLoggable(Level.SEVERE)) {
@@ -423,9 +424,9 @@ public class GetMap {
                 // see if we can merge this layer with the previous one
                 boolean merged = false;
                 if (mapContext.getLayerCount() > 0) {
-                    MapLayer lastLayer = mapContext.getLayer(mapContext.getLayerCount() - 1);
-                    if (lastLayer instanceof WMSMapLayer) {
-                        WMSMapLayer lastWMS = (WMSMapLayer) lastLayer;
+                    org.geotools.map.Layer lastLayer = mapContext.layers().get(mapContext.getLayerCount() - 1);
+                    if (lastLayer instanceof WMSLayer) {
+                        WMSLayer lastWMS = (WMSLayer) lastLayer;
                         WebMapServer otherWMS = lastWMS.getWebMapServer();
                         if (otherWMS.equals(wms)) {
                             lastWMS.addLayer(gt2Layer);
@@ -434,9 +435,9 @@ public class GetMap {
                     }
                 }
                 if (!merged) {
-                    WMSMapLayer mapLayer = new WMSMapLayer(wms, gt2Layer);
-                    mapLayer.setTitle(wmsLayer.getPrefixedName());
-                    mapContext.addLayer(mapLayer);
+                    WMSMapLayer Layer = new WMSMapLayer(wms, gt2Layer);
+                    Layer.setTitle(wmsLayer.getPrefixedName());
+                    mapContext.addLayer(Layer);
                 }
             } else {
                 throw new IllegalArgumentException("Unkown layer type " + layerType);

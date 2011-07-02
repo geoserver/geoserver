@@ -28,7 +28,7 @@ import org.geotools.data.jdbc.JDBCUtils;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.geotools.util.CanonicalSet;
@@ -129,7 +129,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
         this.gs = gs;
     }
     
-    public Filter getFilter(WMSMapContext context, MapLayer layer) {
+    public Filter getFilter(WMSMapContext context, Layer layer) {
         Catalog catalog = gs.getCatalog();
         Set<String> featuresInTile = Collections.emptySet();
         try {
@@ -544,7 +544,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * @param layer
      * @return
      */
-    protected String getDatabaseName(WMSMapContext con, MapLayer layer)
+    protected String getDatabaseName(WMSMapContext con, Layer layer)
         throws Exception {
             int index = Arrays.asList(con.getLayers()).indexOf(layer);
             return getDatabaseName(featureType);

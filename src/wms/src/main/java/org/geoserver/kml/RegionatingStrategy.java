@@ -2,7 +2,7 @@ package org.geoserver.kml;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wms.WMSMapContext;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.opengis.filter.Filter;
 
 /**
@@ -19,7 +19,7 @@ public interface RegionatingStrategy {
      * @param context
      * @param layer
      */
-    public Filter getFilter(WMSMapContext context, MapLayer layer);
+    public Filter getFilter(WMSMapContext context, Layer layer);
 
     /**
      * Clear any cached work (indexing, etc.) for a particular feature type's default regionating 

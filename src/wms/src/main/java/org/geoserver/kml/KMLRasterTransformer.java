@@ -15,7 +15,7 @@ import org.geoserver.wms.WMSRequests;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.FeatureTypeStyle;
@@ -45,10 +45,10 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  *  KMLRasterTransformer tx = new KMLRasterTransformer( context );
  *  for ( int i = 0; i < context.getLayerCount(); i++ ) {
- *    MapLayer mapLayer = mapConext.getMapLayer( i );
+ *    Layer layer = context.getMapLayer( i );
  * 
  *    //transform
- *    tx.transform( mapLayer, output );
+ *    tx.transform( layer, output );
  *  }
  *  </code>
  * </pre>
@@ -93,8 +93,8 @@ public class KMLRasterTransformer extends KMLMapTransformer {
         }
 
         public void encode(Object o) throws IllegalArgumentException {
-            MapLayer mapLayer = (MapLayer) o;
-            int mapLayerOrder = mapContext.indexOf(mapLayer);
+            Layer layer = (Layer) o;
+            int mapLayerOrder = mapContext.layers().indexOf(layer);
 
             if (isStandAlone()) {
                 start("kml");
@@ -115,13 +115,13 @@ public class KMLRasterTransformer extends KMLMapTransformer {
             }
             
             // start("Document");
-            // element("name", mapLayer.getTitle());
+            // element("name", Layer.getTitle());
 
             // start the folder naming it 'layer_<mapLayerOrder>', this is
             // necessary for a GroundOverlay
             start("Folder");
             element("name", "layer_" + mapLayerOrder);
-            element("description", mapLayer.getTitle());
+            element("description", layer.getTitle());
 
             if (lookAtOpts != null) {
                 if (box != null) {
@@ -134,13 +134,13 @@ public class KMLRasterTransformer extends KMLMapTransformer {
             
             start("GroundOverlay");
             // element( "name", feature.getID() );
-            element("name", mapLayer.getTitle());
+            element("name", layer.getTitle());
             element("drawOrder", Integer.toString(mapLayerOrder));
 
             // encode the icon
             start("Icon");
 
-            encodeHref(mapLayer);
+            encodeHref(layer);
 
             element("viewRefreshMode", "never");
             element("viewBoundScale", "0.75");
@@ -162,7 +162,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
                 SimpleFeatureCollection features = null;
                 try {
                     features = KMLUtils.loadFeatureCollection(
-                            (SimpleFeatureSource) mapLayer.getFeatureSource(), mapLayer,
+                            (SimpleFeatureSource) layer.getFeatureSource(), layer,
                             mapContext, wms, scaleDenominator);
                 } catch (Exception ex) {
                     String msg = "Error getting features.";
@@ -181,7 +181,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
 
                     // get the styles for this feature
                     SimpleFeatureType featureType = features.getSchema();
-                    FeatureTypeStyle[] fts = KMLUtils.filterFeatureTypeStyles(mapLayer.getStyle(),
+                    FeatureTypeStyle[] fts = KMLUtils.filterFeatureTypeStyles(layer.getStyle(),
                             featureType);
 
                     Iterator<SimpleFeature> iter = features.iterator();
@@ -226,16 +226,16 @@ public class KMLRasterTransformer extends KMLMapTransformer {
             }
         }
 
-        protected void encodeHref(MapLayer mapLayer) {
+        protected void encodeHref(Layer layer) {
             if (inline) {
                 // inline means reference the image "inline" as in kmz
                 // use the mapLayerOrder
-                int mapLayerOrder = mapContext.indexOf(mapLayer);
+                int mapLayerOrder = mapContext.layers().indexOf(layer);
                 element("href", "images/layer_" + mapLayerOrder + ".png");
             } else {
                 // reference the image as a remote wms call
                 element("href",
-                        WMSRequests.getGetMapUrl(mapContext.getRequest(), mapLayer, 0,
+                        WMSRequests.getGetMapUrl(mapContext.getRequest(), layer, 0,
                                 mapContext.getAreaOfInterest(), new String[] { "format",
                                         "image/png", "transparent", "true" }));
             }

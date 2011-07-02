@@ -21,7 +21,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GMLConfiguration;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
@@ -266,9 +266,8 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
             }
             
             List featureCollections = new ArrayList();
-            for (int i = 0; i < map.getLayerCount(); i++) {
-                MapLayer layer = map.getLayer(i);
-                Query query = new Query(layer.getQuery());
+            for (Layer layer : map.layers()) {
+                Query query = layer.getQuery();
 
                 SimpleFeatureCollection features = null;
                 try {

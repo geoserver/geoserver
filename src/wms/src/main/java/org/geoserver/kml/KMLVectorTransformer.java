@@ -14,7 +14,7 @@ import org.geoserver.wms.WMSMapContext;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Symbolizer;
 import org.geotools.xml.transform.Translator;
@@ -39,11 +39,11 @@ public class KMLVectorTransformer extends KMLMapTransformer {
 
     private KMLLookAt lookAtOpts;
 
-    public KMLVectorTransformer(WMS wms, WMSMapContext mapContext, MapLayer mapLayer) {
+    public KMLVectorTransformer(WMS wms, WMSMapContext mapContext, Layer mapLayer) {
         this(wms, mapContext, mapLayer, null);
     }
 
-    public KMLVectorTransformer(WMS wms, WMSMapContext mapContext, MapLayer mapLayer,
+    public KMLVectorTransformer(WMS wms, WMSMapContext mapContext, Layer mapLayer,
             KMLLookAt lookAtOpts) {
         super(wms, mapContext, mapLayer);
 

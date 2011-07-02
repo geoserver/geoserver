@@ -20,7 +20,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
@@ -174,14 +174,14 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
             }
             aggregatedBounds.setToNull();
 
-            final MapLayer[] mapLayers = context.getLayers();
+            final List<Layer> mapLayers = context.layers();
             final List<MapLayerInfo> layerInfos = context.getRequest().getLayers();
-            for (int i = 0; i < mapLayers.length; i++) {
-                final MapLayer mapLayer = mapLayers[i];
+            for (int i = 0; i < mapLayers.size(); i++) {
+                final Layer Layer = mapLayers.get(i);
                 final MapLayerInfo layerInfo = layerInfos.get(i);
 
                 ReferencedEnvelope layerLatLongBbox;
-                layerLatLongBbox = computeLayerBounds(mapLayer, layerInfo, computeQueryBounds);
+                layerLatLongBbox = computeLayerBounds(Layer, layerInfo, computeQueryBounds);
                 try {
                     layerLatLongBbox = layerLatLongBbox.transform(aggregatedBounds.getCoordinateReferenceSystem(), true);
                 } catch (Exception e) {
@@ -194,10 +194,10 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
         }
 
         @SuppressWarnings("rawtypes")
-        private ReferencedEnvelope computeLayerBounds(MapLayer mapLayer, MapLayerInfo layerInfo,
+        private ReferencedEnvelope computeLayerBounds(Layer layer, MapLayerInfo layerInfo,
                 boolean computeQueryBounds) {
 
-            final Query layerQuery = mapLayer.getQuery();
+            final Query layerQuery = layer.getQuery();
             // make sure if layer is gonna be filtered, the resulting bounds are obtained instead of
             // the whole bounds
             final Filter filter = layerQuery.getFilter();
@@ -210,7 +210,7 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
 
             ReferencedEnvelope layerLatLongBbox = null;
             if (computeQueryBounds) {
-                FeatureSource featureSource = mapLayer.getFeatureSource();
+                FeatureSource featureSource = layer.getFeatureSource();
                 try {
                     CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
                     FeatureCollection features = featureSource.getFeatures(layerQuery);
@@ -273,14 +273,14 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
             }
         }
 
-        public void encodeGWCLink(GetMapRequest request, MapLayerInfo mapLayer) {
+        public void encodeGWCLink(GetMapRequest request, MapLayerInfo layer) {
             start("NetworkLink");
-            String prefixedName = mapLayer.getResource().getPrefixedName();
+            String prefixedName = layer.getResource().getPrefixedName();
             element("name", "GWC-" + prefixedName);
 
             start("Link");
 
-            String type = mapLayer.getType() == MapLayerInfo.TYPE_RASTER ? "png" : "kml";
+            String type = layer.getType() == MapLayerInfo.TYPE_RASTER ? "png" : "kml";
             String url = ResponseUtils.buildURL(request.getBaseUrl(), "gwc/service/kml/" + 
                     prefixedName + "." + type + ".kml", null, URLType.SERVICE);
             element("href", url);

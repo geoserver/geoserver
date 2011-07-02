@@ -6,6 +6,7 @@ package org.geoserver.wms.svg;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.wms.WMSMapContext;
@@ -19,7 +20,7 @@ import org.geotools.filter.FilterFactory;
 import org.geotools.filter.FilterFactoryFinder;
 import org.geotools.filter.FilterType;
 import org.geotools.filter.GeometryFilter;
-import org.geotools.map.MapLayer;
+import org.geotools.map.Layer;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 
@@ -114,8 +115,8 @@ public class StreamingSVGMap extends WebMap {
      * @task TODO: respect layer filtering given by their Styles
      */
     private void writeLayers() throws IOException {
-        MapLayer[] layers = mapContext.getLayers();
-        int nLayers = layers.length;
+        List<Layer> layers = mapContext.layers();
+        int nLayers = layers.size();
 
         // FeatureTypeInfo layerInfo = null;
         int defMaxDecimals = writer.getMaximunFractionDigits();
@@ -123,7 +124,7 @@ public class StreamingSVGMap extends WebMap {
         FilterFactory fFac = FilterFactoryFinder.createFilterFactory();
 
         for (int i = 0; i < nLayers; i++) {
-            MapLayer layer = layers[i];
+            Layer layer = layers.get(i);
             SimpleFeatureIterator featureReader = null;
             SimpleFeatureSource fSource;
             fSource = (SimpleFeatureSource) layer.getFeatureSource();

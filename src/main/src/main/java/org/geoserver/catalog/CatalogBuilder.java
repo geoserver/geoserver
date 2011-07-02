@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
+import javax.media.jai.PlanarImage;
 
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
@@ -41,6 +42,7 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
@@ -800,6 +802,9 @@ public class CatalogBuilder {
 
         /// dispose coverage 
         gc.dispose(true);
+        if(gc.getRenderedImage() instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) gc.getRenderedImage());
+        }
 
         return cinfo;
     }

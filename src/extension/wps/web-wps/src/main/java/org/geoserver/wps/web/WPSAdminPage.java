@@ -5,7 +5,9 @@
 package org.geoserver.wps.web;
 
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.wps.WPSInfo;
 
@@ -26,7 +28,9 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
     @Override
     protected void build(IModel info, Form form) {
-        // nothing to add for the moment
+        TextField connectionTimeout = new TextField("connectionTimeout", Integer.class);
+        connectionTimeout.add(new MinimumValidator<Integer>(-1));
+        form.add(connectionTimeout);
     }
 
 }

@@ -68,6 +68,10 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         if ( service.getVersions().isEmpty() ) {
             service.getVersions().add( new Version( "1.0.0") );
         }
+        if (service.getConnectionTimeout() == 0) {
+            // timeout has not yet been specified. Use default
+            ((WPSInfoImpl)service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
+        }
         return service;
     }
 }

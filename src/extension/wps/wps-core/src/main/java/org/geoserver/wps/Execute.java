@@ -11,7 +11,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,8 +89,9 @@ import org.springframework.context.ApplicationContext;
  * @author Andrea Aime, OpenGeo
  */
 public class Execute {
-    private static final int CONNECTION_TIMEOUT = 30 * 1000;
-
+    
+    int connectionTimeout;
+    
     WPSInfo wps;
 
     GeoServerInfo gs;
@@ -102,6 +102,16 @@ public class Execute {
         this.wps = wps;
         this.gs = gs;
         this.context = context;
+        double timeout = wps.getConnectionTimeout();
+        
+        // The specified timeout is in seconds. Convert it to milliseconds  
+        if (timeout >= 0) {
+            this.connectionTimeout = (int) (timeout * 1000);
+        } else {
+            // specified timeout == -1 represents infinite timeout.
+            // by convention, for infinite URLConnection timeouts, we need to use zero. 
+            this.connectionTimeout = 0;
+        }
     }
 
     /**
@@ -514,8 +524,8 @@ public class Execute {
                 HttpClient client = new HttpClient();
                 // setting timeouts (30 seconds, TODO: make this configurable)
                 HttpConnectionManagerParams params = new HttpConnectionManagerParams();
-                params.setSoTimeout(CONNECTION_TIMEOUT);
-                params.setConnectionTimeout(CONNECTION_TIMEOUT);
+                params.setSoTimeout(connectionTimeout);
+                params.setConnectionTimeout(connectionTimeout);
                 // TODO: make the http client a well behaved http client, no more than x connections
                 // per server (x admin configurable maybe), persistent connections and so on
                 HttpConnectionManager manager = new SimpleHttpConnectionManager();
@@ -547,8 +557,8 @@ public class Execute {
                             } else {
                                 // open with the built-in url management
                                 URLConnection conn = refDestination.openConnection();
-                                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                                conn.setReadTimeout(CONNECTION_TIMEOUT);
+                                conn.setConnectTimeout(connectionTimeout);
+                                conn.setReadTimeout(connectionTimeout);
                                 refInput = conn.getInputStream();
                             }
                             post.setRequestEntity(new InputStreamRequestEntity(refInput, ppio.getMimeType()));
@@ -584,8 +594,8 @@ public class Execute {
             } else {
                 // use the normal url connection methods then...
                 URLConnection conn = destination.openConnection();
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setReadTimeout(CONNECTION_TIMEOUT);
+                conn.setConnectTimeout(connectionTimeout);
+                conn.setReadTimeout(connectionTimeout);
                 input = conn.getInputStream();
             }
             

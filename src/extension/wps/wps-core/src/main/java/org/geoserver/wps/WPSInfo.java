@@ -13,5 +13,18 @@ import org.geoserver.config.ServiceInfo;
  * @author Lucas Reed, Refractions Research Inc
  */
 public interface WPSInfo extends ServiceInfo {
-    // Intentionally empty
+
+    /**
+     * Returns the connection timeout (in seconds). It represents the timeout to be used 
+     * during WPS execute requests, when opening the connection/reading through it.  
+     * 
+     * @return the timeout, or -1 if infinite timeout.
+     */
+    double getConnectionTimeout();
+
+    /**
+     * Sets the connection timeout (in seconds) to be used in WPS execute requests. -1 for infinite timeout 
+     */
+    void setConnectionTimeout(double timeout);
+    
 }

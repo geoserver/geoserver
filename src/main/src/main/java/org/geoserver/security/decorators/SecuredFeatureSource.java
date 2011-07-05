@@ -5,6 +5,7 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.ows.Dispatcher;
@@ -16,11 +17,13 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.PropertyName;
 
 /**
  * Given a {@link FeatureSource} makes sure only the operations allowed by the WrapperPolicy
@@ -69,7 +72,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
     public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
         // mix the external query with the access limits one
         final Query readQuery = getReadQuery();
-        final Query mixed = DataUtilities.mixQueries(query, readQuery, query.getHandle());
+        final Query mixed = mixQueries(query, readQuery);
         final FeatureCollection<T, F> fc = delegate.getFeatures(mixed);
         if (fc == null)
             return null;
@@ -98,5 +101,52 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
             throw new IllegalArgumentException("SecureFeatureSources has been fed " +
             		"with unexpected AccessLimits class " + policy.getLimits().getClass());
         }
+    }
+    
+    /**
+     * Mixes two queries with an eye towards security (limiting attributes instead of adding them)
+     * and preserves all of the other properties in userQuery (hints, crs handling, sorting)
+     * @param userQuery
+     * @param securityQuery
+     * @return
+     */
+    protected Query mixQueries(Query userQuery, Query securityQuery) {
+        // first rough mix
+        Query result = DataUtilities.mixQueries(userQuery, securityQuery, userQuery.getHandle());
+        
+        // check request attributes and use those ones only
+        List<PropertyName> securityProperties = securityQuery.getProperties();
+        if(securityProperties != null && securityProperties.size() > 0) {
+            List<PropertyName> userProperties = userQuery.getProperties();
+            if(userProperties == null) {
+                result.setProperties(securityProperties);
+            } else {
+                for (PropertyName pn : userProperties) {
+                    if(!securityProperties.contains(pn)) {
+                        throw new SecurityException("Attribute " + pn.getPropertyName() + " is not available");
+                    }
+                }
+                result.setProperties(userProperties);
+            }
+        }
+        
+        // mix the hints, keep all the user ones and override with the query ones
+        if(userQuery.getHints() == null) {
+            result.setHints(securityQuery.getHints());
+        } else if(securityQuery.getHints() == null) {
+            result.setHints(userQuery.getHints());
+        } else {
+            Hints mix = userQuery.getHints();
+            mix.putAll(securityQuery.getHints());
+            result.setHints(mix);
+        }
+        
+        // transfer all other properties from the user query
+        result.setCoordinateSystem(userQuery.getCoordinateSystem());
+        result.setCoordinateSystemReproject(userQuery.getCoordinateSystemReproject());
+        result.setStartIndex(userQuery.getStartIndex());
+        result.setSortBy(userQuery.getSortBy());
+        
+        return result;
     }
 }

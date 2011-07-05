@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -187,6 +188,18 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("113", "//cite:FID", doc);
         assertXpathEvaluatesTo("1", "count(//cite:ADDRESS)", doc);
     }
+    
+    public void testReadFilterReproject() throws Exception {
+        // should only see one feature and all attributes
+        authenticate("cite_readfilter", "cite");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS) + "&srsName=EPSG:4269");
+        print(doc);
+        assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
+        assertXpathEvaluatesTo("113", "//cite:FID", doc);
+        assertXpathEvaluatesTo("1", "count(//cite:ADDRESS)", doc);
+        assertXpathEvaluatesTo("http://www.opengis.net/gml/srs/epsg.xml#4269", "//gml:MultiPolygon/@srsName", doc);
+    }
 
     public void testFilterAttribute() throws Exception {
         // should only see one feature
@@ -197,6 +210,21 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
         assertXpathEvaluatesTo("113", "//cite:FID", doc);
         assertXpathEvaluatesTo("0", "count(//cite:ADDRESS)", doc);
+    }
+    
+    public void testFilterRequestedAttribute() throws Exception {
+        // should only see one feature
+        authenticate("cite_readatts", "cite");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS) + "&propertyName=FID,ADDRESS");
+        // print(doc);
+        
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", doc);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String message = xpath.evaluate("//ows:ExceptionText", doc);
+        Pattern pattern = Pattern.compile(".*ADDRESS.*not available.*", Pattern.MULTILINE | Pattern.DOTALL);
+        assertTrue(pattern.matcher(message).matches());
+
     }
 
     public void testInsertNoLimits() throws Exception {

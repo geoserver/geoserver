@@ -132,7 +132,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
 
         // get the mixed filter
         final Query local = new Query(null, filter);
-        Query mixed = DataUtilities.mixQueries(local, writeQuery, null);
+        Query mixed = mixQueries(local, writeQuery);
 
         if (writeQuery.getPropertyNames() == Query.ALL_NAMES) {
             // it was just a matter of filtering.
@@ -177,7 +177,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
 
         // get the mixed filter
         final Query local = new Query(null, filter);
-        Query mixed = DataUtilities.mixQueries(local, writeQuery, null);
+        Query mixed = mixQueries(local, writeQuery);
         storeDelegate.removeFeatures(mixed.getFilter());
     }
 

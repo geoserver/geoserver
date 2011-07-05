@@ -41,7 +41,7 @@ public class SecuredFeatureLocking<T extends FeatureType, F extends Feature> ext
 
     public int lockFeatures(Query query) throws IOException {
         Query writeQuery = getWriteQuery(policy);
-        Query mixed = DataUtilities.mixQueries(query, writeQuery, query.getHandle());
+        Query mixed = mixQueries(query, writeQuery);
         final Filter writeFilter = writeQuery.getFilter();
         
         if(writeFilter == Filter.EXCLUDE) {
@@ -76,7 +76,7 @@ public class SecuredFeatureLocking<T extends FeatureType, F extends Feature> ext
 
     public void unLockFeatures(Query query) throws IOException {
         Query writeQuery = getWriteQuery(policy);
-        Query mixed = DataUtilities.mixQueries(query, writeQuery, query.getHandle());
+        Query mixed = mixQueries(query, writeQuery);
         final Filter writeFilter = writeQuery.getFilter();
         
         if(writeFilter == Filter.EXCLUDE) {

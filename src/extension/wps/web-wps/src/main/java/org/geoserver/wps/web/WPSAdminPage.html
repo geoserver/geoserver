@@ -1,7 +1,17 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-	
+	<li>
+      <fieldset>
+        <legend><span><wicket:message key="executionSettings">ExecutionSettings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="connectionTimeout">Connection Timeout</wicket:message></label>
+            <input type="text" wicket:id="connectionTimeout" class="field text"/>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
 </wicket:extend>
 </body>
 </html>

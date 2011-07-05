@@ -62,6 +62,24 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(255, 182, 182));
     }
     
+    public void testTimeTwice() throws Exception {
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        
+        BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
+
+        // should be similar to the default, but with different shades of color
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 182, 182));
+        
+        image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
+
+        // should be similar to the default, but with different shades of color
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 182, 182));
+
+    }
+    
     public void testTimeElevation() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);

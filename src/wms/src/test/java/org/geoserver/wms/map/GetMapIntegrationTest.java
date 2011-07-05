@@ -88,6 +88,18 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, pixel[2]);
     }
     
+    public void testMosaicTwice() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
+        "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
+        
+        assertEquals("image/png", response.getContentType());
+        
+        response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
+        "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
+        
+        assertEquals("image/png", response.getContentType());
+    }
+    
     public void testIndexedTransparency() throws Exception {
         String request = "wms?LAYERS=sf:paletted&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS" +
         		"&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3174" +

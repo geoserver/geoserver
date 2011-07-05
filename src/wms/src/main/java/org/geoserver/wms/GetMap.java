@@ -391,7 +391,7 @@ public class GetMap {
                     try {
 
                         try {
-                            layer = new GridReaderLayer( reader, layerStyle,  readParameters);
+                            layer = new CachedGridReaderLayer( reader, layerStyle,  readParameters);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }

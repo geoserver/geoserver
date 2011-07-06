@@ -17,10 +17,15 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.store.ReTypingFeatureCollection;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureTypes;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
@@ -73,11 +78,27 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
         // mix the external query with the access limits one
         final Query readQuery = getReadQuery();
         final Query mixed = mixQueries(query, readQuery);
+        int limitedAttributeSize = mixed.getProperties() != null ?  mixed.getProperties().size() : 0;
         final FeatureCollection<T, F> fc = delegate.getFeatures(mixed);
-        if (fc == null)
+        if (fc == null) {
             return null;
-        else
-            return (FeatureCollection) SecuredObjects.secure(fc, policy);
+        } else {
+            if(limitedAttributeSize > 0 && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
+                // the datastore did not honour the query properties??
+                // the jdbc store had this issue
+                if(fc instanceof SimpleFeatureCollection) {
+                    SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
+                    SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
+                    ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
+                    return (FeatureCollection) SecuredObjects.secure(retyped, policy);
+                } else {
+                    throw new RuntimeException("The store did not honor the query attribute list and " +
+                    		"we cannot cast it in memory because it returned a complex feature collection");
+                }
+            } else {
+                return (FeatureCollection) SecuredObjects.secure(fc, policy);
+            }
+        }
     }
     
     protected Query getReadQuery() {

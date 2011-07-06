@@ -42,7 +42,6 @@ public class SecuredSimpleFeatureSource extends
     @Override
     public SimpleFeatureCollection getFeatures(Query query)
             throws IOException {
-
         return DataUtilities.simple(super.getFeatures(query));
     }
 

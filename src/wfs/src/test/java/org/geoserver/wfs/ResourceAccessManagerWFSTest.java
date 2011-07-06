@@ -124,6 +124,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         props.put("cite", "cite,ROLE_DUMMY");
         props.put("cite_readfilter", "cite,ROLE_DUMMY");
         props.put("cite_readatts", "cite,ROLE_DUMMY");
+        props.put("cite_readattsnf", "cite,ROLE_DUMMY");
         props.put("cite_insertfilter", "cite,ROLE_DUMMY");
         props.put("cite_writefilter", "cite,ROLE_DUMMY");
         props.put("cite_writeatts", "cite,ROLE_DUMMY");
@@ -151,6 +152,10 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         List<PropertyName> readAtts = Arrays.asList(ff.property("the_geom"), ff.property("FID"));
         tam.putLimits("cite_readatts", buildings, new VectorAccessLimits(CatalogMode.HIDE,
                 readAtts, fid113, null, null));
+        
+        // limits the attributes, but specifies no filtering
+        tam.putLimits("cite_readattsnf", buildings, new VectorAccessLimits(CatalogMode.HIDE,
+                readAtts, Filter.INCLUDE, null, Filter.INCLUDE));
 
         // disallow writing on Restricted Street
         Filter restrictedStreet = ff.not(ff.like(ff.property("ADDRESS"), "*Restricted Street*", "*", "?",
@@ -194,7 +199,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         authenticate("cite_readfilter", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
                 + getLayerId(MockData.BUILDINGS) + "&srsName=EPSG:4269");
-        print(doc);
+        // print(doc);
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
         assertXpathEvaluatesTo("113", "//cite:FID", doc);
         assertXpathEvaluatesTo("1", "count(//cite:ADDRESS)", doc);
@@ -225,6 +230,30 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         Pattern pattern = Pattern.compile(".*ADDRESS.*not available.*", Pattern.MULTILINE | Pattern.DOTALL);
         assertTrue(pattern.matcher(message).matches());
 
+    }
+    
+    public void testExtraAttributesNoFilter() throws Exception {
+        // should only see one feature
+        authenticate("cite_readattsnf", "cite");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS) + "&propertyName=FID,ADDRESS");
+        // print(doc);
+        
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", doc);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String message = xpath.evaluate("//ows:ExceptionText", doc);
+        Pattern pattern = Pattern.compile(".*ADDRESS.*not available.*", Pattern.MULTILINE | Pattern.DOTALL);
+        assertTrue(pattern.matcher(message).matches());
+    }
+    
+    public void testLimitAttributesNoFilter() throws Exception {
+        // should only see one feature
+        authenticate("cite_readattsnf", "cite");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS));
+        // print(doc);
+        
+        assertXpathEvaluatesTo("0", "count(//cite:ADDRESS)", doc);
     }
 
     public void testInsertNoLimits() throws Exception {

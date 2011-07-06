@@ -108,7 +108,7 @@ public class VectorAccessLimits extends DataAccessLimits {
      * @return
      */
     private Query buildQuery(List<PropertyName> attributes, Filter filter) {
-        if(attributes == null && filter == null || filter == Filter.INCLUDE) {
+        if(attributes == null && (filter == null || filter == Filter.INCLUDE)) {
             return Query.ALL;
         } else {
             Query q = new Query();

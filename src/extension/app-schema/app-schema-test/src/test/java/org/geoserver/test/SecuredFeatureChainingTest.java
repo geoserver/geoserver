@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
 /**
  * WFS GetFeature to test secured feature with GeoServer.
  * 
- * @author Victor Tey, CSIRO Information Management and Technology
+ * @author Victor Tey (CSIRO Earth Science and Resource Engineering)
  */
 public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport {
     /**

@@ -6,7 +6,10 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.print.attribute.standard.Severity;
 
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -83,14 +86,20 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
         if (fc == null) {
             return null;
         } else {
-            if (fc instanceof SimpleFeatureCollection && limitedAttributeSize > 0
-                    && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
-                // the datastore did not honour the query properties??
-                // the jdbc store had this issue
-                SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
-                SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
-                ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
-                return (FeatureCollection) SecuredObjects.secure(retyped, policy);
+            if (limitedAttributeSize > 0 && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
+                if(fc instanceof SimpleFeatureCollection) {
+                    // the datastore did not honour the query properties?? It's broken, but we can fix it
+                    SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
+                    SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
+                    ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
+                    return (FeatureCollection) SecuredObjects.secure(retyped, policy);
+                } else {
+                    // complex feature store eh? No way to fix it at least warn the admin
+                    LOGGER.log(Level.SEVERE, "Complex store returned more properties than allowed " +
+                    		"by security (because they are required by the schema). " +
+                    		"Either the security setup is broken or you have a security breach");
+                    return (FeatureCollection) SecuredObjects.secure(fc, policy);
+                }
             } else {
                 return (FeatureCollection) SecuredObjects.secure(fc, policy);
             }

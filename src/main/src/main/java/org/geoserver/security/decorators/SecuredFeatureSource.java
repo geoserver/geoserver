@@ -83,18 +83,14 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
         if (fc == null) {
             return null;
         } else {
-            if(limitedAttributeSize > 0 && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
+            if (fc instanceof SimpleFeatureCollection && limitedAttributeSize > 0
+                    && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
                 // the datastore did not honour the query properties??
                 // the jdbc store had this issue
-                if(fc instanceof SimpleFeatureCollection) {
-                    SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
-                    SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
-                    ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
-                    return (FeatureCollection) SecuredObjects.secure(retyped, policy);
-                } else {
-                    throw new RuntimeException("The store did not honor the query attribute list and " +
-                    		"we cannot cast it in memory because it returned a complex feature collection");
-                }
+                SimpleFeatureCollection sfc = (SimpleFeatureCollection) fc;
+                SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(sfc.getSchema(), mixed.getPropertyNames());
+                ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
+                return (FeatureCollection) SecuredObjects.secure(retyped, policy);
             } else {
                 return (FeatureCollection) SecuredObjects.secure(fc, policy);
             }

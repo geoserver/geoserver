@@ -6,6 +6,8 @@ package org.geoserver.wms;
 
 import java.util.HashMap;
 
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geotools.map.MapLayer;
 
@@ -90,20 +92,49 @@ public abstract class WebMap {
      * </p>
      */
     public void setContentDispositionHeader(final WMSMapContext mapContext, final String extension) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < mapContext.getLayerCount(); i++) {
-            MapLayer layer = mapContext.getLayer(i);
-            String title = layer.getTitle();
-            if (title != null && !title.equals("")) {
-                sb.append(title).append("_");
+        setContentDispositionHeader(mapContext, extension, true);
+    }
+    
+    /**
+     * Utility method to build a standard content disposition header.
+     * <p>
+     * It will concatenate the titles of the various layers in the map context, or generate
+     * "geoserver" instead (in the event no layer title is set).
+     * </p>
+     * <p>
+     * The file name will be followed by the extension provided, for example, to generate layer.pdf
+     * extension will be ".pdf"
+     * </p>
+     */
+    public void setContentDispositionHeader(final WMSMapContext mapContext, final String extension, boolean attachment) {
+        // see if we can get the original request, before the group expansion happened
+        Request request = Dispatcher.REQUEST.get();
+        String filename = null;
+        if(request != null && request.getRawKvp() != null && request.getRawKvp().get("LAYERS") != null) {
+            String layers = ((String) request.getRawKvp().get("LAYERS")).trim();
+            if(layers.length() > 0) {
+                filename = layers.replace(",", "_");
+            }
+        } 
+        if(filename == null) {
+            StringBuffer sb = new StringBuffer();
+            for (MapLayer layer : mapContext.getLayers()) {
+                String title = layer.getTitle();
+                if (title != null && !title.equals("")) {
+                    sb.append(title).append("_");
+                }
+            }
+            if(sb.length() > 0) {
+                sb.setLength(sb.length() - 1);
+                filename = sb.toString();
             }
         }
         String value;
-        if (sb.length() > 0) {
-            sb.setLength(sb.length() - 1);
-            value = "attachment; filename=" + sb.toString() + extension;
+        String type = attachment ? "attachment" : "inline";
+        if (filename != null && filename.length() > 0) {
+            value = type + "; filename=" + filename.replace(":", "-") + extension;
         } else {
-            value = "attachment; filename=geoserver" + extension;
+            value = type + "; filename=geoserver" + extension;
         }
         setResponseHeader("Content-Disposition", value);
     }

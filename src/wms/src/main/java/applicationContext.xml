@@ -379,6 +379,7 @@
         </list>
       </constructor-arg>
       <constructor-arg ref="wms" />
+      <property name="extension" value="png"/>
     </bean>
     <bean id="PNG8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
       <constructor-arg>
@@ -392,6 +393,7 @@
         </list>
       </constructor-arg>
       <constructor-arg ref="wms" />
+      <property name="extension" value="png"/>
     </bean>
     <bean id="PNGMapResponse" class="org.geoserver.wms.map.PNGMapResponse">
       <constructor-arg ref="wms" />
@@ -408,6 +410,7 @@
           <value>image/geotiff</value>
         </list>
       </constructor-arg>
+      <property name="extension" value="tif"/>
       <constructor-arg ref="wms" />
     </bean>
     <bean id="GeoTiffMapProducer8" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
@@ -422,6 +425,7 @@
         </list>
       </constructor-arg>
       <constructor-arg ref="wms" />
+      <property name="extension" value="tif"/>
     </bean>
     <bean id="GeoTiffMapResponse" class="org.geoserver.wms.map.GeoTIFFMapResponse">
       <constructor-arg ref="wms" />
@@ -439,6 +443,7 @@
         </list>
       </constructor-arg>
       <constructor-arg ref="wms" />
+      <property name="extension" value="tif"/>
     </bean>
     <bean id="Tiff8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
       <constructor-arg>
@@ -452,6 +457,7 @@
         </list>
       </constructor-arg>
       <constructor-arg ref="wms" />
+      <property name="extension" value="tif"/>
     </bean>
     <bean id="TiffMapResponse" class="org.geoserver.wms.map.TIFFMapResponse">
       <constructor-arg ref="wms" />
@@ -463,6 +469,7 @@
         <value>image/gif</value>
       </constructor-arg>
       <constructor-arg ref="wms" />
+      <property name="extension" value="gif"/>
     </bean>
     <bean id="GIFMapResponse" class="org.geoserver.wms.map.GIFMapResponse">
       <constructor-arg ref="wms" />
@@ -482,6 +489,7 @@
         <description>JPEG does not support 8-bit indexed color maps</description>
         <value>false</value>
       </property>
+      <property name="extension" value="jpg"/>
     </bean>
     <bean id="JPEGMapResponse" class="org.geoserver.wms.map.JPEGMapResponse">
       <constructor-arg ref="wms" />

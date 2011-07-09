@@ -5,6 +5,7 @@
 package org.geoserver.wms;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.geotools.styling.Rule;
@@ -298,5 +299,26 @@ public class GetLegendGraphicRequest extends WMSRequest {
 
     public void setStrict(boolean strict) {
         this.strict = strict;
+    }
+
+	/** SLD replacement */
+    private Map /* <String,Object> */env = new HashMap();
+
+    /**
+     * Map of strings that make up the SLD enviroment for variable substitution
+     *
+     * @return
+     */
+    public Map getEnv() {
+        return env;
+    }
+
+    /**
+     * Sets the SLD environment substitution
+     *
+     * @param enviroment
+     */
+    public void setEnv(Map enviroment) {
+        this.env = enviroment;
     }
 }

@@ -4,14 +4,12 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -24,8 +22,6 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class WMSDimensionsTestSupport extends WMSTestSupport {
 
@@ -93,42 +89,6 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         }
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
-    }
-    
-    /**
-     * Retries the request result as a BufferedImage, checking the mime type is the expected one
-     * @param path
-     * @param mime
-     * @return
-     * @throws Exception
-     */
-    protected BufferedImage getAsImage(String path, String mime) throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(path);
-        assertEquals(mime, resp.getContentType());
-        InputStream is = getBinaryInputStream(resp);
-        return ImageIO.read(is);
-    }
-    
-    /**
-     * Checks the pixel i/j has the specified color
-     * @param image
-     * @param i
-     * @param j
-     * @param color
-     */
-    protected void assertPixel(BufferedImage image, int i, int j, Color color) {
-        ColorModel cm = image.getColorModel();
-        Raster raster = image.getRaster();
-        Object pixel = raster.getDataElements(i, j, null);
-        
-        Color actual;
-        if(cm.hasAlpha()) {
-            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), cm.getAlpha(pixel));
-        } else {
-            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), color.getAlpha());
-        }
-
-        assertEquals(color, actual);
     }
 
 }

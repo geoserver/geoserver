@@ -13,7 +13,6 @@ import javax.xml.namespace.QName;
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;

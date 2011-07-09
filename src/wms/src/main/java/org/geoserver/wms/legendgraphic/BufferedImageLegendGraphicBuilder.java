@@ -81,9 +81,6 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class BufferedImageLegendGraphicBuilder {
 
-    /** Factory that will resolve symbolizers into rendered styles */
-    private static final SLDStyleFactory styleFactory = new SLDStyleFactory();
-
     /** Tolerance used to compare doubles for equality */
     public static final double TOLERANCE = 1e-6;
 
@@ -192,6 +189,7 @@ public class BufferedImageLegendGraphicBuilder {
         final int w = request.getWidth();
         final int h = request.getHeight();
 
+        final SLDStyleFactory styleFactory = new SLDStyleFactory();
         final Color bgColor = LegendUtils.getBackgroundColor(request);
         for (int i = 0; i < ruleCount; i++) {
             final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();

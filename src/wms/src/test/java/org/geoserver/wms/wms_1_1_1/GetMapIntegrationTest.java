@@ -135,6 +135,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&styles=&layers=" + layers + "&Format=image/geotiff" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         assertEquals("image/geotiff", response.getContentType());
+        assertEquals("inline; filename=sf-states.tif", response.getHeader("Content-Disposition"));
     }
 
     public void testSldBody() throws Exception {

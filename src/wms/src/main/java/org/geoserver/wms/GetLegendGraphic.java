@@ -7,6 +7,7 @@ package org.geoserver.wms;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphic;
+import org.geotools.filter.function.EnvFunction;
 
 /**
  * WMS GetLegendGraphic operation default implementation.
@@ -44,6 +45,8 @@ public class GetLegendGraphic {
             throw new ServiceException("There is no support for creating legends in "
                     + outputFormat + " format", "InvalidFormat");
         }
+        // the 
+        EnvFunction.setLocalValues(request.getEnv());
         Object legend = format.produceLegendGraphic(request);
         return legend;
     }

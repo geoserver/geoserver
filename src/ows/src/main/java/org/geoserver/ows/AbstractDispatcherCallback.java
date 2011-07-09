@@ -2,17 +2,14 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.flow;
+package org.geoserver.ows;
 
-import org.geoserver.ows.DispatcherCallback;
-import org.geoserver.ows.Request;
-import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * An empty callback implementation, can be used as a conventient base class when there is a need to
+ * An empty callback implementation, can be used as a convenient base class when there is a need to
  * implement only a few callback methods
  * 
  * @author Andrea Aime - OpenGeo

@@ -381,6 +381,18 @@
         <description>The declared output format MIME-Types in the capabilities document</description>
         <list>
           <value>image/png</value>
+        </list>
+      </constructor-arg>
+      <constructor-arg ref="wms" />
+    </bean>
+    <bean id="PNG8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+      <constructor-arg>
+        <description>The prescribed output format MIME-Type</description>
+        <value>image/png8</value>
+      </constructor-arg>
+      <constructor-arg>
+        <description>The declared output format MIME-Types in the capabilities document</description>
+        <list>
           <value>image/png8</value>
         </list>
       </constructor-arg>
@@ -393,12 +405,24 @@
     <bean id="GeoTiffMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
       <constructor-arg>
         <description>The prescribed output format MIME-Type</description>
-        <value>image/tiff</value>
+        <value>image/geotiff</value>
       </constructor-arg>
       <constructor-arg>
         <description>The declared output format MIME-Types in the capabilities document</description>
         <list>
           <value>image/geotiff</value>
+        </list>
+      </constructor-arg>
+      <constructor-arg ref="wms" />
+    </bean>
+    <bean id="GeoTiffMapProducer8" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+      <constructor-arg>
+        <description>The prescribed output format MIME-Type</description>
+        <value>image/geotiff8</value>
+      </constructor-arg>
+      <constructor-arg>
+        <description>The declared output format MIME-Types in the capabilities document</description>
+        <list>
           <value>image/geotiff8</value>
         </list>
       </constructor-arg>
@@ -417,6 +441,18 @@
         <description>The declared output format MIME-Types in the capabilities document</description>
         <list>
           <value>image/tiff</value>
+        </list>
+      </constructor-arg>
+      <constructor-arg ref="wms" />
+    </bean>
+    <bean id="Tiff8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+      <constructor-arg>
+        <description>The prescribed output format MIME-Type</description>
+        <value>image/tiff8</value>
+      </constructor-arg>
+      <constructor-arg>
+        <description>The declared output format MIME-Types in the capabilities document</description>
+        <list>
           <value>image/tiff8</value>
         </list>
       </constructor-arg>

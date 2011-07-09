@@ -31,6 +31,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.PreviewLayer.PreviewLayerType;
@@ -187,7 +188,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             String label = translateFormat("format.wms.", wmsOutputFormat);
             // build option with text and value
             Label format = new Label(i + "", label);
-            format.add(new AttributeModifier("value", true, new Model(wmsOutputFormat)));
+            format.add(new AttributeModifier("value", true, new Model(ResponseUtils.urlEncode(wmsOutputFormat))));
             wmsFormats.add(format);
         }
         menu.add(wmsFormats);

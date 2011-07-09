@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>gov.nasa</groupId>
 			<artifactId>worldwind</artifactId>
-			<version>0.5</version>
+			<version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>

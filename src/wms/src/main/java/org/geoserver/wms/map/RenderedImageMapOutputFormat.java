@@ -172,6 +172,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private boolean transparencySupported = true;
     
     /**
+     * The file extension (minus the .)
+     */
+    private String extension = null;
+    
+    /**
      * The known producer capabilities
      */
     private final Map<String, MapProducerCapabilities> capabilities= new HashMap<String, MapProducerCapabilities>();
@@ -217,7 +222,23 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
     }
-    
+
+    /**
+     * Returns the extension used for the file name in the content disposition header
+     * @param extension
+     */
+    public String getExtension() {
+        return extension;
+    }
+
+    /**
+     * Sets the extension used for the file name in the content disposition header
+     * @param extension
+     */
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
     public MapProducerCapabilities getCapabilities(String format) {
         return capabilities.get(format);
     }
@@ -314,9 +335,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
 
             if (image != null) {
-                RenderedImageMap result = new RenderedImageMap(mapContent, image, getMimeType());
-                result.setRenderedCoverages(renderedCoverages);
-                return result;
+                return buildMap(mapContent, image);
             }
         }
 
@@ -511,7 +530,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             image = preparedImage;
         // }
 
+        RenderedImageMap map = buildMap(mapContent, image);
+        return map;
+    }
+
+    protected RenderedImageMap buildMap(final WMSMapContent mapContent, RenderedImage image) {
         RenderedImageMap map = new RenderedImageMap(mapContent, image, getMimeType());
+        if(extension != null) {
+            map.setContentDispositionHeader(mapContent, "." + extension, false);
+        }
         return map;
     }
 

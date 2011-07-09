@@ -11,7 +11,6 @@ import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
-import org.geotools.renderedImage.viewer.RenderedImageBrowser;
 import org.geotools.util.Converters;
 
 public class GetLegendGraphicTest extends WMSTestSupport {

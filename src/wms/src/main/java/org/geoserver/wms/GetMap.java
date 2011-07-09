@@ -363,24 +363,18 @@ public class GetMap {
         // setup the SLD variable substitution environment
         EnvFunction.setLocalValues(request.getEnv());
 
-        WebMap map;
-        try {
-            // set the buffer value if the admin has set a specific value for some layers
-            // in this map
-            // GR: question: does setupRenderingBuffer need EnvFunction.setLocalValues to be already
-            // set? otherwise move this call out of the try block and above setLovalValues
-            setupRenderingBuffer(mapContext, layers);
+        // set the buffer value if the admin has set a specific value for some layers
+        // in this map
+        // GR: question: does setupRenderingBuffer need EnvFunction.setLocalValues to be already
+        // set? otherwise move this call out of the try block and above setLovalValues
+        setupRenderingBuffer(mapContext, layers);
 
-            // /////////////////////////////////////////////////////////
-            //
-            // Producing the map in the requested format.
-            //
-            // /////////////////////////////////////////////////////////
-            map = delegate.produceMap(mapContext);
-
-        } finally {
-            EnvFunction.clearLocalValues();
-        }
+        // /////////////////////////////////////////////////////////
+        //
+        // Producing the map in the requested format.
+        //
+        // /////////////////////////////////////////////////////////
+        WebMap map = delegate.produceMap(mapContext);
         
         if (cachingPossible) {
             map.setResponseHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
@@ -395,7 +389,6 @@ public class GetMap {
         return map;
 
     }
-
     
     
 

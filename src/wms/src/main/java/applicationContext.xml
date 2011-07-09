@@ -654,4 +654,6 @@
     </bean>
       
     <bean id="wmsCatalogValidator" class="org.geoserver.wms.WMSValidator"/>
+    
+    <bean id="envVariableCleaner" class="org.geoserver.wms.EnvVariableCleaner"/>
 </beans>

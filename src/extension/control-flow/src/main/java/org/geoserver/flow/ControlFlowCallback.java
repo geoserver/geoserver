@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.flow.config.DefaultControlFlowConfigurator;
+import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;

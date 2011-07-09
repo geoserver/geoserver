@@ -58,6 +58,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
         dataDirectory.addStyle("thickStroke", GetFeatureInfoTest.class.getResource("thickStroke.sld"));
+        dataDirectory.addStyle("paramStroke", GetFeatureInfoTest.class.getResource("paramStroke.sld"));
         dataDirectory.addStyle("raster", GetFeatureInfoTest.class.getResource("raster.sld"));
         dataDirectory.addStyle("rasterScales", GetFeatureInfoTest.class.getResource("rasterScales.sld"));
         dataDirectory.addCoverage(TASMANIA_BM, GetFeatureInfoTest.class.getResource("tazbm.tiff"),
@@ -167,6 +168,27 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
         // another request that will catch one feature due to the style with a thick stroke, make sure it's in
         dom = getAsDOM(base + "&styles=thickStroke");
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+    }
+    
+    /**
+     * Tests GetFeatureInfo uses the env params
+     * 
+     * @throws Exception
+     */
+    public void testParameterizedStyle() throws Exception {
+        String layer = getLayerId(MockData.BASIC_POLYGONS);
+        String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
+                "&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229&styles=paramStroke";
+        Document dom = getAsDOM(base);
+        // make sure the document is empty, the style we chose has thin lines
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
+
+        // another request that will catch one feature due to the style with a thick stroke, make sure it's in
+        dom = getAsDOM(base + "&env=thickness:10");
+        // print(dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }

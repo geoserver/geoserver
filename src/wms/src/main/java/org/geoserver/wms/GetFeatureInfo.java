@@ -119,15 +119,8 @@ public class GetFeatureInfo {
         List<FeatureCollection> results;
 
         EnvFunction.setLocalValues(request.getGetMapRequest().getEnv());
-        try {
-            results = execute(request);
-        } finally {
-            EnvFunction.clearLocalValues();
-        }
-        
-        FeatureCollectionType ret = buildResults(results);
-
-        return ret;
+        results = execute(request);
+        return buildResults(results);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

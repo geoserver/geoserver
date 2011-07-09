@@ -152,10 +152,11 @@ public class GetMapTest extends TestCase {
         getMapOp = new GetMap(wms);
         WebMap map = getMapOp.run(request);
         assertTrue(producer.produceMapCalled);
-        // only defaults
-        assertNull(ff.function("env", ff.literal("myParam")).evaluate(null));
-        assertEquals(10, ff.function("env", ff.literal("otherParam"), ff.literal(10))
-                .evaluate(null));
+        // there used to be a test that the values are reset right after 
+        // GetMap, but this is wrong, the producer can be streaming and thus
+        // the env variable must stay until the full request lifecycle is done,
+        // we now use a DispatcherCallback to clean up the env variables:
+        // EnvVariableCleaner
     }
 
     private void assertInvalidMandatoryParam(String expectedExceptionCode) {

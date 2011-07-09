@@ -451,26 +451,21 @@ public class GetMap {
         envMap.put("wms_srs", mapContent.getRequest().getSRS());
         envMap.put("wms_width", mapContent.getMapWidth());
         envMap.put("wms_height", mapContent.getMapHeight());
+        // they will be cleaned up by EnvVariableCleaner
         EnvFunction.setLocalValues(envMap);
+        
+        // set the buffer value if the admin has set a specific value for some layers
+        // in this map
+        // GR: question: does setupRenderingBuffer need EnvFunction.setLocalValues to be already
+        // set? otherwise move this call out of the try block and above setLovalValues
+        setupRenderingBuffer(mapContent, layers);
 
-        WebMap map;
-        try {
-            // set the buffer value if the admin has set a specific value for some layers
-            // in this map
-            // GR: question: does setupRenderingBuffer need EnvFunction.setLocalValues to be already
-            // set? otherwise move this call out of the try block and above setLovalValues
-            setupRenderingBuffer(mapContent, layers);
-
-            // /////////////////////////////////////////////////////////
-            //
-            // Producing the map in the requested format.
-            //
-            // /////////////////////////////////////////////////////////
-            map = delegate.produceMap(mapContent);
-
-        } finally {
-            EnvFunction.clearLocalValues();
-        }
+        // /////////////////////////////////////////////////////////
+        //
+        // Producing the map in the requested format.
+        //
+        // /////////////////////////////////////////////////////////
+        WebMap map = delegate.produceMap(mapContent);
         
         if (cachingPossible) {
             map.setResponseHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");

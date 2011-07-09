@@ -129,6 +129,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         checkImage(response);
     }
+    
+    public void testGeotiffMime() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/geotiff" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        assertEquals("image/geotiff", response.getContentType());
+    }
 
     public void testSldBody() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="

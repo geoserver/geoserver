@@ -11,10 +11,13 @@ import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -394,6 +397,42 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
             t.printStackTrace();
             fail("Could not read image returned from GetMap:" + t.getLocalizedMessage());
         }
+    }
+    
+    /**
+     * Retries the request result as a BufferedImage, checking the mime type is the expected one
+     * @param path
+     * @param mime
+     * @return
+     * @throws Exception
+     */
+    protected BufferedImage getAsImage(String path, String mime) throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(path);
+        assertEquals(mime, resp.getContentType());
+        InputStream is = getBinaryInputStream(resp);
+        return ImageIO.read(is);
+    }
+    
+    /**
+     * Checks the pixel i/j has the specified color
+     * @param image
+     * @param i
+     * @param j
+     * @param color
+     */
+    protected void assertPixel(BufferedImage image, int i, int j, Color color) {
+        ColorModel cm = image.getColorModel();
+        Raster raster = image.getRaster();
+        Object pixel = raster.getDataElements(i, j, null);
+        
+        Color actual;
+        if(cm.hasAlpha()) {
+            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), cm.getAlpha(pixel));
+        } else {
+            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), color.getAlpha());
+        }
+
+        assertEquals(color, actual);
     }
 
 }

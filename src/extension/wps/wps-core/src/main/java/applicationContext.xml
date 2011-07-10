@@ -150,6 +150,7 @@
     <bean id="contourProcess" class="org.geoserver.wps.gs.ContourProcess"/>
     <bean id="polygonExtractionProcess" class="org.geoserver.wps.gs.PolygonExtractionProcess"/>
     <bean id="rclipProcess" class="org.geoserver.wps.gs.RectangularClipProcess"/>
+    <bean id="clipProcess" class="org.geoserver.wps.gs.ClipProcess"/>
     <bean id="collectGeometriesProcess" class="org.geoserver.wps.gs.CollectGeometries" />
     <bean id="cropCoverageProcess" class="org.geoserver.wps.gs.CropCoverage" />
     <bean id="scaleCoverageProcess" class="org.geoserver.wps.gs.ScaleCoverage" />

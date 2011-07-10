@@ -16,7 +16,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ClipProcessTest extends WPSTestSupport {
 
-    public void testClip() throws Exception {
+    public void testClipRectangle() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
                 + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
                 + "<ows:Identifier>gs:RectangularClip</ows:Identifier>"
@@ -45,7 +45,8 @@ public class ClipProcessTest extends WPSTestSupport {
                 + "</wps:RawDataOutput>" + "</wps:ResponseForm>" + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-
+        System.out.println(response.getOutputStreamContent());
+        
         Parser p = new Parser(new WFSConfiguration());
         FeatureCollectionType fct = (FeatureCollectionType) p.parse(new ByteArrayInputStream(
                 response.getOutputStreamContent().getBytes()));

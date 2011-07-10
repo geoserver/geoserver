@@ -6,7 +6,6 @@ package org.geoserver.web.data.store;
 
 import static org.geoserver.web.data.store.StoreProvider.ENABLED;
 import static org.geoserver.web.data.store.StoreProvider.NAME;
-import static org.geoserver.web.data.store.StoreProvider.TYPE;
 import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
 import org.apache.wicket.Component;
@@ -26,11 +25,11 @@ import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Panel listing the configured StoreInfo object on a table
@@ -47,10 +46,6 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     private static final long serialVersionUID = 5957961031378924960L;
 
     private ModalWindow popupWindow;
-
-    public StorePanel(String id) {
-        this(id, new StoreProvider(), false);
-    }
 
     public StorePanel(String id, StoreProvider provider, boolean selectable) {
         super(id, provider, selectable);
@@ -70,7 +65,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
 
-        if (property == TYPE) {
+        if (property == StoreProvider.DATA_TYPE) {
             final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
 
             ResourceReference storeIcon = icons.getStoreIcon(storeInfo);
@@ -95,7 +90,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             f.add(new Image("storeIcon", enabledIcon));
             return f;
         }
-        throw new IllegalArgumentException("Don't know a property named " + property.getName());
+        return null;
     }
 
     private Component storeNameLink(String id, final IModel itemModel) {

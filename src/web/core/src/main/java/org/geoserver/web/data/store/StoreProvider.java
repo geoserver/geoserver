@@ -14,11 +14,15 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geotools.data.DataAccessFactory;
+import org.opengis.coverage.grid.Format;
 
 /**
  * Data providers for the {@link StorePanel}
@@ -26,7 +30,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 @SuppressWarnings("serial")
 public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     
-    static final Property<StoreInfo> TYPE = new AbstractProperty<StoreInfo>("type") {
+    static final Property<StoreInfo> DATA_TYPE = new AbstractProperty<StoreInfo>("datatype") {
 
         public IModel getModel(final IModel itemModel) {
             return new Model(itemModel) {
@@ -53,11 +57,39 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> NAME = new BeanProperty<StoreInfo>("name",
             "name");
 
+    final Property<StoreInfo> TYPE = new AbstractProperty<StoreInfo>("type") {
+        
+        public Object getPropertyValue(StoreInfo item) {
+            String type = item.getType();
+            if(type != null) {
+                return type;
+            }
+            try {
+                ResourcePool resourcePool = getCatalog().getResourcePool();
+                if(item instanceof DataStoreInfo) {
+                    DataStoreInfo dsInfo = (DataStoreInfo) item;
+                    DataAccessFactory factory = resourcePool.getDataStoreFactory(dsInfo);
+                    if(factory != null) {
+                        return factory.getDisplayName();
+                    }
+                } else if(item instanceof CoverageStoreInfo) {
+                    Format format = resourcePool.getGridCoverageFormat((CoverageStoreInfo) item);
+                    if(format != null) {
+                        return format.getName();
+                    }
+                } 
+            } catch(Exception e) {
+                // fine, we tried
+            }
+            return "?";
+        }
+    };
+    
     static final Property<StoreInfo> ENABLED = new BeanProperty<StoreInfo>(
             "enabled", "enabled");
     
-    static final List<Property<StoreInfo>> PROPERTIES = Arrays.asList(TYPE,
-            WORKSPACE, NAME, ENABLED);
+    final List<Property<StoreInfo>> PROPERTIES = Arrays.asList(DATA_TYPE,
+            WORKSPACE, NAME, TYPE, ENABLED);
 
     WorkspaceInfo workspace;
     

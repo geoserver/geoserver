@@ -4,10 +4,10 @@
  */
 package org.geoserver.wfs;
 
-import org.geoserver.feature.DefaultCRSFilterVisitor;
-import org.geoserver.feature.ReprojectingFilterVisitor;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeatureType;

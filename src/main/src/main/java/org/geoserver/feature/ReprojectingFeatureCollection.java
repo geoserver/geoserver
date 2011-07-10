@@ -11,20 +11,25 @@ import java.util.NoSuchElementException;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.FactoryRegistryException;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform2D;
@@ -51,6 +56,8 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  */
 public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
+    
     /**
      * The schema of reprojected features
      */
@@ -152,6 +159,18 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
     }
 
     public SimpleFeatureCollection subCollection(Filter filter) {
+        // reproject the filter to the delegate native crs
+        CoordinateReferenceSystem crs = getSchema().getCoordinateReferenceSystem();
+        CoordinateReferenceSystem crsDelegate = delegate.getSchema().getCoordinateReferenceSystem();
+        if(crs != null) {
+            DefaultCRSFilterVisitor defaulter = new DefaultCRSFilterVisitor(FF, crs);
+            filter = (Filter) filter.accept(defaulter, null);
+            if(crsDelegate != null && !CRS.equalsIgnoreMetadata(crs, crsDelegate)) {
+                ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, delegate.getSchema());
+                filter = (Filter) filter.accept(reprojector, null);
+            }
+        }
+        
         SimpleFeatureCollection sub = delegate.subCollection(filter);
 
         if (sub != null) {

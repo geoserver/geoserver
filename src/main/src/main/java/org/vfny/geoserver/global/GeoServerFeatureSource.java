@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.feature.DefaultCRSFilterVisitor;
-import org.geoserver.feature.ReprojectingFilterVisitor;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -31,6 +29,8 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;

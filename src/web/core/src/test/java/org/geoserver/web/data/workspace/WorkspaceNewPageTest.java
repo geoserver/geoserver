@@ -63,4 +63,14 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceNewPage.class);
         tester.assertErrorMessages(new String[] {"Invalid URI syntax: not a valid uri"});
     }
+    
+    public void testInvalidName()  {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("name", "default");
+        form.setValue("uri", "http://www.geoserver.org");
+        form.submit();
+        
+        tester.assertRenderedPage(WorkspaceNewPage.class);
+        tester.assertErrorMessages(new String[] {"Invalid workspace name: \"default\" is a reserved keyword"});
+    }
 }

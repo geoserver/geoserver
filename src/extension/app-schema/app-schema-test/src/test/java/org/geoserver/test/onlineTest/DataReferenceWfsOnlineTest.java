@@ -7,11 +7,26 @@ package org.geoserver.test.onlineTest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
 import org.geoserver.wfs.WFSInfo;
+import org.geotools.data.DataAccess;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
+import org.geotools.data.complex.MappingFeatureCollection;
+import org.geotools.filter.FilterFactoryImpl;
+import org.opengis.filter.FilterFactory2;
 import org.w3c.dom.Document;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.type.Name;
+import org.geotools.feature.Types;
 
 public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWfsTest {
 
@@ -1750,5 +1765,62 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         assertTrue(isEqualGeometry(orig, expected, 5));
         
     }
-   
+    
+    
+    public void testFilteringSplit() throws Exception {
+        FeatureSource<FeatureType, Feature> featureSource;
+        FilterFactory2 ff = new FilterFactoryImpl(null);
+        try {
+            Name gu = Types.typeName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "GeologicUnit");
+            featureSource = this.getFeatureSource(gu);
+        } catch (IOException ioe) {
+            featureSource = null;
+        }
+        assertNotNull(featureSource);
+        List<Filter> filterList = new ArrayList<Filter>();
+        Expression property = ff
+                .property("gsml:geologicHistory/gsml:GeologicEvent/gsml:eventEnvironment/gsml:CGI_TermValue/gsml:value");
+        Filter filter = ff.like(property, "*mid-crustal*");
+
+        filterList.add(filter);
+        property = ff.property("gsml:purpose");
+        filter = ff.like(property, "*ypical*");
+        filterList.add(filter);
+        Filter andFilter = ff.and(filterList);
+
+        FeatureCollection<FeatureType, Feature> filteredResults = featureSource
+                .getFeatures(andFilter);
+        FeatureIterator<Feature> iterator = filteredResults.features();
+
+        assertTrue(filteredResults instanceof MappingFeatureCollection);
+
+        MappingFeatureCollection mfc = ((MappingFeatureCollection) filteredResults);
+        Filter afterSplit = mfc.getQuery().getFilter();
+        // this tests that after the split, only he LikeFilterImpl exist on the query as a pre
+        // filter
+        assertTrue(afterSplit instanceof org.geotools.filter.LikeFilterImpl);
+        // Below ensures that the right filter exist on the query for pre processing on the
+        // database. The LikeFilter with the nested attribute should be post processed as at that
+        // current point in time the property has not been mapped and is unable to be filtered on
+        // the database whereas gsml:purpose is straight forward and can be pre processed on the
+        // database
+        assertTrue("*ypical*"
+                .equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getPattern()));
+        ArrayList<String> ids = new ArrayList<String>();
+        while (iterator.hasNext()) {
+            ids.add(iterator.next().getIdentifier().toString());
+        }
+        assertEquals(3, ids.size());
+        assertTrue(ids.contains("gsml.geologicunit.1677754911513315832"));
+        assertTrue(ids.contains("gsml.geologicunit.16777549126941084"));
+        assertTrue(ids.contains("gsml.geologicunit.16777549126942588"));
+    }
+
+    public FeatureSource<FeatureType, Feature> getFeatureSource(Name feature) throws IOException {
+        DataAccess<FeatureType, Feature> mfDataAccess = AppSchemaDataAccessRegistry
+                .getDataAccess(feature);
+        return (FeatureSource) mfDataAccess.getFeatureSource(feature);
+
+    }
+    
 }

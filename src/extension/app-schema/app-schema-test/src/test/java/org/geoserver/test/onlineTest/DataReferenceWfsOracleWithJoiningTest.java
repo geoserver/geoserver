@@ -28,5 +28,10 @@ public class DataReferenceWfsOracleWithJoiningTest extends DataReferenceWfsOracl
         AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "true");
         super.oneTimeSetUp();
     }
+    
+    @Override
+    public void testFilteringSplit() throws Exception {
+        //this is a non joining test
+    }
 
 }

@@ -59,7 +59,7 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.WMSMapLayer;
+import org.geotools.map.WMSLayer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -86,10 +86,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Or;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
@@ -515,7 +512,7 @@ public class GetFeatureInfo {
         // the wms layer does request in a CRS that's compatible with the WMS server srs
         // list,
         // we may need to transform
-        WMSMapLayer ml = new WMSMapLayer(wms, layer);
+        WMSLayer ml = new WMSLayer(wms, layer);
         // delegate to the web map layer as there's quite a bit of reprojection magic
         // code
         // that we want to be consistently reproduced for GetFeatureInfo as well

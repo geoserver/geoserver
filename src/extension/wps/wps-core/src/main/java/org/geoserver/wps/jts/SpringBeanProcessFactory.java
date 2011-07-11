@@ -101,14 +101,21 @@ public class SpringBeanProcessFactory extends AnnotationDrivenProcessFactory imp
     @Override
     protected Method method(String className) {
         Class c = classMap.get(className);
+        Method lastExecute = null;
         if (c != null) {
             for (Method m : c.getMethods()) {
-                if ("execute".equals(m.getName())) {
-                    return m;
+                if(m.getName().equals("execute")) {
+                    if(lastExecute != null) {
+                        lastExecute = m;
+                    }
+                    // if annotated return immediately, otherwise keep it aside
+                    if(m.getAnnotation(DescribeResult.class) != null) {
+                        return m;
+                    } 
                 }
             }
         }
-        return null;
+        return lastExecute;
     }
 
     public Set<Name> getNames() {

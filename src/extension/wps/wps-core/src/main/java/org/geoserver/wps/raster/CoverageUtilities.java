@@ -10,7 +10,6 @@ import java.awt.image.DataBuffer;
 import java.util.List;
 
 import javax.media.jai.ROI;
-import javax.media.jai.ROIShape;
 
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
@@ -145,18 +144,35 @@ public class CoverageUtilities {
 	        final List<Range> classificationRanges, 
 	        final Number noDataValue) {
 		
-	    return getRangeLookupTable(classificationRanges, noDataValue,noDataValue.getClass());
+	    return getRangeLookupTable(classificationRanges, noDataValue, noDataValue.getClass());
 	}
 	
+        public static RangeLookupTable getRangeLookupTable(
+                final List<Range> classificationRanges, 
+                final Number noDataValue,
+                final Class clazz) {
+            return getRangeLookupTable(classificationRanges, null, noDataValue, noDataValue.getClass());
+        }
+        
+        public static RangeLookupTable getRangeLookupTable(
+                final List<Range> classificationRanges, 
+                final int[] outputPixelValues,
+                final Number noDataValue) {
+            return getRangeLookupTable(classificationRanges, outputPixelValues, noDataValue, noDataValue.getClass());
+        }
+        
 	public static RangeLookupTable getRangeLookupTable(
 	        final List<Range> classificationRanges, 
+	        final int[] outputPixelValues,
 	        final Number noDataValue,
 	        final Class clazz) {
 		
 	    final RangeLookupTable rlt = new RangeLookupTable(noDataValue); 
-	    final int size= classificationRanges.size(); 
+	    final int size= classificationRanges.size();
+	    final boolean useCustomOutputPixelValues = outputPixelValues != null && outputPixelValues.length == size;
 	    for (int i = 0; i < size; i++) {
-	        rlt.add(classificationRanges.get(i), convert(i + 1, noDataValue.getClass()));
+	        final int reference = useCustomOutputPixelValues ? outputPixelValues [i] : i + 1;
+	        rlt.add(classificationRanges.get(i), convert(reference, noDataValue.getClass()));
 	    }
 	    return rlt;
 	}

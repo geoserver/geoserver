@@ -129,7 +129,8 @@ import org.spatialite.libs.MultiLibs;
  * 
  * Based on CSVOutputFormat.java and ShapeZipOutputFormat.java from geoserver 2.2.x
  *
- * @author ported to gs 2.2.x by Pablo Emanuel Velazquez, TSAVO SRL Group, pvelazquez@gmail.com.ar
+ * @author ported to gs 2.2.x by Pablo Velazquez, GEOTEKNE, pvelazquez@tsavo.com.ar
+ * @author ported to gs 2.2.x by Jose Macchi, GEOTEKNE, jmacchi@tsavo.com.ar
  *
  */
 
@@ -175,9 +176,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     protected boolean canHandleInternal(Operation operation) {
-        //any additional checks that need to be performed to 
-        // determine when the output format should be "engaged" 
-        // should go here
         return super.canHandleInternal(operation);
     }
     
@@ -400,8 +398,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
         byte[] datos = new byte[longitud];
         JDBCIn.read(datos);
         output.write(datos);
-	    File spatialiteLibraryFile = java.oi.File("String con la ruta");  
-    	spatialiteLibraryFile.delete();  
     }
     
     public String getCapabilitiesElementName() {
@@ -466,7 +462,7 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
      * @return value;
      */
     
-    //Tener en cuenta que pasa con las GEOMETRY COLLECTIONS!
+    //Need to solve the problem whit GEOMETRY COLLECTIONS! (if a GEOMETRY COLLECTION have MULTIPOINTS, all of them need to be Fixed)
     private String prepareGeom (String theGeom){
         String value = theGeom;
         if ((boolean)theGeom.contains("MULTIPOINT"))

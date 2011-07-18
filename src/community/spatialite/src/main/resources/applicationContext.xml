@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"> 
-
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  
-  <!-- spatialite datastore initializer -->
-  <bean id="spatialiteDataStoreFactoryInitializer" 
-    class="org.geoserver.spatialite.SpatiaLiteDataStoreFactoryInitializer">
-    <property name="resourceLoader" ref="resourceLoader"/>
-  </bean>
 
-  <bean id="spatiaLiteOutputFormat" class="org.geoserver.wfs.response.SpatiaLiteOutputFormat" />
+  <bean id="spatiaLiteOutputFormat" class="org.geoserver.wfs.response.SpatiaLiteOutputFormat">
+    <constructor-arg index="0" ref="geoServer"/>
+  </bean>
+  
 </beans>

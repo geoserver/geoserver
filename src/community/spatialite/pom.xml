@@ -12,7 +12,7 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>spatialite</artifactId>
   <packaging>jar</packaging>
-  <name>SpatiaLite DataStore Extension</name>
+  <name>SpatiaLite output format</name>
 
 
 <repositories>
@@ -76,6 +76,11 @@
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-spatialite</artifactId>
       <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.xerial</groupId>
+     <artifactId>spatialite-native-libs</artifactId>
+     <version>1.0</version>
    </dependency>
   </dependencies>
 

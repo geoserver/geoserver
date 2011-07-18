@@ -76,3 +76,8 @@ Once on the WMS configuration page, there will be a block titled :guilabel:`INSP
 After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WMS 1.3.0 capabilities document.
 
 .. note:: Currently GeoServer does not offer the ability to configure alternate languages, as there is no way for an administrator to configure multiple responses.  There is an `open issue <http://jira.codehaus.org/browse/GEOS-4502>`_ on the GeoServer issue tracker that we are hoping to secure funding for.  If you are interested in implementing or funding this improvement, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
+
+More information
+----------------
+
+A tutorial on setting up GeoServer with the INSPIRE extension is available at:  `<http://location.defra.gov.uk/2011/07/data-publisher-how-to-guides/>`_.  See the section on :guilabel:`Setting up GeoServer on a Windows Machine`.

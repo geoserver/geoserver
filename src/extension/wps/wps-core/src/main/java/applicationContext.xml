@@ -162,6 +162,9 @@
     <bean id="pointBuffersProces" class="org.geoserver.wps.gs.PointBuffers" />
     <bean id="rasterZonalStatistics" class="org.geoserver.wps.gs.RasterZonalStatistics" />
     <bean id="rangeLookupProcess" class="org.geoserver.wps.gs.RangeLookupProcess" />
+    <bean id="addCoveragesProcess" class="org.geoserver.wps.gs.AddCoveragesProcess" />
+    
+    <bean id="multiplyCoveragesProcess" class="org.geoserver.wps.gs.MultiplyCoveragesProcess" />
     <bean id="gridProcess" class="org.geoserver.wps.gs.GridProcess" />
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     

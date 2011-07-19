@@ -8,6 +8,14 @@
             <uri>urn:cgi:xmlns:CGI:Utilities:3.0.0</uri>
         </Namespace>
         <Namespace>
+            <prefix>gco</prefix>
+            <uri>http://www.isotc211.org/2005/gco</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gmd</prefix>
+            <uri>http://www.isotc211.org/2005/gmd</uri>
+        </Namespace>
+        <Namespace>
             <prefix>gml</prefix>
             <uri>http://www.opengis.net/gml/3.2</uri>
         </Namespace>
@@ -92,11 +100,10 @@
                     </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
-                    <targetAttribute>gsml:resolutionScale</targetAttribute>
-                    <ClientProperty>
-                        <name>xlink:href</name>
-                        <value>'urn:ogc:def:nil:OGC::missing'</value>
-                    </ClientProperty>
+                    <targetAttribute>gsml:resolutionScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>250000</OCQL>
+                    </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>gsml:samplingFrame</targetAttribute>

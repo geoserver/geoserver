@@ -50,6 +50,15 @@ import org.w3c.dom.NodeList;
 public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractTestSupport {
 
     /**
+     * The namespace URI used internally in the DOM to qualify the name of an "xmlns:" attribute.
+     * Note that "xmlns:" attributes are not accessible via XMLUnit XPathEngine, so testing these
+     * can only be performed by examining the DOM.
+     * 
+     * @see <a href="http://www.w3.org/2000/xmlns/">http://www.w3.org/2000/xmlns/</a>
+     */
+    protected static final String XMLNS = "http://www.w3.org/2000/xmlns/";
+
+    /**
      * WFS namespaces, for use by XMLUnit. A seen in WFSTestSupport, plus xlink.
      */
     @SuppressWarnings("serial")
@@ -97,6 +106,20 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
     @Override
     public NamespaceTestData getTestData() {
         return (NamespaceTestData) super.getTestData();
+    }
+
+    /**
+     * Returns the map of namespace prefix to URI configured in the test data.
+     */
+    public Map<String, String> getNamespaces() {
+        return getTestData().getNamespaces();
+    }
+
+    /**
+     * Returns the namespace URI for a given prefix configured in the test data.
+     */
+    public String getNamespace(String prefix) {
+        return getNamespaces().get(prefix);
     }
 
     /**

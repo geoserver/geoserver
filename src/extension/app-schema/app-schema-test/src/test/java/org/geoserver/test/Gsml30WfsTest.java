@@ -45,13 +45,13 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         // check target name space is encoded and is correct
-        assertXpathEvaluatesTo(Gsml30MockData.GSML_URI, "//@targetNamespace", doc);
+        assertXpathEvaluatesTo(getNamespace("gsml"), "//@targetNamespace", doc);
         // make sure the content is only relevant include
         assertXpathCount(1, "//xsd:include", doc);
         // no import to gml since it is already imported inside the included schema
         assertXpathCount(0, "//xsd:import", doc);
         // gsml schemaLocation
-        assertXpathEvaluatesTo(Gsml30MockData.GSML_SCHEMA_LOCATION_URL,
+        assertXpathEvaluatesTo(Gsml30MockData.GSML_SCHEMA_LOCATION,
                 "//xsd:include/@schemaLocation", doc);
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
@@ -92,8 +92,15 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
         assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
         assertXpathCount(2, "//gsml:MappedFeature", doc);
+        // test names
         assertXpathEvaluatesTo("First", "//gsml:MappedFeature[@gml:id='mf.1']/gml:name", doc);
         assertXpathEvaluatesTo("Second", "//gsml:MappedFeature[@gml:id='mf.2']/gml:name", doc);
+        assertXpathEvaluatesTo("250000",
+                "//gsml:MappedFeature[@gml:id='mf.1']/gsml:resolutionScale"
+                        + "/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer", doc);
+        assertXpathEvaluatesTo("250000",
+                "//gsml:MappedFeature[@gml:id='mf.2']/gsml:resolutionScale"
+                        + "/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer", doc);
     }
 
     /**
@@ -106,13 +113,16 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
         assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
-
-        // test the right number of attribute exist in wfs:FeatureCollection
-        assertEquals(11, doc.getFirstChild().getAttributes().getLength());
         assertXpathCount(2, "/wfs:FeatureCollection/wfs:member", doc);
+        // test that all namespaces are present on the root element
+        for (String prefix : getNamespaces().keySet()) {
+            assertEquals(getNamespace(prefix),
+                    doc.getFirstChild().getAttributes().getNamedItemNS(XMLNS, prefix)
+                            .getTextContent());
+        }
+        // test that no namespaces are present on the wfs:member elements
         assertEquals(0, doc.getFirstChild().getChildNodes().item(0).getAttributes().getLength());
         assertEquals(0, doc.getFirstChild().getChildNodes().item(1).getAttributes().getLength());
-
     }
 
 }

@@ -17,6 +17,19 @@ Compatibility
 
 The GeoServer Teradata extension is compatible with GeoServer 2.1.1 and higher.  GeoServer can connect to Teradata databases version 12.0 or higher.  Version 12.0 of the Teradata Database requires the optional geospatial extension to be installed.
 
+Read/write access
+-----------------
+
+The Teradata datastore in GeoServer supports full transactional capabilities, including feature creation, editing, and deleting.
+
+To support editing, a table must have one of the following:
+
+* a primary key
+* a unique primary index
+* an identity (sequential) column
+
+.. note:: It is not recommended to solely use an identity column, as spatial index triggers are not supported when referencing an identity column. See the section on Spatial Indexes for more details.
+
 Query Banding
 -------------
 

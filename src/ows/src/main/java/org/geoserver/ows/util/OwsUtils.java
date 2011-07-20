@@ -222,7 +222,7 @@ public class OwsUtils {
                             if(xmlEscape)
                                 s.append(ResponseUtils.encodeXML(msg));
                             else
-                                s.append( t.next() );
+                                s.append(msg);
                             lastMessage = msg;
                         }
                         

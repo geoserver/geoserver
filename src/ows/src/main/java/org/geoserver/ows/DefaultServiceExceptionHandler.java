@@ -74,7 +74,7 @@ public class DefaultServiceExceptionHandler extends ServiceExceptionHandler {
 
         //add the message
         StringBuffer sb = new StringBuffer();
-        OwsUtils.dumpExceptionMessages(exception, sb, true);
+        OwsUtils.dumpExceptionMessages(exception, sb, false);
         e.getExceptionText().add(sb.toString());
         e.getExceptionText().addAll(exception.getExceptionText());
 

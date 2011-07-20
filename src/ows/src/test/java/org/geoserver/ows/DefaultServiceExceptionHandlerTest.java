@@ -77,7 +77,51 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
 
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
     }
+
+    public void testHandleServiceExceptionEncoding() throws Exception {
+        String message = "foo & <foo> \"foo's\"";
+        
+        ServiceException exception = new ServiceException(message);
+        exception.setLocator("test-locator");
+
+        handler.handleServiceException(exception, requestInfo);
+
+        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilderFactory.setNamespaceAware(true);
+
+        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        
+        Node exceptionText = XPathAPI.selectSingleNode(doc, "ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()");
+        assertNotNull(exceptionText);
+        assertEquals("round-tripped through character entities", message, exceptionText.getTextContent());
+    }
     
+    @SuppressWarnings("unchecked")
+    public void testHandleServiceExceptionEncodingMore() throws Exception {
+        String message1 = "foo & <foo> \"foo's\"";
+        String message2 = "a \"different\" <message>";
+
+        ServiceException exception = new ServiceException(message1);
+        exception.setLocator("test-locator");
+        exception.getExceptionText().add(message2);
+
+        handler.handleServiceException(exception, requestInfo);
+
+        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilderFactory.setNamespaceAware(true);
+
+        Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
+        
+        Node exceptionText = XPathAPI.selectSingleNode(doc, "ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()");
+        assertNotNull(exceptionText);
+        String message = message1 + "\n" + message2;
+        assertEquals("round-tripped through character entities", message, exceptionText.getTextContent());
+    }
+
     public void testHandleServiceExceptionCauses() throws Exception {
         // create a stack of three exceptions
         IllegalArgumentException illegalArgument = new IllegalArgumentException("Illegal argument here");

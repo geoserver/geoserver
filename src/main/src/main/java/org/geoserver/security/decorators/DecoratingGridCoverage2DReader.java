@@ -79,7 +79,10 @@ public abstract class DecoratingGridCoverage2DReader extends AbstractGridCoverag
         delegate.skip();
     }
 
-    
+    @Override
+    protected void finalize() throws Throwable {
+        // override, the base class ends up calling dispose() which in turn disposes of the reader
+    }
     
     
 }

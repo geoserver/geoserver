@@ -1,10 +1,12 @@
 package org.geoserver.wms;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -12,26 +14,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
+import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.renderedImage.viewer.RenderedImageBrowser;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Performs integration tests using a mock {@link ResourceAccessManager}
@@ -90,6 +99,14 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
+        
+        // add a mosaic as well
+        URL style = MockData.class.getResource("raster.sld");
+        dataDirectory.addStyle("raster", style);
+        dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
+
+        
         File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
         security.mkdir();
 
@@ -100,19 +117,34 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         props.put("cite_nostates", "cite,ROLE_DUMMY");
         props.put("cite_noinfo", "cite,ROLE_DUMMY");
         props.put("cite_texas", "cite,ROLE_DUMMY");
+        props.put("cite_mosaic1", "cite,ROLE_DUMMY");
+        props.put("cite_mosaic2", "cite,ROLE_DUMMY");
         props.store(new FileOutputStream(users), "");
     }
 
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
+        
+        // populate the access manager
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext
+                .getBean("testResourceAccessManager");
+        
+        // tile filtering setup
+        CoverageInfo coverage = catalog.getCoverageByName("sf:mosaic");
+        Filter green = CQL.toFilter("location like 'green%'");
+        tam.putLimits("cite_mosaic1", coverage, new CoverageAccessLimits(CatalogMode.HIDE, green, null, null));
+        
+        // image cropping setup
+        WKTReader wkt = new WKTReader();
+        MultiPolygon cropper = (MultiPolygon) wkt.read("MULTIPOLYGON(((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0)))");
+        tam.putLimits("cite_mosaic2", coverage, new CoverageAccessLimits(CatalogMode.HIDE, green, cropper, null));
 
+        // add a wms store too, if possible
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
             return;
         }
-
-        // add a store and a wms layer into the catalog
-        Catalog catalog = getCatalog();
 
         // setup the wms store, resource and layer
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -126,10 +158,6 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         catalog.add(states);
         LayerInfo layer = cb.buildLayer(states);
         catalog.add(layer);
-
-        // populate the access manager
-        TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext
-                .getBean("testResourceAccessManager");
 
         // hide the layer to cite_nostates
         tam.putLimits("cite_nostates", states, new WMSAccessLimits(CatalogMode.HIDE,
@@ -266,6 +294,58 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         assertTrue(texas.contains("STATE_NAME = Texas"));
         String california = getAsString(GET_FEATURE_INFO_CALIFORNIA);
         assertTrue(california.contains("no features were found"));
+    }
+    
+    public void testDoubleMosaic() throws Exception {
+        authenticate("cite_mosaic1", "cite");
+        String path = "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
+        "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+        // this one would fail due to the wrapper finalizer dispose of the coverage reader 
+        response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+    }
+    
+    public void testRasterFilterGreen() throws Exception {
+        // no cql filter, the security one should do
+        authenticate("cite_mosaic1", "cite");
+        MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
+        "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
+        
+        assertEquals("image/png", response.getContentType());
+        
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+        int[] pixel = new int[3];
+        image.getData().getPixel(0, 0, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(255, pixel[1]);
+        assertEquals(0, pixel[2]);
+    }
+    
+    public void testRasterCrop() throws Exception {
+        // this time we should get a cropped image
+        authenticate("cite_mosaic2", "cite");
+        MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
+        "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
+        
+        assertEquals("image/png", response.getContentType());
+        
+        RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+        
+        // bottom right pixel, should be green (inside the crop area)
+        int[] pixel = new int[3];
+        image.getData().getPixel(0, 149, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(255, pixel[1]);
+        assertEquals(0, pixel[2]);
+        
+        // bottom left, out of the crop area should be black (bgcolor)
+        image.getData().getPixel(149, 149, pixel);
+        assertEquals(0, pixel[0]);
+        assertEquals(0, pixel[1]);
+        assertEquals(0, pixel[2]);
+
     }
 
 }

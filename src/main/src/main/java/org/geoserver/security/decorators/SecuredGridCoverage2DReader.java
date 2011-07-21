@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -20,6 +21,7 @@ import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.coverage.grid.Format;
+import org.opengis.filter.Filter;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
@@ -73,6 +75,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
             // get the crop filter
             rasterFilter = limits.getRasterFilter();
+            Filter readFilter = limits.getReadFilter();
 
             // update the read params
             final GeneralParameterValue[] limitParams = limits.getParams();
@@ -90,7 +93,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                         if (param.getDescriptor().equals(lparam.getDescriptor())) {
                             it.remove();
                             break;
-                        }
+                        } 
                     }
                     // add the overwrite param (will be an overwrite if it was already there, an
                     // addition otherwise)
@@ -99,6 +102,15 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
                 parameters = (GeneralParameterValue[]) params
                         .toArray(new GeneralParameterValue[params.size()]);
+            }
+            
+            if(readFilter != null && !Filter.INCLUDE.equals(readFilter)) {
+                
+                
+                ParameterValueGroup readParameters = delegate.getFormat().getReadParameters();
+                List<GeneralParameterDescriptor> descriptors = readParameters.getDescriptor().descriptors();
+                parameters = CoverageUtils.mergeParameter(descriptors, 
+                        parameters, readFilter, "FILTER", "Filter");
             }
         }
 

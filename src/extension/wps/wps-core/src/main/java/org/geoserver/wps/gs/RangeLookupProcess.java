@@ -4,11 +4,6 @@
  */
 package org.geoserver.wps.gs;
 
-import jaitools.media.jai.rangelookup.RangeLookupDescriptor;
-import jaitools.media.jai.rangelookup.RangeLookupRIF;
-import jaitools.media.jai.rangelookup.RangeLookupTable;
-import jaitools.numeric.Range;
-
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.util.HashMap;
@@ -34,6 +29,10 @@ import org.geotools.renderer.i18n.Errors;
 import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.image.ColorUtilities;
 import org.geotools.util.logging.Logging;
+import org.jaitools.media.jai.rangelookup.RangeLookupDescriptor;
+import org.jaitools.media.jai.rangelookup.RangeLookupRIF;
+import org.jaitools.media.jai.rangelookup.RangeLookupTable;
+import org.jaitools.numeric.Range;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.util.ProgressListener;
 

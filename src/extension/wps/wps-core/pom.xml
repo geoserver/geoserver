@@ -17,7 +17,7 @@
     <name>Web Processing Service Module</name>
     
     <properties>
-      <jt.version>1.1.1</jt.version>
+      <jt.version>1.2.0</jt.version>
     </properties>
     
     <repositories>
@@ -88,27 +88,27 @@
             <version>${gt.version}</version>
         </dependency>
         <dependency>
-          <groupId>com.googlecode.jaitools</groupId>
+          <groupId>org.jaitools</groupId>
           <artifactId>jt-zonalstats</artifactId>
           <version>${jt.version}</version>
         </dependency>
         <dependency>
-          <groupId>com.googlecode.jaitools</groupId>
+          <groupId>org.jaitools</groupId>
           <artifactId>jt-rangelookup</artifactId>
           <version>${jt.version}</version>
         </dependency>
         <dependency>
-          <groupId>com.googlecode.jaitools</groupId>
+          <groupId>org.jaitools</groupId>
           <artifactId>jt-contour</artifactId>
           <version>${jt.version}</version>
         </dependency>    
         <dependency>
-          <groupId>com.googlecode.jaitools</groupId>
+          <groupId>org.jaitools</groupId>
           <artifactId>jt-vectorize</artifactId>
           <version>${jt.version}</version>
         </dependency>            
         <dependency>
-          <groupId>com.googlecode.jaitools</groupId>
+          <groupId>org.jaitools</groupId>
           <artifactId>jt-utils</artifactId>
           <version>${jt.version}</version>
         </dependency>

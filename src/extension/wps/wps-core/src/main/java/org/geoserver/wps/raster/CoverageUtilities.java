@@ -1,9 +1,5 @@
 package org.geoserver.wps.raster;
 
-import jaitools.imageutils.ROIGeometry;
-import jaitools.media.jai.rangelookup.RangeLookupTable;
-import jaitools.numeric.Range;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.DataBuffer;
@@ -19,6 +15,9 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.Utilities;
+import org.jaitools.imageutils.ROIGeometry;
+import org.jaitools.media.jai.rangelookup.RangeLookupTable;
+import org.jaitools.numeric.Range;
 import org.opengis.coverage.SampleDimensionType;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.MismatchedDimensionException;

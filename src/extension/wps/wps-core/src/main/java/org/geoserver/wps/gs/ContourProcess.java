@@ -4,10 +4,6 @@
  */
 package org.geoserver.wps.gs;
 
-import jaitools.media.jai.contour.ContourDescriptor;
-import jaitools.media.jai.contour.ContourRIF;
-import jaitools.numeric.Range;
-
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
@@ -34,6 +30,9 @@ import org.geotools.process.ProcessException;
 import org.geotools.resources.i18n.Vocabulary;
 import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.util.NumberRange;
+import org.jaitools.media.jai.contour.ContourDescriptor;
+import org.jaitools.media.jai.contour.ContourRIF;
+import org.jaitools.numeric.Range;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.metadata.spatial.PixelOrientation;
 import org.opengis.util.InternationalString;

@@ -4,10 +4,9 @@
  */
 package org.geoserver.wps.ppio;
 
-import jaitools.JAITools;
-import jaitools.numeric.Range;
-
 import org.geotools.util.Converter;
+import org.jaitools.JAITools;
+import org.jaitools.numeric.Range;
 
 /**
  * Parses a {@link JAITools} range from a string defining it

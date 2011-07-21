@@ -4,14 +4,6 @@
  */
 package org.geoserver.wps.gs;
 
-import jaitools.imageutils.ROIGeometry;
-import jaitools.media.jai.zonalstats.ZonalStats;
-import jaitools.media.jai.zonalstats.ZonalStatsDescriptor;
-import jaitools.media.jai.zonalstats.ZonalStatsOpImage;
-import jaitools.media.jai.zonalstats.ZonalStatsRIF;
-import jaitools.numeric.Range;
-import jaitools.numeric.Statistic;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.RenderedImage;
@@ -45,6 +37,13 @@ import org.geotools.image.jai.Registry;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.util.NumberRange;
+import org.jaitools.imageutils.ROIGeometry;
+import org.jaitools.media.jai.zonalstats.ZonalStats;
+import org.jaitools.media.jai.zonalstats.ZonalStatsDescriptor;
+import org.jaitools.media.jai.zonalstats.ZonalStatsOpImage;
+import org.jaitools.media.jai.zonalstats.ZonalStatsRIF;
+import org.jaitools.numeric.Range;
+import org.jaitools.numeric.Statistic;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -80,7 +79,11 @@ public class RasterZonalStatistics implements GeoServerProcess {
     private final static Operation CROPOPERATION = PROCESSOR.getOperation("CoverageCrop");
     
     static {
-        Registry.registerRIF(JAI.getDefaultInstance(), new ZonalStatsDescriptor(), new ZonalStatsRIF(), Registry.JAI_TOOLS_PRODUCT);
+        try{
+            Registry.registerRIF(JAI.getDefaultInstance(), new ZonalStatsDescriptor(), new ZonalStatsRIF(), Registry.JAI_TOOLS_PRODUCT);
+        } catch (Throwable e) {
+            // swallow exception in case the op has already been registered.
+        }
     }
 
     @DescribeResult(name = "statistics", description = "A geometryless feature collection with all the attributes "
@@ -367,8 +370,18 @@ public class RasterZonalStatistics implements GeoServerProcess {
                 // run the stats via JAI
                 Statistic[] reqStatsArr = new Statistic[] { Statistic.MAX, Statistic.MIN,
                         Statistic.RANGE, Statistic.MEAN, Statistic.SDEV, Statistic.SUM };
-                final ZonalStatsOpImage zsOp = new ZonalStatsOpImage(cropped.getRenderedImage(),
-                        classificationRaster, null, null, reqStatsArr, new Integer[] { band }, roi, null,
+                final ZonalStatsOpImage zsOp = new ZonalStatsOpImage(
+                        cropped.getRenderedImage(),
+                        classificationRaster, 
+                        null, 
+                        null, 
+                        reqStatsArr, 
+                        new Integer[] { band }, 
+                        roi, 
+                        null,
+                        null,
+                        null,
+                        false,
                         novalueRangeList);
                 return (ZonalStats) zsOp.getProperty(ZonalStatsDescriptor.ZONAL_STATS_PROPERTY);
             } finally {

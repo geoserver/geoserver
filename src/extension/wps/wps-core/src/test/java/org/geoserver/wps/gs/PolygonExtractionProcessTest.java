@@ -1,7 +1,5 @@
 package org.geoserver.wps.gs;
 
-import jaitools.numeric.Range;
-
 import java.util.ArrayList;
 
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -9,6 +7,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.GeoTools;
 import org.geotools.util.NullProgressListener;
+import org.jaitools.numeric.Range;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**

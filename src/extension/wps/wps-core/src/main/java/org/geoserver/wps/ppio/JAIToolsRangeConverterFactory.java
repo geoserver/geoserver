@@ -21,11 +21,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jaitools.numeric.Range;
-
 import org.geotools.factory.Hints;
 import org.geotools.util.Converter;
 import org.geotools.util.ConverterFactory;
+import org.jaitools.numeric.Range;
 
 /**
  * ConverterFactory for trading between strings and JAITools ranges

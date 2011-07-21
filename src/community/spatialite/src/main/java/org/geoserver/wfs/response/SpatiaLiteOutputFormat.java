@@ -11,6 +11,7 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -70,7 +71,6 @@ import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.response.ShapeZipOutputFormat.FileNameSource;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureWriter;
@@ -129,8 +129,8 @@ import org.spatialite.libs.MultiLibs;
  * 
  * Based on CSVOutputFormat.java and ShapeZipOutputFormat.java from geoserver 2.2.x
  *
- * @author ported to gs 2.2.x by Pablo Velazquez, Geotekne, pvelazquez@geotekne.com
- * @author ported to gs 2.2.x by Jose Macchi, Geotekne, jmacchi@geotekne.com
+ * @author Pablo Velazquez, Geotekne, info@geotekne.com
+ * @author Jose Macchi, Geotekne, jmacchi@geotekne.com
  *
  */
 
@@ -176,6 +176,9 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     protected boolean canHandleInternal(Operation operation) {
+        //any additional checks that need to be performed to 
+        // determine when the output format should be "engaged" 
+        // should go here
         return super.canHandleInternal(operation);
     }
     
@@ -228,13 +231,11 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
              * A string to store the statements to run to create the Spatialite DataBase 
              */
             String sql = null;
-            conn.setAutoCommit(false);
             String spatialiteLibraryUrl = MultiLibs.loadExtension();
-            sql = "SELECT load_extension('"+spatialiteLibraryUrl+"');";
+            sql = "SELECT load_extension('"+spatialiteLibraryUrl+"')";
             stmt.execute(sql);
             sql = "SELECT InitSpatialMetaData();";
             stmt.execute(sql);
-            conn.commit();
             
             /**
              * A string to store the names of the columns that will be used to populate the table 
@@ -243,6 +244,7 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
             
             //We might get multiple feature collections in our response so we need to
             //write out multiple tables, one for each query response.
+            conn.setAutoCommit(false);
             for (SimpleFeatureCollection fc : collections) {
                 
                 //get the current feature
@@ -279,15 +281,17 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                         sql += ", "+prepareColumnHeader( ad );
                         column_names += ad.getLocalName();
                         column_cnt++;
-                        if ( i < ft.getAttributeCount()-1 ){
+                        if ( i < ft.getAttributeCount()-1){
                             column_names += ", ";
                         }
                            
                     }
                 }
                 sql += ");";
+                //Quick Fix in Column_names
+                if (column_names.endsWith(", "))
+                    column_names = column_names.substring(0,column_names.length()-2);
                 // Finish creating the table
-                
                 System.out.println(sql);
                 stmt.execute(sql);
                 conn.commit();
@@ -350,7 +354,7 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                         else{
                             sql += ") ";
                         }
-    
+                        
                         //I store the default geometry value, so i can omit it and add at the end.
                         Object geom_data = row.getDefaultGeometry();
                         sql += "VALUES (";
@@ -360,13 +364,13 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                                 if ( rowAtt != null ){
                                     //We just transform all content to String.
                                     sql += "'"+rowAtt.toString()+"'";
-                                }
-                                if ( j < row.getAttributeCount()-1 ) {
-                                    sql += ", ";    
+                                    if ( j < row.getAttributeCount()-1)
+                                        sql += ", "; 
                                 }
                             }
                         }
-                        
+                        if (sql.endsWith(", "))
+                            sql = sql.substring(0, sql.length()-2);
                         //Finally if has geometry, insert the geometry data.
                         if (the_geom != null){
                             if (column_cnt > 0 ){
@@ -376,7 +380,7 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                         }
                         sql += ");";
                         System.out.println(sql);
-                        stmt.executeUpdate(sql);
+                        stmt.execute(sql);
                     }
                     conn.commit();
                 }
@@ -385,6 +389,13 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                     fc.close( i );
                 }
             }
+            conn.close();
+            /**
+             * Loads the temp dll and delete it
+             */
+            File spatialiteLibraryFile = new File(spatialiteLibraryUrl);
+            spatialiteLibraryFile.delete();
+
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -394,10 +405,13 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
          * so i can write this in the OutputStream output and flush it.
          */
         FileInputStream JDBCIn = new FileInputStream(tempDir);
-        int longitud = JDBCIn.available();
-        byte[] datos = new byte[longitud];
-        JDBCIn.read(datos);
-        output.write(datos);
+        int dataLengh = JDBCIn.available();
+        byte[] data = new byte[dataLengh];
+        JDBCIn.read(data);
+        output.write(data);
+        JDBCIn.close();
+        tempDir.delete();
+  
     }
     
     public String getCapabilitiesElementName() {
@@ -440,7 +454,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
             return CRS.lookupEpsgCode(crs, true);
         } catch (FactoryException e) {
             System.out.println(e.getMessage());
-            LOGGER.log(Level.FINER, e.getMessage(), e);
             return -1;
         }
     }
@@ -457,23 +470,25 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
     /**
      * This method return a prepared MULTIPOINT geometry if is MULTIPOINT (We need do this
      * because MULTIPOINT Feature format is: MULTIPOINT ((x y),(x y),(x y)) and
-     * MULTIPOINT Spatialite format is: MULTIPOINT (x y, x y, x y))
+     * MULTIPOINT Spatialite format is: MULTIPOINT (x y, x y, x y)
      * @param theGeom;
      * @return value;
      */
-    
-    //Need to solve the problem whit GEOMETRY COLLECTIONS! (if a GEOMETRY COLLECTION have MULTIPOINTS, all of them need to be Fixed)
     private String prepareGeom (String theGeom){
         String value = theGeom;
-        if ((boolean)theGeom.contains("MULTIPOINT"))
-        {
-            value = value.replaceAll("\\(\\(", "*");
-            value = value.replaceAll("\\)\\)", "#");
-            value = value.replaceAll("\\(", "");
-            value = value.replaceAll("\\)", "");
-            value = value.replaceAll("\\*", "(");
-            value = value.replaceAll("\\#", ")");
-        }
+        if (theGeom.contains("GEOMETRYCOLLECTION"))
+           //Hago split;
+            System.out.println("Not Yet");
+        else
+            if ((boolean)theGeom.contains("MULTIPOINT"))
+            {
+                value = value.replaceAll("\\(\\(", "*");
+                value = value.replaceAll("\\)\\)", "#");
+                value = value.replaceAll("\\(", "");
+                value = value.replaceAll("\\)", "");
+                value = value.replaceAll("\\*", "(");
+                value = value.replaceAll("\\#", ")");
+            }
         return value;
     }
 

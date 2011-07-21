@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean id="spatiaLiteOutputFormat" class="org.geoserver.wfs.response.SpatiaLiteOutputFormat">
+  <bean id="SpatiaLiteOutputFormat" class="org.geoserver.wfs.response.SpatiaLiteOutputFormat">
     <constructor-arg index="0" ref="geoServer"/>
   </bean>
   

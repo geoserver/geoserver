@@ -32,7 +32,6 @@ import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
-import org.geotools.renderedImage.viewer.RenderedImageBrowser;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;

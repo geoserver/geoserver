@@ -74,7 +74,11 @@ public class CoverageResource extends AbstractCatalogResource {
             CoverageStoreInfo ds = catalog.getCoverageStoreByName( workspace, coveragestore );
             coverage.setStore( ds );
         }
-        
+
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.setStore(coverage.getStore());
+        builder.initCoverage(coverage);
+
         NamespaceInfo ns = coverage.getNamespace();
         if ( ns != null && !ns.getPrefix().equals( workspace ) ) {
             //TODO: change this once the two can be different and we untie namespace
@@ -93,7 +97,7 @@ public class CoverageResource extends AbstractCatalogResource {
         catalog.add( coverage );
         
         //create a layer for the coverage
-        catalog.add(new CatalogBuilder(catalog).buildLayer(coverage));
+        catalog.add(builder.buildLayer(coverage));
         
         LOGGER.info( "POST coverage " + coveragestore + "," + coverage.getName() );
         return coverage.getName();

@@ -532,18 +532,28 @@ public class CatalogBuilder {
     }
 
     /**
+     * Initializes basic resource info.
+     */
+    private void initResourceInfo(ResourceInfo resInfo) throws Exception {
+    	// set the name
+    	if (resInfo.getNativeName() == null && resInfo.getName() != null) {
+    		resInfo.setNativeName(resInfo.getName());
+    	}
+    	if (resInfo.getNativeName() != null && resInfo.getName() == null) {
+    		resInfo.setName(resInfo.getNativeName());
+    	}
+    }
+
+    /**
      * Initializes a feature type object setting any info that has not been set.
      */
     public void initFeatureType(FeatureTypeInfo featureType) throws Exception {
         if (featureType.getCatalog() == null) {
             featureType.setCatalog(catalog);
         }
-        if (featureType.getNativeName() == null && featureType.getName() != null) {
-            featureType.setNativeName(featureType.getName());
-        }
-        if (featureType.getNativeName() != null && featureType.getName() == null) {
-            featureType.setName(featureType.getNativeName());
-        }
+
+        initResourceInfo(featureType);
+
         // setup the srs if missing
         if (featureType.getSRS() == null) {
             lookupSRS(featureType, true);
@@ -573,14 +583,8 @@ public class CatalogBuilder {
      */
     public void initWMSLayer(WMSLayerInfo wmsLayer) throws Exception {
         wmsLayer.setCatalog(catalog);
-        
-        // set the name
-        if (wmsLayer.getNativeName() == null && wmsLayer.getName() != null) {
-            wmsLayer.setNativeName(wmsLayer.getName());
-        }
-        if (wmsLayer.getNativeName() != null && wmsLayer.getName() == null) {
-            wmsLayer.setName(wmsLayer.getNativeName());
-        }
+
+        initResourceInfo(wmsLayer);
         
         // get a fully initialized version we can copy from
         WMSLayerInfo full = buildWMSLayer(wmsLayer.getNativeName());
@@ -607,6 +611,53 @@ public class CatalogBuilder {
             ReferencedEnvelope boundsLatLon = wmsLayer.getLatLonBoundingBox();
             wmsLayer.setNativeBoundingBox(boundsLatLon.transform(wmsLayer.getNativeCRS(), true));
         }
+    }
+
+    /**
+     * Initialize a coverage object and set any unset info.
+     */
+    public void initCoverage(CoverageInfo cinfo) throws Exception {
+    	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
+        AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) catalog
+            	.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
+
+        initResourceInfo(cinfo);
+
+        if (reader == null)
+            throw new Exception("Unable to acquire a reader for this coverage with format: "
+                    + csinfo.getFormat().getName());
+
+        if (cinfo.getNativeCRS() == null) {
+        	cinfo.setNativeCRS(reader.getCrs());
+        }
+
+        CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
+
+        if (cinfo.getSRS() == null) {
+        	cinfo.setSRS(nativeCRS.getIdentifiers().toArray()[0].toString());
+        }
+
+        if (cinfo.getProjectionPolicy() == null) {
+            if (nativeCRS != null && !nativeCRS.getIdentifiers().isEmpty()) {
+                cinfo.setProjectionPolicy(ProjectionPolicy.REPROJECT_TO_DECLARED);
+            }
+            if (nativeCRS == null) {
+                cinfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+            }
+        }
+
+    	if (cinfo.getLatLonBoundingBox() == null
+    			&& cinfo.getNativeBoundingBox() == null) {
+    		GeneralEnvelope envelope = reader.getOriginalEnvelope();
+
+    		cinfo.setNativeBoundingBox(new ReferencedEnvelope(envelope));
+    		cinfo.setLatLonBoundingBox(new ReferencedEnvelope(CoverageStoreUtils.getWGS84LonLatEnvelope(envelope)));
+    	} else if (cinfo.getLatLonBoundingBox() == null) {
+    		setupBounds(cinfo);
+    	} else if (cinfo.getNativeBoundingBox() == null && cinfo.getNativeCRS() != null) {
+    		ReferencedEnvelope boundsLatLon = cinfo.getLatLonBoundingBox();
+    		cinfo.setNativeBoundingBox(boundsLatLon.transform(cinfo.getNativeCRS(), true));
+    	}
     }
 
     /**

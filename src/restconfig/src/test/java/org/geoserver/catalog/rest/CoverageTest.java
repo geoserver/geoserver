@@ -102,8 +102,8 @@ public class CoverageTest extends CatalogRESTTestSupport {
                 "<name>usa</name>"+
                 "<title>usa is a A raster file accompanied by a spatial data file</title>" + 
                 "<description>Generated from WorldImage</description>" + 
-                "<srs>EPSG:4326</srs>" + 
-                "<latLonBoundingBox>"+
+                "<srs>EPSG:4326</srs>" +
+                /*"<latLonBoundingBox>"+
                   "<minx>-130.85168</minx>"+
                   "<maxx>-62.0054</maxx>"+
                   "<miny>20.7052</miny>"+
@@ -115,7 +115,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
                   "<miny>20.7052</miny>"+
                   "<maxy>54.1141</maxy>"+
                   "<crs>EPSG:4326</crs>"+
-                "</nativeBoundingBox>"+
+                "</nativeBoundingBox>"+*/
                 "<grid dimension=\"2\">"+
                     "<range>"+
                       "<low>0 0</low>"+
@@ -150,11 +150,14 @@ public class CoverageTest extends CatalogRESTTestSupport {
         assertEquals( 201, response.getStatusCode() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/usa" ) );
-        
+
         dom = getAsDOM( req );
         assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
+
+        dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.xml");
+        assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
     }
-    
+
 //    public void testPostAsJSON() throws Exception {
 //        Document dom = getAsDOM( "wfs?request=getfeature&typename=wcs:pdsa");
 //        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());

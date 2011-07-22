@@ -103,7 +103,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         URL style = MockData.class.getResource("raster.sld");
         dataDirectory.addStyle("raster", style);
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
+                this.getClass().getResource("raster-filter-test.zip"), null, "raster");
 
         
         File security = new File(dataDirectory.getDataDirectoryRoot(), "security");

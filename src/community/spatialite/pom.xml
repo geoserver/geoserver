@@ -12,7 +12,7 @@
   <groupId>org.geoserver.community</groupId>
   <artifactId>spatialite</artifactId>
   <packaging>jar</packaging>
-  <name>SpatiaLite output format</name>
+  <name>SpatiaLite Extension</name>
 
 
 <repositories>
@@ -63,13 +63,11 @@
   <dependency>
      <groupId>com.mockrunner</groupId>
      <artifactId>mockrunner</artifactId>
-     <version>0.3.1</version>
      <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>xmlunit</groupId>
     <artifactId>xmlunit</artifactId>
-    <version>1.1</version>
     <scope>test</scope>
   </dependency>
    <dependency>

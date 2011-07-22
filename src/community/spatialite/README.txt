@@ -22,12 +22,12 @@ GET requests format_options
 ===========================
 The following format_options are supported:
 1) FILENAME: name to be assigned to the Spatialite db file. If specified,
-must contain a name. By default a standard name will be assigned to layers.
+must contain a name. By default a standard name (first layer name )will be assigned to the Spatialite db file.
 
-BUILD FROM SOURCE
+PREREQUISITES
 ---------------------------
 
-1) Install JAVA SDK
+1) JAVA SDK
 Download and install the Java SDK.
 
 Create an environment variable called JAVA_HOME and point it to your Java SDK 
@@ -35,20 +35,31 @@ directory.
 Then modify the PATH variable and add: ;%JAVA_HOME%/bin
 Apply the changes.
 
-2) Download and install Maven
-Windows: http://www.apache.org/dyn/closer.cgi/maven/binaries/maven-2.0.4.exe
-Linux: http://www.apache.org/dyn/closer.cgi/maven/binaries/maven-2.0.4.zip
+2) Maven (2.2.1)
+Windows: http://www.apache.org/dyn/closer.cgi/maven/binaries/maven-2.2.1.exe
+Linux: http://www.apache.org/dyn/closer.cgi/maven/binaries/maven-2.2.1.zip
 
 
 If you are using Linux, execute the following commands:
 export M2_HOME=/usr/java/maven-2.0.4
 export PATH=$PATH:$M2_HOME/bin
 
-3) Build Source Code
+3)PROJ and GEOS
+NOTE: This is only if you are Linux user
+
+execute the following commands:
+sudo apt-get install lib-proj-dev lib-geos-dev
+
+
+4) Build Source Code
 Go to the command line and navigate to the root of the source tree.
 Execute the command:
-mvn install
+
+mvn clean install
+
+mvn eclipse:eclipse
 
 If it fails, just try again. It trys to download jars and some might not be 
 available at that time. So just keep trying.
 
+Note: Working on Windows 32 bits, Linux 32 and 64 bits, Mac OSx 32 and 64, Mac PPC 32 and 64

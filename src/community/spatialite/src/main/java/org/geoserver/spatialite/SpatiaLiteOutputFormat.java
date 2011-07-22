@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.geoserver.wfs.response;
+package org.geoserver.spatialite;
  
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;

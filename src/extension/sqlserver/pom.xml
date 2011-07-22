@@ -28,10 +28,14 @@
         <dependency>
           <groupId>com.microsoft</groupId>
           <artifactId>sqljdbc</artifactId>
-          <version>1.2</version>
+          <version>${sqlServerDriverVersion}</version>
         </dependency>
       </dependencies>
     </profile>
   </profiles>
+
+  <properties>
+    <sqlServerDriverVersion>4.0</sqlServerDriverVersion>
+  </properties>
 
 </project>

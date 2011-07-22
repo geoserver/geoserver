@@ -32,7 +32,7 @@
           <descriptor>release/ext-printing.xml</descriptor>
           <descriptor>release/ext-monitor.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
-          <descriptor>release/ext-spatialite.xml</descriptor>
+          <!--descriptor>release/ext-spatialite.xml</descriptor-->
           <descriptor>release/ext-dbconfig.xml</descriptor>
           <descriptor>release/ext-inspire.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
@@ -121,7 +121,7 @@
         <module>ftp</module>
         <module>monitoring</module>
         <module>python</module>
-        <module>spatialite</module>
+        <!--module>spatialite</module-->
         <module>dbconfig</module>
         <module>inspire</module>
         <module>sfs</module>

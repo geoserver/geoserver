@@ -1,8 +1,23 @@
-package org.geoserver.sldservice.rest.resource;
-
-/* utils class that list attributs for a featuretype
- * this will be deprecated when available in restconfig
+/*
+ *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  http://www.geo-solutions.it
+ *
+ *  GPLv3 + Classpath exception
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.geoserver.sldservice.rest.resource;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,7 +52,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
-import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.MapModel;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
@@ -117,9 +131,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 		};
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see
 	 * org.geoserver.catalog.rest.AbstractCatalogResource#createJSONFormat(org
 	 * .restlet.data.Request, org.restlet.data.Response)
@@ -129,9 +141,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 			Response response) {
 		return new ReflectiveJSONFormat() {
 
-			/*
-			 * (non-Javadoc)
-			 * 
+			/**
 			 * @see
 			 * org.geoserver.rest.format.ReflectiveJSONFormat#write(java.lang
 			 * .Object, java.io.OutputStream)
@@ -167,7 +177,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 
 			@Override
 			protected Configuration createConfiguration(Object data, Class clazz) {
-				Configuration cfg = super.createConfiguration(data, clazz);
+				final Configuration cfg = super.createConfiguration(data, clazz);
 				cfg.setClassForTemplateLoading(getClass(), "templates");
 				cfg.setObjectWrapper(new ObjectToMapWrapper<LayerAttributesList>(LayerAttributesList.class) {
 	                @Override
@@ -261,8 +271,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 	 */
 	public class LayerAttributesListConverter implements Converter {
 
-		/*
-		 * (non-Javadoc)
+		/**
 		 * 
 		 * @see
 		 * com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java
@@ -272,17 +281,15 @@ public class ListAttributesResource extends AbstractCatalogResource {
 			return LayerAttributesList.class.isAssignableFrom(clazz);
 		}
 
-		/*
-		 * (non-Javadoc)
+		/**
 		 * 
 		 * @see
 		 * com.thoughtworks.xstream.converters.Converter#marshal(java.lang.Object
 		 * , com.thoughtworks.xstream.io.HierarchicalStreamWriter,
 		 * com.thoughtworks.xstream.converters.MarshallingContext)
 		 */
-		public void marshal(Object value, HierarchicalStreamWriter writer,
-				MarshallingContext context) {
-			LayerAttributesList obj = (LayerAttributesList) value;
+		public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
+			final LayerAttributesList obj = (LayerAttributesList) value;
 
 			writer.addAttribute("layer", obj.getLayerName());
 
@@ -302,9 +309,7 @@ public class ListAttributesResource extends AbstractCatalogResource {
 			}
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
+		/**
 		 * @see
 		 * com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks
 		 * .xstream.io.HierarchicalStreamReader,

@@ -1,5 +1,21 @@
-/**
- * 
+/*
+ *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  http://www.geo-solutions.it
+ *
+ *  GPLv3 + Classpath exception
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.geoserver.sldservice.rest.resource;
 
@@ -11,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
 
@@ -64,10 +82,11 @@ import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 
 /**
- * @author Alessio
- * 
+ * @author Alessio Fabiani, GeoSolutions SAS
  */
 public class ClassifierResource extends AbstractCatalogResource {
+	private final static Logger LOGGER = Logger.getLogger(ClassifierResource.class.toString());
+	
 	final private RulesBuilder builder = new RulesBuilder();
 
 	public ClassifierResource(Context context, Request request, Response response, Catalog catalog) {
@@ -76,19 +95,19 @@ public class ClassifierResource extends AbstractCatalogResource {
 
 	@Override
 	protected Object handleObjectGet() throws Exception {
-		Request req = getRequest();
-		Map attributes = req.getAttributes();
-		Form parameters = req.getResourceRef().getQueryAsForm();
+		final Request req = getRequest();
+		final Map<String,Object> attributes = req.getAttributes();
+		final Form parameters = req.getResourceRef().getQueryAsForm();
 		
-		String layer = getAttribute("layer");
+		final String layer = getAttribute("layer");
 
 		if (layer == null) {
 			return new ArrayList();
 		}
 
-		LayerInfo layerInfo = catalog.getLayerByName(layer);
+		final LayerInfo layerInfo = catalog.getLayerByName(layer);
 		if (layerInfo != null) {
-			List<Rule> rules = this.generateClassifiedSLD(attributes, parameters);
+			final List<Rule> rules = this.generateClassifiedSLD(attributes, parameters);
 			RulesList jsonRules = null;
 
 			if (rules != null)
@@ -120,8 +139,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 	}
 
 	private RulesList generateRulesList(String layer, Request req, List<Rule> rules) {
-
-		RulesList ruleList = new RulesList(layer);
+		final RulesList ruleList = new RulesList(layer);
 		for (Rule rule : rules) {
 			ruleList.addRule(jsonRule(rule));
 		}
@@ -154,9 +172,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 		};
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see
 	 * org.geoserver.catalog.rest.AbstractCatalogResource#createJSONFormat(org
 	 * .restlet.data.Request, org.restlet.data.Response)
@@ -165,9 +181,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 	protected ReflectiveJSONFormat createJSONFormat(Request request, Response response) {
 		return new ReflectiveJSONFormat() {
 
-			/*
-			 * (non-Javadoc)
-			 * 
+			/**
 			 * @see
 			 * org.geoserver.rest.format.ReflectiveJSONFormat#write(java.lang
 			 * .Object, java.io.OutputStream)
@@ -190,8 +204,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 		};
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see
 	 * org.geoserver.catalog.rest.CatalogResourceBase#createHTMLFormat(org.restlet
@@ -203,7 +216,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 
 			@Override
 			protected Configuration createConfiguration(Object data, Class clazz) {
-				Configuration cfg = super.createConfiguration(data, clazz);
+				final Configuration cfg = super.createConfiguration(data, clazz);
 				cfg.setClassForTemplateLoading(getClass(), "templates");
 				cfg.setObjectWrapper(new ObjectToMapWrapper<RulesList>(RulesList.class) {
 	                @Override
@@ -236,13 +249,15 @@ public class ClassifierResource extends AbstractCatalogResource {
 			xmlS.setSkipNamespaces(true);
 			ruleSz = (JSONObject) xmlS.read(xmlRule);
 		} catch (TransformerException e) {
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.FINE))
+				LOGGER.log(Level.FINE, "Exception occurred while transformin the Rule " 
+						+ e.getLocalizedMessage(),e);
 		}
 
 		return ruleSz;
 	}
 
-	private List<Rule> generateClassifiedSLD(Map attributes, Form form) {
+	private List<Rule> generateClassifiedSLD(Map<String,Object> attributes, Form form) {
 		/* Looks in attribute map if there is the featureType param */
 		if (attributes.containsKey("layer")) {
 			final String layerName = (String) attributes.get("layer");
@@ -261,8 +276,8 @@ public class ClassifierResource extends AbstractCatalogResource {
 						ResourceInfo obj = layerInfo.getResource();
 						/* Check if it's feature type or coverage */
 						if (obj instanceof FeatureTypeInfo) {
-							FeatureType ftType = ((FeatureTypeInfo) obj).getFeatureType();
-							FeatureCollection ftCollection = ((FeatureTypeInfo) obj).getFeatureSource(new NullProgressListener(), null).getFeatures();
+							final FeatureType ftType = ((FeatureTypeInfo) obj).getFeatureType();
+							final FeatureCollection ftCollection = ((FeatureTypeInfo) obj).getFeatureSource(new NullProgressListener(), null).getFeatures();
 							List<Rule> rules = null;
 
 							if ("equalInterval".equals(method)) {
@@ -295,7 +310,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 									}
 								}
 
-								Class geomT = ftType.getGeometryDescriptor().getType().getBinding();
+								final Class geomT = ftType.getGeometryDescriptor().getType().getBinding();
 
 								/*
 								 * Line Symbolizer
@@ -319,10 +334,14 @@ public class ClassifierResource extends AbstractCatalogResource {
 						}
 					}
 				} catch (NoSuchElementException e) {
-					e.printStackTrace();
+					if (LOGGER.isLoggable(Level.FINE))
+						LOGGER.log(Level.FINE,"The following exception has occurred " 
+								+ e.getLocalizedMessage(), e);
 					return null;
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (LOGGER.isLoggable(Level.FINE))
+						LOGGER.log(Level.FINE, "The following exception has occurred " 
+								+ e.getLocalizedMessage(), e);
 					return null;
 				}
 			} else
@@ -376,9 +395,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 	 */
 	public class RulesListConverter implements Converter {
 
-		/*
-		 * (non-Javadoc)
-		 * 
+		/**
 		 * @see
 		 * com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java
 		 * .lang.Class)
@@ -387,9 +404,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 			return RulesList.class.isAssignableFrom(clazz);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
+		/**
 		 * @see
 		 * com.thoughtworks.xstream.converters.Converter#marshal(java.lang.Object
 		 * , com.thoughtworks.xstream.io.HierarchicalStreamWriter,
@@ -413,13 +428,12 @@ public class ClassifierResource extends AbstractCatalogResource {
 		}
 
 		private void writeChild(HierarchicalStreamWriter writer, Object object) {
-			if (object instanceof JSONObject
-					&& !((JSONObject) object).isArray()) {
+			if (object instanceof JSONObject && !((JSONObject) object).isArray()) {
 				for (Object key : ((JSONObject) object).keySet()) {
-					Object obj = ((JSONObject) object).get(key);
+					final Object obj = ((JSONObject) object).get(key);
 					if (obj instanceof JSONArray) {
 						for (int i = 0; i < ((JSONArray) obj).size(); i++) {
-							JSONObject child = (JSONObject) ((JSONArray) obj).get(i);
+							final JSONObject child = (JSONObject) ((JSONArray) obj).get(i);
 							writer.startNode((String) key);
 							for (Object cKey : child.keySet()) {
 								if (!((String) cKey).startsWith("@")) {
@@ -440,7 +454,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 				}
 			} else if (object instanceof JSONArray) {
 				for (int i = 0; i < ((JSONArray) object).size(); i++) {
-					Object child = ((JSONArray) object).get(i);
+					final Object child = ((JSONArray) object).get(i);
 					if (child instanceof JSONObject) {
 						for (Object key : ((JSONObject) child).keySet()) {
 							if (((JSONObject) child).get(key) instanceof String)
@@ -458,8 +472,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 			}
 		}
 
-		/*
-		 * (non-Javadoc)
+		/**
 		 * 
 		 * @seecom.thoughtworks.xstream.converters.Converter#unmarshal(com.
 		 * thoughtworks.xstream.io. HierarchicalStreamReader,

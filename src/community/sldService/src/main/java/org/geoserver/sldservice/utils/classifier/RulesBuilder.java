@@ -1,3 +1,22 @@
+/*
+ *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  http://www.geo-solutions.it
+ *
+ *  GPLv3 + Classpath exception
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.geoserver.sldservice.utils.classifier;
 
 import java.awt.Color;
@@ -5,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
@@ -35,6 +56,8 @@ import org.opengis.filter.expression.PropertyName;
  */
 public class RulesBuilder {
 
+	private final static Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
+	
 	private FilterFactory2 ff;
 	private StyleFactory styleFactory;
 	private StyleBuilder sb;
@@ -60,7 +83,7 @@ public class RulesBuilder {
 		FeatureType fType;
 		Classifier groups = null;
 		try {
-			Function classify = ff.function("Quantile", ff.property(property),
+			final Function classify = ff.function("Quantile", ff.property(property),
 					ff.literal(classNumber));
 			groups = (Classifier) classify.evaluate(features);
 			if (groups instanceof RangedClassifier)
@@ -72,8 +95,9 @@ public class RulesBuilder {
 				return this.explicitRules((ExplicitClassifier) groups, property);
 
 		} catch (Exception e) {
-			//System.out.println("RulesBuilder: failed to build Quantile Classification");
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build Quantile Classification" 
+						+ e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
@@ -90,7 +114,7 @@ public class RulesBuilder {
 	public List<Rule> equalIntervalClassification(FeatureCollection features, String property, int classNumber, boolean open) {
 		Classifier groups = null;
 		try {
-			Function classify = ff.function("EqualInterval", ff.property(property), ff.literal(classNumber));
+			final Function classify = ff.function("EqualInterval", ff.property(property), ff.literal(classNumber));
 			groups = (Classifier) classify.evaluate(features);
 			//System.out.println(groups.getSize());
 			if (groups instanceof RangedClassifier)
@@ -102,8 +126,9 @@ public class RulesBuilder {
 				return this.explicitRules((ExplicitClassifier) groups, property);
 
 		} catch (Exception e) {
-			//System.out.println("RulesBuilder: failed to build EqualInterval Classification");
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build EqualInterval Classification" 
+						+ e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
@@ -121,7 +146,7 @@ public class RulesBuilder {
 		Classifier groups = null;
 		int classNumber = features.size();
 		try {
-			Function classify = ff.function("UniqueInterval", ff.property(property), ff.literal(classNumber));
+			final Function classify = ff.function("UniqueInterval", ff.property(property), ff.literal(classNumber));
 			groups = (Classifier) classify.evaluate(features);
 			if (groups instanceof RangedClassifier)
 				return this.closedRangedRules((RangedClassifier) groups, property);
@@ -129,8 +154,9 @@ public class RulesBuilder {
 				return this.explicitRules((ExplicitClassifier) groups, property);
 
 		} catch (Exception e) {
-			//System.out.println("RulesBuilder: failed to build UniqueInterval Classification");
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build UniqueInterval Classification" 
+						+ e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
@@ -160,8 +186,9 @@ public class RulesBuilder {
 				rule.setSymbolizers(new Symbolizer[] { sb.createPolygonSymbolizer(sb.createStroke(Color.BLACK,1),sb.createFill(color)) });
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build polygon Symbolizer" 
+						+ e.getLocalizedMessage(), e);
 		}
 
 	}
@@ -191,8 +218,9 @@ public class RulesBuilder {
 				rule.setSymbolizers(new Symbolizer[] { sb.createLineSymbolizer(color) });
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build Line Symbolizer" 
+						+ e.getLocalizedMessage(), e);
 		}
 
 
@@ -258,8 +286,9 @@ public class RulesBuilder {
             }
             return list;
         } catch (CQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build Open Ranged rules" 
+						+ e.getLocalizedMessage(), e);
         }
         return null;
     }
@@ -298,14 +327,15 @@ public class RulesBuilder {
 			}
 			return list;
 		} catch (CQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build closed Ranged Rules" 
+						+ e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
 
 	/**
-	 * Generate Rules from Explicitclassifier groups
+	 * Generate Rules from Explicit classifier groups
 	 * build a List of rules
 	 * @param groups
 	 * @param property
@@ -342,8 +372,9 @@ public class RulesBuilder {
 			}
 			return list;
 		} catch (CQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (LOGGER.isLoggable(Level.INFO))
+				LOGGER.log(Level.INFO, "Failed to build explicit Rules" 
+						+ e.getLocalizedMessage(), e);
 		}
 		return null;
 

@@ -20,48 +20,21 @@
 package org.geoserver.sldservice.utils.classifier.impl;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.geoserver.sldservice.utils.classifier.ColorRamp;
 
 /**
- * Blue Color Ramp Implementation
+ * Jet Color Ramp Implementation. 
+ * A color ramp starting from BLUE and ending with RED, having
+ * YELLOW as intermediate color.
  * 
- * @author Alessio Fabiani, GeoSolutions SAS
+ * @author Daniele Romagnoli, GeoSolutions SAS
  *
  */
-public class BlueColorRamp implements ColorRamp {
+public class JetColorRamp extends CustomColorRamp {
 
-	private int classNum = 0;
-	private List<Color> colors = new ArrayList<Color>();
-
-	public int getNumClasses() {
-		return classNum;
+	protected void createRamp() throws Exception {
+		setEndColor(new Color(255,0,0));
+		setMid(new Color(255,255,0)); //Yellow color as Mid Color
+		setStartColor(new Color(0,0,255));
+		super.createRamp();
 	}
-
-	public void revert() {
-
-	}
-
-	public void setNumClasses(int numClass) {
-		classNum = numClass+1; //+1 for transparent
-		createRamp();
-
-	}
-
-	public List<Color> getRamp() throws Exception {
-		if (colors == null)
-			throw new Exception("Class num not setted, color ramp null");
-		return colors;
-	}
-
-	private void createRamp() {
-
-		double step = (225.0 / (double) classNum-1);
-		colors.add(new Color(0, 0, 0));
-		for (int i = 1; i < classNum; i++)
-			colors.add(new Color(0, 0, (int) (step * i + 30)));
-	}
-
 }

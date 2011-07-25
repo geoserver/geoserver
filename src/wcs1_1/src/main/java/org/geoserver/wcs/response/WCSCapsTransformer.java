@@ -236,7 +236,7 @@ public class WCSCapsTransformer extends TransformerBase {
             GeoServerInfo gs = wcs.getGeoServer().getGlobal();
 			element("ows:ProviderName", gs.getContact().getContactOrganization());
             AttributesImpl attributes = new AttributesImpl();
-            attributes.addAttribute("", "xlink:href", "xlink:href", "", gs.getOnlineResource());
+            attributes.addAttribute("", "xlink:href", "xlink:href", "", gs.getOnlineResource() != null ? gs.getOnlineResource() : "");
             element("ows:ProviderSite", null, attributes);
 
             handleContact();

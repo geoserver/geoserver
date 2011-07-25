@@ -10,6 +10,7 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.MissingParame
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,8 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.resources.i18n.ErrorKeys;
+import org.geotools.resources.i18n.Errors;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -163,13 +166,12 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         Object time = kvp.get("TIME");
         if (time != null && time instanceof TimeSequenceType) {
             timeSequence = (TimeSequenceType) time;
-        } else if (time != null && time instanceof List) {
+        } else if (time != null) {
             timeSequence = Wcs10Factory.eINSTANCE.createTimeSequenceType();
-            for (Date tPos : (List<Date>) time) {
-                final TimePositionType timePosition = Gml4wcsFactory.eINSTANCE
-                        .createTimePositionType();
-                timePosition.setValue(tPos);
-                timeSequence.getTimePosition().add(timePosition);
+            if (time instanceof Collection) {
+                for (Date tPos : (Collection<Date>) time) {
+                    addTimePosition(timeSequence, tPos);
+                }
             }
         }
         if (timeSequence == null && bbox == null)
@@ -240,6 +242,13 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                 final double resX = Double.parseDouble((String) rx)*xAxisCorrection;
                 final double resY = Double.parseDouble((String) ry)*yAxisCorrection;
                 
+                // basic check, the resolution cannot be larger than any of the two spans 
+                // for the envelope because otherwise the size in raster space will be invalid
+                // We expect the final raster area to be at least 2 pixel on each raster dimension
+                if(Math.abs(envelope.getSpan(0)/Math.abs(resX))<2||Math.abs(envelope.getSpan(1)/Math.abs(resY))<2)
+                    throw new IllegalArgumentException(Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$1,"resolutions"));
+                               
+                
 
                 // now compute offset vector for the transform from the envelope
                 // Following ISO 19123 we use the CELL_CENTER convention but with the raster 
@@ -306,6 +315,17 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         domainSubset.setTemporalSubset(timeSequence);
 
         return domainSubset;
+    }
+
+    /**
+     * @param timeSequence
+     * @param tPos
+     */
+    private void addTimePosition(TimeSequenceType timeSequence, Date tPos) {
+        final TimePositionType timePosition = 
+            Gml4wcsFactory.eINSTANCE.createTimePositionType();
+        timePosition.setValue(tPos);
+        timeSequence.getTimePosition().add(timePosition);
     }
 
     private RangeSubsetType parseRangeSubset(Map kvp, String coverageName) {

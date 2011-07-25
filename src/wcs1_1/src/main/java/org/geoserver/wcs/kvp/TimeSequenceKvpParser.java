@@ -1,7 +1,7 @@
 package org.geoserver.wcs.kvp;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 import net.opengis.wcs11.TimeSequenceType;
@@ -24,7 +24,7 @@ public class TimeSequenceKvpParser extends KvpParser {
         TimeSequenceType timeSequence = Wcs111Factory.eINSTANCE.createTimeSequenceType();
         TimeKvpParser parser = new TimeKvpParser("WCS1_1");
         
-        List<Date> timePositions = (List<Date>)parser.parse(value);
+        Collection<Date> timePositions = (Collection<Date>)parser.parse(value);
         for (Date tp : timePositions) {
             timeSequence.getTimePosition().add(tp);
         }

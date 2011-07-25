@@ -6,10 +6,7 @@ package org.geoserver.catalog.rest;
 
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerLoader;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestletException;
 import org.geotools.util.logging.Logging;
 import org.restlet.Finder;
@@ -23,9 +20,16 @@ public class CatalogReloader extends Finder {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
     GeoServer geoServer;
+    boolean forceReset;
 
-    public CatalogReloader(GeoServer geoServer) {
+    /**
+     * Would normally do a reload, unless the force reset flag is enabled, in that case a reset is done
+     * @param geoServer
+     * @param forceReset
+     */
+    public CatalogReloader(GeoServer geoServer, boolean forceReset) {
         this.geoServer = geoServer;
+        this.forceReset = forceReset;
     }
 
     @Override
@@ -65,6 +69,10 @@ public class CatalogReloader extends Finder {
      * Method to reload the catalog
      */
     protected void reloadCatalog() throws Exception {
-        geoServer.reload();
+        if(forceReset) {
+            geoServer.reset();
+        } else {
+            geoServer.reload();
+        }
     }
 }

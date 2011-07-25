@@ -1335,3 +1335,43 @@ caches and reconnect to all data stores.
      - 405
      -
      -
+     
+Resource reset 
+----------------------- 
+
+Resets all store/raster/schema caches and starts fresh. This operation is used to 
+force GeoServer to drop all caches and stores and reconnect fresh to each of them first time they 
+are needed by a request.
+This is useful in case the stores themselves cache some information about the data structures
+they manage that changed in the meantime.
+
+``/reset``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     -
+     - 405
+     - 
+     - 
+   * - POST
+     - Reloads the configuration from disk
+     - 200
+     - 
+     - 
+   * - PUT
+     - Reloads the configuration from disk
+     - 200
+     - 
+     - 
+   * - DELETE
+     -
+     - 405
+     -
+     -

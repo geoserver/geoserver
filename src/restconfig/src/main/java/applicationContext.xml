@@ -275,6 +275,10 @@
           <value>catalogReloader</value>
         </entry>
         <entry>
+          <key><value>/reset</value></key>
+          <value>catalogResetter</value>
+        </entry>
+        <entry>
           <key><value>/fonts.{format}</value></key>
           <value>fontFinder</value>
         </entry>
@@ -299,7 +303,12 @@
   <bean id="layerFinder2" class="org.geoserver.catalog.rest.LayerFinder" parent="abstractCatalogFinder"/>
   <bean id="layerGroupFinder2" class="org.geoserver.catalog.rest.LayerGroupFinder" parent="abstractCatalogFinder"/>
   <bean id="catalogReloader" class="org.geoserver.catalog.rest.CatalogReloader">
+     <constructor-arg index="0" ref="geoServer"/>
+     <constructor-arg index="1" value="false"/>
+  </bean>
+  <bean id="catalogResetter" class="org.geoserver.catalog.rest.CatalogReloader">
      <constructor-arg ref="geoServer"/>
+     <constructor-arg index="1" value="true"/> <!--  force reset instead of reload -->
   </bean>
 
   <bean id="fontFinder" class="org.geoserver.rest.FontListResource"/>

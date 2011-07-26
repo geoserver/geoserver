@@ -71,6 +71,58 @@ public class ExecuteProcessResponse extends Response {
     }
 
     @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        String mimeType = getMimeType(value, operation);
+        String disposition = DISPOSITION_INLINE;
+        if (mimeType != null) {
+            // if there is a BinaryEncoder we could expose a method that allows
+            // expressing preferred type as opposed to this ugliness
+            if (mimeType.indexOf("image") == 0) {
+                // tiff for download
+                if (mimeType.indexOf("tiff") > 0) {
+                    disposition = DISPOSITION_ATTACH;
+                }
+            } else if (mimeType.equals("application/zip")) {
+                disposition = DISPOSITION_ATTACH;
+            } else if (mimeType.equals("application/arcgrid")) {
+                disposition = DISPOSITION_ATTACH;
+            }
+        }
+        return disposition;
+    }
+
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        ExecuteType execute = (ExecuteType) operation.getParameters()[0];
+        String fname;
+        if (execute.getResponseForm().getRawDataOutput() == null) {
+            fname = super.getAttachmentFileName(value, operation);
+        } else {
+            ExecuteResponseType response = (ExecuteResponseType) value;
+            OutputDefinitionType definition = (OutputDefinitionType) response
+                    .getOutputDefinitions().getOutput().get(0);
+            fname = definition.getIdentifier().getValue();
+            OutputDataType result = (OutputDataType) response
+                    .getProcessOutputs().getOutput().get(0);
+            LiteralDataType literal = result.getData().getLiteralData();
+            String fext;
+            // this is not the most robust way to get mime type...
+            if (literal != null) {
+                fext = "txt";
+            } else {
+                String mimeType = definition.getMimeType();
+                if (mimeType == null) {
+                    fext = "txt";
+                } else {
+                    fext = mimeType.split("/")[1].toLowerCase();
+                }
+            }
+            return fname + "." + fext;
+        }
+        return fname;
+    }
+
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         ExecuteType execute = (ExecuteType) operation.getParameters()[0];

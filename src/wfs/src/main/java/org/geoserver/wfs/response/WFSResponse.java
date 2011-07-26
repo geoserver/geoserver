@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
+import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSInfo;
 
 /**

@@ -55,6 +55,11 @@ public class KMZMapResponse extends AbstractMapResponse {
         this.wms = wms;
     }
 
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
+
     /**
      * Makes the map and sends it to the zipped output stream The produceMap() method does not
      * create the map in this case. We produce the map here so we can stream directly to the

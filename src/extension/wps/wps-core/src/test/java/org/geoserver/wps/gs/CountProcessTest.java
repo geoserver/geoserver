@@ -27,6 +27,8 @@ public class CountProcessTest extends WPSTestSupport {
         MockHttpServletResponse resp = postAsServletResponse(root(), xml);
         assertEquals("text/plain", resp.getContentType());
         assertEquals("5", resp.getOutputStreamContent());
+        resp = postAsServletResponse(root() + "content-disposition=attachment",xml);
+        assertEquals("attachment; filename=result.txt",resp.getHeader("Content-Disposition"));
         
         
     }

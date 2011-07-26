@@ -66,7 +66,14 @@ public abstract class AbstractMapResponse extends Response {
         Assert.isInstanceOf(WebMap.class, value);
         return ((WebMap) value).getMimeType();
     }
-
+    
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        Assert.isInstanceOf(WebMap.class, value);
+        // defer to WebMap - it has the extension and other information
+        return ((WebMap) value).getAttachmentFileName();
+    }
+    
     /**
      * Evaluates whether this response can handle the given operation by checking if the operation's
      * request is a {@link GetMapRequest} and the requested output format is contained in

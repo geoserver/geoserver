@@ -34,6 +34,10 @@ import org.geoserver.platform.ServiceException;
  *
  */
 public abstract class Response {
+    
+    public static final String DISPOSITION_INLINE = "inline";
+    public static final String DISPOSITION_ATTACH = "attachment";
+    
     /**
      * Class of object to serialize
      */
@@ -175,4 +179,40 @@ public abstract class Response {
      */
     public abstract void write(Object value, OutputStream output, Operation operation)
         throws IOException, ServiceException;
+    
+    /**
+     * Get the preferred Content-Disposition header for this response.
+     * The default is inline. Subclasses can prefer attachment.
+     * @param value The value that will be serialized
+     * @param value The operation which resulted in <code>value</code>
+     * @return inline or attachment
+     */
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_INLINE;
+    }
+    
+    /**
+     * Get a name for a Content-Disposition attachment filename. The mimetype
+     * should match the file extension. The default implementation will use
+     * the mimetype and operation id to attempt to build a name.
+     * 
+     * @param value The value that will be serialized
+     * @param operation The operation being performed
+     * @return null or a filename such as result.txt or map.tiff
+     */
+    public String getAttachmentFileName(Object value, Operation operation) {
+        String mimeType = getMimeType(value, operation);
+        String opName = operation.getId();
+        String name = null;
+        if (mimeType != null) {
+            name = "geoserver";
+            if (opName != null) {
+                name = name + "-" + opName;
+            }
+            String[] typeParts = mimeType.split(";");
+            String extension = typeParts[0].split("/")[0];
+            name = name + "." + extension;
+        }
+        return name;
+    }
 }

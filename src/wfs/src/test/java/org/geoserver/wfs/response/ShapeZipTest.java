@@ -223,10 +223,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(fc);
 
         // get the file name
-        String[][] headers = zip.getHeaders(fct, op);
-        assertEquals(1, headers.length);
-        assertEquals("Content-Disposition", headers[0][0]);
-        assertEquals("attachment; filename=shapezip_BasicPolygons.zip", headers[0][1]);
+        assertEquals("shapezip_BasicPolygons.zip", zip.getAttachmentFileName(fct, op));
 
         // check the contents
         zip.write(fct, bos, op);
@@ -249,10 +246,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(getFeatureSource(MockData.BRIDGES).getFeatures(Filter.INCLUDE));
 
         // get the file name
-        String[][] headers = zip.getHeaders(fct, op);
-        assertEquals(1, headers.length);
-        assertEquals("Content-Disposition", headers[0][0]);
-        assertEquals("attachment; filename=shapezip_BasicPolygons.zip", headers[0][1]);
+        assertEquals("shapezip_BasicPolygons.zip", zip.getAttachmentFileName(fct, op));
 
         // check the contents
         zip.write(fct, bos, op);
@@ -274,10 +268,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(getFeatureSource(ALL_DOTS).getFeatures(Filter.INCLUDE));
 
         // get the file name
-        String[][] headers = zip.getHeaders(fct, op);
-        assertEquals(1, headers.length);
-        assertEquals("Content-Disposition", headers[0][0]);
-        assertEquals("attachment; filename=shapezip_All_Types_Dots.zip", headers[0][1]);
+        assertEquals("shapezip_All_Types_Dots.zip", zip.getAttachmentFileName(fct, op));
 
         // check the contents
         zip.write(fct, bos, op);
@@ -304,23 +295,18 @@ public class ShapeZipTest extends WFSTestSupport {
                 getResourceLoader());
 
         FeatureCollectionType mockResult = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        mockResult.getFeature().add(getFeatureSource(ALL_DOTS).getFeatures(Filter.INCLUDE));
+        SimpleFeatureCollection features = getFeatureSource(ALL_DOTS).getFeatures(Filter.INCLUDE);
+        mockResult.getFeature().add(features);
         GetFeatureType mockRequest = WfsFactory.eINSTANCE.createGetFeatureType();
 
         Operation mockOperation = new Operation("GetFeature", getServiceDescriptor10(), null,
                 new Object[] { mockRequest });
 
-        String[][] headers = zip.getHeaders(mockResult, mockOperation);
-        assertEquals(1, headers.length);
-        assertEquals("Content-Disposition", headers[0][0]);
-        assertEquals("attachment; filename=All_Types_Dots.zip", headers[0][1]);
+        assertEquals("All_Types_Dots.zip",  zip.getAttachmentFileName(mockResult, mockOperation));
 
         mockRequest.getFormatOptions().put("FILENAME", "REQUEST_SUPPLIED_FILENAME.zip");
 
-        headers = zip.getHeaders(mockResult, mockOperation);
-        assertEquals(1, headers.length);
-        assertEquals("Content-Disposition", headers[0][0]);
-        assertEquals("attachment; filename=REQUEST_SUPPLIED_FILENAME.zip", headers[0][1]);
+        assertEquals("REQUEST_SUPPLIED_FILENAME.zip",  zip.getAttachmentFileName(mockResult, mockOperation));
 
     }
 

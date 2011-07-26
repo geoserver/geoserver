@@ -78,6 +78,7 @@ public class StyleCoverageTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n" + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
+        assertEquals("attachment; filename=result.tiff",response.getHeader("Content-Disposition"));
         InputStream is = getBinaryInputStream(response);
         
         // very odd, the tiff reader is not able to read the tiff file, yet desktop apps

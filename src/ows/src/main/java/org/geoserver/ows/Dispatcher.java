@@ -751,6 +751,28 @@ public class Dispatcher extends AbstractController {
                 }
             }
             
+            // set content-disposition header if requested.
+            String fname = response.getAttachmentFileName(result, opDescriptor);
+            if (fname != null) {
+                String disposition = null;
+                Map rawKvp = req.getRawKvp();
+                if (rawKvp != null) {
+                    disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
+                    // check and prevent strange header injection
+                    boolean valid = Response.DISPOSITION_ATTACH.equals(disposition) ||
+                            Response.DISPOSITION_INLINE.equals(disposition);
+                    if (! valid ) {
+                        disposition = null;
+                    }
+                }
+                if (disposition == null) {
+                    disposition = response.getPreferredDisposition(result, opDescriptor);
+                }
+                String disp = disposition +"; filename=" + fname;
+                // override existing for backwards compatibility
+                req.getHttpResponse().setHeader("Content-Disposition", disp);
+            }
+            
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
             
             // actually write out the response

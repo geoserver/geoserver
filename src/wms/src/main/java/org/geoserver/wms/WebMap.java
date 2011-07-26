@@ -14,10 +14,14 @@ import org.geotools.map.Layer;
 public abstract class WebMap {
 
     private String mimeType;
-
+    
     private java.util.Map<String, String> responseHeaders;
 
     protected final WMSMapContent mapContent;
+    
+    private String extension;
+    
+    private String disposition;
 
     /**
      * @param context
@@ -107,6 +111,12 @@ public abstract class WebMap {
      * </p>
      */
     public void setContentDispositionHeader(final WMSMapContent mapContent, final String extension, boolean attachment) {
+        // ischneider - this is nasty, but backwards compatible
+        this.extension = extension;
+        this.disposition = attachment ? Response.DISPOSITION_ATTACH : Response.DISPOSITION_INLINE;
+    }
+    
+    public String getAttachmentFileName() {        
         // see if we can get the original request, before the group expansion happened
         Request request = Dispatcher.REQUEST.get();
         String filename = null;
@@ -129,13 +139,9 @@ public abstract class WebMap {
                 filename = sb.toString();
             }
         }
-        String value;
-        String type = attachment ? "attachment" : "inline";
-        if (filename != null && filename.length() > 0) {
-            value = type + "; filename=" + filename.replace(":", "-") + extension;
-        } else {
-            value = type + "; filename=geoserver" + extension;
+        if (filename != null) {
+            filename = filename.replace(":", "-") + extension;
         }
-        setResponseHeader("Content-Disposition", value);
+        return filename;
     }
 }

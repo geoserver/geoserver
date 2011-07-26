@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class ExecuteTest extends WPSTestSupport {
-	
+    
 	/* TODO GET requests A.4.4.1 */
 
     public void testDataInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
@@ -459,8 +459,6 @@ public class ExecuteTest extends WPSTestSupport {
         		"</wps:Execute>";
         
         Document dom = postAsDOM(root(), request);
-        // print(dom);
-        
         assertXpathEvaluatesTo("-4.0E-4 -0.0024", "/ows:BoundingBox/ows:LowerCorner", dom);
         assertXpathEvaluatesTo("0.0036 0.0024", "/ows:BoundingBox/ows:UpperCorner", dom);
     }

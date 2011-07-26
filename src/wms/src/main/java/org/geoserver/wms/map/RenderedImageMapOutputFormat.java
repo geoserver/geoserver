@@ -249,7 +249,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     public final RenderedImageMap produceMap(WMSMapContent mapContent) throws ServiceException {
         return produceMap(mapContent, false);
     }
-
+    
     /**
      * Actually produces the map image, careing about meta tiling if {@code tiled == true}.
      * 
@@ -541,7 +541,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         return map;
     }
-
+    
     protected MapDecorationLayout findDecorationLayout(WMSMapContent mapContent, final boolean tiled) {
         String layoutName = null;
         if (mapContent.getRequest().getFormatOptions() != null) {

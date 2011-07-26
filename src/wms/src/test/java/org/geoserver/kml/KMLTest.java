@@ -4,6 +4,7 @@
  */
 package org.geoserver.kml;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
@@ -101,5 +102,16 @@ public class KMLTest extends WMSTestSupport {
                 "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
             );
         assertEquals( 1, doc.getElementsByTagName("Placemark").getLength());
+    }    
+    
+    public void testContentDisposition() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wms?request=getmap&service=wms&version=1.1.1"
+                + "&format=" + KMZMapOutputFormat.MIME_TYPE
+                + "&layers=" + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&styles=" + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+            );
+        assertEquals("attachment; filename=cite-BasicPolygons.kmz",resp.getHeader("Content-Disposition"));
     }
 }

@@ -14,6 +14,7 @@ import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.kml.KMZMapResponse.KMZMap;
+import org.geoserver.ows.Response;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
@@ -78,14 +79,4 @@ public class KMZMapProducerTest extends WMSTestSupport {
         zipFile.close();
     }
 
-    public void testContentDisposition() {
-        String[][] responseHeaders = producedMap.getResponseHeaders();
-        assertNotNull(responseHeaders);
-        assertEquals(1, responseHeaders.length);
-        
-        assertEquals("Content-Disposition", responseHeaders[0][0]);
-        String contentDisposition = responseHeaders[0][1];
-        assertTrue(contentDisposition.startsWith("attachment; filename="));
-        assertTrue(contentDisposition.endsWith(".kmz"));
-    }
 }

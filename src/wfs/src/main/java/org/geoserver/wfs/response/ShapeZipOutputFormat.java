@@ -161,9 +161,13 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         return true;
     }
 
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
+    
     /**
-     * Returns this output format's HTTP response header to indicate what the output file name is
-     * for the zipped shapefile.
+     * Get this output format's file name for for the zipped shapefile.
      * <p>
      * The output file name is determined as follows:
      * <ul>
@@ -173,14 +177,11 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * <li>Otherwise a file name is inferred from the requested feature type(s) name.
      * </ul>
      * 
-     * @return the {@code Content-Disposition} header indicating what the file name is for the
-     *         zipped shapefile(s)
-     * @see org.geoserver.ows.Response#getHeaders(java.lang.Object,
-     *      org.geoserver.platform.Operation)
+     * @return the the file name for the zipped shapefile(s)
+     * 
      */
     @Override
-    public String[][] getHeaders(Object value, Operation operation)
-        throws ServiceException {
+    public String getAttachmentFileName(Object value, Operation operation) {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) ((FeatureCollectionType) value).getFeature().get(0);
         FeatureTypeInfo ftInfo = getFeatureTypeInfo(fc);
         
@@ -196,9 +197,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         if (filename == null) {
             filename = ftInfo.getName();
         }
-
-        return (String[][]) new String[][] { { "Content-Disposition",
-        	"attachment; filename=" + filename + (filename.endsWith(".zip") ? "" : ".zip") } };
+        return filename + (filename.endsWith(".zip") ? "" : ".zip");
     }
     
     protected void write(FeatureCollectionType featureCollection, OutputStream output,

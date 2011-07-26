@@ -60,16 +60,18 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         // state in the RFC
         return "text/csv";
     }
+
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
     
     @Override
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+    public String getAttachmentFileName(Object value, Operation operation) {
         GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
                 GetFeatureType.class);
-        String outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(0))
-            .getLocalPart();
-        return (String[][]) new String[][] {
-                { "Content-Disposition", "attachment; filename=" + outputFileName + ".csv" }
-            };
+        return ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(0))
+            .getLocalPart() + ".csv";
     }
     
     /**

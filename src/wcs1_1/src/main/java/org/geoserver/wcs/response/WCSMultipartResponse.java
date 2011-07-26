@@ -54,6 +54,15 @@ public class WCSMultipartResponse extends Response {
         return new String[][] { { "Content-Disposition",
                 "attachment;filename=\"" + identifier.replace(':', '_') + ".eml\"" } };
     }
+
+    /**
+     * Disable Dispatcher managed content-disposition handling - not sure if quoted
+     * filenames (see getHeaders above) were necessary for something.
+     */
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        return null;
+    }
     
     @Override
     public boolean canHandle(Operation operation) {

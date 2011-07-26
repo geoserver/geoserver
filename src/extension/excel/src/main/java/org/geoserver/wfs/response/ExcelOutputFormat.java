@@ -70,13 +70,17 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+    public String getAttachmentFileName(Object value, Operation operation) {
         GetFeatureType request = OwsUtils
                 .parameter(operation.getParameters(), GetFeatureType.class);
         String outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(
                 0)).getLocalPart();
-        return new String[][] { { "Content-Disposition",
-                "attachment; filename=" + outputFileName + "." + fileExtension } };
+        return outputFileName + "." + fileExtension;
+    }
+
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
     }
 
     /**

@@ -163,9 +163,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
             return super.canHandle(operation);
         }
     }
+
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
     
     @Override
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+    public String getAttachmentFileName(Object value, Operation operation) {
         GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
                 GetFeatureType.class);
 
@@ -175,13 +180,12 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         } else if (!format.singleFile || request.getQuery().size() > 1) {
             String outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName()
                     .get(0)).getLocalPart();
-            return (String[][]) new String[][] { { "Content-Disposition",
-                    "attachment; filename=" + outputFileName + ".zip" } };
+            return outputFileName + ".zip";
         } else {
             return null;
         }
     }
-
+    
     /**
      * Adds a ogr format among the supported ones
      * 

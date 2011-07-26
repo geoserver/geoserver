@@ -84,4 +84,16 @@ public class ResponseAdapter extends org.geoserver.ows.Response {
         }
         return headers;
     }
+
+    /**
+     * Backwards compatibility for adapter - dispatcher will ignore.
+     * @param value
+     * @param operation
+     * @return null
+     */
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        return null;
+    }
+    
 }

@@ -768,6 +768,9 @@ public class Dispatcher extends AbstractController {
                 if (disposition == null) {
                     disposition = response.getPreferredDisposition(result, opDescriptor);
                 }
+                // this would be a good place to quote the filename but unsure of
+                // compatibility - it appears to be the correct way to handle
+                // spaces and other characters.
                 String disp = disposition +"; filename=" + fname;
                 // override existing for backwards compatibility
                 req.getHttpResponse().setHeader("Content-Disposition", disp);

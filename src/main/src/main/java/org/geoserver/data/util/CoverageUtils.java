@@ -20,6 +20,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Converters;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -318,37 +319,45 @@ public class CoverageUtils {
                         && params.get(key) instanceof GeneralGridGeometry) {
                     value = params.get(key);
                 }
-            } else if (key.equalsIgnoreCase("InputTransparentColor")
-                    || key.equalsIgnoreCase("OutputTransparentColor")) {
-                if (params.get(key) != null) {
-                    value = Color.decode((String) params.get(key));
+            } else {
+                final Class<? extends Object> target = param.getValue().getClass();
+                if (key.equalsIgnoreCase("InputTransparentColor")
+                        || key.equalsIgnoreCase("OutputTransparentColor")) {
+                    if (params.get(key) != null) {
+                        value = Color.decode((String) params.get(key));
+                    } else {
+                        Class[] clArray = { Color.class };
+                        Object[] inArray = { params.get(key) };
+                        value = target.getConstructor(clArray).newInstance(inArray);
+                    }
+                }else if (key.equalsIgnoreCase("BackgroundValues")) {
+                    if (params.get(key) != null) {
+                        String temp = (String) params.get(key);
+                        String[] elements = temp.split(",");
+                        final double[] backgroundValues = new double[elements.length];
+                        for(int i=0;i<elements.length;i++)
+                        	backgroundValues[i]=Double.valueOf(elements[i]);
+                        value=backgroundValues;
+                        
+                    } 
+                } 
+                else if (key.equalsIgnoreCase("InputImageThresholdValue")) {
+                    if (params.get(key) != null) {
+                        String temp = (String) params.get(key);
+                        value=Double.valueOf(temp);
+                        
+                    } 
                 } else {
-                    Class[] clArray = { Color.class };
-                    Object[] inArray = { params.get(key) };
-                    value = param.getValue().getClass().getConstructor(clArray).newInstance(inArray);
+                    value = params.get(key);
+                    if(value != null) {
+                        Object converted = Converters.convert(value, target);
+                        if(converted == null) {
+                            throw new RuntimeException("Failed to convert " + value + " to " + target.getName());
+                        } else {
+                            value = converted;
+                        }
+                    }
                 }
-            }else if (key.equalsIgnoreCase("BackgroundValues")) {
-                if (params.get(key) != null) {
-                    String temp = (String) params.get(key);
-                    String[] elements = temp.split(",");
-                    final double[] backgroundValues = new double[elements.length];
-                    for(int i=0;i<elements.length;i++)
-                    	backgroundValues[i]=Double.valueOf(elements[i]);
-                    value=backgroundValues;
-                    
-                } 
-            } 
-            else if (key.equalsIgnoreCase("InputImageThresholdValue")) {
-                if (params.get(key) != null) {
-                    String temp = (String) params.get(key);
-                    value=Double.valueOf(temp);
-                    
-                } 
-            } 
-            else {
-                Class[] clArray = { String.class };
-                Object[] inArray = { params.get(key) };
-                value = param.getValue().getClass().getConstructor(clArray).newInstance(inArray);
             }
         } catch (Exception e) {
             value = param.getValue();

@@ -1,12 +1,20 @@
 package org.geoserver.catalog.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Properties;
+
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -15,9 +23,14 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.Query;
 import org.geotools.feature.NameImpl;
+import org.geotools.gce.geotiff.GeoTiffWriter;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Point;
@@ -164,6 +177,77 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         
         LayerInfo layer = cb.buildLayer(wmsLayer);
         assertEquals(LayerInfo.Type.WMS, layer.getType());
+    }
+    
+    public void testLargeNDMosaic() throws Exception {
+        // build a mosaic with 1025 files (the standard ulimit is 1024)
+        File mosaic = new File("./target/largeMosaic");
+        try {
+            if(mosaic.exists()) {
+                if(mosaic.isDirectory()) {
+                    FileUtils.deleteDirectory(mosaic);
+                } else {
+                    mosaic.delete();
+                }
+            }
+            mosaic.mkdir();
+            
+            // build the reference coverage into a byte array
+            GridCoverageFactory factory = new GridCoverageFactory();
+            BufferedImage bi = new BufferedImage(10, 10, BufferedImage.TYPE_4BYTE_ABGR);
+            ReferencedEnvelope envelope = new ReferencedEnvelope(0, 10, 0, 10, DefaultGeographicCRS.WGS84);
+            GridCoverage2D test = factory.create("test", bi, envelope);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            GeoTiffWriter writer = new GeoTiffWriter(bos);
+            writer.write(test, null);
+            
+            // create the lot of files
+            byte[] bytes = bos.toByteArray();
+            for(int i = 0; i < 1025; i++) {
+                String pad = "";
+                if(i < 10) {
+                    pad = "000";
+                } else if(i < 100) {
+                    pad = "00";
+                } else if(i < 1000){
+                    pad = "0";
+                }
+                File target = new File(mosaic, "tile_" +pad + i + ".tiff");
+                FileUtils.writeByteArrayToFile(target, bytes);
+            }
+            
+            // create the mosaic indexer property file
+            Properties p = new Properties();
+            p.put("ElevationAttribute", "elevation");
+            p.put("Schema", "*the_geom:Polygon,location:String,elevation:Integer");
+            p.put("PropertyCollectors", "IntegerFileNameExtractorSPI[elevationregex](elevation)");
+            FileOutputStream fos = new FileOutputStream(new File(mosaic, "indexer.properties"));
+            p.store(fos, null);
+            fos.close();
+            // and the regex itself
+            p.clear();
+            p.put("regex", "(?<=_)(\\d{4})");
+            fos = new FileOutputStream(new File(mosaic, "elevationregex.properties"));
+            p.store(fos, null);
+            fos.close();
+            
+            // now configure a new store based on it
+            Catalog cat = getCatalog();
+            CatalogBuilder cb = new CatalogBuilder(cat);
+            CoverageStoreInfo store = cb.buildCoverageStore("largeMosaic");
+            store.setURL(mosaic.getAbsolutePath());
+            store.setType("ImageMosaic");
+            cat.add(store);
+            
+            // and configure also the coverage
+            cb.setStore(store);
+            CoverageInfo ci = cb.buildCoverage();
+            cat.add(ci);
+        } finally {
+            if(mosaic.exists() && mosaic.isDirectory()) {
+                FileUtils.deleteDirectory(mosaic);
+            }
+        }
     }
 
     Name toName(QName qname) {

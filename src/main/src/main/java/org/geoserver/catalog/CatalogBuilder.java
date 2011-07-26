@@ -5,10 +5,8 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
+import javax.media.jai.PlanarImage;
 
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
@@ -24,7 +23,6 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
-import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
@@ -38,16 +36,17 @@ import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.GeoTools;
-import org.geotools.factory.Hints;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
@@ -730,7 +729,9 @@ public class CatalogBuilder {
         // Now reading a fake small GridCoverage just to retrieve meta
         // information about bands:
         //
-        // - calculating a new envelope which is 1/20 of the original one
+        // - calculating a new envelope which is just 5x5 pixels
+        // - if it's a mosaic, limit the number of tiles we're going to read to one 
+        //   (with time and elevation there might be hundreds of superimposed tiles)
         // - reading the GridCoverage subset
         //
         // /////////////////////////////////////////////////////////////////////
@@ -756,6 +757,13 @@ public class CatalogBuilder {
 
         if (customParameters != null) {
         	parameters.putAll(customParameters);
+        }
+        
+        // make sure mosaics with many superimposed tiles won't blow up with 
+        // a "too many open files" exception
+        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
+        if(parameters.keySet().contains(maxAllowedTiles)) {
+            parameters.put(maxAllowedTiles, 1);
         }
         
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
@@ -845,6 +853,9 @@ public class CatalogBuilder {
 
         /// dispose coverage 
         gc.dispose(true);
+        if(gc.getRenderedImage() instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) gc.getRenderedImage());
+        }
 
         return cinfo;
     }

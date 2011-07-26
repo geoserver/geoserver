@@ -578,8 +578,13 @@
    </dependency>
    <dependency>
     <groupId>xerces</groupId>
+    <artifactId>xmlParserAPIs</artifactId>
+    <version>2.6.2</version>
+   </dependency>
+   <dependency>
+    <groupId>xerces</groupId>
     <artifactId>xercesImpl</artifactId>
-    <version>2.4.0</version>
+    <version>2.7.1</version>
    </dependency>
    <dependency>
     <groupId>xalan</groupId>
@@ -814,16 +819,6 @@
     <groupId>tomcat</groupId>
     <artifactId>jasper-runtime</artifactId>
     <version>5.5.15</version>
-   </dependency>
-   <dependency>
-    <groupId>xerces</groupId>
-    <artifactId>xercesImpl</artifactId>
-    <version>2.6.2</version>
-   </dependency>
-   <dependency>
-    <groupId>xerces</groupId>
-    <artifactId>xmlParserAPIs</artifactId>
-    <version>2.6.2</version>
    </dependency>
    <dependency>
     <groupId>commons-el</groupId>

@@ -37,17 +37,7 @@ import com.mockrunner.mock.web.MockServletInputStream;
 public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     private String TempDataBaseUrl = null;
-    private String spatialiteLibraryUrl = null;
     
-     protected void oneTimeSetUp( ) throws Exception {
-         super.oneTimeSetUp();
-         this.spatialiteLibraryUrl = MultiLibs.loadExtension();
-         this.TempDataBaseUrl = null;
-     }
-     protected void oneTimeTearDown( ) throws Exception {
-         super.oneTimeTearDown();
-         new File(this.spatialiteLibraryUrl).delete();
-     }
 
     /**
      * Creates a connection (SQLITE type) with a temporally
@@ -93,9 +83,11 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
         Connection conn = createTempDataBaseConnection(responseInput);
         Statement stmt = conn.createStatement();
         ResultSet rs;
-        stmt.execute("SELECT load_extension('"+this.spatialiteLibraryUrl+"')");
+        if (MultiLibs.isWindows64()){
+        	System.load(MultiLibs.loadWindows64Dependecys());
+        }
+        stmt.execute("SELECT load_extension('"+MultiLibs.loadExtension()+"')");
         for(int i =0 ;i < tbl_names.length; i++ ) {
-            //System.out.println("SELECT GeometryType("+geom_columns[i]+") from "+tbl_names[i]);
             rs = stmt.executeQuery("SELECT GeometryType("+geom_columns[i]+") from "+tbl_names[i]);
             assertEquals(rs.getString(1),geometries[i]);
         }

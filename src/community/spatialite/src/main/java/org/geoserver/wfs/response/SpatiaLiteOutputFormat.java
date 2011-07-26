@@ -231,6 +231,10 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
              * A string to store the statements to run to create the Spatialite DataBase 
              */
             String sql = null;
+            if (MultiLibs.isWindows64())
+	            {
+	            	System.load(MultiLibs.loadWindows64Dependecys());
+	            }
             String spatialiteLibraryUrl = MultiLibs.loadExtension();
             sql = "SELECT load_extension('"+spatialiteLibraryUrl+"')";
             stmt.execute(sql);
@@ -292,7 +296,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                 if (column_names.endsWith(", "))
                     column_names = column_names.substring(0,column_names.length()-2);
                 // Finish creating the table
-                System.out.println(sql);
                 stmt.execute(sql);
                 conn.commit();
                 
@@ -318,7 +321,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                     sql += " );";
                 }
                 //finish creating the geometry column.
-                System.out.println(sql);
                 stmt.execute(sql);
                 conn.commit();
                 
@@ -379,7 +381,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                             sql += "GeomFromText('"+prepareGeom(geom_data.toString())+"', "+srid+")";
                         }
                         sql += ");";
-                        System.out.println(sql);
                         stmt.execute(sql);
                     }
                     conn.commit();
@@ -390,12 +391,6 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
                 }
             }
             conn.close();
-            /**
-             * Loads the temp dll and delete it
-             */
-            File spatialiteLibraryFile = new File(spatialiteLibraryUrl);
-            spatialiteLibraryFile.delete();
-
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -476,11 +471,11 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
      */
     private String prepareGeom (String theGeom){
         String value = theGeom;
-        if (theGeom.contains("GEOMETRYCOLLECTION"))
+        /*if (theGeom.contains("GEOMETRYCOLLECTION"))
            //Hago split;
             System.out.println("Not Yet");
-        else
-            if ((boolean)theGeom.contains("MULTIPOINT"))
+        else*/
+            if (theGeom.contains("MULTIPOINT"))
             {
                 value = value.replaceAll("\\(\\(", "*");
                 value = value.replaceAll("\\)\\)", "#");

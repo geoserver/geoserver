@@ -2,6 +2,7 @@ package org.geoserver.wfs;
 
 import org.geoserver.data.test.MockData;
 import org.opengis.feature.Feature;
+import org.w3c.dom.Document;
 
 /**
  * This test must be run with the server configured with the wfs 1.0 cite
@@ -70,11 +71,35 @@ public class TransactionListenerTest extends WFSTestSupport {
                 + "</cgf:Lines>" + "</wfs:Insert>" + "</wfs:Transaction>";
 
         postAsDOM("wfs", insert);
-        assertEquals(1, listener.events.size());
+        assertEquals(2, listener.events.size());
+        
         TransactionEvent firstEvent = (TransactionEvent) listener.events.get(0);
         assertEquals(TransactionEventType.PRE_INSERT, firstEvent.getType());
         assertEquals(MockData.LINES, firstEvent.getLayerName());
-        assertEquals(1, listener.features.size());
+        // one feature from the pre-insert hook, one from the post-insert hook
+        assertEquals(2, listener.features.size());
+        
+        // what was the fid of the inserted feature?
+        String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
+                + "<wfs:Query typeName=\"cgf:Lines\"> "
+                + "<ogc:PropertyName>id</ogc:PropertyName> "
+                + "<ogc:Filter>" + "<ogc:PropertyIsEqualTo>"
+                + "<ogc:PropertyName>id</ogc:PropertyName>"
+                + "<ogc:Literal>t0002</ogc:Literal>"
+                + "</ogc:PropertyIsEqualTo>" + "</ogc:Filter>"
+                + "</wfs:Query> " + "</wfs:GetFeature>";
+        Document dom = postAsDOM("wfs", getFeature);
+        String fid = dom.getElementsByTagName("cgf:Lines").item(0)
+                .getAttributes().item(0).getNodeValue();
+
+        TransactionEvent secondEvent = (TransactionEvent) listener.events.get(1);
+        assertEquals(TransactionEventType.POST_INSERT, secondEvent.getType());
+        Feature inserted = (Feature) listener.features.get(1);
+        assertEquals(fid, inserted.getIdentifier().getID());
     }
 
     public void testUpdate() throws Exception {

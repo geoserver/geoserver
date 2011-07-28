@@ -16,8 +16,17 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 
 /**
  * Event carrying information about a change that happened/that is about to
- * occur. The feature collection may be an in-memory one, or may be based on a
+ * occur. 
+ * <p>
+ * The feature collection may be an in-memory one, or may be based on a
  * real data store with a filter.
+ * </p>
+ * <p>
+ * <b>Note</b> that care should be taken when relying on feature identifiers from a 
+ * {@link TransactionEventType#POST_INSERT} event. Depending on the type of store those identifiers
+ * may be reliable. Essentially they can only be relied upon in the case of a spatial dbms (such 
+ * as PostGIS) is being used. 
+ * </p>
  */
 public class TransactionEvent {
     private TransactionEventType type;

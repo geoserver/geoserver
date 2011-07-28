@@ -507,6 +507,9 @@ public class GWC implements DisposableBean, InitializingBean {
                     bbox.getMaxX(), bbox.getMaxY());
             try {
                 tileIndex = gridSubset.closestIndex(tileBounds);
+                if (!gridSubset.covers(tileIndex)) {
+                    return null;
+                }
             } catch (GridMismatchException e) {
                 return null;
             }

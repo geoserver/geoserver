@@ -140,10 +140,12 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
         docBuilderFactory.setNamespaceAware(true);
 
         Document doc = docBuilderFactory.newDocumentBuilder().parse(input);
-        Node exceptionText = XPathAPI.selectSingleNode(doc, "ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()");
-        assertNotNull(exceptionText);
-        assertTrue(exceptionText.getNodeValue().indexOf(illegalArgument.getMessage()) != -1);
-        assertTrue(exceptionText.getNodeValue().indexOf(ioException.getMessage()) != -1);
-        assertTrue(exceptionText.getNodeValue().indexOf(serviceException.getMessage()) != -1);
+        Node exceptionTextNode = XPathAPI.selectSingleNode(doc, "ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()");
+        assertNotNull(exceptionTextNode);
+        // normalise whitespace
+        String exceptionText = exceptionTextNode.getNodeValue().replaceAll("\\s+", " ");
+        assertTrue(exceptionText.indexOf(illegalArgument.getMessage()) != -1);
+        assertTrue(exceptionText.indexOf(ioException.getMessage()) != -1);
+        assertTrue(exceptionText.indexOf(serviceException.getMessage()) != -1);
     }
 }

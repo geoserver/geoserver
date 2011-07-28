@@ -1351,7 +1351,6 @@
  </distributionManagement>
 
  <modules>
-  <module>maven</module>
   <module>platform</module>
   <module>main</module>
   <module>wcs</module>
@@ -1380,6 +1379,7 @@
   <jalopy.phase>disabled</jalopy.phase>
   <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
   <test.maxHeapSize>512M</test.maxHeapSize>
+  <test.exclude.pattern>none</test.exclude.pattern>
   <remoteOwsTests>false</remoteOwsTests>
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>

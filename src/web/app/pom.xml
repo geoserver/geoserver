@@ -159,6 +159,43 @@
     <plugins>
       <!-- Builds a valid data directory into the web app -->
       <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>configPackage</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+  <!-- check if config is available, if not fail -->
+  <available file="${configDirectory}/${configId}" property="configIsAvailable" />
+  <fail message="Unable to locate configuration: ${configDirectory}/${configId}" unless="configIsAvailable" />
+
+  <!-- copy the files from the config dir to the webapp dir -->
+  <echo message="Copying data dir from ${configDirectory}/${configId}" />
+  <copy todir="${webappSourceDirectory}/data">
+     <fileset dir="${configDirectory}/${configId}" includes="**/**" />
+  </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>configClean</id>
+            <phase>clean</phase>
+            <configuration>
+              <tasks>
+  <delete dir="${webappSourceDirectory}/data" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!--plugin>
         <groupId>org.geoserver.maven</groupId>
         <artifactId>config</artifactId>
         <version>${project.version}</version>
@@ -182,7 +219,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
@@ -225,6 +262,8 @@
   
   <properties>
     <configId>minimal</configId>
+    <configDirectory>${basedir}</configDirectory>
+    <webappSourceDirectory>${basedir}/src/main/webapp</webappSourceDirectory>
     <sde.version>9.3</sde.version>
   </properties>
 
@@ -663,4 +702,5 @@
     </profile>
 
  </profiles>
+
 </project>

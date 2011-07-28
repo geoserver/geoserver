@@ -127,8 +127,11 @@ class FakeHttpServletResponse implements HttpServletResponse {
         throw new ServletDebugException();
     }
 
+    /**
+     * @see javax.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String)
+     */
     public void setHeader(String arg0, String arg1) {
-        throw new ServletDebugException();
+        addHeader(arg0, arg1);
     }
 
     public void setIntHeader(String arg0, int arg1) {

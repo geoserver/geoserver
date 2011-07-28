@@ -69,18 +69,8 @@ public class KMLUtils {
      */
     static final double TOLERANCE = 1e-6;
 
-    private static final CoordinateReferenceSystem WGS84;
     private static final int RULES = 0;
     private static final int ELSE_RULES = 1;
-
-    static {
-        try {
-            WGS84 = CRS.decode("EPSG:4326");
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Cannot decode EPSG:4326, the CRS subsystem must be badly broken...");
-        }
-    }
 
     public final static Envelope WORLD_BOUNDS_WGS84 = new Envelope(-180,180,-90,90);    
     
@@ -508,9 +498,15 @@ public class KMLUtils {
         q.setFilter(finalFilter);
 
         // make sure we output in 4326 since that's what KML mandates
-        if (sourceCrs != null && !CRS.equalsIgnoreMetadata(WGS84, sourceCrs)) {
-            return new ReprojectFeatureResults(featureSource.getFeatures(q),
-                    WGS84);
+        CoordinateReferenceSystem wgs84;
+        try {
+            wgs84 = CRS.decode("EPSG:4326");
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Cannot decode EPSG:4326, the CRS subsystem must be badly broken...");
+        }
+        if (sourceCrs != null && !CRS.equalsIgnoreMetadata(wgs84, sourceCrs)) {
+            return new ReprojectFeatureResults(featureSource.getFeatures(q), wgs84);
         }
 
         return featureSource.getFeatures(q);

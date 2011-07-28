@@ -5,8 +5,10 @@
 package org.geoserver.gwc.wms;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.lang.reflect.Method;
 import java.nio.channels.Channels;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,11 +77,24 @@ public class CachingWebMapService implements MethodInterceptor {
             if (LOGGER.isLoggable(Level.FINEST)) {
                 LOGGER.finest("GetMap request intercepted, serving cached content: " + request);
             }
+
+            final byte[] tileBytes;
+            {
+                final Resource mapContents = cachedTile.getBlob();
+                if (mapContents instanceof ByteArrayResource) {
+                    tileBytes = ((ByteArrayResource) mapContents).getContents();
+                } else {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    mapContents.transferTo(Channels.newChannel(out));
+                    tileBytes = out.toByteArray();
+                }
+            }
+
             // Handle Etags
             final String ifNoneMatch = request.getHttpRequestHeader("If-None-Match");
-            final String hexTag = Long.toHexString(cachedTile.getTSCreated());
-
-            if (hexTag.equals(ifNoneMatch)) {
+            final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
+            final String etag = toHexString(hash);
+            if (etag.equals(ifNoneMatch)) {
                 // Client already has the current version
                 LOGGER.finer("ETag matches, returning 304");
                 throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);
@@ -88,25 +103,31 @@ public class CachingWebMapService implements MethodInterceptor {
             LOGGER.finer("No matching ETag, returning cached tile");
             final String mimeType = cachedTile.getMimeType().getMimeType();
 
-            RawMap map;
-            final Resource mapContents = cachedTile.getBlob();
-            if (mapContents instanceof ByteArrayResource) {
-                byte[] mapBytes;
-                mapBytes = ((ByteArrayResource) mapContents).getContents();
-                map = new RawMap(null, mapBytes, mimeType);
-            } else {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                mapContents.transferTo(Channels.newChannel(out));
-                map = new RawMap(null, out, mimeType);
-            }
+            RawMap map = new RawMap(null, tileBytes, mimeType);
+
             map.setResponseHeader("Cache-Control", "no-cache");
-            map.setResponseHeader("ETag", Long.toHexString(cachedTile.getTSCreated()));
+            map.setResponseHeader("ETag", etag);
             map.setResponseHeader("geowebcache-tile-index",
                     Arrays.toString(cachedTile.getTileIndex()));
             return map;
         }
 
         return (WebMap) invocation.proceed();
+    }
+
+    private String toHexString(byte[] hash) {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < hash.length; i += 4) {
+            int c1 = 0xFF & hash[i];
+            int c2 = 0xFF & hash[i+1];
+            int c3 = 0xFF & hash[i+2];
+            int c4 = 0xFF & hash[i+3];
+            int integer = ((c1 << 24) + (c2 << 16) + (c3 << 8) + (c4 << 0));
+            sb.append(Integer.toHexString(integer));
+        }
+        return sb.toString();
     }
 
 }

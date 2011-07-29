@@ -77,7 +77,7 @@
    </dependency>
    <dependency>
      <groupId>org.xerial</groupId>
-     <artifactId>spatialite-native-libs</artifactId>
+     <artifactId>spatialite-lib-all</artifactId>
      <version>1.0</version>
    </dependency>
   </dependencies>

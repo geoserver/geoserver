@@ -37,6 +37,17 @@ import com.mockrunner.mock.web.MockServletInputStream;
 public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     private String TempDataBaseUrl = null;
+    private String spatialiteLibraryUrl = null;
+    
+    protected void oneTimeSetUp( ) throws Exception {
+        super.oneTimeSetUp();
+        this.spatialiteLibraryUrl = MultiLibs.loadExtension();
+        this.TempDataBaseUrl = null;
+    }
+    protected void oneTimeTearDown( ) throws Exception {
+        super.oneTimeTearDown();
+        new File(this.spatialiteLibraryUrl).delete();
+    }
     
 
     /**
@@ -83,10 +94,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
         Connection conn = createTempDataBaseConnection(responseInput);
         Statement stmt = conn.createStatement();
         ResultSet rs;
-        if (MultiLibs.isWindows64()){
-        	System.load(MultiLibs.loadWindows64Dependecys());
-        }
-        stmt.execute("SELECT load_extension('"+MultiLibs.loadExtension()+"')");
+        stmt.execute("SELECT load_extension('"+this.spatialiteLibraryUrl+"')");
         for(int i =0 ;i < tbl_names.length; i++ ) {
             rs = stmt.executeQuery("SELECT GeometryType("+geom_columns[i]+") from "+tbl_names[i]);
             assertEquals(rs.getString(1),geometries[i]);
@@ -150,7 +158,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
             for (byte aByte : data)
                 if (aByte != 0){
                     contentNull = false;
-                    System.out.println("Hay contenido");
                     break;
                 }
         assertFalse(contentNull);
@@ -275,36 +282,5 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
         return sResponse;
 
     }
-
-    /**
-     * Test the ltypes format option.
-     * @throws Exception
-     */
-   /* public void testCustomLineTypes() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Lines&outputFormat=dxf&format_options=ltypes:DASHED!--_*_!0.5");
-        String sResponse = testBasicResult(resp, "Lines");
-        checkSequence(sResponse,new String[] {"DASHED"});
-    }*/
-    /**
-     * Test the colors format option.
-     * @throws Exception
-     */
-  /*  public void testCustomColors() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=dxf&format_options=colors:1,2");
-        String sResponse = testBasicResult(resp, "Points_MPoints");
-        checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER"," 62\n     1","LAYER"," 62\n     2"});        
-    }*/
-    
-    /**
-     * Test custom naming for layers.
-     * @throws Exception
-     */
-  /*  public void testLayerNames() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
-        String sResponse = testBasicResult(resp, "Points_MPoints");
-        checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER","MYLAYER1","LAYER","MYLAYER2"});        
-    }*/
-    
-    
 
 }

@@ -121,6 +121,8 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
 import org.sqlite.SQLiteConfig;
 import org.spatialite.libs.MultiLibs;
+import org.spatialite.libs.MultiLibs;
+//import org.spatialite.libs.MultiLibs;
 /**
  *
  * WFS output format for a GetFeature operation in which the outputFormat is "spatialite".
@@ -231,166 +233,176 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
              * A string to store the statements to run to create the Spatialite DataBase 
              */
             String sql = null;
-            if (MultiLibs.isWindows64())
-	            {
-	            	System.load(MultiLibs.loadWindows64Dependecys());
-	            }
             String spatialiteLibraryUrl = MultiLibs.loadExtension();
-            sql = "SELECT load_extension('"+spatialiteLibraryUrl+"')";
-            stmt.execute(sql);
-            sql = "SELECT InitSpatialMetaData();";
-            stmt.execute(sql);
-            
-            /**
-             * A string to store the names of the columns that will be used to populate the table 
-             */
-            String column_names = null;
-            
-            //We might get multiple feature collections in our response so we need to
-            //write out multiple tables, one for each query response.
-            conn.setAutoCommit(false);
-            for (SimpleFeatureCollection fc : collections) {
-                
-                //get the current feature
-                SimpleFeatureType ft = fc.getSchema();
-                
-                //To check if the current feature has a geometry.
-                String the_geom = null;
-                if(ft.getGeometryDescriptor() != null) {
-                    the_geom = ft.getGeometryDescriptor().getLocalName();
-                } 
-                
-                //Get the table name for the current feature
-                String tbl_name = ft.getName().getLocalPart();
-                
-                
-                /**
-                 * Create the table for the current feature as follows:
-                 * - first get the statement for create the table
-                 * - execute the statement
-                 * - second get the statement for add the geometry (if has one) 
-                 * - execute the statement
-                 */
-                
-                //Initialize the "create table" query.
-                column_names = "";
-                int column_cnt = 0;
-                sql = "CREATE TABLE "+tbl_name;
-                sql += " ( PK_UID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT";
-                
-                //Get the columns names for the table tbl_name
-                for ( int i = 0; i < ft.getAttributeCount(); i++ ) {
-                    AttributeDescriptor ad = ft.getDescriptor( i );
-                    if (ad.getLocalName() != the_geom){
-                        sql += ", "+prepareColumnHeader( ad );
-                        column_names += ad.getLocalName();
-                        column_cnt++;
-                        if ( i < ft.getAttributeCount()-1){
-                            column_names += ", ";
-                        }
-                           
-                    }
-                }
-                sql += ");";
-                //Quick Fix in Column_names
-                if (column_names.endsWith(", "))
-                    column_names = column_names.substring(0,column_names.length()-2);
-                // Finish creating the table
-                stmt.execute(sql);
-                conn.commit();
-                
-                int srid = 0;
-                //If the table : "tbl_name" has a geometry, then i write the sql to add the geometry
-                if (the_geom != null){
-                    sql = "SELECT AddGeometryColumn('"+tbl_name+"', ";
-                    //get the geometry type
-                    sql += "'"+the_geom+"', ";
-                    //get the SRID.
-                    srid = getSpatialSRID(ft.getCoordinateReferenceSystem());
-                    sql += srid+", ";
-                    //get the Geometry type.
-                    String geom_type = getSpatialGeometryType(ft);
-                    if (geom_type == null){
-                        throw new WFSException("Error while adding the geometry column in table " 
-                        + tbl_name+ ", unrecognized geometry type");
-                    }
-                    sql += "'"+geom_type+"', ";
-                    //get Dimensions, we only works whit 2 dimensions. 
-                    String dimension = "XY";
-                    sql += "'" + dimension + "'";
-                    sql += " );";
-                }
-                //finish creating the geometry column.
-                stmt.execute(sql);
-                conn.commit();
-                
-                
-                /**
-                 * Populates the table for the current feature as follows:
-                 * For each row
-                 *      - first: configure the statement with the appropriates fields.
-                 *      - second: add to the statement the field the_geom if has a geometry.
-                 *      - third: configure the statement with the appropriates values.
-                 *      (if has a geometry i add that value) 
-                 *      - execute the statement
-                 * Finally commit.
-                 */
-                //Start populating the table: tbl_name.
-                SimpleFeatureIterator i = fc.features();
-                try
-                {
-                    while( i.hasNext() ) {
-                        SimpleFeature row = i.next();
-                        sql = "INSERT INTO "+tbl_name+" ("+column_names;
-                        //if has a geometry, i add the field the_geom.
-                        if (the_geom != null)
-                            if (column_cnt > 0 )
-                            {
-                                sql += ", "+the_geom+" ) ";
-                            }
-                            else
-                            {
-                                sql += the_geom+") ";
-                            }
-    
-                        else{
-                            sql += ") ";
-                        }
-                        
-                        //I store the default geometry value, so i can omit it and add at the end.
-                        Object geom_data = row.getDefaultGeometry();
-                        sql += "VALUES (";
-                        for ( int j = 0; j < row.getAttributeCount(); j++ ) {
-                            Object rowAtt = row.getAttribute( j );
-                            if (!rowAtt.equals(geom_data)){
-                                if ( rowAtt != null ){
-                                    //We just transform all content to String.
-                                    sql += "'"+rowAtt.toString()+"'";
-                                    if ( j < row.getAttributeCount()-1)
-                                        sql += ", "; 
-                                }
-                            }
-                        }
-                        if (sql.endsWith(", "))
-                            sql = sql.substring(0, sql.length()-2);
-                        //Finally if has geometry, insert the geometry data.
-                        if (the_geom != null){
-                            if (column_cnt > 0 ){
-                                sql +=  ", ";
-                            }
-                            sql += "GeomFromText('"+prepareGeom(geom_data.toString())+"', "+srid+")";
-                        }
-                        sql += ");";
-                        stmt.execute(sql);
-                    }
-                    conn.commit();
-                }
-                finally 
-                {
-                    fc.close( i );
-                }
-            }
-            conn.close();
+            if (spatialiteLibraryUrl != null)
+            {
+	            sql = "SELECT load_extension('"+spatialiteLibraryUrl+"')";
+	            stmt.execute(sql);
+	            sql = "SELECT InitSpatialMetaData();";
+	            stmt.execute(sql);
+	            
+	            /**
+	             * A string to store the names of the columns that will be used to populate the table 
+	             */
+	            String column_names = null;
+	            
+	            //We might get multiple feature collections in our response so we need to
+	            //write out multiple tables, one for each query response.
+	            conn.setAutoCommit(false);
+	            for (SimpleFeatureCollection fc : collections) {
+	                
+	                //get the current feature
+	                SimpleFeatureType ft = fc.getSchema();
+	                
+	                //To check if the current feature has a geometry.
+	                String the_geom = null;
+	                if(ft.getGeometryDescriptor() != null) {
+	                    the_geom = ft.getGeometryDescriptor().getLocalName();
+	                } 
+	                
+	                //Get the table name for the current feature
+	                String tbl_name = ft.getName().getLocalPart();
+	                
+	                
+	                /**
+	                 * Create the table for the current feature as follows:
+	                 * - first get the statement for create the table
+	                 * - execute the statement
+	                 * - second get the statement for add the geometry (if has one) 
+	                 * - execute the statement
+	                 */
+	                
+	                //Initialize the "create table" query.
+	                column_names = "";
+	                int column_cnt = 0;
+	                sql = "CREATE TABLE "+tbl_name;
+	                sql += " ( PK_UID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT";
+	                
+	                //Get the columns names for the table tbl_name
+	                for ( int i = 0; i < ft.getAttributeCount(); i++ ) {
+	                    AttributeDescriptor ad = ft.getDescriptor( i );
+	                    if (ad.getLocalName() != the_geom){
+	                        sql += ", "+prepareColumnHeader( ad );
+	                        column_names += ad.getLocalName();
+	                        column_cnt++;
+	                        if ( i < ft.getAttributeCount()-1){
+	                            column_names += ", ";
+	                        }
+	                           
+	                    }
+	                }
+	                sql += ");";
+	                //Quick Fix in Column_names
+	                if (column_names.endsWith(", "))
+	                    column_names = column_names.substring(0,column_names.length()-2);
+	                // Finish creating the table
+	                stmt.execute(sql);
+	                conn.commit();
+	                
+	                int srid = 0;
+	                //If the table : "tbl_name" has a geometry, then i write the sql to add the geometry
+	                if (the_geom != null){
+	                    sql = "SELECT AddGeometryColumn('"+tbl_name+"', ";
+	                    //get the geometry type
+	                    sql += "'"+the_geom+"', ";
+	                    //get the SRID.
+	                    srid = getSpatialSRID(ft.getCoordinateReferenceSystem());
+	                    sql += srid+", ";
+	                    //get the Geometry type.
+	                    String geom_type = getSpatialGeometryType(ft);
+	                    if (geom_type == null){
+	                        throw new WFSException("Error while adding the geometry column in table " 
+	                        + tbl_name+ ", unrecognized geometry type");
+	                    }
+	                    sql += "'"+geom_type+"', ";
+	                    //get Dimensions, we only works whit 2 dimensions. 
+	                    String dimension = "XY";
+	                    sql += "'" + dimension + "'";
+	                    sql += " );";
+	                }
+	                //finish creating the geometry column.
+	                stmt.execute(sql);
+	                conn.commit();
+	                
+	                
+	                /**
+	                 * Populates the table for the current feature as follows:
+	                 * For each row
+	                 *      - first: configure the statement with the appropriates fields.
+	                 *      - second: add to the statement the field the_geom if has a geometry.
+	                 *      - third: configure the statement with the appropriates values.
+	                 *      (if has a geometry i add that value) 
+	                 *      - execute the statement
+	                 * Finally commit.
+	                 */
+	                //Start populating the table: tbl_name.
+	                SimpleFeatureIterator i = fc.features();
+	                try
+	                {
+	                    while( i.hasNext() ) {
+	                        SimpleFeature row = i.next();
+	                        sql = "INSERT INTO "+tbl_name+" ("+column_names;
+	                        //if has a geometry, i add the field the_geom.
+	                        if (the_geom != null)
+	                            if (column_cnt > 0 )
+	                            {
+	                                sql += ", "+the_geom+" ) ";
+	                            }
+	                            else
+	                            {
+	                                sql += the_geom+") ";
+	                            }
+	    
+	                        else{
+	                            sql += ") ";
+	                        }
+	                        
+	                        //I store the default geometry value, so i can omit it and add at the end.
+	                        Object geom_data = row.getDefaultGeometry();
+	                        sql += "VALUES (";
+	                        for ( int j = 0; j < row.getAttributeCount(); j++ ) {
+	                            Object rowAtt = row.getAttribute( j );
+	                            if (!rowAtt.equals(geom_data)){
+	                                if ( rowAtt != null ){
+	                                    //We just transform all content to String.
+	                                    sql += "'"+rowAtt.toString()+"'";
+	                                    if ( j < row.getAttributeCount()-1)
+	                                        sql += ", "; 
+	                                }
+	                            }
+	                        }
+	                        if (sql.endsWith(", "))
+	                            sql = sql.substring(0, sql.length()-2);
+	                        //Finally if has geometry, insert the geometry data.
+	                        if (the_geom != null){
+	                            if (column_cnt > 0 ){
+	                                sql +=  ", ";
+	                            }
+	                            sql += "GeomFromText('"+prepareGeom(geom_data.toString())+"', "+srid+")";
+	                        }
+	                        sql += ");";
+	                        stmt.execute(sql);
+	                    }
+	                    conn.commit();
+	                }
+	                finally 
+	                {
+	                    fc.close( i );
+	                }
+	            }
+	            conn.close();
+	            /**
+	             * Loads the temp dll in a file and delete it
+	             */
+	            File spatialiteLibraryFile = new File(spatialiteLibraryUrl);
+	            spatialiteLibraryFile.delete();
+	        }
+        else
+        {
+        	throw new WFSException("Error loading spatialite native library." +
+        			"platform or OS not supported yet");
+        }
+            	
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -414,7 +426,12 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
     }
     
     @Override
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
+    
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) ((FeatureCollectionType) value).getFeature().get(0);
         GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
                 GetFeatureType.class);
@@ -427,10 +444,10 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
             outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(0))
                             .getLocalPart();
         }
-        return (String[][]) new String[][] {
-                { "Content-Disposition", "attachment; filename=" + outputFileName + ".sqlite" }
-            };
+        return  outputFileName + ".sqlite";
     }
+    
+    
     
     
     //Returns the geometry type of a feature.

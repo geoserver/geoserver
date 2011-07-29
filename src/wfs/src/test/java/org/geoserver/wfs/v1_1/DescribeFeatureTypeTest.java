@@ -1,18 +1,28 @@
 package org.geoserver.wfs.v1_1;
 
+import java.io.File;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.xml.Schemas;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,6 +39,11 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
         dataDirectory.disableDataStore(MockData.CITE_PREFIX);
+        File root = dataDirectory.getDataDirectoryRoot();
+        File otherDir = new File(root, "workspaces/cdf/cdf/Other");
+        otherDir.mkdirs();
+        File otherSchema = new File(otherDir, "schema.xsd");
+        IOUtils.copy(getClass().getResourceAsStream("others.xsd"), otherSchema);
     }
 
     public void testDateMappings() throws Exception {
@@ -225,4 +240,38 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         XMLAssert.assertXpathExists("//xsd:element[@name = 'name']", dom);
         XMLAssert.assertXpathExists("//xsd:element[@name = 'description']", dom);
     }
+    
+    public void testCustomSchema() throws Exception {
+        Document dom = getAsDOM("ows?request=DescribeFeatureType&version=1.1.0&service=WFS&typeName=cdf:Other");
+        XMLAssert.assertXpathExists("//xsd:element[@name = 'pointProperty']", dom);
+        XMLAssert.assertXpathExists("//xsd:element[@name = 'string1']", dom);
+        XMLAssert.assertXpathExists("//xsd:element[@name = 'string2']", dom);
+        XMLAssert.assertXpathNotExists("//xsd:element[@name = 'integers']", dom);
+        XMLAssert.assertXpathNotExists("//xsd:element[@name = 'dataTime']", dom);
+    }
+    
+//    OUR CURRENT TEST HARNESS DOES NOT SUPPORT CONCURRENT TESTING...
+//    public void testConcurrentDescribe() throws Exception {
+//        ExecutorService es = Executors.newFixedThreadPool(8);
+//        List<Future<Void>> results = new ArrayList<Future<Void>>();
+//        for(int i = 0; i < 24; i++) {
+//            Future<Void> future = es.submit(new Callable<Void>() {
+//
+//                @Override
+//                public Void call() throws Exception {
+//                    Document dom = getAsDOM("ows?request=DescribeFeatureType&version=1.1.0&service=WFS&typeName=cdf:Deletes,cdf:Seven,cdf:Locks,cdf:Nulls,cdf:Other,cdf:Inserts,cdf:Fifteen,cdf:Updates");
+//                    System.out.println(dom);
+//                    XMLAssert.assertXpathEvaluatesTo("8", "count(//xsd:ComplexType)", dom);
+//                    return null;
+//                }
+//                
+//            });
+//            results.add(future);
+//        }
+//        
+//        // make sure none threw an exception
+//        for (Future<Void> future : results) {
+//            future.get();
+//        }
+//    }
 }

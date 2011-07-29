@@ -32,7 +32,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
         
         HashMap params = new HashMap();
         params.put( JDBCDataStoreFactory.NAMESPACE.key, MockData.DEFAULT_URI);
-        params.put( JDBCDataStoreFactory.DATABASE.key, "acme");
+        params.put( JDBCDataStoreFactory.DATABASE.key, "target/acme");
         params.put( JDBCDataStoreFactory.DBTYPE.key, "h2");
         
         H2DataStoreFactory fac =  new H2DataStoreFactory();
@@ -81,7 +81,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
               "<name>acme</name>" + 
               "<connectionParameters>" +
                 "<namespace>" + MockData.DEFAULT_URI + "</namespace>" + 
-                "<database>acme</database>" + 
+                "<database>target/acme</database>" + 
                 "<dbtype>h2</dbtype>" + 
               "</connectionParameters>" + 
             "</dataStore>";

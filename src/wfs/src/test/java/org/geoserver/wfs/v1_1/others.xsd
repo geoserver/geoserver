@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:cdf="http://www.opengis.net/cite/data" xmlns:cgf="http://www.opengis.net/cite/geometry"
+  xmlns:cite="http://www.opengis.net/cite" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:gs="http://geoserver.org" xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  elementFormDefault="qualified" targetNamespace="http://www.opengis.net/cite/data">
+  <xsd:import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+  <xsd:complexType name="OtherType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="0"
+            name="pointProperty" nillable="true" type="gml:PointPropertyType" />
+          <xsd:element maxOccurs="1" minOccurs="0" name="string1"
+            nillable="true" type="xsd:string" />
+          <xsd:element maxOccurs="1" minOccurs="0" name="string2"
+            nillable="true" type="xsd:string" />
+            <!-- 
+          <xsd:element maxOccurs="1" minOccurs="0" name="integers"
+            nillable="true" type="xsd:int" />
+          <xsd:element maxOccurs="1" minOccurs="0" name="dates"
+            nillable="true" type="xsd:dateTime" />
+             -->
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="Other" substitutionGroup="gml:_Feature"
+    type="cdf:OtherType" />
+</xsd:schema>

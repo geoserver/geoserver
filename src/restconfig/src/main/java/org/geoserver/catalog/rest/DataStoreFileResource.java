@@ -63,13 +63,13 @@ public class DataStoreFileResource extends StoreFileResource {
     protected static HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();
     static {
         HashMap map = new HashMap();
-        map.put("database", "@NAME@");
+        map.put("database", "@DATA_DIR@/@NAME@");
         map.put("dbtype", "h2");
         
         dataStoreFactoryToDefaultParams.put("org.geotools.data.h2.H2DataStoreFactory", map);
         
         map = new HashMap();
-        map.put("database", "@NAME@");
+        map.put("database", "@DATA_DIR@/@NAME@");
         map.put("dbtype", "spatialite");
         
         dataStoreFactoryToDefaultParams.put("org.geotools.data.spatialite.SpatiaLiteDataStoreFactory", map);
@@ -523,10 +523,13 @@ public class DataStoreFileResource extends StoreFileResource {
         HashMap params = new HashMap(defaultParams);
         
         // replace any replacable parameters
+        String dataDirRoot = catalog.getResourceLoader().getBaseDirectory().getAbsolutePath();
         for (Object o : params.entrySet()) {
             Map.Entry e = (Map.Entry)o;
             if (e.getValue() instanceof String) {
-                e.setValue(e.getValue().toString().replace("@NAME@", info.getName()));
+                String string = (String) e.getValue();
+                string = string.replace("@NAME@", info.getName()).replace("@DATA_DIR@", dataDirRoot);
+                e.setValue(string);
             }
         }
         

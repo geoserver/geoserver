@@ -99,7 +99,8 @@ public abstract class FeatureTypeSchemaBuilder {
     protected Map<String, String> describeFeatureTypeParams;
     protected String gmlPrefix;
     protected Configuration xmlConfiguration;
-
+    protected volatile XSDElementDeclaration featureSubGroupElement;
+    
     protected FeatureTypeSchemaBuilder(GeoServer gs) {
         this.wfs = gs.getService( WFSInfo.class );
         this.catalog = gs.getCatalog();
@@ -124,6 +125,16 @@ public abstract class FeatureTypeSchemaBuilder {
 
     public XSDSchema build(FeatureTypeInfo[] featureTypeInfos, String baseUrl)
         throws IOException {
+        // build the schema and make sure to schedule it for destruction at the end of the request
+        XSDSchema schema = buildSchemaInternal(featureTypeInfos, baseUrl);
+        if(schema != null) {
+            SchemaCleanerCallback.addSchema(schema);
+        }
+        return schema;
+    }
+
+    private XSDSchema buildSchemaInternal(FeatureTypeInfo[] featureTypeInfos, String baseUrl)
+            throws IOException {
         XSDFactory factory = XSDFactory.eINSTANCE;
         XSDSchema schema = factory.createXSDSchema();
         schema.setSchemaForSchemaQNamePrefix("xsd");
@@ -456,8 +467,10 @@ public abstract class FeatureTypeSchemaBuilder {
                     XSDElementDeclaration element = factory.createXSDElementDeclaration();
                     element.setName( featureTypeMeta.getName() );
                     element.setTargetNamespace( featureTypeMeta.getNamespace().getURI() );
-                    element.setSubstitutionGroupAffiliation(
-                        schema.resolveElementDeclaration(gmlNamespace, substitutionGroup));
+                    synchronized (Schemas.class) {
+                        element.setSubstitutionGroupAffiliation(getFeatureElement());
+                    }
+                    
                     
                     //find the type of the element
                     List<XSDComplexTypeDefinition> candidates = new ArrayList<XSDComplexTypeDefinition>();
@@ -491,11 +504,24 @@ public abstract class FeatureTypeSchemaBuilder {
 
                 schema.getContents().addAll(contents);
                 schema.updateElement();
+                
+                Schemas.dispose(ftSchema);
 
                 return true;
             }
         }
         return false;
+    }
+    
+    private XSDElementDeclaration getFeatureElement() {
+        if(featureSubGroupElement == null) {
+            synchronized (this) {
+                if(featureSubGroupElement == null) {
+                    featureSubGroupElement = gmlSchema().resolveElementDeclaration(gmlNamespace, substitutionGroup);
+                }
+            }
+        }
+        return featureSubGroupElement;
     }
 
     private void buildSchemaContent(FeatureTypeInfo featureTypeMeta, XSDSchema schema,
@@ -509,8 +535,10 @@ public abstract class FeatureTypeSchemaBuilder {
             XSDElementDeclaration element = factory.createXSDElementDeclaration();
             element.setName(featureTypeMeta.getName());
             element.setTargetNamespace(featureTypeMeta.getNamespace().getURI());
-            element.setSubstitutionGroupAffiliation(schema.resolveElementDeclaration(gmlNamespace,
-                    substitutionGroup));
+            synchronized(Schemas.class) {
+                // this call changes the global schemas too, need to be synchronized
+                element.setSubstitutionGroupAffiliation(getFeatureElement());
+            }
             element.setTypeDefinition(xsdComplexType);
 
             schema.getContents().add(element);

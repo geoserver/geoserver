@@ -96,6 +96,9 @@
 		</constructor-arg>	
 		<constructor-arg ref="geoServer"/>
 	</bean>
+  
+    <!-- the schema cleaner -->
+    <bean id="xsdSchemaCleaner" class="org.geoserver.wfs.xml.SchemaCleanerCallback"/>
 	
 	<!-- gml schema builders -->
 	<bean id="gml2SchemaBuilder" class="org.geoserver.wfs.xml.FeatureTypeSchemaBuilder$GML2">

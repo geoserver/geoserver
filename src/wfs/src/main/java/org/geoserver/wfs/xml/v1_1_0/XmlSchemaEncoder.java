@@ -20,6 +20,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSDescribeFeatureTypeOutputFormat;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
+import org.geotools.xml.Schemas;
 
 
 public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
@@ -55,7 +56,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         //create the schema
         DescribeFeatureTypeType req = (DescribeFeatureTypeType)describeFeatureType.getParameters()[0];
         XSDSchema schema = schemaBuilder.build(featureTypeInfos, req.getBaseUrl());
-
+    
         //serialize
         schema.updateElement();
         final String encoding = global.getCharset();

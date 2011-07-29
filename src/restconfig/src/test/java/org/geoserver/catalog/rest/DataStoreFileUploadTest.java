@@ -39,9 +39,9 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         super.setUpInternal();
         
         //JD: temporary measure until the h2 dependency problem gets sorted
-        DeleteDbFiles.execute(".", "foo", true);
-        DeleteDbFiles.execute(".", "pds", true);
-        DeleteDbFiles.execute(".", "chinese_poly", true);
+        DeleteDbFiles.execute("target", "foo", true);
+        DeleteDbFiles.execute("target", "pds", true);
+        DeleteDbFiles.execute("target", "chinese_poly", true);
     }
     
     public void testPropertyFileUpload() throws Exception {
@@ -177,7 +177,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         " <type>H2</type>" + 
         " <connectionParameters>" + 
             "<namespace>" + MockData.DEFAULT_URI + "</namespace>" + 
-            "<database>foo</database>" + 
+            "<database>target/foo</database>" + 
             "<dbtype>h2</dbtype>" + 
         " </connectionParameters>" +
         "</dataStore>";
@@ -212,7 +212,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures( dom );
     }
-    
+ 
     public void testGet() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/datastores/pds/file.properties");
         assertEquals( 404, resp.getStatusCode() );

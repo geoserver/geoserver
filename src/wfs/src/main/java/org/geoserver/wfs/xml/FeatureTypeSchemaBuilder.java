@@ -125,15 +125,20 @@ public abstract class FeatureTypeSchemaBuilder {
 
     public XSDSchema build(FeatureTypeInfo[] featureTypeInfos, String baseUrl)
         throws IOException {
+        return build(featureTypeInfos, baseUrl, true);
+    }
+    
+    public XSDSchema build(FeatureTypeInfo[] featureTypeInfos, String baseUrl, boolean scheduleSchemaCleanup)
+        throws IOException {
         // build the schema and make sure to schedule it for destruction at the end of the request
         XSDSchema schema = buildSchemaInternal(featureTypeInfos, baseUrl);
-        if(schema != null) {
+        if(schema != null && scheduleSchemaCleanup) {
             SchemaCleanerCallback.addSchema(schema);
         }
         return schema;
     }
 
-    private XSDSchema buildSchemaInternal(FeatureTypeInfo[] featureTypeInfos, String baseUrl)
+    public XSDSchema buildSchemaInternal(FeatureTypeInfo[] featureTypeInfos, String baseUrl)
             throws IOException {
         XSDFactory factory = XSDFactory.eINSTANCE;
         XSDSchema schema = factory.createXSDSchema();
@@ -344,8 +349,8 @@ public abstract class FeatureTypeSchemaBuilder {
             if(!meta.enabled())
                 continue;
 
-            //build the schema for the types in the single namespace
-            XSDSchema schema = build(new FeatureTypeInfo[] { meta }, null);
+            //build the schema for the types in the single namespace (and don't clean them, they are not dynamic)
+            XSDSchema schema = buildSchemaInternal(new FeatureTypeInfo[] { meta }, null);
 
             //declare the namespace
             String prefix = meta.getNamespace().getPrefix();

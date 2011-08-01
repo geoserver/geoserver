@@ -742,39 +742,7 @@ public class Dispatcher extends AbstractController {
             //set the mime type
             req.getHttpResponse().setContentType(response.getMimeType(result, opDescriptor));
 
-            //set any extra headers, other than the mime-type
-            if (response.getHeaders(result, opDescriptor) != null) {
-                String[][] headers = response.getHeaders(result, opDescriptor);
-
-                for (int i = 0; i < headers.length; i++) {
-                    req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
-                }
-            }
-            
-            // set content-disposition header if requested.
-            String fname = response.getAttachmentFileName(result, opDescriptor);
-            if (fname != null) {
-                String disposition = null;
-                Map rawKvp = req.getRawKvp();
-                if (rawKvp != null) {
-                    disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
-                    // check and prevent strange header injection
-                    boolean valid = Response.DISPOSITION_ATTACH.equals(disposition) ||
-                            Response.DISPOSITION_INLINE.equals(disposition);
-                    if (! valid ) {
-                        disposition = null;
-                    }
-                }
-                if (disposition == null) {
-                    disposition = response.getPreferredDisposition(result, opDescriptor);
-                }
-                // this would be a good place to quote the filename but unsure of
-                // compatibility - it appears to be the correct way to handle
-                // spaces and other characters.
-                String disp = disposition +"; filename=" + fname;
-                // override existing for backwards compatibility
-                req.getHttpResponse().setHeader("Content-Disposition", disp);
-            }
+            setHeaders(req,opDescriptor,result,response);
             
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
             
@@ -790,6 +758,48 @@ public class Dispatcher extends AbstractController {
 
             //flush the underlying out stream for good meaure
             req.getHttpResponse().getOutputStream().flush();
+        }
+    }
+    
+    void setHeaders(Request req, Operation opDescriptor, Object result, Response response) {
+        //set any extra headers, other than the mime-type
+        String[][] headers = response.getHeaders(result, opDescriptor);
+        boolean contentDispositionProvided = false;
+        if (headers != null) {
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i][0].equalsIgnoreCase("Content-Disposition")) {
+                    contentDispositionProvided = true;
+                }
+                req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
+            }
+        }
+
+        // backwards compatibility to new Response API
+        if (!contentDispositionProvided) {
+            String fname = response.getAttachmentFileName(result, opDescriptor);
+            if (fname != null) {
+                String disposition = null;
+                Map rawKvp = req.getRawKvp();
+                if (rawKvp != null) {
+                    // set content-disposition header if requested.
+                    disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
+                    // check and prevent strange header injection
+                    boolean valid = Response.DISPOSITION_ATTACH.equals(disposition)
+                            || Response.DISPOSITION_INLINE.equals(disposition);
+                    if (!valid) {
+                        disposition = null;
+                    }
+                }
+                if (disposition == null) {
+                    disposition = response.getPreferredDisposition(result, opDescriptor);
+                }
+                // this would be a good place to quote the filename but unsure of
+                // compatibility - it appears to be the correct way to handle
+                // spaces and other characters.
+                String disp = disposition + "; filename=" + fname;
+                // override any existing header
+                req.getHttpResponse().setHeader("Content-Disposition", disp);
+            }
         }
     }
 
@@ -1410,5 +1420,5 @@ public class Dispatcher extends AbstractController {
     public void setXMLPostRequestLogBufferSize(int bufferSize) {
         this.xmlPostRequestLogBufferSize = bufferSize;
     }
-    
+
 }

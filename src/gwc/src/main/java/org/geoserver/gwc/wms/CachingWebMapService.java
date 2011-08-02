@@ -109,6 +109,7 @@ public class CachingWebMapService implements MethodInterceptor {
             map.setResponseHeader("ETag", etag);
             map.setResponseHeader("geowebcache-tile-index",
                     Arrays.toString(cachedTile.getTileIndex()));
+            map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension());
             return map;
         }
 

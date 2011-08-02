@@ -116,6 +116,10 @@ public abstract class WebMap {
         this.disposition = attachment ? Response.DISPOSITION_ATTACH : Response.DISPOSITION_INLINE;
     }
     
+    public String getDisposition() {
+        return disposition;
+    }
+    
     public String getAttachmentFileName() {        
         // see if we can get the original request, before the group expansion happened
         Request request = Dispatcher.REQUEST.get();
@@ -139,7 +143,7 @@ public abstract class WebMap {
                 filename = sb.toString();
             }
         }
-        if (filename != null) {
+        if (filename != null && extension != null) {
             filename = filename.replace(":", "-") + extension;
         }
         return filename;

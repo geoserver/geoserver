@@ -73,6 +73,13 @@ public abstract class AbstractMapResponse extends Response {
         // defer to WebMap - it has the extension and other information
         return ((WebMap) value).getAttachmentFileName();
     }
+
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        Assert.isInstanceOf(WebMap.class, value);
+        // defer to WebMap - it has the extension and other information
+        return ((WebMap) value).getDisposition();
+    }
     
     /**
      * Evaluates whether this response can handle the given operation by checking if the operation's

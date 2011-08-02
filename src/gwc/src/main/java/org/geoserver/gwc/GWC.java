@@ -559,11 +559,11 @@ public class GWC implements DisposableBean, InitializingBean {
             }
         }
 
-        if (request.isTransparent()) {
-            if (!filterApplies(filters, request, "TRANSPARENT")) {
-                return false;
-            }
-        }
+//        if (request.isTransparent()) {
+//            if (!filterApplies(filters, request, "TRANSPARENT")) {
+//                return false;
+//            }
+//        }
         if (request.getFormatOptions() != null && !request.getFormatOptions().isEmpty()) {
             if (!filterApplies(filters, request, "FORMAT_OPTIONS")) {
                 return false;

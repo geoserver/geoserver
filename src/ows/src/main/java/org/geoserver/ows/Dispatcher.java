@@ -792,6 +792,9 @@ public class Dispatcher extends AbstractController {
                 }
                 if (disposition == null) {
                     disposition = response.getPreferredDisposition(result, opDescriptor);
+                    if (disposition == null) {
+                        disposition = Response.DISPOSITION_INLINE;
+                    }
                 }
                 // this would be a good place to quote the filename but unsure of
                 // compatibility - it appears to be the correct way to handle

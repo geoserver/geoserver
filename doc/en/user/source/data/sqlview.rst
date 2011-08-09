@@ -4,8 +4,7 @@ SQL views
 =========
 
 The traditional way to use database backed data is to configure either a table or a database view as a new layer in GeoServer.
-Starting with GeoServer 2.1.0 the user can also create a new layer by specifying a raw SQL query, without the need to actually creating a view in the database. The SQL can also be parametrized, and parameter values passed in along with a WMS or WFS request.
-
+Starting with GeoServer 2.1.0 the user can also create a new layer by specifying a raw SQL query, without the need to actually creating a view in the database. The SQL can also be parameterized, and parameter values passed in along with a WMS or WFS request.
 
 Creating a plain SQL view
 -------------------------
@@ -60,23 +59,22 @@ The parameters can be manually specified, but GeoServer can figure out the param
 .. figure:: images/sqlview-paramdefault.png
    :align: center
 
-In this case query cannot be executed without default values, as ``select gid, state_name, the_geom from pgstates where persons between and`` would be invalid SQL. Moreover, the two parameters are positive integer numbers, so the validation expression can be adjusted to allow only that kind of input:
+In this case the query cannot be executed without default values, as ``select gid, state_name, the_geom from pgstates where persons between and`` would be invalid SQL. Moreover, the two parameters are positive integer numbers, so the validation expression should be adjusted to allow only that kind of input:
 
 .. figure:: images/sqlview-paramcustom.png
    :align: center
    
-Once the default values have been set the "Attributes" refresh link can be used to double check the query, retrive the attributes and eventually fix the geometry and identifier details. At this point the workflow proceeds just like with a non parametrized query.
+Once the default values have been set the "Attributes" refresh link can be used to double check the query, retrive the attributes and eventually fix the geometry and identifier details. At this point the workflow proceeds just like with a non parameterized query.
 
 Going to the WMS preview for the ``popstates`` layer should result in all the states being displayed.
-The SQL view parameters can now be specified by adding the ``viewparams`` parameter in the GetMap request. ``viewparams`` is structured as a set of key/value pairs separated by semicolumns: ``viewparams=p1:v1;p2:v2;...``.
-
-For example, to select all states having more than 20 million inhabintants the following params can be added to the normal GetMap request:
-``low:20000000``
+The SQL view parameters can now be specified by adding the ``viewparams`` parameter in the GetMap request. ``viewparams`` is structured as a set of key/value pairs separated by semicolumns: ``viewparams=p1:v1;p2:v2;...``.  If you want to use semicolons or commas in your values they will need to be escaped with a backslash (``\,`` and ``\;``).
+For example, to select all states having more than 20 million inhabitatants the following params can be added to the normal GetMap request:
+ ``low:20000000``
 
 .. figure:: images/sqlview-20millions.png
    :align: center
 
-In order to get all the states having between 2 and 5 millions inhabintants the following can be specified instead:  ``&viewparams=low:2000000;high:5000000``
+In order to get all the states having between 2 and 5 millions inhabitatants the following can be specified instead:  ``&viewparams=low:2000000;high:5000000``
 
 .. figure:: images/sqlview-2m-5m.png
    :align: center

@@ -848,8 +848,9 @@ public class CatalogBuilder {
         cinfo.getInterpolationMethods().add("bilinear");
         cinfo.getInterpolationMethods().add("bicubic");
 
-        // read parameters
-        cinfo.getParameters().putAll(/*CoverageUtils.getParametersKVP(format.getReadParameters())*/ parameters);
+        // read parameters (get the params again since we altered the map to optimize the 
+        // coverage read)
+        cinfo.getParameters().putAll(CoverageUtils.getParametersKVP(readParams));
 
         /// dispose coverage 
         gc.dispose(true);

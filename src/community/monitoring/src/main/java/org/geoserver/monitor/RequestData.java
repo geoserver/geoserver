@@ -195,6 +195,11 @@ public class RequestData implements Serializable {
      * The exception that occurred while processing the request, if any.
      */
     private Throwable error;
+    
+    /**
+     * The response status
+     */
+    int responseStatus;
 
     public long getId() {
         return id;
@@ -258,6 +263,14 @@ public class RequestData implements Serializable {
     
     public void setBodyContentType(String bodyContentType) {
         this.bodyContentType = bodyContentType;
+    }
+    
+    public String getBodyAsString() {
+        if(body != null) {
+            return new String(body);
+        } else {
+            return null;
+        }
     }
     
     public String getHttpMethod() {
@@ -400,6 +413,15 @@ public class RequestData implements Serializable {
         return resources;
     }
     
+    public String getResourcesList() {
+        if(resources != null && resources.size() > 0) {
+            String result = resources.toString();
+            return result.substring(1, result.length() - 1); 
+        } else {
+            return null;
+        }
+    }
+    
     public void setResources(List<String> resources) {
         this.resources = resources;
     }
@@ -461,6 +483,7 @@ public class RequestData implements Serializable {
         clone.setResponseContentType(responseContentType);
         clone.setErrorMessage(errorMessage);
         clone.setError(error);
+        clone.setResponseStatus(responseStatus);
      
         return clone;
     }
@@ -468,5 +491,13 @@ public class RequestData implements Serializable {
     @Override
     public String toString() {
         return "Request (" + String.valueOf(id) + ")";
+    }
+
+    public int getResponseStatus() {
+        return responseStatus;
+    }
+
+    public void setResponseStatus(int httpStatus) {
+        this.responseStatus = httpStatus;
     }
 }

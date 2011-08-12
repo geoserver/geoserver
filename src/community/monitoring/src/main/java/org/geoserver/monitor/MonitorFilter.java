@@ -120,7 +120,7 @@ public class MonitorFilter implements GeoServerFilter {
         }
         
         //wrap the request and response
-        request = new MonitorServletRequest(req);
+        request = new MonitorServletRequest(req, monitor.getConfig().getMaxBodySize());
         response = new MonitorServletResponse(resp);
         
         monitor.update();
@@ -139,6 +139,7 @@ public class MonitorFilter implements GeoServerFilter {
         data.setBodyContentLength(((MonitorServletRequest)request).getBytesRead());
         data.setResponseContentType(response.getContentType());
         data.setResponseLength(((MonitorServletResponse)response).getContentLength());
+        data.setResponseStatus(((MonitorServletResponse)response).getStatus());
         
         if (error != null) {
             data.setStatus(Status.FAILED);
@@ -214,7 +215,7 @@ public class MonitorFilter implements GeoServerFilter {
                     }
                 }
 
-                monitor.getDAO().update(data);
+                monitor.postProcessed(data);
             }
             finally {
                 monitor = null;

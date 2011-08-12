@@ -30,7 +30,11 @@ public class LayerNameNormalizer implements RequestPostProcessor {
             throws Exception {
 
             List<String> layers = data.getResources();
-            for (int i = 0; i < layers.size(); i++) {
+            if(layers==null){
+                return;
+            }
+            final int size=layers.size();
+            for (int i = 0; i < size; i++) {
                 String layer = layers.get(i);
                 int colon = layer.lastIndexOf(':');
                 if (colon == -1) {

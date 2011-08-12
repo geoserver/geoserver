@@ -21,7 +21,7 @@ public class MonitorServletRequestTest extends TestCase {
         byte[] data = data();
         MockServletInputStream mock = new MockServletInputStream(data);
         
-        MonitorInputStream in = new MonitorInputStream(mock);
+        MonitorInputStream in = new MonitorInputStream(mock, 1024);
         byte[] read = read(in);
         
         assertEquals(data.length, read.length);

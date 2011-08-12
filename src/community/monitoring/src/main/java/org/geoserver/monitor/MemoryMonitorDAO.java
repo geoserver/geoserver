@@ -43,7 +43,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
         history.add(data);
         
         if (history.size() > 100) {
-            history.remove();
+            history.poll();
         }
     }
     
@@ -154,6 +154,8 @@ O:      for (Iterator<RequestData> it = requests.iterator(); it.hasNext();) {
     public void dispose() {
         live.clear();
         live = null;
+        history.clear();
+        history = null;
     }
     
     static interface Predicate {

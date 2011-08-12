@@ -143,5 +143,11 @@
     <bean id="layerNameNormalizer" class="org.geoserver.monitor.LayerNameNormalizer">
         <constructor-arg ref="catalog"/>
     </bean>
+
+    <!--  audit listener -->
+    <bean id="auditor" class="org.geoserver.monitor.AuditLogger">
+        <constructor-arg ref="monitorConfig" index="0"/>
+        <constructor-arg ref="resourceLoader" index="1"/>
+    </bean>
     
-    </beans>
+</beans>

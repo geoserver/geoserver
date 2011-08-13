@@ -117,59 +117,6 @@ public class CatalogConfiguration implements Configuration {
         return true;
     }
 
-    // /**
-    // *
-    // * @param li
-    // * @return
-    // */
-    // public GeoServerTileLayer createLayer(LayerInfo li) {
-    // log.finer("Creating GeoServerTileLayer for LayerInfo " + li.getName());
-    // GeoServerTileLayer geoServerTileLayer = new GeoServerTileLayer(mediator, li);
-    // postCreate(geoServerTileLayer);
-    // return geoServerTileLayer;
-    // }
-    //
-    // public GeoServerTileLayer createLayer(LayerGroupInfo lgi) {
-    // log.finer("Creating GeoServerTileLayer for LayerGroup " + lgi.getName());
-    // GeoServerTileLayer geoServerTileLayer = new GeoServerTileLayer(mediator, lgi);
-    // postCreate(geoServerTileLayer);
-    // return geoServerTileLayer;
-    // }
-    //
-    // private void postCreate(GeoServerTileLayer geoServerTileLayer) {
-    // GridSetBroker gridSetBroker = mediator.getGridSetBroker();
-    // geoServerTileLayer.initialize(gridSetBroker);
-    // String layerName = geoServerTileLayer.getName();
-    // layers.put(layerName, geoServerTileLayer);
-    // }
-
-    // /**
-    // * @param layerName
-    // * @return
-    // */
-    // public synchronized GeoServerTileLayer removeLayer(String layerName) {
-    // Map<String, GeoServerTileLayer> newLayers = new HashMap<String, GeoServerTileLayer>(layers);
-    // GeoServerTileLayer removed = newLayers.remove(layerName);
-    // if (removed != null) {
-    // this.layers = newLayers;
-    // }
-    // return removed;
-    // }
-    //
-    // public void add(GeoServerTileLayer tileLayer) {
-    // postCreate(tileLayer);
-    // }
-
-    // public synchronized GeoServerTileLayer getLayerById(String id) {
-    // List<GeoServerTileLayer> registered = new ArrayList<GeoServerTileLayer>(layers.values());
-    // for (GeoServerTileLayer layer : registered) {
-    // if (id.equals(layer.getId())) {
-    // return layer;
-    // }
-    // }
-    // return null;
-    // }
-
     /**
      * Returns the list of {@link GeoServerTileLayer} objects matching the GeoServer ones.
      * <p>

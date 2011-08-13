@@ -89,7 +89,7 @@ public class GeoServerMetaTile extends MetaTile {
                         metaTileContext.getCoordinateReferenceSystem());
                 tilebbox.init(tileBounds.getMinX(), tileBounds.getMaxX(), tileBounds.getMinY(),
                         tileBounds.getMaxY());
-                tileContext.setAreaOfInterest(tilebbox);
+                tileContext.getViewport().setBounds(tilebbox);
             }
             tileMap = new RenderedImageMap(tileContext, tile, mimeType);
         }

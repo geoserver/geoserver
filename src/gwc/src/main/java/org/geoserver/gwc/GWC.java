@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -440,16 +441,7 @@ public class GWC implements DisposableBean, InitializingBean {
      * @return
      */
     public final ConveyorTile dispatch(final GetMapRequest request) {
-        // Assert.isTrue(request.isTiled(), "isTiled");
-        // Assert.notNull(request.getTilesOrigin(), "getTilesOrigin");
 
-        if (!isCachingPossible(request)) {
-            return null;
-        }
-
-        // request.isTransparent()??
-        // request.getEnv()??
-        // request.getFormatOptions()??
         final String layerName = request.getRawKvp().get("LAYERS");
         /*
          * This is a quick way of checking if the request was for a single layer. We can't really
@@ -467,6 +459,10 @@ public class GWC implements DisposableBean, InitializingBean {
             return null;
         }
         if (!tileLayer.isEnabled()) {
+            return null;
+        }
+
+        if (!isCachingPossible(tileLayer, request)) {
             return null;
         }
 
@@ -511,6 +507,9 @@ public class GWC implements DisposableBean, InitializingBean {
                     bbox.getMaxX(), bbox.getMaxY());
             try {
                 tileIndex = gridSubset.closestIndex(tileBounds);
+                if (!gridSubset.covers(tileIndex)) {
+                    return null;
+                }
             } catch (GridMismatchException e) {
                 return null;
             }
@@ -534,55 +533,129 @@ public class GWC implements DisposableBean, InitializingBean {
     /**
      * Determines whether the given {@link GetMapRequest} is a candidate to match a GWC tile or not.
      * 
+     * @param layer
+     * 
      * @param request
      * @return {@code true} if {@code request} <b>might</b>
      */
-    private boolean isCachingPossible(GetMapRequest request) {
-
-        if (request.getFormatOptions() != null && !request.getFormatOptions().isEmpty()) {
-            return false;
-        }
-        if (0.0 != request.getAngle()) {
-            return false;
-        }
-        // if (null != request.getBgColor()) {
-        // return false;
-        // }
-        if (0 != request.getBuffer()) {
-            return false;
-        }
-        if (null != request.getCQLFilter() && !request.getCQLFilter().isEmpty()) {
-            return false;
-        }
-        //if (request.getElevation() != null && !request.getElevation().isEmpty()) {
-        if (!Double.isNaN(request.getElevation())) {
-            return false;
-        }
-        if (null != request.getFeatureId() && !request.getFeatureId().isEmpty()) {
-            return false;
-        }
-        if (null != request.getFilter() && !request.getFilter().isEmpty()) {
-            return false;
-        }
-        if (null != request.getPalette()) {
-            return false;
-        }
+    private boolean isCachingPossible(TileLayer layer, GetMapRequest request) {
         if (null != request.getRemoteOwsType() || null != request.getRemoteOwsURL()) {
             return false;
         }
-        if (null != request.getSld() || null != request.getSldBody()) {
+        if (request.getEnv() != null && !request.getEnv().isEmpty()) {
             return false;
+        }
+
+        Map<String, ParameterFilter> filters;
+        {
+            List<ParameterFilter> parameterFilters = layer.getParameterFilters();
+            if (null != parameterFilters && parameterFilters.size() > 0) {
+                filters = new HashMap<String, ParameterFilter>();
+                for (ParameterFilter pf : parameterFilters) {
+                    filters.put(pf.getKey().toUpperCase(), pf);
+                }
+            } else {
+                filters = Collections.emptyMap();
+            }
+        }
+
+//        if (request.isTransparent()) {
+//            if (!filterApplies(filters, request, "TRANSPARENT")) {
+//                return false;
+//            }
+//        }
+        if (request.getFormatOptions() != null && !request.getFormatOptions().isEmpty()) {
+            if (!filterApplies(filters, request, "FORMAT_OPTIONS")) {
+                return false;
+            }
+        }
+        if (0.0 != request.getAngle()) {
+            if (!filterApplies(filters, request, "ANGLE")) {
+                return false;
+            }
+        }
+        if (null != request.getRawKvp().get("BGCOLOR")) {
+            if (!filterApplies(filters, request, "BGCOLOR")) {
+                return false;
+            }
+        }
+        if (0 != request.getBuffer()) {
+            if (!filterApplies(filters, request, "BUFFER")) {
+                return false;
+            }
+        }
+        if (null != request.getCQLFilter() && !request.getCQLFilter().isEmpty()) {
+            if (!filterApplies(filters, request, "CQL_FILTER")) {
+                return false;
+            }
+        }
+        if (!Double.isNaN(request.getElevation())) {
+            if (!filterApplies(filters, request, "ELEVATION")) {
+                return false;
+            }
+        }
+        if (null != request.getFeatureId() && !request.getFeatureId().isEmpty()) {
+            if (!filterApplies(filters, request, "FEATUREID")) {
+                return false;
+            }
+        }
+        if (null != request.getFilter() && !request.getFilter().isEmpty()) {
+            if (!filterApplies(filters, request, "FILTER")) {
+                return false;
+            }
+        }
+        if (null != request.getPalette()) {
+            if (!filterApplies(filters, request, "PALETTE")) {
+                return false;
+            }
+        }
+        if (null != request.getSld()) {
+            if (!filterApplies(filters, request, "SLD")) {
+                return false;
+            }
+        }
+        if (null != request.getSldBody()) {
+            if (!filterApplies(filters, request, "SLD_BODY")) {
+                return false;
+            }
         }
         if (null != request.getStartIndex()) {
-            return false;
+            if (!filterApplies(filters, request, "STARTINDEX")) {
+                return false;
+            }
+        }
+        if (null != request.getMaxFeatures()) {
+            if (!filterApplies(filters, request, "MAXFEATURES")) {
+                return false;
+            }
         }
         if (null != request.getTime() && !request.getTime().isEmpty()) {
-            return false;
+            if (!filterApplies(filters, request, "TIME")) {
+                return false;
+            }
         }
         if (null != request.getViewParams() && !request.getViewParams().isEmpty()) {
-            return false;
+            if (!filterApplies(filters, request, "VIEWPARAMS")) {
+                return false;
+            }
+        }
+        if (null != request.getFeatureVersion()) {
+            if (!filterApplies(filters, request, "FEATUREVERSION")) {
+                return false;
+            }
         }
         return true;
+    }
+
+    private boolean filterApplies(Map<String, ParameterFilter> filters, GetMapRequest request,
+            String key) {
+        ParameterFilter parameterFilter = filters.get(key);
+        if (parameterFilter == null) {
+            return false;
+        }
+        String parameter = request.getRawKvp().get(key);
+        boolean applies = parameterFilter.applies(parameter);
+        return applies;
     }
 
     /**

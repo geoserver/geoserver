@@ -38,7 +38,7 @@
         /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
         /gwc/rest/web/**=anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
+        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
         /**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,filterInvocationInterceptor
       </value>
     </property>

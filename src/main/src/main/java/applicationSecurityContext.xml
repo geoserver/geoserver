@@ -42,7 +42,7 @@
        <sec:filter-chain pattern="/j_spring_security_logout/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />       
        <sec:filter-chain pattern="/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
        <sec:filter-chain pattern="/gwc/rest/web/**" filters="anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />
-       <sec:filter-chain pattern="/gwc/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
+       <sec:filter-chain pattern="/gwc/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
        <sec:filter-chain pattern="/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,filterInvocationInterceptor" />
    </sec:filter-chain-map>
   </bean>

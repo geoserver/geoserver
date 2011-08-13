@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -24,14 +23,22 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.geotools.util.logging.Logging;
-import org.geowebcache.util.ServletUtils;
-
 @SuppressWarnings("rawtypes")
 class FakeHttpServletRequest implements HttpServletRequest {
-    private static Logger log = Logging.getLogger(HttpServletRequest.class.toString());
 
-    private String wmsParams;
+    private static final Enumeration EMPTY_ENUMERATION = new Enumeration() {
+        //@Override
+        public boolean hasMoreElements() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        //@Override
+        public Object nextElement() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+    };
 
     private Map<String, String> parameterMap = new HashMap<String, String>(10);
 
@@ -40,26 +47,6 @@ class FakeHttpServletRequest implements HttpServletRequest {
     public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
         this.parameterMap = parameterMap;
         this.cookies = cookies;
-    }
-
-    public FakeHttpServletRequest(String wmsParams, Cookie[] cookies) {
-        log.finer("Constructing from " + wmsParams);
-
-        this.wmsParams = wmsParams;
-        this.cookies = cookies;
-
-        // This is a bit stupid... refactor parameters in GWC, again?
-        String[] pairs = this.wmsParams.split("&");
-        for (int i = 0; i < pairs.length; i++) {
-            // log.finest(pairs[i]);
-            String[] key_value = pairs[i].split("=");
-            if (key_value.length < 2) {
-                parameterMap.put(key_value[0], "");
-            } else {
-                parameterMap.put(key_value[0], ServletUtils.URLDecode(key_value[1], "UTF-8"));
-            }
-
-        }
     }
 
     /**
@@ -83,19 +70,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getHeader(String arg0) {
-        throw new ServletDebugException();
+        return null;
     }
 
     public Enumeration getHeaderNames() {
-        return new Enumeration() {
-            public boolean hasMoreElements() {
-                return false;
-            }
-
-            public Object nextElement() {
-                return null;
-            }
-        };
+        return EMPTY_ENUMERATION;
     }
 
     public Enumeration getHeaders(String arg0) {

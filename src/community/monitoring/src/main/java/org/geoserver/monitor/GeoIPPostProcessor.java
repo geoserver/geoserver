@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.io.File;
@@ -66,17 +70,20 @@ public class GeoIPPostProcessor implements RequestPostProcessor {
     LookupService lookupGeoIPDatabase() {
         try {
             File f = loader.find("monitoring", "GeoLiteCity.dat");
-            if (f == null && !warned.get()) {
-                warned.set(false);
+            if (f != null) {
+                return new LookupService(f);
+            }
+            
+            if (!warned.get()) {
+                warned.set(true);
                 
                 String path = 
                     new File(loader.getBaseDirectory(), "monitoring/GeoLiteCity.dat").getAbsolutePath(); 
                 LOGGER.warning("GeoIP database " + path  + " is not available. " +
                     "Please install the file to enable GeoIP lookups.");
-                return null;
             }
+            return null;
             
-            return new LookupService(f);
         } 
         catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error occured looking up GeoIP database", e);

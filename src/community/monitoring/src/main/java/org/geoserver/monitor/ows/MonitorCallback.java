@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor.ows;
 
 import java.util.ArrayList;
@@ -7,6 +11,7 @@ import java.util.Map;
 
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
+import org.geoserver.monitor.RequestData.Category;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.monitor.ows.wcs10.DescribeCoverageHandler;
 import org.geoserver.monitor.ows.wcs10.GetCoverageHandler;
@@ -74,8 +79,9 @@ public class MonitorCallback implements DispatcherCallback {
             return operation;
         }
         
-        data.setOwsService(operation.getService().getId().toUpperCase());
-        data.setOwsOperation(normalizedOpId(operation));
+        data.setCategory(Category.OWS);
+        data.setService(operation.getService().getId().toUpperCase());
+        data.setOperation(normalizedOpId(operation));
         data.setOwsVersion(operation.getService().getVersion().toString());
         
         if (operation.getParameters().length > 0) {

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor.web;
 
 import java.util.Arrays;
@@ -9,9 +13,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorDAO;
-import org.geoserver.monitor.MonitorQuery;
+import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
-import org.geoserver.monitor.MonitorQuery.Comparison;
+import org.geoserver.monitor.Query.Comparison;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -48,7 +52,7 @@ public class LiveActivityPanel extends Panel {
         @Override
         protected List<RequestData> getItems() {
             MonitorDAO dao = getApplication().getBeanOfType(Monitor.class).getDAO();
-            MonitorQuery q = new MonitorQuery().filter("status", 
+            Query q = new Query().filter("status", 
                 Arrays.asList(Status.RUNNING, Status.WAITING, Status.CANCELLING), Comparison.IN);
             
             return dao.getRequests(q);

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.io.File;
@@ -7,6 +11,9 @@ import java.util.Properties;
 import org.geoserver.monitor.hib.HibernateMonitorDAO2;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geotools.factory.Hints;
+import org.geotools.util.ConverterFactory;
+import org.geotools.util.Converters;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -30,6 +37,8 @@ public class MonitorConfig implements ApplicationContextAware {
     Properties props;
     PropertyFileWatcher fw;
     ApplicationContext context;
+    boolean enabled = true;
+    Exception error;
     
     public MonitorConfig() {
         props = new Properties();
@@ -55,6 +64,26 @@ public class MonitorConfig implements ApplicationContextAware {
         return Sync.valueOf(props().getProperty("sync", "async").toUpperCase());
     }
     
+    public long getMaxBodySize() {
+        return Long.parseLong(props.getProperty("maxBodySize", String.valueOf(8 * 1024)));
+    }
+    
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+    public Exception getError() {
+        return error;
+    }
+    
+    public void setError(Exception error) {
+        this.error = error;
+    }
+    
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
@@ -73,6 +102,33 @@ public class MonitorConfig implements ApplicationContextAware {
         return dao;
     }
     
+    /**
+     * Allows to retrieve a generic property from the configuration. Extensions and plugins are
+     * supposed to use the plugin.property naming convention, passing both a prefix and a name
+     * 
+     * @param <T>
+     * @param prefix
+     * @param name
+     * @param target
+     * @return
+     */
+    public <T> T getProperty(String prefix, String name, Class<T> target) {
+        String key = prefix == null ? name : prefix + "." + name;
+        Object value = props().get(key);
+        if (value != null) {
+            T converted = Converters.convert(value, target, new Hints(
+                    ConverterFactory.SAFE_CONVERSION, true));
+            if (converted == null) {
+                throw new IllegalArgumentException("Object " + value
+                        + " could not be converted to the target class " + target);
+            }
+            return converted;
+        } else {
+            return null;
+        }
+    }
+
+    
     Properties props() {
         if (fw != null && fw.isModified()) {
             synchronized (this) {
@@ -88,4 +144,6 @@ public class MonitorConfig implements ApplicationContextAware {
         }
         return props;
     }
+
+    
 }

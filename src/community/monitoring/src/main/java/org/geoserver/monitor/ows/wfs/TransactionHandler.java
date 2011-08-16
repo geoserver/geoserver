@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor.ows.wfs;
 
 import java.util.ArrayList;
@@ -25,6 +29,10 @@ public class TransactionHandler extends WFSRequestObjectHandler {
         
         //also determine the sub operation
         FeatureMap elements = (FeatureMap) EMFUtils.get((EObject)request, "group");
+        if (elements == null) {
+            return;
+        }
+        
         ListIterator i = elements.valueListIterator();
         int flag = 0;
         while(i.hasNext()) {
@@ -54,6 +62,9 @@ public class TransactionHandler extends WFSRequestObjectHandler {
     @Override
     public List<String> getLayers(Object request) {
         FeatureMap elements = (FeatureMap) EMFUtils.get((EObject)request, "group");
+        if (elements == null) {
+            return null;
+        }
         
         List<String> layers = new ArrayList();
         ListIterator i = elements.valueListIterator();

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor.ows.wcs10;
 
 import java.util.Arrays;
@@ -15,7 +19,8 @@ public class GetCoverageHandler extends RequestObjectHandler {
 
     @Override
     public List<String> getLayers(Object request) {
-        return Arrays.asList((String)EMFUtils.get((EObject)request, "sourceCoverage"));
+        String source = (String)EMFUtils.get((EObject)request, "sourceCoverage");
+        return source != null ? Arrays.asList(source) : null;
     }
 
 }

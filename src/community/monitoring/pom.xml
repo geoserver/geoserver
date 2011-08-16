@@ -66,6 +66,11 @@
    <version>${wicket.version}</version>
   </dependency>
   <dependency>
+   <groupId>org.apache.poi</groupId>
+   <artifactId>poi</artifactId>
+   <version>3.2-FINAL</version>
+  </dependency>
+  <dependency>
    <groupId>junit</groupId>
    <artifactId>junit</artifactId>
    <version>4.7</version>

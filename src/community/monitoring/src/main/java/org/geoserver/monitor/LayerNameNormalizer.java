@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.util.List;
@@ -25,8 +29,12 @@ public class LayerNameNormalizer implements RequestPostProcessor {
     public void run(RequestData data, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
-            List<String> layers = data.getLayers();
-            for (int i = 0; i < layers.size(); i++) {
+            List<String> layers = data.getResources();
+            if(layers==null){
+                return;
+            }
+            final int size=layers.size();
+            for (int i = 0; i < size; i++) {
                 String layer = layers.get(i);
                 int colon = layer.lastIndexOf(':');
                 if (colon == -1) {

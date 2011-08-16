@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.io.Serializable;
@@ -21,10 +25,20 @@ public class RequestData implements Serializable {
 
     private static AtomicLong COUNTER = new AtomicLong();
     
+    /**
+     * Enumeration describing the status of a request.
+     */
     public static enum Status {
-        WAITING, RUNNING, CANCELLING, FAILED, FINISHED
+        WAITING, RUNNING, CANCELLING, FAILED, FINISHED, CANCELLED, INTERRUPTED
     };
 
+    /**
+     * Enumeration describing the category of a request.
+     */
+    public static enum Category {
+        OWS, REST, OTHER
+    };
+    
     public long internalid = COUNTER.getAndIncrement();
     
     /**
@@ -36,7 +50,12 @@ public class RequestData implements Serializable {
      * Request status / state
      */
     private Status status = Status.WAITING;
-
+    
+    /**
+     * Request category
+     */
+    private Category category = Category.OTHER;
+    
     /**
      * The path of the request URL.
      */
@@ -52,6 +71,16 @@ public class RequestData implements Serializable {
      * The body of the request in the case of a PUT or POST
      */
     private byte[] body;
+    
+    /**
+     * The length of the request body in teh case of a PUT or POST
+     */
+    private long bodyContentLength;
+    
+    /**
+     * The mime type of the request body
+     */
+    private String bodyContentType;
     
     /**
      * The HTTP method of the request
@@ -117,21 +146,25 @@ public class RequestData implements Serializable {
      */
     private String host;
 
+    /**
+     * The internal server host (to the internal network)
+     */
+    private String internalHost;
     
     /**
-     * The OWS name (such as WMS, WFS, WCS, WPS, etc.)
+     * The service name, in the case of ows this is WMS, WFS, WCS, WPS, etc...
      */
-    private String owsService;
+    private String service;
 
     /**
-     * The OWS version
+     * The operation name, such as GetMap, GetFeature, etc...
+     */
+    private String operation;
+
+    /**
+     * The OWS service version, specific to ows requests
      */
     private String owsVersion;
-
-    /**
-     * The OWS operation name (such as GetMap, GetFeature, etc.)
-     */
-    private String owsOperation;
 
     /**
      * The sub operation, example for WFS transaction being INSERT, UPDATE, etc... 
@@ -139,9 +172,9 @@ public class RequestData implements Serializable {
     private String subOperation;
     
     /**
-     * The layers requested
+     * The requested resources
      */
-    private List<String> layers = new ArrayList<String>(1);
+    private List<String> resources = new ArrayList<String>(1);
 
     /**
      * The HTTP response length, in bytes
@@ -162,6 +195,11 @@ public class RequestData implements Serializable {
      * The exception that occurred while processing the request, if any.
      */
     private Throwable error;
+    
+    /**
+     * The response status
+     */
+    int responseStatus;
 
     public long getId() {
         return id;
@@ -179,6 +217,14 @@ public class RequestData implements Serializable {
         this.status = status;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+    
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+    
     public String getPath() {
         return path;
     }
@@ -203,6 +249,30 @@ public class RequestData implements Serializable {
         this.body = body;
     }
 
+    public long getBodyContentLength() {
+        return bodyContentLength;
+    }
+    
+    public void setBodyContentLength(long bodyContentLength) {
+        this.bodyContentLength = bodyContentLength;
+    }
+    
+    public String getBodyContentType() {
+        return bodyContentType;
+    }
+    
+    public void setBodyContentType(String bodyContentType) {
+        this.bodyContentType = bodyContentType;
+    }
+    
+    public String getBodyAsString() {
+        if(body != null) {
+            return new String(body);
+        } else {
+            return null;
+        }
+    }
+    
     public String getHttpMethod() {
         return httpMethod;
     }
@@ -258,7 +328,15 @@ public class RequestData implements Serializable {
     public void setHost(String host) {
         this.host = host;
     }
+    
+    public String getInternalHost() {
+        return internalHost;
+    }
 
+    public void setInternalHost(String internalHost) {
+        this.internalHost = internalHost;
+    }
+    
     public String getRemoteUser() {
         return remoteUser;
     }
@@ -299,28 +377,28 @@ public class RequestData implements Serializable {
         this.remoteLon = remoteLon;
     }
     
-    public String getOwsService() {
-        return owsService;
+    public String getService() {
+        return service;
+    }
+    
+    public void setService(String service) {
+        this.service = service;
     }
 
-    public void setOwsService(String owsService) {
-        this.owsService = owsService;
+    public String getOperation() {
+        return operation;
     }
-
+    
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+    
     public String getOwsVersion() {
         return owsVersion;
     }
 
     public void setOwsVersion(String owsVersion) {
         this.owsVersion = owsVersion;
-    }
-
-    public String getOwsOperation() {
-        return owsOperation;
-    }
-
-    public void setOwsOperation(String owsOperation) {
-        this.owsOperation = owsOperation;
     }
 
     public String getSubOperation() {
@@ -331,14 +409,23 @@ public class RequestData implements Serializable {
         this.subOperation = subOperation;
     }
     
-    public List<String> getLayers() {
-        return layers;
+    public List<String> getResources() {
+        return resources;
     }
-
-    public void setLayers(List<String> layers) {
-        this.layers = layers;
+    
+    public String getResourcesList() {
+        if(resources != null && resources.size() > 0) {
+            String result = resources.toString();
+            return result.substring(1, result.length() - 1); 
+        } else {
+            return null;
+        }
     }
-
+    
+    public void setResources(List<String> resources) {
+        this.resources = resources;
+    }
+    
     public long getResponseLength() {
         return responseLength;
     }
@@ -385,16 +472,18 @@ public class RequestData implements Serializable {
         clone.setRemoteAddr(remoteAddr);
         clone.setRemoteHost(remoteHost);
         clone.setHost(host);
+        clone.setInternalHost(internalHost);
         clone.setRemoteUser(remoteUser);
-        clone.setOwsService(owsService);
-        clone.setOwsOperation(owsOperation);
+        clone.setService(service);
+        clone.setOperation(operation);
         clone.setSubOperation(subOperation);
         clone.setOwsVersion(owsVersion);
-        clone.setLayers(new ArrayList(layers));
+        clone.setResources(new ArrayList(resources));
         clone.setResponseLength(responseLength);
         clone.setResponseContentType(responseContentType);
         clone.setErrorMessage(errorMessage);
         clone.setError(error);
+        clone.setResponseStatus(responseStatus);
      
         return clone;
     }
@@ -402,5 +491,13 @@ public class RequestData implements Serializable {
     @Override
     public String toString() {
         return "Request (" + String.valueOf(id) + ")";
+    }
+
+    public int getResponseStatus() {
+        return responseStatus;
+    }
+
+    public void setResponseStatus(int httpStatus) {
+        this.responseStatus = httpStatus;
     }
 }

@@ -13,6 +13,7 @@ based on the request data.
    installation/
    overview/
    configuration/
+   audit/
    http/
 
 

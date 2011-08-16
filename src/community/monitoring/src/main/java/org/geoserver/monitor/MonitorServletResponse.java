@@ -1,17 +1,20 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
-import javax.servlet.ServletResponseWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 public class MonitorServletResponse extends HttpServletResponseWrapper {
 
     MonitorOutputStream output;
+    int status = 200;
     
     public MonitorServletResponse(HttpServletResponse response) {
         super(response);
@@ -31,6 +34,22 @@ public class MonitorServletResponse extends HttpServletResponseWrapper {
             output = new MonitorOutputStream(super.getOutputStream());
         }
         return output;
+    }
+    
+    @Override
+    public void setStatus(int sc) {
+        this.status = sc;
+        super.setStatus(sc);
+    }
+    
+    @Override
+    public void setStatus(int sc, String sm) {
+        this.status = sc;
+        super.setStatus(sc, sm);
+    }
+    
+    public int getStatus() {
+        return status;
     }
     
 

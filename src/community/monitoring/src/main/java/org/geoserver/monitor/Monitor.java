@@ -1,8 +1,17 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.monitor.MonitorConfig.Mode;
+import org.geoserver.platform.GeoServerExtensions;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * The GeoServer request monitor and primary entry point into the monitor api.
@@ -20,7 +29,7 @@ import org.geoserver.monitor.MonitorConfig.Mode;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class Monitor {
+public class Monitor implements ApplicationListener {
 
     /**  
      * thread local request object.
@@ -34,6 +43,11 @@ public class Monitor {
     
     MonitorConfig config;
     MonitorDAO dao;
+
+    /**
+     * The set of listeners for the monitor
+     */
+    List<RequestDataListener> listeners = new ArrayList<RequestDataListener>();
     
     public Monitor(MonitorConfig config) {
         this.config = config;
@@ -45,11 +59,24 @@ public class Monitor {
         this.dao = dao;
     }
     
+    public MonitorConfig getConfig() {
+        return config;
+    }
+    
+    public boolean isEnabled() {
+        return config.isEnabled();
+    }
+    
     public RequestData start() {
         RequestData req = new RequestData();
         req = dao.init(req);
         REQUEST.set(req);
         
+        // notify listeners
+        for (RequestDataListener listener : listeners) {
+            listener.requestUpdated(req);
+        }
+        // have the DAO persist/propagate the change
         if (config.getMode() != Mode.HISTORY) {
             dao.add(req);
         }
@@ -62,14 +89,36 @@ public class Monitor {
     }
 
     public void update() {
+        RequestData data = REQUEST.get();
+        // notify listeners
+        for (RequestDataListener listener : listeners) {
+            listener.requestUpdated(data);
+        }
+        // have the DAO persist/propagate the change
         if (config.getMode() != Mode.HISTORY) {
-            dao.update(REQUEST.get());
+            dao.update(data);
         }
     }
 
     public void complete() {
-        dao.save(REQUEST.get());
+        RequestData data = REQUEST.get();
+        // notify listeners
+        for (RequestDataListener listener : listeners) {
+            listener.requestCompleted(data);
+        }
+        // have the DAO persist/propagate the change
+        dao.save(data);
         REQUEST.remove();
+    }
+    
+    public void postProcessed(RequestData rd) {
+        // notify listeners
+        for (RequestDataListener listener : listeners) {
+            listener.requestPostProcessed(rd);
+        }
+        // have the DAO persist/propagate the change
+        dao.update(rd);
+
     }
 
     public void dispose() {
@@ -81,8 +130,14 @@ public class Monitor {
         return dao;
     }
     
-    public void query(MonitorQuery q, RequestDataVisitor visitor) {
+    public void query(Query q, RequestDataVisitor visitor) {
         dao.getRequests(q, visitor);
+    }
+
+    public void onApplicationEvent(ApplicationEvent event) {
+        if(event instanceof ContextRefreshedEvent) {
+            listeners = GeoServerExtensions.extensions(RequestDataListener.class);
+        }
     }
 
 }

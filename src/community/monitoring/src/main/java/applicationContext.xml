@@ -14,6 +14,7 @@
     -->
     <bean id="monitorDataSource" class="org.geoserver.monitor.hib.MonitoringDataSource" depends-on="geoServerLoader" >
       <property name="dataDirectory" ref="dataDirectory" />
+      <property name="config" ref="monitorConfig" />
     </bean>
     
     <!-- monitor daos -->
@@ -32,6 +33,10 @@
       <constructor-arg ref="monitorConfig"/>
     </bean>
     
+    <bean id="monitorInitializer" class="org.geoserver.monitor.MonitorInitializer">
+      <constructor-arg ref="monitor"/>
+    </bean>
+
     <!-- the top level monitoring filter -->
     <bean id="monitorFilter" class="org.geoserver.monitor.MonitorFilter">
         <constructor-arg ref="monitor"/>
@@ -97,6 +102,11 @@
       <constructor-arg ref="monitor"/>
     </bean>
     
+    <!-- rest dispatcher callback -->
+    <bean id="monitorRestCallback" class="org.geoserver.monitor.rest.RESTMonitorCallback">
+       <constructor-arg ref="monitor"/>
+    </bean>
+    
     <!--
      web stuff
      -->
@@ -132,6 +142,12 @@
     <!-- post processors -->
     <bean id="layerNameNormalizer" class="org.geoserver.monitor.LayerNameNormalizer">
         <constructor-arg ref="catalog"/>
+    </bean>
+
+    <!--  audit listener -->
+    <bean id="auditor" class="org.geoserver.monitor.AuditLogger">
+        <constructor-arg ref="monitorConfig" index="0"/>
+        <constructor-arg ref="resourceLoader" index="1"/>
     </bean>
     
 </beans>

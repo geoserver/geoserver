@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor.hib;
 
 import java.io.File;
@@ -66,7 +70,7 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
                 
                 for (Map.Entry e : props.entrySet()) {
                     if (((String)e.getKey()).startsWith("hibernate")) {
-                        factory.getJpaPropertyMap().put(e.getKey(), e.getValue());
+                        factory.getJpaPropertyMap().put((String)e.getKey(), e.getValue());
                     }
                 }
             }

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor.ows;
 
 import static org.junit.Assert.assertEquals;
@@ -73,8 +77,8 @@ public class MonitorCallbackTest {
     public void testBasic() throws Exception {
         callback.operationDispatched(new Request(), op("foo", "bar", "1.2.3", null));
         
-        assertEquals("BAR", data.getOwsService());
-        assertEquals("foo", data.getOwsOperation());
+        assertEquals("BAR", data.getService());
+        assertEquals("foo", data.getOperation());
         assertEquals("1.2.3", data.getOwsVersion());
     }
     
@@ -87,8 +91,8 @@ public class MonitorCallbackTest {
         Operation op = op("DescribeFeatureType", "WFS", "1.0.0", dft);
         callback.operationDispatched(new Request(), op);
         
-        assertEquals("acme:foo", data.getLayers().get(0));
-        assertEquals("acme:bar", data.getLayers().get(1));
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
     }
     
     @Test
@@ -106,8 +110,8 @@ public class MonitorCallbackTest {
         Operation op = op("GetFeature", "WFS", "1.0.0", gf);
         callback.operationDispatched(new Request(), op);
         
-        assertEquals("acme:foo", data.getLayers().get(0));
-        assertEquals("acme:bar", data.getLayers().get(1));
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
     }
     
     @Test
@@ -121,7 +125,7 @@ public class MonitorCallbackTest {
         Operation op = op("LockFeature", "WFS", "1.0.0", lf);
         callback.operationDispatched(new Request(), op);
         
-        assertEquals("acme:foo", data.getLayers().get(0));
+        assertEquals("acme:foo", data.getResources().get(0));
     }
     
     @Test
@@ -139,8 +143,8 @@ public class MonitorCallbackTest {
         Operation op = op("Transaction", "WFS", "1.0.0", t);
         callback.operationDispatched(new Request(), op);
         
-        assertEquals("acme:foo", data.getLayers().get(0));
-        assertEquals("acme:bar", data.getLayers().get(1));
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
     }
     
     @Test
@@ -150,7 +154,7 @@ public class MonitorCallbackTest {
         gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
         callback.operationDispatched(new Request(), op("GetMap", "WMS", "1.1.1", gm));
         
-        assertEquals("acme:foo", data.getLayers().get(0));
+        assertEquals("acme:foo", data.getResources().get(0));
     }
     
     @Test
@@ -160,8 +164,8 @@ public class MonitorCallbackTest {
         gfi.setQueryLayers(Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
         callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", gfi));
         
-        assertEquals("acme:foo", data.getLayers().get(0));
-        assertEquals("acme:bar", data.getLayers().get(1));
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
     }
     
     @Test
@@ -176,7 +180,7 @@ public class MonitorCallbackTest {
         glg.setLayer(type);
         callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", glg));
     
-        assertEquals("http://acme.org:foo", data.getLayers().get(0));
+        assertEquals("http://acme.org:foo", data.getResources().get(0));
     }
     
     @Test
@@ -186,8 +190,8 @@ public class MonitorCallbackTest {
         dc.getCoverage().add("acme:bar");
         
         callback.operationDispatched(new Request(), op("DescribeCoverage", "WCS", "1.0.0", dc));
-        assertEquals("acme:foo", data.getLayers().get(0));
-        assertEquals("acme:bar", data.getLayers().get(1));
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
     }
     
     @Test
@@ -196,7 +200,7 @@ public class MonitorCallbackTest {
         gc.setSourceCoverage("acme:foo");
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.0.0", gc));
         
-        assertEquals("acme:foo", data.getLayers().get(0));
+        assertEquals("acme:foo", data.getResources().get(0));
     }
     
     @Test
@@ -206,8 +210,8 @@ public class MonitorCallbackTest {
         dc.getIdentifier().add("acme:bar");
         
         callback.operationDispatched(new Request(), op("DescribeCoverage", "WCS", "1.1.0", dc));
-        assertEquals("acme:foo", data.getLayers().get(0));
-        assertEquals("acme:bar", data.getLayers().get(1));
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
     }
     
     @Test
@@ -219,7 +223,7 @@ public class MonitorCallbackTest {
         gc.setIdentifier(c);
         
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.1.0", gc));
-        assertEquals("acme:bar", data.getLayers().get(0));
+        assertEquals("acme:bar", data.getResources().get(0));
     }
     
     MapLayerInfo createMapLayer(String name, String ns) {

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.io.ByteArrayOutputStream;
@@ -17,7 +21,7 @@ public class MonitorServletRequestTest extends TestCase {
         byte[] data = data();
         MockServletInputStream mock = new MockServletInputStream(data);
         
-        MonitorInputStream in = new MonitorInputStream(mock);
+        MonitorInputStream in = new MonitorInputStream(mock, 1024);
         byte[] read = read(in);
         
         assertEquals(data.length, read.length);

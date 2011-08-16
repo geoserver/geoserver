@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.io.IOException;
@@ -10,7 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -19,14 +22,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.filters.GeoServerFilter;
+import org.geoserver.monitor.RequestData.Status;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.userdetails.User;
-import org.geoserver.filters.GeoServerFilter;
-import org.geoserver.monitor.RequestData.Status;
-import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.util.logging.Logging;
 
 public class MonitorFilter implements GeoServerFilter {
 
@@ -43,7 +45,16 @@ public class MonitorFilter implements GeoServerFilter {
         
         postProcessExecutor = Executors.newFixedThreadPool(2);
         
-        LOGGER.info("Monitor extension enabled");
+        if (monitor.isEnabled()) {
+            LOGGER.info("Monitor extension enabled");    
+        }
+        else {
+            String msg ="Monitor extension disabled";
+            if (monitor.getConfig().getError() != null) {
+                msg += ": " + monitor.getConfig().getError().getLocalizedMessage();
+            }
+            LOGGER.info(msg);
+        }
     }
     
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -53,8 +64,9 @@ public class MonitorFilter implements GeoServerFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         
-        //ignore non http requests
-        if (!(request instanceof HttpServletRequest)) {
+        
+        //check if enabled, and ignore non http requests
+        if (!monitor.isEnabled() || !(request instanceof HttpServletRequest)) {
             chain.doFilter(request, response);
             return;
         }
@@ -83,12 +95,15 @@ public class MonitorFilter implements GeoServerFilter {
         }
         
         data.setHttpMethod(req.getMethod());
+        data.setBodyContentLength(req.getContentLength());
+        data.setBodyContentType(req.getContentType());
         
         String serverName = System.getProperty("http.serverName");
         if (serverName == null) {
             serverName = req.getServerName();
         }
         data.setHost(serverName);
+        data.setInternalHost(InternalHostname.get());
         data.setRemoteAddr(getRemoteAddr(req));
         data.setStatus(Status.RUNNING);
         
@@ -101,7 +116,7 @@ public class MonitorFilter implements GeoServerFilter {
         }
         
         //wrap the request and response
-        request = new MonitorServletRequest(req);
+        request = new MonitorServletRequest(req, monitor.getConfig().getMaxBodySize());
         response = new MonitorServletResponse(resp);
         
         monitor.update();
@@ -117,8 +132,10 @@ public class MonitorFilter implements GeoServerFilter {
         
         data = monitor.current();
         data.setBody(((MonitorServletRequest)request).getBodyContent());
+        data.setBodyContentLength(((MonitorServletRequest)request).getBytesRead());
         data.setResponseContentType(response.getContentType());
         data.setResponseLength(((MonitorServletResponse)response).getContentLength());
+        data.setResponseStatus(((MonitorServletResponse)response).getStatus());
         
         if (error != null) {
             data.setStatus(Status.FAILED);
@@ -194,7 +211,7 @@ public class MonitorFilter implements GeoServerFilter {
                     }
                 }
 
-                monitor.getDAO().update(data);
+                monitor.postProcessed(data);
             }
             finally {
                 monitor = null;

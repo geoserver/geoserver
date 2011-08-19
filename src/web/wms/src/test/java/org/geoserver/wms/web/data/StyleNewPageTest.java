@@ -33,7 +33,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     public void testUpload() throws Exception {
         FormTester upload = tester.newFormTester("uploadForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld = IOUtils.toString(new FileReader(styleFile));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        
         
         upload.setFile("filename", styleFile, "application/xml");
         upload.submit();
@@ -43,11 +44,13 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     }
     
     public void testMissingName() throws Exception {
+    	
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld = IOUtils.toString(new FileReader(styleFile));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("editor", sld);
         form.submit();
+       
         
         tester.assertRenderedPage(StyleNewPage.class);
         tester.assertErrorMessages(new String[] {"Field 'Name' is required."});

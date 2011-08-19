@@ -59,7 +59,8 @@ public class FeatureWrapperTest extends TestCase {
 
         StringWriter out = new StringWriter();
         template.process(features, out);
-        assertEquals("fid.1\nfid.2\nfid.3\n", out.toString());
+        
+        assertEquals("fid.1\nfid.2\nfid.3\n", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
     public void testFeatureSimple() throws Exception {
@@ -69,7 +70,7 @@ public class FeatureWrapperTest extends TestCase {
         template.process(features.iterator().next(), out);
 
         //replace ',' with '.' for locales which use a comma for decimal point
-        assertEquals("one\n1\n1.1\nPOINT (1 1)", out.toString().replace(',', '.'));
+        assertEquals("one\n1\n1.1\nPOINT (1 1)", out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
     public void testFeatureDynamic() throws Exception {
@@ -80,6 +81,6 @@ public class FeatureWrapperTest extends TestCase {
 
         //replace ',' with '.' for locales which use a comma for decimal point
         assertEquals("string=one\nint=1\ndouble=1.1\ngeom=POINT (1 1)\n",
-            out.toString().replace(',', '.'));
+            out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 }

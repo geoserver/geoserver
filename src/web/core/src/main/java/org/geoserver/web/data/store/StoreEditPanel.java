@@ -66,10 +66,10 @@ public abstract class StoreEditPanel extends Panel {
     }
 
     protected void applyParamDefault(ParamInfo paramInfo, StoreInfo info) {
-        Serializable defValue;
+        Serializable defValue = paramInfo.getValue();
         if ("namespace".equals(paramInfo.getName())) {
             defValue = getCatalog().getDefaultNamespace().getURI();
-        } else if (URL.class == paramInfo.getBinding()) {
+        } else if (URL.class == paramInfo.getBinding() && null == defValue) {
             defValue = "file:data/example.extension";
         } else {
             defValue = paramInfo.getValue();

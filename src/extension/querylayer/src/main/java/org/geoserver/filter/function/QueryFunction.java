@@ -15,9 +15,15 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FunctionImpl;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryComponentFilter;
 
 /**
  * Queries a GeoServer layer and extracts the value(s) of an attribute TODO: add sorting
@@ -70,9 +76,16 @@ public class QueryFunction extends FunctionImpl {
                 throw new IllegalArgumentException("The second argument of the query "
                         + "function should be the attribute name");
             }
-            if (ft.getFeatureType().getDescriptor(attribute) == null) {
+            CoordinateReferenceSystem crs = null;
+            PropertyDescriptor ad = ft.getFeatureType().getDescriptor(attribute);
+            if (ad == null) {
                 throw new IllegalArgumentException("Attribute " + attribute
                         + " could not be found in layer " + layerName);
+            } else if(ad instanceof GeometryDescriptor) {
+                crs = ((GeometryDescriptor) ad).getCoordinateReferenceSystem();
+                if(crs == null) {
+                    crs = ft.getCRS();
+                }
             }
 
             // extract and check the filter
@@ -99,6 +112,12 @@ public class QueryFunction extends FunctionImpl {
             while (fi.hasNext()) {
                 Feature f = fi.next();
                 Object value = f.getProperty(attribute).getValue();
+                if(value instanceof Geometry && crs != null) {
+                    // if the crs is not associated with the geometry do so, this
+                    // way other code will get to know the crs (e.g. for reprojection purposes)
+                    Geometry geom = (Geometry) value;
+                    geom.apply(new GeometryCRSFilter(crs));
+                }
                 results.add(value);
             }
 
@@ -123,6 +142,25 @@ public class QueryFunction extends FunctionImpl {
             }
         }
 
+    }
+    
+    /**
+     * Applies the CRS to all geometry components
+     * @author aaime
+     *
+     */
+    static final class GeometryCRSFilter implements GeometryComponentFilter {
+        CoordinateReferenceSystem crs;
+        
+        public GeometryCRSFilter(CoordinateReferenceSystem crs) {
+            this.crs = crs;
+        }
+        
+        @Override
+        public void filter(Geometry g) {
+            g.setUserData(crs);
+
+        }
     }
 
 }

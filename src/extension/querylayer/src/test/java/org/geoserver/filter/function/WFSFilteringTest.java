@@ -11,7 +11,7 @@ public class WFSFilteringTest extends WFSTestSupport {
     "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs\"\n" + //
             "                xmlns:cite=\"http://www.opengis.net/cite\"\n" + //
             "                xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + //
-            "                service=\"WFS\" version=\"1.0.0\">\n" + //
+            "                service=\"WFS\" version=\"${version}\">\n" + //
             "  <wfs:Query typeName=\"cite:Buildings\">\n" + //
             "    <ogc:Filter>\n" + //
             "      <ogc:DWithin>\n" + // 
@@ -31,7 +31,7 @@ public class WFSFilteringTest extends WFSTestSupport {
     "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs\"\n" + // 
             "  xmlns:cite=\"http://www.opengis.net/cite\" " + //
             "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + //
-            "  service=\"WFS\" version=\"1.0.0\">\n" + //
+            "  service=\"WFS\" version=\"${version}\">\n" + //
             "  <wfs:Query typeName=\"cite:Buildings\">\n" + // 
             "    <ogc:Filter>\n" + //
             "      <ogc:DWithin>\n" + //
@@ -49,8 +49,16 @@ public class WFSFilteringTest extends WFSTestSupport {
             "  </wfs:Query>\n" + //
             "</wfs:GetFeature>";
 
-    public void testSingleSmallDistance() throws Exception {
-        String request = QUERY_SINGLE.replace("${distance}", "0.00000001");
+    public void testSingleSmallDistance10() throws Exception {
+        _testSingleSmallDistance("1.0.0");
+    }
+    
+    public void testSingleSmallDistance11() throws Exception {
+        _testSingleSmallDistance("1.1.0");
+    }
+    
+    void _testSingleSmallDistance(String version) throws Exception {
+        String request = QUERY_SINGLE.replace("${distance}", "0.00000001").replace("${version}", version);
         Document doc = postAsDOM("wfs", request);
         // print(doc);
 
@@ -58,8 +66,16 @@ public class WFSFilteringTest extends WFSTestSupport {
         assertXpathEvaluatesTo("0", "count(cite:Buildings)", doc);
     }
 
-    public void testSingleLargeDistance() throws Exception {
-        String request = QUERY_SINGLE.replace("${distance}", "0.001");
+    public void testSingleLargeDistance10() throws Exception {
+        _testSingleLargeDistance("1.0.0");
+    }
+    
+    public void testSingleLargeDistance11() throws Exception {
+        _testSingleLargeDistance("1.1.0");
+    }
+    
+    void _testSingleLargeDistance(String version) throws Exception {
+        String request = QUERY_SINGLE.replace("${distance}", "0.001").replace("${version}", version);
         Document doc = postAsDOM("wfs", request);
         // print(doc);
 
@@ -67,8 +83,16 @@ public class WFSFilteringTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
     }
     
-    public void testMultiple() throws Exception {
-        Document doc = postAsDOM("wfs", QUERY_MULTI);
+    public void testMultiple10() throws Exception {
+        _testMultiple("1.0.0");
+    }
+    
+    public void testMultiple11() throws Exception {
+        _testMultiple("1.1.0");
+    }
+    
+    void _testMultiple(String version) throws Exception {
+        Document doc = postAsDOM("wfs", QUERY_MULTI.replace("${version}", version));
         // print(doc);
 
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);

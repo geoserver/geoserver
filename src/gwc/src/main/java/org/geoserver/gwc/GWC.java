@@ -330,7 +330,7 @@ public class GWC implements DisposableBean, InitializingBean {
             final GridSubset gridSubset = layer.getGridSubset(gridSetId);
             for (String style : styleNames) {
                 Map<String, String> parameters;
-                if (style.equals(defaultStyle)) {
+                if (style.length() == 0 || style.equals(defaultStyle)) {
                     log.finer("'" + style + "' is the layer's default style, "
                             + "not adding a parameter filter");
                     parameters = null;
@@ -559,11 +559,11 @@ public class GWC implements DisposableBean, InitializingBean {
             }
         }
 
-//        if (request.isTransparent()) {
-//            if (!filterApplies(filters, request, "TRANSPARENT")) {
-//                return false;
-//            }
-//        }
+        // if (request.isTransparent()) {
+        // if (!filterApplies(filters, request, "TRANSPARENT")) {
+        // return false;
+        // }
+        // }
         if (request.getFormatOptions() != null && !request.getFormatOptions().isEmpty()) {
             if (!filterApplies(filters, request, "FORMAT_OPTIONS")) {
                 return false;

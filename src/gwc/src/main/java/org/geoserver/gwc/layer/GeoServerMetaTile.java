@@ -1,27 +1,32 @@
 package org.geoserver.gwc.layer;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.media.jai.PlanarImage;
+
 import org.geoserver.ows.Response;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.resources.image.ImageUtilities;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.mime.FormatModifier;
+import org.geowebcache.mime.ImageMime;
 import org.geowebcache.mime.MimeType;
 import org.springframework.util.Assert;
 
 public class GeoServerMetaTile extends MetaTile {
 
-    private WebMap webMap;
+    private RenderedImageMap metaTileMap;
 
     private final String layer;
 
@@ -35,11 +40,28 @@ public class GeoServerMetaTile extends MetaTile {
         this.mediator = mediator;
     }
 
-    public void setWebMap(WebMap webMap) {
-        this.webMap = webMap;
+    public void setWebMap(RenderedImageMap webMap) {
+        this.metaTileMap = webMap;
         if (webMap instanceof RenderedImageMap) {
             setImage(((RenderedImageMap) webMap).getImage());
         }
+    }
+
+    /**
+     * Overrides to return {@link WMS#getJPEGNativeAcceleration()} if the requested response format
+     * is image/jpeg, otherwise if it's set to false and native JAI is available JPEGMapResponse
+     * will assume the WMS setting and create repeated tiles because it will not get a
+     * BufferedImage.
+     * 
+     * @see org.geowebcache.layer.MetaTile#nativeAccelAvailable()
+     */
+    @Override
+    protected boolean nativeAccelAvailable() {
+        boolean useNativeAccel = super.nativeAccelAvailable();
+        if (useNativeAccel && ImageMime.jpeg.equals(responseFormat)) {
+            useNativeAccel = WMS.get().getJPEGNativeAcceleration();
+        }
+        return useNativeAccel;
     }
 
     /**
@@ -53,26 +75,27 @@ public class GeoServerMetaTile extends MetaTile {
      */
     @Override
     public boolean writeTileToStream(final int tileIdx, Resource target) throws IOException {
-        Assert.notNull(webMap, "webMap is not set");
-        if (!(webMap instanceof RenderedImageMap)) {
+
+        Assert.notNull(metaTileMap, "webMap is not set");
+        if (!(metaTileMap instanceof RenderedImageMap)) {
             throw new IllegalArgumentException("Only RenderedImageMaps are supported so far: "
-                    + webMap.getClass().getName());
+                    + metaTileMap.getClass().getName());
         }
         final RenderedImageMapResponse mapEncoder;
         {
-            final Response responseEncoder = mediator.getResponseEncoder(responseFormat, webMap);
+            final Response responseEncoder = mediator.getResponseEncoder(responseFormat,
+                    metaTileMap);
             mapEncoder = (RenderedImageMapResponse) responseEncoder;
         }
 
-        RenderedImageMap tileMap = (RenderedImageMap) webMap;
+        RenderedImage tile = metaTileMap.getImage();
+        WMSMapContent tileContext = metaTileMap.getMapContext();
+
         if (this.tiles.length > 1) {
             final Rectangle tileDim = this.tiles[tileIdx];
-            final RenderedImage tile = createTile(tileDim.x, tileDim.y, tileDim.width,
-                    tileDim.height);
-            final String mimeType = webMap.getMimeType();
-            final WMSMapContent tileContext;
+            tile = createTile(tileDim.x, tileDim.y, tileDim.width, tileDim.height);
             {
-                final WMSMapContent metaTileContext = ((RenderedImageMap) webMap).getMapContext();
+                final WMSMapContent metaTileContext = metaTileMap.getMapContext();
                 // do not create tileContext with metaTileContext.getLayers() as the layer list.
                 // It is not needed at this stage and the constructor would force a
                 // MapLayer.getBounds() that might fail
@@ -91,26 +114,32 @@ public class GeoServerMetaTile extends MetaTile {
                         tileBounds.getMaxY());
                 tileContext.getViewport().setBounds(tilebbox);
             }
-            tileMap = new RenderedImageMap(tileContext, tile, mimeType);
         }
 
+        OutputStream outStream = target.getOutputStream();
         try {
-            OutputStream outStream = target.getOutputStream();
-            try {
-                mapEncoder.write(tileMap, outStream, null);
-                return true;
-            } finally {
-                outStream.close();
-            }
+            // call formatImageOuputStream instead of write to avoid disposition of rendered images
+            // when processing a tile from a metatile and instead defer it to this class' dispose()
+            // method
+            mapEncoder.formatImageOutputStream(tile, outStream, tileContext);
+            return true;
         } finally {
-            tileMap.dispose();
+            outStream.close();
         }
     }
 
     public void dispose() {
-        if (webMap != null) {
-            webMap.dispose();
-            webMap = null;
+        if (metaTileMap != null) {
+            RenderedImage image = metaTileMap.getImage();
+            // as in RenderedImageMapResponse.write: let go of the image chain as quick as possible
+            // to free memory
+            if (image instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+            } else if (image instanceof BufferedImage) {
+                ((BufferedImage) image).flush();
+            }
+            metaTileMap.dispose();
+            metaTileMap = null;
         }
     }
 }

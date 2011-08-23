@@ -195,7 +195,7 @@ class FakeHttpServletResponse implements HttpServletResponse {
     }
 
     public void setCharacterEncoding(String arg0) {
-        //throw new ServletDebugException();
+        // throw new ServletDebugException();
 
     }
 

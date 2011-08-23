@@ -5,7 +5,6 @@
 package org.geoserver.gwc.wms;
 
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.lang.reflect.Method;
 import java.nio.channels.Channels;
 import java.security.MessageDigest;
@@ -122,9 +121,9 @@ public class CachingWebMapService implements MethodInterceptor {
 
         for (int i = 0; i < hash.length; i += 4) {
             int c1 = 0xFF & hash[i];
-            int c2 = 0xFF & hash[i+1];
-            int c3 = 0xFF & hash[i+2];
-            int c4 = 0xFF & hash[i+3];
+            int c2 = 0xFF & hash[i + 1];
+            int c3 = 0xFF & hash[i + 2];
+            int c4 = 0xFF & hash[i + 3];
             int integer = ((c1 << 24) + (c2 << 16) + (c3 << 8) + (c4 << 0));
             sb.append(Integer.toHexString(integer));
         }

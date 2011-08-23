@@ -34,6 +34,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
@@ -148,7 +149,7 @@ public class WMS implements ApplicationContextAware {
     public static final String KML_KMSCORE = "kmlKmscore";
 
     public static final int KML_KMSCORE_DEFAULT = 40;
-    
+
     private static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     private final GeoServer geoserver;
@@ -186,19 +187,20 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * /**
-     * Returns a supported version according to the version negotiation rules in section 6.2.4 of
-     * the WMS 1.3.0 spec.
+     * /** Returns a supported version according to the version negotiation rules in section 6.2.4
+     * of the WMS 1.3.0 spec.
      * <p>
-     * Calls through to {@link #negotiateVersion(Version)}. 
+     * Calls through to {@link #negotiateVersion(Version)}.
      * </p>
-     * @param requestedVersion The version, may be bull.
+     * 
+     * @param requestedVersion
+     *            The version, may be bull.
      * 
      */
     public static Version negotiateVersion(final String requestedVersion) {
         return negotiateVersion(requestedVersion != null ? new Version(requestedVersion) : null);
     }
-    
+
     /**
      * Returns a supported version according to the version negotiation rules in section 6.2.4 of
      * the WMS 1.3.0 spec.
@@ -319,14 +321,14 @@ public class WMS implements ApplicationContextAware {
         Catalog catalog = getCatalog();
         CoverageInfo resource = catalog.getResourceByName(name, CoverageInfo.class);
         return resource;
-    }    
+    }
 
     public WMSLayerInfo getWMSLayerInfo(final Name name) {
         Catalog catalog = getCatalog();
         WMSLayerInfo resource = catalog.getResourceByName(name, WMSLayerInfo.class);
         return resource;
     }
-    
+
     public ResourceInfo getResourceInfo(final Name name) {
         Catalog catalog = getCatalog();
         ResourceInfo resource = catalog.getResourceByName(name, ResourceInfo.class);
@@ -492,12 +494,12 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Returns all available map output formats. 
+     * Returns all available map output formats.
      */
     public Collection<GetMapOutputFormat> getAvailableMapFormats() {
         return WMSExtensions.findMapProducers(applicationContext);
     }
-    
+
     /**
      * Grabs the list of available MIME-Types for the GetMap operation from the set of
      * {@link GetMapOutputFormat}s registered in the application context.
@@ -538,7 +540,7 @@ public class WMS implements ApplicationContextAware {
     public List<ExtendedCapabilitiesProvider> getAvailableExtendedCapabilitiesProviders() {
         return WMSExtensions.findExtendedCapabilitiesProviders(applicationContext);
     }
-    
+
     /**
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
@@ -610,12 +612,14 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Returns a version object for the specified version string optionally returning null
-     * when the version string does not match one of the available WMS versions.
+     * Returns a version object for the specified version string optionally returning null when the
+     * version string does not match one of the available WMS versions.
      * 
-     * @param version The version string.
-     * @param exact If set to false, a version object will always be returned. If set to true 
-     *   only a version matching on of the available wms versions will be returned.
+     * @param version
+     *            The version string.
+     * @param exact
+     *            If set to false, a version object will always be returned. If set to true only a
+     *            version matching on of the available wms versions will be returned.
      * @return
      */
     public static Version version(String version, boolean exact) {
@@ -632,13 +636,13 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Transforms a crs identifier to its internal representation based on the specified 
-     * WMS version.
+     * Transforms a crs identifier to its internal representation based on the specified WMS
+     * version.
      * <p>
-     * In version 1.3 of WMS geographic coordinate systems are to be ordered y/x or 
-     * latitude/longitude. The only possible way to represent this internally is to use the 
-     * explicit epsg namespace "urn:x-ogc:def:crs:EPSG:". This method essentially replaces the 
-     * traditional "EPSG:" namespace with the explicit. 
+     * In version 1.3 of WMS geographic coordinate systems are to be ordered y/x or
+     * latitude/longitude. The only possible way to represent this internally is to use the explicit
+     * epsg namespace "urn:x-ogc:def:crs:EPSG:". This method essentially replaces the traditional
+     * "EPSG:" namespace with the explicit.
      * </p>
      */
     public static String toInternalSRS(String srs, Version version) {
@@ -647,7 +651,7 @@ public class WMS implements ApplicationContextAware {
                 srs = srs.toUpperCase().replace("EPSG:", "urn:x-ogc:def:crs:EPSG:");
             }
         }
-        
+
         return srs;
     }
 
@@ -670,7 +674,7 @@ public class WMS implements ApplicationContextAware {
             }
 
             return layer.isQueryable();
-            
+
         } catch (IOException e) {
             LOGGER.log(Level.INFO,
                     "Failed to determin if the layer is queryable, assuming it's not", e);
@@ -686,10 +690,11 @@ public class WMS implements ApplicationContextAware {
         }
         return true;
     }
-    
+
     /**
      * Returns the read parameters for the specified layer, merging some well known request
-     * parameters into the read parameters if possible 
+     * parameters into the read parameters if possible
+     * 
      * @param request
      * @param mapLayerInfo
      * @param layerFilter
@@ -698,7 +703,7 @@ public class WMS implements ApplicationContextAware {
      */
     public GeneralParameterValue[] getWMSReadParameters(final GetMapRequest request,
             final MapLayerInfo mapLayerInfo, final Filter layerFilter, final List<Object> times,
-            final List<Object> elevations, final AbstractGridCoverage2DReader reader, 
+            final List<Object> elevations, final AbstractGridCoverage2DReader reader,
             boolean readGeom) throws IOException {
         // setup the scene
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
@@ -716,32 +721,33 @@ public class WMS implements ApplicationContextAware {
             // handle "current"
             List<Object> fixedTimes = new ArrayList<Object>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
-                if(fixedTimes.get(i) == null) {
+                if (fixedTimes.get(i) == null) {
                     fixedTimes.set(i, getCurrentTime(coverage, dimensions));
                 }
             }
             // pass down the parameters
-            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
-                    readParameters, fixedTimes, "TIME", "Time");
+            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
+                    fixedTimes, "TIME", "Time");
         }
 
         // pass down elevation
-        final DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        final DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION,
+                DimensionInfo.class);
         if (elevationInfo != null && elevationInfo.isEnabled()) {
             // handle "current"
             List<Object> fixedElevations = new ArrayList<Object>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
-                if(fixedElevations.get(i) == null) {
+                if (fixedElevations.get(i) == null) {
                     fixedElevations.set(i, getDefaultElevation(coverage, dimensions));
                 }
             }
-            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
-                    readParameters, fixedElevations, "ELEVATION", "Elevation");
+            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
+                    fixedElevations, "ELEVATION", "Elevation");
         }
-        
-        if(layerFilter != null) {
-            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, 
-                    readParameters, layerFilter, "FILTER", "Filter");
+
+        if (layerFilter != null) {
+            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
+                    layerFilter, "FILTER", "Filter");
         }
         return readParameters;
     }
@@ -749,10 +755,11 @@ public class WMS implements ApplicationContextAware {
     public Collection<RenderedImageMapResponse> getAvailableMapResponses() {
         return WMSExtensions.findMapResponses(applicationContext);
     }
-    
+
     /**
      * Returns the list of time values for the specified typeInfo based on the dimension
-     * representation: all values for {@link DimensionPresentation#LIST}, otherwise min and max 
+     * representation: all values for {@link DimensionPresentation#LIST}, otherwise min and max
+     * 
      * @param typeInfo
      * @return
      * @throws IOException
@@ -790,7 +797,7 @@ public class WMS implements ApplicationContextAware {
 
         return result;
     }
-    
+
     /**
      * Returns the list of elevation values for the specified typeInfo based on the dimension
      * representation: all values for {@link DimensionPresentation#LIST}, otherwise min and max
@@ -837,9 +844,10 @@ public class WMS implements ApplicationContextAware {
 
         return result;
     }
-    
+
     /**
-     * Returns the current time for the specified type info 
+     * Returns the current time for the specified type info
+     * 
      * @param typeInfo
      * @return
      * @throws IOException
@@ -858,23 +866,23 @@ public class WMS implements ApplicationContextAware {
         collection.accepts(max, null);
         return (Date) max.getMax();
     }
-    
+
     /**
-     * Returns the current time for the specified coverage 
+     * Returns the current time for the specified coverage
      */
-    Date getCurrentTime(CoverageInfo coverage, ReaderDimensionsAccessor dimensions) throws IOException {
+    Date getCurrentTime(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
+            throws IOException {
         // check the time metadata
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         String name = coverage.getPrefixedName();
         if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + name
-                    + " does not have time support enabled");
+            throw new ServiceException("Layer " + name + " does not have time support enabled");
         }
 
         // get and parse the current time
         return dimensions.getMaxTime();
     }
-    
+
     /**
      * Returns the default elevation (the minimum one)
      * 
@@ -899,14 +907,15 @@ public class WMS implements ApplicationContextAware {
             return ((Number) min.getMin()).doubleValue();
         }
     }
-    
+
     /**
      * Returns the default elevation (the minimum one)
      * 
      * @param typeInfo
      * @return
      */
-    Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions) throws IOException {
+    Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
+            throws IOException {
         // check the time metadata
         DimensionInfo elevation = coverage.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
@@ -1039,6 +1048,10 @@ public class WMS implements ApplicationContextAware {
         }
 
         return result;
+    }
+
+    public static WMS get() {
+        return GeoServerExtensions.bean(WMS.class);
     }
 
 }

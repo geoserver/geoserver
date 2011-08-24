@@ -116,7 +116,7 @@ public abstract class WebMap {
                 filename = layers.replace(",", "_");
             }
         } 
-        if(filename == null) {
+        if(filename == null && mapContext != null) {
             StringBuffer sb = new StringBuffer();
             for (MapLayer layer : mapContext.getLayers()) {
                 String title = layer.getTitle();

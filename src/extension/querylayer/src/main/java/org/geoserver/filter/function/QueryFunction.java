@@ -156,7 +156,6 @@ public class QueryFunction extends FunctionImpl {
             this.crs = crs;
         }
         
-        @Override
         public void filter(Geometry g) {
             g.setUserData(crs);
 

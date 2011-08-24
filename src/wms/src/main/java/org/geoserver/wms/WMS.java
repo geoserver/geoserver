@@ -28,6 +28,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
@@ -699,6 +700,10 @@ public class WMS implements ApplicationContextAware {
                     readParameters, layerFilter, "FILTER", "Filter");
         }
         return readParameters;
+    }
+
+    public static WMS get() {
+        return GeoServerExtensions.bean(WMS.class);
     }
 
 }

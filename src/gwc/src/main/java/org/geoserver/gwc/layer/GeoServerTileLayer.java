@@ -25,6 +25,7 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.CanonicalSet;
@@ -491,7 +492,7 @@ public class GeoServerTileLayer extends TileLayer {
                 LOGGER.finer("--> " + Thread.currentThread().getName()
                         + " submitting getMap request for meta grid location "
                         + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
-                WebMap map;
+                RenderedImageMap map;
                 try {
                     map = dispatchGetMap(tile, metaTile);
                     Assert.notNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
@@ -518,7 +519,7 @@ public class GeoServerTileLayer extends TileLayer {
         }
     }
 
-    private WebMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
+    private RenderedImageMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
             throws Exception {
 
         Map<String, String> params = buildGetMap(tile, metaTile);
@@ -529,11 +530,14 @@ public class GeoServerTileLayer extends TileLayer {
 
             mediator.dispatchOwsRequest(params, cookies);
             map = WEB_MAP.get();
+            if (!(map instanceof RenderedImageMap)) {
+                throw new IllegalStateException("Expected: RenderedImageMap, got " + map);
+            }
         } finally {
             WEB_MAP.remove();
         }
 
-        return map;
+        return (RenderedImageMap) map;
     }
 
     private GeoServerMetaTile createMetaTile(ConveyorTile tile, final int metaX, final int metaY) {

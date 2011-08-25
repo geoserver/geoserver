@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.image.ImageWorker;
@@ -30,6 +31,22 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
             .getLogger(JPEGMapResponse.class.toString());
 
     private static final boolean CODEC_LIB_AVAILABLE = PackageUtil.isCodecLibAvailable();
+    
+    /** 
+     * Default capabilities for JPEG .
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = supported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = false</li>
+     *         <li>transparency = false</li>
+     * </ol>
+     * 
+     * <p>
+     * We should soon support multipage tiff.
+     */
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, false, false, null);
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/jpeg";
@@ -53,5 +70,10 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing a JPEG done!!!");
         }
+    }
+
+    @Override
+    public MapProducerCapabilities getCapabilities(String outputFormat) {
+        return CAPABILITIES;
     }
 }

@@ -14,11 +14,11 @@ import org.geoserver.catalog.StyleInfo;
 public class StyleNameRenderer implements IChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
-        return ((StyleInfo) object).getName();
+        return (object != null ? ((StyleInfo) object).getName() : null);
     }
 
     public String getIdValue(Object object, int index) {
-        return ((StyleInfo) object).getId();
+        return (object != null ? ((StyleInfo) object).getId() : null);
     }
 
 }

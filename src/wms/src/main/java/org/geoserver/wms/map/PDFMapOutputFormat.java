@@ -7,6 +7,7 @@ package org.geoserver.wms.map;
 import java.io.IOException;
 
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMSMapContext;
 
 /**
@@ -21,6 +22,19 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
 
     /** the only MIME type this map producer supports */
     static final String MIME_TYPE = "application/pdf";
+    
+    /** 
+     * Default capabilities for OpenLayers format.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = unsupported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = unsupported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     */
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false, false, true, null);
 
     public static class PDFMap extends org.geoserver.wms.WebMap {
 
@@ -46,6 +60,10 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
         result.setContentDispositionHeader(mapContext, ".pdf");
         result.setMimeType(MIME_TYPE);
         return result;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
     }
 
 }

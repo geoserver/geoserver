@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMSMapContext;
 
 /**
@@ -20,6 +21,19 @@ import org.geoserver.wms.WMSMapContext;
  * @see SVGStreamingMapResponse
  */
 public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
+    
+    /** 
+     * Default capabilities for SVG format.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = unsupported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = unsupported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     */
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(false, false, false, true, null);
 
     public SVGStreamingMapOutputFormat() {
         //
@@ -50,6 +64,10 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
         StreamingSVGMap svg = new StreamingSVGMap(mapContext);
         svg.setMimeType(getMimeType());
         return svg;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
     }
 
 }

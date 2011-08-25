@@ -15,6 +15,7 @@ import javax.media.jai.PlanarImage;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -139,4 +140,10 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
         return ImageUtils.forceIndexed8Bitmask(originalImage, paletteInverter);
     }
 
+    /**
+     * Returns the capabilities for this output format 
+     * @param outputFormat
+     * @return
+     */
+    public abstract MapProducerCapabilities getCapabilities(String outputFormat);
 }

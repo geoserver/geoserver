@@ -5,15 +5,18 @@
 package org.geoserver.wms.map;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.springframework.util.Assert;
 
 /**
+ * Base class for formats that do actually draw a map
  * 
  * @author Simone Giannecchini, GeoSolutions
  * @author Gabriel Roldan

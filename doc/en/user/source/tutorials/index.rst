@@ -12,6 +12,7 @@ Tutorials
    palettedimage/palettedimage.rst
    staticfiles.rst
    wmsreflector.rst
+   animreflector.rst
    cql/cql_tutorial.rst
    image_mosaic_plugin/imagemosaic.rst
    imagepyramid/imagepyramid.rst

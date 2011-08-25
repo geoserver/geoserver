@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +47,12 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WatermarkInfo;
+import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
@@ -174,6 +176,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private String extension = null;
     
     /**
+     * The known producer capabilities
+     */
+    private final Map<String, MapProducerCapabilities> capabilities= new HashMap<String, MapProducerCapabilities>();
+
+    /**
      * 
      */
     public RenderedImageMapOutputFormat(WMS wms) {
@@ -186,8 +193,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      *            generated
      */
     public RenderedImageMapOutputFormat(String mime, WMS wms) {
-        super(mime);
-        this.wms = wms;
+        this(mime, new String[] {mime}, wms);
     }
 
     /**
@@ -203,6 +209,17 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     public RenderedImageMapOutputFormat(String mime, String[] outputFormats, WMS wms) {
         super(mime, outputFormats);
         this.wms = wms;
+        
+        // the capabilities of this produce are actually linked to the map response that is going to
+        // be used, this class just generates a rendered image
+        final Collection<RenderedImageMapResponse> responses = this.wms.getAvailableMapResponses();
+        for(RenderedImageMapResponse response: responses){
+            for(String outFormat:outputFormats){
+                MapProducerCapabilities cap=response.getCapabilities(outFormat);
+                if(cap!=null)
+                    capabilities.put(outFormat, cap);
+            }
+        }
     }
 
     /**
@@ -219,6 +236,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      */
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return capabilities.get(format);
     }
 
     /**

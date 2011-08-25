@@ -14,6 +14,7 @@ import javax.imageio.stream.ImageOutputStream;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -47,6 +48,22 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
     /** GridCoverageFactory. */
     private final static GridCoverageFactory factory = CoverageFactoryFinder
             .getGridCoverageFactory(null);
+    
+    /** 
+     * Default capabilities for GEOTIFF.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = supported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = supported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     * 
+     * <p>
+     * We should soon support multipage tiff.
+     */
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false, true, true, null);
 
     public GeoTIFFMapResponse(final WMS wms) {
         super(OUTPUT_FORMATS, wms);
@@ -107,5 +124,10 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing tiff image done!");
         }
+    }
+
+    @Override
+    public MapProducerCapabilities getCapabilities(String outputFormat) {
+        return CAPABILITIES;
     }
 }

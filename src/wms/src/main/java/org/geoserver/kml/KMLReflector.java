@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
@@ -156,7 +157,7 @@ public class KMLReflector {
         // set some kml specific defaults
         Map fo = request.getFormatOptions();
 
-        merge(fo, modeOptions);
+        KvpUtils.merge(fo, modeOptions);
 
         if (fo.get("kmattr") == null) {
             fo.put("kmattr", wmsConfiguration.getKmlKmAttr());

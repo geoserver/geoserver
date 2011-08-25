@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.map.XMLTransformerMap;
@@ -27,6 +28,8 @@ import org.geotools.util.logging.Logging;
 public class KMLMapOutputFormat implements GetMapOutputFormat {
     /** standard logger */
     protected static final Logger LOGGER = Logging.getLogger(KMLMapOutputFormat.class);
+    
+    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, false, true, true, null);
 
     /**
      * Official KML mime type
@@ -81,5 +84,9 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
                 MIME_TYPE);
         map.setContentDispositionHeader(mapContext, ".kml");
         return map;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return KML_CAPABILITIES;
     }
 }

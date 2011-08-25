@@ -119,6 +119,7 @@
             <value>Map</value>
             <value>reflect</value>
             <value>kml</value>
+            <value>animate</value>
             <value>GetStyles</value>
           </list>
         </constructor-arg>
@@ -150,6 +151,7 @@
               <value>GetLegendGraphic</value>
               <value>reflect</value>
               <value>kml</value>
+              <value>animate</value>
             </list>
           </constructor-arg>
     </bean>
@@ -182,7 +184,14 @@
       <property name="request" value="GetFeatureInfo"/>
     </bean>
     -->
-    
+    <bean id="AnimatedGIFDelayKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+		<constructor-arg value="animatedGIFDelay"/>
+ 	</bean>
+ 	
+ 	<bean id="AnimatedGIFLoopContinuoslyKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+		<constructor-arg value="animatedGIFLoopContinuosly"/>
+ 	</bean>
+ 	
  	<bean id="widthKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="width"/>
  	</bean>
@@ -468,6 +477,13 @@
         <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
         <value>image/gif</value>
       </constructor-arg>
+      <constructor-arg>
+        <description>The declared output format MIME-Types in the capabilities document</description>
+        <list>
+          <value>image/gif</value>
+          <value>image/gif;subtype=animated</value>
+        </list>
+      </constructor-arg>
       <constructor-arg ref="wms" />
       <property name="extension" value="gif"/>
     </bean>
@@ -566,6 +582,18 @@
 		</property>
 	</bean>
 	
+	<bean id="animateURLMapping" 
+		class="org.geoserver.ows.OWSHandlerMapping">
+		<constructor-arg ref="catalog"/>
+		<property name="alwaysUseFullPath" value="true"/>
+		<property name="mappings">
+			<props>
+				<prop key="/animate">dispatcher</prop>
+				<prop key="/animate/*">dispatcher</prop>
+			</props>
+		</property>
+	</bean>
+	
 	<!-- kml kvp parsers -->
  	<bean id="superOverlayKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
 		<constructor-arg value="superoverlay"/>
@@ -651,6 +679,7 @@
     
     <bean id="wmsLifecycleHandler" class="org.geoserver.wms.WMSLifecycleHandler">
       <constructor-arg index="0" ref="dataDirectory"/>
+      <constructor-arg index="1" ref="wms"/>
     </bean>
       
     <bean id="wmsCatalogValidator" class="org.geoserver.wms.WMSValidator"/>

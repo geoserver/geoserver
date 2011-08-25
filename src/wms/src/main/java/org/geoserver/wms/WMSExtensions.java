@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -103,4 +104,13 @@ public class WMSExtensions {
         return GeoServerExtensions.extensions(ExtendedCapabilitiesProvider.class, applicationContext);
     }
 
+    /**
+     * Looks up all the {@link RenderedImageMapResponse} registered in the Spring application context
+     * @param applicationContext
+     * @return
+     */
+    public static Collection<RenderedImageMapResponse> findMapResponses(
+            ApplicationContext applicationContext) {
+        return GeoServerExtensions.extensions(RenderedImageMapResponse.class, applicationContext);
+    }
 }

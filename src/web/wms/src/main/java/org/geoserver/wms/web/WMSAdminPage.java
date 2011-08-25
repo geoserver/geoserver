@@ -25,7 +25,6 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -100,6 +99,29 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> jpegCompressionField = new TextField<Integer>("jpeg.compression", jpegCompression, Integer.class);
         jpegCompressionField.add(new RangeValidator<Integer>(0,100));
         form.add(jpegCompressionField);
+        // GIF animated
+        // MAX_ALLOWED_FRAMES
+        MapModel maxAllowedFrames = defaultedModel(metadataModel, WMS.MAX_ALLOWED_FRAMES, WMS.MAX_ALLOWED_FRAMES_DEFAULT);
+        TextField<Integer> maxAllowedFramesField = new TextField<Integer>("anim.maxallowedframes", maxAllowedFrames, Integer.class);
+        maxAllowedFramesField.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE));
+        form.add(maxAllowedFramesField);
+        // MAX_RENDERING_TIME
+        MapModel maxRenderingTime = defaultedModel(metadataModel, WMS.MAX_RENDERING_TIME, null);
+        TextField<Integer> maxRenderingTimeField = new TextField<Integer>("anim.maxrenderingtime", maxRenderingTime, Integer.class);
+        form.add(maxRenderingTimeField);
+        // MAX_RENDERING_SIZE
+        MapModel maxRenderingSize = defaultedModel(metadataModel, WMS.MAX_RENDERING_SIZE, null);
+        TextField<Integer> maxRenderingSizeField = new TextField<Integer>("anim.maxrenderingsize", maxRenderingSize, Integer.class);
+        form.add(maxRenderingSizeField);
+        // FRAMES_DELAY
+        MapModel framesDelay = defaultedModel(metadataModel, WMS.FRAMES_DELAY, WMS.FRAMES_DELAY_DEFAULT);
+        TextField<Integer> framesDelayField = new TextField<Integer>("anim.framesdelay", framesDelay, Integer.class);
+        framesDelayField.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE));
+        form.add(framesDelayField);
+        // LOOP_CONTINUOUSLY
+        MapModel loopContinuously = defaultedModel(metadataModel, WMS.LOOP_CONTINUOUSLY, WMS.LOOP_CONTINUOUSLY_DEFAULT);
+        CheckBox loopContinuouslyField = new CheckBox("anim.loopcontinuously", loopContinuously);
+        form.add(loopContinuouslyField);
         
         // kml handling
         MapModel kmlReflectorMode = defaultedModel(metadataModel, WMS.KML_REFLECTOR_MODE, WMS.KML_REFLECTOR_MODE_DEFAULT);

@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,13 +38,16 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     static final Logger LOGGER = Logging.getLogger(WMSLifecycleHandler.class);
 
     GeoServerDataDirectory data;
+    WMS wmsConfig;
 
-    public WMSLifecycleHandler(GeoServerDataDirectory data) {
+    public WMSLifecycleHandler(GeoServerDataDirectory data, WMS wmsConfig) {
         this.data = data;
+        this.wmsConfig = wmsConfig;
     }
 
     public void onDispose() {
-        // nothing to do
+        // dispose the WMS Animator Executor Service
+        shutdownAnimatorExecutorService();
     }
 
     public void onReload() {
@@ -55,6 +62,35 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
 
         // reloads the font cache
         reloadFontCache();
+        
+        // reset WMS Animator Executor Service
+        resetAnimatorExecutorService();
+    }
+
+    /**
+     * Shutting down pending tasks and resetting the executor service
+     * timeout.
+     */
+    private void resetAnimatorExecutorService() {
+        shutdownAnimatorExecutorService();
+        
+        Long framesTimeout = this.wmsConfig.getMaxAnimatorRenderingTime() != null ? 
+                this.wmsConfig.getMaxAnimatorRenderingTime() : Long.MAX_VALUE;
+        ExecutorService animatorExecutorService = 
+            new ThreadPoolExecutor(4, 20, framesTimeout, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+
+        this.wmsConfig.setAnimatorExecutorService(animatorExecutorService);
+    }
+
+    /**
+     * Suddenly shuts down the Animator Executor Service
+     */
+    private void shutdownAnimatorExecutorService() {
+        final ExecutorService animatorExecutorService = this.wmsConfig.getAnimatorExecutorService();
+        if (animatorExecutorService != null &&
+                !animatorExecutorService.isShutdown()) {
+            animatorExecutorService.shutdownNow();
+        }
     }
 
     void reloadFontCache() {
@@ -92,6 +128,9 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             reloadFontCache();
+            
+            // reset WMS Animator Executor Service
+            resetAnimatorExecutorService();
         }
     }
 

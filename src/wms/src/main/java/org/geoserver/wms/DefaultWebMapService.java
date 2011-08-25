@@ -18,6 +18,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStyles;
 import org.geoserver.sld.GetStylesRequest;
+import org.geoserver.wms.animate.Animator;
 import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
 import org.geoserver.wms.describelayer.DescribeLayerTransformer;
@@ -390,6 +391,20 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         }
     }
 
+    /**
+     * Method for generation of WMS animations.
+     * 
+     * @param getMap GetMapRequest
+     * @return the <WebMap> output
+     */
+    public WebMap animate(GetMapRequest getMap) {
+        try {
+            return Animator.produce(getMap, this, wms);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     /**
      * @see WebMapService#reflect(GetMapRequest)
      */

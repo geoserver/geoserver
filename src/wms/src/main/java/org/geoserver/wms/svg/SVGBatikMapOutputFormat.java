@@ -22,6 +22,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.map.MaxErrorEnforcer;
@@ -40,6 +41,19 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  */
 public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
+    
+    /** 
+     * Default capabilities for SVG format.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = unsupported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = unsupported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     */
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(false, false, false, true, null);
 
     private final WMS wms;
 
@@ -195,6 +209,10 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
         // Set up the context
         return SVGGeneratorContext.createDefault(document);
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
     }
 
 }

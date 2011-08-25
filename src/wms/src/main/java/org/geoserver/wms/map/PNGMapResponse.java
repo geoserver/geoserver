@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.image.ImageWorker;
@@ -33,6 +34,19 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     private static final String MIME_TYPE = "image/png";
 
     private static final String[] OUTPUT_FORMATS = { MIME_TYPE, "image/png8" };
+    
+    /** 
+     * Default capabilities for PNG format.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = supported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = supported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     */
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * @param format
@@ -71,12 +85,17 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         SampleModel sm = image.getSampleModel();
         int numBits = sm.getSampleSize(0);
         // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
-        boolean nativeAcceleration = PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);;
+        boolean nativeAcceleration = PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
         new ImageWorker(image).writePNG(outStream, "FILTERED", quality,
                 nativeAcceleration, image.getColorModel() instanceof IndexColorModel);
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing png image ... done!");
         }
+    }
+
+    @Override
+    public MapProducerCapabilities getCapabilities(String outputFormat) {
+        return CAPABILITIES;
     }
 }

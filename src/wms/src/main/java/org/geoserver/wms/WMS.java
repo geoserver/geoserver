@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +33,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
@@ -67,6 +69,22 @@ public class WMS implements ApplicationContextAware {
 
     public static final int PNG_COMPRESSION_DEFAULT = 25;
 
+    public static final String MAX_ALLOWED_FRAMES = "maxAllowedFrames";
+
+    public static final int MAX_ALLOWED_FRAMES_DEFAULT = Integer.MAX_VALUE;
+    
+    public static final String MAX_RENDERING_TIME = "maxAnimatorRenderingTime";
+    
+    public static final String MAX_RENDERING_SIZE = "maxRenderingSize";
+    
+    public static final String FRAMES_DELAY = "framesDelay";
+
+    public static final int FRAMES_DELAY_DEFAULT = 1000;
+     
+    public static final String LOOP_CONTINUOUSLY = "loopContinuously";
+
+    public static final Boolean LOOP_CONTINUOUSLY_DEFAULT = Boolean.FALSE;
+    
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -123,6 +141,11 @@ public class WMS implements ApplicationContextAware {
 
     public static final int KML_KMSCORE_DEFAULT = 40;
 
+    /**
+     * the WMS Animator animatorExecutor service
+     */
+    private ExecutorService animatorExecutorService;
+    
     private final GeoServer geoserver;
 
     private ApplicationContext applicationContext;
@@ -219,6 +242,20 @@ public class WMS implements ApplicationContextAware {
 
     public GeoServer getGeoServer() {
         return this.geoserver;
+    }
+
+    /**
+     * @param animatorExecutorService the animatorExecutorService to set
+     */
+    public void setAnimatorExecutorService(ExecutorService animatorExecutorService) {
+        this.animatorExecutorService = animatorExecutorService;
+    }
+
+    /**
+     * @return the animatorExecutorService
+     */
+    public ExecutorService getAnimatorExecutorService() {
+        return animatorExecutorService;
     }
 
     public WMSInterpolation getInterpolation() {
@@ -395,6 +432,36 @@ public class WMS implements ApplicationContextAware {
                 JPEG_COMPRESSION_DEFAULT);
     }
 
+    public int getMaxAllowedFrames() {
+    	WMSInfo serviceInfo = getServiceInfo();
+    	return getMetadataValue(serviceInfo.getMetadata(), MAX_ALLOWED_FRAMES,
+    			MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
+    }
+    
+    public Long getMaxAnimatorRenderingTime() {
+        WMSInfo serviceInfo = getServiceInfo();
+        return getMetadataValue(serviceInfo.getMetadata(), MAX_RENDERING_TIME,
+                        null, Long.class);
+    }
+    
+    public Long getMaxRenderingSize() {
+        WMSInfo serviceInfo = getServiceInfo();
+        return getMetadataValue(serviceInfo.getMetadata(), MAX_RENDERING_SIZE,
+                        null, Long.class);
+    }
+
+    public Integer getFramesDelay() {
+        WMSInfo serviceInfo = getServiceInfo();
+        return getMetadataValue(serviceInfo.getMetadata(), FRAMES_DELAY,
+                FRAMES_DELAY_DEFAULT, Integer.class);
+    }
+    
+    public Boolean getLoopContinuously() {
+        WMSInfo serviceInfo = getServiceInfo();
+        return getMetadataValue(serviceInfo.getMetadata(), LOOP_CONTINUOUSLY,
+                LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
+    }
+
     int getMetadataPercentage(MetadataMap metadata, String key, int defaultValue) {
         Integer parsedValue = Converters.convert(metadata.get(key), Integer.class);
         if (parsedValue == null)
@@ -409,6 +476,14 @@ public class WMS implements ApplicationContextAware {
         return value;
     }
 
+    <T> T getMetadataValue(MetadataMap metadata, String key, T defaultValue, Class<T> clazz) {
+    	T parsedValue =  Converters.convert(metadata.get(key), clazz);
+    	if (parsedValue == null)
+            return defaultValue;
+    	
+    	return parsedValue;
+    }
+    
     public int getNumDecimals() {
         GeoServerInfo global = getGeoServer().getGlobal();
         return global.getNumDecimals();
@@ -464,7 +539,7 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Returns all available map output formats. 
+     * Returns all available map output formats.
      */
     public Collection<GetMapOutputFormat> getAvailableMapFormats() {
         return WMSExtensions.findMapProducers(applicationContext);
@@ -700,6 +775,10 @@ public class WMS implements ApplicationContextAware {
                     readParameters, layerFilter, "FILTER", "Filter");
         }
         return readParameters;
+    }
+
+    public Collection<RenderedImageMapResponse> getAvailableMapResponses() {
+        return WMSExtensions.findMapResponses(applicationContext);
     }
 
     public static WMS get() {

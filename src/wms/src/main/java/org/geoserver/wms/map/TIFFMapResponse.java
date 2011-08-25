@@ -17,6 +17,7 @@ import javax.imageio.stream.ImageOutputStream;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.image.io.ImageIOExt;
@@ -43,6 +44,19 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
     private static final String IMAGE_TIFF8 = "image/tiff8";
 
     private static final String[] OUTPUT_FORMATS = { MIME_TYPE, IMAGE_TIFF8 };
+    
+    /** 
+     * Default capabilities for TIFF format.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = supported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = supported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     */
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * Creates a {@link GetMapProducer} to encode the {@link RenderedImage} generated in
@@ -126,5 +140,10 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing tiff image done!");
         }
+    }
+
+    @Override
+    public MapProducerCapabilities getCapabilities(String outputFormat) {
+        return CAPABILITIES;
     }
 }

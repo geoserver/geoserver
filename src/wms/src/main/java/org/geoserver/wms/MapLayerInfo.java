@@ -251,7 +251,8 @@ public final class MapLayerInfo {
         final List<String> styleNames = new ArrayList<String>();
 
         for (StyleInfo si : layerInfo.getStyles()) {
-            styleNames.add(si.getName());
+            if (si != null)
+                styleNames.add(si.getName());
         }
         return styleNames;
     }

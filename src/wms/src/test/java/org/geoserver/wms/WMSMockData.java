@@ -220,6 +220,10 @@ public class WMSMockData {
                 throws IOException, ServiceException {
         }
 
+        public MapProducerCapabilities getCapabilities(String format) {
+            return new MapProducerCapabilities(true, true, true, true, MIME_TYPE);
+        }
+
     }
 
     public StyleInfo getDefaultStyle() {

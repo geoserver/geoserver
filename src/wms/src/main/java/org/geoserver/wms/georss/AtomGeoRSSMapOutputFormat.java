@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.map.XMLTransformerMap;
@@ -21,6 +22,8 @@ import org.geoserver.wms.map.XMLTransformerMap;
 public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
     /** mime type */
     public static String MIME_TYPE = "application/atom+xml";
+    
+    static final MapProducerCapabilities ATOM_CAPABILITIES = new MapProducerCapabilities(false, false, false, true, null);
 
     /** format names/aliases */
     public static final Set<String> FORMAT_NAMES;
@@ -75,5 +78,11 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
         XMLTransformerMap result = new XMLTransformerMap(mapContext, tx, mapContext, getMimeType());
         return result;
     }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return ATOM_CAPABILITIES;
+    }
+    
+    
 
 }

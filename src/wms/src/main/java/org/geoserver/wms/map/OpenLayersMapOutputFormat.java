@@ -25,6 +25,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -58,6 +59,19 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      */
     private static final Set<String> OUTPUT_FORMATS = new HashSet<String>(Arrays.asList(
             "application/openlayers", "openlayers"));
+    
+    /** 
+     * Default capabilities for OpenLayers format.
+     * 
+     * <p>
+     * <ol>
+     *         <li>tiled = supported</li>
+     *         <li>multipleValues = unsupported</li>
+     *         <li>paletteSupported = supported</li>
+     *         <li>transparency = supported</li>
+     * </ol>
+     */
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * Set of parameters that we can ignore, since they are not part of the OpenLayers WMS request
@@ -114,7 +128,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContext)
+     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     public RawMap produceMap(WMSMapContext mapContext)
             throws ServiceException, IOException {
@@ -275,6 +289,10 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         double h = areaOfInterest.getHeight();
 
         return ((w > h) ? w : h) / 256;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
     }
 
 }

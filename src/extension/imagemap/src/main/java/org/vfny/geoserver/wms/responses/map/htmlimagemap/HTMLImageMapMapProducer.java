@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMSMapContext;
 import org.springframework.util.Assert;
 
@@ -25,6 +26,9 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      */
     static final String MIME_TYPE = "text/html";
 
+    static final MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false,
+            true, true, null);
+
     public HTMLImageMapMapProducer() {
         //
     }
@@ -32,8 +36,7 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
     /**
      * Renders the map.
      * 
-     * @throws ServiceException
-     *             if an error occurs during rendering
+     * @throws ServiceException if an error occurs during rendering
      * @see GetMapOutputFormat#produceMap(WMSMapContext)
      */
     public EncodeHTMLImageMap produceMap(WMSMapContext mapContext) throws ServiceException,
@@ -56,6 +59,10 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
      */
     public String getMimeType() {
         return MIME_TYPE;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
     }
 
 }

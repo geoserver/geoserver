@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 
 import org.geoserver.kml.KMZMapResponse.KMZMap;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
@@ -64,5 +65,9 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
         map.setContentDispositionHeader(mapContext, ".kmz");
 
         return map;
+    }
+
+    public MapProducerCapabilities getCapabilities(String format) {
+        return KMLMapOutputFormat.KML_CAPABILITIES;
     }
 }

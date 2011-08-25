@@ -27,7 +27,7 @@ class KMLMetadataDocumentMapOutputFormat implements GetMapOutputFormat {
     protected static final Logger LOGGER = Logging
             .getLogger(KMLMetadataDocumentMapOutputFormat.class);
     
-    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, false, true, true);
+    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, false, true, true, null);
 
     /**
      * Official KML mime type

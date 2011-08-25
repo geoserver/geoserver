@@ -29,7 +29,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     /** standard logger */
     protected static final Logger LOGGER = Logging.getLogger(KMLMapOutputFormat.class);
     
-    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, false, true, true);
+    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, false, true, true, null);
 
     /**
      * Official KML mime type

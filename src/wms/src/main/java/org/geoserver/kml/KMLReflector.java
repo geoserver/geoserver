@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
@@ -108,7 +109,7 @@ public class KMLReflector {
 
         // setup the default mode
         Map<String, String> rawKvp = request.getRawKvp();
-        String mode = caseInsensitiveParam(rawKvp, "mode", wmsConfiguration.getKmlReflectorMode());
+        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode", wmsConfiguration.getKmlReflectorMode());
 
         if (!MODES.containsKey(mode)) {
             throw new ServiceException("Unknown KML mode: " + mode);
@@ -117,7 +118,7 @@ public class KMLReflector {
         Map modeOptions = new HashMap(MODES.get(mode));
 
         if ("superoverlay".equals(mode)) {
-            String submode = caseInsensitiveParam(request.getRawKvp(), "superoverlay_mode",
+            String submode = KvpUtils.caseInsensitiveParam(request.getRawKvp(), "superoverlay_mode",
                     wmsConfiguration.getKmlSuperoverlayMode());
 
             if ("raster".equalsIgnoreCase(submode)) {
@@ -153,7 +154,7 @@ public class KMLReflector {
         // set some kml specific defaults
         Map fo = request.getFormatOptions();
 
-        merge(fo, modeOptions);
+        KvpUtils.merge(fo, modeOptions);
 
         if (fo.get("kmattr") == null) {
             fo.put("kmattr", wmsConfiguration.getKmlKmAttr());
@@ -203,30 +204,4 @@ public class KMLReflector {
         return wmsResponse;
     }
 
-    private static String caseInsensitiveParam(Map params, String paramname, String defaultValue) {
-        String value = defaultValue;
-
-        for (Object o : params.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            if (entry.getKey() instanceof String) {
-                if (paramname.equalsIgnoreCase((String) entry.getKey())) {
-                    Object obj = entry.getValue();
-                    value = obj instanceof String ? (String) obj
-                            : (obj instanceof String[]) ? ((String[]) obj)[0].toLowerCase() : value;
-                }
-            }
-        }
-
-        return value;
-    }
-
-    private static void merge(Map options, Map addition) {
-        for (Object o : addition.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            if (entry.getValue() == null)
-                options.remove(entry.getKey());
-            else
-                options.put(entry.getKey(), entry.getValue());
-        }
-    }
 }

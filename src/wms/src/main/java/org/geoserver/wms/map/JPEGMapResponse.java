@@ -46,7 +46,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
      * <p>
      * We should soon support multipage tiff.
      */
-    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, false, false);
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, false, false, null);
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/jpeg";

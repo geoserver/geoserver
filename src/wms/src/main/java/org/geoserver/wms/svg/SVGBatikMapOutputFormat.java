@@ -51,7 +51,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      *         <li>transparency = supported</li>
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(false, false, false, true);
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(false, false, false, true, null);
 
     private final WMS wms;
 

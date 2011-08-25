@@ -221,7 +221,7 @@ public class WMSMockData {
         }
 
         public MapProducerCapabilities getCapabilities(String format) {
-            return new MapProducerCapabilities(true, true, true, true);
+            return new MapProducerCapabilities(true, true, true, true, MIME_TYPE);
         }
 
     }

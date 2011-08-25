@@ -560,5 +560,30 @@ public class KvpUtils {
         return sb.toString();
     }
     
-    
+    public static String caseInsensitiveParam(Map params, String paramname, String defaultValue) {
+        String value = defaultValue;
+
+        for (Object o : params.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            if (entry.getKey() instanceof String) {
+                if (paramname.equalsIgnoreCase((String) entry.getKey())) {
+                    Object obj = entry.getValue();
+                    value = obj instanceof String ? (String) obj
+                            : (obj instanceof String[]) ? ((String[]) obj)[0].toLowerCase() : value;
+                }
+            }
+        }
+
+        return value;
+    }
+
+    public static void merge(Map options, Map addition) {
+        for (Object o : addition.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            if (entry.getValue() == null)
+                options.remove(entry.getKey());
+            else
+                options.put(entry.getKey(), entry.getValue());
+        }
+    }
 }

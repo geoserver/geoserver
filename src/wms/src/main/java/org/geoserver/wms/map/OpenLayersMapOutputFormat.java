@@ -71,7 +71,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      *         <li>transparency = supported</li>
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true);
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * Set of parameters that we can ignore, since they are not part of the OpenLayers WMS request

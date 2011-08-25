@@ -115,6 +115,33 @@
     </li>
     <li>
       <fieldset>
+        <legend><span><wicket:message key="animOptions">WMS-Animator Options</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="maxAllowedFrames">Max allowed frames</wicket:message></label>
+            <input class="field" type="text" wicket:id="anim.maxallowedframes"></input>
+          </li>
+          <li>
+            <label><wicket:message key="maxAnimatorRenderingTime">Max Animator rendering time (ms)</wicket:message></label>
+            <input class="field" type="text" wicket:id="anim.maxrenderingtime"></input>
+          </li>
+          <li>
+            <label><wicket:message key="maxRenderingSize">Max rendering size (bytes)</wicket:message></label>
+            <input class="field" type="text" wicket:id="anim.maxrenderingsize"></input>
+          </li>
+          <li>
+            <label><wicket:message key="framesDelay">Frames Delay (ms, default 1s)</wicket:message></label>
+            <input class="field" type="text" wicket:id="anim.framesdelay"></input>
+          </li>
+          <li>
+            <input class="field checkbox" type="checkbox" wicket:id="anim.loopcontinuously"></input>
+            <label class="choice"><wicket:message key="loopContinuously">Loop Continuously</wicket:message></label>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
         <legend><span><wicket:message key="svgOptions">SVG Options</wicket:message></span></legend>
         <ul>
          <li>

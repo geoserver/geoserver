@@ -18,15 +18,18 @@ public class MapProducerCapabilities {
     private final boolean paletteSupported;
 
     private final boolean transparencySupported;
+    
+    private final String framesMimeType;
 
     public MapProducerCapabilities(boolean tiledRequestsSupported,
             boolean multivalueRequestsSupported, boolean paletteSupported,
-            boolean transparencySupported) {
+            boolean transparencySupported, String framesMimeType) {
         super();
         this.tiledRequestsSupported = tiledRequestsSupported;
         this.multivalueRequestsSupported = multivalueRequestsSupported;
         this.paletteSupported = paletteSupported;
         this.transparencySupported = transparencySupported;
+        this.framesMimeType = framesMimeType;
     }
 
     /**
@@ -62,10 +65,19 @@ public class MapProducerCapabilities {
         return transparencySupported;
     }
 
+    /**
+     * Returns the MIME TYPE of frames in case of animation is supported by this format
+     * @return
+     */
+    public String getFramesMimeType() {
+        return framesMimeType;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((framesMimeType == null) ? 0 : framesMimeType.hashCode());
         result = prime * result + (multivalueRequestsSupported ? 1231 : 1237);
         result = prime * result + (paletteSupported ? 1231 : 1237);
         result = prime * result + (tiledRequestsSupported ? 1231 : 1237);
@@ -75,29 +87,43 @@ public class MapProducerCapabilities {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!(obj instanceof MapProducerCapabilities)) {
             return false;
+        }
         MapProducerCapabilities other = (MapProducerCapabilities) obj;
-        if (multivalueRequestsSupported != other.multivalueRequestsSupported)
+        if (framesMimeType == null) {
+            if (other.framesMimeType != null) {
+                return false;
+            }
+        } else if (!framesMimeType.equals(other.framesMimeType)) {
             return false;
-        if (paletteSupported != other.paletteSupported)
+        }
+        if (multivalueRequestsSupported != other.multivalueRequestsSupported) {
             return false;
-        if (tiledRequestsSupported != other.tiledRequestsSupported)
+        }
+        if (paletteSupported != other.paletteSupported) {
             return false;
-        if (transparencySupported != other.transparencySupported)
+        }
+        if (tiledRequestsSupported != other.tiledRequestsSupported) {
             return false;
+        }
+        if (transparencySupported != other.transparencySupported) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "RasterMapProducerCapabilities [multivalueRequestsSupported="
-                + multivalueRequestsSupported + ", paletteSupported=" + paletteSupported
-                + ", tiledRequestsSupported=" + tiledRequestsSupported + ", transparencySupported="
-                + transparencySupported + "]";
+        return "MapProducerCapabilities [framesMimeType=" + framesMimeType
+                + ", multivalueRequestsSupported=" + multivalueRequestsSupported
+                + ", paletteSupported=" + paletteSupported + ", tiledRequestsSupported="
+                + tiledRequestsSupported + ", transparencySupported=" + transparencySupported + "]";
     }
 }

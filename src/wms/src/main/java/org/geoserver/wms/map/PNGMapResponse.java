@@ -46,7 +46,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
      *         <li>transparency = supported</li>
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true);
+    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * @param format

@@ -24,7 +24,7 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
     /** the actual mime type for the response header */
     private static String MIME_TYPE = "application/xml";
     
-    static final MapProducerCapabilities RSS_CAPABILITIES = new MapProducerCapabilities(false, false, false, true);
+    static final MapProducerCapabilities RSS_CAPABILITIES = new MapProducerCapabilities(false, false, false, true, null);
 
     /** format names/aliases */
     public static final Set<String> FORMAT_NAMES;

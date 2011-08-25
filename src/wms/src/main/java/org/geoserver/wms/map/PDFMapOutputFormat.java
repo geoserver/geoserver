@@ -34,7 +34,7 @@ public class PDFMapOutputFormat extends AbstractMapOutputFormat {
      *         <li>transparency = supported</li>
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false, false, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false, false, true, null);
 
     public static class PDFMap extends org.geoserver.wms.WebMap {
 

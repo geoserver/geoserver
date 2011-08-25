@@ -901,7 +901,7 @@ public class Dispatcher extends AbstractController {
         return sBean;
     }
 
-    Collection loadKvpRequestReaders() {
+    public static Collection loadKvpRequestReaders() {
         Collection kvpReaders = GeoServerExtensions.extensions(KvpRequestReader.class);
 
         if (!(new HashSet(kvpReaders).size() == kvpReaders.size())) {
@@ -912,7 +912,7 @@ public class Dispatcher extends AbstractController {
         return kvpReaders;
     }
 
-    KvpRequestReader findKvpRequestReader(Class type) {
+    public static KvpRequestReader findKvpRequestReader(Class type) {
         Collection kvpReaders = loadKvpRequestReaders();
 
         List matches = new ArrayList();

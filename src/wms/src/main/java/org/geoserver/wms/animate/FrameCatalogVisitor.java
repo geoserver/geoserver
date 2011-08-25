@@ -92,10 +92,10 @@ public class FrameCatalogVisitor {
                 image = future.get();
             } catch (InterruptedException e) {
                 dispose();
-                throw new IOException(e);
+                throw new IOException(e.getMessage());
             } catch (ExecutionException e) {
                 dispose();
-                throw new IOException(e);
+                throw new IOException(e.getMessage());
             }
 
             if (image == null) {

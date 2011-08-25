@@ -56,7 +56,8 @@ public class FrameCatalog {
         String aparam = KvpUtils.caseInsensitiveParam(rawKvp, "aparam", null);
         String avalues = KvpUtils.caseInsensitiveParam(rawKvp, "avalues", null);
 
-        if (aparam != null && !aparam.isEmpty() && avalues != null && !avalues.isEmpty()) {
+        if (aparam != null && aparam.trim().length() > 0 && 
+                avalues != null && avalues.trim().length() > 0) {
             this.parameter = aparam;
             this.values = avalues.split("(?<!\\\\)(,)");
         } else {

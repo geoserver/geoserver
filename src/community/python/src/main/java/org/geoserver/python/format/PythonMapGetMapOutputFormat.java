@@ -42,7 +42,7 @@ public class PythonMapGetMapOutputFormat implements GetMapOutputFormat {
     }
 
     public MapProducerCapabilities getCapabilities(String format) {
-        return new MapProducerCapabilities(false, false, false, true);
+        return new MapProducerCapabilities(false, false, false, true, null);
     }
 
 }

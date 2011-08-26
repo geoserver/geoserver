@@ -394,6 +394,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	@Override
 	public MapProducerCapabilities getCapabilities(String outputFormat) {
 		// FIXME become more capable
-		return new MapProducerCapabilities(false, false, false, false);
+		return new MapProducerCapabilities(false, false, false, false, null);
 	}
 }

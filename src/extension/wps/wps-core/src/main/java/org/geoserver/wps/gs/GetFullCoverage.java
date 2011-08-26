@@ -11,10 +11,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wps.WPSException;
-import org.geoserver.wps.jts.DescribeParameter;
-import org.geoserver.wps.jts.DescribeProcess;
-import org.geoserver.wps.jts.DescribeResult;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.process.factory.DescribeParameter;
+import org.geotools.process.factory.DescribeProcess;
+import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.gs.GSProcess;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.filter.Filter;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -28,7 +29,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author Andrea Aime, GeoSolutions SAS
  */
 @DescribeProcess(title = "GetFullCoverage", description = "Returns a full coverage from the catalog, in its native form")
-public class GetFullCoverage implements GeoServerProcess {
+public class GetFullCoverage implements GSProcess {
 
     private Catalog catalog;
 

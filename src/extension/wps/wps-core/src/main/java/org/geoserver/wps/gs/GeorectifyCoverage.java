@@ -32,10 +32,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment.Variable;
 import org.geoserver.wps.WPSException;
-import org.geoserver.wps.jts.DescribeParameter;
-import org.geoserver.wps.jts.DescribeProcess;
-import org.geoserver.wps.jts.DescribeResult;
-import org.geoserver.wps.jts.DescribeResults;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -45,6 +41,11 @@ import org.geotools.data.Query;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
 import org.geotools.process.ProcessException;
+import org.geotools.process.factory.DescribeParameter;
+import org.geotools.process.factory.DescribeProcess;
+import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.factory.DescribeResults;
+import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.opengis.coverage.grid.GridGeometry;
@@ -60,7 +61,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Andrea Aime, GeoSolutions SAS
  */
 @DescribeProcess(title = "GeorectifyCoverage", description = "Process which allows to georectify a coverage through GCPs using gdal_warp")
-public class GeorectifyCoverage implements GeoServerProcess {
+public class GeorectifyCoverage implements GSProcess {
 
     private final static Pattern GCP_PATTERN = Pattern
             .compile("\\[((\\+|-)?[0-9]+(.[0-9]+)?), ((\\+|-)?[0-9]+(.[0-9]+)?)(, ((\\+|-)?[0-9]+(.[0-9]+)?))?\\]");

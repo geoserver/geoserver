@@ -4,11 +4,13 @@
  */
 package org.geoserver.wps.gs;
 
+import org.geotools.process.gs.GSProcess;
+
 /**
  * A marker interface used to lookup the processes
  * 
  * @author Andrea Aime - OpenGeo
  */
-public interface GeoServerProcess {
+public interface GeoServerProcess extends GSProcess {
 
 }

@@ -9,15 +9,16 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.geoserver.wps.WPSStorageHandler;
-import org.geoserver.wps.jts.DescribeParameter;
-import org.geoserver.wps.jts.DescribeProcess;
-import org.geoserver.wps.jts.DescribeResult;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
+import org.geotools.process.factory.DescribeParameter;
+import org.geotools.process.factory.DescribeProcess;
+import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.gs.GSProcess;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
@@ -28,7 +29,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author ETj <etj at geo-solutions.it>
  */
 @DescribeProcess(title = "storeCoverage", description = "Applies a raster symbolizer to the coverage")
-public class StoreCoverage implements GeoServerProcess {
+public class StoreCoverage implements GSProcess {
 
     private final static GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
 

@@ -20,9 +20,6 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.WPSException;
-import org.geoserver.wps.jts.DescribeParameter;
-import org.geoserver.wps.jts.DescribeProcess;
-import org.geoserver.wps.jts.DescribeResult;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
@@ -33,6 +30,10 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.process.ProcessException;
+import org.geotools.process.factory.DescribeParameter;
+import org.geotools.process.factory.DescribeProcess;
+import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
@@ -48,7 +49,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * 
  */
 @DescribeProcess(title = "Catalog import", description = "Imports the provided feature collection into the catalog")
-public class ImportProcess implements GeoServerProcess {
+public class ImportProcess implements GSProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
 

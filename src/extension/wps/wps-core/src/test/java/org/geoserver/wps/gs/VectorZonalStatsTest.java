@@ -1,5 +1,7 @@
 package org.geoserver.wps.gs;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,8 +13,6 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
 import org.w3c.dom.Document;
-
-import static org.custommonkey.xmlunit.XMLAssert.*;
 
 public class VectorZonalStatsTest extends WPSTestSupport {
 

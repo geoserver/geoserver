@@ -16,12 +16,14 @@ import java.util.Set;
 
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.FactoryIteratorProvider;
-import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.FunctionFactory;
-import org.geotools.filter.FunctionFinder;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
+import org.geotools.process.factory.DescribeParameter;
+import org.geotools.process.factory.DescribeProcess;
+import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.factory.DescribeResults;
 import org.geotools.process.function.ProcessFunctionFactory;
 import org.geotools.util.SimpleInternationalString;
 import org.opengis.feature.type.Name;
@@ -39,7 +41,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * {@link DescribeProcess}, {@link DescribeParameter} and {@link DescribeResult}. Each bean will
  * have a "execute" method taking the process parameters as arguments and returning the results
  */
-public class SpringBeanProcessFactory extends AnnotationDrivenProcessFactory implements
+public class SpringBeanProcessFactory extends org.geotools.process.factory.AnnotationDrivenProcessFactory implements
         ApplicationContextAware, ApplicationListener {
 
     Map<String, Class> classMap;

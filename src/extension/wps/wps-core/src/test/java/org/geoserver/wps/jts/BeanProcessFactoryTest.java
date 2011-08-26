@@ -8,9 +8,6 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.geoserver.wps.gs.BoundsProcess;
-import org.geoserver.wps.gs.NearestProcess;
-import org.geoserver.wps.gs.SnapProcess;
 import org.geotools.data.Parameter;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.FactoryIteratorProvider;
@@ -22,6 +19,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
+import org.geotools.process.factory.AnnotatedBeanProcessFactory;
+import org.geotools.process.feature.gs.BoundsProcess;
+import org.geotools.process.feature.gs.NearestProcess;
+import org.geotools.process.feature.gs.SnapProcess;
 import org.geotools.util.SimpleInternationalString;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;

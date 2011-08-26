@@ -5,6 +5,7 @@
 package org.geoserver.wps.gs;
 
 import org.geoserver.wps.ppio.XStreamPPIO;
+import org.geotools.process.feature.gs.AggregateProcess;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.mapper.MapperWrapper;

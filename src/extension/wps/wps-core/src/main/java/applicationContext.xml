@@ -130,42 +130,42 @@
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">
       <constructor-arg index="0" value="GeoServer custom processes"/>
       <constructor-arg index="1" value="gs"/>
-      <constructor-arg index="2" value="org.geoserver.wps.gs.GeoServerProcess"/>
+      <constructor-arg index="2" value="org.geotools.process.gs.GSProcess"/>
     </bean>
-    <bean id="boundsProcess" class="org.geoserver.wps.gs.BoundsProcess"/>
-    <bean id="nearestProcess" class="org.geoserver.wps.gs.NearestProcess"/>
-    <bean id="snapProcess" class="org.geoserver.wps.gs.SnapProcess"/>
+    <bean id="boundsProcess" class="org.geotools.process.feature.gs.BoundsProcess"/>
+    <bean id="nearestProcess" class="org.geotools.process.feature.gs.NearestProcess"/>
+    <bean id="snapProcess" class="org.geotools.process.feature.gs.SnapProcess"/>
     <bean id="importProcess" class="org.geoserver.wps.gs.ImportProcess">
       <constructor-arg index="0" ref="catalog"/>
     </bean>
-    <bean id="reprojectProcess" class="org.geoserver.wps.gs.ReprojectProcess"/>
-    <bean id="reprojectGeometryProcess" class="org.geoserver.wps.gs.ReprojectGeometry"/>
-    <bean id="queryProcess" class="org.geoserver.wps.gs.QueryProcess"/>
-    <bean id="aggregateProcess" class="org.geoserver.wps.gs.AggregateProcess"/>
+    <bean id="reprojectProcess" class="org.geotools.process.feature.gs.ReprojectProcess"/>
+    <bean id="reprojectGeometryProcess" class="org.geotools.process.geometry.gs.ReprojectGeometry"/>
+    <bean id="queryProcess" class="org.geotools.process.feature.gs.QueryProcess"/>
+    <bean id="aggregateProcess" class="org.geotools.process.feature.gs.AggregateProcess"/>
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
-    <bean id="countProcess" class="org.geoserver.wps.gs.CountProcess"/>
-    <bean id="uniqueProcess" class="org.geoserver.wps.gs.UniqueProcess"/>
-    <bean id="simplifyProcess" class="org.geoserver.wps.gs.SimplifyProcess"/>
-    <bean id="rasterAsPointCollectionProcess" class="org.geoserver.wps.gs.RasterAsPointCollectionProcess"/>
-    <bean id="contourProcess" class="org.geoserver.wps.gs.ContourProcess"/>
-    <bean id="polygonExtractionProcess" class="org.geoserver.wps.gs.PolygonExtractionProcess"/>
-    <bean id="rclipProcess" class="org.geoserver.wps.gs.RectangularClipProcess"/>
-    <bean id="clipProcess" class="org.geoserver.wps.gs.ClipProcess"/>
-    <bean id="collectGeometriesProcess" class="org.geoserver.wps.gs.CollectGeometries" />
-    <bean id="cropCoverageProcess" class="org.geoserver.wps.gs.CropCoverage" />
-    <bean id="scaleCoverageProcess" class="org.geoserver.wps.gs.ScaleCoverage" />
-    <bean id="styleCoverageProcess" class="org.geoserver.wps.gs.StyleCoverage" />
+    <bean id="countProcess" class="org.geotools.process.feature.gs.CountProcess"/>
+    <bean id="uniqueProcess" class="org.geotools.process.feature.gs.UniqueProcess"/>
+    <bean id="simplifyProcess" class="org.geotools.process.feature.gs.SimplifyProcess"/>
+    <bean id="rasterAsPointCollectionProcess" class="org.geotools.process.raster.gs.RasterAsPointCollectionProcess"/>
+    <bean id="contourProcess" class="org.geotools.process.raster.gs.ContourProcess"/>
+    <bean id="polygonExtractionProcess" class="org.geotools.process.raster.gs.PolygonExtractionProcess"/>
+    <bean id="rclipProcess" class="org.geotools.process.feature.gs.RectangularClipProcess"/>
+    <bean id="clipProcess" class="org.geotools.process.feature.gs.ClipProcess"/>
+    <bean id="collectGeometriesProcess" class="org.geotools.process.feature.gs.CollectGeometries" />
+    <bean id="cropCoverageProcess" class="org.geotools.process.raster.gs.CropCoverage" />
+    <bean id="scaleCoverageProcess" class="org.geotools.process.raster.gs.ScaleCoverage" />
+    <bean id="styleCoverageProcess" class="org.geotools.process.raster.gs.StyleCoverage" />
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsStorageHandler"></constructor-arg>
     </bean>
-    <bean id="vectorZonalStatistics" class="org.geoserver.wps.gs.VectorZonalStatistics" />
-    <bean id="pointBuffersProces" class="org.geoserver.wps.gs.PointBuffers" />
-    <bean id="rasterZonalStatistics" class="org.geoserver.wps.gs.RasterZonalStatistics" />
-    <bean id="rangeLookupProcess" class="org.geoserver.wps.gs.RangeLookupProcess" />
-    <bean id="addCoveragesProcess" class="org.geoserver.wps.gs.AddCoveragesProcess" />
+    <bean id="vectorZonalStatistics" class="org.geotools.process.feature.gs.VectorZonalStatistics" />
+    <bean id="pointBuffersProces" class="org.geotools.process.feature.gs.PointBuffers" />
+    <bean id="rasterZonalStatistics" class="org.geotools.process.raster.gs.RasterZonalStatistics" />
+    <bean id="rangeLookupProcess" class="org.geotools.process.raster.gs.RangeLookupProcess" />
+    <bean id="addCoveragesProcess" class="org.geotools.process.raster.gs.AddCoveragesProcess" />
     
-    <bean id="multiplyCoveragesProcess" class="org.geoserver.wps.gs.MultiplyCoveragesProcess" />
-    <bean id="gridProcess" class="org.geoserver.wps.gs.GridProcess" />
+    <bean id="multiplyCoveragesProcess" class="org.geotools.process.raster.gs.MultiplyCoveragesProcess" />
+    <bean id="gridProcess" class="org.geotools.process.feature.gs.GridProcess" />
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">

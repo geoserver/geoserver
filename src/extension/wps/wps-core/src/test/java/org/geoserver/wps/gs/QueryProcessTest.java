@@ -1,9 +1,9 @@
 package org.geoserver.wps.gs;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;

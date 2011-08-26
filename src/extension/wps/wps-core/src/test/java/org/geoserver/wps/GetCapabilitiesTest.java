@@ -16,7 +16,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
     
     public void testGetBasic() throws Exception { // Standard Test A.4.2.1
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
-        // print(d);
+        print(d);
         basicCapabilitiesTest(d);
     }
     

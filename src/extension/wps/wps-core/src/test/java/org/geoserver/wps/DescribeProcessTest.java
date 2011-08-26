@@ -12,7 +12,7 @@ public class DescribeProcessTest extends WPSTestSupport {
     }
     
     public void testGetBuffer() throws Exception { // Standard Test A.4.3.1
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:buffer");
+        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
         print(d);
         testBufferDescription(d);
     }
@@ -23,13 +23,18 @@ public class DescribeProcessTest extends WPSTestSupport {
         		"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
         		"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
         		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" + 
-        		"    <ows:Identifier>gt:buffer</ows:Identifier>\r\n" + 
+        		"    <ows:Identifier>JTS:buffer</ows:Identifier>\r\n" + 
         		"</DescribeProcess>";
         Document d = postAsDOM(root(), request);
         print(d);
         testBufferDescription(d);
     }
 
+    public void testGetBufferFeatureCollection() throws Exception { // Standard Test A.4.3.1
+        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
+        print(d);
+    }
+    
     private void testBufferDescription(Document d) throws Exception { // Standard Test A.4.3.3
         // first off, let's check it's schema compliant ... it's not unfortunately, prefix issues
         // prevent even the most basic validation...
@@ -39,27 +44,25 @@ public class DescribeProcessTest extends WPSTestSupport {
         String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
         
         //first parameter
-        assertXpathExists( base + "/Input[1]", d );
-        assertXpathEvaluatesTo("buffer", base + "/Input[1]/ows:Identifier/child::text()", d );
-        assertXpathExists( base + "/Input[1]/LiteralData", d );
-
-        assertXpathEvaluatesTo("xs:double", base + "/Input[1]/LiteralData/ows:DataType/child::text()", d );
+        assertXpathExists( base + "/Input[1]" , d );
+        assertXpathExists( base + "/Input[1]/ComplexData", d );
+        
+        assertXpathEvaluatesTo("text/xml; subtype=gml/3.1.1", 
+        		base + "/Input[1]/ComplexData/Default/Format/MimeType/child::text()", d);
+        assertXpathEvaluatesTo("text/xml; subtype=gml/3.1.1", 
+        		base + "/Input[1]/ComplexData/Supported/Format[1]/MimeType/child::text()", d);
+        assertXpathEvaluatesTo("text/xml; subtype=gml/2.1.2", 
+        		base + "/Input[1]/ComplexData/Supported/Format[2]/MimeType/child::text()", d);
+        assertXpathEvaluatesTo("application/wkt", 
+        		base + "/Input[1]/ComplexData/Supported/Format[3]/MimeType/child::text()", d);
         
         //second parameter
-        base += "/Input[2]";
-        assertXpathExists( base , d );
-        assertXpathExists( base + "/ComplexData", d );
-        
-        base += "/ComplexData";
-        assertXpathEvaluatesTo("text/xml; subtype=gml/3.1.1", 
-                base + "/Default/Format/MimeType/child::text()", d);
-        assertXpathEvaluatesTo("text/xml; subtype=gml/3.1.1", 
-                base + "/Supported/Format[1]/MimeType/child::text()", d);
-        assertXpathEvaluatesTo("text/xml; subtype=gml/2.1.2", 
-                base + "/Supported/Format[2]/MimeType/child::text()", d);
-        assertXpathEvaluatesTo("application/wkt", 
-                base + "/Supported/Format[3]/MimeType/child::text()", d);
-    
+        assertXpathExists( base + "/Input[2]", d );
+        assertXpathEvaluatesTo("distance", base + "/Input[2]/ows:Identifier/child::text()", d );
+        assertXpathExists( base + "/Input[2]/LiteralData", d );
+
+        assertXpathEvaluatesTo("xs:double", base + "/Input[2]/LiteralData/ows:DataType/child::text()", d );
+
         //output
         base = "/wps:ProcessDescriptions/ProcessDescription/ProcessOutputs";
         assertXpathExists( base + "/Output", d );

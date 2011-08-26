@@ -37,28 +37,28 @@ public class ExecuteTest extends WPSTestSupport {
         String xml =  
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-            "<ows:Identifier>gt:buffer</ows:Identifier>" + 
+            "<ows:Identifier>JTS:buffer</ows:Identifier>" + 
              "<wps:DataInputs>" + 
                 "<wps:Input>" + 
-                    "<ows:Identifier>geom1</ows:Identifier>" + 
-                    "<wps:Data>" +
-                      "<wps:ComplexData>" + 
-                        "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>" +
-                          "<gml:exterior>" + 
-                            "<gml:LinearRing>" + 
-                              "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>" + 
-                            "</gml:LinearRing>" + 
-                          "</gml:exterior>" + 
-                        "</gml:Polygon>" +
-                      "</wps:ComplexData>" + 
-                    "</wps:Data>" +     
-                "</wps:Input>" + 
-                "<wps:Input>" + 
-                   "<ows:Identifier>buffer</ows:Identifier>" + 
+                   "<ows:Identifier>distance</ows:Identifier>" + 
                    "<wps:Data>" + 
                      "<wps:LiteralData>1</wps:LiteralData>" + 
                    "</wps:Data>" + 
                 "</wps:Input>" + 
+                "<wps:Input>" + 
+                "<ows:Identifier>geom</ows:Identifier>" + 
+                "<wps:Data>" +
+                  "<wps:ComplexData>" + 
+                    "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>" +
+                      "<gml:exterior>" + 
+                        "<gml:LinearRing>" + 
+                          "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>" + 
+                        "</gml:LinearRing>" + 
+                      "</gml:exterior>" + 
+                    "</gml:Polygon>" +
+                  "</wps:ComplexData>" + 
+                "</wps:Data>" +     
+            "</wps:Input>" + 
            "</wps:DataInputs>" +
            "<wps:ResponseForm>" +  
              "<wps:ResponseDocument storeExecuteResponse='false'>" + 
@@ -84,29 +84,29 @@ public class ExecuteTest extends WPSTestSupport {
         String xml =  
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-            "<ows:Identifier>gt:buffer</ows:Identifier>" + 
+            "<ows:Identifier>JTS:buffer</ows:Identifier>" + 
              "<wps:DataInputs>" + 
                 "<wps:Input>" + 
-                    "<ows:Identifier>geom1</ows:Identifier>" + 
-                    "<wps:Data>" +
-                      "<wps:ComplexData>" + 
-                        "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>" +
-                          "<gml:exterior>" + 
-                            "<gml:LinearRing>" + 
-                              "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>" + 
-                            "</gml:LinearRing>" + 
-                          "</gml:exterior>" + 
-                        "</gml:Polygon>" +
-                      "</wps:ComplexData>" + 
-                    "</wps:Data>" +     
-                "</wps:Input>" + 
-                "<wps:Input>" + 
-                   "<ows:Identifier>buffer</ows:Identifier>" + 
+                   "<ows:Identifier>distance</ows:Identifier>" + 
                    "<wps:Data>" + 
                      "<wps:LiteralData>1</wps:LiteralData>" + 
                    "</wps:Data>" + 
                 "</wps:Input>" + 
-           "</wps:DataInputs>" +
+                "<wps:Input>" + 
+                "<ows:Identifier>geom</ows:Identifier>" + 
+                "<wps:Data>" +
+                  "<wps:ComplexData>" + 
+                    "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>" +
+                      "<gml:exterior>" + 
+                        "<gml:LinearRing>" + 
+                          "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>" + 
+                        "</gml:LinearRing>" + 
+                      "</gml:exterior>" + 
+                    "</gml:Polygon>" +
+                  "</wps:ComplexData>" + 
+                "</wps:Data>" +     
+              "</wps:Input>" + 
+            "</wps:DataInputs>" +
            "<wps:ResponseForm>" + 
            "    <wps:RawDataOutput>" + 
            "        <ows:Identifier>result</ows:Identifier>" + 
@@ -124,22 +124,22 @@ public class ExecuteTest extends WPSTestSupport {
         String xml =  
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-            "<ows:Identifier>gt:buffer</ows:Identifier>" + 
+            "<ows:Identifier>JTS:buffer</ows:Identifier>" + 
              "<wps:DataInputs>" + 
                 "<wps:Input>" + 
-                    "<ows:Identifier>geom1</ows:Identifier>" + 
-                    "<wps:Data>" +
-                      "<wps:ComplexData mimeType=\"application/wkt\">" +
-                        "<![CDATA[POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))]]>" +
-                      "</wps:ComplexData>" + 
-                    "</wps:Data>" +     
-                "</wps:Input>" + 
-                "<wps:Input>" + 
-                   "<ows:Identifier>buffer</ows:Identifier>" + 
+                   "<ows:Identifier>distance</ows:Identifier>" + 
                    "<wps:Data>" + 
                      "<wps:LiteralData>1</wps:LiteralData>" + 
                    "</wps:Data>" + 
                 "</wps:Input>" + 
+                "<wps:Input>" + 
+                "<ows:Identifier>geom</ows:Identifier>" + 
+                "<wps:Data>" +
+                  "<wps:ComplexData mimeType=\"application/wkt\">" +
+                    "<![CDATA[POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))]]>" +
+                  "</wps:ComplexData>" + 
+                "</wps:Data>" +     
+            "</wps:Input>" + 
            "</wps:DataInputs>" +
            "<wps:ResponseForm>" + 
            "    <wps:RawDataOutput mimeType=\"application/wkt\">" + 
@@ -158,8 +158,8 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     public void testWKTInlineKVPRawOutput() throws Exception {
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gt:buffer" +
-        		"&DataInputs=" + urlEncode("geom1=POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))@mimetype=application/wkt;buffer=1") +
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=JTS:buffer" +
+        		"&DataInputs=" + urlEncode("geom=POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))@mimetype=application/wkt;distance=1") +
         		"&RawDataOutput=" + urlEncode("result=@mimetype=application/wkt");
         MockHttpServletResponse response = getAsServletResponse(request);
         // System.out.println(response.getOutputStreamContent());
@@ -172,10 +172,10 @@ public class ExecuteTest extends WPSTestSupport {
     public void testFeatureCollectionInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-              "<ows:Identifier>gt:BufferFeatureCollection</ows:Identifier>" + 
+              "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
                "<wps:DataInputs>" + 
                   "<wps:Input>" + 
-                      "<ows:Identifier>features</ows:Identifier>" + 
+                      "<ows:Identifier>feature collection</ows:Identifier>" + 
                       "<wps:Data>" +
                         "<wps:ComplexData>" + 
                              readFileIntoString("states-FeatureCollection.xml") + 
@@ -183,10 +183,16 @@ public class ExecuteTest extends WPSTestSupport {
                       "</wps:Data>" +     
                   "</wps:Input>" + 
                   "<wps:Input>" + 
-                     "<ows:Identifier>buffer</ows:Identifier>" + 
+                     "<ows:Identifier>width of the buffer</ows:Identifier>" + 
                      "<wps:Data>" + 
                        "<wps:LiteralData>10</wps:LiteralData>" + 
                      "</wps:Data>" + 
+                  "</wps:Input>" + 
+                  "<wps:Input>" + 
+                    "<ows:Identifier>name of the layer attribute containing the width of the buffer</ows:Identifier>" + 
+                    "<wps:Data>" + 
+                      "<wps:LiteralData></wps:LiteralData>" + 
+                    "</wps:Data>" + 
                   "</wps:Input>" + 
                  "</wps:DataInputs>" +
                  "<wps:ResponseForm>" +  
@@ -199,7 +205,7 @@ public class ExecuteTest extends WPSTestSupport {
                "</wps:Execute>";
         
         Document d = postAsDOM( "wps", xml );
-        // print(d);
+        print(d);
         // checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
@@ -212,10 +218,10 @@ public class ExecuteTest extends WPSTestSupport {
     public void testFeatureCollectionInlineBoundedBy() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-              "<ows:Identifier>gt:BufferFeatureCollection</ows:Identifier>" + 
+              "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
                "<wps:DataInputs>" + 
                   "<wps:Input>" + 
-                      "<ows:Identifier>features</ows:Identifier>" + 
+                      "<ows:Identifier>feature collection</ows:Identifier>" + 
                       "<wps:Data>" +
                         "<wps:ComplexData mimeType=\"text/xml; subtype=wfs-collection/1.0\">" + 
                              readFileIntoString("restricted-FeatureCollection.xml") + 
@@ -223,7 +229,7 @@ public class ExecuteTest extends WPSTestSupport {
                       "</wps:Data>" +     
                   "</wps:Input>" + 
                   "<wps:Input>" + 
-                     "<ows:Identifier>buffer</ows:Identifier>" + 
+                     "<ows:Identifier>width of the buffer</ows:Identifier>" + 
                      "<wps:Data>" + 
                        "<wps:LiteralData>1000</wps:LiteralData>" + 
                      "</wps:Data>" + 
@@ -251,8 +257,8 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     public void testFeatureCollectionInlineKVP() throws Exception { 
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gt:BufferFeatureCollection" +
-            "&DataInputs=" + urlEncode("features=" + readFileIntoString("states-FeatureCollection.xml") + "@mimetype=application/wfs-collection-1.1;buffer=10") +
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection" +
+            "&DataInputs=" + urlEncode("feature collection=" + readFileIntoString("states-FeatureCollection.xml") + "@mimetype=application/wfs-collection-1.1;width of the buffer=10") +
             "&ResponseDocument=" + urlEncode("result");
         
         Document d = getAsDOM(request);
@@ -270,15 +276,15 @@ public class ExecuteTest extends WPSTestSupport {
         URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-              "<ows:Identifier>gt:BufferFeatureCollection</ows:Identifier>" + 
+              "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
                "<wps:DataInputs>" + 
                   "<wps:Input>" + 
-                      "<ows:Identifier>features</ows:Identifier>" + 
+                      "<ows:Identifier>feature collection</ows:Identifier>" + 
                       "  <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.1\" " +
                       "xlink:href=\"" + collectionURL.toExternalForm() + "\"/>\n" + 
                   "</wps:Input>" + 
                   "<wps:Input>" + 
-                     "<ows:Identifier>buffer</ows:Identifier>" + 
+                     "<ows:Identifier>width of the buffer</ows:Identifier>" + 
                      "<wps:Data>" + 
                        "<wps:LiteralData>10</wps:LiteralData>" + 
                      "</wps:Data>" + 
@@ -306,9 +312,9 @@ public class ExecuteTest extends WPSTestSupport {
     
     public void testFeatureCollectionFileReferenceKVP() throws Exception { 
         URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gt:BufferFeatureCollection" +
-            "&DataInputs=" + urlEncode("features=@mimetype=application/wfs-collection-1.1@xlink:href=" 
-                    + collectionURL.toExternalForm() + ";buffer=10") + "&ResponseDocument=" + urlEncode("result");
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection" +
+            "&DataInputs=" + urlEncode("feature collection=@mimetype=application/wfs-collection-1.1@xlink:href=" 
+                    + collectionURL.toExternalForm() + ";width of the buffer=10") + "&ResponseDocument=" + urlEncode("result");
         
         Document d = getAsDOM(request);
         // print(d);
@@ -324,10 +330,10 @@ public class ExecuteTest extends WPSTestSupport {
     public void testInlineGeoJSON() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
         "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-        "<ows:Identifier>gt:BufferFeatureCollection</ows:Identifier>" + 
+        "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
          "<wps:DataInputs>" + 
             "<wps:Input>" + 
-                "<ows:Identifier>features</ows:Identifier>" + 
+                "<ows:Identifier>feature collection</ows:Identifier>" + 
                 "<wps:Data>" +
                   "<wps:ComplexData mimeType=\"application/json\"><![CDATA[" + 
                        readFileIntoString("states-FeatureCollection.json") + 
@@ -335,7 +341,7 @@ public class ExecuteTest extends WPSTestSupport {
                 "</wps:Data>" +     
             "</wps:Input>" + 
             "<wps:Input>" + 
-               "<ows:Identifier>buffer</ows:Identifier>" + 
+               "<ows:Identifier>width of the buffer</ows:Identifier>" + 
                "<wps:Data>" + 
                  "<wps:LiteralData>10</wps:LiteralData>" + 
                "</wps:Data>" + 
@@ -360,10 +366,10 @@ public class ExecuteTest extends WPSTestSupport {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
         		"xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:wfs='http://www.opengis.net/wfs' " + 
         "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
-        "<ows:Identifier>gt:BufferFeatureCollection</ows:Identifier>" + 
+        "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
          "<wps:DataInputs>" + 
          "    <wps:Input>\n" + 
-                "<ows:Identifier>features</ows:Identifier>" + 
+                "<ows:Identifier>feature collection</ows:Identifier>" + 
                 "<wps:Data>" +
                   "<wps:ComplexData>" + 
                       readFileIntoString("states-FeatureCollection.xml") + 
@@ -371,7 +377,7 @@ public class ExecuteTest extends WPSTestSupport {
                 "</wps:Data>" +
             "</wps:Input>" + 
             "<wps:Input>" + 
-               "<ows:Identifier>buffer</ows:Identifier>" + 
+               "<ows:Identifier>width of the buffer</ows:Identifier>" + 
                "<wps:Data>" + 
                  "<wps:LiteralData>10</wps:LiteralData>" + 
                "</wps:Data>" + 
@@ -387,48 +393,6 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse r = postAsServletResponse("wps", xml);
         assertEquals("application/zip", r.getContentType());
         checkShapefileIntegrity(new String[] {"states"}, getBinaryInputStream(r));
-    }
-    
-    public void testPlainAddition() throws Exception { // Standard Test A.4.4.3
-        String xml = 
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\r\n" + 
-            "<wps:Execute service=\"WPS\" version=\"1.0.0\"\r\n" + 
-            "        xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\"\r\n" + 
-            "        xmlns:xlink=\"http://www.w3.org/1999/xlink\">\r\n" + 
-            "        <ows:Identifier>gt:DoubleAddition</ows:Identifier>\r\n" + 
-            "        <wps:DataInputs>\r\n" + 
-            "                <wps:Input>\r\n" + 
-            "                        <ows:Identifier>input_a</ows:Identifier>\r\n" + 
-            "                        <wps:Data>\r\n" + 
-            "                                <wps:LiteralData>7</wps:LiteralData>\r\n" + 
-            "                        </wps:Data>\r\n" + 
-            "                </wps:Input>\r\n" + 
-            "                <wps:Input>\r\n" + 
-            "                        <ows:Identifier>input_b</ows:Identifier>\r\n" + 
-            "                        <wps:Data>\r\n" + 
-            "                                <wps:LiteralData>7</wps:LiteralData>\r\n" + 
-            "                        </wps:Data>\r\n" + 
-            "                </wps:Input>\r\n" + 
-            "        </wps:DataInputs>\r\n" + 
-            "        <wps:ResponseForm>\r\n" + 
-            "                <wps:RawDataOutput>\r\n" + 
-            "                        <ows:Identifier>result</ows:Identifier>\r\n" + 
-            "                </wps:RawDataOutput>\r\n" + 
-            "        </wps:ResponseForm>\r\n" + 
-            "</wps:Execute>";
-        
-         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-         assertEquals("text/plain", response.getContentType());
-         assertEquals("14.0", response.getOutputStreamContent());
-    }
-    
-    public void testPlainAdditionKVP() throws Exception { // Standard Test A.4.4.3
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gt:DoubleAddition" +
-        "&DataInputs=" + urlEncode("input_a=7;input_b=7") + "&RawDataOutput=result";
-        
-         MockHttpServletResponse response = getAsServletResponse(request);
-         assertEquals("text/plain", response.getContentType());
-         assertEquals("14.0", response.getOutputStreamContent());
     }
     
     /**

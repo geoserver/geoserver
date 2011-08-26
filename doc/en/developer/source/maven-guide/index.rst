@@ -88,6 +88,22 @@ A special profile named ``allExtensions`` enables all extensions::
 
 .. _profiles:
 
+Recover Build
+-------------
+
+* After fixing a test failure; you can "resume" from a specific point in the build::
+  
+      mvn install -rf extension/wps
+
+* Recover from a 301 Redirect
+  
+  A long standing bug in Maven from 2.0.10 handling of 301 errors when a artifact has been moved.
+  The work around is to run Maven with the option::
+     
+     mvn install -Dmaven.wagon.provider.http=httpclient
+  
+  This is not a common issue.
+
 Profiles
 --------
 

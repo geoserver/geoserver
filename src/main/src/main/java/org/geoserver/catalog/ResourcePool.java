@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
@@ -52,12 +51,12 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
+import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -73,6 +72,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
+import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Schemas;
 import org.opengis.coverage.grid.GridCoverage;
@@ -936,7 +936,7 @@ public class ResourcePool {
         
         GridCoverageReader reader = null;
         Object key;
-        if ( hints != null ) {
+        if ( hints != null && info.getId() != null) {
             // expand the hints if necessary
             final String formatName = gridFormat.getName();
             if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
@@ -949,7 +949,7 @@ public class ResourcePool {
                 }
             }
             
-            key = new CoverageHintReaderKey(info, hints);
+            key = new CoverageHintReaderKey(info.getId(), hints);
             reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
         } else {
             key = info;
@@ -961,11 +961,13 @@ public class ResourcePool {
         }
         
         synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
-            if (hints != null) {
-                reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
-            } else {
-                reader = (GridCoverageReader) coverageReaderCache.get(key);
-            }
+        	if(key != null) {
+	            if (hints != null) {
+	                reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
+	            } else {
+	                reader = (GridCoverageReader) coverageReaderCache.get(key);
+	            }
+        	}
             if (reader == null) {
                 /////////////////////////////////////////////////////////
                 //
@@ -1347,71 +1349,89 @@ public class ResourcePool {
         listeners.clear();
     }
     
-    class FeatureTypeCache extends LRUMap {
+    /**
+     * Base class for all the resource caches, ensures type safety and provides
+     * an easier way to handle with resource disposal 
+     * @author Andrea Aime
+     *
+     * @param <K>
+     * @param <V>
+     */
+    abstract class CatalogResourceCache<K, V> extends SoftValueHashMap<K, V> {
+
+        public CatalogResourceCache() {
+            this(100);
+        }
+
+        public CatalogResourceCache(int hardReferences) {
+            super(hardReferences);
+            super.cleaner = new ValueCleaner() {
+
+                @Override
+                public void clean(Object key, Object object) {
+                    dispose((K) key, (V) object);
+                }
+            };
+        }
+
+        @Override
+        public V remove(Object key) {
+            V object = super.remove(key);
+            if (object != null) {
+                dispose((K) key, (V) object);
+            }
+            return object;
+        }
+
+        @Override
+        public void clear() {
+            for (Entry entry : entrySet()) {
+                dispose((K) entry.getKey(), (V) entry.getValue());
+            }
+            super.clear();
+        }
+
+        protected abstract void dispose(K key, V object);
+    }
+    
+    class FeatureTypeCache extends CatalogResourceCache<String, FeatureType> {
         
         public FeatureTypeCache(int maxSize) {
             super(maxSize);
         }
         
-        protected boolean removeLRU(LinkEntry entry) {
-            String id = (String) entry.getKey();
-            FeatureType featureType = (FeatureType) entry.getValue();
-            FeatureTypeInfo info = catalog.getFeatureType(id);
+        protected void dispose(String id, FeatureType featureType) {
+        	FeatureTypeInfo info = catalog.getFeatureType(id);
             LOGGER.info( "Disposing feature type '" + info.getName() + "'");
-            
             fireDisposed(info, featureType);
-            return super.removeLRU(entry);
         }
     }
     
-    class DataStoreCache extends LRUMap {
-        protected boolean removeLRU(LinkEntry entry) {
-            String name = (String) entry.getKey();
-            dispose(name,(DataAccess) entry.getValue());
-            
-            return super.removeLRU(entry);
-        }
-        
-        void dispose(String id, DataAccess dataStore) {
-            DataStoreInfo info = catalog.getDataStore(id);
-            String name = info != null ? info.getName() : id;
-            LOGGER.info( "Disposing datastore '" + name + "'" );
-            
-            fireDisposed(info, dataStore);
+    class DataStoreCache extends CatalogResourceCache<String, DataAccess> {
+    	
+        protected void dispose(String id, DataAccess da) {
+        	DataStoreInfo info = catalog.getDataStore(id);
+        	String name = null;
+        	if(info != null) {
+	            name = info.getName();
+	            LOGGER.info( "Disposing datastore '" + name + "'" );
+	            
+	            fireDisposed(info, da);
+        	}
             
             try {
-                dataStore.dispose();
-            }
-            catch( Exception e ) {
+                da.dispose();
+            } catch( Exception e ) {
                 LOGGER.warning( "Error occured disposing datastore '" + name + "'");
                 LOGGER.log(Level.FINE, "", e );
             }
-            
-        }
-        
-        protected void destroyEntry(HashEntry entry) {
-            dispose( (String) entry.getKey(), (DataAccess) entry.getValue() );
-            super.destroyEntry(entry);
-        }
-        
-        public void clear() {
-            for ( Iterator e = entrySet().iterator(); e.hasNext(); ) {
-                Map.Entry<String,DataAccess<? extends FeatureType, ? extends Feature>> entry = 
-                    (Entry<String, DataAccess<? extends FeatureType, ? extends Feature>>) e.next();
-                dispose( entry.getKey(), entry.getValue() );
-            }
-            super.clear();
         }
     }
     
-    class CoverageReaderCache extends LRUMap {
-        protected boolean removeLRU(LinkEntry entry) {
-            CoverageStoreInfo info = (CoverageStoreInfo) entry.getKey();
-            dispose( info, (GridCoverageReader) entry.getValue() );
-            return super.removeLRU(entry);
-        }
+    class CoverageReaderCache extends CatalogResourceCache<Object, GridCoverageReader> {
         
-        void dispose( CoverageStoreInfo info, GridCoverageReader reader ) {
+        protected void dispose(Object id, GridCoverageReader reader) {
+        	CoverageStoreInfo info = catalog.getCoverageStore((String) id);
             LOGGER.info( "Disposing grid coverage reader '" + info.getName() + "'");
             fireDisposed(info, reader);
             try {
@@ -1422,31 +1442,13 @@ public class ResourcePool {
                 LOGGER.log(Level.FINE, "", e );
             }
         }
-        
-        protected void destroyEntry(HashEntry entry) {
-            dispose( (CoverageStoreInfo) entry.getKey(), (GridCoverageReader) entry.getValue() );
-            super.destroyEntry(entry);
-        }
-        
-        public void clear() {
-            for ( Iterator e = entrySet().iterator(); e.hasNext(); ) {
-                Map.Entry<CoverageStoreInfo,GridCoverageReader> entry = 
-                    (Entry<CoverageStoreInfo, GridCoverageReader>) e.next();
-                dispose( entry.getKey(), entry.getValue() );
-            }
-            super.clear();
-        }
     }
     
-    class CoverageHintReaderCache extends LRUMap {
+    class CoverageHintReaderCache extends CatalogResourceCache<Object, GridCoverageReader> {
         
-        protected boolean removeLRU(LinkEntry entry) {
-            CoverageHintReaderKey key = (CoverageHintReaderKey) entry.getKey();
-            dispose( key.info, (GridCoverageReader) entry.getValue() );
-            return super.removeLRU(entry);
-        }
-        
-        void dispose( CoverageStoreInfo info, GridCoverageReader reader ) {
+        protected void dispose(Object key, GridCoverageReader reader) {
+        	CoverageHintReaderKey chKey = (CoverageHintReaderKey) key;
+        	CoverageStoreInfo info = catalog.getCoverageStore(chKey.id);
             LOGGER.info( "Disposing grid coverage reader '" + info.getName() + "'");
             fireDisposed(info, reader);
             try {
@@ -1456,21 +1458,6 @@ public class ResourcePool {
                 LOGGER.warning( "Error occured disposing coverage reader '" + info.getName() + "'");
                 LOGGER.log(Level.FINE, "", e );
             }
-        }
-        
-        protected void destroyEntry(HashEntry entry) {
-            CoverageHintReaderKey key = (CoverageHintReaderKey) entry.getKey();
-            dispose( key.info, (GridCoverageReader) entry.getValue() );
-            super.destroyEntry(entry);
-        }
-        
-        public void clear() {
-            for ( Iterator e = entrySet().iterator(); e.hasNext(); ) {
-                Map.Entry<CoverageHintReaderKey,GridCoverageReader> entry = 
-                    (Entry<CoverageHintReaderKey, GridCoverageReader>) e.next();
-                dispose( entry.getKey().info, entry.getValue() );
-            }
-            super.clear();
         }
         
     }
@@ -1481,11 +1468,11 @@ public class ResourcePool {
      * @author Andrea Aime - GeoSolutions
      */
     static class CoverageHintReaderKey {
-        CoverageStoreInfo info;
+        String id;
         Hints hints;
         
-        public CoverageHintReaderKey(CoverageStoreInfo info, Hints hints) {
-            this.info = info;
+        public CoverageHintReaderKey(String id, Hints hints) {
+            this.id = id;
             this.hints = hints;
         }
 
@@ -1494,7 +1481,7 @@ public class ResourcePool {
             final int prime = 31;
             int result = 1;
             result = prime * result + ((hints == null) ? 0 : hints.hashCode());
-            result = prime * result + ((info == null) ? 0 : info.hashCode());
+            result = prime * result + ((id == null) ? 0 : id.hashCode());
             return result;
         }
 
@@ -1512,24 +1499,35 @@ public class ResourcePool {
                     return false;
             } else if (!hints.equals(other.hints))
                 return false;
-            if (info == null) {
-                if (other.info != null)
+            if (id == null) {
+                if (other.id != null)
                     return false;
-            } else if (!info.equals(other.info))
+            } else if (!id.equals(other.id))
                 return false;
             return true;
         }
-        
+
     }
     
-    static class FeatureTypeAttributeCache extends LRUMap {
+    class FeatureTypeAttributeCache extends CatalogResourceCache<String, List<AttributeTypeInfo>> {
+
         FeatureTypeAttributeCache(int size) {
             super(size);
         }
+
+        @Override
+        protected void dispose(String key, List<AttributeTypeInfo> object) {
+            // nothing to do actually
+        }
     }
-    
-    static class WMSCache extends LRUMap {
-        
+
+    class WMSCache extends CatalogResourceCache<String, WebMapServer> {
+
+        @Override
+        protected void dispose(String key, WebMapServer object) {
+            // nothing to do
+        }
+
     }
     
     /**

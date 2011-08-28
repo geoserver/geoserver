@@ -131,7 +131,7 @@ public class ResourcePoolTest extends GeoServerTestSupport {
                 dataStoreCache = new DataStoreCache() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    void dispose(String name, DataAccess dataStore) {
+                    protected void dispose(String name, DataAccess dataStore) {
                         disposeCalled = true;
                         super.dispose(name, dataStore);
                     }
@@ -159,24 +159,6 @@ public class ResourcePoolTest extends GeoServerTestSupport {
         assertTrue(disposeCalled);
     }
     
-    public void testLRU() throws IOException {
-        Catalog catalog = getCatalog();
-        ResourcePool pool = new ResourcePool(catalog);
-        pool.setFeatureTypeCacheSize(2);
-        catalog.setResourcePool(pool);
-        FeatureTypeInfo lakes = catalog.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
-                MockData.LAKES.getLocalPart());
-        FeatureTypeInfo lines = catalog.getFeatureTypeByName(MockData.LINES.getNamespaceURI(),
-                MockData.LINES.getLocalPart());
-        FeatureTypeInfo locks = catalog.getFeatureTypeByName(MockData.LOCKS.getNamespaceURI(),
-                MockData.LOCKS.getLocalPart());
-        pool.getFeatureType(lakes);
-        pool.getFeatureType(lines);
-        pool.getFeatureType(locks);
-        assertEquals("LRU cache size should never exceed set limit", 2, pool.featureTypeCache
-                .size());
-    }
-
     public void testGeoServerReload() throws Exception {
         Catalog cat = getCatalog();
         FeatureTypeInfo lakes = cat.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
@@ -211,6 +193,6 @@ public class ResourcePoolTest extends GeoServerTestSupport {
         gs.save(global);
 
         Catalog catalog = getCatalog();
-        assertEquals(200, catalog.getResourcePool().featureTypeCache.maxSize());
+        assertEquals(200, catalog.getResourcePool().featureTypeCache.getHardReferencesCount());
     }
 }

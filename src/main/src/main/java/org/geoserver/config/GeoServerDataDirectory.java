@@ -66,14 +66,37 @@ public class GeoServerDataDirectory {
     public GeoServerDataDirectory( File baseDirectory ) {
         this( new GeoServerResourceLoader( baseDirectory ) );
     }
-    
+
+    /**
+     * Returns the underlying resource loader.
+     */
+    public GeoServerResourceLoader getResourceLoader() {
+        return resourceLoader;
+    }
+
     /**
      * The root of the data directory.
      */
     public File root() {
         return resourceLoader.getBaseDirectory();
     }
-    
+
+    /**
+     * Returns a directory under the {@link #root()} directory, if the directory does not exist
+     * null will be returned.
+     */
+    public File findOrCreateDir(String... location) throws IOException {
+        return resourceLoader.findOrCreateDirectory(location);
+    }
+
+    /**
+     * Returns a file under the {@link #root()} directory, if the file does not exist null is 
+     * returned.
+     */
+    public File findFile(String... location) throws IOException {
+        return resourceLoader.find(location);
+    }
+
     /**
      * Returns the root of the directory which contains spatial data files, if the directory does
      * exist, null is returned.

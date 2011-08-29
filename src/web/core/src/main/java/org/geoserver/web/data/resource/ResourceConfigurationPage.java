@@ -211,56 +211,67 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
         return new SubmitLink("save") {
             @Override
             public void onSubmit() {
-                try {
-                    Catalog catalog = getCatalog();
-                    ResourceInfo resourceInfo = getResourceInfo();
-                    if (isNew) {
-			// updating grid if is a coverage
-                    	if(resourceInfo instanceof CoverageInfo) {
-                            // the coverage bounds computation path is a bit more linear, the
-                            // readers always return the bounds and in the proper CRS (afaik)
-                            CoverageInfo cinfo = (CoverageInfo) resourceInfo;     
-                            AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints()); 
-
-                            // get  bounds
-                            final ReferencedEnvelope bounds = new ReferencedEnvelope(reader.getOriginalEnvelope());
-                            // apply the bounds, taking into account the reprojection policy if need be 
-                            final ProjectionPolicy projectionPolicy=resourceInfo.getProjectionPolicy();
-                            if (projectionPolicy != ProjectionPolicy.NONE && bounds != null) {
-                                // we need to fix the registered grid for this coverage
-                                final GridGeometry grid = cinfo.getGrid();
-                                cinfo.setGrid(new GridGeometry2D(grid.getGridRange(),grid.getGridToCRS(), resourceInfo.getCRS()));
-                            } 
-                        }
-                    	
-                        catalog.add(resourceInfo);
-                        try {
-                            catalog.add(getLayerInfo());
-                        } catch (IllegalArgumentException e) {
-                            catalog.remove(resourceInfo);
-                            throw e;
-                        }
-                    } else {
-                        ResourceInfo oldState = catalog.getResource(resourceInfo.getId(), ResourceInfo.class);
-                        catalog.save(resourceInfo);
-                        try {
-                            LayerInfo layer = getLayerInfo();
-                            layer.setResource(resourceInfo);
-                            catalog.save(layer);
-                        } catch (IllegalArgumentException e) {
-                            catalog.save(oldState);
-                            throw e;
-                        }
-                    }
-                    onSuccessfulSave();
-                } catch (Exception e) {
-                    LOGGER.log(Level.INFO, "Error saving layer", e);
-                    error(e.getMessage());
-                }
+                doSave();
             }
         };
     }
-    
+
+    /**
+     * Performs the necessary operation on save.
+     * <p>
+     * This implementation adds the necessary objects to the catalog, respecting the isNew flag, 
+     * and calls {@link #onSuccessfulSave()} upon success.
+     * </p>
+     */
+    protected void doSave() {
+        try {
+            Catalog catalog = getCatalog();
+            ResourceInfo resourceInfo = getResourceInfo();
+            if (isNew) {
+                // updating grid if is a coverage
+                if(resourceInfo instanceof CoverageInfo) {
+                    // the coverage bounds computation path is a bit more linear, the
+                    // readers always return the bounds and in the proper CRS (afaik)
+                    CoverageInfo cinfo = (CoverageInfo) resourceInfo;     
+                    AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints()); 
+
+                    // get  bounds
+                    final ReferencedEnvelope bounds = new ReferencedEnvelope(reader.getOriginalEnvelope());
+                    // apply the bounds, taking into account the reprojection policy if need be 
+                    final ProjectionPolicy projectionPolicy=resourceInfo.getProjectionPolicy();
+                    if (projectionPolicy != ProjectionPolicy.NONE && bounds != null) {
+                        // we need to fix the registered grid for this coverage
+                        final GridGeometry grid = cinfo.getGrid();
+                        cinfo.setGrid(new GridGeometry2D(grid.getGridRange(),grid.getGridToCRS(), resourceInfo.getCRS()));
+                    } 
+                }
+                
+                catalog.add(resourceInfo);
+                try {
+                    catalog.add(getLayerInfo());
+                } catch (IllegalArgumentException e) {
+                    catalog.remove(resourceInfo);
+                    throw e;
+                }
+            } else {
+                ResourceInfo oldState = catalog.getResource(resourceInfo.getId(), ResourceInfo.class);
+                catalog.save(resourceInfo);
+                try {
+                    LayerInfo layer = getLayerInfo();
+                    layer.setResource(resourceInfo);
+                    catalog.save(layer);
+                } catch (IllegalArgumentException e) {
+                    catalog.save(oldState);
+                    throw e;
+                }
+            }
+            onSuccessfulSave();
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Error saving layer", e);
+            error(e.getMessage());
+        }
+    }
+
     private Link cancelLink() {
         return new Link("cancel") {
 

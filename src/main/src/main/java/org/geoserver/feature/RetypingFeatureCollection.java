@@ -73,7 +73,9 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
         }
 
         FeatureId id = reTypeId(source.getIdentifier(), source.getFeatureType(), target);
-        return builder.buildFeature(id.getID());
+        SimpleFeature retyped = builder.buildFeature(id.getID());
+        retyped.getUserData().putAll(source.getUserData());
+        return  retyped;
     }
 
     /**

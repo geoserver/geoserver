@@ -21,8 +21,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.thoughtworks.xstream.XStream;
-import org.geoserver.rest.util.RESTUtils;
-import org.geotools.util.Converters;
 
 /**
  * Base class for resources which work reflectively from underlying target objects.
@@ -315,55 +313,6 @@ public abstract class ReflectiveResource extends AbstractResource {
         }
     }
 
-    /**
-     * Convenience method for subclasses to look up the (URL-decoded)value of
-     * an attribute from the request, ie {@link Request#getAttributes()}.
-     * 
-     * @param attribute THe name of the attribute to lookup.
-     * 
-     * @return The value as a string, or null if the attribute does not exist
-     *     or cannot be url-decoded.
-     */
-    protected String getAttribute(String attribute) {
-        return RESTUtils.getAttribute(getRequest(), attribute);
-    }
-    
-    /**
-     * Convenience method for subclasses to look up the (URL-decoded) value of a value specified
-     * in the request query string.
-     * 
-     * @param key The name of the value to lookup. 
-     * 
-     * @return The converted value, or <code>null</code> if the value was not specified.
-     */
-    protected String getQueryStringValue(String key) {
-        return RESTUtils.getQueryStringValue(getRequest(), key);
-    }
-    
-    /**
-     * Convenience method for subclasses to look up the (URL-decoded) value of a value specified
-     * in the request query string, converting to the specified type.
-     * 
-     * @param key The name of the value to lookup. 
-     * @param clazz The class to convert to.
-     * @param defalt The default value to return if the attribute does not exist or no 
-     *   conversion was possible. May be <code>null</code>
-     * 
-     * @return The converted value, or <code>null</code> if either (a) the value was not 
-     *   specified or (b) the value could not be converted to the specified type.
-     */
-    protected <T> T getQueryStringValue(String key, Class<T> clazz, T defalt) {
-        String value = getQueryStringValue(key);
-        if (value != null) {
-            T converted = Converters.convert(value, clazz);
-            if (converted != null) {
-                return converted;
-            }
-        }
-
-        return defalt;
-    }
-    
     /**
      * Helper method which checks if a restlet exception was thrown, if so it throws it, else
      * wraps it in a restlet exception.

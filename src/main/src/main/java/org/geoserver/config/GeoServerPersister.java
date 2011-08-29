@@ -129,6 +129,16 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
                 }
             }
             
+            //handle the case of a feature type changing store
+            if ( source instanceof FeatureTypeInfo ) {
+                i = event.getPropertyNames().indexOf( "store");
+                if ( i > -1 ) {
+                    StoreInfo newStore = (StoreInfo) event.getNewValues().get( i );
+                    File oldDir = dir( (FeatureTypeInfo) source );
+                    oldDir.renameTo( new File( dir( newStore ), oldDir.getName() ) );
+                }
+            }
+            
             //handle default workspace
             if ( source instanceof Catalog ) {
                 i = event.getPropertyNames().indexOf("defaultWorkspace");

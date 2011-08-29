@@ -152,6 +152,27 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( d.exists() );
     }
     
+    public void testChangeFeatureTypeStore() throws Exception {
+        testAddFeatureType();
+        
+        File f1 = 
+            new File( testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/featuretype.xml");
+        assertTrue( f1.exists() );
+        
+        DataStoreInfo ds = catalog.getFactory().createDataStore();
+        ds.setName( "barstore" );
+        ds.setWorkspace( catalog.getWorkspaceByName( "acme" ) );
+        catalog.add( ds );
+        
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName( "foo" );
+        ft.setStore( ds );
+        catalog.save( ft );
+        
+        assertFalse( f1.exists() );
+        File f2 = new File( testData.getDataDirectoryRoot(), "workspaces/acme/barstore/foo/featuretype.xml");
+        assertTrue( f2.exists() );
+    }
+    
     public void testModifyFeatureType() throws Exception {
         testAddFeatureType();
         

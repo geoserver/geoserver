@@ -127,6 +127,18 @@ public class GeoServerDialog extends Panel {
     }
 
     /**
+     * Forcibly closes the dialog.
+     * <p>
+     * Note that calling this method does not result in any {@link DialogDelegate} callbacks being
+     * called.
+     * </p>
+     */
+    public void close(AjaxRequestTarget target) {
+        window.close(target);
+        delegate = null;
+    }
+    
+    /**
      * Submit link that will forward to the {@link DialogDelegate}
      * 
      * @return
@@ -137,8 +149,7 @@ public class GeoServerDialog extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
                 if (delegate.onSubmit(target, (Component) this.getDefaultModelObject())) {
-                    window.close(target);
-                    delegate = null;
+                    close(target);
                 }
             }
             

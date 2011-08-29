@@ -27,15 +27,36 @@ public class OwsUtils {
      * This method uses {@link #setter(Class, String, Class)} to locate teh setter 
      * method for the property and then invokes it with teh specified <tt>value</tt>.
      * </p>
+     * <p>
+     * The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2".
+     * If any of the resulting properties along the path result in null this method will throw 
+     * {@link NullPointerException} 
+     * </p>
      * @param object The target object. 
      * @param property The property to set.
      * @param value The value to set, may be <code>null</code>.
      * 
      * @throws IllegalArgumentException If no such property exists.
      * @throws RuntimeException If an error occurs setting the property
+     * @throws NullPointerException If the property specifies a property that results in null.
      */
     public static void set( Object object, String property, Object value ) throws IllegalArgumentException {
-        Method s = setter( object.getClass(), property, value != null ? value.getClass() : null );
+        String[] props = property.split("\\.");
+        Method s = null;
+        if (props.length > 1) {
+            for (int i = 0; i < props.length-1 && object != null; i++) {
+                object = get(object, props[i]);
+            }
+            if (object == null) {
+                throw new NullPointerException(
+                    "Property '" + property + "' is null for object " + object );
+            }
+            s = setter( object.getClass(), props[props.length-1], value != null ? value.getClass() : null );
+        }
+        else {
+            s = setter( object.getClass(), property, value != null ? value.getClass() : null );
+        }
+
         if ( s == null ) {
             throw new IllegalArgumentException( "No such property '" + property + "' for object " + object ); 
         }
@@ -108,6 +129,11 @@ public class OwsUtils {
      * This method uses {@link #getter(Class, String, Class)} to locate the getter 
      * method for the property and then invokes it.
      * </p>
+     * <p>
+     * The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2".
+     * If any of the resulting properties along the path result in null this method will return 
+     * null.
+     * </p>
      * @param object The target object. 
      * @param property The property to set.
      * 
@@ -115,19 +141,26 @@ public class OwsUtils {
      * @throws RuntimeException If an error occurs getting the property
      */
     public static Object get(Object object, String property) {
-        Method g = getter( object.getClass(), property, null );
-        if ( g == null ) {
-            throw new IllegalArgumentException("No such property '" + property + "' for object " + object );
+        String[] props = property.split("\\.");
+        Object result = object;
+        for (int i = 0; i < props.length && result != null; i++) {
+            String prop = props[i];
+            Method g = getter( result.getClass(), props[i], null );
+            if ( g == null ) {
+                throw new IllegalArgumentException("No such property '" + prop + "' for object " + result );
+            }
+            try {
+                result = g.invoke( result, null );
+            } 
+            catch( Exception e ) {
+                  throw new RuntimeException( e );
+            }
+            
         }
-      
-        try {
-            return g.invoke( object, null );
-        } 
-        catch( Exception e ) {
-            throw new RuntimeException( e );
-        }
+
+        return result;
     }
-    
+
     /**
      * Returns a getter method for a property of java bean.
      *

@@ -27,6 +27,7 @@ import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.geotiff.GeoTiffWriter;
@@ -286,6 +287,45 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         fos = new FileOutputStream(new File(mosaic, "elevationregex.properties"));
         p.store(fos, null);
         fos.close();
+    }
+
+    public void testLookupSRSDetached() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+
+        DataStoreInfo sf = cat.getDataStoreByName("sf");
+
+        FeatureSource fs =  
+                sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
+        FeatureTypeInfo ft = cat.getFactory().createFeatureType();
+        ft.setNativeName("PrimitiveGeoFeature");
+        assertNull(ft.getSRS());
+        assertNull(ft.getCRS());
+
+        cb.lookupSRS(ft, fs, true);
+
+        assertNotNull(ft.getSRS());
+        assertNotNull(ft.getCRS());
+    }
+
+    public void testSetupBoundsDetached() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        
+        DataStoreInfo sf = cat.getDataStoreByName("sf");
+
+        FeatureSource fs =  
+                sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
+        FeatureTypeInfo ft = cat.getFactory().createFeatureType();
+        ft.setNativeName("PrimitiveGeoFeature");
+        assertNull(ft.getNativeBoundingBox());
+        assertNull(ft.getLatLonBoundingBox());
+
+        cb.lookupSRS(ft, fs, true);
+        cb.setupBounds(ft, fs);
+
+        assertNotNull(ft.getNativeBoundingBox());
+        assertNotNull(ft.getLatLonBoundingBox());
     }
 
     Name toName(QName qname) {

@@ -396,6 +396,29 @@ public class CatalogBuilder {
     }
 
     /**
+     * Computes the native bounds for a {@link FeatureTypeInfo} explicitly providing the feature
+     *  source.
+     * <p>
+     * This method calls through to {@link #doSetupBounds(ResourceInfo, Object)}.
+     * </p>
+     */
+    public void setupBounds(FeatureTypeInfo ftinfo, FeatureSource featureSource) throws IOException {
+        doSetupBounds(ftinfo, featureSource);
+    }
+
+    /**
+     * Computes the native bounds for a {@link CoverageInfo} explicitly providing the coverage 
+     *  reader.
+     * <p>
+     * This method calls through to {@link #doSetupBounds(ResourceInfo, Object)}.
+     * </p>
+     */
+    public void setupBounds(CoverageInfo cinfo, AbstractGridCoverage2DReader coverageReader) 
+        throws IOException {
+        doSetupBounds(cinfo, coverageReader);
+    }
+
+    /**
      * Given a {@link ResourceInfo} this method:
      * <ul>
      * <li>computes, if missing, the native bounds (warning, this might be very expensive, cases in
@@ -410,9 +433,18 @@ public class CatalogBuilder {
      *             the geographic bounds computation
      */
     public void setupBounds(ResourceInfo rinfo) throws IOException {
+        doSetupBounds(rinfo, null);
+    }
+
+    /*
+     * Helper method for setupBounds() methods which can optionally take a "data" object rather
+     * than access it through the catalog. This allows for this method to be called for info objects
+     * that might not be part of the catalog.
+     */
+    void doSetupBounds(ResourceInfo rinfo, Object data) throws IOException {
         // setup the native bbox if needed
         if (rinfo.getNativeBoundingBox() == null) {
-            ReferencedEnvelope bounds = getNativeBounds(rinfo);
+            ReferencedEnvelope bounds = getNativeBounds(rinfo, data);
             rinfo.setNativeBoundingBox(bounds);
         }
 
@@ -456,12 +488,26 @@ public class CatalogBuilder {
      * @throws IOException
      */
     public ReferencedEnvelope getNativeBounds(ResourceInfo rinfo) throws IOException {
+        return getNativeBounds(rinfo, null);
+    }
+
+    /*
+     * Helper method for getNativeBounds() methods which can optionally take a "data" object rather
+     * than access it through the catalog. This allows for this method to be called for info objects
+     * that might not be part of the catalog.
+     */
+    ReferencedEnvelope getNativeBounds(ResourceInfo rinfo, Object data) throws IOException {
         ReferencedEnvelope bounds = null;
         if (rinfo instanceof FeatureTypeInfo) {
             FeatureTypeInfo ftinfo = (FeatureTypeInfo) rinfo;
 
             // bounds
-            bounds = ftinfo.getFeatureSource(null, null).getBounds();
+            if (data instanceof FeatureSource) {
+                bounds = ((FeatureSource)data).getBounds();
+            }
+            else {
+                bounds = ftinfo.getFeatureSource(null, null).getBounds();
+            }
 
             // fix the native bounds if necessary, some datastores do
             // not build a proper referenced envelope
@@ -485,7 +531,14 @@ public class CatalogBuilder {
             // the coverage bounds computation path is a bit more linear, the
             // readers always return the bounds and in the proper CRS (afaik)
             CoverageInfo cinfo = (CoverageInfo) rinfo;            
-            AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());   
+            AbstractGridCoverage2DReader reader = null;
+            if (data instanceof AbstractGridCoverage2DReader) {
+                reader = (AbstractGridCoverage2DReader) data;
+            }
+            else {
+                reader = (AbstractGridCoverage2DReader) 
+                    cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
+            }
 
             // get  bounds
             bounds = new ReferencedEnvelope(reader.getOriginalEnvelope());
@@ -515,9 +568,30 @@ public class CatalogBuilder {
      * @throws IOException
      */
     public void lookupSRS(FeatureTypeInfo ftinfo, boolean extensive) throws IOException {
+        lookupSRS(ftinfo, null, extensive);
+    }
+
+    /**
+     * Looks up and sets the SRS based on the feature type info native 
+     * {@link CoordinateReferenceSystem}, obtained from an optional feature source.
+     * 
+     * @param ftinfo
+     * @param data A feature source (possibily null)
+     * @param extensive
+     *            if true an extenstive lookup will be performed (more accurate, but might take
+     *            various seconds)
+     * @throws IOException
+     */
+    public void lookupSRS(FeatureTypeInfo ftinfo, FeatureSource data, boolean extensive) 
+            throws IOException {
         CoordinateReferenceSystem crs = ftinfo.getNativeCRS();
         if (crs == null) {
-            crs = ftinfo.getFeatureType().getCoordinateReferenceSystem();
+            if (data != null) {
+                crs = data.getSchema().getCoordinateReferenceSystem();
+            }
+            else {
+                crs = ftinfo.getFeatureType().getCoordinateReferenceSystem();
+            }
         }
         if (crs != null) {
             try {
@@ -1075,9 +1149,13 @@ public class CatalogBuilder {
         // for vectors we depend on the the nature of the default geometry
         String styleName;
         FeatureTypeInfo featureType = (FeatureTypeInfo) resource;
-        GeometryDescriptor gd = featureType.getFeatureType().getGeometryDescriptor();
-        if (gd == null)
+        if (featureType.getFeatureType() == null) {
             return null;
+        }
+        GeometryDescriptor gd = featureType.getFeatureType().getGeometryDescriptor();
+        if (gd == null) {
+            return null;
+        }
 
         Class gtype = gd.getType().getBinding();
         if (Point.class.isAssignableFrom(gtype) || MultiPoint.class.isAssignableFrom(gtype)) {
@@ -1096,7 +1174,7 @@ public class CatalogBuilder {
         return catalog.getStyleByName(styleName);
     }
 
-    LayerInfo buildLayer(ResourceInfo resource) {
+    public LayerInfo buildLayer(ResourceInfo resource) {
         LayerInfo layer = catalog.getFactory().createLayer();
         layer.setResource(resource);
         layer.setName(resource.getName());

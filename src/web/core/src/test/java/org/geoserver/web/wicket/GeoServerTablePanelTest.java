@@ -94,7 +94,29 @@ public class GeoServerTablePanelTest extends TestCase {
         assertEquals(new Integer(0), table.getSelection().get(0));
         assertEquals(new Integer(6), table.getSelection().get(1));
     }
-    
+
+    public void testSingleSelectionByObjectAndIndex() throws Exception {
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            
+            public Component buildComponent(String id) {
+                return new IntegerTable(id, true);
+            }
+        }));
+        tester.assertComponent("form:panel", IntegerTable.class);
+        
+        IntegerTable table = (IntegerTable) tester.getComponentFromLastRenderedPage("form:panel");
+        assertEquals(0, table.getSelection().size());
+
+        table.selectObject(new Integer(5));
+        assertEquals(1, table.getSelection().size());
+        assertEquals(new Integer(5), table.getSelection().get(0));
+        
+        table.selectObject(7);
+        assertEquals(2, table.getSelection().size());
+        assertEquals(new Integer(5), table.getSelection().get(0));
+        assertEquals(new Integer(7), table.getSelection().get(1));
+    }
+
     static class IntegerTable extends GeoServerTablePanel<Integer> {
         
         public IntegerTable(String id, boolean selectable) {

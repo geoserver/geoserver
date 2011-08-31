@@ -276,7 +276,6 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         int i = 0;
         for (Iterator it = dataView.iterator(); it.hasNext();) {
             Item  item = (Item) it.next();
-            System.out.println(item.getModelObject());
             if(selection[i]) {
                 result.add((T) item.getModelObject());
             }
@@ -344,6 +343,28 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     public void selectAll() {
         setSelection(true);
+    }
+    
+    /**
+     * Selects a single item by object.
+     */
+    public void selectObject(T object) {
+        int i = 0;
+        for (Iterator it = dataView.iterator(); it.hasNext();) {
+            Item  item = (Item) it.next();
+            if (object.equals(item.getModelObject())) {
+                selection[i] = true;
+                return;
+            }
+            i++;
+        }
+    }
+    
+    /**
+     * Selects a single item by index.
+     */
+    public void selectIndex(int i) {
+        selection[i] = true;
     }
 
     /**

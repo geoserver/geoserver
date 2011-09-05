@@ -5,6 +5,7 @@
 package org.geoserver.config;
 
 import javax.media.jai.JAI;
+import javax.media.jai.TileCache;
 
 import com.sun.media.jai.util.SunTileCache;
 
@@ -89,6 +90,6 @@ public interface JAIInfo {
     /**
      * The jai tile cache.
      */
-    SunTileCache getTileCache();
-    void setTileCache(SunTileCache tileCache);
+    TileCache getTileCache();
+    void setTileCache(TileCache tileCache);
 }

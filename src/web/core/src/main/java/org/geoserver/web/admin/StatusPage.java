@@ -1,6 +1,5 @@
 package org.geoserver.web.admin;
 
-import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -10,21 +9,18 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.media.jai.JAI;
+import javax.media.jai.TileCache;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.JAIInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.web.util.DataDirectoryConverterLocator;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataAccess;
@@ -32,6 +28,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.LockingManager;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
+import com.sun.media.jai.util.CacheDiagnostics;
 import com.sun.media.jai.util.SunTileCache;
 
 public class StatusPage extends ServerAdminPage {
@@ -118,7 +115,7 @@ public class StatusPage extends ServerAdminPage {
             private static final long serialVersionUID = 1L;
 
             public void onClick() {
-                SunTileCache jaiCache = getGeoServer().getGlobal().getJAI().getTileCache();
+                TileCache jaiCache = getGeoServer().getGlobal().getJAI().getTileCache();
                 final long capacityBefore = jaiCache.getMemoryCapacity();
                 jaiCache.flush();
                 jaiCache.setMemoryCapacity(0); // to be sure we realease all tiles
@@ -181,10 +178,14 @@ public class StatusPage extends ServerAdminPage {
         JAIInfo jaiInfo = geoServerInfo.getJAI();
         JAI jai =  jaiInfo.getJAI();
         CoverageAccessInfo coverageAccess = geoServerInfo.getCoverageAccess();
-        SunTileCache jaiCache = jaiInfo.getTileCache();
+        TileCache jaiCache = jaiInfo.getTileCache();
 
         values.put(KEY_JAI_MAX_MEM, formatMemory(jaiCache.getMemoryCapacity()));
-        values.put(KEY_JAI_MEM_USAGE, formatMemory(jaiCache.getCacheMemoryUsed()));
+        if(jaiCache instanceof CacheDiagnostics) {
+            values.put(KEY_JAI_MEM_USAGE, formatMemory(((CacheDiagnostics) jaiCache).getCacheMemoryUsed()));
+        } else {
+            values.put(KEY_JAI_MEM_USAGE, "-");
+        }
         values.put(KEY_JAI_MEM_THRESHOLD, Float.toString(100.0f * jaiCache.getMemoryThreshold()));
         values.put(KEY_JAI_TILE_THREADS, Integer.toString(jai.getTileScheduler().getParallelism()));
         values.put(KEY_JAI_TILE_THREAD_PRIORITY, Integer.toString(jai.getTileScheduler()

@@ -7,6 +7,7 @@ package org.geoserver.config.impl;
 import java.io.Serializable;
 
 import javax.media.jai.JAI;
+import javax.media.jai.TileCache;
 
 import org.geoserver.config.JAIInfo;
 
@@ -19,7 +20,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     private static final long serialVersionUID = 7121137497699361776L;
     
     transient JAI jai;
-    transient SunTileCache tileCache;
+    transient TileCache tileCache;
     
     boolean allowInterpolation;
     
@@ -166,11 +167,11 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         this.jai = jai;
     }
     
-    public SunTileCache getTileCache() {
+    public TileCache getTileCache() {
         return tileCache;
     }
     
-    public void setTileCache( SunTileCache tileCache ) {
+    public void setTileCache( TileCache tileCache ) {
         this.tileCache = tileCache;
     }
 

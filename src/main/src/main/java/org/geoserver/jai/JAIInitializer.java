@@ -3,14 +3,12 @@ package org.geoserver.jai;
 import java.util.List;
 
 import javax.media.jai.JAI;
-import javax.media.jai.RecyclingTileFactory;
 
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.JAIInfo;
-import org.geotools.image.io.ImageIOExt;
 import org.geotools.image.jai.Registry;
 
 import com.sun.media.jai.util.SunTileCache;
@@ -50,12 +48,17 @@ public class JAIInitializer implements GeoServerInitializer {
         JAI jaiDef = JAI.getDefaultInstance();
         jai.setJAI( jaiDef );
         
+        // setup concurrent operation registry
+        if(!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
+            jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
+        }
+        
         // setting JAI wide hints
         jaiDef.setRenderingHint(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
         
         // tile factory and recycler
-        if(jai.isRecycling()) {
-            final RecyclingTileFactory recyclingFactory = new RecyclingTileFactory();
+        if(jai.isRecycling() && !(jaiDef.getRenderingHint(JAI.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {
+            final ConcurrentTileFactory recyclingFactory = new ConcurrentTileFactory();
             jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, recyclingFactory);
             jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, recyclingFactory);
         }

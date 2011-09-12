@@ -32,14 +32,17 @@ public class WicketHierarchyPrinter {
 
     boolean classDumpEnabled;
     
+    boolean pathDumpEnabled;
+    
     /**
      * Utility method to dump a single component/page to standard output
      * @param c
      * @param dumpClass
      * @param dumpValue
      */
-    public static void print(Component c, boolean dumpClass, boolean dumpValue) {
+    public static void print(Component c, boolean dumpClass, boolean dumpValue, boolean dumpPath) {
         WicketHierarchyPrinter printer = new WicketHierarchyPrinter();
+        printer.setPathDumpEnabled(dumpClass);
         printer.setClassDumpEnabled(dumpClass);
         printer.setValueDumpEnabled(dumpValue);
         if(c instanceof Page) {
@@ -47,6 +50,16 @@ public class WicketHierarchyPrinter {
         } else {
             printer.print(c);
         }
+    }
+    
+    /**
+     * Utility method to dump a single component/page to standard output
+     * @param c
+     * @param dumpClass
+     * @param dumpValue
+     */
+    public static void print(Component c, boolean dumpClass, boolean dumpValue) {
+        print(c, dumpClass, dumpValue, false);
     }
 
     /**
@@ -112,6 +125,10 @@ public class WicketHierarchyPrinter {
         else
             out.print(tab(level) + c.getId());
             
+        if(pathDumpEnabled) {
+            out.print(" " + c.getPageRelativePath());
+        }
+        
         if (classDumpEnabled) {
             String className;
             if(c.getClass().isAnonymousClass()) {
@@ -131,6 +148,9 @@ public class WicketHierarchyPrinter {
                 out.print(" 'ERROR_RETRIEVING_MODEL " + e.getMessage() + "'");
             }
         }
+        
+        
+            
         out.println();
     }
 
@@ -141,6 +161,22 @@ public class WicketHierarchyPrinter {
         char[] spaces = new char[level * 3];
         Arrays.fill(spaces, ' ');
         return new String(spaces);
+    }
+
+    /**
+     * If the page relative path dumping is enabled
+     * @return
+     */
+    public boolean isPathDumpEnabled() {
+        return pathDumpEnabled;
+    }
+
+    /**
+     * Sets/unsets the relative path dumping
+     * @param pathDumpEnabled
+     */
+    public void setPathDumpEnabled(boolean pathDumpEnabled) {
+        this.pathDumpEnabled = pathDumpEnabled;
     }
 
 }

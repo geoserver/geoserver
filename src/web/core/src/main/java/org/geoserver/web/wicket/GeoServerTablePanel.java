@@ -608,7 +608,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         }
     }
     
-    class SelectionModel implements IModel {
+    public class SelectionModel implements IModel {
         int index;
         
         public SelectionModel(int index) {

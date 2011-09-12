@@ -2,11 +2,6 @@ package org.geoserver.web;
 
 import java.util.Locale;
 
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.context.SecurityContextImpl;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
@@ -15,11 +10,16 @@ import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.context.SecurityContextImpl;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 
 public abstract class GeoServerWicketTestSupport extends GeoServerTestSupport {
     public static WicketTester tester;
 
-    public void oneTimeSetUp() throws Exception {
+    public void oneTimeSetUp() throws Exception {        
         super.oneTimeSetUp();
         // prevent Wicket from bragging about us being in dev mode (and run
         // the tests as if we were in production all the time)
@@ -76,6 +76,18 @@ public abstract class GeoServerWicketTestSupport extends GeoServerTestSupport {
     public void print(Component c, boolean dumpClass, boolean dumpValue) {
         WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
     }
+    
+   /**
+    * Prints the specified component/page containment hierarchy to the standard output
+    * <p>
+    * Each line in the dump looks like: <componentId>(class) 'value'
+    * @param c the component to be printed
+    * @param dumpClass if enabled, the component classes are printed as well
+    * @param dumpValue if enabled, the component values are printed as well
+    */
+   public void print(Component c, boolean dumpClass, boolean dumpValue, boolean dumpPath) {
+       WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
+   }
     
     public void prefillForm(final FormTester tester) {
         Form form = tester.getForm();

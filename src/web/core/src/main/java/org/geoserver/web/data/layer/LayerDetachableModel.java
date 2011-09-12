@@ -15,15 +15,15 @@ import org.geoserver.web.GeoServerApplication;
  */
 @SuppressWarnings("serial")
 public class LayerDetachableModel extends LoadableDetachableModel {
-    String name;
+    String id;
 
     public LayerDetachableModel(LayerInfo layer) {
         super(layer);
-        this.name = layer.getName();
+        this.id = layer.getId();
     }
 
     @Override
     protected Object load() {
-        return GeoServerApplication.get().getCatalog().getLayerByName(name);
+        return GeoServerApplication.get().getCatalog().getLayer(id);
     }
 }

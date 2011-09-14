@@ -11,7 +11,9 @@ import java.util.logging.Level;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.Version;
 
 /**
  * Style edit page
@@ -43,6 +45,8 @@ public class StyleEditPage extends AbstractStylePage {
         // write out the file and save name modifications
         try {
             StyleInfo style = (StyleInfo) styleForm.getModelObject();
+            Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
+            style.setSLDVersion(version);
             getCatalog().save(style);
             
             // write out the SLD

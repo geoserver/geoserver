@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import org.apache.wicket.WicketRuntimeException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
+import org.geotools.util.Version;
 
 /**
  * Allows for editing a new style, includes file upload
@@ -27,11 +29,13 @@ public class StyleNewPage extends AbstractStylePage {
         Catalog catalog = getCatalog();
         StyleInfo s = (StyleInfo) styleForm.getModelObject();
 
-        if (s.getFilename() == null) {
-            // TODO: check that this does not overriDe any existing files
-            s.setFilename(s.getName() + ".sld");
-        }
         try {
+            Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
+            s.setSLDVersion(version);
+            if (s.getFilename() == null) {
+                // TODO: check that this does not overriDe any existing files
+                s.setFilename(s.getName() + ".sld");
+            }
             getCatalog().add(s);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);

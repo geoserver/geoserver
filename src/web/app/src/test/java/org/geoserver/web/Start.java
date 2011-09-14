@@ -56,6 +56,9 @@ public class Start {
             wah.setWar("src/main/webapp");
             jettyServer.setHandler(wah);
             wah.setTempDirectory(new File("target/work"));
+            //this allows to send large SLD's from the styles form
+            wah.getServletContext().getContextHandler().setMaxFormContentSize(1024 * 1024 * 2);
+
 
             String jettyConfigFile = System.getProperty("jetty.config.file");
             if (jettyConfigFile != null) {

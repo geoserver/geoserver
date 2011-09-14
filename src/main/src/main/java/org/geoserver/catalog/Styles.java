@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -71,7 +72,7 @@ public class Styles {
      * @throws IllegalArgumentException If the type of the style can not be determined.
      */
     public static StyledLayerDescriptor parse(Object input) throws IOException {
-        Object[] obj = findVersion(input);
+        Object[] obj = getVersionAndReader(input);
         return parse(obj[1], (Version)obj[0]);
     }
 
@@ -122,7 +123,7 @@ public class Styles {
      * @throws IllegalArgumentException If the specified version is not supported.
      */
     public static List<Exception> validate(Object input) throws IOException {
-        Object[] obj = findVersion(input);
+        Object[] obj = getVersionAndReader(input);
         return validate(obj[1], (Version)obj[0]);
     }
 
@@ -198,10 +199,14 @@ public class Styles {
         return sld;
     }
 
+    public static Version findVersion(Object input) throws IOException{
+        Object[] versionAndReader = getVersionAndReader(input);
+        return (Version) versionAndReader[0];
+    }
     /**
      * Helper method for finding which style handler/version to use from the actual content.
      */
-    static Object[] findVersion(Object input) throws IOException {
+    static Object[] getVersionAndReader(Object input) throws IOException {
         //need to determine version of sld from actual content
         BufferedReader reader = null;
         
@@ -344,7 +349,10 @@ public class Styles {
                     return p.getValidationErrors();
                 } 
                 catch(Exception e) {
-                    return Collections.singletonList(e);
+                    e.printStackTrace();
+                    List validationErrors = new ArrayList<Exception>(p.getValidationErrors());
+                    validationErrors.add(0, e);
+                    return validationErrors;
                 }
             }
 

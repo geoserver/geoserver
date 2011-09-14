@@ -35,6 +35,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
@@ -43,8 +44,6 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StylesModel;
-import org.geotools.sld.SLDConfiguration;
-import org.geotools.xml.Parser;
 
 /**
  * Base page for creating/editing styles
@@ -202,15 +201,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
     
     List<Exception> validateSLD() {
-        Parser parser = new Parser(new SLDConfiguration());
         try {
-            final String sld = editor.getInput();
-            parser.validate( new ByteArrayInputStream(sld.getBytes()) );
+            final String sld = editor.getInput();            
+            ByteArrayInputStream input = new ByteArrayInputStream(sld.getBytes());
+            List<Exception> validationErrors = Styles.validate(input);
+            return validationErrors;
         } catch( Exception e ) {
             return Arrays.asList( e );
         }
-        
-        return parser.getValidationErrors();
     }
 
     AjaxSubmitLink copyLink() {

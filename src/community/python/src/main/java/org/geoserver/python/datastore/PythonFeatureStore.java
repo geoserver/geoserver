@@ -16,6 +16,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.python.core.PyInstance;
 import org.python.core.PyJavaType;
 import org.python.core.PyList;
@@ -48,7 +49,16 @@ public class PythonFeatureStore extends ContentFeatureSource implements SimpleFe
     protected SimpleFeatureType buildFeatureType() throws IOException {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName(((PyString)schema.__findattr__("name")).asString());
-        
+
+        PyObject proj = schema.__findattr__("proj");
+        if (proj != null) {
+            CoordinateReferenceSystem crs = (CoordinateReferenceSystem)
+                proj.__getattr__("_crs").__tojava__(CoordinateReferenceSystem.class);
+            if (crs != null) {
+                tb.setCRS(crs);
+            }
+        }
+       
         PyList fields = (PyList) schema.__findattr__("fields");
         for (Object o : fields.toArray()) {
             PyObject field = (PyObject) o;

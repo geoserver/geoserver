@@ -91,7 +91,7 @@ public class PythonMapFormatAdapterTest {
         adapter.write(context, out);
         
         String result = "500;500\n" + 
-        "(-180.0, -90.0, 180.0, 90.0)\n" +
+        "(-180.0, -90.0, 180.0, 90.0, EPSG:4326)\n" +
         "POINT (0 0)\n" +
         "LINESTRING (0 0, 1 1)\n";
         

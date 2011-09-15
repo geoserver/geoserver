@@ -13,16 +13,17 @@ def info(clazz):
      if name != "_info" and self.__dict__.has_key("_info"):
        try:
          setattr(self._info, name, value)
-       except AttributeError:
+       except (AttributeError,TypeError):
          object.__setattr__(self, name, value)
      else:
        object.__setattr__(self, name, value)
 
    def save(self):
+     cat = self.catalog._catalog;
      if not self._info.getId():
-        self.catalog._catalog.add(self._info)
+        cat.add(self._info)
      else:
-        self.catalog._catalog.save(self._info)
+        cat.save(self._info)
 
    clazz.__getattr__ = __getattr__
    clazz.__setattr__ = __setattr__

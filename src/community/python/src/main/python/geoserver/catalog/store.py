@@ -1,10 +1,23 @@
 from geoserver.catalog.util import info, lazy
 from geoserver.catalog.layer import Layer
-from geoscript.workspace import Workspace
+from geoscript.workspace import Workspace as GeoScriptWorkspace
+from org.geoserver.catalog import StoreInfo
 
 class Store(object):
    """
    A GeoServer store. 
+
+   This class behaves like a dictionary in which the keys are ``str`` that 
+   correspond to layer namespace and the values are instances of 
+   :class:`Layer <geoserver.catalog.Layer>`
+
+   *store* is the name of the store. If the store name does not correspond to an 
+   existing store in the catalog the instance will be created and "disconnected"
+   from the catalog. 
+   
+   *workspace* is the name of the workspace the store is a part of or an instance
+   of :class:`Workspace <geoserver.catalog.Workspace>`. If no workspace is specified
+   it is taken to mean the default workspace in the catalog.
    """
 
    def __init__(self, store, workspace=None, catalog=None):
@@ -13,44 +26,45 @@ class Store(object):
         catalog = Catalog()
 
      self.catalog = catalog
+     self.workspace = None
+     self._info = None
 
-     if isinstance(workspace, str):
-        workspace = catalog._catalog.getWorkspaceByName(workspace)
-                
-     if isinstance(store, (str,unicode)):
-        ds = catalog._catalog.getDataStoreByName(store)
-        if not ds:
-           ds = catalog._catalog.getFactory().createDataStore()
-           ds.setName(store)
-           if workspace: 
-              ds.setWorkspace(workspace._info)   
-           else:
-              ds.setWorkspace(catalog._catalog.getDefaultWorkspace())
-
-        self._info = ds
-     else:
+     if isinstance(store, StoreInfo): 
         self._info = store
+
+        from geoserver.catalog.workspace import Workspace
+        self.workspace = Workspace(self._info.getWorkspace())
+     
+     if not self.workspace:
+        if isinstance(workspace, (str,unicode)):
+           from geoserver.catalog.workspace import Workspace
+           workspace = Workspace(workspace)
+
+        if not workspace:
+           from geoserver.catalog.workspace import Workspace
+           workspace = Workspace()
+
+        self.workspace = workspace
+
+     if not self._info:
+        if isinstance(store, (str,unicode)):
+           ds = catalog._catalog.getDataStoreByName(store)
+           if not ds:
+              ds = catalog._catalog.getFactory().createDataStore()
+              ds.setName(store)
+              if workspace: 
+                 ds.setWorkspace(workspace._info)   
+              else:
+                 ds.setWorkspace(catalog._catalog.getDefaultWorkspace())
+
+           self._info = ds
+        else:
+           raise Exception('Unable to create store from %s' % str(store))
 
    @lazy
    def data(self):
-     return Workspace(ds=self._info.getDataStore(None))
-   """
-   
-   def __getattr__(self, name):
-     try:
-       return getattr(self._info, name)
-     except AttributeError:
-       if not self.__dict__.has_key(name):
-         raise AttributeError("No such attribute %s" % name)
-       return self.__dict__[name]
+     return GeoScriptWorkspace(ds=self._info.getDataStore(None))
 
-   def __setattr__(self, name, value):
-     if name not in ["_info", "catalog"] and hasattr(self._info, name):
-       setattr(self._info, name, value)
-     else:
-       self.__dict__[name] = value
-
-   """
    def keys(self):
      featureTypes = self.catalog._catalog.getFeatureTypesByStore(self._info)
      return [ft.getName() for ft in featureTypes]

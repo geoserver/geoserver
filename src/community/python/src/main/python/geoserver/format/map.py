@@ -30,11 +30,11 @@ class Map(object):
   width = property(getwidth)
   
   def getbounds(self):
-    return Bounds(env=self.context.getAreaOfInterest())
+    return Bounds(env=self.context.getViewport().getBounds())
   bounds = property(getbounds)
   
   def getlayers(self):
-    return [Layer(l) for l in self.context.getLayers()]
+    return [Layer(l) for l in self.context.layers()]
   layers = property(getlayers)
   
 class Layer(object):

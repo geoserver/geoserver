@@ -1,18 +1,30 @@
 from geoserver.catalog.store import Store
 from geoserver.catalog.util import info
+from org.geoserver.catalog import WorkspaceInfo
 
 class Workspace(object):
   """
   A GeoServer workspace/namespace.
+
+  This class behaves like a dictionary in which the keys are ``str`` that 
+  correspond to store names and the values are instances of 
+  :class:`<Store> geoserver.catalog.Store`. 
+
+  *workspace* is the workspace name (equivalent to namespace prefix). If the name 
+  does not correspond to an existing workspace in the catalog one will be created
+  "disconnected" from the catalog. If no name is specified then it assumed to mean
+  the default workspace in the catalog.
   """
 
-  def __init__(self, workspace, catalog=None):
+  def __init__(self, workspace=None, catalog=None):
      if not catalog:
        from geoserver.catalog import Catalog
        catalog = Catalog()
      self.catalog = catalog
 
-     if isinstance(workspace, (str,unicode)):
+     if isinstance(workspace, WorkspaceInfo):
+       self._info = workspace
+     elif isinstance(workspace, (str,unicode)):
        ws = catalog._catalog.getWorkspaceByName(workspace)       
        if not ws:
          ws = catalog._catalog.getFactory().createWorkspace()  
@@ -25,12 +37,11 @@ class Workspace(object):
        else:
          self._info = workspace
 
-  def save(self):
-     cat = self.catalog._catalog
-     if not self._info.getId():
-        cat.add(self._info)
-     else:
-        cat.save(self._info) 
+     self._nsinfo = catalog._catalog.getNamespaceByPrefix(self._info.name)
+
+  def geturi(self):
+    return self._nsinfo.getURI()
+  uri = property(geturi)
 
   def add(self, data, name, **attrs):
 
@@ -54,7 +65,7 @@ class Workspace(object):
   def __getitem__(self, key):
      store = self.catalog._catalog.getDataStoreByName(self._info, key)
      if store:
-       return Store(store, self.catalog)
+       return Store(store, self, self.catalog)
 
      raise KeyError('No such store %s' % key)
 

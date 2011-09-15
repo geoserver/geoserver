@@ -4,13 +4,10 @@ class Catalog(object):
   """
   The GeoServer catalog. 
 
-  This class is a dictionary in which the strings are keys and the values
-  are instances of :class:`geoserver.catalog.Workspace`. 
-
-  The *folder* parameter is the name of a GeoServer workspace/namespace. If 
-  unspecified it will default to the default workspace.
+  This class behaves like a dictionary in which the keys are ``str`` that correspond
+  to namespace prefixes / workspace names. The values are instances of 
+  :class:`Workspace <geoserver.catalog.Workspace>`. 
   """
-
   def __init__(self):
      try:
        from org.geoserver.platform import GeoServerExtensions

@@ -13,6 +13,7 @@
         <include>jython*</include>
         <include>gt-process*</include>
         <include>gt-geojson*</include>
+        <include>gt-xsd-kml*</include>
         <include>json-simple*</include>
       </includes>
     </fileSet>

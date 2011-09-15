@@ -67,6 +67,11 @@
    <version>${gt.version}</version>
   </dependency>
   <dependency>
+   <groupId>org.geotools.xsd</groupId>
+   <artifactId>gt-xsd-kml</artifactId>
+   <version>${gt.version}</version>
+  </dependency>
+  <dependency>
    <groupId>jython</groupId>
    <artifactId>jython</artifactId>
    <version>2.5.1</version>
@@ -203,4 +208,7 @@
    </plugin>
   </plugins>
  </build>
+ <properties>
+   <test.maxPermSize>128m</test.maxPermSize>
+ </properties>
 </project>

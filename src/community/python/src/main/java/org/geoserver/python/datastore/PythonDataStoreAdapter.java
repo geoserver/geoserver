@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.python.Python;
 import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.Parameter;
 import org.geotools.data.DataAccessFactory.Param;
 import org.python.core.Py;
 import org.python.core.PyDictionary;
@@ -106,8 +108,12 @@ public class PythonDataStoreAdapter {
             if (clazz == null) {
                 clazz = Object.class;
             }
-            
-            list.add(new Param(pname, clazz, pdesc));
+
+            Map metadata = null;
+            if ("passwd".equalsIgnoreCase(pname) || "password".equalsIgnoreCase(pname)) {
+                metadata = Collections.singletonMap(Parameter.IS_PASSWORD, true);
+            }
+            list.add(new Param(pname, clazz, pdesc, true, null, metadata ));
         }
         
         return list;

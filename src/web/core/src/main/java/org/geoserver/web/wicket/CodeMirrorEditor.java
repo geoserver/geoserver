@@ -13,6 +13,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -77,6 +79,19 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         super.validate();
         editor.validate();
         editor.clearInput();
+    }
+    
+    public IAjaxCallDecorator getSaveDecorator() {
+        // we need to force CodeMirror to update the textarea contents (which it hid)
+        // before submitting the form, otherwise the validation will use the old contents
+        return new AjaxCallDecorator() {
+            @Override
+            public CharSequence decorateScript(CharSequence script) {
+                // textarea.value = codemirrorinstance.getCode()
+                String id = getTextAreaMarkupId();
+                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getCode();" + script;
+            }
+        };
     }
     
     class CodeMirrorBehavior extends AbstractBehavior {

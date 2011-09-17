@@ -187,16 +187,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             
             @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
-                // we need to force CodeMirror to update the textarea contents (which it hid)
-                // before submitting the form, otherwise the validation will use the old contents
-                return new AjaxCallDecorator() {
-                    @Override
-                    public CharSequence decorateScript(CharSequence script) {
-                        // textarea.value = codemirrorinstance.getCode()
-                        return "document.getElementById('editor').value = document.gsEditors." + editor.getTextAreaMarkupId() + ".getCode();" + script;
-                    }
-                };
-            }
+                return editor.getSaveDecorator();
+            };
         };
     }
     

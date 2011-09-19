@@ -6,6 +6,7 @@ package org.geoserver.ows.kvp;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -143,6 +144,14 @@ public class KvpUtilsTest extends TestCase {
             KvpUtils.unescape("\\");
             fail("Expected IllegalArgumentException.");
         } catch (IllegalArgumentException e) { ; }
+    }
+    
+    public static void testParseQueryString() {
+        Map<String, String> kvp = KvpUtils.parseQueryString("geoserver?request=WMS&version=1.0.0&CQL_FILTER=NAME='geoserver'");
+        assertEquals(3, kvp.size());
+        assertEquals("WMS", kvp.get("request"));
+        assertEquals("1.0.0", kvp.get("version"));
+        assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
     }
     
 }

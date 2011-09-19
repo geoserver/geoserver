@@ -464,7 +464,16 @@ public class KvpUtils {
         Map<String, String> result = new HashMap<String, String>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
-            String[] keyValuePair = token.split("=");
+            String[] keyValuePair;
+            int idx = token.indexOf('=');
+            if(idx > 0) {
+                keyValuePair = new String[2];
+                keyValuePair[0] = token.substring(0, idx);
+                keyValuePair[1] = token.substring(idx + 1);
+            } else {
+                keyValuePair = new String[1];
+                keyValuePair[0] = token;
+            }
             
             //check for any special characters
             if ( keyValuePair.length > 1 ) {

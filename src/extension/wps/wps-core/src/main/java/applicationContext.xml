@@ -155,6 +155,7 @@
     <bean id="cropCoverageProcess" class="org.geotools.process.raster.gs.CropCoverage" />
     <bean id="scaleCoverageProcess" class="org.geotools.process.raster.gs.ScaleCoverage" />
     <bean id="styleCoverageProcess" class="org.geotools.process.raster.gs.StyleCoverage" />
+    <bean id="areaGridProcess" class="org.geotools.process.raster.gs.AreaGridProcess" />
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsStorageHandler"></constructor-arg>
     </bean>

@@ -230,7 +230,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
             
             // check the parameters have the default values
             System.out.println(ci.getParameters());
-            assertEquals(String.valueOf(Integer.MAX_VALUE), ci.getParameters().get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
+            assertEquals(String.valueOf(-1), ci.getParameters().get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
             assertEquals("", ci.getParameters().get(ImageMosaicFormat.FILTER.getName().toString()));
         } finally {
             if(mosaic.exists() && mosaic.isDirectory()) {

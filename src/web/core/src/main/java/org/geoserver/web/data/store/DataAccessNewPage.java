@@ -79,6 +79,10 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     @Override
     protected final void onSaveDataStore(final DataStoreInfo info, AjaxRequestTarget target)
             throws IllegalArgumentException {
+        if(!storeEditPanel.onSave()) {
+            return;
+        }
+        
         final Catalog catalog = getCatalog();
 
         DataAccess<? extends FeatureType, ? extends Feature> dataStore;

@@ -59,6 +59,8 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
     private NamespacePanel namespacePanel;
 
+    protected StoreEditPanel storeEditPanel;
+
     public AbstractDataAccessPage() {
 
     }
@@ -120,7 +122,6 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         paramsForm.add(new CheckBoxParamPanel("dataStoreEnabledPanel", new PropertyModel(model,
                 "enabled"), new ResourceModel("enabled", "Enabled")));
 
-        final StoreEditPanel storeEditPanel;
         {
             /*
              * Here's where the extension point is applied in order to give extensions a chance to
@@ -171,7 +172,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
     /**
      * Call back method called when the save button is hit. Subclasses shall override in order to
      * perform the action over the catalog, whether it is adding a new {@link DataStoreInfo} or
-     * saving the edits to an existing one
+     * saving the edits to an existing onefinal StoreEditPanel 
      * 
      * @param info
      *            the object to save

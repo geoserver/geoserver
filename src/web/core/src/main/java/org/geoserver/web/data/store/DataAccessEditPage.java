@@ -102,6 +102,10 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
      */
     protected final void onSaveDataStore(final DataStoreInfo info,
             final AjaxRequestTarget requestTarget) {
+        
+        if(!storeEditPanel.onSave()) {
+            return;
+        }
 
         final Catalog catalog = getCatalog();
         final ResourcePool resourcePool = catalog.getResourcePool();

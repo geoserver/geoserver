@@ -80,5 +80,13 @@ public abstract class StoreEditPanel extends Panel {
         GeoServerApplication application = (GeoServerApplication) getApplication();
         return application.getCatalog();
     }
+    
+    /**
+     * Gives an option to store panels to raise an opinion before saving
+     * @return
+     */
+    public boolean onSave() {
+        return true;
+    }
 
 }

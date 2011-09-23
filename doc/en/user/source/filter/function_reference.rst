@@ -4,9 +4,9 @@ Filter Function Reference
 ==========================
 
 This page contains a reference to filter functions that can be used in WFS filtering or in SLD expressions.
-If a function reported by the WFS capabilities is not available in this list it might either mean that the
-function cannot actually be used for the above purposes, or that it's new and has not been documented still.
-Ask for details on the user mailing list.
+The list of functions available on a local Geoserver can be determined by browsing to http://localhost:8080/geoserver/wfs?request=GetCapabilities and searching for 'ogc:FunctionNames' in the returned XML.  If a function listed
+in this way is not in this list then it might either mean that the function cannot actually be used for the above
+purposes, or that it's new and has not been documented still.  Ask for details on the user mailing list.
 
 Unless otherwise specified none of the filter functions in this references is understood natively by the data stores, and as a result all expressions using them will be evaluated in memory.
 
@@ -357,6 +357,9 @@ Math Functions
    * - roundDouble
      - ``x``:Double
      - Returns the closest Long to the argument
+   * - sqrt
+     - ``x``:Double
+     - Returns the square root of the argument
    * - tan
      - ``angle``:Double
      - Returns the trigonometric tangent of ``angle``

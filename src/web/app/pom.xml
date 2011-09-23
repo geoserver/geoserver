@@ -700,6 +700,16 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>feature-aggregate</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>feature-aggregate</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
 
  </profiles>
 

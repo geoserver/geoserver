@@ -33,6 +33,7 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
 				0,
 				true, 
 				null, 
+				null,
 				new ArrayList<Range>() {{
 				    add(new Range(0d,true, 1000d,false));
 				    add(new Range(1000d,true, 2000d,false));

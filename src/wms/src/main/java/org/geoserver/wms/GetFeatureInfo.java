@@ -436,8 +436,6 @@ public class GetFeatureInfo {
             getFInfoFilter = ff.and(getFInfoFilter, filters[i]);
         }
         
-        // include the 
-
         // see if we can include the rule filters as well, if too many we'll do them in
         // memory
         Filter postFilter = Filter.INCLUDE;
@@ -452,6 +450,10 @@ public class GetFeatureInfo {
         // handle time/elevation
         Filter timeElevationFilter = wms.getTimeElevationToFilter(times, elevations, layer.getFeature());
         getFInfoFilter = Filters.and(ff, getFInfoFilter, timeElevationFilter);
+        
+        // simplify the filter
+        SimplifyingFilterVisitor simplifier = new SimplifyingFilterVisitor();
+        getFInfoFilter = (Filter) getFInfoFilter.accept(simplifier, null);
         
         // build the query
         String typeName = schema.getName().getLocalPart();

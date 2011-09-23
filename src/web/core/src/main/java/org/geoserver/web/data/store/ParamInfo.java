@@ -10,6 +10,7 @@ package org.geoserver.web.data.store;
 import java.io.Serializable;
 
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.Repository;
 
 /**
  * A serializable view of a {@link Param}
@@ -39,6 +40,9 @@ public class ParamInfo implements Serializable {
         if (Serializable.class.isAssignableFrom(param.type)) {
             this.binding = param.type;
             this.value = (Serializable) param.sample;
+        } else if (Repository.class.equals(param.type)) {
+                this.binding = param.type;
+                this.value = null;
         } else {
             // handle the parameter as a string and let the DataStoreFactory
             // convert it to the appropriate type

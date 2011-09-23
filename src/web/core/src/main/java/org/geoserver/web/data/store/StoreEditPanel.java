@@ -7,8 +7,6 @@ package org.geoserver.web.data.store;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -18,6 +16,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.Repository;
 
 /**
  * Base class for panels containing the form edit components for {@link StoreInfo} objects

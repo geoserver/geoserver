@@ -36,6 +36,7 @@ import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geotools.data.DataAccessFactory;
+import org.geotools.data.Repository;
 import org.geotools.data.DataAccessFactory.Param;
 
 /**
@@ -96,11 +97,13 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             final Param[] dsParams = dsFactory.getParametersInfo();
             for (Param p : dsParams) {
                 ParamInfo paramInfo = new ParamInfo(p);
-                paramsMetadata.put(p.key, paramInfo);
-
-                if (isNew) {
-                    // set default value
-                    applyParamDefault(paramInfo, info);
+                // hide the repository params, the resource pool will inject it transparently
+                if(!Repository.class.equals(paramInfo.getBinding())) {
+                    paramsMetadata.put(p.key, paramInfo);
+                    if (isNew) {
+                        // set default value
+                        applyParamDefault(paramInfo, info);
+                    }
                 }
             }
         }
@@ -188,7 +191,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             // AA: better not mess with files, the converters turn data dir relative to
             // absolute and bye bye data dir portability
             if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
-                    && !URL.class.equals(binding)) {
+                    && !URL.class.equals(binding) && !binding.isArray()) {
                 tp.getFormComponent().setType(binding);
             }
             parameterPanel = tp;

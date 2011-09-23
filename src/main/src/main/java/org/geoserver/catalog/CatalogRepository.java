@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,7 +24,7 @@ import org.opengis.feature.type.Name;
  * @author Christian Mueller
  * @author Justin Deoliveira
  */
-public class CatalogRepository implements Repository {
+public class CatalogRepository implements Repository, Serializable {
 
     /**
      * logger

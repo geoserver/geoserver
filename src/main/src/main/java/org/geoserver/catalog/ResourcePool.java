@@ -57,6 +57,7 @@ import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Repository;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -145,9 +146,11 @@ public class ResourcePool {
     HashMap<StyleInfo,Style> styleCache;
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
+    CatalogRepository repository;
     
     public ResourcePool(Catalog catalog) {
         this.catalog = catalog;
+        this.repository = new CatalogRepository(catalog);
         crsCache = new HashMap<String, CoordinateReferenceSystem>();
         dataStoreCache = new DataStoreCache();
         featureTypeCache = new FeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
@@ -301,29 +304,28 @@ public class ResourcePool {
                         // TODO: find a better way to do this
                         connectionParameters = DataStoreUtils.getParams(connectionParameters,null);
                         
+                        // obtain the factory
+                        DataAccessFactory factory = null;
+                        try {
+                            factory = getDataStoreFactory(info);
+                        } catch(IOException e) {
+                            throw new IOException("Failed to find the datastore factory for " + info.getName() 
+                                    + ", did you forget to install the store extension jar?");
+                        }
+                        Param[] params = factory.getParametersInfo();
+                        
                         //ensure that the namespace parameter is set for the datastore
-                        if (!connectionParameters.containsKey( "namespace")) {
-                            //obtain the factory
-                            DataAccessFactory factory = null;
-                            try {
-                                factory = getDataStoreFactory(info);
-                            }
-                            catch(Exception e ) {
-                                //ignore, it will fail later
-                            }
-                            
+                        if (!connectionParameters.containsKey( "namespace") && params != null) {
                             //if we grabbed the factory, check that the factory actually supports
                             // a namespace parameter, if we could not get the factory, assume that
                             // it does
                             boolean supportsNamespace = true;
-                            if ( factory != null ) {
-                                supportsNamespace = false;
-                                Param[] params = factory.getParametersInfo();
-                                for ( Param p : params ) {
-                                    if ( "namespace".equalsIgnoreCase( p.key ) ) {
-                                        supportsNamespace = true;
-                                        break;
-                                    }
+                            supportsNamespace = false;
+                            
+                            for ( Param p : params ) {
+                                if ( "namespace".equalsIgnoreCase( p.key ) ) {
+                                    supportsNamespace = true;
+                                    break;
                                 }
                             }
                             
@@ -336,6 +338,16 @@ public class ResourcePool {
                                 if ( ns != null ) {
                                     connectionParameters.put( "namespace", ns.getURI() );
                                 }    
+                            }
+                        }
+                        
+                        // see if the store has a repository param, if so, pass the one wrapping
+                        // the store
+                        if(params != null) {
+                            for ( Param p : params ) {
+                                if(Repository.class.equals(p.getType())) {
+                                    connectionParameters.put(p.getName(), repository);
+                                }
                             }
                         }
                         

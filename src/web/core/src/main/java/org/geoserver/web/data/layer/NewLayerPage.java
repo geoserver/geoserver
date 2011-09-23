@@ -5,10 +5,6 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
@@ -21,11 +17,9 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -42,6 +36,8 @@ import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.importer.WMSLayerImporterPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.data.store.StoreListChoiceRenderer;
+import org.geoserver.web.data.store.StoreListModel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -319,37 +315,6 @@ public class NewLayerPage extends GeoServerSecuredPage {
     String getSelectedStoreId() {
         // the provider is always up to date 
         return provider.getStoreId();
-    }
-
-    final class StoreListModel extends LoadableDetachableModel {
-        @Override
-        protected Object load() {
-            List<StoreInfo> stores = getCatalog().getStores(StoreInfo.class);
-            stores = new ArrayList<StoreInfo>(stores);
-            Collections.sort(stores, new Comparator<StoreInfo>() {
-                public int compare(StoreInfo o1, StoreInfo o2) {
-                    if (o1.getWorkspace().equals(o2.getWorkspace())) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-                    return o1.getWorkspace().getName().compareTo(o2.getWorkspace().getName());
-                }
-            });
-            return stores;
-        }
-    }
-    
-    static final class StoreListChoiceRenderer implements IChoiceRenderer {
-
-        public Object getDisplayValue(Object store) {
-            StoreInfo info = (StoreInfo) store;
-            return new StringBuilder(info.getWorkspace().getName()).append(':').append(
-                    info.getName());
-        }
-
-        public String getIdValue(Object store, int arg1) {
-            return ((StoreInfo) store).getId();
-        }
-
     }
 
 }

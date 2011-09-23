@@ -1,5 +1,5 @@
-GeoServer CSS Module
-====================
+CSS Styling
+===========
 
 The ``css`` module for GeoServer adds an alternative style editor to GeoServer
 that uses a CSS-derived language instead of SLD.  These CSS styles are
@@ -22,3 +22,5 @@ Read on for information about:
    properties
    values
    styled-marks
+   examples
+

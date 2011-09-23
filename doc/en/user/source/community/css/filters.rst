@@ -37,7 +37,7 @@ by some predicate operator (such as the less-than operator ``<``).
 Supported predicate operators include the following:
 
 .. list-table:: 
-    :widths: 10 90
+    :widths: 15 85
 
     * - **Operator**
       - **Meaning**
@@ -69,7 +69,7 @@ letters in the first half of the alphabet,  the rule would look like::
 
 .. note:: 
     The current implementation of property filters uses ECQL syntax, described
-    on the `GeoTools wiki <http://docs.codehaus.org/display/GEOTDOC/14+CQL>`_.
+    on the `GeoTools documentation <http://docs.geotools.org/latest/userguide/library/cql/index.html>`_.
 
 Filtering on Type
 -----------------
@@ -137,7 +137,7 @@ When using symbols to create graphics inline, you may want to apply some
 styling options to them.  You can specify style attributes for built-in symbols by using a few special selectors:
 
 .. list-table::
-    :widths: 20 80
+    :widths: 30 70
 
     * - **PseudoSelector**
       - **Meaning**

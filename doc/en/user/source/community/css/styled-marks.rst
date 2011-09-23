@@ -1,5 +1,5 @@
-Styled Marks in GeoServer CSS
-=============================
+Styled Marks in CSS
+===================
 
 GeoServer's CSS module provides a collection of predefined symbols that you can
 use and combine to create simple marks, strokes, and fill patterns without

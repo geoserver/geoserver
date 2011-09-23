@@ -5,6 +5,7 @@
 package org.geoserver.web.wicket;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -16,19 +17,19 @@ import org.apache.wicket.model.IModel;
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
-public abstract class SimpleAjaxLink extends Panel {
-    AjaxLink link;
+public abstract class SimpleAjaxLink<T> extends Panel {
+    AjaxLink<T> link;
     Label label;
     
     public SimpleAjaxLink(String id) {
         this(id, null);
     }
     
-    public SimpleAjaxLink(String id, IModel model) {
+    public SimpleAjaxLink(String id, IModel<T> model) {
         this(id, model, model);
     }
 
-    public SimpleAjaxLink(String id, IModel linkModel, IModel labelModel) {
+    public SimpleAjaxLink(String id, IModel<T> linkModel, IModel labelModel) {
         super(id, linkModel);
         
         add(link = buildAjaxLink(linkModel));
@@ -44,15 +45,33 @@ public abstract class SimpleAjaxLink extends Panel {
                 SimpleAjaxLink.this.onClick(target);
             }
             
+            @Override
+            protected IAjaxCallDecorator getAjaxCallDecorator() {
+                return SimpleAjaxLink.this.getAjaxCallDecorator();
+            }
+            
         };
     }
     
+    protected IAjaxCallDecorator getAjaxCallDecorator() {
+        System.out.println(label.getDefaultModelObject());
+        return null;
+    }
+
     public AjaxLink getLink() {
         return link;
     }
     
     public Label getLabel() {
         return label;
+    }
+    
+    public T getModelObject() {
+        return link.getModelObject();
+    }
+    
+    public IModel<T> getModel() {
+        return link.getModel();
     }
     
         

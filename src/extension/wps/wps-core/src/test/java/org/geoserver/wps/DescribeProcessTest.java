@@ -70,18 +70,6 @@ public class DescribeProcessTest extends WPSTestSupport {
     }
     
     /**
-     * Tests encoding of bounding box inputs
-     * @throws Exception
-     */
-    public void testRasterToVector() throws Exception {
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:RasterToVector");
-        // print(d);
-        checkValidationErrors(d);
-        assertXpathEvaluatesTo("EPSG:4326", "//Input[ows:Identifier='bounds']/BoundingBoxData/Default/CRS", d);
-        assertXpathEvaluatesTo("EPSG:4326", "//Input[ows:Identifier='bounds']/BoundingBoxData/Supported/CRS", d);
-    }
-    
-    /**
      * Tests encoding of bounding box outputs
      * @throws Exception
      */

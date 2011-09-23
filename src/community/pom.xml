@@ -126,6 +126,7 @@
         <module>dbconfig</module>
         <module>inspire</module>
         <module>sfs</module>
+        <module>feature-aggregate</module>
       </modules>
     </profile>
     <profile>

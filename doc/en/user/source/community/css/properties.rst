@@ -74,7 +74,7 @@ Line Symbology
     - * ``stroke- rotation``  
       * angle            
       * A rotation to be applied (clockwise) to the stroke image. See also the
-        ``stroke- repeat`` property.
+        stroke- repeat property.
       * yes
     - * ``stroke- linecap``   
       * keyword: butt, square, round
@@ -153,6 +153,24 @@ Text Symbology (Labeling)
     - * ``label- geometry``
       * expression 
       * An expression to use for the geometry when rendering features. 
+      * yes
+    - * ``label- anchor``
+      * expression 
+      * The part of the label to place over the point or middle of the polygon.
+        This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge.
+        y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label.
+      * yes
+    - * ``label- offset``
+      * expression 
+      * This is for fine-tuning label-anchor. x and y values specify pixels to adjust the label position. 
+      * yes
+    - * ``label- rotation``
+      * expression 
+      * Clockwise rotation of label in degrees. 
+      * yes
+    - * ``label- z-index``
+      * expression 
+      * Used to determine which labels are drawn on top of other labels. Lower z-indexes are drawn on top. 
       * yes
     - * ``shield``
       * mark, symbol

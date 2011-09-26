@@ -20,7 +20,9 @@ Installation
 Setting environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You will need to set the ``JAVA_HOME`` environment variable if it is not already set.  This is the path to your JDK/JRE such that :file:`%JAVA_HOME%\\bin\\java.exe` exists.
+You will need to set the ``JAVA_HOME`` environment variable if it is not already set.  This is the path to your JDK/JRE such that :file:`%JAVA_HOME%\\bin\\java.exe` exists.  You can download a JRE at `<http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_.
+
+.. note:: Oracle Java SE 6 or newer is strongly recommended, although Oracle JRE 5 will work.  A Java Development Kit (JDK) is not required to run GeoServer.  For more information about Java and GeoServer, please see the section on :ref:`production_java`.
 
 #. Navigate to :menuselection:`Control Panel --> System --> Advanced --> Environment Variables`.
 

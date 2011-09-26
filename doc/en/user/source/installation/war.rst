@@ -3,9 +3,15 @@
 Web archive (WAR)
 =================
 
-GeoServer is packaged as a standalone servlet for use with existing servlet container applications such as `Apache Tomcat <http://tomcat.apache.org/>`_ and `Glassfish <https://glassfish.dev.java.net/>`_.
+GeoServer is packaged as a standalone servlet for use with existing servlet container applications such as `Apache Tomcat <http://tomcat.apache.org/>`_ and `Jetty <https://jetty.mortbay.com/>`_.
 
 .. note:: GeoServer has been mostly tested using Tomcat, and therefore these instructions may not work with other container applications.
+
+Java
+----
+
+GeoServer requires Java to be installed on your system.  Oracle Java SE 6 or newer is strongly recommended, although Oracle JRE 5 will work.  A Java Development Kit (JDK) is not required to run GeoServer.  For more information about Java and GeoServer, please see the section on :ref:`production_java`.
+
 
 Installation
 ------------

@@ -8,8 +8,11 @@
 package org.geoserver.web.data.store;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.Repository;
 
 /**
  * A serializable view of a {@link Param}
@@ -31,6 +34,8 @@ public class ParamInfo implements Serializable {
     private boolean required;
 
     private Serializable value;
+    
+    private List<Serializable> options;
 
     public ParamInfo(Param param) {
         this.name = param.key;
@@ -39,6 +44,9 @@ public class ParamInfo implements Serializable {
         if (Serializable.class.isAssignableFrom(param.type)) {
             this.binding = param.type;
             this.value = (Serializable) param.sample;
+        } else if (Repository.class.equals(param.type)) {
+                this.binding = param.type;
+                this.value = null;
         } else {
             // handle the parameter as a string and let the DataStoreFactory
             // convert it to the appropriate type
@@ -46,8 +54,20 @@ public class ParamInfo implements Serializable {
             this.value = param.sample == null ? null : String.valueOf(param.sample);
         }
         this.required = param.required;
+        if (param.metadata != null) {
+            // using the "options" literal as Param.OPTIONS is not currently on GeoTools 2.7.x
+            List<Serializable> options = (List<Serializable>) param.metadata.get("options");
+            if (options != null && options.size() > 0) {
+                this.options = new ArrayList<Serializable>(options);
+                this.value = options.get(0);
+            }
+        }
     }
-
+    
+    public List<Serializable> getOptions(){
+        return options;
+    }
+    
     public Serializable getValue() {
         return value;
     }

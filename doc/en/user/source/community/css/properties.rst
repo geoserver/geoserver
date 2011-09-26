@@ -209,17 +209,6 @@ Text Symbology (Labeling)
       * percentage
       * The opacity of the halo, from 0 (fully transparent) to 1.0 (fully opaque). 
       * yes
-
-Text Symbology (Labeling) - continued
--------------------------------------
-
-.. list-table:: 
-    :widths: 15 15 60 10
-
-    - * **Property** 
-      * **Type**
-      * **Meaning**
-      * **Accepts Express -ion?**
     - * -gt-label-padding
       * length
       * The amount of 'padding' space to provide around labels.  Labels will
@@ -239,6 +228,17 @@ Text Symbology (Labeling) - continued
         will simply be omitted.  This is equivalent to the
         :ref:`maxDisplacement<labeling_max_displacement>` vendor parameter.
       * no
+
+Text Symbology (Labeling) - continued
+-------------------------------------
+
+.. list-table:: 
+    :widths: 15 15 60 10
+
+    - * **Property** 
+      * **Type**
+      * **Meaning**
+      * **Accepts Express -ion?**
     - * -gt-label-min-group-distance
       * length
       * This is equivalent to the minGroupDistance vendor parameter in SLD.
@@ -309,13 +309,25 @@ Text Symbology (Labeling) - continued
       * no
     - * -gt-label-priority
       * expression
-      * This option specifies an expression to use in determining which
+      * Specifies an expression to use in determining which
         features to prefer if there are labeling conflicts.  This is equivalent
         to the :ref:`Priority<labeling_priority>` SLD extension.
       * yes
+ 
+
+Text Symbology (Labeling) - continued
+-------------------------------------
+
+.. list-table:: 
+    :widths: 15 15 60 10
+
+    - * **Property** 
+      * **Type**
+      * **Meaning**
+      * **Accepts Express -ion?**
     - * -gt-shield-resize
       * string, one of ``none``, ``stretch``, or ``proportional``
-      * This option specifies a mode for resizing label graphics (such as
+      * Specifies a mode for resizing label graphics (such as
         highway shields) to fit the text of the label.  The default mode,
         'none', never modifies the label graphic. In ``stretch`` mode,
         GeoServer will resize the graphic to exactly surround the label text,
@@ -325,24 +337,7 @@ Text Symbology (Labeling) - continued
       * none
     - * -gt-shield-margin
       * list of lengths, one to four elements long.
-      * This option specifies an extra margin (in pixels) to be applied to the
-        label text when calculating label dimensions for use with the
-        ``-gt-shield-resize`` option.  Similar to the ``margin`` shorthand
-        property in CSS for HTML, its interpretation varies depending on how
-        many margin values are provided:
-
-        * 1 value means that GeoServer will use that margin length on all sides
-          of the label
-        * 2 values mean that GeoServer will use the first for vertical (top and
-          bottom) margins and the second for horizontal (left and right)
-          margins.
-        * 3 values mean that GeoServer will use the first for the top margin,
-          the second for the horizontal (left and right) margins, and the third
-          for the bottom margin.
-        * 4 values mean that GeoServer will use the first for the top margin,
-          second for the right margin, third for the bottom margin, and fourth
-          for the left margin.
-
+      * Specifies an extra margin (in pixels) to be applied to the label text when calculating label dimensions for use with the ``-gt-shield-resize`` option.  Similar to the ``margin`` shorthand property in CSS for HTML, its interpretation varies depending on how many margin values are provided: 1 = use that margin length on all sides of the label 2 = use the first for top & bottom margins and the second for left & right margins. 3 = use the first for the top margin, second for left & right margins, third for the bottom margin. 4 = use the first for the top margin, second for the right margin, third for the bottom margin, and fourth for the left margin.
       * none
 
 Shared
@@ -374,7 +369,7 @@ These properties are applied only when styling built-in symbols.  See
     - * **Property** 
       * **Type**
       * **Meaning**
-      * **Accepts Express -ion?**
+      * **Accepts Expression?**
     - * size
       * length
       * The size at which to render the symbol. 

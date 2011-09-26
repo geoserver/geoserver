@@ -27,7 +27,7 @@ public class FeatureTypeListResource extends AbstractCatalogListResource {
         String ds = getAttribute("datastore");
         
         if ( ds != null ) {
-            DataStoreInfo dataStore = catalog.getDataStoreByName( ds );
+            DataStoreInfo dataStore = catalog.getDataStoreByName(ws, ds);
             return catalog.getFeatureTypesByDataStore(dataStore);    
         }
         

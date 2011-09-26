@@ -29,6 +29,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
+import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.LabelParamPanel;
 import org.geoserver.web.data.store.panel.NamespacePanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
@@ -147,6 +148,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         final String paramLabel = paramMetadata.getName();
         final boolean required = paramMetadata.isRequired();
         final Class<?> binding = paramMetadata.getBinding();
+        final List<Serializable> options = paramMetadata.getOptions();
 
         Panel parameterPanel;
         if("dbtype".equals(paramName) || "filetype".equals(paramName)) {
@@ -160,6 +162,13 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             IModel namespaceModel = new NamespaceParamModel(paramsModel, paramName);
             IModel paramLabelModel = new ResourceModel(paramLabel, paramLabel);
             parameterPanel = new NamespacePanel(componentId, namespaceModel, paramLabelModel, true);
+        } else if (options != null && options.size() > 0){
+            
+            IModel<Serializable> valueModel = new MapModel(paramsModel, paramName);
+            IModel<String> labelModel = new ResourceModel(paramLabel, paramLabel);
+            parameterPanel = new DropDownChoiceParamPanel(componentId, valueModel, labelModel, options,
+                    required);
+            
         } else if (Boolean.class == binding) {
             // TODO Add prefix for better i18n?
             parameterPanel = new CheckBoxParamPanel(componentId, new MapModel(paramsModel,

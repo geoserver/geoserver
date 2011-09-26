@@ -8,7 +8,7 @@ Use Oracle JRE
 
 .. note::  As of version 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer.  GeoServer no longer requires a Java Development Kit (JDK).
 
-GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE).  For best performance, use `Oracle JRE 6 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ (also known as JRE 1.6).  If this is not possible, use Oracle JRE 5 (also known as JRE 1.5).  JREs other than those released by Oracle may work correctly, but are generally not tested or supported.  Users report GeoServer to be working with OpenJDK, but expect reductions in 2D rendering performance.
+GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE).  For best performance, use `Oracle JRE 6 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ (also known as JRE 1.6) or newer.  (As of GeoServer 2.2.x, Oracle JRE 5 is no longer supported.)  JREs other than those released by Oracle may work correctly, but are generally not tested or supported.  Users report GeoServer to be working with OpenJDK, but expect reductions in 2D rendering performance.
  
 
 Install native JAI and JAI Image I/O extensions

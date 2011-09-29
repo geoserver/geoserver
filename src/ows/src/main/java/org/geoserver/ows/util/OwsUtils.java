@@ -5,9 +5,14 @@
 package org.geoserver.ows.util;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.SoftValueHashMap;
@@ -322,6 +327,68 @@ public class OwsUtils {
         }
     }
    
+    /**
+     * Reflectively sets all collections when they are null.
+     */
+    public static void resolveCollections(Object object) {
+        ClassProperties properties = OwsUtils.getClassProperties( object.getClass() );
+        for ( String property : properties.properties() ) {
+            Method g = properties.getter( property, null );
+            if ( g == null ) {
+                continue;
+            }
+            
+            Class type = g.getReturnType();
+            //only continue if this is a collection or a map
+            if (  !(Map.class.isAssignableFrom( type ) || Collection.class.isAssignableFrom( type ) ) ) {
+                continue;
+            }
+            
+            //only continue if there is also a setter as well
+            Method s = properties.setter( property, null );
+            if ( s == null ) {
+                continue;
+            }
+            
+            //if the getter returns null, call the setter
+            try {
+                Object value = g.invoke( object, null );
+                if ( value == null ) {
+                    //first attempt to instantiate the type directly in case the method declares
+                    // a non interface or abstract class
+                    if (!type.isInterface()) {
+                        try {
+                            value = type.getConstructor().newInstance();
+                        }
+                        catch(Exception e) {
+                            //fall through to defaults
+                        }
+                    }
+                    if (value == null) {
+                        if ( Map.class.isAssignableFrom( type ) ) {
+                            value = new HashMap();
+                        }
+                        else if ( List.class.isAssignableFrom( type ) ) {
+                            value = new ArrayList();
+                        }
+                        else if ( Set.class.isAssignableFrom( type ) ) {
+                            value = new HashSet();
+                        }
+                        else {
+                            throw new RuntimeException( "Unknown collection type:" + type.getName() );
+                        }
+                    }
+                  
+                    //initialize
+                    s.invoke( object, value );
+                }
+            } 
+            catch (Exception e) {
+                throw new RuntimeException( e );
+            }
+        }
+    }
+
     /**
      * Helper method for updating a collection based property.
      */

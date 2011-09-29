@@ -251,12 +251,10 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         delegate.accept(visitor);
     }
     
-    @Override
     public boolean isAdvertised() {
         return delegate.isAdvertised();
     }
     
-    @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
     }

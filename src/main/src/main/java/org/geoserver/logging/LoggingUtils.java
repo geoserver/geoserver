@@ -15,6 +15,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.vfny.geoserver.global.ConfigurationException;
 
@@ -175,6 +176,21 @@ public class LoggingUtils {
                                 logFileName);
         
         
+    }
+    
+    /**
+     * Finds the log location in the "context" (system variable, env variable, servlet context)
+     * or uses the provided base location otherwise 
+     * @param loginfo
+     * @return
+     */
+    public static String getLogFileLocation(String baseLocation) {
+        String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
+        if(location == null) {
+            return baseLocation;
+        } else {
+            return location;
+        }
     }
 
 }

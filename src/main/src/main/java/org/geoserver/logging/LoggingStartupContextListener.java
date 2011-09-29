@@ -70,7 +70,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
                     BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
                     try {
                         LoggingInfo loginfo = xp.load(in,LoggingInfo.class);
-                        final String location = getLogFileLocation(loginfo.getLocation());
+                        final String location = LoggingUtils.getLogFileLocation(loginfo.getLocation());
                         LoggingUtils.initLogging(loader, loginfo.getLevel(), !loginfo.isStdOutLogging(),
                             location);
                     }
@@ -84,7 +84,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
                     if ( f != null ) {
                         LegacyLoggingImporter loggingImporter = new LegacyLoggingImporter();
                         loggingImporter.imprt(baseDir);
-                        final String location = getLogFileLocation(loggingImporter.getLogFile());
+                        final String location = LoggingUtils.getLogFileLocation(loggingImporter.getLogFile());
                         LoggingUtils.initLogging(loader, loggingImporter.getConfigFileName(), loggingImporter
                                 .getSuppressStdOutLogging(), location);
                     }
@@ -98,21 +98,6 @@ public class LoggingStartupContextListener implements ServletContextListener {
         }
     }
 
-    /**
-     * Finds the log location in the "context" (system variable, env variable, servlet context)
-     * or uses the provided base location otherwise 
-     * @param loginfo
-     * @return
-     */
-    private String getLogFileLocation(String baseLocation) {
-        String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
-        if(location == null) {
-            return baseLocation;
-        } else {
-            return location;
-        }
-    }
-    
     Logger getLogger() {
         if(LOGGER == null) {
             LOGGER = Logging.getLogger("org.geoserver.logging");

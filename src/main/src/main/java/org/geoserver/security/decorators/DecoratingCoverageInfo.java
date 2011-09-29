@@ -278,12 +278,10 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
         delegate.accept(visitor);
     }
     
-    @Override
     public boolean isAdvertised() {
         return delegate.isAdvertised();
     }
     
-    @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
     }

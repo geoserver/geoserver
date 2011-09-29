@@ -204,12 +204,10 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
         delegate.setTitle(title);
     }
 
-    @Override
     public boolean isAdvertised() {
         return delegate.isAdvertised();
     }
     
-    @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
     }

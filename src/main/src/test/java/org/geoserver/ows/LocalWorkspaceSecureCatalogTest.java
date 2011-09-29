@@ -1,10 +1,13 @@
 package org.geoserver.ows;
 
+import java.util.Collections;
+
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.DataAccessManagerAdapter;
+import org.geoserver.security.CatalogFilterAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
 
@@ -20,7 +23,8 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     public void testAccessToLayer() throws Exception {
         DataAccessManager def = buildLegacyAccessManager("wideOpen.properties");
         ResourceAccessManager defAsResourceManager = new DataAccessManagerAdapter(def);
-        LocalWorkspaceResourceAccessManager mgr = new LocalWorkspaceResourceAccessManager();
+        CatalogFilterAccessManager mgr = new CatalogFilterAccessManager();
+        mgr.setCatalogFilters(Collections.singletonList(new LocalWorkspaceCatalogFilter()));
         mgr.setDelegate(defAsResourceManager);
         
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};

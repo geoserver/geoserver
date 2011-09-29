@@ -64,6 +64,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     protected ProjectionPolicy projectionPolicy;
 
     protected boolean enabled;
+    
+    protected Boolean advertised;
 
     protected MetadataMap metadata = new MetadataMap();
 
@@ -312,6 +314,29 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     
     public void setProjectionPolicy(ProjectionPolicy projectionPolicy) {
         this.projectionPolicy = projectionPolicy;
+    }
+    
+    @Override
+    public boolean isAdvertised() {
+        if(this.advertised != null) {
+            return advertised;
+        } 
+        
+        // check the metadata map for backwards compatibility with 2.1.x series
+        MetadataMap md = getMetadata();
+        if(md == null) {
+            return true;
+        }
+        Boolean metadataAdvertised = md.get(LayerInfoImpl.KEY_ADVERTISED, Boolean.class);
+        if(metadataAdvertised == null) {
+            metadataAdvertised = true;
+        }
+        return metadataAdvertised;
+    }
+
+    @Override
+    public void setAdvertised(boolean advertised) {
+        this.advertised = advertised;
     }
 
     public int hashCode() {

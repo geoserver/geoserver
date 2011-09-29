@@ -2,36 +2,35 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.geoserver.ows;
+package org.geoserver.security;
 
-import org.springframework.security.core.Authentication;
+import java.util.List;
+
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.security.CatalogMode;
-import org.geoserver.security.CoverageAccessLimits;
-import org.geoserver.security.DataAccessLimits;
-import org.geoserver.security.ResourceAccessManagerWrapper;
-import org.geoserver.security.VectorAccessLimits;
-import org.geoserver.security.WMSAccessLimits;
-import org.geoserver.security.WorkspaceAccessLimits;
-import org.geotools.factory.CommonFactoryFinder;
+import org.geoserver.platform.GeoServerExtensions;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
+import org.springframework.security.core.Authentication;
 
 /**
- * Restricts access to data based on the value of {@link LocalWorkspace} and {@link LocalLayer}. 
+ * Filters viewable layers based on the registered CatalogFilter
  * 
  * @author Justin Deoliveira, OpenGeo
  * @author David Winslow, OpenGeo
+ * @author Andrea Aime, GeoSolutions
  */
-public class LocalWorkspaceResourceAccessManager extends ResourceAccessManagerWrapper {
+public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
+
+    private List<? extends CatalogFilter> filters;
+
     private DataAccessLimits hide(ResourceInfo info) {
         if (info instanceof FeatureTypeInfo) {
-            return new VectorAccessLimits(CatalogMode.HIDE, null, Filter.EXCLUDE, null, Filter.EXCLUDE);
+            return new VectorAccessLimits(CatalogMode.HIDE, null, Filter.EXCLUDE, null,
+                    Filter.EXCLUDE);
         } else if (info instanceof CoverageInfo) {
             return new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null);
         } else if (info instanceof WMSLayerInfo) {
@@ -68,22 +67,49 @@ public class LocalWorkspaceResourceAccessManager extends ResourceAccessManagerWr
         }
     }
 
-    private boolean hideLayer(LayerInfo layer) {
-        return LocalLayer.get() != null && !LocalLayer.get().equals(layer);
-    }
-
     private boolean hideResource(ResourceInfo resource) {
-        if (LocalLayer.get() != null) {
-            for (LayerInfo l : resource.getCatalog().getLayers(resource)) {
-                if (!l.equals(LocalLayer.get())) {
-                    return true;
-                }
+        for (CatalogFilter filter : getCatalogFilters()) {
+            if (filter.hideResource(resource)) {
+                return true;
             }
         }
-        return hideWorkspace(resource.getStore().getWorkspace());
+        return false;
+    }
+
+    private boolean hideLayer(LayerInfo layer) {
+        for (CatalogFilter filter : getCatalogFilters()) {
+            if (filter.hideLayer(layer)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     private boolean hideWorkspace(WorkspaceInfo workspace) {
-        return LocalWorkspace.get() != null && !LocalWorkspace.get().equals(workspace);
+        for (CatalogFilter filter : getCatalogFilters()) {
+            if (filter.hideWorkspace(workspace)) {
+                return true;
+            }
+        }
+        return false;
+
     }
+
+    private List<? extends CatalogFilter> getCatalogFilters() {
+        if (filters == null) {
+            filters = GeoServerExtensions.extensions(CatalogFilter.class);
+        }
+        return filters;
+    }
+    
+    /**
+     * Designed for testing, allows to manually configure the catalog filters bypassing
+     * the Spring context lookup
+     * @param filters
+     */
+    public void setCatalogFilters(List<? extends CatalogFilter> filters) {
+        this.filters = filters;
+    }
+
 }

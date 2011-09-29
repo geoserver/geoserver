@@ -162,5 +162,10 @@
   <bean id="namespaceWorkspaceConsistencyListener" class="org.geoserver.catalog.NamespaceWorkspaceConsistencyListener">
     <constructor-arg ref="catalog"/>
   </bean>
+  
+  <!-- Hides resources in other workspaces when using virtual services -->
+  <bean id="localWorkspaceFilter" class="org.geoserver.ows.LocalWorkspaceCatalogFilter"/>
+  <!-- Hides non advertised resources and layers -->
+  <bean id="advertisedResourceFilter" class="org.geoserver.catalog.AdvertisedResourceFilter"/>
 
 </beans>

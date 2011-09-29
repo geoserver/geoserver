@@ -11,19 +11,18 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.CatalogVisitor;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geotools.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 public class LayerInfoImpl implements LayerInfo {
     
     static final Logger LOGGER = Logging.getLogger(LayerInfoImpl.class);
+    
+    static final String KEY_ADVERTISED = "advertised"; 
 
     protected String id;
 
@@ -45,12 +44,16 @@ public class LayerInfoImpl implements LayerInfo {
     protected LegendInfo legend;
 
     protected boolean enabled;
+    
+    protected Boolean advertised;
 
     protected Boolean queryable;
 
     protected MetadataMap metadata = new MetadataMap();
 
     protected AttributionInfo attribution;
+    
+    
     
     public String getId() {
         return id;
@@ -262,5 +265,31 @@ public class LayerInfoImpl implements LayerInfo {
 
     public boolean isQueryable() {
         return this.queryable == null? true : this.queryable.booleanValue();
+    }
+
+    @Override
+    public boolean isAdvertised() {
+        if(this.advertised != null) {
+            return advertised;
+        } 
+        
+        // check the metadata map for backwards compatibility with 2.1.x series
+        MetadataMap md = getMetadata();
+        if(md == null) {
+            return true;
+        }
+        Boolean metadataAdvertised = md.get(KEY_ADVERTISED, Boolean.class);
+        if(metadataAdvertised == null) {
+            metadataAdvertised = true;
+        }
+        return metadataAdvertised;
+    }
+
+    @Override
+    public void setAdvertised(boolean advertised) {
+        this.advertised = advertised;
+        if(resource != null) {
+            resource.setAdvertised(advertised);
+        }
     }
 }

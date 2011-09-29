@@ -51,8 +51,9 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         List<LayerInfo> layers = getCatalog().getLayers();
         for (LayerInfo layer :layers ) {
             // ask for enabled() instead of isEnabled() to account for disabled resource/store
-            if (layer.enabled())
+            if (layer.enabled() && layer.isAdvertised()) {
                 result.add(new PreviewLayer(layer));
+            }
         }
 
         final List<LayerGroupInfo> layerGroups = getCatalog().getLayerGroups();

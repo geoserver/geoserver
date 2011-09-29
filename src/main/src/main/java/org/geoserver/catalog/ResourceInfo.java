@@ -380,4 +380,16 @@ public interface ResourceInfo extends CatalogInfo {
      * @uml.associationEnd inverse="resourceInfo:org.geoserver.catalog.Resource"
      */
     //Resource getResource(ProgressListener listener) throws IOException;
+    
+    /**
+     * Returns true if the resource existence should be advertised (true by default, unless otherwise set)
+     * @return
+     */
+    boolean isAdvertised();
+    
+    /**
+     * Set to true if the resource should be advertised, false otherwise
+     * @param advertised
+     */
+    void setAdvertised(boolean advertised);
 }

@@ -218,4 +218,16 @@ public interface LayerInfo extends CatalogInfo {
      * @see AttributionInfo
      */
     void setAttribution(AttributionInfo attribution);
+    
+    /**
+     * Returns true if the layer existence should be advertised (true by default, unless otherwise set)
+     * @return
+     */
+    boolean isAdvertised();
+    
+    /**
+     * Set to true if the layer should be advertised, false otherwise
+     * @param advertised
+     */
+    void setAdvertised(boolean advertised);
 }

@@ -31,7 +31,6 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.LocalWorkspaceResourceAccessManager;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -76,7 +75,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             DataAccessManager daManager = lookupDataAccessManager();
             manager = new DataAccessManagerAdapter(daManager);
         } 
-        LocalWorkspaceResourceAccessManager lwManager = new LocalWorkspaceResourceAccessManager();
+        CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
         return lwManager;
     }

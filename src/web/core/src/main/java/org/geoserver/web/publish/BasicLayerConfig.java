@@ -19,6 +19,7 @@ public class BasicLayerConfig extends LayerConfigurationPanel {
 		
         add(name);
 		add(new CheckBox("enabled"));
+		add(new CheckBox("advertised"));
 	}
 	
 	private void init(){

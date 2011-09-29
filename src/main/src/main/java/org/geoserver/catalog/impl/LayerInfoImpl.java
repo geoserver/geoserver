@@ -11,19 +11,18 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.CatalogVisitor;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geotools.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 public class LayerInfoImpl implements LayerInfo {
     
     static final Logger LOGGER = Logging.getLogger(LayerInfoImpl.class);
+    
+    static final String KEY_ADVERTISED = "advertised"; 
 
     protected String id;
 
@@ -51,6 +50,8 @@ public class LayerInfoImpl implements LayerInfo {
     protected MetadataMap metadata = new MetadataMap();
 
     protected AttributionInfo attribution;
+    
+    
     
     public String getId() {
         return id;
@@ -262,5 +263,28 @@ public class LayerInfoImpl implements LayerInfo {
 
     public boolean isQueryable() {
         return this.queryable == null? true : this.queryable.booleanValue();
+    }
+
+    public boolean isAdvertised() {
+        // new property, it's in the metadata on 2.1.x series (there is a filed in
+        MetadataMap md = getMetadata();
+        if(md == null) {
+            return true;
+        }
+        Boolean metadataAdvertised = md.get(KEY_ADVERTISED, Boolean.class);
+        if(metadataAdvertised == null) {
+            metadataAdvertised = true;
+        }
+        return metadataAdvertised;
+    }
+
+    public void setAdvertised(boolean advertised) {
+        if(metadata == null) {
+            metadata = new MetadataMap();
+        }
+        metadata.put(KEY_ADVERTISED, advertised);
+        if(resource != null) {
+            resource.setAdvertised(advertised);
+        }
     }
 }

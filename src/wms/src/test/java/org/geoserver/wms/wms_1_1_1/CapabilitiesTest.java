@@ -4,8 +4,8 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLUnit.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +101,25 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertEquals(layers.size(), nodeLayers.getLength());
     }
 
+    public void testNonAdvertisedLayer() throws Exception {
+        String layerId = getLayerId(MockData.BUILDINGS);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        try {
+            // now you see me
+            Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), true);
+            assertXpathExists("//Layer[Name='" + layerId + "']", dom);
+            
+            // now you don't!
+            layer.setAdvertised(false);
+            getCatalog().save(layer);
+            dom = dom(get("wms?request=getCapabilities&version=1.1.1"), true);
+            assertXpathNotExists("//Layer[Name='" + layerId + "']", dom);
+        } finally {
+            layer.setAdvertised(true);
+            getCatalog().save(layer);
+        }
+    }
+    
     public void testWorkspaceQualified() throws Exception {
         Document dom = dom(get("cite/wms?request=getCapabilities&version=1.1.1"), true);
         Element e = dom.getDocumentElement();

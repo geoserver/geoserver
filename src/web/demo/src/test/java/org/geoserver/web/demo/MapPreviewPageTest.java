@@ -7,4 +7,5 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
     }
+    
 }

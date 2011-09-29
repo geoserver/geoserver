@@ -52,4 +52,5 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     public DataStoreInfo getStore() {
         return (DataStoreInfo) SecuredObjects.secure(delegate.getStore(), policy);
     }
+    
 }

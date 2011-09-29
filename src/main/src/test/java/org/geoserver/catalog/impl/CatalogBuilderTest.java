@@ -173,17 +173,31 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
 
         cb.setStore(wms);
         WMSLayerInfo wmsLayer = cb.buildWMSLayer("topp:states");
-        assertEquals("states", wmsLayer.getName());
-        assertEquals("topp:states", wmsLayer.getNativeName());
-        assertEquals("EPSG:4326", wmsLayer.getSRS());
-        assertEquals(CRS.decode("EPSG:4326"), wmsLayer.getNativeCRS());
-        assertNotNull(wmsLayer.getNativeBoundingBox());
-        assertNotNull(wmsLayer.getLatLonBoundingBox());
+        assertWMSLayer(wmsLayer);
         
         LayerInfo layer = cb.buildLayer(wmsLayer);
         assertEquals(LayerInfo.Type.WMS, layer.getType());
+
+        wmsLayer = cat.getFactory().createWMSLayer();
+        wmsLayer.setName("states");
+        wmsLayer.setNativeName("topp:states");
+        cb.initWMSLayer(wmsLayer);
+        assertWMSLayer(wmsLayer);
     }
-    
+
+    void assertWMSLayer(WMSLayerInfo wmsLayer) throws Exception {
+        assertEquals("states", wmsLayer.getName());
+        assertEquals("topp:states", wmsLayer.getNativeName());
+        assertEquals("EPSG:4326", wmsLayer.getSRS());
+        assertEquals("USA Population", wmsLayer.getTitle());
+        assertEquals("This is some census data on the states.", wmsLayer.getAbstract());
+        
+        assertEquals(CRS.decode("EPSG:4326"), wmsLayer.getNativeCRS());
+        assertNotNull(wmsLayer.getNativeBoundingBox());
+        assertNotNull(wmsLayer.getLatLonBoundingBox());
+        assertFalse(wmsLayer.getKeywords().isEmpty());
+    }
+
     public void testLargeNDMosaic() throws Exception {
         // build a mosaic with 1025 files (the standard ulimit is 1024)
         File mosaic = new File("./target/largeMosaic");

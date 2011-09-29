@@ -61,6 +61,8 @@ public class LoggingInitializer implements GeoServerInitializer, ApplicationCont
                         stdOutLogging = (Boolean) newValues.get( propertyNames.indexOf( "stdOutLogging" ) );
                         reload = true;
                     }
+                    // maintain the system variable overlay
+                    loggingLocation = LoggingUtils.getLogFileLocation(loggingLocation);
                    
                     if ( reload ) {
                         try {

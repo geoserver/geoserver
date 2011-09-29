@@ -968,7 +968,27 @@ public class CatalogImplTest extends TestCase {
         assertNotSame(l,l2);
         assertEquals( l, l2 );
     }
-    
+
+    public void testGetLayerByNameWithColon() {
+        
+        FeatureTypeInfo ft = catalog.getFactory().createFeatureType();
+        ft.setEnabled(true);
+        ft.setName( "foo:bar" );
+        ft.setAbstract( "ftAbstract" );
+        ft.setDescription( "ftDescription" );
+        ft.setStore( ds );
+        ft.setNamespace( ns );
+        catalog.add(ft);
+        
+        LayerInfo l = catalog.getFactory().createLayer();
+        l.setEnabled(true);
+        l.setResource(ft);
+        l.setDefaultStyle( s );
+        
+        catalog.add(l);
+        assertNotNull(catalog.getLayerByName("foo:bar"));
+    }
+
     public void testGetLayerByResource() {
         addLayer();
         

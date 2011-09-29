@@ -689,13 +689,10 @@ public class CatalogImpl implements Catalog {
                 if (layers.size() == 1) {
                     return layers.get(0);
                 }
-                
             }
-            return null;
         }
-        else {
-            return facade.getLayerByName(name);
-        }
+
+        return facade.getLayerByName(name);
 
     }
 

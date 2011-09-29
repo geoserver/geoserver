@@ -1,5 +1,7 @@
 package org.geoserver.wfs;
 
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -10,6 +12,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.w3c.dom.Document;
@@ -163,5 +166,24 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals(6, xpath.getMatchingNodes("//wfs:Post[contains(@onlineResource,'sf/PrimitiveGeoFeature/wfs')]", doc).getLength());
         
         //TODO: test with a non existing workspace
+    }
+    
+    public void testNonAdvertisedLayer() throws Exception {
+        String layerId = getLayerId(MockData.MLINES);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        try {
+            // now you see me
+            Document dom = getAsDOM("wfs?request=getCapabilities&version=1.0.0");
+            assertXpathExists("//wfs:FeatureType[wfs:Name='" + layerId + "']", dom);
+            
+            // now you don't!
+            layer.setAdvertised(false);
+            getCatalog().save(layer);
+            dom = getAsDOM("wfs?request=getCapabilities&version=1.0.0");
+            assertXpathNotExists("//wfs:FeatureType[wfs:Name = '" + layerId + "']", dom);
+        } finally {
+            layer.setAdvertised(true);
+            getCatalog().save(layer);
+        }
     }
 }

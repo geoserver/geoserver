@@ -313,6 +313,26 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     public void setProjectionPolicy(ProjectionPolicy projectionPolicy) {
         this.projectionPolicy = projectionPolicy;
     }
+    
+    public boolean isAdvertised() {
+        // new property, it's in the metadata on 2.1.x series (there is a filed in 
+        MetadataMap md = getMetadata();
+        if(md == null) {
+            return true;
+        }
+        Boolean metadataAdvertised = md.get(LayerInfoImpl.KEY_ADVERTISED, Boolean.class);
+        if(metadataAdvertised == null) {
+            metadataAdvertised = true;
+        }
+        return metadataAdvertised;
+    }
+
+    public void setAdvertised(boolean advertised) {
+        if(metadata == null) {
+            metadata = new MetadataMap();
+        }
+        metadata.put(LayerInfoImpl.KEY_ADVERTISED, advertised);
+    }
 
     public int hashCode() {
         final int prime = 31;

@@ -1,11 +1,12 @@
 package org.geoserver.wcs;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.data.test.MockData.WORLD;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.geoserver.data.test.MockData.*;
 import junit.framework.Test;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.test.WCSTestSupport;
@@ -260,5 +261,24 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     
         dom = getAsDOM("wcs/BlueMarble/wcs?request=GetCapabilities&service=WCS");
         assertEquals(1, xpath.getMatchingNodes("//wcs:CoverageSummary", dom).getLength());
+    }
+    
+    public void testNonAdvertisedLayer() throws Exception {
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        try {
+            // now you see me
+            Document dom = getAsDOM("wcs?request=GetCapabilities");
+            assertXpathExists("//wcs:CoverageSummary[ows:Title='DEM']", dom);
+            
+            // now you don't!
+            layer.setAdvertised(false);
+            getCatalog().save(layer);
+            dom = getAsDOM("wcs?request=GetCapabilities");
+            assertXpathNotExists("//wcs:CoverageSummary[ows:Title='DEM']", dom);
+        } finally {
+            layer.setAdvertised(true);
+            getCatalog().save(layer);
+        }
     }
 }

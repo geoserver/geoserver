@@ -110,7 +110,10 @@ The publishing tab allows for configuration of HTTP and WCS settings.
 .. figure:: ../images/data_layers_edit_publish.png
    :align: center
    
-   *Editing Publishing Data*   
+   *Editing Publishing Data*
+   
+* *Enabled*: A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST-config)
+* *Additional styles*: A layer is advertised by default. A non advertised layer will be available in all data access requests (e.g., WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview. 
 
 **HTTP Settings:** Cache parameters that apply to the HTTP response from client requests.  If :guilabel:`Response Cache Headers` is checked, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`.  One hour measured in seconds (i.e., 3600), is the default value for :guilabel:`Cache Time`.
 

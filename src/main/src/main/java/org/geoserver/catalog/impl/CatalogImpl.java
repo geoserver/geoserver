@@ -1291,55 +1291,7 @@ public class CatalogImpl implements Catalog {
      * Method which reflectively sets all collections when they are null.
      */
     protected void resolveCollections(Object object) {
-        ClassProperties properties = OwsUtils.getClassProperties( object.getClass() );
-        for ( String property : properties.properties() ) {
-            Method g = properties.getter( property, null );
-            if ( g == null ) {
-                continue;
-            }
-            
-            Class type = g.getReturnType();
-            //only continue if this is a collection or a map
-            if (  !(Map.class.isAssignableFrom( type ) || Collection.class.isAssignableFrom( type ) ) ) {
-                continue;
-            }
-            
-            //only continue if there is also a setter as well
-            Method s = properties.setter( property, null );
-            if ( s == null ) {
-                continue;
-            }
-            
-            //if the getter returns null, call the setter
-            try {
-                Object value = g.invoke( object, null );
-                if ( value == null ) {
-                    if ( Map.class.isAssignableFrom( type ) ) {
-                        if ( MetadataMap.class.isAssignableFrom( type ) ) {
-                            value = new MetadataMap();
-                        }
-                        else {
-                            value = new HashMap();
-                        }
-                    }
-                    else if ( List.class.isAssignableFrom( type ) ) {
-                        value = new ArrayList();
-                    }
-                    else if ( Set.class.isAssignableFrom( type ) ) {
-                        value = new HashSet();
-                    }
-                    else {
-                        throw new RuntimeException( "Unknown collection type:" + type.getName() );
-                    }
-                  
-                    //initialize
-                    s.invoke( object, value );
-                }
-            } 
-            catch (Exception e) {
-                throw new RuntimeException( e );
-            }
-        }
+        OwsUtils.resolveCollections(object);
     }
     
     protected boolean isNull( String string ) {

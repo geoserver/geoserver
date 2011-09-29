@@ -658,13 +658,17 @@ public class CatalogBuilder {
         wmsLayer.setCatalog(catalog);
 
         initResourceInfo(wmsLayer);
-        
+        OwsUtils.resolveCollections(wmsLayer);
+
         // get a fully initialized version we can copy from
         WMSLayerInfo full = buildWMSLayer(wmsLayer.getNativeName());
 
         // setup the srs if missing
         if (wmsLayer.getSRS() == null) {
             wmsLayer.setSRS(full.getSRS());
+        }
+        if (wmsLayer.getNativeCRS() == null) {
+            wmsLayer.setNativeCRS(full.getNativeCRS());
         }
         if (wmsLayer.getProjectionPolicy() == null) {
             wmsLayer.setProjectionPolicy(full.getProjectionPolicy());
@@ -683,6 +687,20 @@ public class CatalogBuilder {
             // we know the geographic and we can reproject back to native
             ReferencedEnvelope boundsLatLon = wmsLayer.getLatLonBoundingBox();
             wmsLayer.setNativeBoundingBox(boundsLatLon.transform(wmsLayer.getNativeCRS(), true));
+        }
+
+        //fill in missing metadata
+        if (wmsLayer.getTitle() == null) {
+            wmsLayer.setTitle(full.getTitle());
+        }
+        if (wmsLayer.getDescription() == null) {
+            wmsLayer.setDescription(full.getDescription());
+        }
+        if (wmsLayer.getAbstract() == null) {
+            wmsLayer.setAbstract(full.getAbstract());
+        }
+        if (wmsLayer.getKeywords().isEmpty()) {
+            wmsLayer.getKeywords().addAll(full.getKeywords());
         }
     }
 
@@ -991,6 +1009,7 @@ public class CatalogBuilder {
 
         WMSStoreInfo wms = (WMSStoreInfo) store;
         WMSLayerInfo wli = catalog.getFactory().createWMSLayer();
+
         wli.setName(layerName);
         wli.setNativeName(layerName);
 

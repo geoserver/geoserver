@@ -4,7 +4,9 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.net.URL;
 import java.util.logging.Level;
 
@@ -17,6 +19,7 @@ import junit.framework.Test;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
@@ -102,7 +105,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
     
     @Override
-    public void setUpInternal(){
+    public void setUpInternal() throws Exception {
         Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
     }
 
@@ -243,6 +246,19 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         ServletResponse response = getAsServletResponse("cite/Ponds/wms?request=getmap&service=wms"
                 + "&layers=Ponds&width=100&height=100&format=image/png"
                 + "&srs=epsg:4326&bbox=-180,-90,180,90");
+        assertEquals("image/png", response.getContentType());
+    }
+    
+    public void testGroupWorkspaceQualified() throws Exception {
+        // check the group works without workspace qualification
+        String url = "wms?request=getmap&service=wms"
+                + "&layers=nature&width=100&height=100&format=image/png"
+                + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+        ServletResponse response = getAsServletResponse(url);
+        assertEquals("image/png", response.getContentType());
+        
+        // see that it works also with workspace qualification
+        response = getAsServletResponse("cite/" + url);
         assertEquals("image/png", response.getContentType());
     }
     

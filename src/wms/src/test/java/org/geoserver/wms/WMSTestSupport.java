@@ -33,9 +33,10 @@ import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureSourceMapLayer;
@@ -63,6 +64,8 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  */
 public abstract class WMSTestSupport extends GeoServerTestSupport {
+
+    private static final String NATURE_GROUP = "nature";
 
     protected static final int SHOW_TIMEOUT = 2000;
 
@@ -99,6 +102,23 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
         copySchemaFile("filter/1.0.0/expr.xsd");
         copySchemaFile("filter/1.0.0/filter.xsd");
         copySchemaFile("sld/StyledLayerDescriptor.xsd");
+        
+        // setup a layer group
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
+        group.setName(NATURE_GROUP);
+        group.getLayers().add(lakes);
+        group.getLayers().add(forests);
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(group);
+        catalog.add(group);
+    }
+    
+    @Override
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
     }
 
     protected void copySchemaFile(String file) throws IOException {

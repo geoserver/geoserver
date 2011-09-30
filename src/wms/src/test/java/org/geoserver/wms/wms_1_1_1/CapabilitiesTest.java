@@ -16,6 +16,7 @@ import junit.framework.Test;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ContactInfo;
@@ -91,6 +92,7 @@ public class CapabilitiesTest extends WMSTestSupport {
                 it.remove();
             }
         }
+        List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), true);
 
@@ -98,7 +100,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         NodeList nodeLayers = xpath.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/Layer",
                 dom);
 
-        assertEquals(layers.size(), nodeLayers.getLength());
+        assertEquals(layers.size() + groups.size(), nodeLayers.getLength());
     }
 
     public void testNonAdvertisedLayer() throws Exception {

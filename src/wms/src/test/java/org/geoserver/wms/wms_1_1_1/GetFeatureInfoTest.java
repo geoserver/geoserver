@@ -4,12 +4,11 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
-import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 
-import javax.imageio.ImageIO;
+import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
@@ -20,8 +19,6 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
     
@@ -376,6 +373,26 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         //System.out.println(result);
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
+    }
+    
+    public void testGroupWorkspaceQualified() throws Exception {
+        // check the group works without workspace qualification
+        String url = "wms?request=getmap&service=wms&version=1.1.1"
+                + "&layers=nature&width=100&height=100&format=image/png"
+                + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002&info_format=text/plain" +
+                		"&request=GetFeatureInfo&query_layers=nature&x=50&y=50&feature_count=2";
+        String result = getAsString(url);
+        assertTrue(result.indexOf("Blue Lake") > 0);
+        assertTrue(result.indexOf("Green Forest") > 0);
+
+        // check that it still works when workspace qualified
+        result = getAsString("cite/" + url);
+        assertTrue(result.indexOf("Blue Lake") > 0);
+        assertTrue(result.indexOf("Green Forest") > 0);
+        
+        // but we have nothing if the workspace
+        Document dom = getAsDOM("cdf/" + url);
+        assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
     public void testNonExactVersion() throws Exception {

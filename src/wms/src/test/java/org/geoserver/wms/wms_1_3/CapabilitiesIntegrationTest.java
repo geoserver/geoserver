@@ -20,6 +20,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ContactInfo;
@@ -115,6 +116,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
                 it.remove();
             }
         }
+        List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
 
         Document dom = dom(get("wms?request=GetCapabilities&version=1.3.0"), true);
 
@@ -122,7 +124,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         NodeList nodeLayers = xpath.getMatchingNodes(
                 "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer", dom);
 
-        assertEquals(layers.size(), nodeLayers.getLength());
+        assertEquals(layers.size() + groups.size(), nodeLayers.getLength());
     }
 
     public void testWorkspaceQualified() throws Exception {

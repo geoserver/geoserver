@@ -761,6 +761,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             AttributesImpl qatts = new AttributesImpl();
             boolean queryable = wmsConfig.isQueryable(layer);
             qatts.addAttribute("", "queryable", "queryable", "", queryable ? "1" : "0");
+            Integer cascaded = wmsConfig.getCascadedHopCount(layer);
+            if (cascaded != null) {
+                qatts.addAttribute("", "cascaded", "cascaded", "", String.valueOf(cascaded));
+            }
+            
             start("Layer", qatts);
             element("Name", layer.getResource().getNamespace().getPrefix() + ":" + layer.getName());
             // REVISIT: this is bad, layer should have title and anbstract by itself

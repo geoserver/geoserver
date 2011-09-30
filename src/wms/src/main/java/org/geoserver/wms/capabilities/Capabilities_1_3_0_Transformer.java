@@ -4,7 +4,10 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -28,12 +31,12 @@ import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
@@ -784,8 +787,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         protected void handleLayer(final LayerInfo layer) {
             boolean queryable = wmsConfig.isQueryable(layer);
             AttributesImpl qatts = attributes("queryable", queryable ? "1" : "0");
-            int cascadedHopCount = getCascadedHopCount(layer);
-            if (cascadedHopCount > 0) {
+            Integer cascadedHopCount = wmsConfig.getCascadedHopCount(layer);
+            if (cascadedHopCount != null) {
                 qatts.addAttribute("", "cascaded", "cascaded", "", String.valueOf(cascadedHopCount));
             }
             start("Layer", qatts);
@@ -883,26 +886,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 }
             }
         }
-
-
-
-
-        /**
-         * Returns the layer hop count if the layer is cascaded
-         * <p>
-         * TODO: the geotools wms Layer object does not hold information on the cascaded status of
-         * layers, so in order to correctly implement this we need to gather that information in the
-         * geotools wms module. For now this method just returns {@code 1} is layer is a
-         * {@link WMSLayerInfo}
-         * </p>
-         */
-        private int getCascadedHopCount(final LayerInfo layer) {
-            if (layer instanceof WMSLayerInfo) {
-                return 1;
-            }
-            return 0;
-        }
-
+        
         protected void handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
             if (layerGroups == null || layerGroups.size() == 0) {

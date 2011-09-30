@@ -756,6 +756,22 @@ public class WMS implements ApplicationContextAware {
         }
     }
 
+    public Integer getCascadedHopCount(LayerInfo layer) {
+        if (!(layer.getResource() instanceof WMSLayerInfo)) {
+            return null;
+        }
+        WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layer.getResource();
+        Layer wmsLayer;
+        int cascaded = 1;
+        try {
+            wmsLayer = wmsLayerInfo.getWMSLayer(null);
+            cascaded = 1 + wmsLayer.getCascaded();
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Unable to determina WMSLayer cascaded hop count", e);
+        }
+        return cascaded;
+    }
+
     public boolean isQueryable(LayerGroupInfo layerGroup) {
         for (LayerInfo layer : layerGroup.getLayers()) {
             if (!isQueryable(layer)) {

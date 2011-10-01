@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,6 +57,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     static SoftValueHashMap<Class, String[]> extensionsCache = new SoftValueHashMap<Class, String[]>(40);
     
+    static ConcurrentHashMap<String, Object> singletonBeanCache = new ConcurrentHashMap<String, Object>();
+    
     /**
      * SPI lookups are very  expensive, we need to cache them
      */
@@ -82,6 +85,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         throws BeansException {
         GeoServerExtensions.context = context;
         extensionsCache.clear();
+        singletonBeanCache.clear();
     }
 
     /**
@@ -133,7 +137,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         // look up all the beans
         List result = new ArrayList(names.length);
         for(String name : names) {
-            Object bean = context.getBean(name);
+            Object bean = getBean(context, name);
             if(!excludeBean(name, bean, filters))
                 result.add(bean);
         }
@@ -192,6 +196,17 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         return result;
     }
 
+    private static Object getBean(ApplicationContext context, String name) {
+        Object bean = singletonBeanCache.get(name);
+        if(bean == null) {
+            bean = context.getBean(name);
+            if(bean != null && context.isSingleton(name)) {
+                singletonBeanCache.put(name, bean);
+            } 
+        }
+        return bean;
+    }
+
     private static void filter(List objects, List<ExtensionFilter> filters, List result) {
         for (Object bean : objects) {
             if(!excludeBean(null, bean, filters))
@@ -239,7 +254,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     public static final Object bean(String name, ApplicationContext context) {
         checkContext(context);
-        return context != null ? context.getBean(name) : null;
+        return context != null ? getBean(context, name) : null;
     }
 
     /**
@@ -286,8 +301,10 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     }
     
     public void onApplicationEvent(ApplicationEvent event) {
-        if(event instanceof ContextRefreshedEvent)
+        if(event instanceof ContextRefreshedEvent) { 
             extensionsCache.clear();
+            singletonBeanCache.clear();
+        }
     }
     
     /**

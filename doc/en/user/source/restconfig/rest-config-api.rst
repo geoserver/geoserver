@@ -612,12 +612,14 @@ Operations
 .. _list_parameter:
 
 The ``list`` parameter is used to control the category of feature types that 
-are returned. It can take one of the three values "configured", "available", or "all".
+are returned. It can take one of the three values "configured", "available", "available_with_geom" or "all".
 
 - ``configured`` - Only setup or configured feature types are returned. This
   is the default value.
 - ``available`` - Only unconfigured feature types (not yet setup) but are 
   available from the specified datastore  will be returned.
+- ``available_with_geom`` - Same as ``available`` but only includes feature 
+  types that have a geometry attribute.
 - ``all`` - The union of ``configured`` and ``available``.
 
 ``/workspaces/<ws>/datastores/<ds>/featuretypes/<ft>[.<format>]``

@@ -8,8 +8,14 @@ import static org.geoserver.data.test.MockData.TASMANIA_DEM;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.Test;
 
+import org.geoserver.catalog.CoverageDimensionInfo;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,6 +23,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DescribeCoverageTest extends WCSTestSupport {
+    
+    public static QName NO_RANGE = new QName(MockData.WCS_URI, "NoRange", MockData.WCS_PREFIX);
     
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -35,9 +43,28 @@ public class DescribeCoverageTest extends WCSTestSupport {
 //        System.out.println(CRS.decode("urn:ogc:def:crs:EPSG:4326"));
 //    }
     
+    @Override
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        super.populateDataDirectory(dataDirectory);
+        
+        dataDirectory.addCoverage(NO_RANGE, DescribeCoverageTest.class.getResource("norange.tiff"),
+                MockData.TIFF, "raster");
+    }
+    
+    @Override
+    protected void oneTimeSetUp() throws Exception {
+        super.oneTimeSetUp();
+        
+        // the GUI builds the dimension without range, let's do the same here
+        CoverageInfo noRange = getCatalog().getCoverageByName(getLayerId(NO_RANGE));
+        CoverageDimensionInfo cdi = noRange.getDimensions().get(0);
+        cdi.setRange(null);
+        getCatalog().save(noRange);
+    }
+    
     public void testDescribeNoIdentifiers() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&version=1.1.1");
-//        print(dom);
+        // print(dom);
         assertEquals(1, dom.getElementsByTagName("ows:ExceptionReport").getLength());
         Element element = (Element) dom.getElementsByTagName("ows:Exception").item(0);
         assertEquals("MissingParameterValue", element.getAttribute("exceptionCode"));
@@ -89,9 +116,24 @@ public class DescribeCoverageTest extends WCSTestSupport {
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="
                 + getLayerId(TASMANIA_DEM));
-//        print(dom);
         checkValidationErrors(dom, WCS11_SCHEMA);
         checkDemCoverageDescription(dom);
+    }
+    
+    public void testDescribeNoRangeKvp() throws Exception {
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="
+                + getLayerId(NO_RANGE));
+        print(dom);
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        
+        // check the basics, the output is a single coverage description with the expected id
+        assertEquals(1, dom.getElementsByTagName("wcs:CoverageDescriptions").getLength());
+        assertEquals(1, dom.getElementsByTagName("wcs:CoverageDescription").getLength());
+        assertXpathEvaluatesTo(getLayerId(NO_RANGE), 
+                "/wcs:CoverageDescriptions/wcs:CoverageDescription/wcs:Identifier", dom);
+        // check we generated a ows:AnyValue for the field definition (since we have no validity range)
+        assertXpathEvaluatesTo("1", "count(//wcs:Field/wcs:Definition/ows:AnyValue)", dom);
     }
     
     public void testDescribeDemCoverageXml() throws Exception {

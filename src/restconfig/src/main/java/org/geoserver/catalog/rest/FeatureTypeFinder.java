@@ -51,7 +51,8 @@ public class FeatureTypeFinder extends AbstractCatalogFinder {
             //check the list flag, if == 'available', just return the list 
             // of feature types available
             Form form = request.getResourceRef().getQueryAsForm();
-            if ( "available".equalsIgnoreCase( form.getFirstValue( "list" ) ) ) {
+            String list = form.getFirstValue( "list" );
+            if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)) {
                 return new AvailableFeatureTypeResource(null,request,response,catalog);
             }
             

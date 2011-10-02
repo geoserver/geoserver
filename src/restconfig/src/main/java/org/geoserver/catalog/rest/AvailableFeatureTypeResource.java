@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -15,6 +16,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
 import org.geotools.data.DataStore;
+import org.opengis.feature.type.FeatureType;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -37,7 +39,10 @@ public class AvailableFeatureTypeResource extends AbstractCatalogResource {
         if ( info == null ) {
             throw new RestletException( "No such datastore: " + datastore, Status.CLIENT_ERROR_NOT_FOUND );
         }
-        
+
+        //flag to control whether to filter out types without geometry
+        boolean skipNoGeom = "available_with_geom".equalsIgnoreCase(getQueryStringValue("list"));
+
         //list of available feature types
         List<String> available = new ArrayList<String>();
         try {
@@ -48,6 +53,21 @@ public class AvailableFeatureTypeResource extends AbstractCatalogResource {
                 FeatureTypeInfo ftinfo = catalog.getFeatureTypeByDataStore(info, featureTypeName);
                 if (ftinfo == null ) {
                     //not in catalog, add it
+                    
+                    //check whether to filter by geometry
+                    if (skipNoGeom) {
+                        try {
+                            FeatureType featureType = ds.getSchema(featureTypeName);
+                            if (featureType.getGeometryDescriptor() == null) {
+                                //skip
+                                continue;
+                            }
+                        }
+                        catch(IOException e) {
+                            LOGGER.log(Level.WARNING, 
+                                "Unable to load schema for feature type " + featureTypeName, e);
+                        }
+                    }
                     available.add( featureTypeName );
                 }
             }

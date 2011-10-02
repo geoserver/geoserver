@@ -112,7 +112,17 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsa'])", dom);
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsb'])", dom);
     }
-    
+
+    public void testGetAllAvailableWithGeometryOnly() throws Exception {
+        addGeomlessPropertyDataStore(false);
+
+        Document dom = getAsDOM( "/rest/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available");
+        assertXpathEvaluatesTo("2", "count(//featureTypeName)", dom);
+
+        dom = getAsDOM( "/rest/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available_with_geom");
+        assertXpathEvaluatesTo("0", "count(//featureTypeName)", dom);
+    }
+
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatusCode() );
     }

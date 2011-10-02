@@ -600,12 +600,12 @@ public class DefaultCatalogFacade implements CatalogFacade {
     }
     
     public NamespaceInfo getDefaultNamespace() {
-        return namespaces.containsKey(null) ? 
+        return namespaces.get(null) != null ? 
                 ModificationProxy.create(namespaces.get( null ),NamespaceInfo.class) : null;
     }
 
     public void setDefaultNamespace(NamespaceInfo defaultNamespace) {
-        NamespaceInfo ns = namespaces.get(defaultNamespace.getPrefix());
+        NamespaceInfo ns = defaultNamespace != null ? namespaces.get(defaultNamespace.getPrefix()) : null;
         NamespaceInfo old = namespaces.get(null);
         namespaces.put( null, ns );
         namespaces.put( Catalog.DEFAULT, ns );

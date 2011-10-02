@@ -363,6 +363,7 @@ public class CatalogImplTest extends TestCase {
         catalog.add( ws );
         assertEquals( 1, catalog.getWorkspaces().size() );
         assertEquals(ws, catalog.getDefaultWorkspace());
+        assertNull(catalog.getDefaultNamespace());
     }
     
     public void testRemoveDefaultWorkspace() {
@@ -370,6 +371,19 @@ public class CatalogImplTest extends TestCase {
         assertNotNull(catalog.getDefaultWorkspace());
         catalog.remove( ws );
         assertNull(catalog.getDefaultWorkspace());
+    }
+    
+    public void testAutoCascadeDefaultWorksapce() {
+        CatalogFactory factory = catalog.getFactory();
+        WorkspaceInfo ws1 = factory.createWorkspace();
+        ws1.setName("ws1Name");
+        WorkspaceInfo ws2 = factory.createWorkspace();
+        ws2.setName("ws2Name");
+        catalog.add(ws1);
+        catalog.add(ws2);
+        assertEquals(ws1, catalog.getDefaultWorkspace());
+        catalog.remove(ws1);
+        assertEquals(ws2, catalog.getDefaultWorkspace());
     }
 
     public void testAutoSetDefaultNamespace() {
@@ -383,6 +397,22 @@ public class CatalogImplTest extends TestCase {
         catalog.remove( ns );
         assertNull(catalog.getDefaultNamespace());
     }
+    
+    public void testAutoCascadeDefaultNamespace() {
+        CatalogFactory factory = catalog.getFactory();
+        NamespaceInfo ns1 = factory.createNamespace();
+        ns1.setPrefix("1");
+        ns1.setURI("http://www.geoserver.org/1");
+        NamespaceInfo ns2 = factory.createNamespace();
+        ns2.setPrefix("2");
+        ns2.setURI("http://www.geoserver.org/2");
+        catalog.add(ns1);
+        catalog.add(ns2);
+        assertEquals(ns1, catalog.getDefaultNamespace());
+        catalog.remove(ns1);
+        assertEquals(ns2, catalog.getDefaultNamespace());
+    }
+
     
     public void testAutoSetDefaultStore() {
         catalog.add(ws);

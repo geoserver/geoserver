@@ -877,7 +877,28 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException( "Unable to delete non-empty namespace.");
         }
 
-        facade.remove(namespace);
+        //TODO: remove synchronized block, need transactions
+        synchronized(facade) {
+            facade.remove(namespace);
+         
+            NamespaceInfo defaultNamespace = getDefaultNamespace();
+            if (namespace.equals(defaultNamespace) || defaultNamespace == null) {
+                List<NamespaceInfo> namespaces = facade.getNamespaces(); 
+                
+                defaultNamespace = null;
+                if (!namespaces.isEmpty()) {
+                    defaultNamespace = namespaces.get(0);
+                }
+                
+                setDefaultNamespace(defaultNamespace);
+                if(defaultNamespace != null) {
+                    WorkspaceInfo defaultWorkspace = getWorkspaceByName(defaultNamespace.getPrefix());
+                    if(defaultWorkspace != null) {
+                        setDefaultWorkspace(defaultWorkspace);
+                    }
+                }
+            }
+        }
         removed(namespace);
     }
 
@@ -896,9 +917,11 @@ public class CatalogImpl implements Catalog {
     }
 
     public void setDefaultNamespace(NamespaceInfo defaultNamespace) {
-        NamespaceInfo ns = getNamespaceByPrefix( defaultNamespace.getPrefix() );
-        if ( ns == null ) {
-            throw new IllegalArgumentException( "No such namespace: '" + defaultNamespace.getPrefix() + "'" );
+        if(defaultNamespace != null) {
+            NamespaceInfo ns = getNamespaceByPrefix( defaultNamespace.getPrefix() );
+            if ( ns == null ) {
+                throw new IllegalArgumentException( "No such namespace: '" + defaultNamespace.getPrefix() + "'" );
+            }
         }
         facade.setDefaultNamespace(defaultNamespace);
     }
@@ -963,6 +986,12 @@ public class CatalogImpl implements Catalog {
                 }
                 
                 setDefaultWorkspace(defaultWorkspace);
+                if(defaultWorkspace != null) {
+                    NamespaceInfo defaultNamespace = getNamespaceByPrefix(defaultWorkspace.getName());
+                    if(defaultNamespace != null) {
+                        setDefaultNamespace(defaultNamespace);
+                    }
+                }
             }
         }
 

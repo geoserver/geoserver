@@ -286,7 +286,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
             start("wcs:Definition");
             NumberRange range = getCoverageRange(dimensions);
             if (range == null || range.isEmpty()) {
-                element("wcs:AnyValue", "");
+                element("ows:AnyValue", "");
             } else {
                 start("ows:AllowedValues");
                 start("ows:Range");

@@ -253,6 +253,44 @@ The following adds the table ``parks`` as a new feature type::
 This GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:parks) 
 shows the rendered parks layer.
 
+Creating a PostGIS table
+------------------------
+
+In the previous example a new feature type was added from a table that already existed in the database. The following 
+creates a new feature type along with the underlying table from scratch. The following XML represents the new feature type
+named 'annotations'.
+
+.. code-block:: xml
+
+    <featureType>
+     <name>annotations</name>
+     <nativeName>annotations</nativeName>
+     <title>Annotations</title>
+     <srs>EPSG:4326</srs>
+     <attributes>
+      <attribute>
+       <name>the_geom</name>
+       <binding>com.vividsolutions.jts.geom.Point</binding>
+      </attribute>
+      <attribute>
+       <name>description</name>
+       <binding>java.lang.String</binding>
+      </attribute>
+      <attribute>
+       <name>timestamp</name>
+       <binding>java.util.Date</binding>
+      </attribute>
+     </attributes>
+    </featureType>
+    
+Save the above xml into a file named ``annotations.xml``. The following adds 
+the new datastore::
+
+  curl -u admin:geoserver -XPOST -T annotations.xml -H 'Content-type: text/xml' \
+    http://localhost:8080/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes
+    
+The result is a new empty table named "annotations" in the "nyc" database, fully configured as a feature type. 
+
 Creating a layer group
 ----------------------
 

@@ -574,7 +574,7 @@ Operations
      - HTML
      - :ref:`list <list_parameter>`
    * - POST
-     - Create a new feature type
+     - Create a new feature type, see :ref:`notes <featuretypes_post_notes>` below
      - 201 with ``Location`` header
      - XML, JSON
      - 
@@ -604,6 +604,11 @@ Operations
 - PUT that changes name of feature type -> 403
 - PUT that changes data store of feature type -> 403
 
+.. _featuretypes_post_notes:
+
+When creating a new feature type via ``POST``, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in 
+the feature type representation.
+ 
 .. _list_parameter:
 
 The ``list`` parameter is used to control the category of feature types that 

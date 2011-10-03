@@ -32,7 +32,7 @@ import org.geoserver.catalog.ResourceInfo;
  */
 @SuppressWarnings("serial")
 public class MetadataLinkEditor extends Panel {
-    private static final List<String> LINK_TYPES = Arrays.asList("ISO 19115:2003", "FGDC",
+    private static final List<String> LINK_TYPES = Arrays.asList("ISO19115:2003", "FGDC",
             "TC211", "other");
     private ListView links;
     private Label noMetadata;

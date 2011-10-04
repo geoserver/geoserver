@@ -1,7 +1,7 @@
-Tutorial: Converting an SLD to CSS
-==================================
+Tutorial: Styling Data with CSS
+===============================
 
-This tutorial will walk through installing the CSS plugin for GeoServer and using it to style the states data that is included with GeoServer.
+This tutorial will walk through using CSS to style the (USA) states example data that is included with the default GeoServer installation.  It also shows you the equivalent SLD code.
 
 What you need before starting this tutorial:
 
@@ -299,15 +299,11 @@ these details in mind, let's write the rule::
     * {
       stroke-width: 0.2;
       label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-style: normal;
       font-size: 14;
     }
-
-.. note:: 
-
-    You may have noticed this snippet doesn't include the LabelPlacement
-    fields from the SLD.  The CSS module doesn't yet support this option.
 
 Putting it all together, you should now have a style that looks like::
 
@@ -329,13 +325,14 @@ Putting it all together, you should now have a style that looks like::
     * {
       stroke-width: 0.2;
       label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-style: normal;
       font-size: 14;
     }
 
-Press the :guilabel:`Submit` button at the bottom of the CSS form to see your
-style applied to the states layer.
+Press the :guilabel:`Submit` button at the bottom of the CSS form to save
+your changes and see your style applied to the states layer.
 
 Surprise! The borders are missing.  What happened?  In the GeoServer CSS
 module, each type of symbolizer has a "key" property which controls whether it
@@ -365,6 +362,7 @@ so that that last rule ends up looking like::
       stroke: black;
       stroke-width: 0.2;
       label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-style: normal;
       font-size: 14;
@@ -401,6 +399,7 @@ particular features.  Anyway, this takes the style down to only 21 lines::
       fill-opacity: 0.7;
       stroke-width: 0.2;
       label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-style: normal;
       font-size: 14;
@@ -422,6 +421,7 @@ properties::
 
     [@scale < 20000000] {
       label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-style: normal;
       font-size: 14;
@@ -459,6 +459,7 @@ specially formatted comments before each rule.  We can add titles like so::
     * {
       stroke-width: 0.2;
       label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
       font-family: "Times New Roman";
       font-style: normal;
       font-size: 14;

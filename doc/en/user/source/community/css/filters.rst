@@ -37,7 +37,7 @@ by some predicate operator (such as the less-than operator ``<``).
 Supported predicate operators include the following:
 
 .. list-table:: 
-    :widths: 10 90
+    :widths: 15 85
 
     * - **Operator**
       - **Meaning**
@@ -121,7 +121,7 @@ The context details that are provided are as follows:
 
     * - **Pseudo-Attribute**
       - **Meaning**
-    * - ``@scale``
+    * - @scale
       - The scale denominator for the current rendering.  More explicitly, this
         is the ratio of real-world distance to screen/rendered distance.
 
@@ -137,29 +137,29 @@ When using symbols to create graphics inline, you may want to apply some
 styling options to them.  You can specify style attributes for built-in symbols by using a few special selectors:
 
 .. list-table::
-    :widths: 20 80
+    :widths: 30 70
 
     * - **PseudoSelector**
       - **Meaning**
-    * - ``:mark`` 
+    * - :mark 
       - specifies that a rule applies to symbols used as point markers
-    * - ``:stroke`` 
+    * - :stroke 
       - specifies that a rule applies to symbols used as stroke patterns
-    * - ``:fill`` 
+    * - :fill 
       - specifies that a rule applies to symbols used as fill patterns
-    * - ``:symbol`` 
+    * - :symbol 
       - specifies that a rule applies to any symbol, regardless of which
         context it is used in
-    * - ``:nth-mark(n)`` 
+    * - :nth-mark(n) 
       - specifies that a rule applies to the symbol used for the nth stacked
         point marker on a feature.
-    * - ``:nth-stroke(n)`` 
+    * - :nth-stroke(n) 
       - specifies that a rule applies to the symbol used for the nth stacked
         stroke pattern on a feature.
-    * - ``:nth-fill(n)`` 
+    * - :nth-fill(n) 
       - specifies that a rule applies to the symbol used for the nth stacked
         fill pattern on a feature.
-    * - ``:nth-symbol(n)`` 
+    * - :nth-symbol(n) 
       - specifies that a rule applies to the symbol used for the nth stacked
         symbol on a feature, regardless of which context it is used in.
 

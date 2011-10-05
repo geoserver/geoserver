@@ -37,6 +37,12 @@ To connect to an external WMS, it is necessary to load it as a new store.  To st
      - Enables the store.  If disabled, no data from the remote WMS will be served.
    * - :guilabel:`Capabilities URL`
      - The full URL to access the capabilities document of the remote WMS.
+   * - :guilabel:`User Name`
+     - If the WMS requires authentication, the user name to connect as.
+   * - :guilabel:`Password`
+     - If the WMS requires authentication, the password to connect with.
+   * - :guilabel:`Max concurrent connections`
+     - The maximum number of persistent connections to keep for this WMS.
 
 When finished, click :guilabel:`Save`.
 

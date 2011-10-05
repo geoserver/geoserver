@@ -4,9 +4,6 @@
  */
 package org.geoserver.web.data.store;
 
-import java.net.URL;
-import java.util.Collections;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
@@ -16,16 +13,14 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
+import org.geoserver.web.data.store.panel.PasswordParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.wms.WebMapServer;
 
 /**
  * Supports coverage store configuration
@@ -71,10 +66,30 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                 true);
         form.add(workspacePanel);
         
-        capabilitiesURL = new TextParamPanel("capabilitiesURL", new PropertyModel(form.getModelObject(), "capabilitiesURL"),
+        capabilitiesURL = new TextParamPanel("capabilitiesURL", new PropertyModel(model, "capabilitiesURL"),
                 new ParamResourceModel("capabilitiesURL", AbstractWMSStorePage.this), true);
         form.add(capabilitiesURL);
 
+        // user name
+        PropertyModel userModel = new PropertyModel(model, "username");
+        final TextParamPanel usernamePanel = new TextParamPanel("userNamePanel", userModel,
+                new ResourceModel("AbstractWMSStorePage.userName"), false);
+
+        form.add(usernamePanel);
+
+        // password
+        PropertyModel passwordModel = new PropertyModel(model, "password");
+        form.add(new PasswordParamPanel("passwordPanel", passwordModel, new ResourceModel(
+                "AbstractWMSStorePage.password"), false));
+        
+        // max concurrent connections
+        PropertyModel connectionsModel = new PropertyModel(model, "maxConnections");
+        if (store.getMaxConnections() <= 0) {
+            connectionsModel.setObject(Integer.valueOf(6));
+        }
+        form.add(new TextParamPanel("maxConnectionsPanel", connectionsModel, new ResourceModel(
+                "AbstractWMSStorePage.maxConnections"), false));
+        
         // cancel/submit buttons
         form.add(new BookmarkablePageLink("cancel", StorePage.class));
         form.add(saveLink());
@@ -99,6 +114,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
+                form.process();
                 WMSStoreInfo info = (WMSStoreInfo) form.getModelObject();
                 try {
                     onSave(info, target);
@@ -130,6 +146,9 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         target.setType(source.getType());
         target.setCapabilitiesURL(source.getCapabilitiesURL());
         target.setWorkspace(source.getWorkspace());
+        target.setUsername(source.getUsername());
+        target.setPassword(source.getPassword());
+        target.setMaxConnections(source.getMaxConnections());
     }
 
     

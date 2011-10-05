@@ -19,6 +19,7 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.ows.CRSEnvelope;
+import org.geotools.data.ows.HTTPResponse;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.Response;
 import org.geotools.data.ows.StyleImpl;
@@ -239,9 +240,9 @@ public class SecuredGetMapRequest implements GetMapRequest {
         delegate.setVersion(version);
     }
 
-    public Response createResponse(String contentType, InputStream inputStream)
+    public Response createResponse(HTTPResponse response)
             throws ServiceException, IOException {
-        return delegate.createResponse(contentType, inputStream);
+        return delegate.createResponse(response);
     }
     
     

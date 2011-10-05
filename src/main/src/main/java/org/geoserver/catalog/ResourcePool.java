@@ -52,13 +52,14 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
+import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.ows.Layer;
+import org.geotools.data.ows.MultithreadedHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wms.WebMapServer;
@@ -1145,8 +1146,19 @@ public class ResourcePool {
                 synchronized (wmsCache) {
                     wms = (WebMapServer) wmsCache.get(id);
                     if (wms == null) {
-                        wms = new WebMapServer(new URL(info.getCapabilitiesURL()));
+                        MultithreadedHttpClient client = new MultithreadedHttpClient();
+                        if(info.getMaxConnections() > 0){
+                            client.setMaxConnections(info.getMaxConnections());
+                        }
+                        String username = info.getUsername();
+                        String password = info.getPassword();
 
+                        client.setUser(username);
+                        client.setPassword(password);
+
+                        URL serverURL = new URL(info.getCapabilitiesURL());
+                        wms = new WebMapServer(serverURL, client);
+                        
                         wmsCache.put(id, wms);
                     }
                 }

@@ -9,6 +9,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
+import org.geotools.data.wms.WebMapServer;
 
 public class WMSStoreEditPage extends AbstractWMSStorePage {
     
@@ -35,7 +36,11 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
             try {
                 // try to see if we can connect
                 getCatalog().getResourcePool().clear(info);
-                info.getWebMapServer(null).getCapabilities();
+                // do not call info.getWebMapServer cause it ends up calling
+                // resourcepool.getWebMapServer with the unproxied instance (old values)
+                //info.getWebMapServer(null).getCapabilities();
+                WebMapServer webMapServer = getCatalog().getResourcePool().getWebMapServer(info);
+                webMapServer.getCapabilities();
                 doSaveStore(info);
             } catch(Exception e) {
                 confirmSaveOnConnectionFailure(info, target, e);

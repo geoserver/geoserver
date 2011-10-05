@@ -38,7 +38,7 @@
         /j_spring_security_logout/**=httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
         /rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
         /gwc/rest/web/**=anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor
-        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor
+        /gwc/rest/**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilterWithoutRememberMeSerice,owsExceptionTranslationFilter,restFilterInvocationInterceptor
         /**=httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,filterInvocationInterceptor
       </value>
     </property>
@@ -203,6 +203,21 @@
     </property>
     <property name="rememberMeServices">
       <ref local="rememberMeServices" />
+    </property>
+  </bean>
+
+  <!-- 
+    Handles the basic authentication headers without integration with the remember-me services.
+    Used for /gwc/rest/** entry points as somehow the presence of the remember-me service makes the
+    POST'ed form to reach the gwc restlets empty.
+  -->
+  <bean id="basicProcessingFilterWithoutRememberMeSerice"
+    class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
+    <property name="authenticationManager">
+      <ref local="authenticationManager" />
+    </property>
+    <property name="authenticationEntryPoint">
+      <ref local="basicProcessingFilterEntryPoint" />
     </property>
   </bean>
 

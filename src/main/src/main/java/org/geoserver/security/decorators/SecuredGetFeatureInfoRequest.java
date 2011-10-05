@@ -5,7 +5,6 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Set;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
+import org.geotools.data.ows.HTTPResponse;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.Response;
 import org.geotools.data.wms.request.GetFeatureInfoRequest;
@@ -95,9 +95,9 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
     // Pure delegate methods
     // ----------------------------------------------------------------------------------------
 
-    public Response createResponse(String contentType, InputStream inputStream)
+    public Response createResponse(HTTPResponse response)
             throws ServiceException, IOException {
-        return delegate.createResponse(contentType, inputStream);
+        return delegate.createResponse(response);
     }
 
     public String getPostContentType() {

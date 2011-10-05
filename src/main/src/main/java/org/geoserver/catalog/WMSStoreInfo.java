@@ -45,5 +45,17 @@ public interface WMSStoreInfo extends StoreInfo {
      * @uml.property name="url"
      */
     void setCapabilitiesURL(String url);
-
+    
+    String getUsername();
+    
+    void setUsername(String user);
+    
+    String getPassword();
+    
+    void setPassword(String password);
+    
+    int getMaxConnections();
+    
+    void setMaxConnections(int maxConcurrentConnections);
+    
 }

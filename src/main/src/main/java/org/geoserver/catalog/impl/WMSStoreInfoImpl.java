@@ -31,6 +31,37 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
         this.capabilitiesURL = capabilitiesURL;
     }
 
+    //@Override
+    public String getUsername() {
+        return getMetadata().get("user", String.class);
+    }
+
+    //@Override
+    public void setUsername(String user) {
+        getMetadata().put("user", user);
+    }
+
+    //@Override
+    public String getPassword() {
+        return getMetadata().get("password", String.class);
+    }
+
+    //@Override
+    public void setPassword(String password) {
+        getMetadata().put("password", password);
+    }
+
+    //@Override
+    public int getMaxConnections() {
+        Integer maxconnections = getMetadata().get("maxConnections", Integer.class);
+        return maxconnections == null? 0 : maxconnections;
+    }
+
+    //@Override
+    public void setMaxConnections(int maxConcurrentConnections) {
+        getMetadata().put("maxConnections", Integer.valueOf(maxConcurrentConnections));        
+    }
+
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }

@@ -113,4 +113,34 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo> impl
         delegate.setWorkspace(workspace);
     }
 
+    //@Override
+    public String getUsername() {
+        return delegate.getUsername();
+    }
+
+    //@Override
+    public void setUsername(String user) {
+        delegate.setUsername(user);
+    }
+
+    //@Override
+    public String getPassword() {
+        return delegate.getPassword();
+    }
+
+    //@Override
+    public void setPassword(String password) {
+        delegate.setPassword(password);
+    }
+
+    //@Override
+    public int getMaxConnections() {
+        return delegate.getMaxConnections();
+    }
+
+    //@Override
+    public void setMaxConnections(int maxConcurrentConnections) {
+        delegate.setMaxConnections(maxConcurrentConnections);        
+    }
+
 }

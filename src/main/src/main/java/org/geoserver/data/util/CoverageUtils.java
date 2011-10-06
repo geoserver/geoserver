@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.GeneralGridGeometry;
@@ -239,6 +240,10 @@ public class CoverageUtils {
 
             // Intentionally generic exception catched
         } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+            }
+            
             value = null;
 
             // errors.add("paramValue[" + i + "]",
@@ -320,7 +325,7 @@ public class CoverageUtils {
                     value = params.get(key);
                 }
             } else {
-                final Class<? extends Object> target = param.getDescriptor().getValueClass();
+                final Class<? extends Object> target = param.getClass();
                 if (key.equalsIgnoreCase("InputTransparentColor")
                         || key.equalsIgnoreCase("OutputTransparentColor")) {
                     if (params.get(key) != null) {
@@ -360,6 +365,9 @@ public class CoverageUtils {
                 }
             }
         } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+            }
             value = param.getValue();
         }
 

@@ -325,7 +325,7 @@ public class CoverageUtils {
                     value = params.get(key);
                 }
             } else {
-                final Class<? extends Object> target = param.getClass();
+                final Class<? extends Object> target = param.getDescriptor().getValueClass();
                 if (key.equalsIgnoreCase("InputTransparentColor")
                         || key.equalsIgnoreCase("OutputTransparentColor")) {
                     if (params.get(key) != null) {

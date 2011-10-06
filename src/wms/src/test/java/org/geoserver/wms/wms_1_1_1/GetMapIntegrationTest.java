@@ -6,9 +6,10 @@ package org.geoserver.wms.wms_1_1_1;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
-import java.util.logging.Level;
+import java.util.Arrays;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
@@ -16,11 +17,11 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.util.logging.Logging;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -106,7 +107,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     
     @Override
     public void setUpInternal() throws Exception {
-        Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
+        // Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
     }
 
     @Override
@@ -120,6 +121,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         // add a parametric style to the mix
         dataDirectory.addStyle("parametric", WMSTestSupport.class.getResource("map/parametric.sld"));
+        
+        // add the mosaic with holes
+        URL style = MockData.class.getResource("raster.sld");
+        String styleName = "raster";
+        dataDirectory.addStyle(styleName, style);
+        dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX), 
+                GetMapIntegrationTest.class.getResource("mosaic_holes.zip"), null, "raster");
     }
 
     // protected String getDefaultLogConfiguration() {
@@ -292,6 +300,29 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(255, rgba[0]);
         assertEquals(0, rgba[1]);
         assertEquals(0, rgba[2]);
+    }
+    
+    public void testMosaicHoles() throws Exception {
+        String url = "wms?LAYERS=sf%3Amosaic_holes&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1" +
+        		"&REQUEST=GetMap&STYLES=&SRS=EPSG%3A4326" +
+        		"&BBOX=6.40284375,36.385494140625,12.189662109375,42.444494140625" +
+        		"&WIDTH=489&HEIGHT=512&transparent=true";
+        BufferedImage bi = getAsImage(url, "image/png");
+        int[] pixel = new int[4];
+        bi.getRaster().getPixel(0, 250, pixel);
+        assertTrue(Arrays.equals(new int[] {0,0,0,255}, pixel));
+        
+        // now reconfigure the mosaic for transparency
+        CoverageInfo ci = getCatalog().getCoverageByName("sf:mosaic_holes");
+        Map<String, Serializable> params = ci.getParameters();
+        params.put(ImageMosaicFormat.INPUT_TRANSPARENT_COLOR.getName().getCode(), "#000000");
+        params.put(ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR.getName().getCode(), "#000000");
+        getCatalog().save(ci);
+        
+        // this time that pixel should be transparent
+        bi = getAsImage(url, "image/png");
+        bi.getRaster().getPixel(0, 250, pixel);
+        assertTrue(Arrays.equals(new int[] {255,255,255,0}, pixel));
     }
 
 }

@@ -1,15 +1,15 @@
 <coverage>
-  <id>CoverageInfoImpl--570ae188:124761b8d78:-7fb3</id>
+  <id>CoverageInfoImpl--4a9eec43:132d48aac79:-8000</id>
   <name>mosaic</name>
   <nativeName>mosaic</nativeName>
   <namespace>
     <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff8</id>
   </namespace>
-  <title>Sample PNG mosaic</title>
-  <description>Subsampled satellite imagery loaded as a mosaic of PNG images</description>
+  <title>mosaic</title>
+  <description>Generated from ImageMosaic</description>
   <keywords>
     <string>WCS</string>
-    <string>mosaic</string>
+    <string>ImageMosaic</string>
     <string>mosaic</string>
   </keywords>
   <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
@@ -36,9 +36,10 @@
     <maxy>46.591</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <metadata>
-    <entry key="dirName">mosaic_sample</entry>
+    <entry key="dirName">mosaic_mosaic</entry>
   </metadata>
   <store class="coverageStore">
     <id>CoverageStoreInfoImpl--570ae188:124761b8d78:-7fd6</id>
@@ -60,46 +61,54 @@
     <crs>EPSG:4326</crs>
   </grid>
   <supportedFormats>
-    <string>GTOPO30</string>
-    <string>GEOTIFF</string>
-    <string>IMAGEMOSAIC</string>
-    <string>ARCGRID</string>
     <string>GIF</string>
     <string>PNG</string>
     <string>JPEG</string>
     <string>TIFF</string>
+    <string>ImageMosaic</string>
+    <string>GEOTIFF</string>
+    <string>ArcGrid</string>
+    <string>Gtopo30</string>
   </supportedFormats>
   <interpolationMethods>
     <string>nearest neighbor</string>
     <string>bilinear</string>
     <string>bicubic</string>
-    <string>bicubic_2</string>
   </interpolationMethods>
   <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
   <dimensions>
     <coverageDimension>
-      <name>mosaic [0 ... 255]</name>
-      <description>GridSampleDimension[0.0,255.0]</description>
+      <name>RED_BAND</name>
+      <description>GridSampleDimension[0.0,0.0]</description>
       <range>
         <min>0.0</min>
-        <max>255.0</max>
+        <max>0.0</max>
       </range>
+      <nullValues>
+        <double>0.0</double>
+      </nullValues>
     </coverageDimension>
     <coverageDimension>
-      <name>mosaic [0 ... 255]</name>
-      <description>GridSampleDimension[0.0,255.0]</description>
+      <name>GREEN_BAND</name>
+      <description>GridSampleDimension[0.0,0.0]</description>
       <range>
         <min>0.0</min>
-        <max>255.0</max>
+        <max>0.0</max>
       </range>
+      <nullValues>
+        <double>0.0</double>
+      </nullValues>
     </coverageDimension>
     <coverageDimension>
-      <name>mosaic [0 ... 255]</name>
-      <description>GridSampleDimension[0.0,255.0]</description>
+      <name>BLUE_BAND</name>
+      <description>GridSampleDimension[0.0,0.0]</description>
       <range>
         <min>0.0</min>
-        <max>255.0</max>
+        <max>0.0</max>
       </range>
+      <nullValues>
+        <double>0.0</double>
+      </nullValues>
     </coverageDimension>
   </dimensions>
   <requestSRS>
@@ -110,16 +119,36 @@
   </responseSRS>
   <parameters>
     <entry>
+      <string>AllowMultithreading</string>
+      <string>false</string>
+    </entry>
+    <entry>
+      <string>Filter</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>MaxAllowedTiles</string>
+      <string>-1</string>
+    </entry>
+    <entry>
       <string>InputTransparentColor</string>
-      <string></string>
+      <string>#000000</string>
     </entry>
     <entry>
       <string>OutputTransparentColor</string>
       <string>#000000</string>
     </entry>
     <entry>
-      <string>InputImageThresholdValue</string>
-      <string>NaN</string>
+      <string>SUGGESTED_TILE_SIZE</string>
+      <string>512,512</string>
+    </entry>
+    <entry>
+      <string>USE_JAI_IMAGEREAD</string>
+      <string>true</string>
+    </entry>
+    <entry>
+      <string>BackgroundValues</string>
+      <null/>
     </entry>
   </parameters>
 </coverage>

@@ -90,7 +90,7 @@ public class GetCapabilities {
         si.getTitle().add(Ows11Util.languageString(wps.getTitle()));
         si.getAbstract().add(Ows11Util.languageString(wps.getAbstract()));
 
-        KeywordsType kw = Ows11Util.keywords(wps.getKeywords());
+        KeywordsType kw = Ows11Util.keywords(wps.keywordValues());
         ;
         if (kw != null) {
             si.getKeywords().add(kw);

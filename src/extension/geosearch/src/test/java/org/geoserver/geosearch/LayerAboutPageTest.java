@@ -10,6 +10,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 
+import freemarker.ext.beans.StringModel;
 import freemarker.template.SimpleHash;
 import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
@@ -55,7 +56,7 @@ public class LayerAboutPageTest extends GeoServerTestSupport  {
 		
 		//keywords
 		assertEquals("Value of 'keywords' in context is not the right size", ((SimpleSequence) context.get("keywords")).size(),1);
-		assertEquals("Unexpected value of first template model in 'keywords' of context", ((SimpleScalar) ((SimpleSequence) context.get("keywords")).get(0)).getAsString(), "GenericEntity");
+		assertEquals("Unexpected value of first template model in 'keywords' of context", ((StringModel) ((SimpleSequence) context.get("keywords")).get(0)).getAsString(), "GenericEntity");
 		
 		//width and height
 		assertEquals("Unexpected value for 'width' in context", ((SimpleNumber) context.get("width")).getAsNumber(), 800);

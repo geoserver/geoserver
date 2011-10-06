@@ -156,6 +156,11 @@ public interface ServiceInfo extends Info {
     List<KeywordInfo> getKeywords();
 
     /**
+     * List of keyword values, derived from {@link #getKeywords()}.
+     */
+    List<String> keywordValues();
+
+    /**
      * Exception formats the service can provide.
      * 
      * @uml.property name="exceptionFormats"

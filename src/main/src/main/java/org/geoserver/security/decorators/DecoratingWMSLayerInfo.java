@@ -81,6 +81,10 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
         return delegate.getKeywords();
     }
 
+    public List<String> keywordValues() {
+        return delegate.keywordValues();
+    }
+
     public ReferencedEnvelope getLatLonBoundingBox() {
         return delegate.getLatLonBoundingBox();
     }

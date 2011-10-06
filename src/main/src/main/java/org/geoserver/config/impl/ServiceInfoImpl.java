@@ -137,6 +137,16 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.keywords = keywords;
     }
 
+    public List<String> keywordValues() {
+        List<String> values = new ArrayList<String>();
+        if (keywords != null) {
+            for (KeywordInfo kw : keywords) {
+                values.add(kw.getValue());
+            }
+        }
+        return values;
+    }
+
     public List getVersions() {
         return versions;
     }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
@@ -36,7 +37,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected List versions = new ArrayList();
 
-    protected List keywords = new ArrayList();
+    protected List<KeywordInfo> keywords = new ArrayList();
 
     protected List exceptionFormats = new ArrayList();
 
@@ -128,11 +129,11 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.fees = fees;
     }
 
-    public List getKeywords() {
+    public List<KeywordInfo> getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(List keywords) {
+    public void setKeywords(List<KeywordInfo> keywords) {
         this.keywords = keywords;
     }
 

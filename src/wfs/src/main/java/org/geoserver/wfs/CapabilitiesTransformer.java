@@ -27,6 +27,7 @@ import net.opengis.wfs.GetCapabilitiesType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -1480,7 +1481,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * </p>
                  * @param keywords
                  */
-            void keywords(String[] keywords) {
+            void keywords(KeywordInfo[] keywords) {
                 if ((keywords == null) || (keywords.length == 0)) {
                     return;
                 }
@@ -1488,7 +1489,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 start("ows:Keywords");
 
                 for (int i = 0; i < keywords.length; i++) {
-                    element("ows:Keyword", keywords[i]);
+                    element("ows:Keyword", keywords[i].getValue());
                 }
 
                 end("ows:Keywords");
@@ -1496,7 +1497,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
             void keywords(List keywords) {
                 if(keywords != null){
-                    keywords((String[]) keywords.toArray(new String[keywords.size()]));
+                    keywords((KeywordInfo[]) keywords.toArray(new KeywordInfo[keywords.size()]));
                 }
             }
 

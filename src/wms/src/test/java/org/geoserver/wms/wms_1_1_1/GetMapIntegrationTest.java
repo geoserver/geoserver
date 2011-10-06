@@ -281,6 +281,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         int[] rgba = new int[3];
         // fully black pixel in the middle of the map
         image.getData().getPixel(250, 125, rgba);
+        System.out.println("******" + String.format("%d,%d,%d", rgba[0], rgba[1], rgba[2]));
         assertEquals(0, rgba[0]);
         assertEquals(0, rgba[1]);
         assertEquals(0, rgba[2]);
@@ -297,6 +298,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         int[] rgba = new int[3];
         // fully red pixel in the middle of the map
         image.getData().getPixel(250, 125, rgba);
+        System.out.println("******" + String.format("%d,%d,%d", rgba[0], rgba[1], rgba[2]));
         assertEquals(255, rgba[0]);
         assertEquals(0, rgba[1]);
         assertEquals(0, rgba[2]);

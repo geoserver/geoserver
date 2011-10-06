@@ -5,6 +5,7 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ContactInfo;
@@ -255,8 +258,8 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         service.setAccessConstraints("test accessConstraints");
         service.setFees("test fees");
         service.getKeywords().clear();
-        service.getKeywords().add("test keyword 1");
-        service.getKeywords().add("test keyword 2");
+        service.getKeywords().add(new Keyword("test keyword 1"));
+        service.getKeywords().add(new Keyword("test keyword 2"));
         service.setMaintainer("test maintainer");
         service.setOnlineResource("http://example.com/geoserver");
         GeoServerInfo global = getGeoServer().getGlobal();
@@ -319,5 +322,34 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
 
         assertXpathEvaluatesTo("1", "//wms:Layer[wms:Name='" + linesName + "']/@queryable", doc);
         assertXpathEvaluatesTo("0", "//wms:Layer[wms:Name='" + pointsName + "']/@queryable", doc);
+    }
+
+    public void testKeywordVocab() throws Exception {
+        FeatureTypeInfo lines = getFeatureTypeInfo(MockData.LINES);
+
+        Keyword kw = new Keyword("foo");
+        kw.setVocabulary("bar");
+        lines.getKeywords().add(kw);
+        
+        getCatalog().save(lines);
+
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        
+        kw = new Keyword("baz");
+        kw.setVocabulary("bar");
+        wms.getKeywords().add(kw);
+        getGeoServer().save(wms);
+        
+        String linesName = MockData.LINES.getPrefix() + ":" + MockData.LINES.getLocalPart();
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+
+        String xpath = "//wms:Layer[wms:Name='" + linesName + "']/wms:KeywordList/wms:Keyword[@vocabulary='bar']";
+        assertXpathExists(xpath, doc);
+        assertXpathEvaluatesTo("foo", xpath, doc);
+
+        xpath = "//wms:Service/wms:KeywordList/wms:Keyword[@vocabulary='bar']";
+        assertXpathExists(xpath, doc);
+        assertXpathEvaluatesTo("baz", xpath, doc);
+
     }
 }

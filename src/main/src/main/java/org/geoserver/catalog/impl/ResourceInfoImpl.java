@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
@@ -49,7 +50,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected String _abstract;
 
-    protected List<String> keywords = new ArrayList<String>();
+    protected List<KeywordInfo> keywords = new ArrayList<KeywordInfo>();
 
     protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
 
@@ -167,11 +168,11 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         this._abstract = _abstract;
     }
 
-    public List<String> getKeywords() {
+    public List<KeywordInfo> getKeywords() {
         return keywords;
     }
     
-    public void setKeywords(List<String> keywords) {
+    public void setKeywords(List<KeywordInfo> keywords) {
         this.keywords = keywords;
     }
 

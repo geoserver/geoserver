@@ -92,8 +92,13 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         SubmitLink submit = new SubmitLink("submit",new StringResourceModel( "save", (Component)null, null) ) {
             @Override
             public void onSubmit() {
-                handleSubmit((T)infoModel.getObject());
-                setResponsePage(GeoServerHomePage.class);
+                try {
+                    handleSubmit((T)infoModel.getObject());
+                    setResponsePage(GeoServerHomePage.class);    
+                }
+                catch(Exception e) {
+                    error(e);
+                }
             }
         };
         form.add(submit);

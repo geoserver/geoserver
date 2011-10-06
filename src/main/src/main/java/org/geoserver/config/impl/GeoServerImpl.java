@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
@@ -197,10 +198,16 @@ public class GeoServerImpl implements GeoServer {
     }
     
     public void save(ServiceInfo service) {
+        validate(service);
+
         facade.save(service);
         
         //fire post modification event
         firePostServiceModified(service);
+    }
+
+    void validate(ServiceInfo service) {
+        CatalogImpl.validateKeywords(service.getKeywords());
     }
 
     public void fireServiceModified(ServiceInfo service, List<String> changed, List oldValues, 

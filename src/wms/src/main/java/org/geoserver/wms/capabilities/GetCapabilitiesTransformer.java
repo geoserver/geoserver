@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
@@ -341,12 +342,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * 
          * @param keywords
          */
-        private void handleKeywordList(List<String> keywords) {
+        private void handleKeywordList(List<KeywordInfo> keywords) {
             start("KeywordList");
 
             if (keywords != null) {
-                for (Iterator<String> it = keywords.iterator(); it.hasNext();) {
-                    element("Keyword", it.next());
+                for (Iterator<KeywordInfo> it = keywords.iterator(); it.hasNext();) {
+                    element("Keyword", it.next().getValue());
                 }
             }
 

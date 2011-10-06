@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -29,6 +31,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -111,6 +115,7 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.converters.reflection.SortableFieldKeySorter;
 import com.thoughtworks.xstream.converters.reflection.Sun14ReflectionProvider;
+import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -273,7 +278,8 @@ public class XStreamPersister {
         xs.omitField(impl(ServiceInfo.class), "clientProperties");
         xs.omitField(impl(ServiceInfo.class), "geoServer");
         xs.registerLocalConverter(impl(ServiceInfo.class), "metadata", new MetadataMapConverter());
-        
+        xs.registerLocalConverter(impl(ServiceInfo.class), "keywords", new KeywordListConverter());
+
         // Catalog
         xs.omitField(impl(Catalog.class), "resourcePool");
         xs.omitField(impl(Catalog.class), "resourceLoader");
@@ -322,7 +328,7 @@ public class XStreamPersister {
         xs.registerLocalConverter( impl(ResourceInfo.class), "store", new ReferenceConverter(StoreInfo.class));
         xs.registerLocalConverter( impl(ResourceInfo.class), "namespace", new ReferenceConverter(NamespaceInfo.class));
         xs.registerLocalConverter( impl(ResourceInfo.class), "metadata", new MetadataMapConverter() );
-        xs.registerLocalConverter( impl(ResourceInfo.class), "keywords", new LaxCollectionConverter(xs.getMapper()));
+        xs.registerLocalConverter( impl(ResourceInfo.class), "keywords", new KeywordListConverter());
         
         // FeatureTypeInfo
         
@@ -371,6 +377,7 @@ public class XStreamPersister {
         xs.registerConverter(new GridGeometry2DConverter());
         xs.registerConverter(new ProxyCollectionConverter( xs.getMapper() ) );
         xs.registerConverter(new VirtualTableConverter());
+        xs.registerConverter(new KeywordInfoConverter());
         
         // register VirtulaTable handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
@@ -1634,6 +1641,70 @@ public class XStreamPersister {
         }
         
     }
-    
-    
+
+    static class KeywordInfoConverter extends AbstractSingleValueConverter {
+
+        static Pattern RE = Pattern.compile(
+            "([^\\\\]+)(?:\\\\@language=([^\\\\]+)\\\\;)?(?:\\\\@vocabulary=([^\\\\]+)\\\\;)?");
+        
+        @Override
+        public boolean canConvert(Class type) {
+            return Keyword.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public Object fromString(String str) {
+            Matcher m = RE.matcher(str);
+            if (!m.matches()) {
+                throw new IllegalArgumentException(
+                    String.format("%s does not match regular expression: %s", str, RE));
+            }
+
+            KeywordInfo kw = new Keyword(m.group(1));
+            if (m.group(2) != null) {
+                kw.setLanguage(m.group(2));
+            }
+            if (m.group(3) != null) {
+                kw.setVocabulary(m.group(3));
+            }
+            return kw;
+        }
+
+        @Override
+        public String toString(Object obj) {
+            KeywordInfo kw = (KeywordInfo) obj;
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append(kw.getValue());
+            if (kw.getLanguage() != null) {
+                sb.append("\\@language=").append(kw.getLanguage()).append("\\;");
+            }
+            if (kw.getVocabulary() != null) {
+                sb.append("\\@vocabulary=").append(kw.getVocabulary()).append("\\;");
+            }
+            return sb.toString();
+        }
+    }
+
+    class KeywordListConverter extends LaxCollectionConverter {
+
+        public KeywordListConverter() {
+            super(getXStream().getMapper());
+        }
+
+        @Override
+        protected Object readItem(HierarchicalStreamReader reader, UnmarshallingContext context,
+                Object current) {
+            return context.convertAnother(current, Keyword.class);
+        }
+
+        @Override
+        protected void writeItem(Object item, MarshallingContext context,
+                HierarchicalStreamWriter writer) {
+            ExtendedHierarchicalStreamWriterHelper.startNode(writer, "string", Keyword.class);
+            context.convertAnother(item);
+            writer.endNode();
+        }
+
+    }
 }

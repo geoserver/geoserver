@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
@@ -30,6 +31,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
@@ -384,7 +386,8 @@ public class CatalogImpl implements Catalog {
             String msg = "Resource named '"+resource.getName()+"' already exists in namespace: '"+ namespace.getPrefix()+"'";
             throw new IllegalArgumentException( msg );
         }
-        
+
+        validateKeywords(resource.getKeywords());
         return postValidate(resource, isNew);
     }
     
@@ -1206,7 +1209,27 @@ public class CatalogImpl implements Catalog {
     public static Object unwrap(Object obj) {
         return obj;
     }
-    
+
+    public static void validateKeywords(List<KeywordInfo> keywords) {
+        if (keywords != null) {
+            for (KeywordInfo kw : keywords) {
+                Matcher m = KeywordInfo.RE.matcher(kw.getValue());
+                if (!m.matches()) {
+                    throw new IllegalArgumentException(
+                        "Keyword must not contain the '\\' character"); 
+                }
+                if (kw.getVocabulary() != null) {
+                    m = KeywordInfo.RE.matcher(kw.getVocabulary());
+                    if (!m.matches()) {
+                        throw new IllegalArgumentException(
+                            "Keyword vocbulary must not contain the '\\' character"); 
+                    }
+                }
+                
+            }
+        }
+    }
+
     /**
      * Implementation method for resolving all {@link ResolvingProxy} instances.
      */

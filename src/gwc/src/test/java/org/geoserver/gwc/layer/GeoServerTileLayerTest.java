@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import junit.framework.TestCase;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.NamespaceInfo;
@@ -102,7 +103,7 @@ public class GeoServerTileLayerTest extends TestCase {
         resource.setNativeBoundingBox(new ReferencedEnvelope(-180, -90, 0, 0,
                 DefaultGeographicCRS.WGS84));
         resource.setSRS("EPSG:4326");
-        resource.setKeywords(Arrays.asList("kwd1", "kwd2"));
+        resource.setKeywords((List)Arrays.asList(new Keyword("kwd1"), new Keyword("kwd2")));
 
         layerInfo = new LayerInfoImpl();
         layerInfo.setId(layerInfoId);
@@ -298,7 +299,10 @@ public class GeoServerTileLayerTest extends TestCase {
         List<String> keywords = metaInformation.getKeywords();
         assertEquals(layerInfo.getResource().getTitle(), title);
         assertEquals(layerInfo.getResource().getAbstract(), description);
-        assertEquals(layerInfo.getResource().getKeywords(), keywords);
+        assertEquals(layerInfo.getResource().getKeywords().size(), keywords.size());
+        for (String kw : keywords) {
+            assertTrue(layerInfo.getResource().getKeywords().contains(new Keyword(kw)));
+        }
 
         metaInformation = layerGroupInfoTileLayer.getMetaInformation();
         assertNotNull(metaInformation);

@@ -21,6 +21,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -431,8 +432,10 @@ public class LegacyCatalogImporter {
         
         featureType.setTitle(ftInfoReader.title());
         featureType.setAbstract(ftInfoReader.abstrct());
-        featureType.getKeywords().addAll(ftInfoReader.keywords());
-        
+        for (String kw : ftInfoReader.keywords()) {
+            featureType.getKeywords().add(new Keyword(kw));
+        }
+
         for ( Map m : ftInfoReader.metadataLinks() ) {
             MetadataLinkInfo link = factory.createMetadataLink();
             link.setContent( (String) m.get( null ) );
@@ -545,8 +548,10 @@ public class LegacyCatalogImporter {
         coverage.setNativeName(cInfoReader.name());
         coverage.setTitle(cInfoReader.label());
         coverage.setDescription(cInfoReader.description());
-        coverage.getKeywords().addAll( cInfoReader.keywords() );
-        
+        for (String kw : cInfoReader.keywords()) {
+            coverage.getKeywords().add(new Keyword(kw));
+        }
+
         Map<String,Object> envelope = cInfoReader.envelope();
         String userDefinedCrsIdentifier = (String)envelope.get( "srsName" );
         String nativeCrsWkt = (String)envelope.get("crs");

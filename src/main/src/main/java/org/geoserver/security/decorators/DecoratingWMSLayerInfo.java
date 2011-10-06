@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
@@ -76,7 +77,8 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
         return delegate.getId();
     }
 
-    public List<String> getKeywords() {
+    @Override
+    public List<KeywordInfo> getKeywords() {
         return delegate.getKeywords();
     }
 

@@ -893,9 +893,9 @@ public class CatalogBuilder {
         cinfo.setDescription(new StringBuilder("Generated from ").append(format.getName()).toString());
 
         // keywords
-        cinfo.getKeywords().add("WCS");
-        cinfo.getKeywords().add(format.getName());
-        cinfo.getKeywords().add(name);
+        cinfo.getKeywords().add(new Keyword("WCS"));
+        cinfo.getKeywords().add(new Keyword(format.getName()));
+        cinfo.getKeywords().add(new Keyword(name));
 
         // native format name
         cinfo.setNativeFormat(format.getName());
@@ -1084,7 +1084,9 @@ public class CatalogBuilder {
         wli.setDescription(layer.get_abstract());
         wli.setTitle(layer.getTitle());
         if (layer.getKeywords() != null) {
-            wli.getKeywords().addAll(Arrays.asList(layer.getKeywords()));
+            for (String kw : layer.getKeywords()) {
+                wli.getKeywords().add(new Keyword(kw));
+            }
         }
 
         // strip off the prefix if we're cascading from a server that does add them

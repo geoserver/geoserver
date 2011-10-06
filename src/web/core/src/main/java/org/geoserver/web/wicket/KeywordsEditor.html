@@ -8,11 +8,20 @@
           <button wicket:id="removeKeywords" type="submit"><wicket:message key="removeSelected">Remove selected</wicket:message></button>
         </li>   
         <li>
+          
           <label for="newKeyword"><wicket:message key="newKeyword">New Keyword</wicket:message></label>
           <input id="newKeyword" class="text" type="text" wicket:id="newKeyword"></input>
-          <button wicket:id="addKeyword" type="submit"> <wicket:message key="add">Add</wicket:message> </button>
+          
+          
+          <!--label for="lang"><wicket:message key="language">Language</wicket:message></label-->
+          <select id="lang" class="text" type="text" wicket:id="lang"></select>
+          
+          
+          <label for="vocab"><wicket:message key="vocabulary">Vocabulary</wicket:message></label>
+          <input id="vocab" class="text" type="text" wicket:id="vocab"></input>
         </li>
       </ul>
+      <button wicket:id="addKeyword" type="submit"> <wicket:message key="addKeyword">Add</wicket:message> </button>
    </wicket:panel>
 </body>
 </html>

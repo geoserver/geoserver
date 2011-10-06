@@ -5,17 +5,25 @@
 package org.geoserver.web.wicket;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+
+import net.sf.cglib.core.Local;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.KeywordInfo;
 
 /**
  * Form component to edit a List<String> that makes up the keywords field of
@@ -26,7 +34,9 @@ public class KeywordsEditor extends FormComponentPanel {
 
     ListMultipleChoice choices;
     TextField newKeyword;
-
+    TextField<String> vocabTextField;
+    DropDownChoice<String> langChoice;
+    
     /**
      * Creates a new keywords editor. 
      * @param id
@@ -35,13 +45,48 @@ public class KeywordsEditor extends FormComponentPanel {
     public KeywordsEditor(String id, final IModel keywords) {
         super(id, keywords);
 
-        choices = new ListMultipleChoice("keywords", new Model(), new ArrayList((List) keywords.getObject()));
+        choices = new ListMultipleChoice("keywords", new Model(), 
+            new ArrayList((List) keywords.getObject()), new ChoiceRenderer<Keyword>() {
+                @Override
+                public Object getDisplayValue(Keyword kw) {
+                    StringBuffer sb = new StringBuffer(kw.getValue());
+                    if (kw.getLanguage() != null) {
+                        sb.append(" (").append(kw.getLanguage()).append(")");
+                    }
+                    if (kw.getVocabulary() != null) {
+                        sb.append(" [").append(kw.getVocabulary()).append("]");
+                    }
+                    return sb.toString();
+                }
+        });
         choices.setOutputMarkupId(true);
         add(choices);
         add(removeKeywordsButton());
         newKeyword = new TextField("newKeyword", new Model());
         newKeyword.setOutputMarkupId(true);
         add(newKeyword);
+
+        langChoice = new DropDownChoice<String>("lang", new Model(), 
+            Arrays.asList(Locale.getISOLanguages()), new ChoiceRenderer<String>() {
+            @Override
+            public Object getDisplayValue(String object) {
+                return new Locale(object).getDisplayLanguage();
+            }
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
+        });
+
+        langChoice.setNullValid(true);
+        langChoice.setOutputMarkupId(true);
+        add(langChoice);
+
+        vocabTextField = new TextField<String>("vocab", new Model());
+        vocabTextField.setOutputMarkupId(true);
+            
+        add(vocabTextField);
+
         add(addKeywordsButton());
     }
 
@@ -49,12 +94,31 @@ public class KeywordsEditor extends FormComponentPanel {
         AjaxButton button = new AjaxButton("addKeyword") {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form form) {
+                String value = newKeyword.getInput();
+                String lang = langChoice.getInput();
+                String vocab = vocabTextField.getInput();
+                
+                KeywordInfo keyword = new Keyword(value);
+                if (lang != null && !"".equals(lang.trim())) {
+                    keyword.setLanguage(lang);
+                }
+                if (vocab != null && !"".equals(vocab.trim())) {
+                    keyword.setVocabulary(vocab);
+                }
+                
                 List choiceList = choices.getChoices();
-                choiceList.add(newKeyword.getInput());
+                choiceList.add(keyword);
                 choices.setChoices(choiceList);
-                newKeyword.setModelObject(null);
-                newKeyword.modelChanged();
+                
+                langChoice.setModelObject(null);
+                langChoice.modelChanged();
+
+                vocabTextField.setModelObject(null);
+                vocabTextField.modelChanged();
+
                 target.addComponent(newKeyword);
+                target.addComponent(langChoice);
+                target.addComponent(vocabTextField);
                 target.addComponent(choices);
             }
         };
@@ -70,7 +134,7 @@ public class KeywordsEditor extends FormComponentPanel {
                 List selection = (List) choices.getModelObject();
                 List keywords = choices.getChoices();
                 for (Iterator it = selection.iterator(); it.hasNext();) {
-                    String selected = (String) it.next();
+                    KeywordInfo selected = (KeywordInfo) it.next();
                     keywords.remove(selected);
                 }
                 choices.setChoices(keywords);

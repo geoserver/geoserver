@@ -20,6 +20,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -153,8 +154,8 @@ public class GetCapabilitiesTransformerTest extends TestCase {
     public void testServiceSection() throws Exception {
         wmsInfo.setTitle("title");
         wmsInfo.setAbstract("abstract");
-        wmsInfo.getKeywords().add("k1");
-        wmsInfo.getKeywords().add("k2");
+        wmsInfo.getKeywords().add(new Keyword("k1"));
+        wmsInfo.getKeywords().add(new Keyword("k2"));
         // @REVISIT: this is not being respected, but the onlineresource is being set based on the
         // proxyBaseUrl... not sure if that's correct
         wmsInfo.setOnlineResource("http://onlineresource/fake");

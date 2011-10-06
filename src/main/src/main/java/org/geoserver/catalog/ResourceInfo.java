@@ -171,7 +171,7 @@ public interface ResourceInfo extends CatalogInfo {
      * 
      * @uml.property name="keywords"
      */
-    List<String> getKeywords();
+    List<KeywordInfo> getKeywords();
 
     /**
      * A collection of metadata links for the resource.

@@ -7,6 +7,7 @@ package org.geoserver.config.util;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -99,9 +100,11 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
             service.setMetadataLink( ml );
         }
         
-        List keywords = (List) properties.get( "keywords" );
+        List<String> keywords = (List<String>) properties.get( "keywords" );
         if ( keywords != null ) {
-            service.getKeywords().addAll( keywords );
+            for (String kw : keywords) {
+                service.getKeywords().add(new Keyword(kw));
+            }
         }
         
         service.setOnlineResource( (String) properties.get( "onlineResource" ) );

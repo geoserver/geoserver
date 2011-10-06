@@ -13,6 +13,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     List<String> srs = new ArrayList<String>();
 
+    Boolean bboxForEachCRS;
+
     WatermarkInfo watermark = new WatermarkInfoImpl();
 
     WMSInterpolation interpolation;
@@ -61,6 +63,20 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
         this.srs = srs;
     }
 
+    public Boolean isBBOXForEachCRS() {
+        if (bboxForEachCRS != null) {
+            return bboxForEachCRS;
+        }
+        
+        //check the metadata map if upgrading from 2.1.x
+        Boolean bool = getMetadata().get("bboxForEachCRS", Boolean.class);
+        return bool != null && bool;
+    }
+
+    public void setBBOXForEachCRS(Boolean bboxForEachCRS) {
+        this.bboxForEachCRS = bboxForEachCRS;
+    }
+
     public int getMaxBuffer() {
         return maxBuffer;
     }
@@ -84,5 +100,4 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     public void setMaxRenderingErrors(int maxRenderingErrors) {
         this.maxRenderingErrors = maxRenderingErrors;
     }
-
 }

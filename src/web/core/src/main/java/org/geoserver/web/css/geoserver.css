@@ -1045,6 +1045,11 @@ background: transparent url(../img/icons/silk/arrow_refresh.png) scroll no-repea
 padding: 2px 0px 2px 20px;
 }
 
+.info-link {
+background: transparent url(../img/icons/silk/information.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
 .computeLink { 
 display: block;
 margin-bottom: 1em;

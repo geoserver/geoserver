@@ -4,9 +4,9 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,20 +61,18 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     @Override
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.put("wms", "http://www.opengis.net/wms");
-        namespaces.put("ows", "http://www.opengis.net/ows");
-        getTestData().registerNamespaces(namespaces);
-
-        NamespaceContext ctx = new SimpleNamespaceContext(namespaces);
-        XMLUnit.setXpathNamespaceContext(ctx);
 
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
     }
+
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("ows", "http://www.opengis.net/ows");
+    }
+
 
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
@@ -318,7 +316,6 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         String pointsName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
 
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
-        // print(doc);
 
         assertXpathEvaluatesTo("1", "//wms:Layer[wms:Name='" + linesName + "']/@queryable", doc);
         assertXpathEvaluatesTo("0", "//wms:Layer[wms:Name='" + pointsName + "']/@queryable", doc);
@@ -351,5 +348,11 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathExists(xpath, doc);
         assertXpathEvaluatesTo("baz", xpath, doc);
 
+    }
+    public void testBoundingBoxCRS84() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']", doc);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer//wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']", doc);
     }
 }

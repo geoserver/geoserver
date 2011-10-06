@@ -8,6 +8,11 @@
           <li>
             <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
           </li>
+          <li>
+            <input class="field checkbox" type="checkbox" wicket:id="bBOXForEachCRS"></input>
+            <label class="choice"><wicket:message key="bboxForEachCRS">Output bounding box for each supported CRS</wicket:message></label>
+            &nbsp;&nbsp;<a class="info-link" style="padding-left: 18px;" wicket:id="bboxPerCRSInfo">...</a>
+          </li>
         </ul>
       </fieldset>
     </li>
@@ -155,6 +160,7 @@
         </ul>
       </fieldset>
     </li>
+    <div wicket:id="bboxForEachCRSDialog"></div>
   </wicket:extend>
 </body>
 </html>

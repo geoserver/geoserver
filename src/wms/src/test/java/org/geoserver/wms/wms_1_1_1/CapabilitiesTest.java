@@ -17,6 +17,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ContactInfo;
@@ -246,8 +247,8 @@ public class CapabilitiesTest extends WMSTestSupport {
         service.setAccessConstraints("test accessConstraints");
         service.setFees("test fees");
         service.getKeywords().clear();
-        service.getKeywords().add("test keyword 1");
-        service.getKeywords().add("test keyword 2");
+        service.getKeywords().add(new Keyword("test keyword 1"));
+        service.getKeywords().add(new Keyword("test keyword 2"));
         service.setMaintainer("test maintainer");
         service.setOnlineResource("http://example.com/geoserver");
         GeoServerInfo global = getGeoServer().getGlobal();

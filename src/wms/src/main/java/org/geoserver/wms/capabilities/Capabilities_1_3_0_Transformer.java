@@ -33,6 +33,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
@@ -345,12 +346,16 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * 
          * @param keywords
          */
-        private void handleKeywordList(List<String> keywords) {
+        private void handleKeywordList(List<KeywordInfo> keywords) {
             start("KeywordList");
 
             if (keywords != null) {
-                for (String kw : keywords) {
-                    element("Keyword", kw);
+                for (KeywordInfo kw : keywords) {
+                    AttributesImpl atts = new AttributesImpl();
+                    if (kw.getVocabulary() != null) {
+                        atts.addAttribute("", "vocabulary", "vocabulary", "", kw.getVocabulary());
+                    }
+                    element("Keyword", kw.getValue(), atts);
                 }
             }
 

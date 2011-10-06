@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geotools.util.Version;
@@ -152,7 +153,7 @@ public interface ServiceInfo extends Info {
      * 
      * @uml.property name="keywords"
      */
-    List<String> getKeywords();
+    List<KeywordInfo> getKeywords();
 
     /**
      * Exception formats the service can provide.

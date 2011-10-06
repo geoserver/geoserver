@@ -16,6 +16,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
@@ -868,7 +869,7 @@ public class CatalogImplTest extends TestCase {
         
         FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
         ft2.setDescription( "ft2Description" );
-        ft2.getKeywords().add( "ft2");
+        ft2.getKeywords().add(new Keyword("ft2"));
         
         FeatureTypeInfo ft3 = catalog.getFeatureTypeByName(ft.getName());
         assertEquals( "ftName", ft3.getName() );

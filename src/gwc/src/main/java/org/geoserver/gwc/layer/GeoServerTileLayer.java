@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -321,7 +322,10 @@ public class GeoServerTileLayer extends TileLayer {
         if (resourceInfo != null) {
             title = resourceInfo.getTitle();
             description = resourceInfo.getAbstract();
-            keywords = resourceInfo.getKeywords();
+            keywords = new ArrayList<String>();
+            for (KeywordInfo kw : resourceInfo.getKeywords()) {
+                keywords.add(kw.getValue());
+            }
         }
         meta = new LayerMetaInformation(title, description, keywords, contacts);
         return meta;

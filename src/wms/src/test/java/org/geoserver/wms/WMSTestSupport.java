@@ -89,10 +89,12 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
         namespaces.put("gml", "http://www.opengis.net/gml");
         getTestData().registerNamespaces(namespaces);
+        registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         
         //copy over some schema files
@@ -119,6 +121,12 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
+    }
+
+    /**
+     * subclass hook to register additional namespaces.
+     */
+    protected void registerNamespaces(Map<String, String> namespaces) {
     }
 
     protected void copySchemaFile(String file) throws IOException {

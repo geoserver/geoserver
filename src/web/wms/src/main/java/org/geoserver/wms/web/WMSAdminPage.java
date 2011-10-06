@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -25,9 +31,11 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.web.data.resource.FeatureResourceConfigurationPanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -48,6 +56,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     
     static final List<String> KML_SUPEROVERLAY_MODES = Arrays.asList(new String[] {WMS.KML_SUPEROVERLAY_MODE_AUTO, 
             WMS.KML_SUPEROVERLAY_MODE_RASTER, WMS.KML_SUPEROVERLAY_MODE_OVERVIEW, WMS.KML_SUPEROVERLAY_MODE_HYBRID, WMS.KML_SUPEROVERLAY_MODE_CACHED});
+
+    ModalWindow bboxPerCRSInfoDialog;
     
     protected Class<WMSInfo> getServiceClass() {
         return WMSInfo.class;
@@ -65,6 +75,26 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         srsList.add(new SRSListValidator());
         srsList.setType(List.class);
         form.add(srsList);
+
+        form.add(new CheckBox("bBOXForEachCRS", new MapModel(new PropertyModel(info, "metadata"), "bboxForEachCRS")));
+        form.add(bboxPerCRSInfoDialog = new ModalWindow("bboxForEachCRSDialog"));
+        bboxPerCRSInfoDialog.setPageCreator(new ModalWindow.PageCreator() {
+            public Page createPage() {
+                return new BBOXPerCRSInfoDialog(
+                    new StringResourceModel("bboxForEachCRSInfo", WMSAdminPage.this, null));
+            }
+        });
+        bboxPerCRSInfoDialog.setTitle(new StringResourceModel("information", (Component)  null, null));
+        bboxPerCRSInfoDialog.setInitialHeight(100);
+        bboxPerCRSInfoDialog.setInitialHeight(200);
+        
+        GeoServerAjaxFormLink bboxPerCRSInfoLink = new GeoServerAjaxFormLink("bboxPerCRSInfo") {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                bboxPerCRSInfoDialog.show(target);
+            }
+        };
+        form.add(bboxPerCRSInfoLink);
 
         // general
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
@@ -228,5 +258,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             
         }
         
+    }
+    
+    static class BBOXPerCRSInfoDialog extends WebPage {
+        public BBOXPerCRSInfoDialog(StringResourceModel message) {
+            add(new Label("message", message));
+        }
     }
 }

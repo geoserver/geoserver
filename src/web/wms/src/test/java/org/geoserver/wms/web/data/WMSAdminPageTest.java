@@ -56,4 +56,13 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         assertTrue(((ValidationErrorFeedback)errors.get(0)).getMessage().contains("bla"));
         tester.assertRenderedPage(WMSAdminPage.class);
     }
+
+    public void testBBOXForEachCRS() throws Exception {
+        assertFalse(wms.isBBOXForEachCRS());
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("bBOXForEachCRS", true);
+        ft.submit("submit");
+        assertTrue(wms.isBBOXForEachCRS());
+    }
 }

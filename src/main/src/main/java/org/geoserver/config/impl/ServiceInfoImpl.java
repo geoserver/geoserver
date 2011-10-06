@@ -178,6 +178,9 @@ public class ServiceInfoImpl implements ServiceInfo {
     }
 
     public MetadataMap getMetadata() {
+        if (metadata == null) {
+            metadata = new MetadataMap();
+        }
         return metadata;
     }
 

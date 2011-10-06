@@ -40,6 +40,24 @@ public interface WMSInfo extends ServiceInfo {
     List<String> getSRS();
 
     /**
+     * Flag controlling whether the WMS service, for each layer, should declare a bounding box 
+     * for every CRS supported, in it's capabilities document. 
+     * <p>
+     * By default the number of CRS's supported is huge which does not make this option practical.
+     * This flag is only respected in cases there {@link #getSRS()} is non empty.
+     * </p>
+     */
+    boolean isBBOXForEachCRS();
+
+    /**
+     * Sets flag controlling whether the WMS service, for each layer, should declare a bounding box 
+     * for every CRS supported.
+     * 
+     * @see #isBBOXForEachCRS()
+     */
+    void setBBOXForEachCRS(boolean bboxForEachCRS);
+
+    /**
      * The maximum search radius for GetFeatureInfo
      */
     int getMaxBuffer();

@@ -656,10 +656,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 String currentSRS;
 
                 while (it.hasNext()) {
-                    currentSRS = it.next();
-                    if (currentSRS.indexOf(':') == -1) {
-                        currentSRS = EPSG + currentSRS;
-                    }
+                    currentSRS = qualifySRS(it.next());
                     element("SRS", currentSRS);
                 }
             } catch (Exception e) {
@@ -693,6 +690,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
 
             handleLatLonBBox(latlonBbox);
+            handleAdditionalBBox(new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
         /**
@@ -796,7 +794,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 }
             }
 
-            Envelope bbox;
+            ReferencedEnvelope bbox;
             try {
                 bbox = layer.getResource().boundingBox();
             } catch (Exception e) {
@@ -809,6 +807,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // the native bbox might be null
             if (bbox != null) {
                 handleBBox(bbox, srs);
+                handleAdditionalBBox(bbox, srs, layer);
             }
 
             // handle dimensions
@@ -1026,6 +1025,13 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         //
         // return (String[]) finalArray.toArray(new String[1]);
         // }
+
+       private String qualifySRS(String srs) {
+            if (srs.indexOf(':') == -1) {
+                srs = EPSG + srs;
+            }
+            return srs;
+       }
 
         protected void handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
@@ -1293,6 +1299,33 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             bboxAtts.addAttribute("", "maxy", "maxy", "", maxy);
 
             element("BoundingBox", null, bboxAtts);
+        }
+
+        private void handleAdditionalBBox(ReferencedEnvelope bbox, String srs, LayerInfo layer) {
+            //TODO: this method is copied from wms 1.3 caps (along with a lot of things), we 
+            // should refactor
+            WMSInfo info = wmsConfig.getServiceInfo();
+            if (info.isBBOXForEachCRS() && !info.getSRS().isEmpty()) {
+                //output bounding box for each supported service srs
+                for (String crs : info.getSRS()) {
+                    crs = qualifySRS(crs);
+                    if (srs != null && crs.equals(srs)) {
+                        continue; //already did this one
+                    }
+                    
+                    try {
+                        ReferencedEnvelope tbbox = bbox.transform(CRS.decode(crs), true);
+                        handleBBox(tbbox, crs);
+                    } 
+                    catch(Exception e) {
+                        LOGGER.warning(String.format("Unable to transform bounding box for layer" +
+                            " '%s' to %s", layer.getName(), crs));
+                        if (LOGGER.isLoggable(Level.FINE)) {
+                            LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+                        }
+                    }
+                }
+            }
         }
     }
 }

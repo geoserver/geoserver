@@ -65,7 +65,9 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.type.Name;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
@@ -681,10 +683,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 String currentSRS;
 
                 while (it.hasNext()) {
-                    currentSRS = it.next();
-                    if (currentSRS.indexOf(':') == -1) {
-                        currentSRS = EPSG + currentSRS;
-                    }
+                    currentSRS = qualifySRS(it.next());
                     element("CRS", currentSRS);
                 }
             } catch (Exception e) {
@@ -693,6 +692,16 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             // the default CRS:84
             element("CRS", "CRS:84");
+        }
+
+        /**
+         * prefixes an srs code with "EPSG:" if it is not already prefixed.
+         */
+        private String qualifySRS(String srs) {
+            if (srs.indexOf(':') == -1) {
+                srs = EPSG + srs;
+            }
+            return srs;
         }
 
         /**
@@ -721,6 +730,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             handleGeographicBoundingBox(latlonBbox);
+            handleBBox(latlonBbox, "CRS:84");
+            handleAdditionalBBox(
+                new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
         /**
@@ -798,6 +810,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             ReferencedEnvelope llbbox = layer.getResource().getLatLonBoundingBox();
             handleGeographicBoundingBox(llbbox);
+            handleBBox(llbbox, "CRS:84");
 
             ReferencedEnvelope bbox;
             try {
@@ -809,6 +822,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // the native bbox might be null
             if (bbox != null) {
                 handleBBox(bbox, crs);
+                handleAdditionalBBox(bbox, crs, layer);
             }
 
             // handle dimensions
@@ -1222,6 +1236,31 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     "maxy", maxy);
 
             element("BoundingBox", null, bboxAtts);
+        }
+
+        private void handleAdditionalBBox(ReferencedEnvelope bbox, String crs, LayerInfo layer) {
+            WMSInfo info = wmsConfig.getServiceInfo();
+            if (info.isBBOXForEachCRS() && !info.getSRS().isEmpty()) {
+                //output bounding box for each supported service srs
+                for (String srs : info.getSRS()) {
+                    srs = qualifySRS(srs);
+                    if (crs != null && srs.equals(crs)) {
+                        continue; //already did this one
+                    }
+
+                    try {
+                        ReferencedEnvelope tbbox = bbox.transform(CRS.decode(srs), true);
+                        handleBBox(tbbox, srs);
+                    } 
+                    catch(Exception e) {
+                        LOGGER.warning(String.format("Unable to transform bounding box for '%s' layer" +
+                            " to %s", layer != null ? layer.getName() : "root", srs));
+                        if (LOGGER.isLoggable(Level.FINE)) {
+                            LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+                        }
+                    }
+                }
+            }
         }
     }
 }

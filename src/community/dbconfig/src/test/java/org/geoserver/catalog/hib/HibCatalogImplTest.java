@@ -7,6 +7,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -280,7 +281,7 @@ public class HibCatalogImplTest extends CatalogImplTest {
         
         FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
         ft2.setDescription( "ft2Description" );
-        ft2.getKeywords().add( "ft2");
+        ft2.getKeywords().add(new Keyword("ft2"));
         catalog.save( ft2 );
         
         FeatureTypeInfo  ft3 = catalog.getFeatureTypeByName(ft.getName());

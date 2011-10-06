@@ -107,6 +107,10 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         return delegate.getKeywords();
     }
 
+    public List<String> keywordValues() {
+        return delegate.keywordValues();
+    }
+
     public ReferencedEnvelope getLatLonBoundingBox() {
         return delegate.getLatLonBoundingBox();
     }

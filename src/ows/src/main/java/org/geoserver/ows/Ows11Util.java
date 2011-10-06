@@ -58,7 +58,7 @@ public class Ows11Util {
         }
         return kw;
     }
-    
+
     public static CodeType code( String value ) {
         CodeType code = f.createCodeType();
         code.setValue( value );

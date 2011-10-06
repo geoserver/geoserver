@@ -89,7 +89,7 @@ public class GeoSearchLayer extends AbstractResource {
             LayerInfo layerInfo = (LayerInfo) layer;
             title = layerInfo.getResource().getTitle();
             description = layerInfo.getResource().getAbstract();
-            List<String> kws = layerInfo.getResource().getKeywords();
+            List<String> kws = layerInfo.getResource().keywordValues();
             if (kws != null) {
                 keywords = kws.toArray(new String[kws.size()]);
             }
@@ -211,7 +211,7 @@ public class GeoSearchLayer extends AbstractResource {
     private String[] getKeyWords(LayerGroupInfo lgi) {
         Set<String> kws = new TreeSet<String>();
         for (LayerInfo li : lgi.getLayers()) {
-            List<String> keywords = li.getResource().getKeywords();
+            List<String> keywords = li.getResource().keywordValues();
             if (keywords != null) {
                 kws.addAll(keywords);
             }

@@ -174,6 +174,11 @@ public interface ResourceInfo extends CatalogInfo {
     List<KeywordInfo> getKeywords();
 
     /**
+     * List of keyword values, derived from {@link #getKeywords()}.
+     */
+    List<String> keywordValues();
+
+    /**
      * A collection of metadata links for the resource.
      * 
      * @uml.property name="metadataLinks"

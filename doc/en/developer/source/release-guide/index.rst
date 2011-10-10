@@ -266,6 +266,12 @@ PDF
 
       pdflatex GeoServerUserManual.tex GeoServerUserManual.pdf
 
+#. Immediately **run the same command a second time**::
+
+      pdflatex GeoServerUserManual.tex GeoServerUserManual.pdf
+
+   .. note:: This seemingly duplicate step is required because the PDF table of contents and associated bookmarks are not generated on the first pass.
+
 #. Go back to the root of the documentation tree, and change directory to :file:`doc/developer`.
 
 #. Build LaTeX files for the Developer Manual.

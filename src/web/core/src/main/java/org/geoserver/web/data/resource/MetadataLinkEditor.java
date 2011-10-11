@@ -32,6 +32,10 @@ import org.geoserver.catalog.ResourceInfo;
  */
 @SuppressWarnings("serial")
 public class MetadataLinkEditor extends Panel {
+    /**
+     * Can't depend on the wms module here, but beware links of type ISO19115:2003 won't show up in
+     * WMS 1.1.1 GetCaps
+     */
     private static final List<String> LINK_TYPES = Arrays.asList("ISO19115:2003", "FGDC",
             "TC211", "other");
     private ListView links;

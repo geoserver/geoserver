@@ -19,7 +19,12 @@
     </table>
     <p wicket:id="noLinks"></p>
   </div>
-  <button wicket:id="addlink"><wicket:message key="addLink">Add link</wicket:message></button>
+  <div>
+   <span>
+    <button wicket:id="addlink"><wicket:message key="addLink">Add link</wicket:message></button>
+    <i><wicket:message key="MetadataLinkEditor.warnValidWmsLinkTypes"></wicket:message></i>
+   </span>
+  </div>
 </wicket:panel>
 </body>
 </html>

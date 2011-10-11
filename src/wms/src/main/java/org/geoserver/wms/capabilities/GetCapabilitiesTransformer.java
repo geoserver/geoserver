@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -93,6 +94,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
     /** the WMS supported exception formats */
     static final String[] EXCEPTION_FORMATS = { "application/vnd.ogc.se_xml",
             "application/vnd.ogc.se_inimage", };
+
+    
+    /**
+     * Set of supported metadta link types. Links of any other type will be ignored to honor the DTD
+     * rule: {@code <!ATTLIST MetadataURL type ( TC211 | FGDC ) #REQUIRED>}
+     */
+    private static final Set<String> SUPPORTED_MDLINK_TYPES = Collections
+            .unmodifiableSet(new HashSet<String>(Arrays.asList("FGDC", "TC211")));
 
     /**
      * The geoserver base URL to append it the schemas/wms/1.1.1/WMS_MS_Capabilities.dtd DTD
@@ -353,7 +362,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
 
             for (MetadataLinkInfo link : metadataURLs) {
-
+                if (!SUPPORTED_MDLINK_TYPES.contains(link.getMetadataType())) {
+                    continue;
+                }
                 AttributesImpl lnkAtts = new AttributesImpl();
                 lnkAtts.addAttribute("", "type", "type", "", link.getMetadataType());
                 start("MetadataURL", lnkAtts);

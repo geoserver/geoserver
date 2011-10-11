@@ -607,8 +607,13 @@ public class DefaultCatalogFacade implements CatalogFacade {
     public void setDefaultNamespace(NamespaceInfo defaultNamespace) {
         NamespaceInfo ns = defaultNamespace != null ? namespaces.get(defaultNamespace.getPrefix()) : null;
         NamespaceInfo old = namespaces.get(null);
-        namespaces.put( null, ns );
-        namespaces.put( Catalog.DEFAULT, ns );
+        if(ns != null) {
+            namespaces.put( null, ns );
+            namespaces.put( Catalog.DEFAULT, ns );
+        } else {
+            namespaces.remove( null);
+            namespaces.remove( Catalog.DEFAULT);
+        }
         
         //fire change event
         catalog.fireModified(catalog, 

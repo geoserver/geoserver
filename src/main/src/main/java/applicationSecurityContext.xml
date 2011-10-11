@@ -42,7 +42,7 @@
        <sec:filter-chain pattern="/j_spring_security_logout/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />       
        <sec:filter-chain pattern="/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
        <sec:filter-chain pattern="/gwc/rest/web/**" filters="anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />
-       <sec:filter-chain pattern="/gwc/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilterWithoutRememberMeSerice,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
+       <sec:filter-chain pattern="/gwc/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilterWithoutRememberMeService,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
        <sec:filter-chain pattern="/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,filterInvocationInterceptor" />
    </sec:filter-chain-map>
   </bean>
@@ -230,7 +230,7 @@
     Used for /gwc/rest/** entry points as somehow the presence of the remember-me service makes the
     POST'ed form to reach the gwc restlets empty.
   -->
-  <bean id="basicProcessingFilterWithoutRememberMeSerice"
+  <bean id="basicProcessingFilterWithoutRememberMeService"
     class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
     <property name="authenticationManager">
       <ref local="authenticationManager" />

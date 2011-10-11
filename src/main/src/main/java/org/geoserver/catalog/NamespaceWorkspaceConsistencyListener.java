@@ -53,13 +53,15 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
             }
         } else if(event.getSource() instanceof Catalog && properties.contains("defaultNamespace") && !editing) {
             NamespaceInfo newDefault = (NamespaceInfo) event.getNewValues().get(properties.indexOf("defaultNamespace"));
-            WorkspaceInfo ws = catalog.getWorkspaceByName(newDefault.getPrefix());
-            if(ws != null && !catalog.getDefaultWorkspace().equals(ws)) {
-                try {
-                    editing = true;
-                    catalog.setDefaultWorkspace(ws);
-                } finally {
-                    editing = false;
+            if(newDefault != null) {
+                WorkspaceInfo ws = catalog.getWorkspaceByName(newDefault.getPrefix());
+                if(ws != null && !catalog.getDefaultWorkspace().equals(ws)) {
+                    try {
+                        editing = true;
+                        catalog.setDefaultWorkspace(ws);
+                    } finally {
+                        editing = false;
+                    }
                 }
             }
         } else if(event.getSource() instanceof WorkspaceInfo && !editing && properties.contains("name")) {

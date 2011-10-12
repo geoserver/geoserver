@@ -20,8 +20,11 @@ import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
@@ -72,7 +75,15 @@ public class GML32OutputFormat extends GML3OutputFormat {
         
         return new Encoder(config);
     }
-    
+
+    @Override
+    protected void setAdditionalSchemaLocations(Encoder encoder, BaseRequestType request, WFSInfo wfs) {
+        //since wfs 2.0 schema does not depend on gml 3.2 schema we register it manually
+        String loc = wfs.isCanonicalSchemaLocation() ? GML.CANONICAL_SCHEMA_LOCATION : 
+            ResponseUtils.buildSchemaURL(request.getBaseUrl(), "gml/3.2.1/gml.xsd");
+        encoder.setSchemaLocation(GML.NAMESPACE, loc);
+    }
+
     @Override
     protected void encode(FeatureCollectionType results, OutputStream output, Encoder encoder)
             throws IOException {

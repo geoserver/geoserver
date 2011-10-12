@@ -236,6 +236,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                 encoder.setSchemaLocation(namespaceURI, schemaLocation);
             }
         }
+
+        setAdditionalSchemaLocations(encoder, gft, wfs);
         if (this.isComplexFeature(results)) {
             complexFeatureStreamIntercept(results, output, encoder);
         } else {
@@ -243,10 +245,14 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         }
         
     }
-
+    
     protected Encoder createEncoder(Configuration configuration, 
         Map<String, Set<FeatureTypeInfo>> featureTypes, BaseRequestType request ) {
         return new Encoder(configuration, configuration.schema());
+    }
+
+    protected void setAdditionalSchemaLocations(Encoder encoder, BaseRequestType request, WFSInfo wfs) {
+        //hook for subclasses
     }
     
     protected void encode(FeatureCollectionType results, OutputStream output, Encoder encoder)

@@ -60,7 +60,7 @@ public class WFSFilteringTest extends WFSTestSupport {
     void _testSingleSmallDistance(String version) throws Exception {
         String request = QUERY_SINGLE.replace("${distance}", "0.00000001").replace("${version}", version);
         Document doc = postAsDOM("wfs", request);
-        // print(doc);
+         print(doc);
 
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
         assertXpathEvaluatesTo("0", "count(cite:Buildings)", doc);

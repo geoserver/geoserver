@@ -7,7 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.geotools.filter.FunctionImpl;
+import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.geometry.jts.GeometryCollector;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 
@@ -26,8 +28,9 @@ public class CollectGeometriesFunction extends FunctionImpl {
 
     long maxCoordinates;
 
-    public CollectGeometriesFunction(String name, List<Expression> args, Literal fallback, long maxCoordinates) {
-        setName(name);
+    public CollectGeometriesFunction(Name name, List<Expression> args, Literal fallback, long maxCoordinates) {
+        functionName = new FunctionNameImpl(name, args != null ? args.size() : -1);
+        setName(name.getLocalPart());
         setFallbackValue(fallback);
         setParameters(args);
         this.maxCoordinates = maxCoordinates;

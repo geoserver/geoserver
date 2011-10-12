@@ -13,9 +13,11 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FunctionImpl;
+import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
@@ -38,15 +40,17 @@ public class QueryFunction extends FunctionImpl {
     
     boolean single;
 
-    public QueryFunction(String name, Catalog catalog, List<Expression> args, Literal fallback,
+    public QueryFunction(Name name, Catalog catalog, List<Expression> args, Literal fallback,
             boolean single, int maxResults) {
         this.catalog = catalog;
         this.maxResults = maxResults;
         this.single = single;
-        setName(name);
+
+        functionName = new FunctionNameImpl(name, args != null ? args.size() : -1);
+        setName(name.getLocalPart());
         setFallbackValue(fallback);
         setParameters(args);
-
+        
         if (args.size() < 3 || args.size() > 4) {
             throw new IllegalArgumentException(
                     "QuerySingle function requires 3 or 4 arguments (feature type qualified name, "

@@ -11,8 +11,10 @@ import java.util.logging.Level;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.python.Python;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.FunctionFactory;
 import org.geotools.util.SoftValueHashMap;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
@@ -22,7 +24,7 @@ import org.opengis.filter.expression.Literal;
 public class PythonFilterFunctionFactory implements FunctionFactory {
 
     Python py;
-    SoftValueHashMap<String, PythonFilterFunctionAdapter> adapters = new SoftValueHashMap(10);
+    SoftValueHashMap<Name, PythonFilterFunctionAdapter> adapters = new SoftValueHashMap(10);
     
     public List<FunctionName> getFunctionNames() {
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -51,12 +53,16 @@ public class PythonFilterFunctionFactory implements FunctionFactory {
     }
     
     public Function function(String name, List<Expression> args, Literal fallback) {
+        return function(new NameImpl(name), args, fallback);
+    }
+
+    public Function function(Name name, List<Expression> args, Literal fallback) {
         PythonFilterFunctionAdapter adapter = adapter(name);
         if (adapter == null) {
             return null;
         }
         return new PythonFunction(name, args, adapter);
-    }
+    };
     
     Python py() {
         if (py == null) {
@@ -65,7 +71,7 @@ public class PythonFilterFunctionFactory implements FunctionFactory {
         return py;
     }
     
-    PythonFilterFunctionAdapter adapter(String name) {
+    PythonFilterFunctionAdapter adapter(Name name) {
         PythonFilterFunctionAdapter adapter = adapters.get(name);
         if (adapter == null) {
             synchronized(this) {
@@ -87,12 +93,12 @@ public class PythonFilterFunctionFactory implements FunctionFactory {
         return adapter;
     }
 
-    private PythonFilterFunctionAdapter createFilterFunctionAdapter(String name) 
+    private PythonFilterFunctionAdapter createFilterFunctionAdapter(Name name) 
         throws IOException {
         
         for (File f : py().getFilterRoot().listFiles()) {
             PythonFilterFunctionAdapter adapter = new PythonFilterFunctionAdapter(f, py());
-            if (adapter.getNames().contains(name)) {
+            if (adapter.getNames().contains(name.getLocalPart())) {
                 return adapter; 
             }
         }

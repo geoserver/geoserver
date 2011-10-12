@@ -11,8 +11,10 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.FunctionFactory;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
@@ -26,11 +28,11 @@ import org.opengis.filter.expression.Literal;
  * @author Andrea Aime - GeoSolutions
  */
 public class QueryLayerFunctionFactory implements FunctionFactory {
-    static final String COLLECT_GEOMETRIES = "collectGeometries";
+    static final Name COLLECT_GEOMETRIES = new NameImpl("collectGeometries");
 
-    static final String QUERY_COLLECTION = "queryCollection";
+    static final Name QUERY_COLLECTION = new NameImpl("queryCollection");
 
-    static final String QUERY_SINGLE = "querySingle";
+    static final Name QUERY_SINGLE = new NameImpl("querySingle");
 
     static final Logger LOGGER = Logging.getLogger(QueryLayerFunctionFactory.class);
 
@@ -87,6 +89,11 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
     }
 
     public Function function(String name, List<Expression> args, Literal fallback) {
+        return function(new NameImpl(name), args, fallback);
+    }
+
+    @Override
+    public Function function(Name name, List<Expression> args, Literal fallback) {
         if (!isInitialized()) {
             return null;
         }

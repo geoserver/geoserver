@@ -51,13 +51,13 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         // name
         PropertyModel nameModel = new PropertyModel(model, "name");
         final TextParamPanel namePanel = new TextParamPanel("namePanel", nameModel,
-                new ResourceModel("dataSrcName", "Data Source Name"), true);
+                new ResourceModel("AbstractWMSStorePage.dataSrcName", "Data Source Name"), true);
 
         form.add(namePanel);
 
         // description and enabled
         form.add(new TextParamPanel("descriptionPanel", new PropertyModel(model,
-                "description"), new ResourceModel("description", "Description"), false));
+                "description"), new ResourceModel("AbstractWMSStorePage.description", "Description"), false));
         form.add(new CheckBoxParamPanel("enabledPanel", new PropertyModel(model, "enabled"),
                 new ResourceModel("enabled", "Enabled")));
         // a custom converter will turn this into a namespace url

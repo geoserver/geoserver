@@ -101,7 +101,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
         {
             final IModel wsModel = new PropertyModel(model, "workspace");
-            final IModel wsLabelModel = new ResourceModel("AbstractDataAccessPage.workspace");
+            final IModel wsLabelModel = new ResourceModel("workspace", "Workspace");
             workspacePanel = new WorkspacePanel("workspacePanel", wsModel, wsLabelModel, true);
         }
         paramsForm.add(workspacePanel);
@@ -114,7 +114,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         paramsForm.add(dataStoreNamePanel);
 
         paramsForm.add(new TextParamPanel("dataStoreDescriptionPanel", new PropertyModel(model,
-                "description"), new ResourceModel("description", "Description"), false,
+                "description"), new ResourceModel("AbstractDataAccessPage.description", "Description"), false,
                 (IValidator[]) null));
 
         paramsForm.add(new CheckBoxParamPanel("dataStoreEnabledPanel", new PropertyModel(model,

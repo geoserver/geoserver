@@ -1085,7 +1085,9 @@ public class CatalogBuilder {
         wli.setTitle(layer.getTitle());
         if (layer.getKeywords() != null) {
             for (String kw : layer.getKeywords()) {
-                wli.getKeywords().add(new Keyword(kw));
+                if(kw != null){
+                    wli.getKeywords().add(new Keyword(kw));
+                }
             }
         }
 

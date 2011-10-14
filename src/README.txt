@@ -4,7 +4,7 @@ http://geoserver.org/display/GEOSDOC/Developers+Guide
 ---------------------------
 
 1) Install JAVA SDK
-Download and install the Java SDK, Sun Java version 1.5.0
+Download and install the Java SDK, Sun Java version 6.0 (1.6.0_XX)
 
 Create an environment variable called JAVA_HOME and point it to your Java SDK directory.
 Then modify the PATH variable and add: ;%JAVA_HOME%/bin

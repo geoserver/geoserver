@@ -17,6 +17,8 @@ import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.data.layer.NewLayerPage;
+import org.geotools.data.ows.HTTPClient;
+import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.wms.WebMapServer;
 
 public class WMSStoreNewPage extends AbstractWMSStorePage {
@@ -74,13 +76,22 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         setResponsePage(layerChooserPage);
     }
     
-    static final class WMSCapabilitiesURLValidator extends AbstractValidator {
+    final class WMSCapabilitiesURLValidator extends AbstractValidator {
 
         @Override
         protected void onValidate(IValidatable validatable) {
             String url = (String) validatable.getValue();
             try {
-                WebMapServer server = new WebMapServer(new URL(url));
+                HTTPClient client = new SimpleHttpClient();
+                usernamePanel.getFormComponent().processInput();
+                String user = usernamePanel.getFormComponent().getInput();
+                password.getFormComponent().processInput();
+                String pwd = password.getFormComponent().getInput();
+                if (user != null && user.length() > 0 && pwd != null && pwd.length() > 0) {
+                    client.setUser(user);
+                    client.setPassword(pwd);
+                }
+                WebMapServer server = new WebMapServer(new URL(url), client);
                 server.getCapabilities();
             } catch(Exception e) {
                 error(validatable, "WMSCapabilitiesValidator.connectionFailure", 

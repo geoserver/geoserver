@@ -39,6 +39,10 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
     TextParamPanel capabilitiesURL;
 
+    protected TextParamPanel usernamePanel;
+    
+    protected PasswordParamPanel password;
+    
     void initUI(final WMSStoreInfo store) {
         IModel model = new Model(store);
         
@@ -72,14 +76,14 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
         // user name
         PropertyModel userModel = new PropertyModel(model, "username");
-        final TextParamPanel usernamePanel = new TextParamPanel("userNamePanel", userModel,
-                new ResourceModel("AbstractWMSStorePage.userName"), false);
+        usernamePanel = new TextParamPanel("userNamePanel", userModel, new ResourceModel(
+                "AbstractWMSStorePage.userName"), false);
 
         form.add(usernamePanel);
 
         // password
         PropertyModel passwordModel = new PropertyModel(model, "password");
-        form.add(new PasswordParamPanel("passwordPanel", passwordModel, new ResourceModel(
+        form.add(password = new PasswordParamPanel("passwordPanel", passwordModel, new ResourceModel(
                 "AbstractWMSStorePage.password"), false));
         
         // max concurrent connections

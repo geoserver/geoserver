@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
@@ -51,8 +53,11 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
     @Override
     public GridCoverageReader getGridCoverageReader(ProgressListener listener,
             Hints hints) throws IOException {
-        if(policy.level == AccessLevel.METADATA)
+        Request request = Dispatcher.REQUEST.get();
+        if(policy.level == AccessLevel.METADATA && 
+                (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest()))) {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
+        }
         GridCoverageReader reader = super.getGridCoverageReader(listener, hints);
         return (GridCoverageReader) SecuredObjects.secure(reader, policy);
     }

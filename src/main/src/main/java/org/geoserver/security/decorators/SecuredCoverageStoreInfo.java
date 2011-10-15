@@ -5,6 +5,8 @@
 package org.geoserver.security.decorators;
 
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
@@ -20,8 +22,11 @@ public class SecuredCoverageStoreInfo extends DecoratingCoverageStoreInfo {
 
     @Override
     public AbstractGridFormat getFormat() {
-        if(policy.level == AccessLevel.METADATA)
-            throw SecureCatalogImpl.unauthorizedAccess(getName());
+        Request request = Dispatcher.REQUEST.get();
+        if(policy.level == AccessLevel.METADATA && 
+                (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest()))) {
+            throw SecureCatalogImpl.unauthorizedAccess(this.getName());
+        }
         return super.getFormat();
     }
 

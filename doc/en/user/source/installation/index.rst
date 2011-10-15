@@ -10,5 +10,5 @@ There are many ways to install GeoServer on your system.  This section will disc
 
    windows/index
    osx/index
-   linux
+   linux/index
    war

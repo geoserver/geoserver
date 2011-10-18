@@ -152,7 +152,7 @@
                         ${param.name}: '${param.value?js_string}',
                         </#list>
                         format: format,
-                        tiled: !pureCoverage,
+                        tiled: true,
                         tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
                     },
                     {

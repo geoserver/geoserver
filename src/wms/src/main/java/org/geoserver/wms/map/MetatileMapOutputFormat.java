@@ -9,7 +9,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.media.jai.operator.CropDescriptor;
+import javax.media.jai.RenderedOp;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -32,6 +31,10 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.crop.GTCropDescriptor;
+import org.geotools.resources.i18n.ErrorKeys;
+import org.geotools.resources.i18n.Errors;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -44,6 +47,8 @@ import org.geotools.util.logging.Logging;
  * @author Simone Giannecchini - GeoSolutions
  */
 public final class MetatileMapOutputFormat implements GetMapOutputFormat {
+ 
+    private static final RenderingHints NO_CACHE_HINTS = new RenderingHints(JAI.KEY_TILE_CACHE, null);
 
     /** A logger for this class. */
     private static final Logger LOGGER = Logging.getLogger(MetatileMapOutputFormat.class);
@@ -174,56 +179,67 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
         final int metaFactor = key.getMetaFactor();
         final RenderedImage[] tiles = new RenderedImage[key.getMetaFactor() * key.getMetaFactor()];
         final int tileSize = key.getTileSize();
-        final RenderingHints no_cache = new RenderingHints(JAI.KEY_TILE_CACHE, null);
 
-        // get tile factors
-        final int tileW = metaTile.getTileWidth();
-        final int tileH = metaTile.getTileHeight();
-        final int tileGridXOffset = metaTile.getTileGridXOffset();
-        final int tileGridYOffset = metaTile.getTileGridYOffset();
-        final boolean metatilingIsRespected = tileGridXOffset == 0 && tileGridYOffset == 0
-                && tileH == tileSize && tileW == tileSize;
+        // check image type 
+        int type = 0;
+        if (metaTile instanceof PlanarImage) {
+            type = 1;
+        } else if (metaTile instanceof BufferedImage) {
+            type = 2;
+        }
 
+        // now do the splitting
         for (int i = 0; i < metaFactor; i++) {
             for (int j = 0; j < metaFactor; j++) {
                 int x = j * tileSize;
                 int y = (tileSize * (metaFactor - 1)) - (i * tileSize);
 
-                final Raster tile_;
                 RenderedImage tile;
-                if (metaTile instanceof PlanarImage) {
+                switch (type) {
+                case 0:
+                    // do a crop, and then turn it into a buffered image so that we can release
+                    // the image chain
+                    RenderedOp cropped = GTCropDescriptor.create(metaTile, Float.valueOf(x), Float.valueOf(y), Float.valueOf(
+                            tileSize), Float.valueOf(tileSize), NO_CACHE_HINTS);
+                    tile = cropped.getAsBufferedImage();
+                    break;
+                case 1:
                     final PlanarImage pImage = (PlanarImage) metaTile;
-
-                    if (metatilingIsRespected) {
-                        final int tileX = pImage.XToTileX(x);
-                        final int tileY = pImage.YToTileY(y);
-                        tile_ = pImage.getTile(tileX, tileY);
-
+                    final WritableRaster wTile = WritableRaster.createWritableRaster(
+                            pImage.getSampleModel().createCompatibleSampleModel(tileSize, tileSize), 
+                            new Point(x, y));
+                    Rectangle sourceArea = new Rectangle(x, y, tileSize, tileSize);
+                    sourceArea = sourceArea.intersection(pImage.getBounds());
+                    
+                    // copying the data to ensure we don't have side effects when we clean the cache
+                    pImage.copyData(wTile);
+                    if(wTile.getMinX()!=0||wTile.getMinY()!=0) {
+                        tile = new BufferedImage(pImage.getColorModel(), (WritableRaster) wTile.createTranslatedChild(0, 0), pImage.getColorModel().isAlphaPremultiplied(), null);                    
                     } else {
-                        Rectangle sourceArea = new Rectangle(x, y, tileSize, tileSize);
-                        sourceArea = sourceArea.intersection(pImage.getBounds());
-                        tile_ = pImage.getData(sourceArea);
-
+                        tile = new BufferedImage(pImage.getColorModel(), wTile, pImage.getColorModel().isAlphaPremultiplied(), null);
                     }
-                    WritableRaster wTile = WritableRaster.createWritableRaster(tile_
-                            .getSampleModel().createCompatibleSampleModel(tileSize, tileSize),
-                            tile_.getDataBuffer(), new Point(0, 0));
-                    tile = new BufferedImage(pImage.getColorModel(), wTile, pImage.getColorModel()
-                            .isAlphaPremultiplied(), null);
-
-                } else if (metaTile instanceof BufferedImage) {
+                    break;
+                case 2:
                     final BufferedImage image = (BufferedImage) metaTile;
-                    tile = image.getSubimage(x, y, tileSize, tileSize);
-                } else {
-                    tile = CropDescriptor.create(metaTile, new Float(x), new Float(y), new Float(
-                            tileSize), new Float(tileSize), no_cache);
+                    tile = image.getSubimage(x, y, tileSize, tileSize);                    
+                    break;                    
+                default:
+                    throw new IllegalStateException(Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2,"metaTile class",metaTile.getClass().toString()));
 
                 }
 
                 tiles[(i * key.getMetaFactor()) + j] = tile;
             }
         }
-
+        
+        // dispose input image if necessary/possible
+        if (type < 2) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) metaTile);
+        } else {
+            BufferedImage image = (BufferedImage) metaTile;
+            image.flush();
+            image = null;
+        }
         return tiles;
     }
 

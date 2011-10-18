@@ -4,10 +4,9 @@
  */
 package org.geoserver.kml;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -18,9 +17,9 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapResponse;
-import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.XMLTransformerMap;
 import org.geotools.map.Layer;
 import org.geotools.xml.transform.TransformerBase;
@@ -106,7 +105,7 @@ public class KMZMapResponse extends AbstractMapResponse {
             zip.putNextEntry(images);
             
             // write the images
-            CopyOnWriteArrayList<Layer> layers = mapContent.layers();
+            List<Layer> layers = mapContent.layers();
             for (int i = 0; i < layers.size(); i++) {
                 Layer mapLayer = layers.get(i);
 

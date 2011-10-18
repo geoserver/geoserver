@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.map;
 
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.PlanarImage;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -22,6 +24,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.image.palette.InverseColorMapOp;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -134,6 +137,13 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
                 // eat exception to release resources silently
                 if (LOGGER.isLoggable(Level.FINEST))
                     LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
+            }
+            
+            // let go of the image
+            if (image instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+            } else if (image instanceof BufferedImage) {
+                ((BufferedImage) image).flush();
             }
         }
 

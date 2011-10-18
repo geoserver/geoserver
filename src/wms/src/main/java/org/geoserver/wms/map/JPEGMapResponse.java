@@ -66,6 +66,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
         float quality = (100 - wms.getJpegCompression()) / 100.0f;
         ImageWorker iw = new ImageWorker(image);
         iw.writeJPEG(outStream, "JPEG", quality, JPEGNativeAcc);
+        iw.dispose();
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing a JPEG done!!!");

@@ -119,6 +119,9 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
                 if (LOGGER.isLoggable(Level.FINEST))
                     LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
             }
+            
+            // let go of the chain behind the coverage
+            gc.dispose(true);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {

@@ -4,10 +4,13 @@
  */
 package org.geoserver.wms.map;
 
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +21,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedImageList;
 
 import org.geoserver.platform.ServiceException;
@@ -27,6 +31,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.palette.InverseColorMapOp;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 import com.sun.media.imageioimpl.plugins.gif.GIFImageWriter;
@@ -136,8 +141,10 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             //
             try {
                 InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
-                new ImageWorker(super.forceIndexed8Bitmask(originalImage, paletteInverter))
-                        .writeGIF(outStream, "LZW", 0.75f);
+                ImageWorker iw = new ImageWorker(super.forceIndexed8Bitmask(originalImage, paletteInverter));
+                iw.writeGIF(outStream, "LZW", 0.75f);
+                // cleanup whatever intermediate image migth have been created
+                iw.dispose();
             } catch (IOException e) {
                 throw new ServiceException(e);
             }
@@ -145,8 +152,9 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
         }
 
         // check the number is >1
-        if (numfiles <= 0)
+        if (numfiles <= 0) {
             throw new ServiceException("The number of frames for this GIF is less than 1");
+        }
 
         final GIFImageWriter gifWriter = new GIFImageWriter(ORIGINATING_PROVIDER);
         // write param
@@ -156,6 +164,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
         param.setCompressionQuality(0.75f);
 
         ImageOutputStream otStream = null;
+        List<RenderedImage> images = new ArrayList<RenderedImage>();
         try {
             otStream = ImageIO.createImageOutputStream(outStream);
             gifWriter.setOutput(otStream);
@@ -175,7 +184,6 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             //
             // Getting input files
             //
-
             for (int i = 0; i < numfiles; i++) {
                 if (LOGGER.isLoggable(Level.FINE))
                     LOGGER.fine("Writing image " + i);
@@ -185,7 +193,6 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                 InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
                 ri = super.forceIndexed8Bitmask(ri, paletteInverter);
                 if (ri != null) {
-
                     // prepare metadata and write param
                     final IIOMetadata imageMetadata = gifWriter.getDefaultImageMetadata(
                             new ImageTypeSpecifier(ri), param);
@@ -193,9 +200,8 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
 
                     // write
                     gifWriter.writeToSequence(new IIOImage(ri, null, imageMetadata), param);
-
+                    images.add(ri);
                 }
-
             }
 
             // close writing sequence
@@ -222,6 +228,14 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                 // swallow
             }
 
+            // let go of the image chain as soon as possible to free memory
+            for (RenderedImage image : images) {
+                if (image instanceof PlanarImage) {
+                    ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+                } else if (image instanceof BufferedImage) {
+                    ((BufferedImage) image).flush();
+                }
+            }
         }
 
         if (LOGGER.isLoggable(Level.FINE))

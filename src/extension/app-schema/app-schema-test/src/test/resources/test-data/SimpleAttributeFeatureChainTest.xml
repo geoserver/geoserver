@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!--
+        Mapped Feature mapping file with multiple names coming from different tables.
+        This is to address GEOT-2952, to reduce the need for additional view.
+        The way we achieve this is to allow feature chaining for simple attributes
+        (i.e. name, in this case).
+    -->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>xlink</prefix>
+            <uri>http://www.w3.org/1999/xlink</uri>
+        </Namespace>
+    </namespaces>
+    <sourceDataStores>
+        <DataStore>
+            <id>MappedFeatureDataStore</id>
+            <parameters>
+                <Parameter>
+                    <name>directory</name>
+                    <!-- path can be relative to this file if starts with "file: -->
+                    <value>file:./</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+        <FeatureType>
+            <schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>
+        </FeatureType>
+    </targetTypes>
+    <typeMappings>
+        <FeatureTypeMapping>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>MappedFeatureWithNestedName</sourceType>
+            <targetElement>gsml:MappedFeature</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gsml:MappedFeature</targetAttribute>
+                    <idExpression><OCQL>strConCat('gsml.mappedfeature.',ID)</OCQL></idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <targetAttribute>gml:name[1]</targetAttribute>
+                   <sourceExpression><OCQL>LEX_D</OCQL></sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <!-- Test gml:name coming from another table, and ClientProperty too -->
+                   <targetAttribute>gml:name[2]</targetAttribute>
+                   <sourceExpression>
+                       <OCQL>ID</OCQL>
+                       <linkElement>NAME_ONE</linkElement>
+                       <linkField>FEATURE_LINK</linkField>
+                   </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <!-- Test gml:name from another table, but ClientProperty from this table -->
+                   <targetAttribute>gml:name[3]</targetAttribute>
+                   <sourceExpression>
+                       <OCQL>getID()</OCQL>
+                       <linkElement>NAME_TWO</linkElement>
+                       <linkField>FEATURE_LINK</linkField>
+                   </sourceExpression>        
+                   <isMultiple>true</isMultiple>           
+                   <ClientProperty>
+                       <name>codeSpace</name>
+                       <value>strConcat('some:uri:', getID())</value>
+                   </ClientProperty>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <!-- Test xlink:href with values from another table -->
+                   <targetAttribute>gml:name[4]</targetAttribute>
+                   <sourceExpression>
+                       <OCQL>getID()</OCQL>
+                       <linkElement>NAME_TWO</linkElement>
+                       <linkField>FEATURE_LINK</linkField>
+                   </sourceExpression>                   
+                   <ClientProperty>
+                       <name>xlink:href</name>
+                       <value>strConcat('some:uri:', getID())</value>
+                   </ClientProperty>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>NAME_ONE</mappingName>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>MappedFeatureNameOne</sourceType>
+            <targetElement>gml:name</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gml:name</targetAttribute>
+                    <sourceExpression><OCQL>NAME</OCQL></sourceExpression>
+                    <!--  ClientProperty coming from this table -->
+                    <ClientProperty>
+                        <name>codeSpace</name>
+                        <value>CODESPACE</value>
+                    </ClientProperty>                    
+                </AttributeMapping>
+                <AttributeMapping>
+                   <targetAttribute>FEATURE_LINK</targetAttribute>
+                   <sourceExpression><OCQL>MF_ID</OCQL></sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>NAME_TWO</mappingName>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>MappedFeatureNameTwo</sourceType>
+            <targetElement>gml:name</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gml:name</targetAttribute>
+                    <sourceExpression><OCQL>NAME</OCQL></sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <targetAttribute>FEATURE_LINK</targetAttribute>
+                   <sourceExpression><OCQL>MF_ID</OCQL></sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+    </typeMappings>
+</as:AppSchemaDataAccess>

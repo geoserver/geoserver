@@ -31,7 +31,6 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.geoserver.web.data.resource.FeatureResourceConfigurationPanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -41,6 +40,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
+import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
 import org.geotools.referencing.CRS;
 
 /**
@@ -63,7 +63,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return WMSInfo.class;
     }
     
+    @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
+        // authority URLs and Identifiers for the root layer
+        LayerAuthoritiesAndIdentifiersPanel authAndIds;
+        authAndIds = new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
+        form.add(authAndIds);
+
         // limited srs list
         TextArea srsList = new TextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS"))) {
             @Override

@@ -33,9 +33,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
@@ -628,6 +630,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
             handleRootBbox(layers);
 
+            // handle AuthorityURL
+            handleAuthorityURL(serviceInfo.getAuthorityURLs());
+            
+            // handle identifiers
+            handleLayerIdentifiers(serviceInfo.getIdentifiers());
+
             // now encode each layer individually
             LayerTree featuresLayerTree = new LayerTree(layers);
             handleLayerTree(featuresLayerTree);
@@ -846,6 +854,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle data attribution
             handleAttribution(layer);
 
+            // handle AuthorityURL
+            handleAuthorityURL(layer.getAuthorityURLs());
+            
+            // handle identifiers
+            handleLayerIdentifiers(layer.getIdentifiers());
+            
             // handle metadata URLs
             handleMetadataList(layer.getResource().getMetadataLinks());
 
@@ -936,6 +950,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
                 handleLatLonBBox(latLonBounds);
                 handleBBox(layerGroupBounds, authority);
+
+                // handle AuthorityURL
+                handleAuthorityURL(layerGroup.getAuthorityURLs());
+                
+                // handle identifiers
+                handleLayerIdentifiers(layerGroup.getIdentifiers());
 
                 // Aggregated metadata links (see GEOS-4500)
                 List<LayerInfo> layers = layerGroup.getLayers();
@@ -1187,5 +1207,62 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 }
             }
         }
+        
+        /**
+         * e.g.
+         * {@code <AuthorityURL name="gcmd"><OnlineResource xlink:href="some_url" ... /></AuthorityURL>}
+         */
+        private void handleAuthorityURL(List<AuthorityURLInfo> authorityURLs) {
+            if (authorityURLs == null || authorityURLs.isEmpty()) {
+                return;
+            }
+
+            String name;
+            String href;
+            AttributesImpl atts = new AttributesImpl();
+            for (AuthorityURLInfo url : authorityURLs) {
+                name = url.getName();
+                href = url.getHref();
+                if (name == null || href == null) {
+                    LOGGER.warning("Ignoring AuthorityURL, name: " + name + ", href: " + href);
+                    continue;
+                }
+                atts.clear();
+                atts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
+                atts.addAttribute("", "name", "name", "", name);
+                start("AuthorityURL", atts);
+
+                atts.clear();
+                atts.addAttribute("", "xlink:href", "xlink:href", "", href);
+                element("OnlineResource", null, atts);
+                end("AuthorityURL");
+            }
+        }
+
+        /**
+         * e.g. {@code <Identifier authority="gcmd">id_value</Identifier>}
+         */
+        private void handleLayerIdentifiers(List<LayerIdentifierInfo> identifiers) {
+            if (identifiers == null || identifiers.isEmpty()) {
+                return;
+            }
+
+            String authority;
+            String id;
+            AttributesImpl atts = new AttributesImpl();
+            for (LayerIdentifierInfo identifier : identifiers) {
+                authority = identifier.getAuthority();
+                id = identifier.getIdentifier();
+                if (authority == null || id == null) {
+                    LOGGER.warning("Ignoring layer Identifier, authority: " + authority
+                            + ", identifier: " + id);
+                    continue;
+                }
+                atts.clear();
+                atts.addAttribute("", "authority", "authority", "", authority);
+                element("Identifier", id, atts);
+            }
+        }
+
     }
 }

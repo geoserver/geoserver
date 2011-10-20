@@ -7,8 +7,10 @@ package org.geoserver.catalog.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
@@ -23,6 +25,22 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
     protected ReferencedEnvelope bounds;
     protected MetadataMap metadata = new MetadataMap();
+
+    /**
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "authorityURLs", and a not transient in the 2.2.x series.
+     * 
+     * @since 2.1.3
+     */
+    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(2);
+
+    /**
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "identifiers", and a not transient in the 2.2.x series.
+     * 
+     * @since 2.1.3
+     */
+    protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
     
     public LayerGroupInfoImpl() {
     }
@@ -97,6 +115,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((path == null) ? 0 : path.hashCode());
         result = prime * result + ((styles == null) ? 0 : styles.hashCode());
+        result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
+        result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
         return result;
     }
 
@@ -139,9 +159,40 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
                 return false;
         } else if (!styles.equals(other.getStyles()))
             return false;
+        if(authorityURLs == null){
+            if (other.getAuthorityURLs() != null)
+                return false;
+        } else if (!authorityURLs.equals(other.getAuthorityURLs()))
+            return false;
+        
+        if(identifiers == null){
+            if (other.getIdentifiers() != null)
+                return false;
+        } else if (!identifiers.equals(other.getIdentifiers()))
+            return false;
+        
         return true;
     }
     
+
+    @Override
+    public List<AuthorityURLInfo> getAuthorityURLs() {
+        return authorityURLs;
+    }
+
+    public void setAuthorityURLs(List<AuthorityURLInfo> authorities){
+        this.authorityURLs = authorities;
+    }
+    
+    @Override
+    public List<LayerIdentifierInfo> getIdentifiers() {
+        return identifiers;
+    }
+    
+    public void setIdentifiers(List<LayerIdentifierInfo> identifiers){
+        this.identifiers = identifiers;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')

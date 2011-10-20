@@ -7,6 +7,8 @@ package org.geoserver.wms;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
@@ -18,6 +20,24 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     WatermarkInfo watermark = new WatermarkInfoImpl();
 
     WMSInterpolation interpolation;
+    
+
+    /**
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "authorityURLs", and a not transient in the 2.2.x series.
+     * 
+     * @since 2.1.3
+     */
+    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(2);
+    
+
+    /**
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "identifiers", and a not transient in the 2.2.x series.
+     * 
+     * @since 2.1.3
+     */
+    protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
 
     int maxBuffer;
 
@@ -29,6 +49,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     public WMSInfoImpl() {
         setId("wms");
+        authorityURLs = new ArrayList<AuthorityURLInfo>(2);
+        identifiers = new ArrayList<LayerIdentifierInfo>(2);
     }
 
     public int getMaxRequestMemory() {
@@ -100,4 +122,23 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     public void setMaxRenderingErrors(int maxRenderingErrors) {
         this.maxRenderingErrors = maxRenderingErrors;
     }
+
+    @Override
+    public List<AuthorityURLInfo> getAuthorityURLs() {
+        return authorityURLs;
+    }
+
+    public void setAuthorityURLs(List<AuthorityURLInfo> urls) {
+        this.authorityURLs = urls;
+    }
+
+    @Override
+    public List<LayerIdentifierInfo> getIdentifiers() {
+        return identifiers;
+    }
+
+    public void setIdentifiers(List<LayerIdentifierInfo> identifiers) {
+        this.identifiers = identifiers;
+    }
+
 }

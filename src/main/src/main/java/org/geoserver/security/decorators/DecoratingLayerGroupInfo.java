@@ -6,8 +6,10 @@ package org.geoserver.security.decorators;
 
 import java.util.List;
 
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
@@ -63,8 +65,19 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     }
     
     @Override
+    public List<AuthorityURLInfo> getAuthorityURLs() {
+        return delegate.getAuthorityURLs();
+    }
+
+    @Override
+    public List<LayerIdentifierInfo> getIdentifiers() {
+        return delegate.getIdentifiers();
+    }
+
+    @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append('[').append(delegate).append(
                 ']').toString();
     }
+
 }

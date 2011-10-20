@@ -17,6 +17,12 @@
     <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerConfig"/>
   </bean>
 
+  <bean id="wmsLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
+    <property name="id" value="wmsLayerGroupConfig"/>
+    <property name="titleKey" value="publish.layergroup.config.wms"/>
+    <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerGroupConfig"/>
+  </bean>
+
   <bean id="attributionLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="attributionLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.attribution"/>

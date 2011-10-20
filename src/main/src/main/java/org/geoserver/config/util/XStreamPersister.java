@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -34,6 +35,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -46,6 +48,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AttributeTypeInfoImpl;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
+import org.geoserver.catalog.impl.AuthorityURL;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
@@ -54,6 +57,7 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.DefaultCatalogFacade;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
+import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
@@ -267,6 +271,8 @@ public class XStreamPersister {
         xs.alias( "projected", DefaultProjectedCRS.class);
         xs.alias( "attribution", AttributionInfo.class );
         xs.aliasField("abstract", ResourceInfoImpl.class, "_abstract" );
+        xs.alias("AuthorityURL", AuthorityURLInfo.class);
+        xs.alias("Identifier", LayerIdentifierInfo.class);
         
         // GeoServerInfo
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");
@@ -533,7 +539,9 @@ public class XStreamPersister {
         xs.addDefaultImplementation(AttributeTypeInfoImpl.class, AttributeTypeInfo.class );
         xs.addDefaultImplementation(LayerInfoImpl.class, LayerInfo.class);
         xs.addDefaultImplementation(LayerGroupInfoImpl.class, LayerGroupInfo.class );
-        
+        xs.addDefaultImplementation(LayerIdentifier.class, LayerIdentifierInfo.class );
+        xs.addDefaultImplementation(AuthorityURL.class, AuthorityURLInfo.class );
+
         //supporting objects
         xs.addDefaultImplementation(GridGeometry2D.class, GridGeometry.class );
         xs.addDefaultImplementation(DefaultGeographicCRS.class, CoordinateReferenceSystem.class);
@@ -1490,6 +1498,22 @@ public class XStreamPersister {
             writer.startNode("name");
             writer.setValue(l.getName());
             writer.endNode();
+            
+            {
+                String authUrlsSerializedForm = AuthorityURLInfoInfoListConverter.toString(l
+                        .getAuthorityURLs());
+                if (null != authUrlsSerializedForm) {
+                    l.getMetadata().put("authorityURLs", authUrlsSerializedForm);
+                }
+            }
+
+            {
+                String identifiersSerializedForm = LayerIdentifierInfoListConverter.toString(l
+                        .getIdentifiers());
+                if (null != identifiersSerializedForm) {
+                    l.getMetadata().put("identifiers", identifiersSerializedForm);
+                }
+            }
 
             super.doMarshal(source, writer, context);
         }
@@ -1504,6 +1528,35 @@ public class XStreamPersister {
             writer.endNode();
             */
             callback.postEncodeLayer( (LayerInfo) result, writer, context );
+        }
+
+        @Override
+        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+
+            LayerInfoImpl li = (LayerInfoImpl) super.doUnmarshal(result, reader, context);
+            MetadataMap metadata = li.getMetadata();
+            if (li.getAuthorityURLs() == null && metadata != null) {
+                String serialized = metadata.get("authorityURLs", String.class);
+                List<AuthorityURLInfo> authorities;
+                if (serialized == null) {
+                    authorities = new ArrayList<AuthorityURLInfo>(1);
+                } else {
+                    authorities = AuthorityURLInfoInfoListConverter.fromString(serialized);
+                }
+                li.setAuthorityURLs(authorities);
+            }
+            if (li.getIdentifiers() == null && metadata != null) {
+                String serialized = metadata.get("identifiers", String.class);
+                List<LayerIdentifierInfo> identifiers;
+                if (serialized == null) {
+                    identifiers = new ArrayList<LayerIdentifierInfo>(1);
+                } else {
+                    identifiers = LayerIdentifierInfoListConverter.fromString(serialized);
+                }
+                li.setIdentifiers(identifiers);
+            }
+            return li;
         }
     }
   
@@ -1520,6 +1573,61 @@ public class XStreamPersister {
         protected void postDoMarshal(Object result,
                 HierarchicalStreamWriter writer, MarshallingContext context) {
             callback.postEncodeLayerGroup((LayerGroupInfo)result, writer, context);
+        }
+        
+        @Override
+        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+
+            LayerGroupInfoImpl lgi = (LayerGroupInfoImpl) super
+                    .doUnmarshal(result, reader, context);
+            MetadataMap metadata = lgi.getMetadata();
+            if (lgi.getAuthorityURLs() == null && metadata != null) {
+                String serialized = metadata.get("authorityURLs", String.class);
+                List<AuthorityURLInfo> authorities;
+                if (serialized == null) {
+                    authorities = new ArrayList<AuthorityURLInfo>(1);
+                } else {
+                    authorities = AuthorityURLInfoInfoListConverter.fromString(serialized);
+                }
+                lgi.setAuthorityURLs(authorities);
+            }
+            if (lgi.getIdentifiers() == null && metadata != null) {
+                String serialized = metadata.get("identifiers", String.class);
+                List<LayerIdentifierInfo> identifiers;
+                if (serialized == null) {
+                    identifiers = new ArrayList<LayerIdentifierInfo>(1);
+                } else {
+                    identifiers = LayerIdentifierInfoListConverter.fromString(serialized);
+                }
+                lgi.setIdentifiers(identifiers);
+            }
+            return lgi;
+        }
+        
+        @Override
+        protected void doMarshal(Object source, HierarchicalStreamWriter writer,
+                MarshallingContext context) {
+
+            LayerGroupInfo l = (LayerGroupInfo) source;
+            
+            {
+                String authUrlsSerializedForm = AuthorityURLInfoInfoListConverter.toString(l
+                        .getAuthorityURLs());
+                if (null != authUrlsSerializedForm) {
+                    l.getMetadata().put("authorityURLs", authUrlsSerializedForm);
+                }
+            }
+
+            {
+                String identifiersSerializedForm = LayerIdentifierInfoListConverter.toString(l
+                        .getIdentifiers());
+                if (null != identifiersSerializedForm) {
+                    l.getMetadata().put("identifiers", identifiersSerializedForm);
+                }
+            }
+
+            super.doMarshal(source, writer, context);
         }
     }
     

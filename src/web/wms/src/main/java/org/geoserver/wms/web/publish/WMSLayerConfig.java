@@ -32,6 +32,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 @SuppressWarnings("serial")
 public class WMSLayerConfig extends LayerConfigurationPanel {
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public WMSLayerConfig(String id, IModel layerModel) {
         super(id, layerModel);
         
@@ -96,6 +97,11 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         styleContainer.add(renderingBuffer);
         
         add(new TextField("wmsPath", new PropertyModel(layerModel, "path")));
+
+        // authority URLs and identifiers for this layer
+        LayerAuthoritiesAndIdentifiersPanel authAndIds;
+        authAndIds = new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", false, layerModel);
+        add(authAndIds);
         
     }
 }

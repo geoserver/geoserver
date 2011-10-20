@@ -4,13 +4,17 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -50,9 +54,25 @@ public class LayerInfoImpl implements LayerInfo {
     protected MetadataMap metadata = new MetadataMap();
 
     protected AttributionInfo attribution;
+
+
+    /**
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "authorityURLs", and a not transient in the 2.2.x series.
+     * 
+     * @since 2.1.3
+     */
+    protected transient List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(1);
     
-    
-    
+
+    /**
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "identifiers", and a not transient in the 2.2.x series.
+     * 
+     * @since 2.1.3
+     */
+    protected transient List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
+
     public String getId() {
         return id;
     }
@@ -188,6 +208,8 @@ public class LayerInfoImpl implements LayerInfo {
         result = prime * result + ((styles == null) ? 0 : styles.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
+        result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
+        result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
         return result;
     }
 
@@ -247,6 +269,17 @@ public class LayerInfoImpl implements LayerInfo {
                 return false;
         } else if (!attribution.equals(other.getAttribution()))
             return false;
+        if(authorityURLs == null){
+            if (other.getAuthorityURLs() != null)
+                return false;
+        } else if (!authorityURLs.equals(other.getAuthorityURLs()))
+            return false;
+        
+        if(identifiers == null){
+            if (other.getIdentifiers() != null)
+                return false;
+        } else if (!identifiers.equals(other.getIdentifiers()))
+            return false;
 
         return true;
     }
@@ -286,5 +319,23 @@ public class LayerInfoImpl implements LayerInfo {
         if(resource != null) {
             resource.setAdvertised(advertised);
         }
+    }
+
+    // @Override
+    public List<AuthorityURLInfo> getAuthorityURLs() {
+        return authorityURLs;
+    }
+    
+    public void setAuthorityURLs(List<AuthorityURLInfo> authorities){
+        this.authorityURLs = authorities;
+    }
+
+    // @Override
+    public List<LayerIdentifierInfo> getIdentifiers() {
+        return identifiers;
+    }
+
+    public void setIdentifiers(List<LayerIdentifierInfo> identifiers){
+        this.identifiers = identifiers;
     }
 }

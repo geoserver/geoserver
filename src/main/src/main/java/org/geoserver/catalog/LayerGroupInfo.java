@@ -6,6 +6,7 @@ package org.geoserver.catalog;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -66,4 +67,14 @@ public interface LayerGroupInfo extends CatalogInfo {
      */
     MetadataMap getMetadata();
 
+    /**
+     * @return the list of this layer's authority URLs
+     */
+    List<AuthorityURLInfo> getAuthorityURLs();
+    
+    /**
+     * @return the list of this layer's identifiers
+     */
+    List<LayerIdentifierInfo> getIdentifiers();
+    
 }

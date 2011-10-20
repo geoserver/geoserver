@@ -1,9 +1,12 @@
 package org.geoserver.security.decorators;
 
+import java.util.List;
 import java.util.Set;
 
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -128,5 +131,15 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
 
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
+    }
+
+    // @Override
+    public List<AuthorityURLInfo> getAuthorityURLs() {
+        return delegate.getAuthorityURLs();
+    }
+
+    // @Override
+    public List<LayerIdentifierInfo> getIdentifiers() {
+        return delegate.getIdentifiers();
     }
 }

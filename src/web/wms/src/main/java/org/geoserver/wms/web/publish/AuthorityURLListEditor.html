@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <div wicket:id="container">
+    <table wicket:id="table">
+      <tr>
+        <th><wicket:message key="name">Name</wicket:message></th>
+        <th width="100%"><wicket:message key="url">URL</wicket:message></th>
+        <th></th>
+      </tr>
+      <tr wicket:id="authorities">
+        <td><div wicket:id="authNameBorder"><input wicket:id="authName" type="text" class="text"></input></div></td>
+        <td><div wicket:id="urlBorder" style="width:100%;"><input wicket:id="authorityURL" type="text" class="text" style="width:90%;"></input></div></td>
+        <td><a href="#" wicket:id="removeLink"><wicket:message key="remove">Remove</wicket:message></a></td>
+      </tr>
+    </table>
+    <p wicket:id="noURLs"></p>
+  </div>
+  <div>
+   <span>
+    <button wicket:id="addURL"><wicket:message key="addAuthorityURL">Add Authority URL</wicket:message></button>
+   </span>
+  </div>
+</wicket:panel>
+</body>
+</html>

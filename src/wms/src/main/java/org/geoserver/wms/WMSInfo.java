@@ -6,6 +6,8 @@ package org.geoserver.wms;
 
 import java.util.List;
 
+import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.ServiceInfo;
 
 /**
@@ -107,4 +109,16 @@ public interface WMSInfo extends ServiceInfo {
      * @param maxRenderingTime
      */
     void setMaxRenderingErrors(int maxRenderingTime);
+    
+    /**
+     * Defines the list of authority URLs for the root WMS layer
+     * 
+     * @return the list of WMS root layer's authority URLs
+     */
+    List<AuthorityURLInfo> getAuthorityURLs();
+
+    /**
+     * @return the list of identifiers for the WMS root layer
+     */
+    List<LayerIdentifierInfo> getIdentifiers();
 }

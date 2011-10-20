@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -230,4 +231,14 @@ public interface LayerInfo extends CatalogInfo {
      * @param advertised
      */
     void setAdvertised(boolean advertised);
+
+    /**
+     * @return the list of this layer's authority URLs
+     */
+    List<AuthorityURLInfo> getAuthorityURLs();
+    
+    /**
+     * @return the list of this layer's identifiers
+     */
+    List<LayerIdentifierInfo> getIdentifiers();
 }

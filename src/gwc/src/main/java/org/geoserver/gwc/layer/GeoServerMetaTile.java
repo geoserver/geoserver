@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import javax.media.jai.PlanarImage;
 
 import org.geoserver.ows.Response;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -137,11 +138,7 @@ public class GeoServerMetaTile extends MetaTile {
             RenderedImage image = metaTileMap.getImage();
             // as in RenderedImageMapResponse.write: let go of the image chain as quick as possible
             // to free memory
-            if (image instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) image);
-            } else if (image instanceof BufferedImage) {
-                ((BufferedImage) image).flush();
-            }
+            RasterCleaner.addImage(image);
             metaTileMap.dispose();
             metaTileMap = null;
         }

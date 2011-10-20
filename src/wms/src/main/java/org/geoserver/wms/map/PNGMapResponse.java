@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -89,7 +90,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         ImageWorker iw = new ImageWorker(image);
         boolean indexed = image.getColorModel() instanceof IndexColorModel;
         iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, indexed);
-        iw.dispose();
+        RasterCleaner.addImage(iw.getRenderedImage());
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing png image ... done!");

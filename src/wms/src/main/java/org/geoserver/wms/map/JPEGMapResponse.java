@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -66,7 +67,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
         float quality = (100 - wms.getJpegCompression()) / 100.0f;
         ImageWorker iw = new ImageWorker(image);
         iw.writeJPEG(outStream, "JPEG", quality, JPEGNativeAcc);
-        iw.dispose();
+        RasterCleaner.addImage(iw.getRenderedImage());
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing a JPEG done!!!");

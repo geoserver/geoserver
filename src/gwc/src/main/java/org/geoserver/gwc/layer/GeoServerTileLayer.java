@@ -62,6 +62,7 @@ import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.util.GWCVars;
+import org.geowebcache.util.ServletUtils;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -407,6 +408,15 @@ public class GeoServerTileLayer extends TileLayer {
         wmsParams.put("BBOX", bbox.toString());
         wmsParams.put("X", String.valueOf(x));
         wmsParams.put("Y", String.valueOf(y));
+        String featureCount;
+        {
+            Map<String, String> values = ServletUtils.selectedStringsFromMap(
+                    convTile.servletReq.getParameterMap(), convTile.servletReq.getCharacterEncoding(), "feature_count");
+            featureCount = values.get("feature_count");
+        }
+        if(featureCount != null){
+            wmsParams.put("FEATURE_COUNT", featureCount);
+        }
 
         Map<String, String> fullParameters = convTile.getFullParameters();
         if (fullParameters.isEmpty()) {

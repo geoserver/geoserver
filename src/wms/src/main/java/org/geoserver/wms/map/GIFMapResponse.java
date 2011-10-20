@@ -26,6 +26,7 @@ import javax.media.jai.RenderedImageList;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
@@ -143,8 +144,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                 InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
                 ImageWorker iw = new ImageWorker(super.forceIndexed8Bitmask(originalImage, paletteInverter));
                 iw.writeGIF(outStream, "LZW", 0.75f);
-                // cleanup whatever intermediate image migth have been created
-                iw.dispose();
+                RasterCleaner.addImage(iw.getRenderedImage());
             } catch (IOException e) {
                 throw new ServiceException(e);
             }

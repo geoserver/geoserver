@@ -20,6 +20,7 @@ import javax.media.jai.PlanarImage;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.image.io.ImageIOExt;
@@ -140,11 +141,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
             }
             
             // let go of the image
-            if (image instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) image);
-            } else if (image instanceof BufferedImage) {
-                ((BufferedImage) image).flush();
-            }
+            RasterCleaner.addImage(image);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {

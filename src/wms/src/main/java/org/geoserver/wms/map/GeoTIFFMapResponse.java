@@ -15,6 +15,7 @@ import javax.imageio.stream.ImageOutputStream;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -121,7 +122,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
             }
             
             // let go of the chain behind the coverage
-            gc.dispose(true);
+            RasterCleaner.addCoverage(gc);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {

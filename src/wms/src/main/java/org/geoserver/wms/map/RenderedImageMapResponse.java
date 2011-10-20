@@ -16,6 +16,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -116,15 +117,9 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
             } finally {
                 // let go of the coverages created for rendering
                 for (GridCoverage2D coverage : renderedCoverages) {
-                    coverage.dispose(true);
+                    RasterCleaner.addCoverage(coverage);
                 }
-
-                // let go of the image chain as quick as possible to free memory
-                if (image instanceof PlanarImage) {
-                    ImageUtilities.disposePlanarImageChain((PlanarImage) image);
-                } else if (image instanceof BufferedImage) {
-                    ((BufferedImage) image).flush();
-                }
+                RasterCleaner.addImage(image);
             }
         } finally {
             imageMap.dispose();

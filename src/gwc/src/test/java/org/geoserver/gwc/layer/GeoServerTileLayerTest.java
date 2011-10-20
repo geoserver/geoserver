@@ -359,6 +359,7 @@ public class GeoServerTileLayerTest extends TestCase {
         convTile.setTileLayer(layerInfoTileLayer);
         convTile.setMimeType(MimeType.createFromFormat("image/png"));
         convTile.setGridSetId("EPSG:4326");
+        convTile.servletReq = new MockHttpServletRequest();
         BoundingBox bbox = new BoundingBox(0, 0, 10, 10);
 
         Resource mockResult = mock(Resource.class);

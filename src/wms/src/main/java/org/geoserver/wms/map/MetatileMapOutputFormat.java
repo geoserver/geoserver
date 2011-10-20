@@ -26,6 +26,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
@@ -34,7 +35,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.crop.GTCropDescriptor;
 import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.i18n.Errors;
-import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -201,6 +201,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                     // the image chain
                     RenderedOp cropped = GTCropDescriptor.create(metaTile, Float.valueOf(x), Float.valueOf(y), Float.valueOf(
                             tileSize), Float.valueOf(tileSize), NO_CACHE_HINTS);
+                    RasterCleaner.addImage(cropped);
                     tile = cropped.getAsBufferedImage();
                     break;
                 case 1:
@@ -233,13 +234,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
         }
         
         // dispose input image if necessary/possible
-        if (type < 2) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) metaTile);
-        } else {
-            BufferedImage image = (BufferedImage) metaTile;
-            image.flush();
-            image = null;
-        }
+        RasterCleaner.addImage(metaTile);
         return tiles;
     }
 

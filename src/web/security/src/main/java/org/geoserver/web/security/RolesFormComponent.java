@@ -8,16 +8,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.security.impl.GeoserverUserDao;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
 
@@ -68,6 +71,22 @@ public class RolesFormComponent extends FormComponentPanel {
                 Recorder rec = super.newRecorderComponent();
                 rec.setRequired(true);
                 return rec;
+            }
+            
+            /**
+             * Override otherwise the header is not i18n'ized
+             */
+            public Component newSelectedHeader(final String componentId) {
+                return new Label(componentId, new ResourceModel(
+                        "RolesFormComponent.selectedHeader"));
+            }
+         
+            /**
+             * Override otherwise the header is not i18n'ized
+             */
+            public Component newAvailableHeader(final String componentId) {
+                return new Label(componentId, new ResourceModel(
+                        "RolesFormComponent.availableHeader"));
             }
         };
     }

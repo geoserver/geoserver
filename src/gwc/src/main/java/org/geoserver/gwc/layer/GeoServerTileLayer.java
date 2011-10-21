@@ -521,20 +521,12 @@ public class GeoServerTileLayer extends TileLayer {
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 } finally {
                     META_GRID_LOCKS.remove(metaGridLoc);
+                    metaTile.dispose();
                 }
             }
         }
 
         return finalizeTile(tile);
-    }
-
-    @Override
-    protected void saveTiles(MetaTile metaTile, ConveyorTile tileProto) throws GeoWebCacheException {
-        try {
-            super.saveTiles(metaTile, tileProto);
-        } finally {
-            ((GeoServerMetaTile) metaTile).dispose();
-        }
     }
 
     private RenderedImageMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)

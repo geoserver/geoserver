@@ -4,28 +4,30 @@
  */
 package org.geoserver.gwc.layer;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedOp;
 
 import org.geoserver.ows.Response;
-import org.geoserver.wms.RasterCleaner;
-import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.crop.GTCropDescriptor;
+import org.geotools.resources.i18n.ErrorKeys;
+import org.geotools.resources.i18n.Errors;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.mime.FormatModifier;
-import org.geowebcache.mime.ImageMime;
 import org.geowebcache.mime.MimeType;
 import org.springframework.util.Assert;
 
@@ -50,23 +52,6 @@ public class GeoServerMetaTile extends MetaTile {
         if (webMap instanceof RenderedImageMap) {
             setImage(((RenderedImageMap) webMap).getImage());
         }
-    }
-
-    /**
-     * Overrides to return {@link WMS#getJPEGNativeAcceleration()} if the requested response format
-     * is image/jpeg, otherwise if it's set to false and native JAI is available JPEGMapResponse
-     * will assume the WMS setting and create repeated tiles because it will not get a
-     * BufferedImage.
-     * 
-     * @see org.geowebcache.layer.MetaTile#nativeAccelAvailable()
-     */
-    @Override
-    protected boolean nativeAccelAvailable() {
-        boolean useNativeAccel = super.nativeAccelAvailable();
-        if (useNativeAccel && ImageMime.jpeg.equals(responseFormat)) {
-            useNativeAccel = WMS.get().getJPEGNativeAcceleration();
-        }
-        return useNativeAccel;
     }
 
     /**
@@ -99,6 +84,7 @@ public class GeoServerMetaTile extends MetaTile {
         if (this.tiles.length > 1) {
             final Rectangle tileDim = this.tiles[tileIdx];
             tile = createTile(tileDim.x, tileDim.y, tileDim.width, tileDim.height);
+            disposeLater(tile);
             {
                 final WMSMapContent metaTileContext = metaTileMap.getMapContext();
                 // do not create tileContext with metaTileContext.getLayers() as the layer list.
@@ -133,14 +119,76 @@ public class GeoServerMetaTile extends MetaTile {
         }
     }
 
+    /**
+     * Overrides to use the same method to slice the tiles than {@code MetatileMapOutputFormat} so
+     * the GeoServer settings such as use native accel are leveraged in the same way when calling
+     * {@link RenderedImageMapResponse#formatImageOutputStream},
+     * 
+     * @see org.geowebcache.layer.MetaTile#createTile(int, int, int, int)
+     */
+    @Override
+    public RenderedImage createTile(final int x, final int y, final int tileWidth,
+            final int tileHeight) {
+        // check image type
+        final int type;
+        if (metaTileImage instanceof PlanarImage) {
+            type = 1;
+        } else if (metaTileImage instanceof BufferedImage) {
+            type = 2;
+        } else {
+            type = 0;
+        }
+
+        // now do the splitting
+        RenderedImage tile;
+        switch (type) {
+        case 0:
+            // do a crop, and then turn it into a buffered image so that we can release
+            // the image chain
+            RenderedOp cropped = GTCropDescriptor
+                    .create(metaTileImage, Float.valueOf(x), Float.valueOf(y),
+                            Float.valueOf(tileWidth), Float.valueOf(tileHeight), NO_CACHE);
+            tile = cropped.getAsBufferedImage();
+            disposeLater(cropped);
+            break;
+        case 1:
+            final PlanarImage pImage = (PlanarImage) metaTileImage;
+            final WritableRaster wTile = WritableRaster.createWritableRaster(pImage
+                    .getSampleModel().createCompatibleSampleModel(tileWidth, tileHeight),
+                    new Point(x, y));
+            Rectangle sourceArea = new Rectangle(x, y, tileWidth, tileHeight);
+            sourceArea = sourceArea.intersection(pImage.getBounds());
+
+            // copying the data to ensure we don't have side effects when we clean the cache
+            pImage.copyData(wTile);
+            if (wTile.getMinX() != 0 || wTile.getMinY() != 0) {
+                tile = new BufferedImage(pImage.getColorModel(),
+                        (WritableRaster) wTile.createTranslatedChild(0, 0), pImage.getColorModel()
+                                .isAlphaPremultiplied(), null);
+            } else {
+                tile = new BufferedImage(pImage.getColorModel(), wTile, pImage.getColorModel()
+                        .isAlphaPremultiplied(), null);
+            }
+            break;
+        case 2:
+            final BufferedImage image = (BufferedImage) metaTileImage;
+            tile = image.getSubimage(x, y, tileWidth, tileHeight);
+            break;
+        default:
+            throw new IllegalStateException(Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2,
+                    "metaTile class", metaTileImage.getClass().toString()));
+
+        }
+
+        return tile;
+    }
+
+    @Override
     public void dispose() {
         if (metaTileMap != null) {
-            RenderedImage image = metaTileMap.getImage();
-            // as in RenderedImageMapResponse.write: let go of the image chain as quick as possible
-            // to free memory
-            RasterCleaner.addImage(image);
             metaTileMap.dispose();
             metaTileMap = null;
         }
+        super.dispose();
     }
 }

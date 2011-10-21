@@ -1228,11 +1228,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     continue;
                 }
                 atts.clear();
-                atts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 atts.addAttribute("", "name", "name", "", name);
                 start("AuthorityURL", atts);
 
                 atts.clear();
+                atts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 atts.addAttribute("", "xlink:href", "xlink:href", "", href);
                 element("OnlineResource", null, atts);
                 end("AuthorityURL");

@@ -1,48 +1,39 @@
 package org.geoserver.community.css.web
 
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.FileWriter
+import java.io.{ ByteArrayInputStream, ByteArrayOutputStream, File, FileWriter }
 
+import scala.collection.JavaConverters._
 import scala.io.Source
 
-import org.geoserver.catalog.{FeatureTypeInfo, ResourceInfo, StyleInfo}
+import org.geoserver.catalog.{ Catalog, FeatureTypeInfo, LayerInfo, ResourceInfo, StyleInfo }
 import org.geoserver.config.GeoServerDataDirectory
 import org.geoserver.web.GeoServerSecuredPage
+import org.geoserver.web.wicket.{ GeoServerDataProvider, GeoServerTablePanel, ParamResourceModel }
 
 import org.geotools.data.FeatureSource
 
-import org.opengis.feature.simple.SimpleFeature
-import org.opengis.feature.simple.SimpleFeatureType
+import org.opengis.feature.simple.{ SimpleFeature, SimpleFeatureType } 
 
-import org.apache.wicket.PageParameters
-import org.apache.wicket.WicketRuntimeException
+import org.apache.wicket.{ Component, PageParameters, WicketRuntimeException }
 import org.apache.wicket.ajax.AjaxRequestTarget
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior
-import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior
+import org.apache.wicket.ajax.form.{ AjaxFormComponentUpdatingBehavior, AjaxFormValidatingBehavior }
 import org.apache.wicket.ajax.markup.html.AjaxLink
-import org.apache.wicket.ajax.markup.html.form.AjaxButton
+import org.apache.wicket.ajax.markup.html.form.{ AjaxButton, AjaxCheckBox }
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel
-import org.apache.wicket.extensions.markup.html.tabs.AbstractTab
-import org.apache.wicket.extensions.markup.html.tabs.ITab
-import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.tabs.{ AbstractTab, ITab, PanelCachingTab }
 import org.apache.wicket.markup.html.basic.Label
-import org.apache.wicket.markup.html.form.DropDownChoice
-import org.apache.wicket.markup.html.form.Form
-import org.apache.wicket.markup.html.form.IChoiceRenderer
-import org.apache.wicket.markup.html.form.SubmitLink
-import org.apache.wicket.markup.html.form.TextArea
-import org.apache.wicket.markup.html.form.TextField
+import org.apache.wicket.markup.html.form.{
+  DropDownChoice, Form, IChoiceRenderer, SubmitLink, TextArea, TextField
+}
+import org.apache.wicket.markup.html.list.{ ListItem, ListView }
+import org.apache.wicket.markup.html.link.Link
 import org.apache.wicket.markup.html.panel.{ EmptyPanel, Fragment, Panel }
-import org.apache.wicket.model.CompoundPropertyModel
-import org.apache.wicket.model.IModel
-import org.apache.wicket.model.Model
-import org.apache.wicket.model.PropertyModel
+import org.apache.wicket.model.{ CompoundPropertyModel, IModel, Model, PropertyModel }
 import org.apache.wicket.validation.{IValidator, IValidatable, ValidationError}
 import org.apache.wicket.util.time.Duration
 
-import org.geoscript.geocss._
-import org.geoscript.geocss.CssParser._
+import org.geoscript.geocss._, CssParser._
 
 trait CssDemoConstants {
   val styleName = "cssdemo"
@@ -52,7 +43,7 @@ trait CssDemoConstants {
   mark: symbol(square);
 }"""
 
-  val Translator = new Translator()
+  def Translator = new Translator()
 
   private def styleSheetXML(stylesheet: Seq[Rule]): String = {
     val style = Translator.css2sld(stylesheet)
@@ -92,6 +83,334 @@ class CssValidator extends IValidator[String] {
   }
 }
 
+class UpdatingTextArea(id: String, m: IModel[String], feedback: Component) extends TextArea(id, m) {
+  object onblur extends AjaxFormComponentUpdatingBehavior("onblur") {
+    override def onUpdate(target: AjaxRequestTarget) =
+      target.addComponent(feedback)
+  }
+  add(onblur)
+}
+
+class StylePanel(
+  id: String,
+  model: IModel[CssDemoPage],
+  map: => Option[OpenLayersMapPanel],
+  feedback: Component,
+  findStyleFile: String => File,
+  cssText2sldText: String => Either[NoSuccess, String],
+  cssSource: String,
+  sldText: => Option[String],
+  catalog: => Catalog,
+  styleInfo: => StyleInfo,
+  sldPreview: => Option[Component]
+) extends Panel(id, model) {
+  var styleBody = {
+    val file = findStyleFile(cssSource)
+    if (file != null && file.exists) {
+      Source.fromFile(file).mkString
+    } else {
+      """
+No CSS file was found for this style.  Please
+make sure this is the style you intended to
+edit, since saving the CSS will destroy the
+existing SLD.
+      """.trim
+    }
+  }
+
+  val styleEditor = new Form("style-editor")
+  styleEditor.add(new Label("label", "The stylesheet for this map..."))
+  val textArea =
+    new UpdatingTextArea("editor", new PropertyModel(this, "styleBody"), feedback)
+  textArea.add(new CssValidator)
+  styleEditor.add(textArea)
+  styleEditor.add(new AjaxButton("submit", styleEditor) {
+    override def onSubmit(target: AjaxRequestTarget, form: Form[_]) = {
+      try {
+        val file = findStyleFile(cssSource)
+
+        cssText2sldText(styleBody) match {
+          case Left(noSuccess) => println(noSuccess.toString)
+          case Right(sld) => {
+            val writer = new FileWriter(file)
+            writer.write(styleBody)
+            writer.close()
+            catalog.getResourcePool.writeStyle(
+              styleInfo,
+              new ByteArrayInputStream(sld.getBytes)
+            )
+          }
+        }
+      } catch {
+        case e => throw new WicketRuntimeException(e);
+      }
+
+      catalog.save(styleInfo)
+
+      sldPreview.foreach(target.addComponent(_))
+      map.foreach { m => target.appendJavascript(m.getUpdateCommand()) }
+    }
+  })
+
+  AjaxFormValidatingBehavior.addToAllFormComponents(styleEditor, "onkeyup", Duration.ONE_SECOND)
+  add(styleEditor)
+}
+
+class DataPanel(
+  id: String,
+  model: IModel[CssDemoPage],
+  layerInfo: FeatureTypeInfo
+) extends Panel(id, model) {
+  add(new Label(
+    "summary-message",
+    "For reference, here is a listing of the attributes in this data set."
+  ))
+
+  val states =
+    new SummaryProvider(
+      layerInfo.getFeatureSource(null,null)
+      .asInstanceOf[FeatureSource[SimpleFeatureType, SimpleFeature]]
+      .getFeatures
+    )
+  add(new SummaryTable("summary", states))
+}
+
+class CreateLinkPanel(id: String, namePanel: => Component) extends Panel(id) { createPanel =>
+  setOutputMarkupId(true)
+
+  add(new AjaxLink("create-style", new Model("Create")) {
+    override def onClick(target: AjaxRequestTarget) {
+      createPanel.replaceWith(namePanel)
+      target.addComponent(namePanel)
+    }
+  })
+}
+
+class NamePanel(
+  id: String,
+  createPanel: => Component,
+  createCssTemplate: String => Unit,
+  layerInfo: FeatureTypeInfo
+) extends Panel(id) { namePanel =>
+  setOutputMarkupId(true)
+  var stylename = new Model("New style name")
+
+  add(new Form("create-style") {
+    add(new TextField("new-style-name", stylename))
+
+    add(new SubmitLink("new-style-submit", this))
+
+    add(new AjaxLink("new-style-cancel", new Model("Cancel")) {
+      override def onClick(target: AjaxRequestTarget) {
+        namePanel.replaceWith(createPanel)
+        target.addComponent(createPanel)
+      }
+    })
+
+    override def onSubmit() {
+      val name = stylename.getObject().asInstanceOf[String]
+      createCssTemplate(name)
+
+      val params = new org.apache.wicket.PageParameters
+      params.put("layer", layerInfo.getPrefixedName())
+      params.put("style", name)
+      setResponsePage(classOf[CssDemoPage], params)
+      setRedirect(true)
+    }
+  })
+}
+
+abstract class DemoPanel(id: String, demo: CssDemoPage) extends Panel(id) {
+  import GeoServerDataProvider.Property
+  def cat = demo.catalog
+  def prop[A](name: String)(f: A => (_ <: AnyRef)): Property[A] =
+    new GeoServerDataProvider.AbstractProperty[A](name) {
+      override def getPropertyValue(x: A) = f(x)
+    }
+}
+
+class SLDPreviewPanel(id: String, sldModel: IModel[String]) extends Panel(id, sldModel) {
+  val label = new Label("sld-preview", sldModel)
+  label.setOutputMarkupId(true)
+  add(label)
+}
+
+class DocsPanel(id: String) extends Panel(id)
+
+class StyleChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+  import GeoServerDataProvider.Property
+
+  object styleProvider extends GeoServerDataProvider[StyleInfo] {
+    override def getItems(): java.util.List[StyleInfo] = 
+      cat.getStyles().asScala.sortBy(_.getName).asJava
+
+    override def getProperties(): java.util.List[Property[StyleInfo]] =
+      List(prop("Name"){ (x: StyleInfo) => x.getName }).asJava
+  }
+
+  object styleTable extends GeoServerTablePanel[StyleInfo]("style.table", styleProvider) {
+    override def getComponentForProperty(
+      id: String, value: IModel[_],
+      property: Property[StyleInfo]
+    ): Component = {
+      val style = value.getObject.asInstanceOf[StyleInfo]
+      new Fragment(id, "style.link", StyleChooser.this) {
+        add(
+          new AjaxLink("link") {
+            add(new Label("style.name", new Model(property.getPropertyValue(style).toString)))
+            override def onClick(target: AjaxRequestTarget) = {
+              val params = new PageParameters
+              params.put("layer", demo.layerInfo.getPrefixedName)
+              params.put("style", style.getName)
+              setResponsePage(classOf[CssDemoPage], params)
+            }
+          }
+        )
+      }
+    }
+  }
+
+  add(styleTable)
+}
+
+class LayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+  import GeoServerDataProvider.Property
+
+  object layerProvider extends GeoServerDataProvider[FeatureTypeInfo] {
+    override def getItems(): java.util.List[FeatureTypeInfo] = 
+      cat.getFeatureTypes()
+
+    val workspace = prop("Workspace"){ (x: FeatureTypeInfo) => x.getStore.getWorkspace.getName }
+    val store = prop("Store"){ (x: FeatureTypeInfo) => x.getStore.getName }
+    val name = prop("Layer"){ (x: FeatureTypeInfo) => x.getName }
+
+    override def getProperties(): java.util.List[Property[FeatureTypeInfo]] =
+      List(workspace, store, name).asJava
+  }
+
+  object layerTable extends GeoServerTablePanel[FeatureTypeInfo]("layer.table", layerProvider) {
+    override def getComponentForProperty(
+      id: String, value: IModel[_],
+      property: Property[FeatureTypeInfo]
+    ): Component = {
+      val layer = value.getObject.asInstanceOf[FeatureTypeInfo]
+      val text = property.getPropertyValue(layer).toString
+      if (property eq layerProvider.name) {
+        new Fragment(id, "layer.link", LayerChooser.this) {
+          add(
+            new AjaxLink("link") {
+              add(new Label("layer.name", new Model(text)))
+              override def onClick(target: AjaxRequestTarget) = {
+                val params = new PageParameters
+                params.put("layer", layer.getPrefixedName)
+                params.put("style", demo.styleInfo.getName)
+                setResponsePage(classOf[CssDemoPage], params)
+              }
+            }
+          )
+        }
+      } else {
+        new Label(id, text)
+      }
+    }
+  }
+
+  add(layerTable)
+}
+
+class LayerNameInput(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+  object form extends Form("layer.name.form") {
+    var name: String = ""
+
+    object nameValidation extends IValidator[String] {
+      override def validate(text: IValidatable[String]) {
+        val value = text.getValue()
+        def error(x: String) = text.error(new ValidationError().setMessage(x))
+        if (value.matches("\\s"))
+          error("Spaces not allowed in style names")
+        else if (cat.getStyle(value) != null)
+          error("That name is already taken!")
+      }
+    }
+
+    object nameField extends TextField("layer.name.field", new PropertyModel[String](this, "name")) { add(nameValidation) }
+
+    object submitButton extends AjaxButton("submit.button", this) {
+      override def onSubmit(target: AjaxRequestTarget, form: Form[_]) {
+        require(cat.getStyleByName(name) == null, "Trying to create style with same name as existing one!")
+        demo.createCssTemplate(name)
+        val params = new PageParameters
+        params.put("layer", demo.layerInfo.getPrefixedName)
+        params.put("style", name)
+        setResponsePage(classOf[CssDemoPage], params)
+      }
+    }
+
+    add(nameField)
+    add(submitButton)
+  }
+  add(form)
+}
+
+class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+  import GeoServerDataProvider.Property
+
+  def usesEditedStyle(l: LayerInfo): Boolean =
+    (l.getStyles.asScala + l.getDefaultStyle).exists { _.getName == demo.styleInfo.getName }
+
+  object layerProvider extends GeoServerDataProvider[LayerInfo] {
+    override def getItems(): java.util.List[LayerInfo] = 
+      cat.getLayers().asScala.sortBy(_.getName).asJava
+
+    val workspace = prop("Workspace"){ (x: LayerInfo) => x.getResource.getStore.getWorkspace.getName }
+    val name = prop("Layer"){ (x: LayerInfo) => x.getName }
+    val associated = prop("Associated"){ (x: LayerInfo) => Boolean.box(usesEditedStyle(x)) }
+
+    override def getProperties(): java.util.List[Property[LayerInfo]] =
+      List(workspace, name, associated).asJava
+  }
+
+  object layerTable extends GeoServerTablePanel[LayerInfo]("layer.table", layerProvider) {
+    override def getComponentForProperty(
+      id: String, value: IModel[_],
+      property: Property[LayerInfo]
+    ): Component = {
+      val layer = value.getObject.asInstanceOf[LayerInfo]
+      val text = property.getPropertyValue(layer).toString
+      if (property eq layerProvider.associated) {
+        val model = 
+          new IModel[java.lang.Boolean] {
+            def getObject: java.lang.Boolean = usesEditedStyle(layer)
+            def setObject(b: java.lang.Boolean): Unit = {
+              if (Boolean.unbox(b)) {
+                layer.getStyles().add(demo.styleInfo)
+              } else {
+                if (layer.getDefaultStyle.getName == demo.styleInfo.getName) {
+                  if (layer.getStyles.asScala.isEmpty) {
+                    layer.setDefaultStyle(cat.getStyleByName("point"))
+                  } else {
+                    val s = layer.getStyles().iterator.next
+                    layer.setDefaultStyle(s)
+                    layer.getStyles.remove(s)
+                  }
+                } else {
+                  layer.getStyles.asScala --= layer.getStyles.asScala.filter(_.getName == demo.styleInfo.getName)
+                }
+              }
+              cat.save(layer)
+            }
+            override def detach() {}
+          }
+        new Fragment(id, "layer.association.checkbox", MultipleLayerChooser.this) {
+          add(new AjaxCheckBox("selected", model) { override def onUpdate(target: AjaxRequestTarget) {} })
+        }
+      } else
+        new Label(id, text)
+    }
+  }
+
+  add(layerTable)
+}
 /**
  * A Wicket page using the GeoServer extension system.  It adds a simple form
  * and an OpenLayers map that can be used to try out CSS styling interactively
@@ -102,20 +421,12 @@ class CssValidator extends IValidator[String] {
 class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage
 with CssDemoConstants
 {
-  val datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
-  val styledir = datadir.findStyleDir()
-  override val Translator =
+  def datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
+  override def Translator =
     new Translator(Option(styledir).map { _.toURI.toURL })
 
+  val styledir = datadir.findStyleDir()
   def findStyleFile(f: String): java.io.File = new java.io.File(styledir, f)
-
-  class UpdatingTextArea(id: String, m: IModel[String]) extends TextArea(id, m) {
-    add(new AjaxFormComponentUpdatingBehavior("onblur") {
-      override def onUpdate(target: AjaxRequestTarget) = {
-        target.addComponent(getFeedbackPanel())
-      }
-    })
-  }
 
   def this() = this(new PageParameters)
   def catalog = getCatalog
@@ -125,91 +436,6 @@ with CssDemoConstants
     val file = Some(findStyleFile(filename)) filter (null !=)
     file map { file => Source.fromFile(file).mkString }
   }
-
-  class StylePanel(id: String, model: IModel[CssDemoPage], map: OpenLayersMapPanel) extends Panel(id, model) {
-    var styleBody = {
-      val file = findStyleFile(cssSource)
-      if (file != null && file.exists) {
-        Source.fromFile(file).mkString
-      } else {
-        """
-No CSS file was found for this style.  Please
-make sure this is the style you intended to
-edit, since saving the CSS will destroy the
-existing SLD.
-        """.trim
-      }
-    }
-
-    val sldModel: IModel[String] = 
-      new org.apache.wicket.model.AbstractReadOnlyModel[String] {
-        override def getObject() = sldText getOrElse ("""
-No SLD file found for this style.  One will be generated automatically if you
-submit a CSS file.
-        """.trim)
-      }
-
-    val sldPreview = new Label("sld-preview", sldModel)
-
-    sldPreview.setOutputMarkupId(true)
-    add(sldPreview)
-
-    val styleEditor = new Form("style-editor")
-    styleEditor.add(new Label("label", "The stylesheet for this map..."))
-    val textArea =
-      new UpdatingTextArea("editor", new PropertyModel(this, "styleBody"))
-    textArea.add(new CssValidator)
-    styleEditor.add(textArea)
-    styleEditor.add(new AjaxButton("submit", styleEditor) {
-      override def onSubmit(target: AjaxRequestTarget, form: Form[_]) = {
-        try {
-          val file = findStyleFile(cssSource)
-
-          cssText2sldText(styleBody) match {
-            case Left(noSuccess) => println(noSuccess.toString)
-            case Right(sld) => {
-              val writer = new FileWriter(file)
-              writer.write(styleBody)
-              writer.close()
-              getCatalog.getResourcePool.writeStyle(
-                styleInfo,
-                new ByteArrayInputStream(sld.getBytes)
-              )
-            }
-          }
-        } catch {
-          case e => throw new WicketRuntimeException(e);
-        }
-
-        getCatalog.save(styleInfo)
-
-        target.addComponent(sldPreview)
-        target.appendJavascript(map.getUpdateCommand())
-      }
-    })
-
-
-    AjaxFormValidatingBehavior.addToAllFormComponents(styleEditor, "onkeyup", Duration.ONE_SECOND)
-    add(styleEditor)
-  }
-
-  class DataPanel(id: String, model: IModel[CssDemoPage]) extends Panel(id, model) {
-    add(new Label(
-      "summary-message",
-      "For reference, here is a listing of the attributes in this data set."
-    ))
-
-    val states =
-      new SummaryProvider(
-        layerInfo.getFeatureSource(null,null)
-        .asInstanceOf[FeatureSource[SimpleFeatureType, SimpleFeature]]
-        .getFeatures
-      )
-    add(new SummaryTable("summary", states))
-  }
-
-  class CreateLinkPanel(id: String) extends Panel(id)
-  class NamePanel(id: String) extends Panel(id)
 
   var layerInfo = {
     def res(a: String, b: String) =
@@ -272,131 +498,104 @@ submit a CSS file.
 
   if (layerInfo != null && styleInfo != null) {
     val mainContent = new Fragment("main-content", "normal", this) {
-      val layerSelectionForm = new Form("layer-selection")
-      val layerResources = catalog.getResources(classOf[FeatureTypeInfo])
-      java.util.Collections.sort(
-        layerResources,
-        new java.util.Comparator[FeatureTypeInfo] {
-          override def compare(a: FeatureTypeInfo, b: FeatureTypeInfo): Int = 
-             a.getName().compareTo(b.getName())
+      val popup = new ModalWindow("popup")
+      add(popup)
+      add(new Label("style.name", new PropertyModel(styleInfo, "name")))
+      add(new Label("layer.name", new PropertyModel(layerInfo, "prefixedName")))
+      add(new AjaxLink("change.style", new ParamResourceModel("CssDemoPage.changeStyle", this)) {
+        def onClick(target: AjaxRequestTarget) {
+          target.appendJavascript("Wicket.Window.unloadConfirmation = false;"); 
+          popup.setInitialHeight(400)
+          popup.setInitialWidth(600)
+          popup.setTitle(new Model("Choose style to edit"))
+          popup.setContent(new StyleChooser(popup.getContentId, CssDemoPage.this))
+          popup.show(target)
         }
-      )
+      })
+      add(new AjaxLink("change.layer", new ParamResourceModel("CssDemoPage.changeLayer", this)) {
+        def onClick(target: AjaxRequestTarget) {
+          target.appendJavascript("Wicket.Window.unloadConfirmation = false;"); 
+          popup.setInitialHeight(400)
+          popup.setInitialWidth(600)
+          popup.setTitle(new Model("Choose layer to preview"))
+          popup.setContent(new LayerChooser(popup.getContentId, CssDemoPage.this))
+          popup.show(target)
+        }
+      })
+      add(new AjaxLink("create.style", new ParamResourceModel("CssDemoPage.createStyle", this)) {
+        def onClick(target: AjaxRequestTarget) {
+          target.appendJavascript("Wicket.Window.unloadConfirmation = false;"); 
+          popup.setInitialHeight(200)
+          popup.setInitialWidth(300)
+          popup.setTitle(new Model("Choose name for new style"))
+          popup.setContent(new LayerNameInput(popup.getContentId, CssDemoPage.this))
+          popup.show(target)
+        }
+      })
+      add(new AjaxLink("associate.styles", new ParamResourceModel("CssDemoPage.associateStyles", this)) {
+        def onClick(target: AjaxRequestTarget) {
+          target.appendJavascript("Wicket.Window.unloadConfirmation = false;"); 
+          popup.setInitialHeight(400)
+          popup.setInitialWidth(600)
+          popup.setTitle(new Model("Choose layers to associate"))
+          popup.setContent(new MultipleLayerChooser(popup.getContentId, CssDemoPage.this))
+          popup.show(target)
+        }
+      })
 
-      layerSelectionForm.add(
-        new DropDownChoice(
-          "layername",
-          new PropertyModel[ResourceInfo](CssDemoPage.this, "layerInfo"),
-          layerResources,
-          new IChoiceRenderer[ResourceInfo] {
-            override def getDisplayValue(resource: ResourceInfo) = {
-              val layers = getCatalog.getLayers(resource)
-              if (layers != null && layers.size > 0) {
-                "%s [%s]".format(layers.get(0).getName, resource.getPrefixedName)
-              } else {
-                resource.getPrefixedName
-              }
+      var map: Option[OpenLayersMapPanel] = None
+      var sldPreview: Option[Label] = None
+      val model = new CompoundPropertyModel[CssDemoPage](CssDemoPage.this)
+      val tabs = new java.util.ArrayList[ITab]
+      tabs.add(new AbstractTab(new Model("Collapse")) {
+        override def getPanel(id: String): Panel = new EmptyPanel(id)
+      })
+      tabs.add(new PanelCachingTab(new AbstractTab(new Model("Map")) {
+        override def getPanel(id: String): Panel = {
+          map = Some(new OpenLayersMapPanel(id, layerInfo, styleInfo))
+          map.get
+        }
+      }))
+      tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
+        override def getPanel(id: String): Panel = new DataPanel(id, model, layerInfo)
+      }))
+      tabs.add(new PanelCachingTab(new AbstractTab(new Model("Generated SLD")) {
+        override def getPanel(id: String): Panel = {
+          val sldModel: IModel[String] = 
+            new org.apache.wicket.model.AbstractReadOnlyModel[String] {
+              override def getObject() = sldText getOrElse ("""
+        No SLD file found for this style.  One will be generated automatically if you
+        submit a CSS file.
+              """.trim)
             }
-
-            override def getIdValue(choice: ResourceInfo, index: Int) = choice.getId
-          }
-        )
-      )
-
-      val styleResources = new java.util.ArrayList[StyleInfo]
-      styleResources.addAll(catalog.getStyles())
-      java.util.Collections.sort(
-        styleResources,
-        new java.util.Comparator[StyleInfo] {
-          override def compare(a: StyleInfo, b: StyleInfo): Int = 
-            a.getName().compareTo(b.getName())
+          val panel = new SLDPreviewPanel(id, sldModel)
+          sldPreview = Some(panel.label)
+          panel
         }
-      )
-
-      layerSelectionForm.add(
-        new DropDownChoice(
-          "stylename",
-          new PropertyModel[StyleInfo](CssDemoPage.this, "styleInfo"),
-          styleResources,
-          new IChoiceRenderer[StyleInfo] {
-            override def getDisplayValue(choice: StyleInfo) = choice.getName()
-
-            override def getIdValue(choice: StyleInfo, index: Int) = choice.getId
-          }
-        )
-      )
-
-      layerSelectionForm.add(new SubmitLink("submit", layerSelectionForm) {
-          override def onSubmit() {
-            val params = new org.apache.wicket.PageParameters
-            params.put("layer", layerInfo.getPrefixedName())
-            params.put("style", styleInfo.getName())
-            setResponsePage(classOf[CssDemoPage], params)
-          }
-        }
-      )
-      
-      val createPanel: Panel = new CreateLinkPanel("create") {
-        setOutputMarkupId(true)
-
-        add(new AjaxLink("create-style", new Model("Create")) {
-          override def onClick(target: AjaxRequestTarget) {
-            createPanel.replaceWith(namePanel)
-            target.addComponent(namePanel)
-          }
-        })
-      }
-
-      val namePanel: Panel = new NamePanel("create") {
-        setOutputMarkupId(true)
-        var stylename = new Model("New style name")
-
-        add(new Form("create-style") {
-          add(new TextField("new-style-name", stylename))
-
-          add(new SubmitLink("new-style-submit", this))
-
-          add(new AjaxLink("new-style-cancel", new Model("Cancel")) {
-            override def onClick(target: AjaxRequestTarget) {
-              namePanel.replaceWith(createPanel)
-              target.addComponent(createPanel)
-            }
-          })
-
-          override def onSubmit() {
-            val name = stylename.getObject().asInstanceOf[String]
-            createCssTemplate(name)
-
-            val params = new org.apache.wicket.PageParameters
-            params.put("layer", layerInfo.getPrefixedName())
-            params.put("style", name)
-            setResponsePage(classOf[CssDemoPage], params)
-            setRedirect(true)
-          }
-        })
-      }
-
-      layerSelectionForm.add(createPanel)
-
-      add(layerSelectionForm)
-
-      val map = new OpenLayersMapPanel("map", layerInfo, styleInfo)
-      add(map)
+      }))
+      tabs.add(new AbstractTab(new Model("CSS Reference")) {
+        override def getPanel(id: String): Panel = new DocsPanel(id)
+      })
+      add(new AjaxTabbedPanel("context", tabs))
 
       val feedback2 =
         new org.apache.wicket.markup.html.panel.FeedbackPanel("feedback-low")
       feedback2.setOutputMarkupId(true)
       add(feedback2)
 
-      val tabs = new java.util.ArrayList[ITab]
-      val model = new CompoundPropertyModel[CssDemoPage](CssDemoPage.this)
-      tabs.add(new PanelCachingTab(new AbstractTab(new Model("Style")) {
-        override def getPanel(id: String): Panel = new StylePanel(id, model, map)
-      }))
-      tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
-        override def getPanel(id: String): Panel = new DataPanel(id, model)
-      }))
-
-      add(new AjaxTabbedPanel("tabs", tabs))
+      add(new StylePanel(
+        "style.editing",
+        model,
+        map,
+        getFeedbackPanel(),
+        findStyleFile _,
+        cssText2sldText _,
+        cssSource,
+        sldText,
+        getCatalog,
+        styleInfo,
+        sldPreview
+      ))
     }
 
     add(mainContent) 

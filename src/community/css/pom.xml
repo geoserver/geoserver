@@ -27,70 +27,46 @@
   </pluginRepositories>
 
   <dependencies>
+    <!-- Runtime/compile-time dependencies -->
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-compiler</artifactId>
-      <version>${scala.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-cql</artifactId>
-      <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-epsg-hsql</artifactId>
-      <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-shapefile</artifactId>
-      <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
-      <version>${gs.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>web-core</artifactId>
-      <version>${gs.version}</version>
-      <scope>provided</scope>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-extensions</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoscript</groupId>
       <artifactId>geocss_${scala.version}</artifactId>
       <version>0.7.1</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <properties>
@@ -141,40 +117,6 @@
           </execution>
         </executions>
       </plugin>
-<!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>appassembler-maven-plugin</artifactId>
-        <configuration>
-          <repositoryName>lib</repositoryName>
-          <programs>
-            <program>
-              <name>css2sld</name>
-              <mainClass>org.geoserver.community.css.Converter</mainClass>
-            </program>
-          </programs>
-        </configuration>
-        <executions>
-          <execution>
-            <id>create-standalone-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assemble</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <finalName>css</finalName>
-          <descriptors>
-            <descriptor>src/assembly/geoserver-plugin-assembly.xml</descriptor>
-            <descriptor>src/assembly/standalone-converter-assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-      </plugin>
--->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>

@@ -106,7 +106,8 @@ extends GeoServerDataProvider[Summary] {
 
 /**
  * A specialized GeoServerTablePanel that shows maximum and minimum data for a
- * particular featuretype.  It is intended to provide some extra context during  * styling, etc.
+ * particular featuretype.  It is intended to provide some extra context during
+ * styling, etc.
  *
  * @author David Winslow <cdwinslow@gmail.com>
  */

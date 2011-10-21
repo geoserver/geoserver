@@ -49,6 +49,7 @@ with IHeaderContributor {
 
     olLoader.format("""
       OpenLayers.DOTS_PER_INCH= 25.4 / 0.28;
+      OpenLayers.ImgPath = "../www/openlayers/img/";
 
       var cfg = {
         maxExtent: new OpenLayers.Bounds(%1$f, %2$f, %3$f, %4$f),

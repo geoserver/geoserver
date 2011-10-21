@@ -117,7 +117,9 @@ public class GeoServerTileLayerInfo {
                 if (alternateStyles != null && alternateStyles.size() > 0) {
                     Set<String> cachedStyles = new HashSet<String>();
                     for (StyleInfo si : alternateStyles) {
-                        cachedStyles.add(si.getName());
+                        if (si != null) {
+                            cachedStyles.add(si.getName());
+                        }
                     }
                     info.setCachedStyles(cachedStyles);
                     info.setDirty(true);

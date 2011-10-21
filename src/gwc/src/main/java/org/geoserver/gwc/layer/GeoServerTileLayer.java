@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.gwc.layer;
 
 import java.io.IOException;
@@ -517,20 +521,12 @@ public class GeoServerTileLayer extends TileLayer {
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 } finally {
                     META_GRID_LOCKS.remove(metaGridLoc);
+                    metaTile.dispose();
                 }
             }
         }
 
         return finalizeTile(tile);
-    }
-
-    @Override
-    protected void saveTiles(MetaTile metaTile, ConveyorTile tileProto) throws GeoWebCacheException {
-        try {
-            super.saveTiles(metaTile, tileProto);
-        } finally {
-            ((GeoServerMetaTile) metaTile).dispose();
-        }
     }
 
     private RenderedImageMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)

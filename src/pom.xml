@@ -1133,7 +1133,6 @@
       <descriptor>release/ext-vpf.xml</descriptor>
       <descriptor>release/ext-arcsde.xml</descriptor>
       <descriptor>release/ext-pyramid.xml</descriptor>
-      <descriptor>release/ext-wfsv.xml</descriptor>
       <descriptor>release/ext-gdal.xml</descriptor>
       <descriptor>release/ext-h2.xml</descriptor>
       <descriptor>release/ext-sqlserver.xml</descriptor>

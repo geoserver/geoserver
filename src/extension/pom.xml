@@ -183,7 +183,6 @@
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
-        <module>wfsv</module>
         <module>db2</module>
         <module>imagemap</module>
         <module>jp2k</module>
@@ -211,7 +210,6 @@
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
-        <module>wfsv</module>
         <module>db2</module>
         <module>imagemap</module>
         <module>jp2k</module>

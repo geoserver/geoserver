@@ -190,7 +190,6 @@
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
-        <module>wfsv</module>
         <module>db2</module>
         <module>imagemap</module>
         <module>gdal</module>
@@ -219,7 +218,6 @@
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
-        <module>wfsv</module>
         <module>db2</module>
         <module>imagemap</module>
         <module>gdal</module>

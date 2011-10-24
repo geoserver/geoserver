@@ -9,6 +9,7 @@ package org.geoserver.web.data.store;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.geotools.data.DataAccessFactory.Param;
@@ -37,6 +38,7 @@ public class ParamInfo implements Serializable {
     
     private List<Serializable> options;
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ParamInfo(Param param) {
         this.name = param.key;
         this.title = param.title == null ? null : param.title.toString();
@@ -58,7 +60,12 @@ public class ParamInfo implements Serializable {
             List<Serializable> options = (List<Serializable>) param.metadata.get(Param.OPTIONS);
             if (options != null && options.size() > 0) {
                 this.options = new ArrayList<Serializable>(options);
-                this.value = options.get(0);
+                if (Comparable.class.isAssignableFrom(this.binding)) {
+                    Collections.sort((List) options);
+                }
+                if (this.value == null) {
+                    this.value = options.get(0);
+                }
             }
         }
     }

@@ -60,7 +60,6 @@ trait CssDemoConstants {
       case ns: NoSuccess => Left(ns)
     }
   }
-
 }
 
 class CssValidator extends IValidator[String] {
@@ -81,14 +80,6 @@ class CssValidator extends IValidator[String] {
       case _ => text.error(new ValidationError().setMessage("CSS text must not be empty"))
     }
   }
-}
-
-class UpdatingTextArea(id: String, m: IModel[String], feedback: Component) extends TextArea(id, m) {
-  object onblur extends AjaxFormComponentUpdatingBehavior("onblur") {
-    override def onUpdate(target: AjaxRequestTarget) =
-      target.addComponent(feedback)
-  }
-  add(onblur)
 }
 
 class StylePanel(

@@ -1,10 +1,21 @@
 package org.geoserver.community.css.web
 
+import collection.JavaConverters._
+
 import org.apache.wicket.markup.html.IHeaderContributor
 import org.apache.wicket.markup.html.IHeaderResponse
 import org.apache.wicket.markup.html.panel.Panel
 
 import org.geoserver.catalog.{ResourceInfo, StyleInfo}
+
+object OpenLayersMapPanel {
+  val templates = {
+    val cfg = (new freemarker.template.Configuration);
+    cfg.setClassForTemplateLoading(classOf[OpenLayersMapPanel], "")
+    cfg.setObjectWrapper(new freemarker.template.DefaultObjectWrapper)
+    cfg
+  }
+}
 
 /**
  * A Wicket widget that encapsulates an OpenLayers interactive map.
@@ -18,78 +29,28 @@ with IHeaderContributor {
   setOutputMarkupId(true)
 
   def renderHead(response: IHeaderResponse) {
-    response.renderString("""
-      <style type="text/css">
-        div#%1$s {
-          border: 2px groove black;
-          height: 300px;
-        }
+    val cssContext = Map("id" -> getMarkupId()).asJava
+    val cssTemplate = OpenLayersMapPanel.templates.getTemplate("ol-style.ftl")
+    val css = new java.io.StringWriter()
+    cssTemplate.process(cssContext, css)
+    response.renderString(css.toString)
+    response.renderJavascriptReference("../openlayers/OpenLayers.js")
 
-        div#%1$s div.olMap {
-          height: 100%%;
-        }
-
-        div#%1$s div.olControlScale {
-          background: white;
-          border-color: black;
-          border-style: solid;
-          border-width: 2px 0px 0px 2px;
-          bottom: 0px;
-          padding: 3px;
-          right: 0px;
-        }
-      </style>
-    """.format(getMarkupId()))
-
-    response.renderJavascriptReference(
-      "../openlayers/OpenLayers.js"
-    )
-
-    val olLoader = new java.util.Formatter(new java.util.Locale("zxx"))
-
-    olLoader.format("""
-      OpenLayers.DOTS_PER_INCH= 25.4 / 0.28;
-      OpenLayers.ImgPath = "../www/openlayers/img/";
-
-      var cfg = {
-        maxExtent: new OpenLayers.Bounds(%1$f, %2$f, %3$f, %4$f),
-        maxResolution: %9$f,
-        controls: [
-          new OpenLayers.Control.PanZoomBar(),
-          new OpenLayers.Control.Scale(),
-          new OpenLayers.Control.Navigation()
-        ]
-      };
-
-      var map = new OpenLayers.Map("%5$s", cfg);
-      map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../wms",
-          {
-            layers: "%6$s",
-            styles: "%7$s",
-            format: "image/png",
-            random: %8$d
-          }, {
-            singleTile: true
-          }
-        )
-      );
-
-      map.zoomToMaxExtent();
-      window.olMaps = window.olMaps || {};
-      window.olMaps["%5$s"] = map;
-    """,
-        bbox.getMinX(): java.lang.Double, 
-        bbox.getMinY(): java.lang.Double, 
-        bbox.getMaxX(): java.lang.Double,
-        bbox.getMaxY(): java.lang.Double,
-        getMarkupId(),
-        resource.getPrefixedName(),
-        style.getName(),
-        rand.nextInt(): java.lang.Integer,
-        bbox.getSpan(0).max(bbox.getSpan(1)) / 256.0: java.lang.Double
-    )
-
-    response.renderOnLoadJavascript(olLoader.toString())
+    val scriptContext = Map(
+      "minx" -> bbox.getMinX(),
+      "miny" -> bbox.getMinY(),
+      "maxx" -> bbox.getMaxX(),
+      "maxy" -> bbox.getMaxY(),
+      "id" -> getMarkupId(),
+      "layer" -> resource.getPrefixedName(),
+      "style" -> style.getName(),
+      "cachebuster" -> rand.nextInt(),
+      "resolution" -> bbox.getSpan(0).max(bbox.getSpan(1)) / 256.0
+    ).asJava
+    val scriptTemplate = OpenLayersMapPanel.templates.getTemplate("ol-load.ftl")
+    val script = new java.io.StringWriter()
+    scriptTemplate.process(scriptContext, script)
+    response.renderOnLoadJavascript(script.toString)
   }
 
   /*
@@ -97,12 +58,13 @@ with IHeaderContributor {
    * updated.
    */
   def getUpdateCommand(): String = {
-  """
-    var map = window.olMaps["%s"];
-    for (var i = 0; i < map.layers.length; i++) {
-      var layer = map.layers[i];
-      if (layer.mergeNewParams) layer.mergeNewParams({random: %d});
-    }
-  """.format(getMarkupId(), rand.nextInt())
+    val context = Map(
+      "id" -> getMarkupId(),
+      "cachebuster" -> rand.nextInt()
+    ).asJava
+    val template = OpenLayersMapPanel.templates.getTemplate("ol-update.ftl")
+    val script = new java.io.StringWriter()
+    template.process(context, script)
+    script.toString
   }
 }

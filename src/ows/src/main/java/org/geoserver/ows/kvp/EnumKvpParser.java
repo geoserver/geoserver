@@ -26,7 +26,7 @@ public class EnumKvpParser extends KvpParser {
         final Class<?> enumClass = getBinding();
         Object[] enumConstants = enumClass.getEnumConstants();
         for (Object enumValue : enumConstants) {
-            if (enumValue.toString().equals(value)) {
+            if (enumValue.toString().equalsIgnoreCase(value)) {
                 return enumValue;
             }
         }

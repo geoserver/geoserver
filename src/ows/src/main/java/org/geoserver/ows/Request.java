@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.platform.Service;
+
 /**
  * A collection of the informations collected and parsed by the
  * {@link Dispatcher} while doing its dispatching work. In case of dispatching
@@ -57,6 +59,12 @@ public class Request {
 
     protected String version;
 
+    /**
+     * The ows service descriptor of the service/version that was actually dispatched  
+     */
+    protected Service serviceDescriptor;
+
+    
     /**
      * Pre context of the url path
      */
@@ -156,6 +164,13 @@ public class Request {
     }
 
     /**
+     * The service descriptor of the service/version that was actually dispatched.
+     */
+    public Service getServiceDescriptor() {
+        return serviceDescriptor;
+    }
+    
+    /**
      * The output format
      * @return
      */
@@ -245,6 +260,14 @@ public class Request {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * Allows callbacks to override the service descriptor
+     * @param serviceDescriptor
+     */
+    public void setServiceDescriptor(Service serviceDescriptor) {
+        this.serviceDescriptor = serviceDescriptor;
     }
 
     /**

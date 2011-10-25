@@ -410,6 +410,7 @@ public class Dispatcher extends AbstractController {
                 throw new ServiceException(msg, "InvalidParameterValue", "service");    
             }
         }
+        req.setServiceDescriptor(serviceDescriptor);
         return fireServiceDispatchedCallback(req,serviceDescriptor);
     }
     

@@ -94,7 +94,7 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
     public void testGetFeatureContent() {
         String id = "1";
 
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer&version=1.1.0");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(2, "//ex:geomContainer", doc);
@@ -261,7 +261,8 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
         String targetPointCoord = targetPoint.getCoordinate().x + " "
                 + targetPoint.getCoordinate().y;
 
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer&srsname=urn:x-ogc:def:crs:EPSG::4326");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer" +
+            "&srsname=urn:x-ogc:def:crs:EPSG::4326");
         LOGGER
                 .info("WFS GetFeature&typename=ex:geomContainer&srsname=urn:x-ogc:def:crs:EPSG::4326 response:\n"
                         + prettyString(doc));
@@ -401,7 +402,8 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Ensure filters are still working.
      */
     public void testFilters() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer&srsname=urn:x-ogc:def:crs:EPSG::4326&featureid=1");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer" +
+            "&srsname=urn:x-ogc:def:crs:EPSG::4326&featureid=1");
         LOGGER
                 .info("WFS GetFeature&typename=ex:geomContainer&srsname=urn:x-ogc:def:crs:EPSG::4326&featureid=1"
                         + "response:\n" + prettyString(doc));

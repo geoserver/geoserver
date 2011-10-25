@@ -24,6 +24,9 @@ import org.geoserver.wfs.TransactionListener;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTransactionException;
+import org.geoserver.wfs.request.TransactionElement;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.FeatureDiff;
 import org.geotools.data.FeatureDiffReader;
 import org.geotools.data.FeatureStore;
@@ -48,8 +51,9 @@ public class RollbackElementHandler implements TransactionElementHandler {
         this.filterFactory = filterFactory;
     }
 
-    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
-            throws WFSTransactionException {
+    @Override
+    public void checkValidity(TransactionElement element,
+            Map<QName, FeatureTypeInfo> featureTypeInfos) throws WFSTransactionException {
         // let's check we can perfom inserts, updates and deletes
         if (!wfs.getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_INSERT)) {
             throw new WFSException("Transaction INSERT support is not enabled "
@@ -86,19 +90,20 @@ public class RollbackElementHandler implements TransactionElementHandler {
         // we don't have an authentication subsystem
     }
 
-    public void execute(EObject element, TransactionType request,
-            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
-            TransactionResponseType response, TransactionListener listener)
-            throws WFSTransactionException {
-        RollbackType rollback = (RollbackType) element;
+    @Override
+    public void execute(TransactionElement element, TransactionRequest request,
+        @SuppressWarnings("rawtypes")Map<QName, FeatureStore> featureStores, 
+        TransactionResponse response, TransactionListener listener) throws WFSTransactionException {
+
+        Rollback rollback = (Rollback) element;
         final QName layerName = rollback.getTypeName();
         VersioningFeatureStore vstore = (VersioningFeatureStore) featureStores.get(layerName);
         if(vstore == null)
             throw new WFSTransactionException("Could not locate feature type " + layerName);
         
-        long inserted = response.getTransactionSummary().getTotalInserted().longValue();
-        long updated = response.getTransactionSummary().getTotalUpdated().longValue();
-        long deleted = response.getTransactionSummary().getTotalDeleted().longValue();
+        long inserted = response.getTotalInserted().longValue();
+        long updated = response.getTotalUpdated().longValue();
+        long deleted = response.getTotalDeleted().longValue();
 
         FeatureDiffReader reader = null;
 
@@ -125,11 +130,8 @@ public class RollbackElementHandler implements TransactionElementHandler {
                 if (fd.getState() == FeatureDiff.INSERTED) {
                     inserted++;
 
-                    InsertedFeatureType insertedFeature = WfsFactory.eINSTANCE
-                            .createInsertedFeatureType();
-                    insertedFeature.setHandle(rollback.getHandle());
-                    insertedFeature.getFeatureId().add(filterFactory.featureId(fd.getID()));
-                    response.getInsertResults().getFeature().add(insertedFeature);
+                    response.addInsertedFeature(rollback.getHandle(), filterFactory.featureId(fd.getID()));
+
                     // accumulate fids for transaction event handling
                     insertedIds.add(filterFactory.featureId(fd.getID()));
                 } else if (fd.getState() == FeatureDiff.UPDATED) {
@@ -170,9 +172,9 @@ public class RollbackElementHandler implements TransactionElementHandler {
                     request, layerName, vstore.getFeatures(updatedFilter)));
 
             // update summary information
-            response.getTransactionSummary().setTotalInserted(BigInteger.valueOf(inserted));
-            response.getTransactionSummary().setTotalUpdated(BigInteger.valueOf(updated));
-            response.getTransactionSummary().setTotalDeleted(BigInteger.valueOf(deleted));
+            response.setTotalInserted(BigInteger.valueOf(inserted));
+            response.setTotalUpdated(BigInteger.valueOf(updated));
+            response.setTotalDeleted(BigInteger.valueOf(deleted));
         } catch (IOException e) {
             throw new WFSTransactionException("Could not perform the rollback", e, rollback
                     .getHandle());
@@ -190,15 +192,15 @@ public class RollbackElementHandler implements TransactionElementHandler {
     /**
      * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
      */
-    public Class<RollbackType> getElementClass() {
-        return RollbackType.class;
+    public Class<Rollback> getElementClass() {
+        return Rollback.class;
     }
 
     /**
      * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
      */
-    public QName[] getTypeNames(EObject element) throws WFSTransactionException {
-        RollbackType rollback = (RollbackType) element;
+    public QName[] getTypeNames(TransactionElement element) throws WFSTransactionException {
+        Rollback rollback = (Rollback) element;
 
         return new QName[] { (QName) rollback.getTypeName() };
     }

@@ -9,9 +9,20 @@ import org.geoserver.config.ServiceInfo;
 public interface WFSInfo extends ServiceInfo {
 
     static enum Version {
-        V_10,
-        V_11;
+        V_10("1.0.0"),
+        V_11("1.1.0"),
+        V_20("2.0.0");
+
+        org.geotools.util.Version version;
         
+        Version(String ver) {
+            this.version = new org.geotools.util.Version(ver);
+        }
+
+        public org.geotools.util.Version getVersion() {
+            return version;
+        }
+
         static Version get( String v ) {
             if ( v.startsWith( "1.0") ) {
                 return V_10;
@@ -19,7 +30,25 @@ public interface WFSInfo extends ServiceInfo {
             if ( v.startsWith( "1.1") ) {
                 return V_11;
             }
+            if ( v.startsWith( "2.0") ) {
+                return V_20;
+            }
             return null;
+        }
+
+        public static Version negotiate(String ver) {
+            if (ver == null) {
+                return null;
+            }
+
+            org.geotools.util.Version version = new org.geotools.util.Version(ver);
+            if (version.compareTo(V_10.version) <= 0) {
+                return V_10;
+            }
+            if (version.compareTo(V_11.version) <= 0) {
+                return V_11;
+            }
+            return V_20;
         }
     };
     
@@ -57,6 +86,11 @@ public interface WFSInfo extends ServiceInfo {
         TRANSACTION_DELETE {
             public int getCode() {
                 return 16;
+            }
+        }, 
+        TRANSACTION_REPLACE {
+            public int getCode() {
+                return 32;
             }
         };
         
@@ -96,7 +130,7 @@ public interface WFSInfo extends ServiceInfo {
                     Operation.GETCAPABILITIES,Operation.DESCRIBEFEATURETYPE,
                     Operation.GETFEATURE, Operation.TRANSACTION_INSERT, 
                     Operation.TRANSACTION_UPDATE, Operation.TRANSACTION_DELETE,
-                    Operation.LOCKFEATURE
+                    Operation.TRANSACTION_REPLACE, Operation.LOCKFEATURE
                 );
             }
         };

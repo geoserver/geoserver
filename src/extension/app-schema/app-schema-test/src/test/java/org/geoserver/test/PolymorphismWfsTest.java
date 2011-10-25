@@ -33,7 +33,7 @@ public class PolymorphismWfsTest extends AbstractAppSchemaWfsTestSupport {
     }
 
     public void testPolymorphism() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:PolymorphicFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature");
         LOGGER
                 .info("WFS GetFeature&typename=ex:PolymorphicFeature response:\n"
                         + prettyString(doc));

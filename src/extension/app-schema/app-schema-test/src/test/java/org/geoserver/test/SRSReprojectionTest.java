@@ -57,7 +57,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
      */
     public void testNonFeatureTypeProxy() {
         Document doc = null;
-        doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature&srsName=EPSG:4326");
+        doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4326");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo(
                 "value01",
@@ -95,7 +95,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
                 doc);
 
-        doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature&srsName=urn:x-ogc:def:crs:EPSG:4326");
+        doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         // test result returns in lat,long order
         assertXpathEvaluatesTo(
@@ -111,7 +111,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
      */
     public void testChainingReprojection() throws NoSuchAuthorityCodeException, FactoryException,
             MismatchedDimensionException, TransformException {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
         // Generate test geometries and its results after re-projection.
         CoordinateReferenceSystem sourceCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4283);
@@ -159,7 +159,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
                 "//ex:geomContainer[@gml:id='2']/ex:nestedFeature[2]/ex:nestedGeom[@gml:id='secondNested.1']/ex:geom",
                 doc);
 
-        doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer&srsName=urn:x-ogc:def:crs:EPSG:4326");
+        doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer&srsName=urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
         // test that the polygon is correctly re-projected.
         assertXpathEvaluatesTo(
@@ -184,7 +184,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
      * 
      */
     public void testChainingXlink() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("http://example.com/UrnResolver/?uri=1",
                 "//ex:geomContainer[@gml:id='1']/ex:nestedFeature[3]/@xlink:href", doc);

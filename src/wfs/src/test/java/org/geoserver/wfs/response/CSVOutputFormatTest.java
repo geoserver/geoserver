@@ -13,6 +13,7 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryDataStore;
@@ -33,7 +34,7 @@ import com.vividsolutions.jts.geom.Point;
 public class CSVOutputFormatTest extends WFSTestSupport {
 
     public void testFullRequest() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv");
         
         FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         
@@ -78,7 +79,8 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();
         Operation op = new Operation("GetFeature", getServiceDescriptor10(), null, new Object[] {gft});
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fs.getFeatures());
         
         // write out the results

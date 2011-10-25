@@ -37,7 +37,7 @@ public class DuplicatePropertiesWfsTest extends AbstractAppSchemaWfsTestSupport 
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
     public void testGetCapabilities() {
-        Document doc = getAsDOM("wfs?request=GetCapabilities");
+        Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
         // make sure non-feature types don't appear in FeatureTypeList

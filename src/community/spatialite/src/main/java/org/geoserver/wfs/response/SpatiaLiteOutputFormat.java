@@ -31,6 +31,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,6 +72,7 @@ import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureWriter;
@@ -185,11 +187,11 @@ public class SpatiaLiteOutputFormat extends WFSGetFeatureOutputFormat {
     }
     
     @Override
-    protected void write(FeatureCollectionType featureCollection,
+    protected void write(FeatureCollectionResponse featureCollection,
     OutputStream output, Operation getFeature) throws IOException,
     ServiceException {
     List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
-    collections.addAll(featureCollection.getFeature());
+    collections.addAll((Collection<? extends SimpleFeatureCollection>) featureCollection.getFeature());
     Charset charset = Charset.forName("UTF-8");
     write(collections, charset, output, (GetFeatureType) getFeature.getParameters()[0]);
     }

@@ -9,15 +9,11 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.ResultTypeType;
-
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.Response;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.response.WFSResponse;
 
 
@@ -25,8 +21,8 @@ import org.geoserver.wfs.response.WFSResponse;
  * Base class for a response to a WFS GetFeature operation.
  * <p>
  * The result of a GetFeature operation is an instance of
- * {@link FeatureCollectionType}. Subclasses are responsible for serializing
- * an instance of this type in {@link #write(FeatureCollectionType, OutputStream, Operation)}.
+ * {@link FeatureCollectionResponse}. Subclasses are responsible for serializing
+ * an instance of this type in {@link #write(FeatureCollectionResponse, OutputStream, Operation)}.
  * </p>
  * <p>
  * Subclasses also need declare the mime-type in which the format is encoded.
@@ -48,7 +44,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * @param outputFormat The well-known name of the format, not <code>null</code>
      */
     public WFSGetFeatureOutputFormat(GeoServer gs, String outputFormat) {
-        super(gs, FeatureCollectionType.class, outputFormat);
+        super(gs, FeatureCollectionResponse.class, outputFormat);
     }
     
     /**
@@ -57,7 +53,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * @param outputFormats Set of well-known name of the format, not <code>null</code>
      */
     public WFSGetFeatureOutputFormat(GeoServer gs, Set<String> outputFormats) {
-        super(gs, FeatureCollectionType.class, outputFormats);
+        super(gs, FeatureCollectionResponse.class, outputFormats);
     }
 
     /**
@@ -83,10 +79,8 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         if ("GetFeature".equalsIgnoreCase(operation.getId())
                 || "GetFeatureWithLock".equalsIgnoreCase(operation.getId())) {
             //also check that the resultType is "results"
-            GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                    GetFeatureType.class);
-
-            if (request.getResultType() == ResultTypeType.RESULTS_LITERAL) {
+            GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
+            if (req.isResultTypeResults()) {
                 //call subclass hook
                 return canHandleInternal(operation);
             }
@@ -134,11 +128,19 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     }
 
     /**
-     * Calls through to {@link #write(FeatureCollectionType, OutputStream, Operation)}.
+     * Calls through to {@link #write(FeatureCollectionResponse, OutputStream, Operation)}.
      */
     public final void write(Object value, OutputStream output, Operation operation)
         throws IOException, ServiceException {
-        write((FeatureCollectionType) value, output, operation);
+        //for WFS 2.0 we changed the input object type to be the request object adapter, but there
+        // is other code (like WMS GetFeatureInfo) that passes in the old objects, so do a check 
+        if (value instanceof FeatureCollectionResponse) {
+            write((FeatureCollectionResponse) value, output, operation);
+        }
+        else {
+            write(FeatureCollectionResponse.adapt(value), output, operation);
+        }
+        
     }
 
     /**
@@ -148,6 +150,6 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * @param output The output stream to serialize to.
      * @param getFeature The GetFeature operation descriptor.
      */
-    protected abstract void write(FeatureCollectionType featureCollection, OutputStream output,
+    protected abstract void write(FeatureCollectionResponse featureCollection, OutputStream output,
         Operation getFeature) throws IOException, ServiceException;
 }

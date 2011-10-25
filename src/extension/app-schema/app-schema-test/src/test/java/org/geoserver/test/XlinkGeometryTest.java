@@ -37,7 +37,7 @@ public class XlinkGeometryTest extends AbstractAppSchemaWfsTestSupport {
      * Tests whether automatic and manual xlink:href is encoded in all Geometry Types
      */
     public void testGeometry() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=ex:MyTestFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
 
         // test manual xlink:href

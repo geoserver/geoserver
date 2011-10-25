@@ -11,6 +11,7 @@ import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
+import org.geoserver.wfs.request.TransactionRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 
 
@@ -33,14 +34,14 @@ public class TransactionEvent {
     private SimpleFeatureCollection affectedFeatures;
     private QName layerName;
     private Object source;
-    private final TransactionType request;
+    private final TransactionRequest request;
 
-    public TransactionEvent(TransactionEventType type, TransactionType request, QName layerName,
+    public TransactionEvent(TransactionEventType type, TransactionRequest request, QName layerName,
             SimpleFeatureCollection affectedFeatures) {
         this( type, request, layerName, affectedFeatures, null );
     }
     
-    public TransactionEvent(TransactionEventType type, TransactionType request, QName layerName,
+    public TransactionEvent(TransactionEventType type, TransactionRequest request, QName layerName,
             SimpleFeatureCollection affectedFeatures, Object source) {
         this.type = type;
         this.request = request;
@@ -95,6 +96,6 @@ public class TransactionEvent {
     }
 
     public TransactionType getRequest() {
-        return request;
+        return TransactionRequest.WFS11.unadapt(request);
     }
 }

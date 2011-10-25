@@ -5,7 +5,6 @@
 package org.geoserver.wfs;
 
 import net.opengis.wfs.DescribeFeatureTypeType;
-import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.GetFeatureWithLockType;
@@ -18,6 +17,12 @@ import net.opengis.wfs.TransactionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetCapabilitiesRequest;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.LockFeatureRequest;
+import org.geoserver.wfs.request.TransactionRequest;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.beans.BeansException;
@@ -80,9 +85,10 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      */
     public TransformerBase getCapabilities(GetCapabilitiesType request)
         throws WFSException {
-        return new GetCapabilities(getServiceInfo(), catalog).run(request);
+        return new GetCapabilities(getServiceInfo(), catalog)
+            .run(new GetCapabilitiesRequest.WFS11(request));
     }
-
+    
     /**
      * WFS DescribeFeatureType operation.
      *
@@ -94,7 +100,8 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      */
     public FeatureTypeInfo[] describeFeatureType(DescribeFeatureTypeType request)
         throws WFSException {
-        return new DescribeFeatureType(getServiceInfo(), catalog).run(request);
+        return new DescribeFeatureType(getServiceInfo(), catalog)
+            .run(new DescribeFeatureTypeRequest.WFS11(request));
     }
 
     /**
@@ -106,12 +113,12 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      *
      * @throws WFSException Any service exceptions.
      */
-    public FeatureCollectionType getFeature(GetFeatureType request)
+    public FeatureCollectionResponse getFeature(GetFeatureType request)
         throws WFSException {
         GetFeature getFeature = new GetFeature(getServiceInfo(), catalog);
         getFeature.setFilterFactory(filterFactory);
 
-        return getFeature.run(request);
+        return getFeature.run(new GetFeatureRequest.WFS11(request));
     }
 
     /**
@@ -123,7 +130,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      *
      * @throws WFSException Any service exceptions.
      */
-    public FeatureCollectionType getFeatureWithLock(GetFeatureWithLockType request)
+    public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
         throws WFSException {
         return getFeature(request);
     }
@@ -133,7 +140,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      *
      * @param request The lock feature request.
      *
-     * @return A lock feture response type.
+     * @return A lock feature response type.
      *
      * @throws WFSException An service exceptions.
      */
@@ -142,7 +149,8 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
         LockFeature lockFeature = new LockFeature(getServiceInfo(), catalog);
         lockFeature.setFilterFactory(filterFactory);
 
-        return lockFeature.lockFeature(request);
+        return (LockFeatureResponseType) 
+            lockFeature.lockFeature(new LockFeatureRequest.WFS11(request)).getAdaptee();
     }
 
     /**
@@ -159,7 +167,8 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
         Transaction transaction = new Transaction(getServiceInfo(), catalog, context);
         transaction.setFilterFactory(filterFactory);
 
-        return transaction.transaction(request);
+        return (TransactionResponseType) 
+            transaction.transaction(new TransactionRequest.WFS11(request)).getAdaptee();
     }
     
     /**

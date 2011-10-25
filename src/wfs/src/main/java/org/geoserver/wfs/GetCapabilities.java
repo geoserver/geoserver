@@ -12,6 +12,7 @@ import net.opengis.wfs.GetCapabilitiesType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.wfs.request.GetCapabilitiesRequest;
 
 /**
  * Web Feature Service GetCapabilities operation.
@@ -36,7 +37,7 @@ public class GetCapabilities {
     Catalog catalog;
 
     /**
-     * Creates a new wfs GetCapabilitis operation.
+     * Creates a new wfs 1.0/1.1 GetCapabilitis operation.
      *
      * @param wfs The wfs configuration
      * @param catalog The geoserver catalog.
@@ -46,14 +47,14 @@ public class GetCapabilities {
         this.catalog = catalog;
     }
 
-    public CapabilitiesTransformer run(GetCapabilitiesType request)
+    public CapabilitiesTransformer run(GetCapabilitiesRequest request)
         throws WFSException {
         //cite requires that we fail when we see an "invalid" update sequence,
         // since we dont support update sequences, all are invalid, but we take
         // our more lax approach and just ignore it when not doint the cite thing
         if (wfs.isCiteCompliant()) {
             if (request.getUpdateSequence() != null) {
-                throw new WFSException("Invalid update sequence", "InvalidUpdateSequence");
+                throw new WFSException(request, "Invalid update sequence", "InvalidUpdateSequence");
             }
         }
 
@@ -74,9 +75,9 @@ public class GetCapabilities {
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
         provided.add("1.1.0");
-        List<String> accepted = null;
-        if(request.getAcceptVersions() != null)
-            accepted = request.getAcceptVersions().getVersion();
+        provided.add("2.0.0");
+        List<String> accepted = request.getAcceptVersions();
+
         String version = RequestUtils.getVersionPreOws(provided, accepted);
 
         final CapabilitiesTransformer capsTransformer;
@@ -84,8 +85,10 @@ public class GetCapabilities {
             capsTransformer = new CapabilitiesTransformer.WFS1_0(wfs, catalog);
         }else if ("1.1.0".equals(version)) {
             capsTransformer = new CapabilitiesTransformer.WFS1_1(wfs, catalog);
+        }else if ("2.0.0".equals(version)) {
+            capsTransformer = new CapabilitiesTransformer.WFS2_0(wfs, catalog);
         }else{
-            throw new WFSException("Could not understand version:" + version);
+            throw new WFSException(request, "Could not understand version:" + version);
         }
         capsTransformer.setEncoding(Charset.forName( wfs.getGeoServer().getGlobal().getCharset() ));
         return capsTransformer;

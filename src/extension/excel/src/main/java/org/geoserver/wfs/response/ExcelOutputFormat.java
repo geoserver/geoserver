@@ -28,6 +28,8 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
@@ -71,10 +73,9 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureType request = OwsUtils
-                .parameter(operation.getParameters(), GetFeatureType.class);
-        String outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(
-                0)).getLocalPart();
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
+
         return outputFileName + "." + fileExtension;
     }
 
@@ -87,8 +88,9 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
     @Override
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
-            Operation getFeature) throws IOException, ServiceException {
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, 
+        Operation getFeature) throws IOException ,ServiceException {
+    
         // Create the workbook
         Workbook wb = getNewWorkbook();
         CreationHelper helper = wb.getCreationHelper();

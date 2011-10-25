@@ -30,7 +30,7 @@ public class DuplicateTypeTest extends AbstractAppSchemaWfsTestSupport {
      * Test GetFeature for gsml:DuplicateMappedFeature.
      */
     public void testGetDuplicateMappedFeature() throws Exception {
-        String request = "GetFeature&typename=gsml:DuplicateMappedFeature";
+        String request = "GetFeature&version=1.1.0&typename=gsml:DuplicateMappedFeature";
         Document doc = getAsDOM("wfs?request=" + request);
         LOGGER.info("WFS " + request + " response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -51,7 +51,7 @@ public class DuplicateTypeTest extends AbstractAppSchemaWfsTestSupport {
      * Test GetFeature for gsml:MappedFeature.
      */
     public void testGetMappedFeature() throws Exception {
-        String request = "GetFeature&typename=gsml:MappedFeature";
+        String request = "GetFeature&version=1.1.0&typename=gsml:MappedFeature";
         Document doc = getAsDOM("wfs?request=" + request);
         LOGGER.info("WFS " + request + " response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);

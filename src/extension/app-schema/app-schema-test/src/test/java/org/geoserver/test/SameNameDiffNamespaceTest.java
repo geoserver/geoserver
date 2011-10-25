@@ -35,7 +35,7 @@ public class SameNameDiffNamespaceTest extends AbstractAppSchemaWfsTestSupport {
      * Test GetFeature with two 'name' properties with different namespace.
      */
     public void testSameNameDiffNamespace3() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=ex:MyTestFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertXpathCount(1, "//ex:MyTestFeature[@gml:id='f1']/gml:name", doc);
         assertXpathCount(1, "//ex:MyTestFeature[@gml:id='f1']/ex:name", doc);

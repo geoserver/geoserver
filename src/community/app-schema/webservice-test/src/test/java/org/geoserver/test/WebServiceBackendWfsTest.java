@@ -43,7 +43,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
     public void testGetCapabilities() {
-        Document doc = getAsDOM("wfs?request=GetCapabilities");
+        Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
 
@@ -70,12 +70,10 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * @throws IOException
      */
     public void testDescribeFeatureType() throws IOException {
-        File dataDir = this.getTestData().getDataDirectoryRoot();
-
         /**
          * gsml:MappedFeature
          */
-        Document doc = getAsDOM("wfs?request=DescribeFeatureType&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
                 + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
@@ -96,7 +94,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
         /**
          * gsml:GeologicUnit
          */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&typename=gsml:GeologicUnit");
+        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"
                 + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
@@ -118,7 +116,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * backend.
      */
     public void testMappedFeature() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(4, "//gsml:MappedFeature", doc);
@@ -164,7 +162,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * It also feature chains CompositionPart which is another app-schema data access with web service.
      */
     public void testGeologicUnit() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:GeologicUnit");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("3", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(3, "//gsml:GeologicUnit", doc);

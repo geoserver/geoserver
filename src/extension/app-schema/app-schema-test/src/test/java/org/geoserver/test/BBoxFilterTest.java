@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.Point;
  */
 
 public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
-    private final String WFS_GET_FEATURE = "wfs?request=GetFeature&typename=ex:geomContainer";
+    private final String WFS_GET_FEATURE = "wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer";
 
     private final String WFS_GET_FEATURE_LOG = "WFS GetFeature&typename=ex:geomContainerresponse:\n";
 

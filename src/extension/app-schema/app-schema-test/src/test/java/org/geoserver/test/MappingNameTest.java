@@ -38,7 +38,7 @@ public class MappingNameTest extends AbstractAppSchemaWfsTestSupport {
      * feature chaining.
      */
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertXpathCount(1, "//wfs:FeatureCollection", doc);
 

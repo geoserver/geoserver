@@ -62,7 +62,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * @throws Exception
      */
     public void testGetCapabilities() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetCapabilities");
+        Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
     }
@@ -73,7 +73,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * @throws Exception
      */
     public void testDescribeFeatureType() throws Exception {
-        Document doc = getAsDOM("wfs?request=DescribeFeatureType&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
     }
@@ -95,7 +95,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * @throws Exception
      */
     public void testGetFeatureContent() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
 
         assertXpathCount(2, "//gsml:MappedFeature", doc);
 

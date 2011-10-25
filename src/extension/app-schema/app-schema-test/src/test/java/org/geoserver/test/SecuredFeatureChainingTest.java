@@ -113,7 +113,8 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport 
      */
     public void testDenormalisedFeaturesCount() {
         authenticate("cite_readatts", "cite");
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:GeologicUnit&maxFeatures=3&resultType=hits");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit" +
+            "&maxFeatures=3&resultType=hits");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&maxFeatures=3 response:\n"
                 + prettyString(doc));
         assertXpathEvaluatesTo("3", "//wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -125,7 +126,7 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport 
      */
     public void testSecureFeatureContent() {
         authenticate("cite_readatts", "cite");
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:GeologicUnit&maxFeatures=3");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&maxFeatures=3");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&maxFeatures=3 response:\n"
                 + prettyString(doc));
         assertXpathCount(3, "//gsml:GeologicUnit", doc);

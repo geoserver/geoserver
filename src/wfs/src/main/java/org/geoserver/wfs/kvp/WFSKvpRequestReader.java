@@ -6,6 +6,7 @@ package org.geoserver.wfs.kvp;
 
 import net.opengis.wfs.WfsFactory;
 
+import org.eclipse.emf.ecore.EFactory;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 
 
@@ -26,10 +27,20 @@ public class WFSKvpRequestReader extends EMFKvpRequestReader {
      * @param requestBean The request class, which must be an emf class.
      */
     public WFSKvpRequestReader(Class requestBean) {
-        super(requestBean, WfsFactory.eINSTANCE);
+        this(requestBean, WfsFactory.eINSTANCE);
     }
     
-    protected WfsFactory getWfsFactory() {
-        return (WfsFactory) factory;
+    /**
+     * Creates the Wfs Kvp Request reader specifying the factory.
+     *
+     * @param requestBean The request class, which must be an emf class.
+     * @param factory The emf factory for the request bean.
+     */
+    public WFSKvpRequestReader(Class requestBean, EFactory factory) {
+        super(requestBean, factory);
+    }
+    
+    protected EFactory getFactory() {
+        return factory;
     }
 }

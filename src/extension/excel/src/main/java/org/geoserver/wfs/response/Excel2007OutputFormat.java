@@ -14,8 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.opengis.wfs.FeatureCollectionType;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -24,6 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
@@ -79,8 +78,8 @@ public class Excel2007OutputFormat extends ExcelOutputFormat {
      *      >Yegor Kozlov's code</a>.
      */
     @Override
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
-            Operation getFeature) throws IOException, ServiceException {
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, 
+        Operation getFeature) throws IOException ,ServiceException {
         // Create the workbook
         Workbook wb = getNewWorkbook();
         ExcelCellStyles styles = new ExcelCellStyles(wb);

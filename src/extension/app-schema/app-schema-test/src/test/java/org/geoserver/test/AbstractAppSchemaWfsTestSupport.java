@@ -289,7 +289,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      *            the document under test
      * @return list of matching nodes
      */
-    private NodeList getMatchingNodes(String xpath, Document document) {
+    protected NodeList getMatchingNodes(String xpath, Document document) {
         try {
             return getXpathEngine().getMatchingNodes(xpath, document);
         } catch (XpathException e) {

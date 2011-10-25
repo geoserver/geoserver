@@ -30,6 +30,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.DataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -210,8 +211,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
      * zips up all the resulting files.
      */
     @Override
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
-            Operation getFeature) throws IOException, ServiceException {
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, 
+        Operation getFeature) throws IOException ,ServiceException {
 
         // figure out which output format we're going to generate
         GetFeatureType gft = (GetFeatureType) getFeature.getParameters()[0];

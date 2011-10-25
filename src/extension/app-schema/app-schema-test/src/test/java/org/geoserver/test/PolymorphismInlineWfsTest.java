@@ -39,7 +39,7 @@ public class PolymorphismInlineWfsTest extends AbstractAppSchemaWfsTestSupport {
      * broken in the future. See GEOT-3304.
      */
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:PolymorphicFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature");
         LOGGER
                 .info("WFS GetFeature&typename=ex:PolymorphicFeature response:\n"
                         + prettyString(doc));

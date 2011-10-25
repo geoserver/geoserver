@@ -9,6 +9,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 
 public class PythonGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
@@ -26,9 +27,8 @@ public class PythonGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation getFeature) throws IOException, ServiceException {
-    
         try {
             adapter.write(featureCollection, output);
         } 

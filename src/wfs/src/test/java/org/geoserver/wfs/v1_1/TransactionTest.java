@@ -445,7 +445,7 @@ public class TransactionTest extends WFSTestSupport {
         
         assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild().getNodeValue());
         
-        dom = getAsDOM( "wfs?request=getfeature&typename=cite:RoadSegments&srsName=EPSG:4326&" +
+        dom = getAsDOM( "wfs?version=1.1.0&request=getfeature&typename=cite:RoadSegments&srsName=EPSG:4326&" +
     		"cql_filter=FID%3D'foo'");
 //        print(dom);
         assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
@@ -505,7 +505,7 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
         
         String srsBlock = "".equals(srs) ? "" : "&" + srs.replaceAll("\"", "");
-        dom = getAsDOM( "wfs?request=getfeature&typename=cite:RoadSegments" + srsBlock + "&" +
+        dom = getAsDOM( "wfs?version=1.1.0&request=getfeature&typename=cite:RoadSegments" + srsBlock + "&" +
             "cql_filter=FID%3D'102'");
         assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
         

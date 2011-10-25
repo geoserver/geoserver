@@ -10,9 +10,6 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wfs.GetFeature;

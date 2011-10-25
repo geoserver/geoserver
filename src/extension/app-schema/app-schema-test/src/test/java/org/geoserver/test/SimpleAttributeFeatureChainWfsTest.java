@@ -33,7 +33,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaWfsTest
      * Test that feature chaining for gml:name works.
      */
     public void testGetFeature() {
-        String path = "wfs?request=GetFeature&typeName=gsml:MappedFeature";
+        String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature";
         Document doc = getAsDOM(path);
         LOGGER.info("MappedFeature with name feature chained Response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);

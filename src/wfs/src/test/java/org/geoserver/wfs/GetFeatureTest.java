@@ -157,7 +157,7 @@ public class GetFeatureTest extends WFSTestSupport {
     
     public void testLax() throws Exception {
         String xml = 
-            "<GetFeature xmlns:gml=\"http://www.opengis.net/gml\">" +  
+            "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">" +  
             " <Query typeName=\"" + MockData.BUILDINGS.getLocalPart() + "\">" + 
             "   <PropertyName>ADDRESS</PropertyName>" + 
             "   <Filter>" + 
@@ -200,7 +200,7 @@ public class GetFeatureTest extends WFSTestSupport {
     public void testLikeMatchCase() throws Exception {
         // first run, without matching case, should match both buildings
         String xml = 
-            "<GetFeature xmlns:gml=\"http://www.opengis.net/gml\">" +  
+            "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">" +  
             " <Query typeName=\"" + MockData.BUILDINGS.getLocalPart() + "\">" + 
             "   <PropertyName>ADDRESS</PropertyName>" + 
             "   <Filter>" + 
@@ -221,7 +221,7 @@ public class GetFeatureTest extends WFSTestSupport {
         
         // second run, with match case, should match none
         xml = 
-            "<GetFeature xmlns:gml=\"http://www.opengis.net/gml\">" +  
+            "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">" +  
             " <Query typeName=\"" + MockData.BUILDINGS.getLocalPart() + "\">" + 
             "   <PropertyName>ADDRESS</PropertyName>" + 
             "   <Filter>" + 

@@ -36,9 +36,6 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -58,6 +55,8 @@ import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureWriter;
@@ -182,11 +181,11 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      */
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) ((FeatureCollectionType) value).getFeature().get(0);
+        SimpleFeatureCollection fc = (SimpleFeatureCollection) ((FeatureCollectionResponse) value).getFeature().get(0);
         FeatureTypeInfo ftInfo = getFeatureTypeInfo(fc);
         
         String filename = null;
-        GetFeatureType request = OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         if (request != null) {
             Map<String, ?> formatOptions = request.getFormatOptions();
             filename = (String) formatOptions.get("FILENAME");
@@ -200,18 +199,19 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         return filename + (filename.endsWith(".zip") ? "" : ".zip");
     }
     
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation getFeature) throws IOException, ServiceException {
     	List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
-        collections.addAll(featureCollection.getFeature());
+        collections.addAll((List)featureCollection.getFeature());
         Charset charset = getShapefileCharset(getFeature);
-        write(collections, charset, output, (GetFeatureType) getFeature.getParameters()[0]);
+        write(collections, charset, output, GetFeatureRequest.adapt(getFeature.getParameters()[0]));
     }
 
     /**
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
-    public void write(List<SimpleFeatureCollection> collections, Charset charset, OutputStream output, GetFeatureType request) throws IOException, ServiceException {
+    public void write(List<SimpleFeatureCollection> collections, Charset charset, OutputStream output, 
+        GetFeatureRequest request) throws IOException, ServiceException {
         //We might get multiple featurecollections in our response (multiple queries?) so we need to
         //write out multiple shapefile sets, one for each query response.
         File tempDir = IOUtils.createTempDirectory("shpziptemp");
@@ -225,7 +225,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
             for (SimpleFeatureCollection curCollection : collections) {
                 
                 if(curCollection.getSchema().getGeometryDescriptor() == null) {
-                    throw new WFSException("Cannot write geometryless shapefiles, yet " 
+                    throw new WFSException(request, "Cannot write geometryless shapefiles, yet " 
                             + curCollection.getSchema() + " has no geometry field");
                 } 
                 Class geomType = curCollection.getSchema().getGeometryDescriptor().getType().getBinding();
@@ -281,7 +281,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * Dumps the request
      * @param simpleFeatureCollection
      */
-    private void createRequestDump(File tempDir, GetFeatureType gft, SimpleFeatureCollection fc) {
+    private void createRequestDump(File tempDir, GetFeatureRequest gft, SimpleFeatureCollection fc) {
         final Request request = Dispatcher.REQUEST.get();
         if(request == null || gft == null) {
             // we're probably running in a unit test
@@ -321,7 +321,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
                 }
             }
         } catch(IOException e) {
-            throw new WFSException("Failed to dump the WFS request");
+            throw new WFSException(gft, "Failed to dump the WFS request");
         }
         
     }
@@ -342,7 +342,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * @param c the featurecollection to write
      * @param tempDir the temp directory into which it should be written
      */
-    private void writeCollectionToShapefile(SimpleFeatureCollection c, File tempDir, Charset charset, GetFeatureType request) {
+    private void writeCollectionToShapefile(SimpleFeatureCollection c, File tempDir, Charset charset, 
+        GetFeatureRequest request) {
         FeatureTypeInfo ftInfo = getFeatureTypeInfo(c);
 
         c = remapCollectionSchema(c, null);
@@ -426,7 +427,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * format.
      * </p>
      */
-    private void changeWKTFormatIfFileFormatIsESRI(File tempDir, GetFeatureType request,
+    private void changeWKTFormatIfFileFormatIsESRI(File tempDir, GetFeatureRequest request,
             String fileName, SimpleFeatureType remappedSchema) throws FactoryException,
             IOException, FileNotFoundException {
         
@@ -587,7 +588,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * @param request 
      * @return true if a shapefile has been created, false otherwise
      */
-    private boolean writeCollectionToShapefiles(SimpleFeatureCollection c, File tempDir, Charset charset, GetFeatureType request) {
+    private boolean writeCollectionToShapefiles(SimpleFeatureCollection c, File tempDir, Charset charset, 
+        GetFeatureRequest request) {
         FeatureTypeInfo ftInfo = getFeatureTypeInfo(c);
         c = remapCollectionSchema(c, null);
         SimpleFeatureType schema = c.getSchema();
@@ -730,7 +732,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
     private Charset getShapefileCharset(Operation getFeature) {
         Charset result = null;
         
-        GetFeatureType gft = (GetFeatureType) getFeature.getParameters()[0];
+        GetFeatureRequest gft = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         if(gft.getFormatOptions() != null && gft.getFormatOptions().get("CHARSET") != null) {
            result = (Charset) gft.getFormatOptions().get("CHARSET");
         } else {

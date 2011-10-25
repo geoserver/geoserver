@@ -5,9 +5,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.opengis.wfs.FeatureCollectionType;
-
 import org.geoserver.python.Python;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
@@ -27,7 +26,7 @@ public class PythonVectorFormatAdapter extends PythonFormatAdapter {
         return "__vector_format__";
     }
     
-    public void write(FeatureCollectionType features, OutputStream output) throws Exception {
+    public void write(FeatureCollectionResponse features, OutputStream output) throws Exception {
         write(features.getFeature(), output);
     }
     

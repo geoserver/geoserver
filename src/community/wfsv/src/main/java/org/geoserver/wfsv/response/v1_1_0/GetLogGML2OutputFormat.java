@@ -20,6 +20,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.xml.GML2OutputFormat;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -36,10 +38,12 @@ public class GetLogGML2OutputFormat extends GML2OutputFormat {
         super(geoserver);
     }
 
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
+    @Override
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation getFeature) throws IOException, ServiceException {
+
         GetLogType request = (GetLogType) getFeature.getParameters()[0];
-        GetFeatureType ftRequest = toGetFeatureType(featureCollection, request);
+        GetFeatureRequest ftRequest = toGetFeatureType(featureCollection, request);
 
         prepare(ftRequest.getOutputFormat(), featureCollection, ftRequest);
         encode(output, featureCollection, ftRequest);
@@ -52,7 +56,7 @@ public class GetLogGML2OutputFormat extends GML2OutputFormat {
      * @param request
      * @return
      */
-    private GetFeatureType toGetFeatureType(FeatureCollectionType featureCollection,
+    private GetFeatureRequest toGetFeatureType(FeatureCollectionResponse featureCollection,
             GetLogType request) {
         SimpleFeatureCollection features = (SimpleFeatureCollection) featureCollection.getFeature().get(0);
         SimpleFeatureType featureType = features.getSchema();
@@ -65,7 +69,7 @@ public class GetLogGML2OutputFormat extends GML2OutputFormat {
         ftRequest.setMaxFeatures(request.getMaxFeatures());
         ftRequest.setOutputFormat(request.getOutputFormat());
         ftRequest.setResultType(ResultTypeType.RESULTS_LITERAL);
-        return ftRequest;
+        return GetFeatureRequest.adapt(ftRequest);
     }
 
     public boolean canHandle(Operation operation) {

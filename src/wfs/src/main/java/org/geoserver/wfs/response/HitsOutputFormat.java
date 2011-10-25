@@ -8,25 +8,21 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
-import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.ResultTypeType;
-import net.opengis.wfs.WfsFactory;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.Response;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.xml.GML3OutputFormat;
-import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.simple.SimpleFeatureTypeImpl;
+import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
 
 
@@ -41,10 +37,10 @@ public class HitsOutputFormat extends WFSResponse {
     /**
      * Xml configuration
      */
-    WFSConfiguration configuration;
+    Configuration configuration;
 
-    public HitsOutputFormat(GeoServer gs, WFSConfiguration configuration) {
-        super(gs, FeatureCollectionType.class);
+    public HitsOutputFormat(GeoServer gs, Configuration configuration) {
+        super(gs, FeatureCollectionResponse.class);
 
         this.configuration = configuration;
     }
@@ -71,10 +67,10 @@ public class HitsOutputFormat extends WFSResponse {
         throws IOException, ServiceException {
         WFSInfo wfs = getInfo();
         
-        FeatureCollectionType featureCollection = (FeatureCollectionType) value;
-
+        FeatureCollectionResponse featureCollection = (FeatureCollectionResponse) value;
+        
         //create a new feautre collcetion type with just the numbers
-        FeatureCollectionType hits = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse hits = featureCollection.create();
         if (GML3OutputFormat.isComplexFeature(featureCollection)) {
             // we have to count the number of features here manually because complex feature
             // collection size() now returns 0. In order to count the number of features,
@@ -86,17 +82,16 @@ public class HitsOutputFormat extends WFSResponse {
         } else {
             hits.setNumberOfFeatures(featureCollection.getNumberOfFeatures());
         }
+        
+        hits.setTotalNumberOfFeatures(featureCollection.getTotalNumberOfFeatures());
+        hits.setNext(featureCollection.getNext());
+        hits.setPrevious(featureCollection.getPrevious());
         hits.setTimeStamp(featureCollection.getTimeStamp());
 
-        Encoder encoder = new Encoder(configuration, configuration.schema());
-        encoder.setEncoding(Charset.forName( wfs.getGeoServer().getGlobal().getCharset()) );
-        encoder.setSchemaLocation(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
-            ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
-
-        encoder.encode(hits, org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+        encode(hits, output, wfs);
     }
     
-    private BigInteger countFeature(FeatureCollectionType fct) {
+    private BigInteger countFeature(FeatureCollectionResponse fct) {
         BigInteger count = BigInteger.valueOf(0);
         for (int fcIndex = 0; fcIndex < fct.getFeature().size(); fcIndex++) {
             FeatureIterator i = null;
@@ -114,6 +109,14 @@ public class HitsOutputFormat extends WFSResponse {
         return count;
     }
 
-   
+    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs) 
+        throws IOException {
+        Encoder encoder = new Encoder(configuration, configuration.schema());
+        encoder.setEncoding(Charset.forName( wfs.getGeoServer().getGlobal().getCharset()) );
+        encoder.setSchemaLocation(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
+            ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
+
+        encoder.encode(hits.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+    }
 
 }

@@ -47,6 +47,8 @@ public class WfsXmlReader extends XmlRequestReader {
     }
 
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
+        //TODO: refactor this method to use WFSXmlUtils
+        
         //check the strict flag to determine if we should validate or not
         Boolean strict = (Boolean) kvp.get("strict");
         if ( strict == null ) {

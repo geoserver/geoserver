@@ -11,6 +11,7 @@ import net.opengis.wfs.WfsFactory;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.python.Python;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -71,7 +72,7 @@ public class PythonVectorFormatAdapterTest {
         fc.getFeature().add(features);
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        adapter.write(fc, out); 
+        adapter.write(FeatureCollectionResponse.adapt(fc), out); 
         
         assertEquals("fid.0;fid.1;", new String(out.toByteArray()));
         

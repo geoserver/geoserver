@@ -13,6 +13,9 @@ import net.opengis.wfs.TransactionType;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.wfs.request.TransactionElement;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.FeatureStore;
 
 
@@ -34,7 +37,7 @@ public interface TransactionElementHandler {
      * Returns the qualified names of feature types needed to handle this
      * element
      */
-    QName[] getTypeNames(EObject element) throws WFSTransactionException;
+    QName[] getTypeNames(TransactionElement element) throws WFSTransactionException;
 
     /**
      * Checks the element content is valid, throws an exception otherwise
@@ -46,8 +49,7 @@ public interface TransactionElementHandler {
      *            the keys contain all the feature type names reported by
      *            {@link #getTypeNames(EObject)}
      */
-    void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
-            throws WFSTransactionException;
+    void checkValidity(TransactionElement element, Map<QName, FeatureTypeInfo> featureTypeInfos) throws WFSTransactionException;
 
     /**
      * Executes the element against the provided feature sources
@@ -68,7 +70,6 @@ public interface TransactionElementHandler {
      *            each change performed against the data stores
      */
     @SuppressWarnings("rawtypes")
-    void execute(EObject element, TransactionType request, Map<QName, FeatureStore> featureStores,
-            TransactionResponseType response, TransactionListener listener)
-            throws WFSTransactionException;
+    void execute(TransactionElement element, TransactionRequest request, Map<QName, FeatureStore> featureStores, 
+        TransactionResponse response, TransactionListener listener) throws WFSTransactionException;
 }

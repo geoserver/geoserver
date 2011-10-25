@@ -13,6 +13,7 @@ import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
 
+import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
@@ -195,6 +196,14 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         //&lt;xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("maxFeatures")) {
             getFeature.setMaxFeatures((BigInteger) node.getAttributeValue("maxFeatures"));
+        }
+
+        //support startIndex from wfs 2.0
+        if (node.hasAttribute("startIndex")) {
+            //since this is not going to be defined as a type in the schema we have to manually
+            // convert it since the parser won't parse it into the correct type for us
+            getFeature.setStartIndex(
+                Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class));
         }
 
         //&lt;xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional"&gt;

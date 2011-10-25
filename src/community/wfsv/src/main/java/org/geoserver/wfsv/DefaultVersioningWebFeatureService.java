@@ -31,6 +31,12 @@ import org.geoserver.wfs.GetFeature;
 import org.geoserver.wfs.LockFeature;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetCapabilitiesRequest;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.LockFeatureRequest;
+import org.geoserver.wfs.request.TransactionRequest;
 import org.geotools.data.FeatureDiffReader;
 import org.geotools.util.Version;
 import org.geotools.xml.transform.TransformerBase;
@@ -110,7 +116,7 @@ public class DefaultVersioningWebFeatureService
      */
     public TransformerBase getCapabilities(GetCapabilitiesType request)
         throws WFSException {
-        return new GetCapabilities(wfs, catalog).run(request);
+        return new GetCapabilities(wfs, catalog).run(GetCapabilitiesRequest.adapt(request));
     }
 
     /**
@@ -122,12 +128,12 @@ public class DefaultVersioningWebFeatureService
      *
      * @throws WFSException Any service exceptions.
      */
-    public FeatureCollectionType getFeature(GetFeatureType request)
+    public FeatureCollectionResponse getFeature(GetFeatureType request)
         throws WFSException {
         GetFeature getFeature = new GetFeature(wfs, catalog);
         getFeature.setFilterFactory(filterFactory);
 
-        return getFeature.run(request);
+        return getFeature.run(GetFeatureRequest.adapt(request));
     }
 
     /**
@@ -139,7 +145,7 @@ public class DefaultVersioningWebFeatureService
      *
      * @throws WFSException Any service exceptions.
      */
-    public FeatureCollectionType getFeatureWithLock(GetFeatureWithLockType request)
+    public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
         throws WFSException {
         return getFeature(request);
     }
@@ -158,7 +164,8 @@ public class DefaultVersioningWebFeatureService
         LockFeature lockFeature = new LockFeature(wfs, catalog);
         lockFeature.setFilterFactory(filterFactory);
 
-        return lockFeature.lockFeature(request);
+        return (LockFeatureResponseType) 
+            lockFeature.lockFeature(LockFeatureRequest.adapt(request)).getAdaptee();
     }
 
     public Object getGmlObject(GetGmlObjectType request) throws WFSException {
@@ -184,7 +191,8 @@ public class DefaultVersioningWebFeatureService
         VersioningTransaction transaction = new VersioningTransaction(wfs, catalog, context);
         transaction.setFilterFactory(filterFactory);
 
-        return transaction.transaction(request);
+        return (TransactionResponseType) 
+            transaction.transaction(TransactionRequest.adapt(request)).getAdaptee();
     }
 
     public FeatureCollectionType getLog(GetLogType request) {
@@ -204,15 +212,17 @@ public class DefaultVersioningWebFeatureService
         VersionedGetFeature getFeature = new VersionedGetFeature(wfs, catalog);
         getFeature.setFilterFactory(filterFactory);
 
-        return (VersionedFeatureCollectionType) getFeature.run(request);
+        return (VersionedFeatureCollectionType) 
+            getFeature.run(GetFeatureRequest.adapt(request)).getAdaptee();
     }
     
     public FeatureTypeInfo[] describeFeatureType(net.opengis.wfs.DescribeFeatureTypeType request) {
-        return new DescribeFeatureType(wfs, catalog).run(request);
+        return new DescribeFeatureType(wfs, catalog).run(DescribeFeatureTypeRequest.adapt(request));
     }
     
     public VersionedDescribeResults describeVersionedFeatureType(DescribeVersionedFeatureTypeType request) {
-        FeatureTypeInfo[] infos = new DescribeFeatureType(wfs, catalog).run(request);
+        FeatureTypeInfo[] infos = 
+            new DescribeFeatureType(wfs, catalog).run(DescribeFeatureTypeRequest.adapt(request));
         return new VersionedDescribeResults(infos, request.isVersioned());
     }
 }

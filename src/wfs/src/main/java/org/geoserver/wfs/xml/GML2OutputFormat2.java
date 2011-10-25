@@ -13,9 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.opengis.wfs.BaseRequestType;
-import net.opengis.wfs.FeatureCollectionType;
-
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,6 +25,8 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
@@ -53,11 +52,11 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
         return "GML2";
     }
 
-    protected void write(FeatureCollectionType results, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse results, OutputStream output, Operation getFeature)
         throws ServiceException, IOException {
         
         //declare wfs schema location
-        BaseRequestType gft = (BaseRequestType)getFeature.getParameters()[0];
+        GetFeatureRequest gft = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         
         List featureCollections = results.getFeature();
 
@@ -72,7 +71,8 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
             String namespaceURI = featureType.getName().getNamespaceURI();
             FeatureTypeInfo meta = catalog.getFeatureTypeByName( namespaceURI, featureType.getTypeName() );
             if(meta == null)
-                throw new WFSException("Could not find feature type " + namespaceURI + ":" + featureType.getTypeName() + " in the GeoServer catalog");
+                throw new WFSException(gft, "Could not find feature type " + namespaceURI + ":" 
+                    + featureType.getTypeName() + " in the GeoServer catalog");
 
             NamespaceInfo ns = catalog.getNamespaceByURI( namespaceURI );
             ns2metas.put( ns, meta );
@@ -118,7 +118,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
                     buildURL(gft.getBaseUrl(), "wfs", params, URLType.RESOURCE));
         }
 
-        encoder.encode(results, org.geotools.wfs.v1_0.WFS.FeatureCollection, output);
+        encoder.encode(results.getAdaptee(), org.geotools.wfs.v1_0.WFS.FeatureCollection, output);
     }
 
 }

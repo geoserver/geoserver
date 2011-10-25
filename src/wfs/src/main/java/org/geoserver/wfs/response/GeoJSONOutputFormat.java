@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
 import net.sf.json.JSONException;
 
 import org.geoserver.config.GeoServer;
@@ -19,6 +17,8 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -44,8 +44,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
 
     public String getMimeType(Object value, Operation operation)
     throws ServiceException {
-        // let's check if a callback has been set, in that case, we need to return a different mime type
-        GetFeatureType gft = (GetFeatureType) operation.getParameters()[0];
+        GetFeatureRequest gft = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String callback = (String) gft.getFormatOptions().get("CALLBACK");
         if(callback != null && !"".equals(callback)) {
             return "text/javascript";
@@ -58,8 +57,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
         return "GEOJSON";
     }
 
-    protected String getContentDisposition(
-            FeatureCollectionType featureCollection) {
+    protected String getContentDisposition(FeatureCollectionResponse featureCollection) {
 
         StringBuffer sb = new StringBuffer();
         for (Iterator f = featureCollection.getFeature().iterator(); f
@@ -72,7 +70,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
 
     }
 
-    protected void write(FeatureCollectionType featureCollection,
+    protected void write(FeatureCollectionResponse featureCollection,
             OutputStream output, Operation getFeature) throws IOException,
             ServiceException {
 
@@ -84,7 +82,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
             new OutputStreamWriter(output,wfs.getGeoServer().getGlobal().getCharset()));
         
         // let's check if a callback has been set
-        GetFeatureType gft = (GetFeatureType) getFeature.getParameters()[0];
+        GetFeatureRequest gft = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         String callback = (String) gft.getFormatOptions().get("CALLBACK");
         if(callback != null && !"".equals(callback)) {
             outWriter.write(callback + "(");

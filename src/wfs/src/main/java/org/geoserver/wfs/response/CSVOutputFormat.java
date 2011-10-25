@@ -14,16 +14,14 @@ import java.util.Locale;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.type.DateUtil;
@@ -68,17 +66,16 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
-        return ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(0))
-            .getLocalPart() + ".csv";
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
+        return outputFileName + ".csv";
     }
     
     /**
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
     @Override
-    protected void write(FeatureCollectionType featureCollection,
+    protected void write(FeatureCollectionResponse featureCollection,
             OutputStream output, Operation getFeature) throws IOException,
             ServiceException {
     	   //write out content here

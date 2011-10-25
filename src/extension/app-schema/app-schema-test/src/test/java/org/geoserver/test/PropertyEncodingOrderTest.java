@@ -35,7 +35,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
      * @throws Exception
      */
     public void testPropertyEncodingOrder_Borehole() throws Exception {
-        String path = "wfs?request=GetFeature&typename=gsml:Borehole";
+        String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:Borehole";
         Document doc = getAsDOM(path);
         LOGGER.info("WFS GetFeature&gsml:Borehole:\n" + prettyString(doc));
         assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -120,7 +120,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
      * @throws Exception
      */
     public void testPropertyEncodingOrder_PlanarOrientation() throws Exception {
-        String path = "wfs?request=GetFeature&typename=er:MineralOccurrence";
+        String path = "wfs?request=GetFeature&version=1.1.0&typename=er:MineralOccurrence";
         Document doc = getAsDOM(path);
         LOGGER.info("WFS GetFeature&er:MineralOccurrence:\n" + prettyString(doc));
         assertXpathCount(1, "//er:MineralOccurrence[@gml:id='er.mineraloccurrence.S0032895']", doc);
@@ -192,7 +192,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
-        String path = "wfs?request=GetFeature&typename=gsml:GeologicUnit&featureid=gu.25699";
+        String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gu.25699";
         Document doc = getAsDOM(path);
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&featureid=gu.25699:\n"
                 + prettyString(doc));

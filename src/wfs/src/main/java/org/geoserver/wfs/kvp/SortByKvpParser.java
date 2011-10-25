@@ -36,7 +36,7 @@ public class SortByKvpParser extends NestedKvpParser {
         SortOrder order = SortOrder.ASCENDING;
 
         if (nameOrder.length > 1) {
-            if ("D".equalsIgnoreCase(nameOrder[1])) {
+            if ("D".equalsIgnoreCase(nameOrder[1]) || "DESC".equalsIgnoreCase(nameOrder[1])) {
                 order = SortOrder.DESCENDING;
             }
         }

@@ -64,6 +64,7 @@ import org.geoserver.wcs.WebCoverageService100;
 import org.geoserver.wcs.WebCoverageService111;
 import org.geoserver.wfs.WebFeatureService;
 import org.geoserver.wfs.kvp.GetFeatureKvpRequestReader;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wps.kvp.ExecuteKvpRequestReader;
 import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
@@ -430,9 +431,9 @@ public class Execute {
             gft = (GetFeatureType) kvpParse(ref.getHref(), reader);
         }
 
-        FeatureCollectionType featureCollectionType = wfs.getFeature(gft);
+        FeatureCollectionResponse featureCollectionType = wfs.getFeature(gft);
         // this will also deal with axis order issues
-        return ((ComplexPPIO) ppio).decode(featureCollectionType);
+        return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
     }
     
     /**

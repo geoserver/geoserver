@@ -1,9 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.kvp;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,16 +18,26 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
+import net.opengis.wfs.WfsFactory;
+import net.opengis.wfs20.ParameterExpressionType;
+import net.opengis.wfs20.ParameterType;
+import net.opengis.wfs20.StoredQueryType;
+import net.opengis.wfs20.Wfs20Factory;
 
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.ows.util.NumericKvpParser;
 import org.geoserver.wfs.GetFeature;
+import org.geoserver.wfs.StoredQuery;
+import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.request.GetFeatureRequest.WFS20;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.xml.EMFUtils;
@@ -52,7 +63,12 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
     FilterFactory filterFactory;
 
     public GetFeatureKvpRequestReader(Class requestBean, Catalog catalog, FilterFactory filterFactory) {
-        super(requestBean);
+        this(requestBean, WfsFactory.eINSTANCE, catalog, filterFactory);
+    }
+
+    public GetFeatureKvpRequestReader(Class requestBean, EFactory factory, Catalog catalog, 
+        FilterFactory filterFactory) {
+        super(requestBean, factory);
         this.catalog = catalog;
         this.filterFactory = filterFactory;
     }
@@ -61,24 +77,34 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
      * Performs additinon GetFeature kvp parsing requirements
      */
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+        //hack but startIndex conflicts with WMS startIndex... which parses to different type, so 
+        // we just parse manually
+        if (rawKvp.containsKey("startIndex")) {
+            kvp.put("startIndex", 
+                new NumericKvpParser(null, BigInteger.class).parse((String)rawKvp.get("startIndex")));
+        }
+
         request = super.read(request, kvp, rawKvp);
         
-        // make sure the filter is specified in just one way
-        ensureMutuallyExclusive(kvp, new String[] { "featureId", "filter", "bbox", "cql_filter" });
-
         //get feature has some additional parsing requirements
         EObject eObject = (EObject) request;
+
+        // make sure the filter is specified in just one way
+        ensureMutuallyExclusive(kvp, new String[] { "featureId", "resourceId", "filter", "bbox", "cql_filter" }, eObject);
 
         //outputFormat
         if (!EMFUtils.isSet(eObject, "outputFormat")) {
             //set the default
             String version = (String) EMFUtils.get(eObject, "version");
-
-            if ((version != null) && version.startsWith("1.0")) {
-                EMFUtils.set(eObject, "outputFormat", "GML2");
-            } else {
-                EMFUtils.set(eObject, "outputFormat", "text/xml; subtype=gml/3.1.1");
-            }
+            switch(WFSInfo.Version.negotiate(version)) {
+                case V_10:
+                    EMFUtils.set(eObject, "outputFormat", "GML2"); break;
+                case V_11:
+                    EMFUtils.set(eObject, "outputFormat", "text/xml; subtype=gml/3.1.1"); break;
+                case V_20:
+                default:
+                    EMFUtils.set(eObject, "outputFormat", "text/xml; subtype=gml/3.2");
+            };
         }
 
         // did the user supply alternate namespace prefixes?
@@ -92,68 +118,48 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             }
         }
         
-        //typeName
-        if (kvp.containsKey("typeName")) {
+        //typeName (in WFS 2.0 it is typeNames, not typeName)
+        if (kvp.containsKey("typeName") || kvp.containsKey("typeNames")) {
             //HACK, the kvp reader gives us a list of QName, need to wrap in 
             // another
             List typeName = (List) kvp.get("typeName");
+            if (typeName == null) {
+                typeName = (List) kvp.get("typeNames");
+            }
             List list = new ArrayList();
 
             for (Iterator itr = typeName.iterator(); itr.hasNext();) {
-                QName qName = (QName) itr.next();
-
-                // check the type name is known, otherwise complain
-                String namespaceURI = qName.getNamespaceURI();
-                String localPart = qName.getLocalPart();
-                String prefix = qName.getPrefix();
-                if (namespaces != null) {
-                    if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
-                        // request did not specify a namespace prefix for the typeName,
-                        // let's see if it speficied a default namespace
-                        String uri = namespaces.getURI(XMLConstants.DEFAULT_NS_PREFIX);
-                        if (!XMLConstants.NULL_NS_URI.equals(uri)) {
-                            // alright, request came with xmlns(http:...) to idicat the typeName's
-                            // namespace
-                            namespaceURI = uri;
-                        }
-                    } else if (namespaces.getURI(prefix) != null) {
-                        // so request used a custom prefix and declared the prefix:uri mapping?
-                        namespaceURI = namespaces.getURI(qName.getPrefix());
+                Object obj = itr.next();
+                
+                //we might get a list of qname, or a list of list of qname
+                if (obj instanceof QName) {
+                    QName qName = (QName) obj;
+                    qName = checkTypeName(qName, namespaces, eObject);
+                    
+                    List l = new ArrayList();
+                    l.add(qName);
+                    list.add(l);
+                }
+                else {
+                    List<QName> qNames = (List<QName>) obj;
+                    for (int i = 0; i < qNames.size(); i++) {
+                        qNames.set(i, checkTypeName(qNames.get(i), namespaces, eObject));
                     }
-                    NamespaceInfo ns = catalog.getNamespaceByURI(namespaceURI);
-                    if (ns == null) {
-                        throw new WFSException("Unknown namespace [" + qName.getPrefix() + "]",
-                                "InvalidParameterValue", "namespace");
-                    }
-                    prefix = ns.getPrefix();
-                    qName = new QName(namespaceURI, localPart, prefix);
-                }
 
-                if (!XMLConstants.DEFAULT_NS_PREFIX.equals(qName.getPrefix())
-                        && catalog.getNamespaceByPrefix(qName.getPrefix()) == null) {
-                    throw new WFSException("Unknown namespace [" + qName.getPrefix() + "]",
-                            "InvalidParameterValue", "namespace");
+                    list.add(qNames);
                 }
-
-                if (catalog.getFeatureTypeByName(namespaceURI, localPart) == null) {
-                    String name = qName.getPrefix() + ":" + qName.getLocalPart();
-                    throw new WFSException("Feature type " + name + " unknown",
-                            "InvalidParameterValue", "typeName");
-                }
-
-                List l = new ArrayList();
-                l.add(qName);
-                list.add(l);
             }
 
             kvp.put("typeName", list);
             querySet(eObject, "typeName", list);
         } else {
             //check for featureId and infer typeName
-            if (kvp.containsKey("featureId")) {
+            // in WFS 2.0 it is resourceId
+            if (kvp.containsKey("featureId") || kvp.containsKey("resourceId")) {
                 //use featureId to infer type Names
                 List featureId = (List) kvp.get("featureId");
-
+                featureId = featureId != null ? featureId : (List) kvp.get("resourceId");
+                
                 ArrayList typeNames = new ArrayList();
 
                 QNameKvpParser parser = new QNameKvpParser("typeName", catalog);
@@ -173,18 +179,34 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
 
                 querySet(eObject, "typeName", typeNames);
             } else {
-                throw new WFSException("The query should specify either typeName or a featureId filter", "MissingParameterValue");
+                //check for stored query id, i have seen both storedQueryId and storedQuery_Id used
+                // so support both
+                List<URI> storedQueryId = null;
+                if (kvp.containsKey("storedQuery_Id")) {
+                    storedQueryId = (List<URI>) kvp.get("storedQuery_Id");
+                }
+                if (storedQueryId == null && kvp.containsKey("storedQueryId")) {
+                    storedQueryId = (List<URI>) kvp.get("storedQueryId");
+                }
+                if (storedQueryId != null) {
+                    buildStoredQueries(eObject, storedQueryId, kvp);
+                }
+                else {
+                    throw new WFSException(eObject, "The query should specify either typeName, featureId filter" +
+                        ", or a stored query id", "MissingParameterValue");
+                }
             }
         }
-
+        
         //filter
         if (kvp.containsKey("filter")) {
             querySet(eObject, "filter", (List) kvp.get("filter"));
         } else if (kvp.containsKey("cql_filter")) {
             querySet(eObject, "filter", (List) kvp.get("cql_filter"));
-        } else if (kvp.containsKey("featureId")) {
+        } else if (kvp.containsKey("featureId") || kvp.containsKey("resourceId")) {
             //set filter from featureId
             List featureIdList = (List) kvp.get("featureId");
+            featureIdList = featureIdList != null ? featureIdList : (List) kvp.get("resourceId"); 
             Set ids = new HashSet();
 
             for (Iterator i = featureIdList.iterator(); i.hasNext();) {
@@ -200,12 +222,13 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             //set filter from bbox 
             Envelope bbox = (Envelope) kvp.get("bbox");
 
-            List queries = (List) EMFUtils.get(eObject, "query");
+            List<Query> queries = GetFeatureRequest.adapt(eObject).getQueries();
             List filters = new ArrayList();
 
-            for (Iterator q = queries.iterator(); q.hasNext();) {
-                QueryType query = (QueryType) q.next();
-                List typeName = query.getTypeName();
+            for (Iterator<Query> it = queries.iterator(); it.hasNext();) {
+                Query q = it.next();
+                
+                List typeName = q.getTypeNames();
                 Filter filter = null;
 
                 if (typeName.size() > 1) {
@@ -225,6 +248,11 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             }
 
             querySet(eObject, "filter", filters);
+        }
+
+        //aliases
+        if (kvp.containsKey("aliases")) {
+            querySet(eObject, "aliases", (List) kvp.get("aliases"));
         }
 
         //propertyName
@@ -248,23 +276,22 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 Collections.singletonList((String) kvp.get("featureVersion")));
         }
         
+        GetFeatureRequest req = GetFeatureRequest.adapt(request);
         if(kvp.containsKey("format_options")) {
-            GetFeatureType gft = (GetFeatureType) eObject;
-            gft.getFormatOptions().putAll((Map) kvp.get("format_options"));
+            req.getFormatOptions().putAll((Map) kvp.get("format_options"));
         }
         
         // sql view params
         if(kvp.containsKey("viewParams")) {
-            GetFeatureType gft = (GetFeatureType) eObject;
-            if(gft.getMetadata() == null) {
-                gft.setMetadata(new HashMap());
-            } 
-            
+            if(req.getMetadata() == null) {
+                req.setMetadata(new HashMap());
+            }
+
             // fan out over all layers if necessary
             List<Map<String, String>> viewParams = (List<Map<String, String>>) kvp.get("viewParams");
             if(viewParams.size() > 0) {
-                int layerCount = gft.getQuery().size();
-                
+                int layerCount = req.getQueries().size();
+
                 // if we have just one replicate over all layers
                 if(viewParams.size() == 1 && layerCount > 1) {
                     List<Map<String, String>> replacement = new ArrayList<Map<String,String>>();
@@ -274,12 +301,12 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                     viewParams = replacement;
                 } else if(viewParams.size() != layerCount) {
                     String msg = layerCount + " feature types requested, but found " + viewParams.size()
-                    + " view params specified. ";
-                    throw new ServiceException(msg, getClass().getName());
+                   + " view params specified. ";
+                    throw new WFSException(eObject, msg, getClass().getName());
                 }
             }
-            
-            gft.getMetadata().put(GetFeature.SQL_VIEW_PARAMS, viewParams);
+
+            req.getMetadata().put(GetFeature.SQL_VIEW_PARAMS, viewParams);
         }
 
         return request;
@@ -290,20 +317,62 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
      * @param kvp
      * @param keys
      */
-    private void ensureMutuallyExclusive(Map kvp, String[] keys) {
+    private void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
         for (int i = 0; i < keys.length; i++) {
             if (kvp.containsKey(keys[i])) {
                 for (int j = i + 1; j < keys.length; j++) {
                     if (kvp.containsKey(keys[j])) {
                         String msg = keys[i] + " and " + keys[j]
                             + " both specified but are mutually exclusive";
-                        throw new WFSException(msg);
+                        throw new WFSException(request, msg);
                     }
                 }
             }
         }
     }
 
+    QName checkTypeName(QName qName, NamespaceSupport namespaces, EObject request) {
+     // check the type name is known, otherwise complain
+        String namespaceURI = qName.getNamespaceURI();
+        String localPart = qName.getLocalPart();
+        String prefix = qName.getPrefix();
+        if (namespaces != null) {
+            if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
+                // request did not specify a namespace prefix for the typeName,
+                // let's see if it speficied a default namespace
+                String uri = namespaces.getURI(XMLConstants.DEFAULT_NS_PREFIX);
+                if (!XMLConstants.NULL_NS_URI.equals(uri)) {
+                    // alright, request came with xmlns(http:...) to idicat the typeName's
+                    // namespace
+                    namespaceURI = uri;
+                }
+            } else if (namespaces.getURI(prefix) != null) {
+                // so request used a custom prefix and declared the prefix:uri mapping?
+                namespaceURI = namespaces.getURI(qName.getPrefix());
+            }
+            NamespaceInfo ns = catalog.getNamespaceByURI(namespaceURI);
+            if (ns == null) {
+                throw new WFSException("Unknown namespace [" + qName.getPrefix() + "]",
+                        "InvalidParameterValue", "namespace");
+            }
+            prefix = ns.getPrefix();
+            qName = new QName(namespaceURI, localPart, prefix);
+        }
+
+        if (!XMLConstants.DEFAULT_NS_PREFIX.equals(qName.getPrefix())
+                && catalog.getNamespaceByPrefix(qName.getPrefix()) == null) {
+            throw new WFSException("Unknown namespace [" + qName.getPrefix() + "]",
+                    "InvalidParameterValue", "namespace");
+        }
+
+        if (catalog.getFeatureTypeByName(namespaceURI, localPart) == null) {
+            String name = qName.getPrefix() + ":" + qName.getLocalPart();
+            throw new WFSException("Feature type " + name + " unknown",
+                    "InvalidParameterValue", "typeName");
+        }
+        return qName;
+    }
+    
     BBOX bboxFilter(QName typeName, Envelope bbox) throws Exception {
         FeatureTypeInfo featureTypeInfo = 
             catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
@@ -333,8 +402,20 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             return;
         }
 
-        List query = (List) EMFUtils.get(request, "query");
-
+        GetFeatureRequest req = GetFeatureRequest.adapt(request);
+        
+        //handle the name differences in property names between 1.1 and 2.0
+        if (req instanceof GetFeatureRequest.WFS20) {
+            if ("typeName".equals(property)) {
+                property = "typeNames";
+            }
+            if ("propertyName".equals(property)) {
+                property = "abstractProjectionClause";
+            }
+        }
+        
+        List query = req.getAdaptedQueries();
+        
         int m = values.size();
         int n = query.size();
 
@@ -345,29 +426,66 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             return;
         }
 
+        //WfsFactory wfsFactory = (WfsFactory) getFactory();
         //match up sizes
         if (m > n) {
             if (n == 0) {
                 //make same size, with empty objects
                 for (int i = 0; i < m; i++) {
-                    query.add(getWfsFactory().createQueryType());
+                    query.add(req.createQuery().getAdaptee());
                 }
             } else if (n == 1) {
                 //clone single object up to 
                 EObject q = (EObject) query.get(0);
 
                 for (int i = 1; i < m; i++) {
-                    query.add(EMFUtils.clone(q, getWfsFactory()));
+                    query.add(EMFUtils.clone(q, req.getFactory()));
                 }
 
                 return;
             } else {
                 //illegal
                 String msg = "Specified " + m + " " + property + " for " + n + " queries.";
-                throw new WFSException(msg);
+                throw new WFSException(request, msg);
             }
         }
 
         EMFUtils.set(query, property, values);
+    }
+    
+    protected void buildStoredQueries(EObject request, List<URI> storedQueryIds, Map kvp) {
+        GetFeatureRequest req = GetFeatureRequest.adapt(request);
+        req.getAdaptedQueries();
+        
+        if (!(req instanceof GetFeatureRequest.WFS20)) {
+            throw new WFSException(req, "Stored queries only supported in WFS 2.0+");
+        }
+
+        StoredQueryProvider sqp = new StoredQueryProvider(catalog);
+        for (URI storedQueryId : storedQueryIds) {
+            StoredQuery sq = sqp.getStoredQuery(storedQueryId.toString());
+            if (sq == null) {
+                throw new WFSException(req, "No such stored query: " + storedQueryId);
+            }
+    
+            //JD: since stored queries are 2.0 only we will create 2.0 model objects directly... once
+            // the next version of wfs comes out (and if they keep stored queries around) we will have
+            // to abstract stored query away with a request object adapter
+            Wfs20Factory factory = (Wfs20Factory) req.getFactory();
+            StoredQueryType storedQuery = factory.createStoredQueryType();
+            storedQuery.setId(storedQueryId.toString());
+            
+            //look for parameters in the kvp map
+            for (ParameterExpressionType p : sq.getQuery().getParameter()) {
+                if (kvp.containsKey(p.getName())) {
+                    ParameterType param = factory.createParameterType();
+                    param.setName(p.getName());
+                    param.setValue(kvp.get(p.getName()).toString());
+                    storedQuery.getParameter().add(param);
+                }
+            }
+            
+            req.getAdaptedQueries().add(storedQuery);
+        }
     }
 }

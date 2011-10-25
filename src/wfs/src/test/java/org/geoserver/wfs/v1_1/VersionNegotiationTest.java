@@ -8,6 +8,7 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.wfs.CapabilitiesTransformer;
 import org.geoserver.wfs.GetCapabilities;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
 
 public class VersionNegotiationTest extends WFSTestSupport {
@@ -42,7 +43,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.getAcceptVersions().getVersion().add("1.0.0");
         request.getAcceptVersions().getVersion().add("1.1.0");
 
-        TransformerBase tx = getCaps.run(request);
+        TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
         assertTrue(tx instanceof CapabilitiesTransformer.WFS1_1);
     }
 
@@ -53,7 +54,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.setAcceptVersions(owsFactory.createAcceptVersionsType());
         request.getAcceptVersions().getVersion().add("1.0.0");
 
-        TransformerBase tx = getCaps.run(request);
+        TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
         assertTrue(tx instanceof CapabilitiesTransformer.WFS1_0);
     }
 
@@ -64,7 +65,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.setAcceptVersions(owsFactory.createAcceptVersionsType());
         request.getAcceptVersions().getVersion().add("1.1.0");
 
-        TransformerBase tx = getCaps.run(request);
+        TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
         assertTrue(tx instanceof CapabilitiesTransformer.WFS1_1);
     }
 
@@ -76,7 +77,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.setAcceptVersions(owsFactory.createAcceptVersionsType());
         request.getAcceptVersions().getVersion().add("0.0.0");
 
-        TransformerBase tx = getCaps.run(request);
+        TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
         assertTrue(tx instanceof CapabilitiesTransformer.WFS1_0);
     }
 
@@ -88,7 +89,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.setAcceptVersions(owsFactory.createAcceptVersionsType());
         request.getAcceptVersions().getVersion().add("1.1.1");
 
-        TransformerBase tx = getCaps.run(request);
+        TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
         assertTrue(tx instanceof CapabilitiesTransformer.WFS1_1);
     }
 
@@ -99,7 +100,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
         request.setAcceptVersions(owsFactory.createAcceptVersionsType());
         request.getAcceptVersions().getVersion().add("1.0.5");
 
-        TransformerBase tx = getCaps.run(request);
+        TransformerBase tx = getCaps.run(GetCapabilitiesRequest.adapt(request));
         assertTrue(tx instanceof CapabilitiesTransformer.WFS1_0);
     }
 

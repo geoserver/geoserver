@@ -46,7 +46,7 @@ public class XYGeomTest extends AbstractAppSchemaWfsTestSupport {
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=test:PointFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=test:PointFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
     }
@@ -55,7 +55,7 @@ public class XYGeomTest extends AbstractAppSchemaWfsTestSupport {
      * Test content of GetFeature response.
      */
     public void testGetFeatureContent() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=test:PointFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=test:PointFeature");
 
         assertXpathCount(2, "//test:PointFeature", doc);
     }

@@ -33,7 +33,7 @@ public class SecondaryNamespaceTest extends AbstractAppSchemaWfsTestSupport {
      * Test encoding of sa namespace.
      */
     public void testNamespaces() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=ex:ShapeContent");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:ShapeContent");
         LOGGER.info("Secondary Namespace Response:\n" + prettyString(doc));
         assertXpathCount(2, "//sa:shape", doc);
         assertXpathEvaluatesTo("420502.00109583 399739.99000583 420502.00109583 399739.99000583",

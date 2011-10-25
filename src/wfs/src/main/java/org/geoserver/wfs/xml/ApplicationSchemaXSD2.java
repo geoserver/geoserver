@@ -66,7 +66,7 @@ public class ApplicationSchemaXSD2 extends XSD {
         for (Set<FeatureTypeInfo> fts : featureTypes.values()) {
             types.addAll(fts);
         }
-        return schemaBuilder.build(types.toArray(new FeatureTypeInfo[types.size()]), baseURL);
+        return schemaBuilder.build(types.toArray(new FeatureTypeInfo[types.size()]), baseURL, 1);
     }
 
 }

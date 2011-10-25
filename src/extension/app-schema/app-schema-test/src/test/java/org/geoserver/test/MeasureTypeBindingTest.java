@@ -31,7 +31,7 @@ public class MeasureTypeBindingTest extends AbstractAppSchemaWfsTestSupport {
      * (http://jira.codehaus.org/browse/GEOT-1272)
      */
     public void testMeasureTypeBindingWithoutUOM() {
-        String path = "wfs?request=GetFeature&typename=ex:PolymorphicFeature";
+        String path = "wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature";
         Document doc = getAsDOM(path);
         LOGGER
                 .info("WFS GetFeature&typename=ex:PolymorphicFeature response:\n"

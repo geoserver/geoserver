@@ -39,7 +39,7 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test DescribeFeatureType response.
      */
     public void testDescribeFeatureType() {
-        String path = "wfs?request=DescribeFeatureType&typename=gsml:MappedFeature";
+        String path = "wfs?request=DescribeFeatureType&typename=gsml:MappedFeature&version=1.1.0";
         String newline = System.getProperty("line.separator");
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));

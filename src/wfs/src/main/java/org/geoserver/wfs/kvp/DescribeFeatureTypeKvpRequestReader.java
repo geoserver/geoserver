@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.kvp;
@@ -12,17 +12,25 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import net.opengis.wfs.DescribeFeatureTypeType;
+import net.opengis.wfs.WfsFactory;
 
+import org.eclipse.emf.ecore.EFactory;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 import org.xml.sax.helpers.NamespaceSupport;
 
 
 public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
 
     private final Catalog catalog;
-
+    
     public DescribeFeatureTypeKvpRequestReader(final Catalog catalog) {
-        super(DescribeFeatureTypeType.class);
+        super(DescribeFeatureTypeType.class, WfsFactory.eINSTANCE);
+        this.catalog = catalog;
+    }
+    public DescribeFeatureTypeKvpRequestReader(final Catalog catalog, Class requestBean, EFactory factory) {
+        super(requestBean, factory);
         this.catalog = catalog;
     }
 
@@ -33,15 +41,17 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
 
         //do an additional check for outputFormat, because the default 
         // in wfs 1.1 is not the default for wfs 1.0
-        DescribeFeatureTypeType describeFeatureType = (DescribeFeatureTypeType) request;
-
-        if (!describeFeatureType.isSetOutputFormat()) {
-            if (describeFeatureType.getVersion().startsWith("1.1")) {
-                //set 1.1 default
-                describeFeatureType.setOutputFormat("text/xml; subtype=gml/3.1.1");
-            } else {
-                //set 1.0 default
-                describeFeatureType.setOutputFormat("XMLSCHEMA");
+        DescribeFeatureTypeRequest req = DescribeFeatureTypeRequest.adapt(request);
+        
+        if (!req.isSetOutputFormat()) {
+            switch(WFSInfo.Version.negotiate(req.getVersion())) {
+                case V_10:
+                    req.setOutputFormat("XMLSCHEMA"); break;
+                case V_11:
+                    req.setOutputFormat("text/xml; subtype=gml/3.1.1"); break;
+                case V_20:
+                default:
+                    req.setOutputFormat("text/xml; subtype=gml/3.2");
             }
         }
 
@@ -56,7 +66,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
             }
         }
         if (namespaces != null) {
-            List<QName> typeNames = describeFeatureType.getTypeName();
+            List<QName> typeNames = req.getTypeNames();
             List<QName> newList = new ArrayList<QName>(typeNames.size());
             for(QName name : typeNames){
                 String localPart = name.getLocalPart();
@@ -76,8 +86,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
                 }
                 newList.add(new QName(namespaceURI, localPart, prefix));
             }
-            describeFeatureType.getTypeName().clear();
-            describeFeatureType.getTypeName().addAll(newList);
+            req.setTypeNames(newList);
         }
         return request;
     }

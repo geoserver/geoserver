@@ -20,10 +20,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.xml.transform.TransformerException;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -35,6 +31,9 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
 import org.geotools.GML.Version;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -126,7 +125,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
     * @throws IOException DOCUMENT ME!
     */
     @SuppressWarnings("unchecked")
-    public void prepare(String outputFormat, FeatureCollectionType results, GetFeatureType request)
+    public void prepare(String outputFormat, FeatureCollectionResponse results, GetFeatureRequest request)
         throws IOException {
         this.compressOutput = formatNameCompressed.equalsIgnoreCase(outputFormat);
 
@@ -166,7 +165,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
             //JD: wfs reprojection: should not set srs form metadata but from 
             // the request
             //srs = Integer.parseInt(meta.getSRS());
-            QueryType query = (QueryType) request.getQuery().get(i);
+            Query query = request.getQueries().get(i);
             try {
                 String srsName = query.getSrsName() != null ? query.getSrsName().toString() : null;
                 if ( srsName == null ) {
@@ -250,7 +249,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
      * @throws IOException DOCUMENT ME!
      * @throws IllegalStateException DOCUMENT ME!
      */
-    public void encode(OutputStream output, FeatureCollectionType results, GetFeatureType request)
+    public void encode(OutputStream output, FeatureCollectionResponse results, GetFeatureRequest request)
         throws ServiceException, IOException {
         if (results == null) {
             throw new IllegalStateException("It seems prepare() has not been called"
@@ -287,9 +286,9 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
         Operation getFeature) throws IOException, ServiceException {
-        GetFeatureType request = (GetFeatureType) getFeature.getParameters()[0];
+        GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         
         prepare(request.getOutputFormat(), featureCollection, request);
         encode(output, featureCollection, request );

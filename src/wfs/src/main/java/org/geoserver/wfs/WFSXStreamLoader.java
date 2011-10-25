@@ -52,10 +52,14 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
     protected WFSInfo initialize(WFSInfo service) {
         super.initialize(service);
         if ( service.getVersions().isEmpty() ) {
-            service.getVersions().add( new Version( "1.0.0" ) );
-            service.getVersions().add( new Version( "1.1.0" ) );
+            service.getVersions().add(WFSInfo.Version.V_10.getVersion());
+            service.getVersions().add(WFSInfo.Version.V_11.getVersion());
         }
-        
+
+        if (!service.getVersions().contains(WFSInfo.Version.V_20.getVersion())) {
+            service.getVersions().add(WFSInfo.Version.V_20.getVersion());
+        }
+
         //set the defaults for GMLInfo if they are not set
         GMLInfo gml = service.getGML().get(WFSInfo.Version.V_10);
         if (gml.getOverrideGMLAttributes() == null) {

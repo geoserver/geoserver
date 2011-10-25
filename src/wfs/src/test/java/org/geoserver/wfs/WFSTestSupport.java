@@ -74,8 +74,14 @@ public abstract class WFSTestSupport extends GeoServerTestSupport {
         namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("gs", "http://geoserver.org");
         
         getTestData().registerNamespaces(namespaces);
+        setUpNamespaces(namespaces);
+        
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+    }
+    
+    protected void setUpNamespaces(Map<String,String> namespaces) {
     }
 }

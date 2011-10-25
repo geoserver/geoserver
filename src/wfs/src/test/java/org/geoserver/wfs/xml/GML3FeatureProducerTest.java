@@ -9,7 +9,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.Test;
-import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
@@ -18,6 +17,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.data.FeatureSource;
@@ -65,8 +65,8 @@ public class GML3FeatureProducerTest extends WFSTestSupport {
         FeatureSource<? extends FeatureType, ? extends Feature> source = getFeatureSource(MockData.SEVEN);
         FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures();
 
-        FeatureCollectionType fcType = WfsFactory.eINSTANCE
-                .createFeatureCollectionType();
+        FeatureCollectionResponse fcType = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
 
         fcType.getFeature().add(features);
 
@@ -82,8 +82,8 @@ public class GML3FeatureProducerTest extends WFSTestSupport {
     }
 
     public void testMultipleSameNamespace() throws Exception {
-        FeatureCollectionType fcType = WfsFactory.eINSTANCE
-                .createFeatureCollectionType();
+        FeatureCollectionResponse fcType = FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE
+                .createFeatureCollectionType());
         fcType.getFeature().add(
                getFeatureSource(MockData.SEVEN).getFeatures());
         fcType.getFeature().add(getFeatureSource(MockData.FIFTEEN).getFeatures());
@@ -101,8 +101,8 @@ public class GML3FeatureProducerTest extends WFSTestSupport {
     }
 
     public void testMultipleDifferentNamespace() throws Exception {
-        FeatureCollectionType fcType = WfsFactory.eINSTANCE
-                .createFeatureCollectionType();
+        FeatureCollectionResponse fcType = FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE
+                .createFeatureCollectionType());
         fcType.getFeature().add(getFeatureSource(MockData.SEVEN).getFeatures());
         fcType.getFeature().add(getFeatureSource(MockData.POLYGONS).getFeatures());
         

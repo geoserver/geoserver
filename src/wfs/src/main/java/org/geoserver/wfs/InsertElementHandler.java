@@ -27,6 +27,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.feature.ReprojectingFeatureCollection;
+import org.geoserver.wfs.request.Insert;
+import org.geoserver.wfs.request.TransactionElement;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -63,27 +67,29 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         this.filterFactory = filterFactory;
     }
 
-    public void checkValidity(EObject element, Map<QName, FeatureTypeInfo> featureTypeInfos)
+    public void checkValidity(TransactionElement element, Map<QName, FeatureTypeInfo> featureTypeInfos)
         throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains( WFSInfo.Operation.TRANSACTION_INSERT)) {
-            throw new WFSException("Transaction INSERT support is not enabled");
+            throw new WFSException(element, "Transaction INSERT support is not enabled");
         }
     }
 
-    public void execute(EObject element, TransactionType request,
-            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
-            TransactionResponseType response, TransactionListener listener)
-            throws WFSTransactionException {
-        LOGGER.finer("Transasction Insert:" + element);
+    @SuppressWarnings("unchecked")
+    public void execute(TransactionElement element, TransactionRequest request, Map featureStores, 
+        TransactionResponse response, TransactionListener listener) throws WFSTransactionException {
+        
+        Insert insert = (Insert) element;
+        LOGGER.finer("Transasction Insert:" + insert);
 
-        InsertElementType insert = (InsertElementType) element;
-        long inserted = response.getTransactionSummary().getTotalInserted().longValue();
+        long inserted = response.getTotalInserted().longValue();
 
         try {
             // group features by their schema
             HashMap /* <SimpleFeatureType,FeatureCollection> */ schema2features = new HashMap();
 
-            for (Iterator f = insert.getFeature().iterator(); f.hasNext();) {
+            
+            List featureList = insert.getFeatures();
+            for (Iterator f = featureList.iterator(); f.hasNext();) {
                 SimpleFeature feature = (SimpleFeature) f.next();
                 SimpleFeatureType schema = feature.getFeatureType();
                 SimpleFeatureCollection collection;
@@ -114,7 +120,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                 store = DataUtilities.simple((FeatureStore) featureStores.get(elementName));
 
                 if (store == null) {
-                    throw new WFSException("Could not locate FeatureStore for '" + elementName
+                    throw new WFSException(request, "Could not locate FeatureStore for '" + elementName
                         + "'");
                 }
 
@@ -182,9 +188,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
             // report back fids, we need to keep the same order the
             // fids were reported in the original feature collection
-            InsertedFeatureType insertedFeature = null;
-
-            for (Iterator f = insert.getFeature().iterator(); f.hasNext();) {
+            for (Iterator f = featureList.iterator(); f.hasNext();) {
                 SimpleFeature feature = (SimpleFeature) f.next();
                 SimpleFeatureType schema = feature.getFeatureType();
 
@@ -192,22 +196,18 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                 LinkedList fids = (LinkedList) schema2fids.get(schema.getTypeName());
                 String fid = ((FeatureId) fids.removeFirst()).getID();
 
-                insertedFeature = WfsFactory.eINSTANCE.createInsertedFeatureType();
-                insertedFeature.setHandle(insert.getHandle());
-                insertedFeature.getFeatureId().add(filterFactory.featureId(fid));
-
-                response.getInsertResults().getFeature().add(insertedFeature);
+                response.addInsertedFeature(insert.getHandle(), filterFactory.featureId(fid));
             }
 
             // update the insert counter
-            inserted += insert.getFeature().size();
+            inserted += featureList.size();
         } catch (Exception e) {
             String msg = "Error performing insert: " + e.getMessage();
             throw new WFSTransactionException(msg, e, insert.getHandle());
         }
 
         // update transaction summary
-        response.getTransactionSummary().setTotalInserted(BigInteger.valueOf(inserted));
+        response.setTotalInserted(BigInteger.valueOf(inserted));
     }
 
     
@@ -239,24 +239,20 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
-    /**
-     * @see org.geoserver.wfs.TransactionElementHandler#getElementClass()
-     */
-    public Class<InsertElementType> getElementClass() {
-        return InsertElementType.class;
+    public Class getElementClass() {
+        return Insert.class;
     }
 
-    /**
-     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
-     */
-    @SuppressWarnings("unchecked")
-    public QName[] getTypeNames(EObject element) throws WFSTransactionException {
-        InsertElementType insert = (InsertElementType) element;
-        Set<QName> typeNames = new HashSet<QName>();
+    public QName[] getTypeNames(TransactionElement element) throws WFSTransactionException {
+        Insert insert = (Insert) element;
+        
+        List typeNames = new ArrayList();
 
-        if (!insert.getFeature().isEmpty()) {
-            Iterable<SimpleFeature> features = insert.getFeature();
-            for (SimpleFeature feature : features) {
+        List features = insert.getFeatures();
+        if (!features.isEmpty()) {
+            for (Iterator f = features.iterator(); f.hasNext();) {
+                SimpleFeature feature = (SimpleFeature) f.next();
+
                 String name = feature.getFeatureType().getTypeName();
                 String namespaceURI = feature.getFeatureType().getName().getNamespaceURI();
 

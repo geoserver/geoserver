@@ -36,7 +36,7 @@ public class SubstitutionGroupTest extends AbstractAppSchemaWfsTestSupport {
      * Test GetFeature .
      */
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("200.0",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue", doc);

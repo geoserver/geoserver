@@ -15,6 +15,7 @@ import net.opengis.wfs.DescribeFeatureTypeType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 
 
 /**
@@ -42,7 +43,7 @@ public class DescribeFeatureType {
     private WFSInfo wfs;
 
     /**
-         * Creates a new wfs DescribeFeatureType operation.
+         * Creates a new wfs 1.0/1.1 DescribeFeatureType operation.
          *
          * @param wfs The wfs configuration
          * @param catalog The geoserver catalog.
@@ -68,9 +69,9 @@ public class DescribeFeatureType {
         this.catalog = catalog;
     }
 
-    public FeatureTypeInfo[] run(DescribeFeatureTypeType request)
+    public FeatureTypeInfo[] run(DescribeFeatureTypeRequest request)
         throws WFSException {
-        List<QName> names = new ArrayList<QName>(request.getTypeName());
+        List<QName> names = new ArrayList<QName>(request.getTypeNames());
 
         final boolean citeConformance = getWFS().isCiteCompliant();
         if (!citeConformance) {
@@ -89,7 +90,8 @@ public class DescribeFeatureType {
             for (QName name : names) {
                 String nsUri = name.getNamespaceURI();
                 if (XMLConstants.NULL_NS_URI.equals(nsUri)
-                        || org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE.equals(nsUri)) {
+                        || org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE.equals(nsUri)
+                        || org.geotools.wfs.v2_0.WFS.NAMESPACE.equals(nsUri)) {
                     // for this one we need to assign the default geoserver
                     // namespace
                     name = new QName(defaultNsUri, name.getLocalPart());
@@ -135,7 +137,7 @@ public class DescribeFeatureType {
                         msg += ". \nStrict WFS protocol conformance is being applied.\n"
                                 + "Make sure the type name is correctly qualified";
                     }
-                    throw new WFSException(msg);
+                    throw new WFSException(request, msg);
                 }
             }
         }

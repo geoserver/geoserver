@@ -63,6 +63,12 @@
       <version>1.8</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-h2</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

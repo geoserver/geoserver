@@ -17,6 +17,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
@@ -58,53 +59,16 @@ public class WfsXmlReader extends XmlRequestReader {
     }
 
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
-        //check the strict flag to determine if we should validate or not
-        Boolean strict = (Boolean) kvp.get("strict");
-        if ( strict == null ) {
-            strict = Boolean.FALSE;
-        }
-        
-        //check for cite compliance, we always validate for cite
-        if ( wfs.isCiteCompliant() ) {
-            strict = Boolean.TRUE;
-        }
-        
         //TODO: make this configurable?
         configuration.getProperties().add(Parser.Properties.PARSE_UNKNOWN_ELEMENTS);
 
         Parser parser = new Parser(configuration);
-        parser.setValidating(strict.booleanValue());
+        WFSXmlUtils.initRequestParser(parser, wfs, catalog, kvp);
         
-        //"inject" namespace mappings
-        List<NamespaceInfo> namespaces = catalog.getNamespaces();
-        for ( NamespaceInfo ns : namespaces ) {
-            if ( ns.equals( catalog.getDefaultNamespace() ) )  
-                continue;
-            
-            parser.getNamespaces().declarePrefix( 
-                ns.getPrefix(), ns.getURI());
-        }
-       
-        //set the input source with the correct encoding
-        InputSource source = new InputSource(reader);
-        source.setEncoding(wfs.getGeoServer().getGlobal().getCharset());
-
-        Object parsed = parser.parse(source);
-
-        //TODO: HACK, disabling validation for transaction
-        if (!"Transaction".equalsIgnoreCase(getElement().getLocalPart())) {
-            if (!parser.getValidationErrors().isEmpty()) {
-                WFSException exception = new WFSException("Invalid request", "InvalidParameterValue");
-
-                for (Iterator e = parser.getValidationErrors().iterator(); e.hasNext();) {
-                    Exception error = (Exception) e.next();
-                    exception.getExceptionText().add(error.getLocalizedMessage());
-                }
-
-                throw exception;
-            }
-        }
-
+        Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
+        
+        WFSXmlUtils.checkValidationErrors(parser, this);
+        
         return parsed;
     }
 }

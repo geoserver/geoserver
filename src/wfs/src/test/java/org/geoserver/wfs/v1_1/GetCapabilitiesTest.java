@@ -54,7 +54,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals(0, xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[not(starts-with(., sf))]", doc).getLength());
         
         // try again with a missing one
-        doc = getAsDOM("wfs?service=WFS&request=getCapabilities&namespace=NotThere");
+        doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities&namespace=NotThere");
         e = doc.getDocumentElement();
         assertEquals("WFS_Capabilities", e.getLocalName());
         assertEquals(0, xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength());
@@ -62,11 +62,14 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
     public void testPost() throws Exception {
 
-        String xml = "<GetCapabilities service=\"WFS\" "
+        String xml = "<GetCapabilities service=\"WFS\" version='1.1.0'"
                 + " xmlns=\"http://www.opengis.net/wfs\" "
                 + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + " xmlns:ows=\"http://www.opengis.net/ows\" "
                 + " xsi:schemaLocation=\"http://www.opengis.net/wfs "
-                + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\"/>";
+                + " http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\">" 
+                +   "<ows:AcceptVersions><ows:Version>1.1.0</ows:Version></ows:AcceptVersions>"
+                + "</GetCapabilities>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement()
@@ -75,9 +78,12 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     }
 
     public void testPostNoSchemaLocation() throws Exception {
-        String xml = "<GetCapabilities service=\"WFS\" "
+        String xml = "<GetCapabilities service=\"WFS\" version='1.1.0'"
                 + " xmlns=\"http://www.opengis.net/wfs\" "
-                + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />";
+                + " xmlns:ows=\"http://www.opengis.net/ows\" "
+                + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >"
+                +   "<ows:AcceptVersions><ows:Version>1.1.0</ows:Version></ows:AcceptVersions>"
+                + "</GetCapabilities>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement()

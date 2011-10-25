@@ -18,7 +18,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
 
@@ -32,6 +31,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -110,7 +110,8 @@ public class ShapeZipTest extends WFSTestSupport {
         fs = getFeatureSource(MockData.BASIC_POLYGONS);
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
@@ -219,7 +220,8 @@ public class ShapeZipTest extends WFSTestSupport {
                 Filter.INCLUDE);
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fc);
 
         // get the file name
@@ -241,7 +243,8 @@ public class ShapeZipTest extends WFSTestSupport {
         // setup the request params
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(getFeatureSource(MockData.BASIC_POLYGONS).getFeatures(Filter.INCLUDE));
         fct.getFeature().add(getFeatureSource(MockData.BRIDGES).getFeatures(Filter.INCLUDE));
 
@@ -264,7 +267,8 @@ public class ShapeZipTest extends WFSTestSupport {
         // setup the request params
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(getFeatureSource(ALL_DOTS).getFeatures(Filter.INCLUDE));
 
         // get the file name
@@ -294,9 +298,10 @@ public class ShapeZipTest extends WFSTestSupport {
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat(getGeoServer(), getCatalog(),
                 getResourceLoader());
 
-        FeatureCollectionType mockResult = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        SimpleFeatureCollection features = getFeatureSource(ALL_DOTS).getFeatures(Filter.INCLUDE);
-        mockResult.getFeature().add(features);
+        FeatureCollectionResponse mockResult = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+        mockResult.getFeature().add(getFeatureSource(ALL_DOTS).getFeatures(Filter.INCLUDE));
+
         GetFeatureType mockRequest = WfsFactory.eINSTANCE.createGetFeatureType();
 
         Operation mockOperation = new Operation("GetFeature", getServiceDescriptor10(), null,
@@ -331,7 +336,8 @@ public class ShapeZipTest extends WFSTestSupport {
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat(getGeoServer(), getCatalog(),
                 getResourceLoader());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
@@ -353,7 +359,8 @@ public class ShapeZipTest extends WFSTestSupport {
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat(getGeoServer(), getCatalog(),
                 getResourceLoader());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(getFeatureSource(ALL_TYPES).getFeatures());
         Map options = new HashMap();
         options.put("PRJFILEFORMAT", "ESRI");
@@ -383,7 +390,8 @@ public class ShapeZipTest extends WFSTestSupport {
 
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat(geoServer, catalog, resourceLoader);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
@@ -405,7 +413,8 @@ public class ShapeZipTest extends WFSTestSupport {
     byte[] writeOut(FeatureCollection fc) throws IOException {
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        FeatureCollectionResponse fct = 
+            FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(fc);
         zip.write(fct, bos, op);
         return bos.toByteArray();

@@ -68,7 +68,7 @@ public class GetGmlObject {
                 ds = dsInfo.getDataStore(null);
             } 
             catch (IOException e) {
-                throw new WFSException( e );
+                throw new WFSException( request, e );
             }
             
             if ( ds instanceof GmlObjectStore ) {
@@ -84,6 +84,6 @@ public class GetGmlObject {
             }
         }
         
-        throw new WFSException( "No such object: " + id );
+        throw new WFSException( request, "No such object: " + id );
     }
 }

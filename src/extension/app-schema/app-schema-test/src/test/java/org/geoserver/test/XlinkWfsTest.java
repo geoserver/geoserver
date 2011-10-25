@@ -54,7 +54,7 @@ public class XlinkWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
     }
@@ -63,7 +63,7 @@ public class XlinkWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test content of GetFeature response.
      */
     public void testGetFeatureContent() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
 
         assertXpathCount(4, "//gsml:MappedFeature", doc);
 

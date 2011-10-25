@@ -68,13 +68,6 @@
     </profile>
     
     <profile>
-      <id>wfsv</id>
-      <modules>
-        <module>wfsv</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>db2</id>
       <modules>
         <module>db2</module>

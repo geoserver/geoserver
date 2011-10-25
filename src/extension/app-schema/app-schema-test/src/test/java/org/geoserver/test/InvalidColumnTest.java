@@ -35,7 +35,7 @@ public class InvalidColumnTest extends AbstractAppSchemaWfsTestSupport {
      * Test whether GetFeature returns ows:ExceptionReport.
      */
     public void testGetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=gsml:GeologicUnit");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertXpathCount(1, "//ows:ExceptionReport", doc);
     }

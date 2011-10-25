@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 
@@ -25,7 +26,7 @@ public class PythonGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat
             throws ServiceException, IOException {
         
         try {
-            adapter.write(results, out);
+            adapter.write(FeatureCollectionResponse.adapt(results), out);
         } 
         catch (Exception e) {
             throw new ServiceException(e);

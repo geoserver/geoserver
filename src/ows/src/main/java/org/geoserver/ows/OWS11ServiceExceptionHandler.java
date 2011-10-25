@@ -37,8 +37,17 @@ import org.geotools.xml.Encoder;
  *
  */
 public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
+    /**
+     * verbose exception flag controlling whether the exception stack trace will be included in the
+     * encoded ows exception report
+     */
     protected boolean verboseExceptions = false;
-    
+
+    /**
+     * flag that controls what version to use in the ows exception report.
+     */
+    protected boolean useServiceVersion = false;
+
     /**
      * Constructor to be called if the exception is not for a particular service.
      *
@@ -71,7 +80,12 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
     public void handleServiceException(ServiceException exception, Request request) {
         Ows11Factory factory = Ows11Factory.eINSTANCE;
 
-        ExceptionReportType report = Ows11Util.exceptionReport( exception, verboseExceptions );
+        String version = null;
+        if (useServiceVersion && request.getServiceDescriptor() != null) {
+            version = request.getServiceDescriptor().getVersion().toString();
+        }
+
+        ExceptionReportType report = Ows11Util.exceptionReport( exception, verboseExceptions, version );
         
         HttpServletResponse response = request.getHttpResponse();
         response.setContentType("application/xml");
@@ -100,5 +114,15 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
             } catch (IOException ioe) {
             }
         }
+    }
+
+    /**
+     * Flag that controls what version to use in the ows exception report.
+     * <p>
+     * Setting to true will cause the service version to be used rather than the ows spec version.
+     * </p>
+     */
+    public void setUseServiceVersion(boolean useServiceVersion) {
+        this.useServiceVersion = useServiceVersion;
     }
 }

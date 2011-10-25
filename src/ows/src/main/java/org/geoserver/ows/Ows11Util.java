@@ -111,6 +111,11 @@ public class Ows11Util {
     
     public static ExceptionReportType exceptionReport(
             ServiceException exception, boolean verboseExceptions) {
+        return exceptionReport(exception, verboseExceptions, null);
+    }
+
+    public static ExceptionReportType exceptionReport(ServiceException exception, 
+        boolean verboseExceptions, String version) {
         
         ExceptionType e = f.createExceptionType();
 
@@ -139,7 +144,9 @@ public class Ows11Util {
         }
 
         ExceptionReportType report = f.createExceptionReportType();
-        report.setVersion("1.1.0");
+        
+        version = version != null ? version : "1.1.0";
+        report.setVersion(version);
         report.getException().add(e);
         
         return report;

@@ -90,7 +90,11 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
         report.setVersion("1.0.0");
         report.getException().add(e);
 
-        request.getHttpResponse().setContentType("application/xml");
+        if (!request.isSOAP()) {
+            //there will already be a SOAP mime type
+            request.getHttpResponse().setContentType("application/xml");
+        }
+        
 
         //response.setCharacterEncoding( "UTF-8" );
         OWSConfiguration configuration = new OWSConfiguration();
@@ -99,7 +103,8 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
         encoder.setIndenting(true);
         encoder.setIndentSize(2);
         encoder.setLineWidth(60);
-
+        encoder.setOmitXMLDeclaration(request.isSOAP());
+        
         String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/1.0.0/owsExceptionReport.xsd");
         encoder.setSchemaLocation(org.geoserver.ows.xml.v1_0.OWS.NAMESPACE, schemaLocation);
 

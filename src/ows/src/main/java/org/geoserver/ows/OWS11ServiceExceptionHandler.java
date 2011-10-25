@@ -88,7 +88,10 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
         ExceptionReportType report = Ows11Util.exceptionReport( exception, verboseExceptions, version );
         
         HttpServletResponse response = request.getHttpResponse();
-        response.setContentType("application/xml");
+        if (!request.isSOAP()) {
+            //there will already be a SOAP mime type
+            response.setContentType("application/xml");
+        }
 
         //response.setCharacterEncoding( "UTF-8" );
         OWSConfiguration configuration = new OWSConfiguration();
@@ -97,7 +100,8 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
         encoder.setIndenting(true);
         encoder.setIndentSize(2);
         encoder.setLineWidth(60);
-
+        encoder.setOmitXMLDeclaration(request.isSOAP());
+        
         String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/1.1.0/owsAll.xsd");
         encoder.setSchemaLocation(OWS.NAMESPACE, schemaLocation);
 

@@ -36,6 +36,11 @@ public class Request {
     protected boolean get;
 
     /**
+     * flag indicating if the request is a SOAP request
+     */
+    protected boolean soap;
+
+    /**
      * Kvp parameters, only non-null if get = true
      */
     protected Map kvp;
@@ -115,6 +120,13 @@ public class Request {
      */
     public boolean isGet() {
         return get;
+    }
+
+    /**
+     * True if the request is a SOAP request.
+     */
+    public boolean isSOAP() {
+        return soap;
     }
 
     /**
@@ -212,6 +224,13 @@ public class Request {
      */
     public void setGet(boolean get) {
         this.get = get;
+    }
+
+    /**
+     * Flags/unflags the request as a SOAP request.
+     */
+    public void setSOAP(boolean soap) {
+        this.soap = soap;
     }
 
     /**

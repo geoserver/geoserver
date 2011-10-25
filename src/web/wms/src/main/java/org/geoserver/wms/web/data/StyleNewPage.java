@@ -31,20 +31,22 @@ public class StyleNewPage extends AbstractStylePage {
             // TODO: check that this does not overriDe any existing files
             s.setFilename(s.getName() + ".sld");
         }
+
+        // write out the SLD before creating the style
+        try {
+            catalog.getResourcePool().writeStyle(s,
+                    new ByteArrayInputStream(rawSLD.getBytes()));
+        } catch (IOException e) {
+            throw new WicketRuntimeException(e);
+        }
+        
+        // store in the catalog
         try {
             getCatalog().add(s);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             error(e);
             return;
-        }
-
-        // write out the SLD
-        try {
-            catalog.getResourcePool().writeStyle(s,
-                    new ByteArrayInputStream(rawSLD.getBytes()));
-        } catch (IOException e) {
-            throw new WicketRuntimeException(e);
         }
 
         setResponsePage(StylePage.class);

@@ -4,6 +4,9 @@
  */
 package org.geoserver.ows.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 public class OwsUtilsTest extends TestCase {
@@ -38,6 +41,26 @@ public class OwsUtilsTest extends TestCase {
 
         OwsUtils.set(bar, "foo.b", 123);
         assertEquals(123, OwsUtils.get(bar, "foo.b"));
+    }
+
+    public void testPut() throws Exception {
+        Baz baz = new Baz();
+        try {
+            OwsUtils.put(baz, "map", "k", "v");
+            fail("null map should cause exception");
+        }
+        catch(IllegalArgumentException e) {}
+
+        baz.map = new HashMap();
+        try {
+            OwsUtils.put(baz, "xyz", "k", "v");
+            fail("bad property should cause exception");
+        }
+        catch(IllegalArgumentException e) {}
+
+        assertTrue(baz.map.isEmpty());
+        OwsUtils.put(baz, "map", "k", "v");
+        assertEquals("v", baz.map.get("k"));
     }
 
     class Foo {
@@ -80,6 +103,14 @@ public class OwsUtilsTest extends TestCase {
         }
         public void setD(Double d) {
             this.d = d;
+        }
+    }
+
+    class Baz {
+        Map map;
+
+        public Map getMap() {
+            return map;
         }
     }
 }

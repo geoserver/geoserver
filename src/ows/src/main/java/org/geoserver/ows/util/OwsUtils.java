@@ -167,6 +167,30 @@ public class OwsUtils {
     }
 
     /**
+     * Reflectively puts a key, value into a Map property.
+     * 
+     * @param object The target object.
+     * @param property The Map property.
+     * @param key The key to place into the map.
+     * @param value The value to place into the map.
+     * 
+     * @throws IllegalArgumentException If the property specified is not a map
+     * @throws NullPointerException If the property specifies is null
+     */
+    public static void put(Object object, String property, Object key, Object value) {
+        Object o = get(object, property);
+        if (!(o instanceof Map)) {
+            throw new IllegalArgumentException("Property " + property + " is not a map");
+        }
+
+        if (o == null) {
+            throw new NullPointerException("Property " + property + " is null");
+        }
+
+        ((Map)o).put(key,  value);
+    }
+
+    /**
      * Returns a getter method for a property of java bean.
      *
      * @param clazz The type of the bean.

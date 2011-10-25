@@ -1034,12 +1034,12 @@ public class Dispatcher extends AbstractController {
                 
                 if ( !matches.isEmpty() ) {
                     //we found some matches, make sure they are all in the 
-                    // same namespace
+                    // same service
                     Iterator itr = matches.iterator();
                     XmlRequestReader first = (XmlRequestReader) itr.next();
                     while( itr.hasNext() ) {
                         XmlRequestReader xmlReader = (XmlRequestReader ) itr.next();
-                        if ( !first.getElement().equals( xmlReader.getElement() ) ) {
+                        if (!first.getServiceId().equals(xmlReader.getServiceId())) {
                             //abort
                             matches.clear();
                             break;

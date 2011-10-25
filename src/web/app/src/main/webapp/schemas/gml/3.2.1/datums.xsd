@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Clemens Portele (interactive instruments) -->
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:datums:3.2.1">datums.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 13.5
+The datums schema components can be divided into three logical parts, which define elements and types for XML encoding of the definitions of:
+-	Abstract datum
+-	Geodetic datums, including ellipsoid and prime meridian
+-	Multiple other concrete types of spatial or temporal datums
+These schema components encode the Datum packages of the UML Models of ISO 19111 Clause 10 and ISO/DIS 19136 D.3.10.</documentation>
+	</annotation>
+	<include schemaLocation="referenceSystems.xsd"/>
+	<include schemaLocation="measures.xsd"/>
+	<element name="AbstractDatum" type="gml:AbstractDatumType" abstract="true" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>A gml:AbstractDatum specifies the relationship of a coordinate system to the earth, thus creating a coordinate reference system. A datum uses a parameter or set of parameters that determine the location of the origin of the coordinate reference system. Each datum subtype may be associated with only specific types of coordinate systems. This abstract complex type shall not be used, extended, or restricted, in a GML Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractDatumType" abstract="true">
+		<complexContent>
+			<extension base="gml:IdentifiedObjectType">
+				<sequence>
+					<element ref="gml:domainOfValidity" minOccurs="0"/>
+					<element ref="gml:scope" maxOccurs="unbounded"/>
+					<element ref="gml:anchorDefinition" minOccurs="0"/>
+					<element ref="gml:realizationEpoch" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="anchorDefinition" type="gml:CodeType">
+		<annotation>
+			<documentation>gml:anchorDefinition is a description, possibly including coordinates, of the definition used to anchor the datum to the Earth. Also known as the "origin", especially for engineering and image datums. The codeSpace attribute may be used to reference a source of more detailed on this point or surface, or on a set of such descriptions.
+-	For a geodetic datum, this point is also known as the fundamental point, which is traditionally the point where the relationship between geoid and ellipsoid is defined. In some cases, the "fundamental point" may consist of a number of points. In those cases, the parameters defining the geoid/ellipsoid relationship have been averaged for these points, and the averages adopted as the datum definition.
+-	For an engineering datum, the anchor definition may be a physical point, or it may be a point with defined coordinates in another CRS.may
+-	For an image datum, the anchor definition is usually either the centre of the image or the corner of the image.
+-	For a temporal datum, this attribute is not defined. Instead of the anchor definition, a temporal datum carries a separate time origin of type DateTime.</documentation>
+		</annotation>
+	</element>
+	<element name="realizationEpoch" type="date">
+		<annotation>
+			<documentation>gml:realizationEpoch is the time after which this datum definition is valid. See ISO 19111 Table 32 for details.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DatumPropertyType">
+		<annotation>
+			<documentation>gml:DatumPropertyType is a property type for association roles to a datum, either referencing or containing the definition of that datum.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="GeodeticDatum" type="gml:GeodeticDatumType" substitutionGroup="gml:AbstractDatum">
+		<annotation>
+			<documentation>gml:GeodeticDatum is a geodetic datum defines the precise location and orientation in 3-dimensional space of a defined ellipsoid (or sphere), or of a Cartesian coordinate system centered in this ellipsoid (or sphere).</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeodeticDatumType">
+		<complexContent>
+			<extension base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:primeMeridian"/>
+					<element ref="gml:ellipsoid"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="primeMeridian" type="gml:PrimeMeridianPropertyType">
+		<annotation>
+			<documentation>gml:primeMeridian is an association role to the prime meridian used by this geodetic datum.</documentation>
+		</annotation>
+	</element>
+	<element name="ellipsoid" type="gml:EllipsoidPropertyType">
+		<annotation>
+			<documentation>gml:ellipsoid is an association role to the ellipsoid used by this geodetic datum.</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeodeticDatumPropertyType">
+		<annotation>
+			<documentation>gml:GeodeticDatumPropertyType is a property type for association roles to a geodetic datum, either referencing or containing the definition of that datum.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:GeodeticDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="Ellipsoid" type="gml:EllipsoidType" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>A gml:Ellipsoid is a geometric figure that may be used to describe the approximate shape of the earth. In mathematical terms, it is a surface formed by the rotation of an ellipse about its minor axis.</documentation>
+		</annotation>
+	</element>
+	<complexType name="EllipsoidType">
+		<complexContent>
+			<extension base="gml:IdentifiedObjectType">
+				<sequence>
+					<element ref="gml:semiMajorAxis"/>
+					<element ref="gml:secondDefiningParameter"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="semiMajorAxis" type="gml:MeasureType">
+		<annotation>
+			<documentation>gml:semiMajorAxis specifies the length of the semi-major axis of the ellipsoid, with its units. Uses the MeasureType with the restriction that the unit of measure referenced by uom must be suitable for a length, such as metres or feet.</documentation>
+		</annotation>
+	</element>
+	<element name="secondDefiningParameter">
+		<annotation>
+			<documentation>gml:secondDefiningParameter is a property containing the definition of the second parameter that defines the shape of an ellipsoid. An ellipsoid requires two defining parameters: semi-major axis and inverse flattening or semi-major axis and semi-minor axis. When the reference body is a sphere rather than an ellipsoid, only a single defining parameter is required, namely the radius of the sphere; in that case, the semi-major axis "degenerates" into the radius of the sphere.
+The inverseFlattening element contains the inverse flattening value of the ellipsoid. This value is a scale factor (or ratio). It uses gml:LengthType with the restriction that the unit of measure referenced by the uom attribute must be suitable for a scale factor, such as percent, permil, or parts-per-million.
+The semiMinorAxis element contains the length of the semi-minor axis of the ellipsoid. When the isSphere element is included, the ellipsoid is degenerate and is actually a sphere. The sphere is completely defined by the semi-major axis, which is the radius of the sphere.</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="gml:SecondDefiningParameter"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="SecondDefiningParameter">
+		<complexType>
+			<choice>
+				<element name="inverseFlattening" type="gml:MeasureType"/>
+				<element name="semiMinorAxis" type="gml:LengthType"/>
+				<element name="isSphere" type="boolean" default="true"/>
+			</choice>
+		</complexType>
+	</element>
+	<complexType name="EllipsoidPropertyType">
+		<annotation>
+			<documentation>gml:EllipsoidPropertyType is a property type for association roles to an ellipsoid, either referencing or containing the definition of that ellipsoid.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:Ellipsoid"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="PrimeMeridian" type="gml:PrimeMeridianType" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>A gml:PrimeMeridian defines the origin from which longitude values are determined. The default value for the prime meridian gml:identifier value is "Greenwich".</documentation>
+		</annotation>
+	</element>
+	<complexType name="PrimeMeridianType">
+		<complexContent>
+			<extension base="gml:IdentifiedObjectType">
+				<sequence>
+					<element ref="gml:greenwichLongitude"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="greenwichLongitude" type="gml:AngleType">
+		<annotation>
+			<documentation>gml:greenwichLongitude is the longitude of the prime meridian measured from the Greenwich meridian, positive eastward. If the value of the prime meridian "name" is "Greenwich" then the value of greenwichLongitude shall be 0 degrees.</documentation>
+		</annotation>
+	</element>
+	<complexType name="PrimeMeridianPropertyType">
+		<annotation>
+			<documentation>gml:PrimeMeridianPropertyType is a property type for association roles to a prime meridian, either referencing or containing the definition of that meridian.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:PrimeMeridian"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="EngineeringDatum" type="gml:EngineeringDatumType" substitutionGroup="gml:AbstractDatum">
+		<annotation>
+			<documentation>gml:EngineeringDatum defines the origin of an engineering coordinate reference system, and is used in a region around that origin. This origin may be fixed with respect to the earth (such as a defined point at a construction site), or be a defined point on a moving vehicle (such as on a ship or satellite).</documentation>
+		</annotation>
+	</element>
+	<complexType name="EngineeringDatumType">
+		<complexContent>
+			<extension base="gml:AbstractDatumType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="EngineeringDatumPropertyType">
+		<annotation>
+			<documentation>gml:EngineeringDatumPropertyType is a property type for association roles to an engineering datum, either referencing or containing the definition of that datum.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:EngineeringDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="ImageDatum" type="gml:ImageDatumType" substitutionGroup="gml:AbstractDatum">
+		<annotation>
+			<documentation>gml:ImageDatum defines the origin of an image coordinate reference system, and is used in a local context only. For an image datum, the anchor definition is usually either the centre of the image or the corner of the image. For more information, see ISO 19111 B.3.5.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ImageDatumType">
+		<complexContent>
+			<extension base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:pixelInCell"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="pixelInCell" type="gml:CodeWithAuthorityType">
+		<annotation>
+			<documentation>gml:pixelInCell is a specification of the way an image grid is associated with the image data attributes. The required codeSpace attribute shall reference a source of information specifying the values and meanings of all the allowed string values for this property.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ImageDatumPropertyType">
+		<annotation>
+			<documentation>gml:ImageDatumPropertyType is a property type for association roles to an image datum, either referencing or containing the definition of that datum.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:ImageDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="VerticalDatum" type="gml:VerticalDatumType" substitutionGroup="gml:AbstractDatum">
+		<annotation>
+			<documentation>gml:VerticalDatum is a textual description and/or a set of parameters identifying a particular reference level surface used as a zero-height surface, including its position with respect to the Earth for any of the height types recognized by this International Standard.</documentation>
+		</annotation>
+	</element>
+	<complexType name="VerticalDatumType">
+		<complexContent>
+			<extension base="gml:AbstractDatumType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="VerticalDatumPropertyType">
+		<annotation>
+			<documentation>gml:VerticalDatumPropertyType is property type for association roles to a vertical datum, either referencing or containing the definition of that datum.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:VerticalDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="TemporalDatum" type="gml:TemporalDatumType" substitutionGroup="gml:AbstractDatum">
+		<annotation>
+			<documentation>A gml:TemporalDatum defines the origin of a Temporal Reference System. This type omits the "anchorDefinition" and "realizationEpoch" elements and adds the "origin" element with the dateTime type.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TemporalDatumType">
+		<complexContent>
+			<extension base="gml:TemporalDatumBaseType">
+				<sequence>
+					<element ref="gml:origin"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TemporalDatumBaseType" abstract="true">
+		<annotation>
+			<documentation>The TemporalDatumBaseType partially defines the origin of a temporal coordinate reference system. This type restricts the AbstractDatumType to remove the "anchorDefinition" and "realizationEpoch" elements.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:AbstractDatumType">
+				<sequence>
+					<element ref="gml:metaDataProperty" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:description" minOccurs="0"/>
+					<element ref="gml:descriptionReference" minOccurs="0"/>
+					<element ref="gml:identifier"/>
+					<element ref="gml:name" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:remarks" minOccurs="0"/>
+					<element ref="gml:domainOfValidity" minOccurs="0"/>
+					<element ref="gml:scope" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<element name="origin" type="dateTime">
+		<annotation>
+			<documentation>gml:origin is the date and time origin of this temporal datum.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TemporalDatumPropertyType">
+		<annotation>
+			<documentation>gml:TemporalDatumPropertyType is a property type for association roles to a temporal datum, either referencing or containing the definition of that datum.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TemporalDatum"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+</schema>

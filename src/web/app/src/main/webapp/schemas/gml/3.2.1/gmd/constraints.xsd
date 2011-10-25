@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="0.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>This file was generated from ISO TC/211 UML class diagrams == 01-26-2005 12:40:01 ====== </xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="../gco/gco.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="MD_Constraints_Type">
+		<xs:annotation>
+			<xs:documentation>Restrictions on the access and use of a dataset or metadata</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="useLimitation" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_Constraints" type="gmd:MD_Constraints_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_Constraints_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_Constraints"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_LegalConstraints_Type">
+		<xs:annotation>
+			<xs:documentation>Restrictions and legal prerequisites for accessing and using the dataset.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:MD_Constraints_Type">
+				<xs:sequence>
+					<xs:element name="accessConstraints" type="gmd:MD_RestrictionCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="useConstraints" type="gmd:MD_RestrictionCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="otherConstraints" type="gco:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_LegalConstraints" type="gmd:MD_LegalConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_LegalConstraints_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_LegalConstraints"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_SecurityConstraints_Type">
+		<xs:annotation>
+			<xs:documentation>Handling restrictions imposed on the dataset because of national security, privacy, or other concerns</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:MD_Constraints_Type">
+				<xs:sequence>
+					<xs:element name="classification" type="gmd:MD_ClassificationCode_PropertyType"/>
+					<xs:element name="userNote" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="classificationSystem" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="handlingDescription" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_SecurityConstraints" type="gmd:MD_SecurityConstraints_Type" substitutionGroup="gmd:MD_Constraints"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_SecurityConstraints_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_SecurityConstraints"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="MD_ClassificationCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_ClassificationCode_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_ClassificationCode"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="MD_RestrictionCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_RestrictionCode_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_RestrictionCode"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

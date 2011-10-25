@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/fes/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   elementFormDefault="qualified"
+   version="2.0.0">
+ <xsd:annotation>
+  <xsd:documentation>
+         This XML Schema defines OGC query filter capabilities documents.
+         Copyright (c) 2002, 2003, 2004 OpenGIS, All Rights Reserved. 
+      </xsd:documentation>
+ </xsd:annotation>
+ <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
+               schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+ <xsd:import namespace="http://www.opengis.net/ows/1.1"
+               schemaLocation="../../ows/1.1.0/owsAll.xsd"/>
+ <xsd:element name="Filter_Capabilities">
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element name="Conformance"
+                         type="fes:ConformanceType"/>
+    <xsd:element name="Id_Capabilities"
+                         type="fes:Id_CapabilitiesType"
+                         minOccurs="0"/>
+    <xsd:element name="Scalar_Capabilities"
+                         type="fes:Scalar_CapabilitiesType"
+                         minOccurs="0"/>
+    <xsd:element name="Spatial_Capabilities"
+                         type="fes:Spatial_CapabilitiesType"
+                         minOccurs="0"/>
+    <xsd:element name="Temporal_Capabilities"
+                         type="fes:Temporal_CapabilitiesType"
+                         minOccurs="0"/>
+    <xsd:element name="Functions"
+                         type="fes:AvailableFunctionsType" minOccurs="0"/>
+    <xsd:element name="Extended_Capabilities"
+                         type="fes:Extended_CapabilitiesType"
+                         minOccurs="0"/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+<!-- CONFORMANCE -->
+ <xsd:complexType name="ConformanceType">
+  <xsd:sequence>
+   <xsd:element name="Constraint"
+                      type="ows:DomainType" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+<!-- RESOURCE IDENTIFIERS -->
+ <xsd:complexType name="Id_CapabilitiesType">
+  <xsd:sequence>
+   <xsd:element name="ResourceIdentifier"
+                      type="fes:ResourceIdentifierType" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="ResourceIdentifierType">
+  <xsd:sequence>
+   <xsd:element ref="ows:Metadata" minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="name" type="xsd:QName" use="required"/>
+ </xsd:complexType>
+<!-- SCALAR CAPABILITIES -->
+ <xsd:complexType name="Scalar_CapabilitiesType">
+  <xsd:sequence>
+   <xsd:element ref="fes:LogicalOperators" minOccurs="0"/>
+   <xsd:element name="ComparisonOperators"
+                      type="fes:ComparisonOperatorsType" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:element name="LogicalOperators">
+  <xsd:complexType/>
+ </xsd:element>
+ <xsd:complexType name="ComparisonOperatorsType">
+  <xsd:sequence maxOccurs="unbounded">
+   <xsd:element name="ComparisonOperator"
+                      type="fes:ComparisonOperatorType"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="ComparisonOperatorType">
+  <xsd:attribute name="name"
+                     type="fes:ComparisonOperatorNameType" use="required"/>
+ </xsd:complexType>
+ <xsd:simpleType name="ComparisonOperatorNameType">
+  <xsd:union>
+   <xsd:simpleType>
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="PropertyIsEqualTo"/>
+     <xsd:enumeration value="PropertyIsNotEqualTo"/>
+     <xsd:enumeration value="PropertyIsLessThan"/>
+     <xsd:enumeration value="PropertyIsGreaterThan"/>
+     <xsd:enumeration value="PropertyIsLessThanOrEqualTo"/>
+     <xsd:enumeration value="PropertyIsGreaterThanOrEqualTo"/>
+     <xsd:enumeration value="PropertyIsLike"/>
+     <xsd:enumeration value="PropertyIsNull"/>
+     <xsd:enumeration value="PropertyIsNil"/>
+     <xsd:enumeration value="PropertyIsBetween"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType>
+    <xsd:restriction base="xsd:string">
+     <xsd:pattern value="extension:\w{2,}"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+  </xsd:union>
+ </xsd:simpleType>
+ <xsd:complexType name="AvailableFunctionsType">
+  <xsd:sequence>
+   <xsd:element name="Function"
+                      type="fes:AvailableFunctionType" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="AvailableFunctionType">
+  <xsd:sequence>
+   <xsd:element ref="ows:Metadata" minOccurs="0"/>
+   <xsd:element name="Returns" type="xsd:QName"/>
+   <xsd:element name="Arguments"
+                      type="fes:ArgumentsType" minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="name" type="xsd:string" use="required"/>
+ </xsd:complexType>
+ <xsd:complexType name="ArgumentsType">
+  <xsd:sequence>
+   <xsd:element name="Argument"
+                      type="fes:ArgumentType" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="ArgumentType">
+  <xsd:sequence>
+   <xsd:element ref="ows:Metadata" minOccurs="0"/>
+   <xsd:element name="Type" type="xsd:QName"/>
+  </xsd:sequence>
+  <xsd:attribute name="name" type="xsd:string" use="required"/>
+ </xsd:complexType>
+<!-- SPATIAL CAPABILITIES -->
+ <xsd:complexType name="Spatial_CapabilitiesType">
+  <xsd:sequence>
+   <xsd:element name="GeometryOperands"
+                      type="fes:GeometryOperandsType"/>
+   <xsd:element name="SpatialOperators"
+                      type="fes:SpatialOperatorsType"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="GeometryOperandsType">
+  <xsd:sequence>
+   <xsd:element name="GeometryOperand" maxOccurs="unbounded">
+    <xsd:complexType>
+     <xsd:attribute name="name" type="xsd:QName" use="required"/>
+    </xsd:complexType>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="SpatialOperatorsType">
+  <xsd:sequence>
+   <xsd:element name="SpatialOperator"
+                      type="fes:SpatialOperatorType"
+                      maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="SpatialOperatorType">
+  <xsd:sequence>
+   <xsd:element name="GeometryOperands"
+                      type="fes:GeometryOperandsType"
+                      minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="name" type="fes:SpatialOperatorNameType"/>
+ </xsd:complexType>
+ <xsd:simpleType name="SpatialOperatorNameType">
+  <xsd:union>
+   <xsd:simpleType>
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="BBOX"/>
+     <xsd:enumeration value="Equals"/>
+     <xsd:enumeration value="Disjoint"/>
+     <xsd:enumeration value="Intersects"/>
+     <xsd:enumeration value="Touches"/>
+     <xsd:enumeration value="Crosses"/>
+     <xsd:enumeration value="Within"/>
+     <xsd:enumeration value="Contains"/>
+     <xsd:enumeration value="Overlaps"/>
+     <xsd:enumeration value="Beyond"/>
+     <xsd:enumeration value="DWithin"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType>
+    <xsd:restriction base="xsd:string">
+     <xsd:pattern value="extension:\w{2,}"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+  </xsd:union>
+ </xsd:simpleType>
+<!-- TEMPORAL CAPABILITIES -->
+ <xsd:complexType name="Temporal_CapabilitiesType">
+  <xsd:sequence>
+   <xsd:element name="TemporalOperands"
+                      type="fes:TemporalOperandsType"/>
+   <xsd:element name="TemporalOperators"
+                      type="fes:TemporalOperatorsType"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="TemporalOperandsType">
+  <xsd:sequence>
+   <xsd:element name="TemporalOperand" maxOccurs="unbounded">
+    <xsd:complexType>
+     <xsd:attribute name="name" type="xsd:QName" use="required"/>
+    </xsd:complexType>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="TemporalOperatorsType">
+  <xsd:sequence>
+   <xsd:element name="TemporalOperator"
+                      type="fes:TemporalOperatorType"
+                      maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="TemporalOperatorType">
+  <xsd:sequence>
+   <xsd:element name="TemporalOperands"
+                      type="fes:TemporalOperandsType"
+                      minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="name"
+                     type="fes:TemporalOperatorNameType" use="required"/>
+ </xsd:complexType>
+ <xsd:simpleType name="TemporalOperatorNameType">
+  <xsd:union>
+   <xsd:simpleType>
+    <xsd:restriction base="xsd:string">
+     <xsd:enumeration value="After"/>
+     <xsd:enumeration value="Before"/>
+     <xsd:enumeration value="Begins"/>
+     <xsd:enumeration value="BegunBy"/>
+     <xsd:enumeration value="TContains"/>
+     <xsd:enumeration value="During"/>
+     <xsd:enumeration value="TEquals"/>
+     <xsd:enumeration value="TOverlaps"/>
+     <xsd:enumeration value="Meets"/>
+     <xsd:enumeration value="OverlappedBy"/>
+     <xsd:enumeration value="MetBy"/>
+     <xsd:enumeration value="Ends"/>
+     <xsd:enumeration value="EndedBy"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType>
+    <xsd:restriction base="xsd:string">
+     <xsd:pattern value="extension:\w{2,}"/>
+    </xsd:restriction>
+   </xsd:simpleType>
+  </xsd:union>
+ </xsd:simpleType>
+<!-- EXTENSION CAPABILITIES -->
+ <xsd:complexType name="Extended_CapabilitiesType">
+  <xsd:sequence>
+   <xsd:element name="AdditionalOperators"
+                      type="fes:AdditionalOperatorsType" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="AdditionalOperatorsType">
+  <xsd:sequence>
+   <xsd:element name="Operator"
+                      type="fes:ExtensionOperatorType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="ExtensionOperatorType">
+  <xsd:attribute name="name" type="xsd:QName" use="required"/>
+ </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:coordinateSystems:3.2.1">coordinateSystems.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 13.4.
+The coordinate systems schema components can be divded into  three logical parts, which define elements and types for XML encoding of the definitions of:
+-	Coordinate system axes
+-	Abstract coordinate system
+-	Multiple concrete types of spatial-temporal coordinate systems
+These schema components encode the Coordinate System packages of the UML Models of ISO 19111 Clause 9 and ISO/DIS 19136 D.3.10.</documentation>
+	</annotation>
+	<include schemaLocation="referenceSystems.xsd"/>
+	<element name="CoordinateSystemAxis" type="gml:CoordinateSystemAxisType" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>gml:CoordinateSystemAxis is a definition of a coordinate system axis.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CoordinateSystemAxisType">
+		<complexContent>
+			<extension base="gml:IdentifiedObjectType">
+				<sequence>
+					<element ref="gml:axisAbbrev"/>
+					<element ref="gml:axisDirection"/>
+					<element ref="gml:minimumValue" minOccurs="0"/>
+					<element ref="gml:maximumValue" minOccurs="0"/>
+					<element ref="gml:rangeMeaning" minOccurs="0"/>
+				</sequence>
+				<attribute name="uom" type="gml:UomIdentifier" use="required">
+					<annotation>
+						<documentation>The uom attribute provides an identifier of the unit of measure used for this coordinate system axis. The value of this coordinate in a coordinate tuple shall be recorded using this unit of measure, whenever those coordinates use a coordinate reference system that uses a coordinate system that uses this axis.</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="axisAbbrev" type="gml:CodeType">
+		<annotation>
+			<documentation>gml:axisAbbrev is the abbreviation used for this coordinate system axis; this abbreviation is also used to identify the coordinates in the coordinate tuple. The codeSpace attribute may reference a source of more information on a set of standardized abbreviations, or on this abbreviation.</documentation>
+		</annotation>
+	</element>
+	<element name="axisDirection" type="gml:CodeWithAuthorityType">
+		<annotation>
+			<documentation>gml:axisDirection is the direction of this coordinate system axis (or in the case of Cartesian projected coordinates, the direction of this coordinate system axis at the origin).
+Within any set of coordinate system axes, only one of each pair of terms may be used. For earth-fixed CRSs, this direction is often approximate and intended to provide a human interpretable meaning to the axis. When a geodetic datum is used, the precise directions of the axes may therefore vary slightly from this approximate direction.
+The codeSpace attribute shall reference a source of information specifying the values and meanings of all the allowed string values for this property.</documentation>
+		</annotation>
+	</element>
+	<element name="minimumValue" type="double">
+		<annotation>
+			<documentation>The gml:minimumValue and gml:maximumValue properties allow the specification of minimum and maximum value normally allowed for this axis, in the unit of measure for the axis. For a continuous angular axis such as longitude, the values wrap-around at this value. Also, values beyond this minimum/maximum can be used for specified purposes, such as in a bounding box. A value of minus infinity shall be allowed for the gml:minimumValue element, a value of plus infiniy for the gml:maximumValue element. If these elements are omitted, the value is unspecified.</documentation>
+		</annotation>
+	</element>
+	<element name="maximumValue" type="double">
+		<annotation>
+			<documentation>The gml:minimumValue and gml:maximumValue properties allow the specification of minimum and maximum value normally allowed for this axis, in the unit of measure for the axis. For a continuous angular axis such as longitude, the values wrap-around at this value. Also, values beyond this minimum/maximum can be used for specified purposes, such as in a bounding box. A value of minus infinity shall be allowed for the gml:minimumValue element, a value of plus infiniy for the gml:maximumValue element. If these elements are omitted, the value is unspecified.</documentation>
+		</annotation>
+	</element>
+	<element name="rangeMeaning" type="gml:CodeWithAuthorityType">
+		<annotation>
+			<documentation>gml:rangeMeaning describes the meaning of axis value range specified by gml:minimumValue and gml:maximumValue. This element shall be omitted when both gml:minimumValue and gml:maximumValue are omitted. This element should be included when gml:minimumValue and/or gml:maximumValue are included. If this element is omitted when the gml:minimumValue and/or gml:maximumValue are included, the meaning is unspecified. The codeSpace attribute shall reference a source of information specifying the values and meanings of all the allowed string values for this property.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CoordinateSystemAxisPropertyType">
+		<annotation>
+			<documentation>gml:CoordinateSystemAxisPropertyType is a property type for association roles to a coordinate system axis, either referencing or containing the definition of that axis.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:CoordinateSystemAxis"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="AbstractCoordinateSystem" type="gml:AbstractCoordinateSystemType" abstract="true" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>gml:AbstractCoordinateSystem is a coordinate system (CS) is the non-repeating sequence of coordinate system axes that spans a given coordinate space. A CS is derived from a set of mathematical rules for specifying how coordinates in a given space are to be assigned to points. The coordinate values in a coordinate tuple shall be recorded in the order in which the coordinate system axes associations are recorded. This abstract complex type shall not be used, extended, or restricted, in an Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractCoordinateSystemType" abstract="true">
+		<complexContent>
+			<extension base="gml:IdentifiedObjectType">
+				<sequence>
+					<element ref="gml:axis" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="axis" type="gml:CoordinateSystemAxisPropertyType">
+		<annotation>
+			<documentation>The gml:axis property is an association role (ordered sequence) to the coordinate system axes included in this coordinate system. The coordinate values in a coordinate tuple shall be recorded in the order in which the coordinate system axes associations are recorded, whenever those coordinates use a coordinate reference system that uses this coordinate system. The gml:AggregationAttributeGroup should be used to specify that the axis objects are ordered.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CoordinateSystemPropertyType">
+		<annotation>
+			<documentation>gml:CoordinateSystemPropertyType is a property type for association roles to a coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractCoordinateSystem"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="EllipsoidalCS" type="gml:EllipsoidalCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:EllipsoidalCS is a two- or three-dimensional coordinate system in which position is specified by geodetic latitude, geodetic longitude, and (in the three-dimensional case) ellipsoidal height. An EllipsoidalCS shall have two or three gml:axis property elements; the number of associations shall equal the dimension of the CS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="EllipsoidalCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="EllipsoidalCSPropertyType">
+		<annotation>
+			<documentation>gml:EllipsoidalCSPropertyType is a property type for association roles to an ellipsoidal coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:EllipsoidalCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="CartesianCS" type="gml:CartesianCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:CartesianCS is a 1-, 2-, or 3-dimensional coordinate system. In the 1-dimensional case, it contains a single straight coordinate axis. In the 2- and 3-dimensional cases gives the position of points relative to orthogonal straight axes. In the multi-dimensional case, all axes shall have the same length unit of measure. A CartesianCS shall have one, two, or three gml:axis property elements.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CartesianCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="CartesianCSPropertyType">
+		<annotation>
+			<documentation>gml:CartesianCSPropertyType is a property type for association roles to a Cartesian coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:CartesianCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="VerticalCS" type="gml:VerticalCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:VerticalCS is a one-dimensional coordinate system used to record the heights or depths of points. Such a coordinate system is usually dependent on the Earth's gravity field, perhaps loosely as when atmospheric pressure is the basis for the vertical coordinate system axis. A VerticalCS shall have one gml:axis property element.</documentation>
+		</annotation>
+	</element>
+	<complexType name="VerticalCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="VerticalCSPropertyType">
+		<annotation>
+			<documentation>gml:VerticalCSPropertyType is a property type for association roles to a vertical coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:VerticalCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="TimeCS" type="gml:TimeCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:TimeCS is a one-dimensional coordinate system containing a time axis, used to describe the temporal position of a point in the specified time units from a specified time origin. A TimeCS shall have one gml:axis property element.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimeCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="TimeCSPropertyType">
+		<annotation>
+			<documentation>gml:TimeCSPropertyType is a property type for association roles to a time coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TimeCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="LinearCS" type="gml:LinearCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:LinearCS is a one-dimensional coordinate system that consists of the points that lie on the single axis described. The associated coordinate is the distance – with or without offset – from the specified datum to the point along the axis. A LinearCS shall have one gml:axis property element.</documentation>
+		</annotation>
+	</element>
+	<complexType name="LinearCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="LinearCSPropertyType">
+		<annotation>
+			<documentation>gml:LinearCSPropertyType is a property type for association roles to a linear coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:LinearCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="UserDefinedCS" type="gml:UserDefinedCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:UserDefinedCS is a two- or three-dimensional coordinate system that consists of any combination of coordinate axes not covered by any other coordinate system type. A UserDefinedCS shall have two or three gml:axis property elements; the number of property elements shall equal the dimension of the CS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="UserDefinedCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="UserDefinedCSPropertyType">
+		<annotation>
+			<documentation>gml:UserDefinedCSPropertyType is a property type for association roles to a user-defined coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:UserDefinedCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="SphericalCS" type="gml:SphericalCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:SphericalCS is a three-dimensional coordinate system with one distance measured from the origin and two angular coordinates. A SphericalCS shall have three gml:axis property elements.</documentation>
+		</annotation>
+	</element>
+	<complexType name="SphericalCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="SphericalCSPropertyType">
+		<annotation>
+			<documentation>gml:SphericalCSPropertyType is property type for association roles to a spherical coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:SphericalCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="PolarCS" type="gml:PolarCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:PolarCS ia s two-dimensional coordinate system in which position is specified by the distance from the origin and the angle between the line from the origin to a point and a reference direction. A PolarCS shall have two gml:axis property elements.</documentation>
+		</annotation>
+	</element>
+	<complexType name="PolarCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="PolarCSPropertyType">
+		<annotation>
+			<documentation>gml:PolarCSPropertyType is a property type for association roles to a polar coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:PolarCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="CylindricalCS" type="gml:CylindricalCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:CylindricalCS is a three-dimensional coordinate system consisting of a polar coordinate system extended by a straight coordinate axis perpendicular to the plane spanned by the polar coordinate system. A CylindricalCS shall have three gml:axis property elements.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CylindricalCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="CylindricalCSPropertyType">
+		<annotation>
+			<documentation>gml:CylindricalCSPropertyType is a property type for association roles to a cylindrical coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:CylindricalCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="AffineCS" type="gml:AffineCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<documentation>gml:AffineCS is a two- or three-dimensional coordinate system with straight axes that are not necessarily orthogonal. An AffineCS shall have two or three gml:axis property elements; the number of property elements shall equal the dimension of the CS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AffineCSType">
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="AffineCSPropertyType">
+		<annotation>
+			<documentation>gml:AffineCSPropertyType is a property type for association roles to an affine coordinate system, either referencing or containing the definition of that coordinate system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AffineCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+</schema>

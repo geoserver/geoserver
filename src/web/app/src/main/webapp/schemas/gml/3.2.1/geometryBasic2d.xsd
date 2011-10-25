@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:geometryBasic2d:3.2.1">geometryBasic2d.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 Clause 10.</documentation>
+	</annotation>
+	<include schemaLocation="geometryBasic0d1d.xsd"/>
+	<complexType name="AbstractSurfaceType" abstract="true">
+		<annotation>
+			<documentation>gml:AbstractSurfaceType is an abstraction of a surface to support the different levels of complexity. A surface is always a continuous region of a plane.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricPrimitiveType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractSurface" type="gml:AbstractSurfaceType" abstract="true" substitutionGroup="gml:AbstractGeometricPrimitive">
+		<annotation>
+			<documentation>The AbstractSurface element is the abstract head of the substitution group for all (continuous) surface elements.</documentation>
+		</annotation>
+	</element>
+	<complexType name="SurfacePropertyType">
+		<annotation>
+			<documentation>A property that has a surface as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractSurface"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="surfaceProperty" type="gml:SurfacePropertyType">
+		<annotation>
+			<documentation>This property element either references a surface via the XLink-attributes or contains the surface element. surfaceProperty is the predefined property which may be used by GML Application Schemas whenever a GML feature has a property with a value that is substitutable for AbstractSurface.</documentation>
+		</annotation>
+	</element>
+	<complexType name="SurfaceArrayPropertyType">
+		<annotation>
+			<documentation>gml:SurfaceArrayPropertyType is a container for an array of surfaces. The elements are always contained in the array property, referencing geometry elements or arrays of geometry elements via XLinks is not supported.</documentation>
+		</annotation>
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<element ref="gml:AbstractSurface"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="PolygonType">
+		<complexContent>
+			<extension base="gml:AbstractSurfaceType">
+				<sequence>
+					<element ref="gml:exterior" minOccurs="0"/>
+					<element ref="gml:interior" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="Polygon" type="gml:PolygonType" substitutionGroup="gml:AbstractSurface">
+		<annotation>
+			<documentation>A Polygon is a special surface that is defined by a single surface patch (see D.3.6). The boundary of this patch is coplanar and the polygon uses planar interpolation in its interior. 
+The elements exterior and interior describe the surface boundary of the polygon.</documentation>
+		</annotation>
+	</element>
+	<element name="exterior" type="gml:AbstractRingPropertyType">
+		<annotation>
+			<documentation>A boundary of a surface consists of a number of rings. In the normal 2D case, one of these rings is distinguished as being the exterior boundary. In a general manifold this is not always possible, in which case all boundaries shall be listed as interior boundaries, and the exterior will be empty.</documentation>
+		</annotation>
+	</element>
+	<element name="interior" type="gml:AbstractRingPropertyType">
+		<annotation>
+			<documentation>A boundary of a surface consists of a number of rings. The "interior" rings separate the surface / surface patch from the area enclosed by the rings.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractRingType" abstract="true">
+		<sequence/>
+	</complexType>
+	<element name="AbstractRing" type="gml:AbstractRingType" abstract="true" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>An abstraction of a ring to support surface boundaries of different complexity.
+The AbstractRing element is the abstract head of the substituition group for all closed boundaries of a surface patch.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractRingPropertyType">
+		<annotation>
+			<documentation>A property with the content model of gml:AbstractRingPropertyType encapsulates a ring to represent the surface boundary property of a surface.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:AbstractRing"/>
+		</sequence>
+	</complexType>
+	<complexType name="LinearRingType">
+		<complexContent>
+			<extension base="gml:AbstractRingType">
+				<sequence>
+					<choice>
+						<choice minOccurs="4" maxOccurs="unbounded">
+							<element ref="gml:pos"/>
+							<element ref="gml:pointProperty"/>
+							<element ref="gml:pointRep"/>
+						</choice>
+						<element ref="gml:posList"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="LinearRing" type="gml:LinearRingType" substitutionGroup="gml:AbstractRing">
+		<annotation>
+			<documentation>A LinearRing is defined by four or more coordinate tuples, with linear interpolation between them; the first and last coordinates shall be coincident. The number of direct positions in the list shall be at least four.</documentation>
+		</annotation>
+	</element>
+	<complexType name="LinearRingPropertyType">
+		<annotation>
+			<documentation>A property with the content model of gml:LinearRingPropertyType encapsulates a linear ring to represent a component of a surface boundary.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:LinearRing"/>
+		</sequence>
+	</complexType>
+</schema>

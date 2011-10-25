@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/fes/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="2.0.0">
+ <xsd:include schemaLocation="query.xsd"/>
+ <xsd:include schemaLocation="expr.xsd"/>
+<!-- ============================================= -->
+<!-- SORTBY EXPRESSION                             -->
+<!-- ============================================= -->
+ <xsd:element name="SortBy"
+                type="fes:SortByType"
+                substitutionGroup="fes:AbstractSortingClause"/>
+<!-- ============================================= -->
+<!-- COMPLEX TYPES                                 -->
+<!-- ============================================= -->
+ <xsd:complexType name="SortByType">
+  <xsd:sequence>
+   <xsd:element name="SortProperty"
+                      type="fes:SortPropertyType" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="SortPropertyType">
+  <xsd:sequence>
+   <xsd:element ref="fes:ValueReference"/>
+   <xsd:element name="SortOrder" type="fes:SortOrderType" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:simpleType name="SortOrderType">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="DESC"/>
+   <xsd:enumeration value="ASC"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+</xsd:schema>

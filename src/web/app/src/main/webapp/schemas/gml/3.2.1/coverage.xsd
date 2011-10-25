@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:coverage:3.2.1">coverage.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 20.3.
+A coverage incorporates a mapping from a spatiotemporal domain to a range set, the latter providing the set in which the attribute values live.  The range set may be an arbitrary set including discrete lists, integer or floating point ranges, and multi-dimensional vector spaces.
+A coverage can be viewed as the graph of the coverage function f:A à B, that is as the set of ordered pairs {(x, f(x)) | where x is in A}. This view is especially applicable to the GML encoding of a coverage.  In the case of a discrete coverage, the domain set A is partitioned into a collection of subsets (typically a disjoint collection) A = UAi and the function f is constant on each Ai. For a spatial domain, the Ai are geometry elements, hence the coverage can be viewed as a collection of (geometry,value) pairs, where the value is an element of the range set.  If the spatial domain A is a topological space then the coverage can be viewed as a collection of (topology,value) pairs, where the topology element in the pair is a topological n-chain (in GML terms this is a gml:TopoPoint, gml:TopoCurve, gml:TopoSurface or gml:TopoSolid). 
+A coverage is implemented as a GML feature. We can thus speak of a "temperature distribution feature", or a "remotely sensed image feature", or a "soil distribution feature".
+As is the case for any GML object, a coverage object may also be the value of a property of a feature.  
+</documentation>
+	</annotation>
+	<include schemaLocation="feature.xsd"/>
+	<include schemaLocation="valueObjects.xsd"/>
+	<include schemaLocation="grids.xsd"/>
+	<include schemaLocation="geometryAggregates.xsd"/>
+	<complexType name="AbstractCoverageType" abstract="true">
+		<annotation>
+			<documentation>The base type for coverages is gml:AbstractCoverageType. The basic elements of a coverage can be seen in this content model: the coverage contains gml:domainSet and gml:rangeSet properties. The gml:domainSet property describes the domain of the coverage and the gml:rangeSet property describes the range of the coverage.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element ref="gml:domainSet"/>
+					<element ref="gml:rangeSet"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractCoverage" type="gml:AbstractCoverageType" abstract="true" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<documentation>This element serves as the head of a substitution group which may contain any coverage whose type is derived from gml:AbstractCoverageType.  It may act as a variable in the definition of content models where it is required to permit any coverage to be valid.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DiscreteCoverageType">
+		<complexContent>
+			<extension base="gml:AbstractCoverageType">
+				<sequence>
+					<element ref="gml:coverageFunction" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractDiscreteCoverage" type="gml:DiscreteCoverageType" abstract="true" substitutionGroup="gml:AbstractCoverage">
+		<annotation>
+			<documentation>A discrete coverage consists of a domain set, range set and optionally a coverage function. The domain set consists of either spatial or temporal geometry objects, finite in number. The range set is comprised of a finite number of attribute values each of which is associated to every direct position within any single spatiotemporal object in the domain. In other words, the range values are constant on each spatiotemporal object in the domain. This coverage function maps each element from the coverage domain to an element in its range. The coverageFunction element describes the mapping function.
+This element serves as the head of a substitution group which may contain any discrete coverage whose type is derived from gml:DiscreteCoverageType.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractContinuousCoverageType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractCoverageType">
+				<sequence>
+					<element ref="gml:coverageFunction" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractContinuousCoverage" type="gml:AbstractContinuousCoverageType" abstract="true" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<documentation>A continuous coverage as defined in ISO 19123 is a coverage that can return different values for the same feature attribute at different direct positions within a single spatiotemporal object in its spatiotemporal domain. The base type for continuous coverages is AbstractContinuousCoverageType.
+The coverageFunction element describes the mapping function. 
+The abstract element gml:AbstractContinuousCoverage serves as the head of a substitution group which may contain any continuous coverage whose type is derived from gml:AbstractContinuousCoverageType.</documentation>
+		</annotation>
+	</element>
+	<element name="domainSet" type="gml:DomainSetType">
+		<annotation>
+			<documentation>The gml:domainSet property element describes the spatio-temporal region of interest, within which the coverage is defined. Its content model is given by gml:DomainSetType.
+The value of the domain is thus a choice between a gml:AbstractGeometry and a gml:AbstractTimeObject.  In the instance these abstract elements will normally be substituted by a geometry complex or temporal complex, to represent spatial coverages and time-series, respectively.  
+The presence of the gml:AssociationAttributeGroup means that domainSet follows the usual GML property model and may use the xlink:href attribute to point to the domain, as an alternative to describing the domain inline. Ownership semantics may be provided using the gml:OwnershipAttributeGroup.
+</documentation>
+		</annotation>
+	</element>
+	<complexType name="DomainSetType">
+		<sequence minOccurs="0">
+			<choice>
+				<element ref="gml:AbstractGeometry"/>
+				<element ref="gml:AbstractTimeObject"/>
+			</choice>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="rangeSet" type="gml:RangeSetType">
+		<annotation>
+			<documentation>The gml:rangeSet property element contains the values of the coverage (sometimes called the attribute values).  Its content model is given by gml:RangeSetType.
+This content model supports a structural description of the range.  The semantic information describing the range set is embedded using a uniform method, as part of the explicit values, or as a template value accompanying the representation using gml:DataBlock and gml:File.
+The values from each component (or "band") in the range may be encoded within a gml:ValueArray element or a concrete member of the gml:AbstractScalarValueList substitution group . Use of these elements satisfies the value-type homogeneity requirement.</documentation>
+		</annotation>
+	</element>
+	<complexType name="RangeSetType">
+		<choice>
+			<element ref="gml:ValueArray" maxOccurs="unbounded"/>
+			<element ref="gml:AbstractScalarValueList" maxOccurs="unbounded"/>
+			<element ref="gml:DataBlock"/>
+			<element ref="gml:File"/>
+		</choice>
+	</complexType>
+	<element name="DataBlock" type="gml:DataBlockType" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>gml:DataBlock describes the Range as a block of text encoded values similar to a Common Separated Value (CSV) representation.
+The range set parameterization is described by the property gml:rangeParameters.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DataBlockType">
+		<sequence>
+			<element ref="gml:rangeParameters"/>
+			<choice>
+				<element ref="gml:tupleList"/>
+				<element ref="gml:doubleOrNilReasonTupleList"/>
+			</choice>
+		</sequence>
+	</complexType>
+	<element name="rangeParameters" type="gml:AssociationRoleType"/>
+	<element name="tupleList" type="gml:CoordinatesType">
+		<annotation>
+			<documentation>gml:CoordinatesType consists of a list of coordinate tuples, with each coordinate tuple separated by the ts or tuple separator (whitespace), and each coordinate in the tuple by the cs or coordinate separator (comma).
+The gml:tupleList encoding is effectively "band-interleaved".</documentation>
+		</annotation>
+	</element>
+	<element name="doubleOrNilReasonTupleList" type="gml:doubleOrNilReasonList">
+		<annotation>
+			<documentation>gml:doubleOrNilReasonList consists of a list of gml:doubleOrNilReason values, each separated by a whitespace. The gml:doubleOrNilReason values are grouped into tuples where the dimension of each tuple in the list is equal to the number of range parameters.</documentation>
+		</annotation>
+	</element>
+	<element name="File" type="gml:FileType" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>for efficiency reasons, GML also provides a means of encoding the range set in an arbitrary external encoding, such as a binary file.  This encoding may be "well-known" but this is not required. This mode uses the gml:File element.
+The values of the coverage (attribute values in the range set) are transmitted in a external file that is referenced from the XML structure described by gml:FileType.  The external file is referenced by the gml:fileReference property that is an anyURI (the gml:fileName property has been deprecated).  This means that the external file may be located remotely from the referencing GML instance. 
+The gml:compression property points to a definition of a compression algorithm through an anyURI.  This may be a retrievable, computable definition or simply a reference to an unambiguous name for the compression method.
+The gml:mimeType property points to a definition of the file mime type.
+The gml:fileStructure property is defined by a codelist. Note further that all values shall be enclosed in a single file. Multi-file structures for values are not supported in GML.
+The semantics of the range set is described as above using the gml:rangeParameters property.
+Note that if any compression algorithm is applied, the structure above applies only to the pre-compression or post-decompression structure of the file.
+Note that the fields within a record match the gml:valueComponents of the gml:CompositeValue in document order.</documentation>
+		</annotation>
+	</element>
+	<complexType name="FileType">
+		<sequence>
+			<element ref="gml:rangeParameters"/>
+			<choice>
+				<element name="fileName" type="anyURI">
+					<annotation>
+						<appinfo>deprecated</appinfo>
+					</annotation>
+				</element>
+				<element name="fileReference" type="anyURI"/>
+			</choice>
+			<element name="fileStructure" type="gml:CodeType"/>
+			<element name="mimeType" type="anyURI" minOccurs="0"/>
+			<element name="compression" type="anyURI" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<element name="coverageFunction" type="gml:CoverageFunctionType" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>The gml:coverageFunction property describes the mapping function from the domain to the range of the coverage.
+The value of the CoverageFunction is one of gml:CoverageMappingRule and gml:GridFunction.
+If the gml:coverageFunction property is omitted for a gridded coverage (including rectified gridded coverages) the gml:startPoint is assumed to be the value of the gml:low property in the gml:Grid geometry, and the gml:sequenceRule is assumed to be linear and the gml:axisOrder property is assumed to be "+1 +2".</documentation>
+		</annotation>
+	</element>
+	<complexType name="CoverageFunctionType">
+		<choice>
+			<element ref="gml:MappingRule"/>
+			<element ref="gml:CoverageMappingRule"/>
+			<element ref="gml:GridFunction"/>
+		</choice>
+	</complexType>
+	<element name="CoverageMappingRule" type="gml:MappingRuleType" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>gml:CoverageMappingRule provides a formal or informal description of the coverage function.
+The mapping rule may be defined as an in-line string (gml:ruleDefinition) or via a remote reference through xlink:href (gml:ruleReference).  
+If no rule name is specified, the default is 'Linear' with respect to members of the domain in document order.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MappingRuleType" final="#all">
+		<choice>
+			<element name="ruleDefinition" type="string"/>
+			<element name="ruleReference" type="gml:ReferenceType"/>
+		</choice>
+	</complexType>
+	<element name="GridFunction" type="gml:GridFunctionType" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>gml:GridFunction provides an explicit mapping rule for grid geometries, i.e. the domain shall be a geometry of type grid.  It describes the mapping of grid posts (discrete point grid coverage) or grid cells (discrete surface coverage) to the values in the range set.
+The gml:startPoint is the index position of a point in the grid that is mapped to the first point in the range set (this is also the index position of the first grid post).  If the gml:startPoint property is omitted the gml:startPoint is assumed to be equal to the value of gml:low in the gml:Grid geometry. Subsequent points in the mapping are determined by the value of the gml:sequenceRule.</documentation>
+		</annotation>
+	</element>
+	<complexType name="GridFunctionType">
+		<sequence>
+			<element name="sequenceRule" type="gml:SequenceRuleType" minOccurs="0"/>
+			<element name="startPoint" type="gml:integerList" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="SequenceRuleType">
+		<annotation>
+			<documentation>The gml:SequenceRuleType is derived from the gml:SequenceRuleEnumeration through the addition of an axisOrder attribute.  The gml:SequenceRuleEnumeration is an enumerated type. The rule names are defined in ISO 19123. If no rule name is specified the default is "Linear".</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:SequenceRuleEnumeration">
+				<attribute name="order" type="gml:IncrementOrder">
+					<annotation>
+						<appinfo>deprecated</appinfo>
+					</annotation>
+				</attribute>
+				<attribute name="axisOrder" type="gml:AxisDirectionList"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="SequenceRuleEnumeration">
+		<restriction base="string">
+			<enumeration value="Linear"/>
+			<enumeration value="Boustrophedonic"/>
+			<enumeration value="Cantor-diagonal"/>
+			<enumeration value="Spiral"/>
+			<enumeration value="Morton"/>
+			<enumeration value="Hilbert"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AxisDirectionList">
+		<annotation>
+			<documentation>The different values in a gml:AxisDirectionList indicate the incrementation order to be used on all axes of the grid. Each axis shall be mentioned once and only once.</documentation>
+		</annotation>
+		<list itemType="gml:AxisDirection"/>
+	</simpleType>
+	<simpleType name="AxisDirection">
+		<annotation>
+			<documentation>The value of a gml:AxisDirection indicates the incrementation order to be used on an axis of the grid.</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="[\+\-][1-9][0-9]*"/>
+		</restriction>
+	</simpleType>
+	<element name="MultiPointCoverage" type="gml:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>In a gml:MultiPointCoverage the domain set is a gml:MultiPoint, that is a collection of arbitrarily distributed geometric points.
+The content model is identical with gml:DiscreteCoverageType, but that gml:domainSet shall have values gml:MultiPoint.
+In a gml:MultiPointCoverage the mapping from the domain to the range is straightforward.
+-	For gml:DataBlock encodings the points of the gml:MultiPoint are mapped in document order to the tuples of the data block.
+-	For gml:CompositeValue encodings the points of the gml:MultiPoint are mapped to the members of the composite value in document order.
+-	For gml:File encodings the points of the gml:MultiPoint are mapped to the records of the file in sequential order.
+</documentation>
+		</annotation>
+	</element>
+	<element name="MultiCurveCoverage" type="gml:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>In a gml:MultiCurveCoverage the domain is partioned into a collection of curves comprising a gml:MultiCurve.  The coverage function then maps each curve in the collection to a value in the range set.
+The content model is identical with gml:DiscreteCoverageType, but that gml:domainSet shall have values gml:MultiCurve.
+In a gml:MultiCurveCoverage the mapping from the domain to the range is straightforward.
+-	For gml:DataBlock encodings the curves of the gml:MultiCurve are mapped in document order to the tuples of the data block.
+-	For gml:CompositeValue encodings the curves of the gml:MultiCurve are mapped to the members of the composite value in document order.
+-	For gml:File encodings the curves of the gml:MultiCurve are mapped to the records of the file in sequential order.
+</documentation>
+		</annotation>
+	</element>
+	<element name="MultiSurfaceCoverage" type="gml:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>In a gml:MultiSurfaceCoverage the domain is partioned into a collection of surfaces comprising a gml:MultiSurface.  The coverage function than maps each surface in the collection to a value in the range set.
+The content model is identical with gml:DiscreteCoverageType, but that gml:domainSet shall have values gml:MultiSurface.
+In a gml:MultiSurfaceCoverage the mapping from the domain to the range is straightforward.
+-	For gml:DataBlock encodings the surfaces of the gml:MultiSurface are mapped in document order to the tuples of the data block.
+-	For gml:CompositeValue encodings the surfaces of the gml:MultiSurface are mapped to the members of the composite value in document order.
+-	For gml:File encodings the surfaces of the gml:MultiSurface are mapped to the records of the file in sequential order.
+</documentation>
+		</annotation>
+	</element>
+	<element name="MultiSolidCoverage" type="gml:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>In a gml:MultiSolidCoverage the domain is partioned into a collection of solids comprising a gml:MultiSolid.  The coverage function than maps each solid in the collection to a value in the range set.
+The content model is identical with gml:DiscreteCoverageType, but that gml:domainSet shall have values gml:MultiSolid.
+In a gml:MultiSolidCoverage the mapping from the domain to the range is straightforward.
+-	For gml:DataBlock encodings the solids of the gml:MultiSolid are mapped in document order to the tuples of the data block.
+-	For gml:CompositeValue encodings the solids of the gml:MultiSolid are mapped to the members of the composite value in document order.
+-	For gml:File encodings the solids of the gml:MultiSolid are mapped to the records of the file in sequential order.
+</documentation>
+		</annotation>
+	</element>
+	<element name="GridCoverage" type="gml:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>A gml:GriddedCoverage is a discrete point coverage in which the domain set is a geometric grid of points.
+Note that this is the same as the gml:MultiPointCoverage except that we have a gml:Grid to describe the domain.
+The simple gridded coverage is not geometrically referenced and hence no geometric positions are assignable to the points in the grid. Such geometric positioning is introduced in the gml:RectifiedGridCoverage.</documentation>
+		</annotation>
+	</element>
+	<element name="RectifiedGridCoverage" type="gml:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>The gml:RectifiedGridCoverage is a discrete point coverage based on a rectified grid. It is similar to the grid coverage except that the points of the grid are geometrically referenced. The rectified grid coverage has a domain that is a gml:RectifiedGrid geometry.</documentation>
+		</annotation>
+	</element>
+</schema>

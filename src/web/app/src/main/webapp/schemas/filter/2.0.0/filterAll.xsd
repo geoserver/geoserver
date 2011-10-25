@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/fes/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="2.0.0">
+ <xsd:include schemaLocation="query.xsd"/>
+ <xsd:include schemaLocation="filter.xsd"/>
+ <xsd:include schemaLocation="sort.xsd"/>
+</xsd:schema>

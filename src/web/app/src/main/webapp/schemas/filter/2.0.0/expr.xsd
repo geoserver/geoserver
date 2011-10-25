@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/fes/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="2.0.0">
+ <xsd:element name="expression" abstract="true"/>
+ <xsd:element name="ValueReference" type="xsd:string"
+                substitutionGroup="fes:expression"/>
+ <xsd:element name="Function" type="fes:FunctionType"
+                substitutionGroup="fes:expression"/>
+ <xsd:complexType name="FunctionType">
+  <xsd:sequence>
+   <xsd:element ref="fes:expression"
+                      minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:attribute name="name" type="xsd:string" use="required"/>
+ </xsd:complexType>
+ <xsd:element name="Literal" type="fes:LiteralType"
+                substitutionGroup="fes:expression"/>
+ <xsd:complexType name="LiteralType" mixed="true">
+  <xsd:sequence>
+   <xsd:any minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="type" type="xsd:QName"/>
+ </xsd:complexType>
+</xsd:schema>

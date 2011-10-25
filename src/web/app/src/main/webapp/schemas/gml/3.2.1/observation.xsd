@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:observation:3.2.1">observation.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 Clause 19.
+A GML observation models the act of observing, often with a camera, a person or some form of instrument.  An observation feature describes the "metadata" associated with an information capture event, together with a value for the result of the observation.  This covers a broad range of cases, from a tourist photo (not the photo but the act of taking the photo), to images acquired by space borne sensors or the measurement of a temperature 5 meters below the surfaces of a lake.
+The basic structures introduced in this schema are intended to serve as the foundation for more comprehensive schemas for scientific, technical and engineering measurement schemas.
+</documentation>
+	</annotation>
+	<include schemaLocation="feature.xsd"/>
+	<include schemaLocation="direction.xsd"/>
+	<include schemaLocation="valueObjects.xsd"/>
+	<element name="Observation" type="gml:ObservationType" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<documentation>The content model is a straightforward extension of gml:AbstractFeatureType; it automatically has the gml:identifier, gml:description, gml:descriptionReference, gml:name, and gml:boundedBy properties. 
+The gml:validTime element describes the time of the observation. Note that this may be a time instant or a time period.
+The gml:using property contains or references a description of a sensor, instrument or procedure used for the observation.
+The gml:target property contains or references the specimen, region or station which is the object of the observation. This property is particularly useful for remote observations, such as photographs, where a generic location property might apply to the location of the camera or the location of the field of view, and thus may be ambiguous.  
+The gml:subject element is provided as a convenient synonym for gml:target. This is the term commonly used in phtotography.  
+The gml:resultOf property indicates the result of the observation.  The value may be inline, or a reference to a value elsewhere.
+</documentation>
+		</annotation>
+	</element>
+	<complexType name="ObservationType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element ref="gml:validTime"/>
+					<element ref="gml:using" minOccurs="0"/>
+					<element ref="gml:target" minOccurs="0"/>
+					<element ref="gml:resultOf"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="using" type="gml:ProcedurePropertyType"/>
+	<complexType name="ProcedurePropertyType">
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="target" type="gml:TargetPropertyType"/>
+	<element name="subject" type="gml:TargetPropertyType" substitutionGroup="gml:target"/>
+	<complexType name="TargetPropertyType">
+		<choice minOccurs="0">
+			<element ref="gml:AbstractFeature"/>
+			<element ref="gml:AbstractGeometry"/>
+		</choice>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="resultOf" type="gml:ResultType"/>
+	<complexType name="ResultType">
+		<sequence minOccurs="0">
+			<any namespace="##any"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="DirectedObservation" type="gml:DirectedObservationType" substitutionGroup="gml:Observation">
+		<annotation>
+			<documentation>A gml:DirectedObservation is the same as an observation except that it adds an additional gml:direction property. This is the direction in which the observation was acquired. Clearly this applies only to certain types of observations such as visual observations by people, or observations obtained from terrestrial cameras.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DirectedObservationType">
+		<complexContent>
+			<extension base="gml:ObservationType">
+				<sequence>
+					<element ref="gml:direction"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="DirectedObservationAtDistance" type="gml:DirectedObservationAtDistanceType" substitutionGroup="gml:DirectedObservation">
+		<annotation>
+			<documentation>gml:DirectedObservationAtDistance adds an additional distance property. This is the distance from the observer to the subject of the observation. Clearly this applies only to certain types of observations such as visual observations by people, or observations obtained from terrestrial cameras.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DirectedObservationAtDistanceType">
+		<complexContent>
+			<extension base="gml:DirectedObservationType">
+				<sequence>
+					<element name="distance" type="gml:MeasureType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

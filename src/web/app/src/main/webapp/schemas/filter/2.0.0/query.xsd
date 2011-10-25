@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/fes/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="2.0.0">
+ <xsd:element name="AbstractQueryExpression"
+                type="fes:AbstractQueryExpressionType" abstract="true"/>
+ <xsd:complexType name="AbstractQueryExpressionType" abstract="true">
+  <xsd:attribute name="handle" type="xsd:string"/>
+ </xsd:complexType>
+ <xsd:element name="AbstractAdhocQueryExpression"
+                type="fes:AbstractAdhocQueryExpressionType"
+                substitutionGroup="fes:AbstractQueryExpression"
+                abstract="true"/>
+ <xsd:complexType name="AbstractAdhocQueryExpressionType" abstract="true">
+  <xsd:complexContent>
+   <xsd:extension base="fes:AbstractQueryExpressionType">
+    <xsd:sequence>
+     <xsd:element ref="fes:AbstractProjectionClause"
+                            minOccurs="0" maxOccurs="unbounded"/>
+     <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
+     <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="typeNames"
+                           type="fes:TypeNamesListType" use="required"/>
+    <xsd:attribute name="aliases"
+                           type="fes:AliasesType"/>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:simpleType name="TypeNamesListType">
+  <xsd:list itemType="fes:TypeNamesType"/>
+ </xsd:simpleType>
+ <xsd:simpleType name="TypeNamesType">
+  <xsd:union memberTypes="fes:SchemaElement xsd:QName"/>
+ </xsd:simpleType>
+ <xsd:simpleType name="SchemaElement">
+  <xsd:restriction base="xsd:string">
+   <xsd:pattern value="schema\-element\(.+\)"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="AliasesType">
+  <xsd:list itemType="xsd:NCName"/>
+ </xsd:simpleType>
+ <xsd:element name="AbstractProjectionClause" abstract="true"/>
+ <xsd:complexType name="AbstractProjectionClauseType" abstract="true"/>
+ <xsd:element name="AbstractSelectionClause" abstract="true"/>
+ <xsd:complexType name="AbstractSelectionClauseType" abstract="true"/>
+ <xsd:element name="AbstractSortingClause" abstract="true"/>
+ <xsd:complexType name="AbstractSortingClauseType" abstract="true"/>
+</xsd:schema>

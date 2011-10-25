@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1" xml:lang="en">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:coordinateReferenceSystems:3.2.1">coordinateReferenceSystems.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 13.3.
+The spatial-temporal coordinate reference systems schema components are divided into two logical parts. One part defines elements and types for XML encoding of abstract coordinate reference systems definitions. The larger part defines specialized constructs for XML encoding of definitions of the multiple concrete types of spatial-temporal coordinate reference systems.
+These schema components encode the Coordinate Reference System packages of the UML Models of ISO 19111 Clause 8 and ISO/DIS 19136 D.3.10, with the exception of the abstract "SC_CRS" class.</documentation>
+	</annotation>
+	<include schemaLocation="coordinateSystems.xsd"/>
+	<include schemaLocation="datums.xsd"/>
+	<include schemaLocation="coordinateOperations.xsd"/>
+	<element name="AbstractSingleCRS" type="gml:AbstractCRSType" abstract="true" substitutionGroup="gml:AbstractCRS">
+		<annotation>
+			<documentation>gml:AbstractSingleCRS implements a coordinate reference system consisting of one coordinate system and one datum (as opposed to a Compound CRS).</documentation>
+		</annotation>
+	</element>
+	<complexType name="SingleCRSPropertyType">
+		<annotation>
+			<documentation>gml:SingleCRSPropertyType is a property type for association roles to a single coordinate reference system, either referencing or containing the definition of that coordinate reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractSingleCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="AbstractGeneralDerivedCRS" type="gml:AbstractGeneralDerivedCRSType" abstract="true" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<documentation>gml:AbstractGeneralDerivedCRS is a coordinate reference system that is defined by its coordinate conversion from another coordinate reference system. This abstract complex type shall not be used, extended, or restricted, in a GML Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractGeneralDerivedCRSType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<element ref="gml:conversion"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="conversion" type="gml:GeneralConversionPropertyType">
+		<annotation>
+			<documentation>gml:conversion is an association role to the coordinate conversion used to define the derived CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="CompoundCRS" type="gml:CompoundCRSType" substitutionGroup="gml:AbstractCRS">
+		<annotation>
+			<documentation>gml:CompundCRS is a coordinate reference system describing the position of points through two or more independent coordinate reference systems. It is associated with a non-repeating sequence of two or more instances of SingleCRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CompoundCRSType">
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<element ref="gml:componentReferenceSystem" minOccurs="2" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="componentReferenceSystem" type="gml:SingleCRSPropertyType">
+		<annotation>
+			<documentation>The gml:componentReferenceSystem elements are an ordered sequence of associations to all the component coordinate reference systems included in this compound coordinate reference system. The gml:AggregationAttributeGroup should be used to specify that the gml:componentReferenceSystem properties are ordered.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CompoundCRSPropertyType">
+		<annotation>
+			<documentation>gml:CompoundCRSPropertyType is a property type for association roles to a compound coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:CompoundCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="GeodeticCRS" type="gml:GeodeticCRSType" substitutionGroup="gml:AbstractSingleCRS"/>
+	<complexType name="GeodeticCRSType">
+		<annotation>
+			<documentation>gml:GeodeticCRS is a coordinate reference system based on a geodetic datum.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<choice>
+						<element ref="gml:ellipsoidalCS"/>
+						<element ref="gml:cartesianCS"/>
+						<element ref="gml:sphericalCS"/>
+					</choice>
+					<element ref="gml:geodeticDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ellipsoidalCS" type="gml:EllipsoidalCSPropertyType">
+		<annotation>
+			<documentation>gml:ellipsoidalCS is an association role to the ellipsoidal coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="cartesianCS" type="gml:CartesianCSPropertyType">
+		<annotation>
+			<documentation>gml:cartesianCS is an association role to the Cartesian coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="sphericalCS" type="gml:SphericalCSPropertyType">
+		<annotation>
+			<documentation>gml:sphericalCS is an association role to the spherical coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="geodeticDatum" type="gml:GeodeticDatumPropertyType">
+		<annotation>
+			<documentation>gml:geodeticDatum is an association role to the geodetic datum used by this CRS.
+</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeodeticCRSPropertyType">
+		<annotation>
+			<documentation>gml:GeodeticCRSPropertyType is a property type for association roles to a geodetic coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:GeodeticCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="VerticalCRS" type="gml:VerticalCRSType" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<documentation>gml:VerticalCRS is a 1D coordinate reference system used for recording heights or depths. Vertical CRSs make use of the direction of gravity to define the concept of height or depth, but the relationship with gravity may not be straightforward. By implication, ellipsoidal heights (h) cannot be captured in a vertical coordinate reference system. Ellipsoidal heights cannot exist independently, but only as an inseparable part of a 3D coordinate tuple defined in a geographic 3D coordinate reference system.</documentation>
+		</annotation>
+	</element>
+	<complexType name="VerticalCRSType">
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<element ref="gml:verticalCS"/>
+					<element ref="gml:verticalDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="verticalCS" type="gml:VerticalCSPropertyType">
+		<annotation>
+			<documentation>gml:verticalCS is an association role to the vertical coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="verticalDatum" type="gml:VerticalDatumPropertyType">
+		<annotation>
+			<documentation>gml:verticalDatum is an association role to the vertical datum used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="VerticalCRSPropertyType">
+		<annotation>
+			<documentation>gml:VerticalCRSPropertyType is a property type for association roles to a vertical coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:VerticalCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="ProjectedCRS" type="gml:ProjectedCRSType" substitutionGroup="gml:AbstractGeneralDerivedCRS">
+		<annotation>
+			<documentation>gml:ProjectedCRS is a 2D coordinate reference system used to approximate the shape of the earth on a planar surface, but in such a way that the distortion that is inherent to the approximation is carefully controlled and known. Distortion correction is commonly applied to calculated bearings and distances to produce values that are a close match to actual field values.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ProjectedCRSType">
+		<complexContent>
+			<extension base="gml:AbstractGeneralDerivedCRSType">
+				<sequence>
+					<choice>
+						<element ref="gml:baseGeodeticCRS"/>
+						<element ref="gml:baseGeographicCRS"/>
+					</choice>
+					<element ref="gml:cartesianCS"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="baseGeodeticCRS" type="gml:GeodeticCRSPropertyType">
+		<annotation>
+			<documentation>gml:baseGeodeticCRS is an association role to the geodetic coordinate reference system used by this projected CRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ProjectedCRSPropertyType">
+		<annotation>
+			<documentation>gml:ProjectedCRSPropertyType is a property type for association roles to a projected coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:ProjectedCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="DerivedCRS" type="gml:DerivedCRSType" substitutionGroup="gml:AbstractGeneralDerivedCRS">
+		<annotation>
+			<documentation>gml:DerivedCRS is a single coordinate reference system that is defined by its coordinate conversion from another single coordinate reference system known as the base CRS. The base CRS can be a projected coordinate reference system, if this DerivedCRS is used for a georectified grid coverage as described in ISO 19123, Clause 8.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DerivedCRSType">
+		<complexContent>
+			<extension base="gml:AbstractGeneralDerivedCRSType">
+				<sequence>
+					<element ref="gml:baseCRS"/>
+					<element ref="gml:derivedCRSType"/>
+					<element ref="gml:coordinateSystem"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="baseCRS" type="gml:SingleCRSPropertyType">
+		<annotation>
+			<documentation>gml:baseCRS is an association role to the coordinate reference system used by this derived CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="derivedCRSType" type="gml:CodeWithAuthorityType">
+		<annotation>
+			<documentation>The gml:derivedCRSType property describes the type of a derived coordinate reference system. The required codeSpace attribute shall reference a source of information specifying the values and meanings of all the allowed string values for this property.</documentation>
+		</annotation>
+	</element>
+	<element name="coordinateSystem" type="gml:CoordinateSystemPropertyType">
+		<annotation>
+			<documentation>An association role to the coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DerivedCRSPropertyType">
+		<annotation>
+			<documentation>gml:DerivedCRSPropertyType is a property type for association roles to a non-projected derived coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:DerivedCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="EngineeringCRS" type="gml:EngineeringCRSType" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<documentation>gml:EngineeringCRS is a contextually local coordinate reference system which can be divided into two broad categories:
+-	earth-fixed systems applied to engineering activities on or near the surface of the earth;
+-	CRSs on moving platforms such as road vehicles, vessels, aircraft, or spacecraft, see ISO 19111 8.3.</documentation>
+		</annotation>
+	</element>
+	<complexType name="EngineeringCRSType">
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<choice>
+						<element ref="gml:affineCS"/>
+						<element ref="gml:cartesianCS"/>
+						<element ref="gml:cylindricalCS"/>
+						<element ref="gml:linearCS"/>
+						<element ref="gml:polarCS"/>
+						<element ref="gml:sphericalCS"/>
+						<element ref="gml:userDefinedCS"/>
+						<element ref="gml:coordinateSystem">
+							<annotation>
+								<appinfo>deprecated</appinfo>
+							</annotation>
+						</element>
+					</choice>
+					<element ref="gml:engineeringDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="cylindricalCS" type="gml:CylindricalCSPropertyType">
+		<annotation>
+			<documentation>gml:cylindricalCS is an association role to the cylindrical coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="linearCS" type="gml:LinearCSPropertyType">
+		<annotation>
+			<documentation>gml:linearCS is an association role to the linear coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="polarCS" type="gml:PolarCSPropertyType">
+		<annotation>
+			<documentation>gml:polarCS is an association role to the polar coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="userDefinedCS" type="gml:UserDefinedCSPropertyType">
+		<annotation>
+			<documentation>gml:userDefinedCS is an association role to the user defined coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="engineeringDatum" type="gml:EngineeringDatumPropertyType">
+		<annotation>
+			<documentation>gml:engineeringDatum is an association role to the engineering datum used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="EngineeringCRSPropertyType">
+		<annotation>
+			<documentation>gml:EngineeringCRSPropertyType is a property type for association roles to an engineering coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:EngineeringCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="ImageCRS" type="gml:ImageCRSType" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<documentation>gml:ImageCRS is an engineering coordinate reference system applied to locations in images. Image coordinate reference systems are treated as a separate sub-type because the definition of the associated image datum contains two attributes not relevant to other engineering datums.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ImageCRSType">
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<choice>
+						<element ref="gml:cartesianCS"/>
+						<element ref="gml:affineCS"/>
+						<element ref="gml:usesObliqueCartesianCS"/>
+					</choice>
+					<element ref="gml:imageDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="affineCS" type="gml:AffineCSPropertyType">
+		<annotation>
+			<documentation>gml:affineCS is an association role to the affine coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="imageDatum" type="gml:ImageDatumPropertyType">
+		<annotation>
+			<documentation>gml:imageDatum is an association role to the image datum used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ImageCRSPropertyType">
+		<annotation>
+			<documentation>gml:ImageCRSPropertyType is a property type for association roles to an image coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:ImageCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="TemporalCRS" type="gml:TemporalCRSType" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<documentation>gml:TemporalCRS is a 1D coordinate reference system used for the recording of time.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TemporalCRSType">
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<choice>
+						<element ref="gml:timeCS"/>
+						<element ref="gml:usesTemporalCS"/>
+					</choice>
+					<element ref="gml:temporalDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="timeCS" type="gml:TimeCSPropertyType">
+		<annotation>
+			<documentation>gml:timeCS is an association role to the time coordinate system used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<element name="temporalDatum" type="gml:TemporalDatumPropertyType">
+		<annotation>
+			<documentation>gml:temporalDatum is an association role to the temporal datum used by this CRS.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TemporalCRSPropertyType">
+		<annotation>
+			<documentation>gml:TemporalCRSPropertyType is a property type for association roles to a temporal coordinate reference system, either referencing or containing the definition of that reference system.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TemporalCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+</schema>

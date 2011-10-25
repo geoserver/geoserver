@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/fes/2.0"
+   xmlns:fes="http://www.opengis.net/fes/2.0"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="2.0.0">
+ <xsd:include schemaLocation="expr.xsd"/>
+ <xsd:include schemaLocation="query.xsd"/>
+ <xsd:include schemaLocation="filterCapabilities.xsd"/>
+ <xsd:element name="Filter"
+                type="fes:FilterType"
+                substitutionGroup="fes:AbstractSelectionClause"/>
+ <xsd:complexType name="FilterType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:AbstractSelectionClauseType">
+    <xsd:sequence>
+     <xsd:group ref="fes:FilterPredicates"/>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+<!-- =================================================================== -->
+<!-- FILTER PREDICATES                                                   -->
+<!-- =================================================================== -->
+ <xsd:group name="FilterPredicates">
+  <xsd:choice>
+   <xsd:element ref="fes:comparisonOps"/>
+   <xsd:element ref="fes:spatialOps"/>
+   <xsd:element ref="fes:temporalOps"/>
+   <xsd:element ref="fes:logicOps"/>
+   <xsd:element ref="fes:extensionOps"/>
+   <xsd:element ref="fes:Function"/>
+   <xsd:element ref="fes:_Id" maxOccurs="unbounded"/>
+  </xsd:choice>
+ </xsd:group>
+<!-- =================================================================== -->
+<!-- COMPARISON OPERATORS                                                -->
+<!-- =================================================================== -->
+ <xsd:element name="comparisonOps"
+                type="fes:ComparisonOpsType"
+                abstract="true"/>
+ <xsd:complexType name="ComparisonOpsType" abstract="true"/>
+ <xsd:element name="PropertyIsEqualTo"
+                type="fes:BinaryComparisonOpType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsNotEqualTo"
+                type="fes:BinaryComparisonOpType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsLessThan"
+                type="fes:BinaryComparisonOpType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsGreaterThan"
+                type="fes:BinaryComparisonOpType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsLessThanOrEqualTo"
+                type="fes:BinaryComparisonOpType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsGreaterThanOrEqualTo"
+                type="fes:BinaryComparisonOpType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsLike"
+                type="fes:PropertyIsLikeType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsNull"
+                type="fes:PropertyIsNullType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsNil"
+                type="fes:PropertyIsNilType"
+                substitutionGroup="fes:comparisonOps"/>
+ <xsd:element name="PropertyIsBetween"
+                type="fes:PropertyIsBetweenType"
+                substitutionGroup="fes:comparisonOps"/>
+<!-- =================================================================== -->
+<!-- SPATIAL OPERATORS                                                   -->
+<!-- =================================================================== -->
+ <xsd:element name="spatialOps" type="fes:SpatialOpsType" abstract="true"/>
+ <xsd:complexType name="SpatialOpsType" abstract="true"/>
+ <xsd:element name="Equals"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Disjoint"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Touches"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Within"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Overlaps"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Crosses"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Intersects"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Contains"
+                type="fes:BinarySpatialOpType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="DWithin"
+                type="fes:DistanceBufferType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="Beyond"
+                type="fes:DistanceBufferType"
+                substitutionGroup="fes:spatialOps"/>
+ <xsd:element name="BBOX"
+                type="fes:BBOXType"
+                substitutionGroup="fes:spatialOps"/>
+<!-- =================================================================== -->
+<!-- TEMPORAL OPERATORS                                                  -->
+<!-- =================================================================== -->
+ <xsd:element name="temporalOps" type="fes:TemporalOpsType" abstract="true"/>
+ <xsd:complexType name="TemporalOpsType" abstract="true"/>
+ <xsd:element name="After"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="Before"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="Begins"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="BegunBy"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="TContains"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="During"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="EndedBy"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="Ends"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="TEquals"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="Meets"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="MetBy"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="TOverlaps"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="OverlappedBy"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+ <xsd:element name="AnyInteracts"
+                type="fes:BinaryTemporalOpType"
+                substitutionGroup="fes:temporalOps"/>
+<!-- =================================================================== -->
+<!-- LOGICAL OPERATORS                                                   -->
+<!-- =================================================================== -->
+ <xsd:element name="logicOps" type="fes:LogicOpsType" abstract="true"/>
+ <xsd:complexType name="LogicOpsType" abstract="true"/>
+ <xsd:element name="And"
+                type="fes:BinaryLogicOpType"
+                substitutionGroup="fes:logicOps"/>
+ <xsd:element name="Or"
+                type="fes:BinaryLogicOpType"
+                substitutionGroup="fes:logicOps"/>
+ <xsd:element name="Not"
+                type="fes:UnaryLogicOpType"
+                substitutionGroup="fes:logicOps"/>
+<!-- =================================================================== -->
+<!-- EXTENSION OPERATORS                                                 -->
+<!-- =================================================================== -->
+ <xsd:element name="extensionOps"
+                type="fes:ExtensionOpsType"
+                abstract="true"/>
+ <xsd:complexType name="ExtensionOpsType" abstract="true"/>
+<!-- =================================================================== -->
+<!-- OBJECT/RECORDS IDENTIFIERS                                          -->
+<!-- =================================================================== -->
+ <xsd:element name="_Id" type="fes:AbstractIdType" abstract="true"/>
+ <xsd:complexType name="AbstractIdType" abstract="true"/>
+<!-- =================================================================== -->
+<!-- CONCRETE OBJECT IDENTIFIERS                                         -->
+<!-- =================================================================== -->
+ <xsd:element name="ResourceId"
+                type="fes:ResourceIdType"
+                substitutionGroup="fes:_Id"/>
+ <xsd:complexType name="ResourceIdType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:AbstractIdType">
+    <xsd:attribute name="rid" type="xsd:string" use="required"/>
+    <xsd:attribute name="previousRid" type="xsd:string"/>
+    <xsd:attribute name="version" type="fes:VersionType"/>
+    <xsd:attribute name="startDate" type="xsd:dateTime"/>
+    <xsd:attribute name="endDate" type="xsd:dateTime"/>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:simpleType name="VersionType">
+  <xsd:union memberTypes="fes:VersionActionTokens
+                              xsd:positiveInteger
+                              xsd:dateTime">
+   <xsd:annotation>
+    <xsd:documentation>
+               Allows navigation of versioned resources.  
+               Can be the tokens FIRST,LAST,PREVIOUS,NEXT,ALL relative
+               to the specified rid.  It is up to the WFS to arrange
+               for the version id to be hashed into the RID.
+               Can be an integer indicating which version of a
+               feature to fetch.  1=first, 2=second, etc...
+               Can be a 
+            </xsd:documentation>
+   </xsd:annotation>
+  </xsd:union>
+ </xsd:simpleType>
+ <xsd:simpleType name="VersionActionTokens">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="FIRST"/>
+   <xsd:enumeration value="LAST"/>
+   <xsd:enumeration value="PREVIOUS"/>
+   <xsd:enumeration value="NEXT"/>
+   <xsd:enumeration value="ALL"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+<!-- =================================================================== -->
+<!-- TYPE DECLARATIONS                                                   -->
+<!-- =================================================================== -->
+ <xsd:complexType name="BinaryComparisonOpType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:ComparisonOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression" minOccurs="2" maxOccurs="2"/>
+    </xsd:sequence>
+    <xsd:attribute name="matchCase" type="xsd:boolean"
+                           use="optional" default="true"/>
+    <xsd:attribute name="matchAction" type="fes:MatchActionType"
+                           use="optional" default="Any"/>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:simpleType name="MatchActionType">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="All"/>
+   <xsd:enumeration value="Any"/>
+   <xsd:enumeration value="One"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:complexType name="PropertyIsLikeType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:ComparisonOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression" minOccurs="2" maxOccurs="2"/>
+    </xsd:sequence>
+    <xsd:attribute name="wildCard" type="xsd:string" use="required"/>
+    <xsd:attribute name="singleChar" type="xsd:string" use="required"/>
+    <xsd:attribute name="escapeChar" type="xsd:string" use="required"/>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="PropertyIsNullType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:ComparisonOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression" minOccurs="0"/>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="PropertyIsNilType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:ComparisonOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="nilReason" type="xsd:string"/>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="PropertyIsBetweenType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:ComparisonOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression"/>
+     <xsd:element name="LowerBoundary" type="fes:LowerBoundaryType"/>
+     <xsd:element name="UpperBoundary" type="fes:UpperBoundaryType"/>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="LowerBoundaryType">
+  <xsd:choice>
+   <xsd:element ref="fes:expression"/>
+  </xsd:choice>
+ </xsd:complexType>
+ <xsd:complexType name="UpperBoundaryType">
+  <xsd:sequence>
+   <xsd:element ref="fes:expression"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="BinarySpatialOpType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:SpatialOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:ValueReference"/>
+     <xsd:choice>
+      <xsd:element ref="fes:expression"/>
+      <xsd:any namespace="##other"/>
+     </xsd:choice>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="BinaryTemporalOpType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:TemporalOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:ValueReference"/>
+     <xsd:choice>
+      <xsd:element ref="fes:expression"/>
+      <xsd:any namespace="##other"/>
+     </xsd:choice>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="BBOXType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:SpatialOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression" minOccurs="0"/>
+     <xsd:any namespace="##other"/>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="DistanceBufferType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:SpatialOpsType">
+    <xsd:sequence>
+     <xsd:element ref="fes:expression" minOccurs="0"/>
+     <xsd:any namespace="##other"/>
+     <xsd:element name="Distance" type="fes:MeasureType"/>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="BinaryLogicOpType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:LogicOpsType">
+    <xsd:choice minOccurs="2" maxOccurs="unbounded">
+     <xsd:group ref="fes:FilterPredicates"/>
+    </xsd:choice>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="UnaryLogicOpType">
+  <xsd:complexContent>
+   <xsd:extension base="fes:LogicOpsType">
+    <xsd:sequence>
+     <xsd:choice>
+      <xsd:group ref="fes:FilterPredicates"/>
+     </xsd:choice>
+    </xsd:sequence>
+   </xsd:extension>
+  </xsd:complexContent>
+ </xsd:complexType>
+<!-- MISCELANEOUS TYPE -->
+ <xsd:complexType name="MeasureType">
+  <xsd:annotation>
+   <xsd:documentation>
+            fes:MeasureType supports recording an amount encoded as a value of
+            XML Schema double, together with a units of measure indicated by an
+            attribute uom, short for "units Of measure". The value of the uom
+            attribute identifies a reference system for the amount, usually a
+            ratio or interval scale.
+         </xsd:documentation>
+  </xsd:annotation>
+  <xsd:simpleContent>
+   <xsd:extension base="xsd:double">
+    <xsd:attribute name="uom" type="fes:UomIdentifier" use="required"/>
+   </xsd:extension>
+  </xsd:simpleContent>
+ </xsd:complexType>
+ <xsd:simpleType name="UomIdentifier">
+  <xsd:annotation>
+   <xsd:documentation>
+            The simple type fes:UomIdentifer defines the syntax and value space
+            of the unit of measure identifier.
+         </xsd:documentation>
+  </xsd:annotation>
+  <xsd:union memberTypes="fes:UomSymbol fes:UomURI"/>
+ </xsd:simpleType>
+ <xsd:simpleType name="UomSymbol">
+  <xsd:annotation>
+   <xsd:documentation>
+            This type specifies a character string of length at least one, and
+            restricted such that it must not contain any of the following
+            characters: ":" (colon), " " (space), (newline), (carriage return),
+            (tab). This allows values corresponding to familiar abbreviations,
+            such as "kg", "m/s", etc.
+            It is recommended that the symbol be an identifier for a unit of
+            measure as specified in the "Unified Code of Units of Measure"
+            (UCUM) (http://aurora.regenstrief.org/UCUM). This provides a set
+            of symbols and a grammar for constructing identifiers for units of
+            measure that are unique, and may be easily entered with a keyboard
+            supporting the limited character set known as 7-bit ASCII. ISO 2955
+            formerly provided a specification with this scope, but was withdrawn
+            in 2001. UCUM largely follows ISO 2955 with modifications to remove
+            ambiguities and other problems.
+         </xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:pattern value="[^: \n\r\t]+"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="UomURI">
+  <xsd:annotation>
+   <xsd:documentation>
+            This type specifies a URI, restricted such that it must start with
+            one of the following sequences: "#", "./", "../", or a string of
+            characters followed by a ":". These patterns ensure that the most
+            common URI forms are supported, including absolute and relative URIs
+            and URIs that are simple fragment identifiers, but prohibits certain
+            forms of relative URI that could be mistaken for unit of measure symbol.
+            NOTE    It is possible to re-write such a relative URI to conform to
+                    the restriction (e.g. "./m/s").
+            In an instance document, on elements of type fes:MeasureType the
+            mandatory uom attribute shall carry a value corresponding to either
+            - a conventional unit of measure symbol,
+            - a link to a definition of a unit of measure that does not
+              have a conventional symbol, or when it is desired to indicate
+              a precise or variant definition.
+         </xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:anyURI">
+   <xsd:pattern value="([a-zA-Z][a-zA-Z0-9\-\+\.]*:|\.\./|\./|#).*"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+</xsd:schema>

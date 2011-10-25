@@ -29,6 +29,15 @@ public class StyleNewPage extends AbstractStylePage {
         Catalog catalog = getCatalog();
         StyleInfo s = (StyleInfo) styleForm.getModelObject();
 
+        // write out the SLD before creating the style
+        try {
+            catalog.getResourcePool().writeStyle(s,
+                    new ByteArrayInputStream(rawSLD.getBytes()));
+        } catch (IOException e) {
+            throw new WicketRuntimeException(e);
+        }
+        
+        // store in the catalog
         try {
             Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
             s.setSLDVersion(version);
@@ -41,14 +50,6 @@ public class StyleNewPage extends AbstractStylePage {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             error(e);
             return;
-        }
-
-        // write out the SLD
-        try {
-            catalog.getResourcePool().writeStyle(s,
-                    new ByteArrayInputStream(rawSLD.getBytes()));
-        } catch (IOException e) {
-            throw new WicketRuntimeException(e);
         }
 
         setResponsePage(StylePage.class);

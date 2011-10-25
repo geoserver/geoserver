@@ -409,18 +409,41 @@ public class KvpUtils {
             for (Iterator pitr = parsers.iterator(); pitr.hasNext() && parsed == null;) {
                 KvpParser candidate = (KvpParser) pitr.next();
                 if (key.equalsIgnoreCase(candidate.getKey())) {
-                    if (parser == null)
+                    if (parser == null) {
                         parser = candidate;
-                    
+                    }
                     else {
+                        String curService = parser.getService();
+                        Version curVersion = parser.getVersion();
+
                         String trgService = candidate.getService();
                         Version trgVersion = candidate.getVersion();
-                        
-                        if (trgService != null && trgService.equalsIgnoreCase(service) && trgVersion!= null && trgVersion.toString().equals(version))
-                            parser = candidate;
-                        
-                        else if (trgService != null && trgService.equalsIgnoreCase(service))
-                            parser = candidate;
+
+                        //determine if this parser more closely matches the request
+                        if (curService == null) {
+                            //if target service matches, it is a closer match
+                            if (trgService != null && trgService.equalsIgnoreCase(service)) {
+                                parser = candidate;
+                            }
+                        }
+                        else {
+                            if (trgService != null && trgService.equalsIgnoreCase(service)) {
+                                //both match, filter by version
+                                if (trgVersion != null) {
+                                    if (curVersion == null && trgVersion.toString().equals(version)) {
+                                        parser = candidate;
+                                    }
+                                }
+                                else {
+                                    if (curVersion == null) {
+                                        //ambiguous, unable to match
+                                        //TODO: use request
+                                        throw new IllegalStateException("Multiple kvp parsers: " + 
+                                            parser + "," +  candidate);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -31,12 +31,12 @@ public class ServiceException extends RuntimeException {
     /**
      * Application specfic code.
      */
-    String code;
+    protected String code;
 
     /**
      * Application specific locator
      */
-    String locator;
+    protected String locator;
 
     /**
      * List of text recording information about the exception
@@ -161,6 +161,20 @@ public class ServiceException extends RuntimeException {
     }
 
     /**
+     * Chaining method for setting code.
+     * <p>
+     * This allows code to:
+     * <code><pre>
+     * throw new ServiceException(...).code("someCode");
+     * </pre></code> 
+     * </p>
+     */
+    public ServiceException code(String code) {
+        setCode(code);
+        return this;
+    }
+
+    /**
      * @return The application specific locator.
      */
     public String getLocator() {
@@ -176,6 +190,20 @@ public class ServiceException extends RuntimeException {
         this.locator = locator;
     }
 
+    /**
+     * Chaining method for setting locator.
+     * <p>
+     * This allows code to:
+     * <code><pre>
+     * throw new ServiceException(...).locator("someLocator");
+     * </pre></code> 
+     * </p>
+     */
+    public ServiceException locator(String locator) {
+        setLocator(locator);
+        return this;
+    }
+    
     /**
      * Returns the list of text fragments which provide additonal information
      * about the exception.

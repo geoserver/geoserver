@@ -58,6 +58,8 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Repository;
+import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.Join;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.MultithreadedHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
@@ -80,6 +82,7 @@ import org.geotools.xml.Schemas;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -111,7 +114,12 @@ public class ResourcePool {
      * resource.
      */
     public static Hints.Key REPROJECT = new Hints.Key( Boolean.class );
-    
+
+    /**
+     * Hint to specify additional joined attributes when loading a feature type
+     */
+    public static Hints.Key JOINS = new Hints.Key(List.class);
+
     /** logging */
     static Logger LOGGER = Logging.getLogger( "org.geoserver.catalog");
     
@@ -923,7 +931,21 @@ public class ResourcePool {
             } catch( ClassCastException e ) {
                 //fall through
             } 
-            
+
+            //joining, check for join hint which requires us to create a shcema with some additional
+            // attributes
+            if (hints != null && hints.containsKey(JOINS)) {
+                List<Join> joins = (List<Join>) hints.get(JOINS);
+                SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+                typeBuilder.init(schema);
+                
+                for (Join j : joins) {
+                    String attName = j.getAlias() != null ? j.getAlias() : j.getTypeName();
+                    typeBuilder.add(attName, SimpleFeature.class);
+                }
+                schema = typeBuilder.buildFeatureType();
+            }
+
             //return a normal 
             return GeoServerFeatureLocking.create(fs, schema,
                     info.getFilter(), resultCRS, info.getProjectionPolicy().getCode());

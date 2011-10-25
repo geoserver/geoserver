@@ -340,7 +340,7 @@ public class Dispatcher extends AbstractController {
         if (req.getKvp() != null) {
 
             req.setService(normalize((String) req.getKvp().get("service")));
-            req.setVersion(normalize((String) req.getKvp().get("version")));
+            req.setVersion(normalizeVersion(normalize((String) req.getKvp().get("version"))));
             req.setRequest(normalize((String) req.getKvp().get("request")));
             req.setOutputFormat(normalize((String) req.getKvp().get("outputFormat")));
         } 
@@ -351,7 +351,7 @@ public class Dispatcher extends AbstractController {
                 req.setService(normalize((String) xml.get("service")));    
             }
             if (req.getVersion() == null) {
-                req.setVersion(normalize((String) xml.get("version")));    
+                req.setVersion(normalizeVersion(normalize((String) xml.get("version"))));
             }
             if (req.getRequest() == null) {
                 req.setRequest(normalize((String) xml.get("request")));    
@@ -433,6 +433,31 @@ public class Dispatcher extends AbstractController {
         return value.trim();
     }
 
+    /**
+     * Normalize the version, handling cases like forcing "x.y" to "x.y.z".
+     */
+    String normalizeVersion(String version) {
+        if (version == null) {
+            return null;
+        }
+        
+        Version v = new Version(version);
+        if (v.getMajor() == null) {
+            return null;
+        }
+        
+        if (v.getMinor() == null) {
+            return String.format("%d.0.0", v.getMajor()); 
+        }
+        
+        if (v.getRevision() == null) {
+            return String.format("%d.%d.0", v.getMajor(), v.getMinor());
+        }
+        
+        //version ok
+        return version;
+    }
+    
     Operation dispatch(Request req, Service serviceDescriptor)
         throws Throwable {
         if (req.getRequest() == null) {
@@ -526,7 +551,8 @@ public class Dispatcher extends AbstractController {
                     }
 
                     if (req.getVersion() == null) {
-                        req.setVersion(lookupRequestBeanProperty(requestBean, "version", false));
+                        req.setVersion(normalizeVersion(
+                            lookupRequestBeanProperty(requestBean, "version", false)));
                     }
 
                     if (req.getOutputFormat() == null) {

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -204,10 +205,13 @@ public abstract class FeatureTypeSchemaBuilder {
                     // schema is supplied by the user.. just include the top level schema instead of
                     // building the type
                     if (!findTypeInSchema(featureTypeInfos[0], schema, factory)) {
+                        // map of namespace to schemaLocation used to prevent duplicate imports
                         Map<String, String> imports = new HashMap<String, String>();
+                        // set of schemaLocations used to prevent duplicate includes
+                        Set<String> includes = new HashSet<String>();
                         for (String namespace : schemaURIs.keySet()) {
                             addReference(schema, factory, namespace,
-                                    schemaURIs.get(namespace), imports);
+                                    schemaURIs.get(namespace), imports, includes);
                         }
                     }
                     return schema;
@@ -240,8 +244,10 @@ public abstract class FeatureTypeSchemaBuilder {
             NamespaceInfo ns = featureTypeInfos[0].getNamespace();
             schema.setTargetNamespace(ns.getURI());
             
-            // map of namespace to schemaLocation used to detect remove duplicate references
-            Map<String, String> references = new HashMap<String, String>();
+            // map of namespace to schemaLocation used to prevent duplicate imports
+            Map<String, String> imports = new HashMap<String, String>();
+            // set of schemaLocations used to prevent duplicate includes
+            Set<String> includes = new HashSet<String>();
             for (Iterator i = ns2featureTypeInfos.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry) i.next();
                 String prefix = (String) entry.getKey();
@@ -261,7 +267,7 @@ public abstract class FeatureTypeSchemaBuilder {
                         // schema is supplied by the user.. just import the specified location
                         for (String namespace : schemaURIs.keySet()) {
                             addReference(schema, factory, namespace,
-                                    schemaURIs.get(namespace), references);
+                                    schemaURIs.get(namespace), imports, includes);
                         }
                     } else {
                         typeNames.append(info.getPrefixedName()).append(",");
@@ -339,8 +345,8 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     /**
-     * Add a schema reference using include or import. Duplicate conflicting references are not
-     * allowed (warning is logged).
+     * Add a schema reference using include or import. Duplicate conflicting imports are not allowed
+     * (warning is logged).
      * 
      * @param schema
      *            schema to which the reference is being added
@@ -350,12 +356,14 @@ public abstract class FeatureTypeSchemaBuilder {
      *            namespace URI of the referenced schema
      * @param schemaLocation
      *            location URI of the referenced schema
-     * @param references
-     *            map of namespace to schemaLocation for references already added
+     * @param imports
+     *            map of namespace to schemaLocation used to prevent duplicate imports
+     * @param includes
+     *            set of schemaLocations used to prevent duplicate includes
      */
     private void addReference(XSDSchema schema, XSDFactory factory, String namespace,
-            String schemaLocation, Map<String, String> references) {
-        if (getWfsSchema() != null && references.get(getWfsSchema().getTargetNamespace()) == null) {
+            String schemaLocation, Map<String, String> imports, Set<String> includes) {
+        if (getWfsSchema() != null && imports.get(getWfsSchema().getTargetNamespace()) == null) {
             /*
              * Add an import for the WFS schema. Needed for GML32OutputFormat only. See
              * GML32.importGMLSchema where a similar import is used for simple features (generated
@@ -370,30 +378,36 @@ public abstract class FeatureTypeSchemaBuilder {
             wfsImport.setResolvedSchema(getWfsSchema());
             schema.getContents().add(wfsImport);
             ((XSDSchemaImpl)getWfsSchema()).imported(wfsImport);
-            references.put(getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
+            imports.put(getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
         }
-        if (references.get(namespace) != null) {
-            if (references.get(namespace).equals(schemaLocation)) {
-                logger.finer("Skipped generation of duplicate reference for namespace=\""
-                        + namespace + "\" schemaLocation=\"" + schemaLocation
-                        + " while generating schema for " + schema.getTargetNamespace());
+        if (namespace.equals(schema.getTargetNamespace())) {
+            if (includes.contains(schemaLocation)) {
+                logger.finer("Skipped generation of duplicate include for  schemaLocation=\""
+                        + schemaLocation + " while generating schema for "
+                        + schema.getTargetNamespace());
             } else {
-                logger.warning("Skipped generation of conflicting reference for namespace=\""
-                        + namespace
-                        + "\" schemaLocation=\""
-                        + schemaLocation
-                        + " while generating schema for "
-                        + schema.getTargetNamespace()
-                        + " (some XML processors will ignore all imports"
-                        + " for a namespace after the first)");
+                addInclude(schema, factory, schemaLocation);
+                includes.add(schemaLocation);
             }
         } else {
-            if (namespace.equals(schema.getTargetNamespace())) {
-                addInclude(schema, factory, namespace, schemaLocation);
+            if (imports.get(namespace) != null) {
+                if (imports.get(namespace).equals(schemaLocation)) {
+                    logger.finer("Skipped generation of duplicate import for namespace=\""
+                            + namespace + "\" schemaLocation=\"" + schemaLocation
+                            + " while generating schema for " + schema.getTargetNamespace());
+                } else {
+                    logger.warning("Skipped generation of conflicting import for namespace=\""
+                            + namespace
+                            + "\" schemaLocation=\""
+                            + schemaLocation
+                            + " while generating schema for "
+                            + schema.getTargetNamespace()
+                            + " (some XML processors will ignore all imports for a namespace after the first)");
+                }
             } else {
                 addImport(schema, factory, namespace, schemaLocation);
+                imports.put(namespace, schemaLocation);
             }
-            references.put(namespace, schemaLocation);
         }
     }
     
@@ -407,8 +421,7 @@ public abstract class FeatureTypeSchemaBuilder {
      * @param schemaLocation
      *            The schema location to be included
      */
-    private void addInclude(XSDSchema schema, XSDFactory factory, String namespace,
-            String schemaLocation) {
+    private void addInclude(XSDSchema schema, XSDFactory factory, String schemaLocation) {
         XSDInclude xsdInclude = factory.createXSDInclude();
         xsdInclude.setSchemaLocation(schemaLocation);
         schema.getContents().add(xsdInclude);

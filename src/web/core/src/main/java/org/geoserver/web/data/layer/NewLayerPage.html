@@ -10,11 +10,20 @@
   </form>
   
   <div wicket:id="selectLayersContainer">
-      <div wicket:id="createWMSLayerImportContainer">You can import all cascading WMS layers from selected store at once using 
-            <b><a href="#" wicket:id="createWMSImport">batch import</a></b>
+      <div wicket:id="createWMSLayerImportContainer">
+         <wicket:message key="createWMSImportMessage">You can import all cascading WMS layers from selected store at once using </wicket:message>
+         <b><a href="#" wicket:id="createWMSImport"><wicket:message key="createWMSImportLink">batch import</wicket:message></a></b>
       </div>
-      <div wicket:id="createTypeContainer">You can create a new feature type by manually configuring the attribute names and types. <a href="#" wicket:id="createFeatureType">Create new feature type...</a></div>
-      <div wicket:id="createSQLViewContainer">On databases you can also create a new feature type by configuring a native SQL statement. <a href="#" wicket:id="createSQLView">Configure new SQL view...</a></div>
+      
+      <div wicket:id="createTypeContainer">
+      	 <wicket:message key="createFeatureTypeMessage">You can create a new feature type by manually configuring the attribute names and types. </wicket:message>
+      	 <b><a href="#" wicket:id="createFeatureType"><wicket:message key="createFeatureTypeLink">Create new feature type...</wicket:message></a></b>
+      </div>
+      
+      <div wicket:id="createSQLViewContainer">
+      	 <wicket:message key="createSQLViewMessage">On databases you can also create a new feature type by configuring a native SQL statement. </wicket:message>
+      	 <b><a href="#" wicket:id="createSQLView"><wicket:message key="createSQLViewLink">Configure new SQL view...</wicket:message></a></b>
+      </div>
       
       <div wicket:id="selectLayers">
 		  <p><wicket:message key="listOfResourcesContained">Here is a list of resources contained in the store</wicket:message> '<span

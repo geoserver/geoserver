@@ -84,7 +84,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * @throws Exception
      */
     public void testGetFeature() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
     }

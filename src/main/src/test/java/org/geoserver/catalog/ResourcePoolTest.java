@@ -23,6 +23,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.data.DataAccess;
+import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -194,5 +195,36 @@ public class ResourcePoolTest extends GeoServerTestSupport {
 
         Catalog catalog = getCatalog();
         assertEquals(200, catalog.getResourcePool().featureTypeCache.getHardReferencesCount());
+    }
+    
+    public void testDropCoverageStore() throws Exception {
+        // build the store
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        CoverageStoreInfo store = cb.buildCoverageStore("dem");
+        store.setURL(MockData.class.getResource("tazdem.tiff").toExternalForm());
+        store.setType("GeoTIFF");
+        cat.add(store);
+        
+        // build the coverage
+        cb.setStore(store);
+        CoverageInfo ci = cb.buildCoverage();
+        cat.add(ci);
+        
+        // build the layer
+        LayerInfo layer = cb.buildLayer(ci);
+        cat.add(layer);
+        
+        // grab a reader just to inizialize the code
+        ci.getGridCoverage(null, null);
+        ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+        
+        // now drop the store
+        CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(cat);
+        visitor.visit(store);
+        
+        // and reload (GEOS-4782 -> BOOM!)
+        getGeoServer().reload();
+        
     }
 }

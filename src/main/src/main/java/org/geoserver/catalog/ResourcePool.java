@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +58,8 @@ import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.Repository;
-import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.Join;
+import org.geotools.data.Repository;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.MultithreadedHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
@@ -987,7 +987,7 @@ public class ResourcePool {
             key = new CoverageHintReaderKey(info.getId(), hints);
             reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
         } else {
-            key = info;
+            key = info.getId();
             reader = (GridCoverageReader) coverageReaderCache.get( key );
         }
         
@@ -1012,7 +1012,11 @@ public class ResourcePool {
                 final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
     
                 reader = gridFormat.getReader(obj,hints);
-                (hints != null ? hintCoverageReaderCache : coverageReaderCache ).put(key, reader);
+                if(hints != null) {
+                    hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                } else {
+                    coverageReaderCache.put((String) key, reader);
+                }
             }
         }
         
@@ -1024,7 +1028,15 @@ public class ResourcePool {
      * Clears any cached readers for the coverage.
      */
     public void clear(CoverageStoreInfo info) {
-        coverageReaderCache.remove(info);
+        String storeId = info.getId();
+        coverageReaderCache.remove(storeId);
+        HashSet<CoverageHintReaderKey> keys = new HashSet<CoverageHintReaderKey>(hintCoverageReaderCache.keySet());
+        for (CoverageHintReaderKey key : keys) {
+            if(key.id.equals(storeId)) {
+                hintCoverageReaderCache.remove(key);
+            }
+        }
+        
     }
     
     /**
@@ -1474,12 +1486,16 @@ public class ResourcePool {
         }
     }
     
-    class CoverageReaderCache extends CatalogResourceCache<Object, GridCoverageReader> {
+    class CoverageReaderCache extends CatalogResourceCache<String, GridCoverageReader> {
         
-        protected void dispose(Object id, GridCoverageReader reader) {
-        	CoverageStoreInfo info = catalog.getCoverageStore((String) id);
-            LOGGER.info( "Disposing grid coverage reader '" + info.getName() + "'");
-            fireDisposed(info, reader);
+        protected void dispose(String id, GridCoverageReader reader) {
+        	CoverageStoreInfo info = catalog.getCoverageStore(id);
+        	if(info != null) {
+                String name = info.getName();
+                LOGGER.info( "Disposing coverage store '" + name + "'" );
+                
+                fireDisposed(info, reader);
+            }
             try {
                 reader.dispose();
             }
@@ -1490,13 +1506,16 @@ public class ResourcePool {
         }
     }
     
-    class CoverageHintReaderCache extends CatalogResourceCache<Object, GridCoverageReader> {
+    class CoverageHintReaderCache extends CatalogResourceCache<CoverageHintReaderKey, GridCoverageReader> {
         
-        protected void dispose(Object key, GridCoverageReader reader) {
-        	CoverageHintReaderKey chKey = (CoverageHintReaderKey) key;
-        	CoverageStoreInfo info = catalog.getCoverageStore(chKey.id);
-            LOGGER.info( "Disposing grid coverage reader '" + info.getName() + "'");
-            fireDisposed(info, reader);
+        protected void dispose(CoverageHintReaderKey key, GridCoverageReader reader) {
+        	CoverageStoreInfo info = catalog.getCoverageStore(key.id);
+        	if(info != null) {
+                String name = info.getName();
+                LOGGER.info( "Disposing coverage store '" + name + "'" );
+                
+                fireDisposed(info, reader);
+            }
             try {
                 reader.dispose();
             }
@@ -1602,10 +1621,12 @@ public class ResourcePool {
         public void visit(DataStoreInfo dataStore) {
             clear(dataStore);
         }
+        
         @Override
         public void visit(CoverageStoreInfo coverageStore) {
             clear(coverageStore);
         }
+        
         @Override
         public void visit(FeatureTypeInfo featureType) {
             clear(featureType);

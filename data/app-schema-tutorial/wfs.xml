@@ -18,6 +18,9 @@ data.</abstrct>
     <org.geotools.util.Version>
       <version>1.1.0</version>
     </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>2.0.0</version>
+    </org.geotools.util.Version>
   </versions>
   <keywords>
     <string>WFS</string>
@@ -44,7 +47,7 @@ data.</abstrct>
       </org.geoserver.wfs.GMLInfoImpl>
     </entry>
   </gml>
-  <serviceLevel>COMPLETE</serviceLevel>
+  <serviceLevel>BASIC</serviceLevel>
   <maxFeatures>1000000</maxFeatures>
   <featureBounding>false</featureBounding>
   <canonicalSchemaLocation>true</canonicalSchemaLocation>

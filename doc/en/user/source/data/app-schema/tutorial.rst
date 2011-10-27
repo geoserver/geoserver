@@ -314,9 +314,9 @@ WFS response
 
 When GeoServer is running, test app-schema WFS in a web browser. If GeoServer is listening on ``localhost:8080`` you can query the two feature types using these links:
 
-* http://localhost:8080/geoserver/wfs?request=GetFeature&typeName=gsml:GeologicUnit
+* http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.1.0&typeName=gsml:GeologicUnit
 
-* http://localhost:8080/geoserver/wfs?request=GetFeature&typeName=gsml:MappedFeature
+* http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature
 
 You can also obtain WFS responses by using the *Demo requests* page in the GeoServer web interface. (Note that the web interface does not yet support app-schema store or layer administration.)
 

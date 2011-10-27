@@ -889,6 +889,7 @@ public class CatalogBuilder {
          */
         String name = gc.getName().toString();
         cinfo.setName(name);
+        cinfo.setNativeName(name);
         cinfo.setTitle(name);
         cinfo.setDescription(new StringBuilder("Generated from ").append(format.getName()).toString());
 

@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -44,12 +43,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.RequestUtils;
-import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -921,47 +918,55 @@ public class Dispatcher extends AbstractController {
     }
     
     void setHeaders(Request req, Operation opDescriptor, Object result, Response response) {
-        //set any extra headers, other than the mime-type
+        // get the basics using the new api
+        Map rawKvp = req.getRawKvp();
+        String disposition = response.getPreferredDisposition(result, opDescriptor);
+        String filename = response.getAttachmentFileName(result, opDescriptor);
+        
+        // get user overrides, if any
+        if (rawKvp != null) {
+            // check if the filename and content disposition were provided
+            if(rawKvp.get("FILENAME") != null) {
+                filename = (String) rawKvp.get("FILENAME");
+            }
+            if(rawKvp.get("CONTENT-DISPOSITION") != null) {
+                disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
+            }
+        }
+        
+        // make sure the disposition obtained so far is valid
+        // check and prevent invalid header injection
+        if(disposition != null && !Response.DISPOSITION_ATTACH.equals(disposition)
+                && !Response.DISPOSITION_INLINE.equals(disposition)) {
+            disposition = null;
+        } 
+        
+        // set any extra headers, other than the mime-type
         String[][] headers = response.getHeaders(result, opDescriptor);
         boolean contentDispositionProvided = false;
         if (headers != null) {
             for (int i = 0; i < headers.length; i++) {
                 if (headers[i][0].equalsIgnoreCase("Content-Disposition")) {
                     contentDispositionProvided = true;
+                    if(disposition == null) {
+                        req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
+                    }
+                } else {
+                    req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
                 }
-                req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
             }
         }
-
-        // backwards compatibility to new Response API
-        if (!contentDispositionProvided) {
-            String fname = response.getAttachmentFileName(result, opDescriptor);
-            if (fname != null) {
-                String disposition = null;
-                Map rawKvp = req.getRawKvp();
-                if (rawKvp != null) {
-                    // set content-disposition header if requested.
-                    disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
-                    // check and prevent strange header injection
-                    boolean valid = Response.DISPOSITION_ATTACH.equals(disposition)
-                            || Response.DISPOSITION_INLINE.equals(disposition);
-                    if (!valid) {
-                        disposition = null;
-                    }
-                }
-                if (disposition == null) {
-                    disposition = response.getPreferredDisposition(result, opDescriptor);
-                    if (disposition == null) {
-                        disposition = Response.DISPOSITION_INLINE;
-                    }
-                }
-                // this would be a good place to quote the filename but unsure of
-                // compatibility - it appears to be the correct way to handle
-                // spaces and other characters.
-                String disp = disposition + "; filename=" + fname;
-                // override any existing header
-                req.getHttpResponse().setHeader("Content-Disposition", disp);
+        
+        // default disposition value and set if not forced by the user and not set 
+        // directly by the response
+        if(!contentDispositionProvided) {
+            if (disposition == null) {
+                disposition = Response.DISPOSITION_INLINE;
             }
+        
+            // override any existing header
+            String disp = disposition + "; filename=" + filename;
+            req.getHttpResponse().setHeader("Content-Disposition", disp);
         }
     }
 

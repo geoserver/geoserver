@@ -989,6 +989,7 @@ public class ResourcePool {
      */
     public void clear(CoverageStoreInfo info) {
         coverageReaderCache.remove(info);
+        hintCoverageReaderCache.remove(info);
     }
     
     /**

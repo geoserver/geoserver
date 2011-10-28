@@ -677,6 +677,11 @@
           singleton="false"
     />
     
+    <bean id="text" 
+          class="org.geoserver.wms.decoration.TextDecoration"
+          singleton="false"
+    />
+    
     <bean id="wmsWorkspaceQualifier" class="org.geoserver.wms.WMSWorkspaceQualifier">
       <constructor-arg ref="catalog"/>
     </bean>

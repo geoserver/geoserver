@@ -34,7 +34,7 @@ public interface MapDecoration {
      *
      * @throws InvalidStateException if loadOptions() has not been called yet
      */
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent);
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception;
 
     /**
      * Render the contents of this decoration onto the provided graphics object within the 

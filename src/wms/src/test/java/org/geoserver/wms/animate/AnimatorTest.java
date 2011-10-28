@@ -86,6 +86,7 @@ public class AnimatorTest extends WMSTestSupport {
     	getMapRequest.getRawKvp().put("aparam", "fake_param");
     	getMapRequest.getRawKvp().put("avalues", "val0,val\\,1,val2\\,\\,,val3");
     	getMapRequest.getRawKvp().put("format", GIF_ANIMATED_FORMAT);
+    	getMapRequest.getRawKvp().put("LAYERS", layerName);
     	
     	catalog = new FrameCatalog(getMapRequest, wms, getWMS());
     	

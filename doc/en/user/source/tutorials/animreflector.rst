@@ -98,7 +98,32 @@ Lets now rotate the image very fast and forever.
 .. code-block:: html
 
     http://localhost:8080/geoserver/wms/animate?layers=topp:states,sf:restricted&format=image/gif;subtype=animated&aparam=angle&avalues=0,45,90,135,180,225,270,365&format_options=gif_loop_continuosly:true;gif_frames_delay:10&width=640
-    
+
+Adding current frame values as text overlays
+--------------------------------------------
+
+It is possible to decorate each frame with the ``avalue`` that generated it using the ``text`` map decoration and having it exand the ``avalue`` parameter, which is fed into the ``env`` map while the animator runs (if needs be, the same value can also be used as a SLD parameter).
+Here is an example call that uses a decoration:
+
+.. code-block:: html
+
+   http://localhost:8080/geoserver/wms/animate?LAYERS=topp%3Aworld&aparam=time&avalues=2004-01-01T00:00:00.000Z,2004-02-01T00:00:00.000Z&format=image/gif;subtype=animated&format_options=layout:message
+
+which uses the following decoration layout, located in ``layouts/message.xml``:
+
+.. code-block:: xml
+
+  <layout>
+    <decoration type="text" affinity="bottom,right" offset="6,6">
+      <option name="message" value="${avalue}"/>
+      <option name="font-size" value="12"/>
+      <option name="font-family" value="Arial"/>
+      <option name="halo-radius" value="2"/>        
+    </decoration>
+  </layout>
+  
+
+
 WMS Animator default behaviour through WMS Params
 -------------------------------------------------
 The GeoServer amdinistrator GUI allows you also to setup some default parameters for the WMS Animator. 

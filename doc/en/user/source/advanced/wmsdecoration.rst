@@ -79,6 +79,32 @@ The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing t
 
 The **legend** decoration (``type="legend"``) overlays a graphic containing legends for the layers in the map.
 
+The **text** decoration (``type="text"``) overlays a parametric, single line text message on top of the map. 
+The parameter values can be fed via the the ``env`` request parameter, just like SLD enviroment parameters.
+
+.. list-table::
+   :widths: 20 80
+
+   * - **Option Name**
+     - **Meaning**
+   * - ``message``
+     - the message to be displayed, as plain text or Freemarker template that can use the ``env`` map contents to expand variables
+   * - ``font-family``
+     - the name of the font used to display the message, e.g., ``Arial``, defaults to ``Serif``
+   * - ``font-size``
+     - the size of the font to use (can have decimals), defaults to 12
+   * - ``font-italic``
+     - it ``true`` the font will be italic, defaults to ``false``
+   * - ``font-bold``
+     - if ``true`` the font will be bold, defaults to ``false``
+   * - ``font-color``
+     - the color of the message, in ``#RRGGBB`` or ``#RRGGBBAA`` format, defaults to black
+   * - ``halo-radius``
+     - the radius of a halo around the message, can have decimals, defaults to 0
+   * - ``halo-color``
+     - the halo fill color, in ``#RRGGBB`` or ``#RRGGBBAA`` format, defaults to white
+
+
 Example
 -------
 

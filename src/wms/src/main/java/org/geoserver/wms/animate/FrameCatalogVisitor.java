@@ -190,7 +190,7 @@ class FrameLoader implements Callable<RenderedImage> {
 
         // Making a shallow copy of the original request and replacing param's values
         GetMapRequest frameRequest = replaceRequestParams(this.request, this.aparam, this.avalue);
-
+        
         // set rest of the wms defaults
         frameRequest = DefaultWebMapService.autoSetMissingProperties(frameRequest);
 
@@ -275,7 +275,10 @@ class FrameLoader implements Callable<RenderedImage> {
         KvpUtils.parse(kvp);
         
         // finally building the request
-        request = kvpRequestReader.read(request, kvp, rawKvp);
+        request = kvpRequestReader.read(new GetMapRequest(), kvp, rawKvp);
+
+        // add the param value for text decorations to use
+        request.getEnv().put("avalue", value);
         
         return request;
     }

@@ -193,7 +193,7 @@ public class MapDecorationLayout {
          * @param g2d the Graphics2D context into which the MapDecoration will be rendered
          * @param mapContext the WMSMapContext for the request being handled
          */
-        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext) {
+        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContext) throws Exception {
             return (dimension != null) 
                 ? dimension 
                 : decoration.findOptimalSize(g2d, mapContext);

@@ -58,7 +58,6 @@ public class NewLayerPage extends GeoServerSecuredPage {
     String storeId;
     private NewLayerPageProvider provider;
     private GeoServerTablePanel<Resource> layers;
-    private WebMarkupContainer layersContainer;
     private WebMarkupContainer selectLayersContainer;
     private WebMarkupContainer selectLayers;
     private Label storeName;
@@ -248,21 +247,28 @@ public class NewLayerPage extends GeoServerSecuredPage {
     void updateSpecialFunctionPanels(StoreInfo store) {
         // at the moment just assume every store can create types
         createTypeContainer.setVisible(store instanceof DataStoreInfo);
-        if(store instanceof DataStoreInfo) {
+
+        // reset to default first, to avoid the container being displayed if store is not a
+        // DataStoreInfo
+        createSQLViewContainer.setVisible(false);
+        if (store instanceof DataStoreInfo) {
             try {
                 DataAccess da = ((DataStoreInfo) store).getDataStore(null);
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
-            } catch(IOException e) {
-                
+            } catch (IOException e) {
+
             }
         }
-        
-        if(store instanceof WMSStoreInfo) {
+
+        // reset to default first, to avoid the container being displayed if store is not a
+        // WMSStoreInfo
+        createWMSLayerImportContainer.setVisible(false);
+        if (store instanceof WMSStoreInfo) {
             try {
-                WebMapServer wms = ((WMSStoreInfo)store).getWebMapServer(null);
+                WebMapServer wms = ((WMSStoreInfo) store).getWebMapServer(null);
                 createWMSLayerImportContainer.setVisible(wms != null);
             } catch (IOException e) {
-                
+
             }
         }
     }

@@ -4,8 +4,6 @@
  */
 package org.geoserver.web.security.user;
 
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -14,12 +12,16 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.security.SelectionUserRemovalLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.springframework.security.userdetails.User;
+import org.springframework.security.userdetails.UserDetails;
 
 /**
  * A page listing users, allowing for removal, addition and linking to an edit page
@@ -35,6 +37,7 @@ public class UserPage extends GeoServerSecuredPage {
         UserListProvider provider = new UserListProvider();
         add(users = new GeoServerTablePanel<User>("table", provider, true) {
 
+            @SuppressWarnings("rawtypes")
             @Override
             protected Component getComponentForProperty(String id, IModel itemModel,
                     Property<User> property) {
@@ -43,7 +46,15 @@ public class UserPage extends GeoServerSecuredPage {
                 } else if (property == UserListProvider.ROLES) {
                     return new Label(id, property.getModel(itemModel));
                 } else if (property == UserListProvider.ADMIN) {
-                    return new Label(id, property.getModel(itemModel));
+                    User user = (User) itemModel.getObject();
+                    Boolean isAdmin = (Boolean) property.getPropertyValue(user);
+
+                    if (Boolean.TRUE.equals(isAdmin)) {
+                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                    } else {
+                        return new Label(id, "");
+                    }
+
                 }
                 throw new RuntimeException("Uknown property " + property);
             }

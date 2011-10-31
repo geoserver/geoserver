@@ -162,51 +162,6 @@ class DataPanel(
   add(new SummaryTable("summary", states))
 }
 
-class CreateLinkPanel(id: String, namePanel: => Component) extends Panel(id) { createPanel =>
-  setOutputMarkupId(true)
-
-  add(new AjaxLink("create-style", new Model("Create")) {
-    override def onClick(target: AjaxRequestTarget) {
-      createPanel.replaceWith(namePanel)
-      target.addComponent(namePanel)
-    }
-  })
-}
-
-class NamePanel(
-  id: String,
-  createPanel: => Component,
-  createCssTemplate: String => Unit,
-  layerInfo: FeatureTypeInfo
-) extends Panel(id) { namePanel =>
-  setOutputMarkupId(true)
-  var stylename = new Model("New style name")
-
-  add(new Form("create-style") {
-    add(new TextField("new-style-name", stylename))
-
-    add(new SubmitLink("new-style-submit", this))
-
-    add(new AjaxLink("new-style-cancel", new Model("Cancel")) {
-      override def onClick(target: AjaxRequestTarget) {
-        namePanel.replaceWith(createPanel)
-        target.addComponent(createPanel)
-      }
-    })
-
-    override def onSubmit() {
-      val name = stylename.getObject().asInstanceOf[String]
-      createCssTemplate(name)
-
-      val params = new org.apache.wicket.PageParameters
-      params.put("layer", layerInfo.getPrefixedName())
-      params.put("style", name)
-      setResponsePage(classOf[CssDemoPage], params)
-      setRedirect(true)
-    }
-  })
-}
-
 abstract class DemoPanel(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.Property
   def cat = demo.catalog

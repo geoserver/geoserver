@@ -85,18 +85,14 @@ class CssValidator extends IValidator[String] {
 class StylePanel(
   id: String,
   model: IModel[CssDemoPage],
-  map: => Option[OpenLayersMapPanel],
+  page: CssDemoPage,
   feedback: Component,
   findStyleFile: String => File,
   cssText2sldText: String => Either[NoSuccess, String],
-  cssSource: String,
-  sldText: => Option[String],
-  catalog: => Catalog,
-  styleInfo: => StyleInfo,
-  sldPreview: => Option[Component]
+  cssSource: String
 ) extends Panel(id, model) {
   var styleBody = {
-    val file = findStyleFile(cssSource)
+    val file = page.findStyleFile(cssSource)
     if (file != null && file.exists) {
       Source.fromFile(file).mkString
     } else {
@@ -126,8 +122,8 @@ existing SLD.
             val writer = new FileWriter(file)
             writer.write(styleBody)
             writer.close()
-            catalog.getResourcePool.writeStyle(
-              styleInfo,
+            page.catalog.getResourcePool.writeStyle(
+              page.styleInfo,
               new ByteArrayInputStream(sld.getBytes)
             )
           }
@@ -136,10 +132,10 @@ existing SLD.
         case e => throw new WicketRuntimeException(e);
       }
 
-      catalog.save(styleInfo)
+      page.catalog.save(page.styleInfo)
 
-      sldPreview.foreach(target.addComponent(_))
-      map.foreach { m => target.appendJavascript(m.getUpdateCommand()) }
+      page.sldPreview.foreach(target.addComponent(_))
+      page.map.foreach { m => target.appendJavascript(m.getUpdateCommand()) }
     }
   })
 
@@ -487,6 +483,9 @@ with CssDemoConstants
     }
   }
 
+  var map: Option[OpenLayersMapPanel] = None
+  var sldPreview: Option[Label] = None
+
   if (layerInfo != null && styleInfo != null) {
     val mainContent = new Fragment("main-content", "normal", this) {
       val popup = new ModalWindow("popup")
@@ -534,8 +533,6 @@ with CssDemoConstants
         }
       })
 
-      var map: Option[OpenLayersMapPanel] = None
-      var sldPreview: Option[Label] = None
       val model = new CompoundPropertyModel[CssDemoPage](CssDemoPage.this)
       val tabs = new java.util.ArrayList[ITab]
       tabs.add(new AbstractTab(new Model("Collapse")) {
@@ -577,15 +574,11 @@ with CssDemoConstants
       add(new StylePanel(
         "style.editing",
         model,
-        map,
+        CssDemoPage.this,
         getFeedbackPanel(),
         findStyleFile _,
         cssText2sldText _,
-        cssSource,
-        sldText,
-        getCatalog,
-        styleInfo,
-        sldPreview
+        cssSource
       ))
     }
 

@@ -7,7 +7,6 @@
 package org.geoserver.test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import junit.framework.Test;
@@ -54,6 +53,51 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
             + " "
             + AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL //
             + "\""; // end of schemaLocation
+
+    /**
+     * Return the root of the test fixture data directory.
+     */
+    private File getDataDir() {
+        return getTestData().getDataDirectoryRoot();
+    }
+
+    /**
+     * Return first ex schema file.
+     */
+    private File getExSchemaOne() {
+        return findFile("featureTypes/ex_FirstParentFeature/simpleContent.xsd", getDataDir());
+    }
+
+    /**
+     * Return first ex schema location.
+     */
+    private String getExSchemaOneLocation() {
+        return getExSchemaOne().toURI().toString();
+    }
+
+    /**
+     * Return second ex schema file.
+     */
+    private File getExSchemaTwo() {
+        return findFile("featureTypes/ex_SecondParentFeature/simpleContent.xsd", getDataDir());
+    }
+
+    /**
+     * Return second ex schema location.
+     */
+    private String getExSchemaTwoLocation() {
+        return getExSchemaTwo().toURI().toString();
+    }
+
+    /**
+     * Test that ex schemas are found and the files exist.
+     */
+    public void testExSchemas() {
+        assertNotNull(getExSchemaOne());
+        assertTrue(getExSchemaOne().exists());
+        assertNotNull(getExSchemaTwo());
+        assertTrue(getExSchemaTwo().exists());
+    }
     
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
@@ -89,18 +133,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     }
 
     /**
-     * Test whether DescribeFeatureType returns xsd:schema, and if the contents are correct. When no
-     * type name specified, it should return imports for all name spaces involved. If type name is
-     * specified, it should return imports of GML type and the type's top level schema.
-     * 
-     * @throws IOException
+     * Test DescribeFeatureType response for gsml:MappedFeature.
      */
-    public void testDescribeFeatureType() throws IOException {
-        File dataDir = this.getTestData().getDataDirectoryRoot();
-
-        /**
-         * gsml:MappedFeature
-         */
+    public void testDescribeFeatureTypeMappedFeature() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
                 + prettyString(doc));
@@ -118,11 +153,13 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
+    }
 
-        /**
-         * gsml:GeologicUnit
-         */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:GeologicUnit");
+    /**
+     * Test DescribeFeatureType response for gsml:GeologicUnit.
+     */
+    public void testDescribeFeatureTypeGeologicUnit() {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"
                 + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
@@ -135,37 +172,35 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
+    }
 
-        /**
-         * ex:FirstParentFeature and ex:SecondParentFeature
-         */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=ex:FirstParentFeature,ex:SecondParentFeature");
+    /**
+     * Test DescribeFeatureType response for ex:FirstParentFeature and ex:SecondParentFeature, which
+     * have two schemas in the same namespace.
+     */
+    public void testDescribeFeatureTypeTwoSchemasSameNamespace() {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=ex:FirstParentFeature,ex:SecondParentFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=ex:FirstParentFeature,"
                 + "ex:SecondParentFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo(FeatureChainingMockData.EX_URI, "//@targetNamespace", doc);
         assertXpathCount(1, "//xsd:include", doc);
         assertXpathCount(0, "//xsd:import", doc);
         // EX include
-        File exSchemaOne = findFile("featureTypes/ex_FirstParentFeature/simpleContent.xsd", dataDir);
-        assertNotNull(exSchemaOne);
-        assertTrue(exSchemaOne.exists());
-        String exSchemaOneLocation = exSchemaOne.toURI().toString();
-        File exSchemaTwo = findFile("featureTypes/ex_SecondParentFeature/simpleContent.xsd", dataDir);
-        assertNotNull(exSchemaTwo);
-        assertTrue(exSchemaTwo.exists());
-        String exSchemaTwoLocation = exSchemaTwo.toURI().toString();
         String schemaLocation = evaluate("//xsd:include/@schemaLocation", doc);
-        if (!schemaLocation.equals(exSchemaOneLocation)) {
-            assertEquals(exSchemaTwoLocation, schemaLocation);
+        if (!schemaLocation.equals(getExSchemaOneLocation())) {
+            assertEquals(getExSchemaTwoLocation(), schemaLocation);
         }
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
+    }
 
-        /**
-         * om:Observation has 2 schemaURIs specified in the mapping file. Both must appear.
-         */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=om:Observation");
+    /**
+     * Test DescribeFeatureType response for om:Observation, which has 2 schemaUris specified in the
+     * mapping file. Both must appear.
+     */
+    public void testDescribeFeatureTypeObservation() {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=om:Observation");
         LOGGER.info("WFS DescribeFeatureType, typename=om:Observation response:\n"
                 + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
@@ -182,87 +217,111 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
-        
-        /**
-         * Mixed name spaces
-         */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=gsml:MappedFeature,ex:FirstParentFeature");
-        LOGGER
-                .info("WFS DescribeFeatureType, typename=gsml:MappedFeature,ex:FirstParentFeature response:\n"
-                        + prettyString(doc));
-        checkDescribeFeatureTypeReferences(doc, exSchemaOneLocation, null, null);
-
-        /**
-         * All type names specified, should result the same as above
-         */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=gsml:MappedFeature,gsml:GeologicUnit,ex:FirstParentFeature,ex:SecondParentFeature");
-        LOGGER
-                .info("WFS DescribeFeatureType, typename=gsml:MappedFeature,gsml:GeologicUnit,ex:FirstParentFeature,ex:SecondParentFeature response:\n"
-                        + prettyString(doc));
-        checkDescribeFeatureTypeReferences(doc, exSchemaOneLocation, exSchemaTwoLocation, null);
-
-        /**
-         * No type name specified, should result the same as all type names
-         */
-        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0");
-        LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
-        checkDescribeFeatureTypeReferences(doc, exSchemaOneLocation, exSchemaTwoLocation,
-                FeatureChainingMockData.OM_SCHEMA_LOCATION_URL);
     }
 
     /**
-     * Check that imports and includes in the DescribeFeatureType response are correct.
+     * Test DescribeFeatureType response for mixed namespaces.
      */
-    private void checkDescribeFeatureTypeReferences(Document doc, String exSchemaOneLocation,
-            String exSchemaTwoLocation, String omSchemaLocation) {
+    public void testDescribeFeatureTypeMixedNamespaces() {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=gsml:MappedFeature,ex:FirstParentFeature");
+        LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature,ex:FirstParentFeature response:\n"
+                + prettyString(doc));
+        checkGsmlExDescribeFeatureType(doc);
+    }
+
+    /**
+     * Test DescribeFeatureType response for many types.
+     */
+    public void testDescribeFeatureTypeManyTypes() {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=gsml:MappedFeature,gsml:GeologicUnit,ex:FirstParentFeature,ex:SecondParentFeature");
+        LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature,gsml:GeologicUnit,ex:FirstParentFeature,ex:SecondParentFeature response:\n"
+                + prettyString(doc));
+        checkGsmlExDescribeFeatureType(doc);
+    }
+
+    private void checkGsmlExDescribeFeatureType(Document doc) {
+        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo(FeatureChainingMockData.GSML_URI, "//@targetNamespace", doc);
+        assertXpathCount(1, "//xsd:include", doc);
+        assertXpathCount(1, "//xsd:import", doc);
+        // gsml schemaLocation as xsd:include
+        assertXpathEvaluatesTo(FeatureChainingMockData.GSML_SCHEMA_LOCATION_URL,
+                "//xsd:include/@schemaLocation", doc);
+        // ex schemaLocation as xsd:import because the namespace is different
+        // Only one ex schema can be imported.
+        // The other ex schema is ignored (a warning is logged).
+        // The reason for this is that the effect of importing multiple schemas with
+        // the same target namespace is undefined, so FeatureTypeSchemaBuilder does
+        // not do it.
+        assertXpathEvaluatesTo(FeatureChainingMockData.EX_URI, "//xsd:import/@namespace", doc);
+        String schemaLocation = evaluate("//xsd:import/@schemaLocation", doc);
+        assertTrue(schemaLocation.equals(getExSchemaOneLocation())
+                || schemaLocation.equals(getExSchemaTwoLocation()));
+        // nothing else
+        assertXpathCount(0, "//xsd:complexType", doc);
+        assertXpathCount(0, "//xsd:element", doc);
+    }
+
+    /**
+     * Test DescribeFeatureType response when no types are specified.
+     */
+    public void testDescribeFeatureTypeNoTypes() {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0");
+        LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         String targetNamespace = evaluate("//@targetNamespace", doc);
-        assertTrue(targetNamespace.length() > 0);
-        int numberOfReferences = omSchemaLocation != null ? 3 : 2;
+        assertFalse(targetNamespace.isEmpty());
         int numberOfImports = getMatchingNodes("//xsd:import", doc).getLength();
         int numberOfIncludes = getMatchingNodes("//xsd:include", doc).getLength();
-        assertEquals(numberOfReferences, numberOfImports + numberOfIncludes);
+        // targetNamespace depends on load order which is platform dependent
+        if (targetNamespace.equals(FeatureChainingMockData.EX_URI)) {
+            assertEquals(2, numberOfImports); // gsml and om schemas
+            assertEquals(2, numberOfIncludes); // two ex schemas
+        } else {
+            // If the targetNamespace is not the ex namespace, only one ex schema can be imported.
+            // The other ex schema is ignored (a warning is logged).
+            // The reason for this is that the effect of importing multiple schemas with
+            // the same target namespace is undefined, so FeatureTypeSchemaBuilder does
+            // not do it.
+            assertEquals(2, numberOfImports);
+            assertEquals(1, numberOfIncludes);
+        }
         ArrayList<String> namespaces = new ArrayList<String>();
         namespaces.add(AbstractAppSchemaMockData.GSML_URI);
         namespaces.add(FeatureChainingMockData.EX_URI);
-        if (omSchemaLocation != null) {
-            namespaces.add(FeatureChainingMockData.OM_URI);
-        }
+        namespaces.add(FeatureChainingMockData.OM_URI);
         // order is unimportant, and could change, so we don't test the order
-        for (int i = 1; i <= numberOfReferences; i++) {
+        for (int i = 1; i <= numberOfImports + numberOfIncludes; i++) {
             String namespace;
             String schemaLocation;
             if (i <= numberOfImports) {
                 namespace = evaluate("//xsd:import[" + i + "]/@namespace", doc);
                 schemaLocation = "//xsd:import[" + i + "]/@schemaLocation";
+                assertFalse(namespace.equals(targetNamespace));
             } else {
                 namespace = targetNamespace;
                 schemaLocation = "//xsd:include[" + (i - numberOfImports) + "]/@schemaLocation";
             }
             if (namespace.equals(AbstractAppSchemaMockData.GSML_URI)) {
-                // GSML import
+                // gsml import
                 assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
                         schemaLocation, doc);
                 namespaces.remove(AbstractAppSchemaMockData.GSML_URI);
             } else if (namespace.equals(FeatureChainingMockData.EX_URI)) {
-                // EX import
+                // ex import
                 String loc = evaluate(schemaLocation, doc);
-                if (!loc.equals(exSchemaOneLocation)) {
-                    // probably the 2nd one, which is the same, but located differently
-                    assertNotNull(exSchemaTwoLocation);
-                    assertEquals(exSchemaTwoLocation, loc);
-                }
+                assertTrue(loc.equals(getExSchemaOneLocation())
+                        || loc.equals(getExSchemaTwoLocation()));
                 namespaces.remove(FeatureChainingMockData.EX_URI);
             } else {
-                // OM import
-                assertTrue(omSchemaLocation != null);
+                // om import
                 assertEquals(FeatureChainingMockData.OM_URI, namespace);
                 assertXpathEvaluatesTo(FeatureChainingMockData.OM_SCHEMA_LOCATION_URL,
                         schemaLocation, doc);
                 namespaces.remove(FeatureChainingMockData.OM_URI);
             }
         }
-        // ensure there's no repeats in the imports
+        // ensure there are no unexpected references
         assertTrue(namespaces.isEmpty());
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);

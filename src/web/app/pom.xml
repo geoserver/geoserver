@@ -710,7 +710,16 @@
         </dependency>
       </dependencies>
     </profile>
-
+    <profile>
+      <id>gt-ogr</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-ogr</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 
 </project>

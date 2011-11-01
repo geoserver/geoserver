@@ -24,7 +24,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:editor:editorContainer:editor", TextArea.class);
+        tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
         tester.assertComponent("uploadForm:filename", FileUploadField.class);
         
         tester.assertModelValue("form:name", null);
@@ -40,20 +40,43 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         upload.submit();
         
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertModelValue("form:editor", sld);
+        tester.assertModelValue("form:SLD", sld);
     }
     
     public void testMissingName() throws Exception {
-    	
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("editor", sld);
+        form.setValue("SLD:editorContainer:editor", sld);
         form.submit();
        
         
         tester.assertRenderedPage(StyleNewPage.class);
         tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
+    }
+    
+    public void testMissingStyle() throws Exception {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("name", "test");
+        form.submit();
+       
+        
+        tester.assertRenderedPage(StyleNewPage.class);
+        tester.assertErrorMessages(new String[] {"Field 'SLD' is required."});
+    }
+
+    
+    public void testNewStyle() throws Exception {
+        
+        FormTester form = tester.newFormTester("form");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("SLD:editorContainer:editor", sld);
+        form.setValue("name", "test");
+        form.submit();
+        
+        tester.assertRenderedPage(StylePage.class);
+        assertNotNull(getCatalog().getStyleByName("test"));
     }
     
 //    Cannot make this one to work, the sld text area is not filled in the test

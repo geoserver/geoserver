@@ -87,10 +87,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(nameTextField = new TextField("name"));
         nameTextField.setRequired(true);
         
-        styleForm.add( editor = new CodeMirrorEditor("editor", new PropertyModel(this, "rawSLD")) );
+        styleForm.add( editor = new CodeMirrorEditor("SLD", new PropertyModel(this, "rawSLD")) );
         // force the id otherwise this blasted thing won't be usable from other forms
         editor.setTextAreaMarkupId("editor");
         editor.setOutputMarkupId(true);
+        editor.setRequired(true);
         styleForm.add(editor);
 
         if (style != null) {

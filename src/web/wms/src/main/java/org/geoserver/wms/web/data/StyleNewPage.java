@@ -31,6 +31,10 @@ public class StyleNewPage extends AbstractStylePage {
 
         // write out the SLD before creating the style
         try {
+            if (s.getFilename() == null) {
+                // TODO: check that this does not overriDe any existing files
+                s.setFilename(s.getName() + ".sld");
+            }
             catalog.getResourcePool().writeStyle(s,
                     new ByteArrayInputStream(rawSLD.getBytes()));
         } catch (IOException e) {
@@ -41,10 +45,6 @@ public class StyleNewPage extends AbstractStylePage {
         try {
             Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
             s.setSLDVersion(version);
-            if (s.getFilename() == null) {
-                // TODO: check that this does not overriDe any existing files
-                s.setFilename(s.getName() + ".sld");
-            }
             getCatalog().add(s);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);

@@ -36,7 +36,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:editor:editorContainer:editor", TextArea.class);
+        tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
         
         tester.assertModelValue("form:name", "Buildings");
 
@@ -46,7 +46,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         //GEOS-3257, actually drag into xml and compare with xmlunit to avoid 
         // line ending problems
-        String xml = tester.getComponentFromLastRenderedPage("form:editor").getDefaultModelObjectAsString();
+        String xml = tester.getComponentFromLastRenderedPage("form:SLD").getDefaultModelObjectAsString();
         xml = xml.replaceAll("&lt;","<").replaceAll("&gt;",">").replaceAll("&quot;", "\"");
         Document d2 = db.parse( new ByteArrayInputStream(xml
             .getBytes()));

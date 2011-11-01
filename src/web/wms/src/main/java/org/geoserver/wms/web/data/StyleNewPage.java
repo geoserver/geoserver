@@ -27,13 +27,12 @@ public class StyleNewPage extends AbstractStylePage {
         Catalog catalog = getCatalog();
         StyleInfo s = (StyleInfo) styleForm.getModelObject();
 
-        if (s.getFilename() == null) {
-            // TODO: check that this does not overriDe any existing files
-            s.setFilename(s.getName() + ".sld");
-        }
-
         // write out the SLD before creating the style
         try {
+            if (s.getFilename() == null) {
+                // TODO: check that this does not overriDe any existing files
+                s.setFilename(s.getName() + ".sld");
+            }
             catalog.getResourcePool().writeStyle(s,
                     new ByteArrayInputStream(rawSLD.getBytes()));
         } catch (IOException e) {

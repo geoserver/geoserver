@@ -35,33 +35,6 @@ import org.apache.wicket.util.time.Duration
 
 import org.geoscript.geocss._, CssParser._
 
-trait CssDemoConstants {
-  val styleName = "cssdemo"
-  val defaultStyle = """ * {
-  fill: lightgrey;
-  stroke: black;
-  mark: symbol(square);
-}"""
-
-  def Translator = new Translator()
-
-  private def styleSheetXML(stylesheet: Seq[Rule]): String = {
-    val style = Translator.css2sld(stylesheet)
-    val sldBytes = new java.io.ByteArrayOutputStream
-    val xform = new org.geotools.styling.SLDTransformer
-    xform.setIndentation(2)
-    xform.transform(style, sldBytes)
-    sldBytes.toString
-  }
-
-  def cssText2sldText(css: String): Either[NoSuccess, String] = {
-    parse(css) match {
-      case Success(rules, in) => Right(styleSheetXML(rules))
-      case ns: NoSuccess => Left(ns)
-    }
-  }
-}
-
 class CssValidator extends IValidator[String] {
   override def validate(text: IValidatable[String]) = {
     text.getValue() match {
@@ -360,24 +333,17 @@ class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, 
  *
  * @author David Winslow <cdwinslow@gmail.com>
  */
-class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage
-with CssDemoConstants
-{
-  def datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
-  override def Translator =
-    new Translator(Option(styledir).map { _.toURI.toURL })
+class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
+  def this() = this(new PageParameters)
+
+  val styleName = "cssdemo"
+  val defaultStyle = """ * {
+  fill: lightgrey;
+  stroke: black;
+  mark: symbol(square);
+}"""
 
   val styledir = datadir.findStyleDir()
-  def findStyleFile(f: String): java.io.File = new java.io.File(styledir, f)
-
-  def this() = this(new PageParameters)
-  def catalog = getCatalog
-
-  def sldText = {
-    val filename = styleInfo.getFilename()
-    val file = Some(findStyleFile(filename)) filter (null !=)
-    file map { file => Source.fromFile(file).mkString }
-  }
 
   var layerInfo = {
     def res(a: String, b: String) =
@@ -404,39 +370,10 @@ with CssDemoConstants
   }
 
   val styleInfo =
-    if ((params containsKey "style") && catalog.getStyleByName(params.getString("style")) != null) {
+    if ((params containsKey "style") && catalog.getStyleByName(params.getString("style")) != null)
       catalog.getStyleByName(params.getString("style"))
-    } else {
+    else
       catalog.getLayers(layerInfo).get(0).getDefaultStyle()
-    }
-
-  def cssSource = styleInfo.getFilename.replaceAll("\\.sld$","") + ".css"
-
-  def createCssTemplate(name: String) {
-    if (catalog.getStyleByName(name) == null) {
-      val style = catalog.getFactory().createStyle()
-      style.setName(name)
-      style.setFilename(name + ".sld")
-      catalog.add(style)
-
-      val sld = findStyleFile(style.getFilename())
-      if (sld == null || !sld.exists) {
-        catalog.getResourcePool().writeStyle(
-          style,
-          new ByteArrayInputStream(
-            cssText2sldText(defaultStyle).right.get.getBytes()
-          )
-        )
-      }
-
-      val css = findStyleFile(name + ".css")
-      if (!css.exists) {
-        val writer = new FileWriter(css)
-        writer.write(defaultStyle)
-        writer.close()
-      }
-    }
-  }
 
   var map: Option[OpenLayersMapPanel] = None
   var sldPreview: Option[Label] = None
@@ -540,5 +477,61 @@ with CssDemoConstants
     add(mainContent) 
   } else {
     add(new Fragment("main-content", "loading-failure", this))
+  }
+
+  def Translator = new Translator(Option(styledir).map { _.toURI.toURL })
+
+  private def styleSheetXML(stylesheet: Seq[Rule]): String = {
+    val style = Translator.css2sld(stylesheet)
+    val sldBytes = new java.io.ByteArrayOutputStream
+    val xform = new org.geotools.styling.SLDTransformer
+    xform.setIndentation(2)
+    xform.transform(style, sldBytes)
+    sldBytes.toString
+  }
+
+  def cssText2sldText(css: String): Either[NoSuccess, String] =
+    parse(css) match {
+      case Success(rules, in) => Right(styleSheetXML(rules))
+      case ns: NoSuccess => Left(ns)
+    }
+
+  def datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
+  def findStyleFile(f: String): java.io.File = new java.io.File(styledir, f)
+
+  def catalog = getCatalog
+
+  def sldText = {
+    val filename = styleInfo.getFilename()
+    val file = Some(findStyleFile(filename)) filter (null !=)
+    file map { file => Source.fromFile(file).mkString }
+  }
+
+  def cssSource = styleInfo.getFilename.replaceAll("\\.sld$","") + ".css"
+
+  def createCssTemplate(name: String) {
+    if (catalog.getStyleByName(name) == null) {
+      val style = catalog.getFactory().createStyle()
+      style.setName(name)
+      style.setFilename(name + ".sld")
+      catalog.add(style)
+
+      val sld = findStyleFile(style.getFilename())
+      if (sld == null || !sld.exists) {
+        catalog.getResourcePool().writeStyle(
+          style,
+          new ByteArrayInputStream(
+            cssText2sldText(defaultStyle).right.get.getBytes()
+          )
+        )
+      }
+
+      val css = findStyleFile(name + ".css")
+      if (!css.exists) {
+        val writer = new FileWriter(css)
+        writer.write(defaultStyle)
+        writer.close()
+      }
+    }
   }
 }

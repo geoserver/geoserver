@@ -440,17 +440,6 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
       }))
       tabs.add(new PanelCachingTab(new AbstractTab(new Model("Generated SLD")) {
         override def getPanel(id: String): Panel = {
-          val sldModel: IModel[String] = 
-            new org.apache.wicket.model.AbstractReadOnlyModel[String] {
-              override def getObject() = 
-                if (sldText != null)
-                  sldText
-                else
-                  """
-                  |No SLD file found for this style.  One will be generated automatically if you
-                  |submit a CSS file.
-                  """.stripMargin
-            }
           val panel = new SLDPreviewPanel(id, sldModel)
           sldPreview = panel.label
           panel
@@ -504,13 +493,18 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
 
   def catalog = getCatalog
 
-  def sldText = {
-    val filename = styleInfo.getFilename()
-    val file = findStyleFile(filename)
-    if (file != null)
-      Source.fromFile(file).mkString
-    else
-      ""
+  object sldModel extends org.apache.wicket.model.AbstractReadOnlyModel[String] {
+    override def getObject() = {
+      val filename = styleInfo.getFilename()
+      val file = findStyleFile(filename)
+      if (file != null)
+        Source.fromFile(file).mkString
+      else
+        """
+        |No SLD file found for this style.  One will be generated automatically
+        |if you submit a CSS file.
+        """.stripMargin
+    }
   }
 
   def cssSource = styleInfo.getFilename.replaceAll("\\.sld$","") + ".css"

@@ -15,6 +15,8 @@ import org.geotools.referencing.CRS;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
@@ -53,21 +55,23 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
             //
         }
 
+        String wkt = "";
+
         add(new Label("crsName", name));
         CoordinateReferenceSystem crs = null;
         try {
             crs = CRS.decode(code);
         } catch (Exception e) {
-            //
+            wkt = "Error decoding CRS: " + e.getMessage();
         }
 
         InternationalString scope = null;
         InternationalString remarks = null;
-        String wkt = "";
         String aovCoords = "";
         String areaOfValidity = "";
         this.jsBbox = "null";
         this.jsSrs = code;
+        CoordinateReferenceSystem mapCrs = crs;
         if (crs != null) {
             // CoordinateSystem coordinateSystem = crs.getCoordinateSystem();
             // coordinateSystem.getName();
@@ -116,6 +120,10 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
                 double[] dst1;
                 double[] dst2;
+                double x1;
+                double y1;
+                double x2;
+                double y2;
                 try {
                     MathTransform tr = CRS.findMathTransform(CRS.decode("EPSG:4326"), crs, true);
                     dst1 = new double[tr.getTargetDimensions()];
@@ -129,15 +137,24 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                     src2[1] = northBoundLatitude;
                     tr.transform(src1, 0, dst1, 0, 1);
                     tr.transform(src2, 0, dst2, 0, 1);
+
+                    x1 = Math.min(dst1[0], dst2[0]);
+                    y1 = Math.min(dst1[1], dst2[1]);
+                    x2 = Math.max(dst1[0], dst2[0]);
+                    y2 = Math.max(dst1[1], dst2[1]);
                 } catch (Exception e1) {
-                    e1.printStackTrace();
-                    throw new RuntimeException(e1);
+                    x1 = westBoundLongitude;
+                    y1 = southBoundLatitude;
+                    x2 = eastBoundLongitude;
+                    y2 = northBoundLatitude;
+                    this.jsSrs = "EPSG:4326";
+                    try {
+                        mapCrs = CRS.decode("EPSG:4326");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
-                double x1 = Math.min(dst1[0], dst2[0]);
-                double y1 = Math.min(dst1[1], dst2[1]);
-                double x2 = Math.max(dst1[0], dst2[0]);
-                double y2 = Math.max(dst1[1], dst2[1]);
                 String bbox = "[" + x1 + "," + y1 + "," + x2 + "," + y2 + "]";
                 this.jsBbox = bbox;
 
@@ -154,7 +171,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         add(new Label("aovCoords", aovCoords));
         add(new Label("aovDescription", areaOfValidity));
 
-        Image aovMap = new Image("aovMap", new DynamicCrsMapResource(crs));
+        Image aovMap = new Image("aovMap", new DynamicCrsMapResource(mapCrs));
         add(aovMap);
     }
 

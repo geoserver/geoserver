@@ -60,8 +60,6 @@ class StylePanel(
   model: IModel[CssDemoPage],
   page: CssDemoPage,
   feedback: Component,
-  findStyleFile: String => File,
-  cssText2sldText: String => Either[NoSuccess, String],
   cssSource: String
 ) extends Panel(id, model) {
   var styleBody = {
@@ -87,9 +85,9 @@ existing SLD.
   styleEditor.add(new AjaxButton("submit", styleEditor) {
     override def onSubmit(target: AjaxRequestTarget, form: Form[_]) = {
       try {
-        val file = findStyleFile(cssSource)
+        val file = page.findStyleFile(cssSource)
 
-        cssText2sldText(styleBody) match {
+        page.cssText2sldText(styleBody) match {
           case Left(noSuccess) => println(noSuccess.toString)
           case Right(sld) => {
             val writer = new FileWriter(file)
@@ -456,13 +454,7 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
       add(feedback2)
 
       add(new StylePanel(
-        "style.editing",
-        model,
-        CssDemoPage.this,
-        getFeedbackPanel(),
-        findStyleFile _,
-        cssText2sldText _,
-        cssSource
+        "style.editing", model, CssDemoPage.this, getFeedbackPanel(), cssSource
       ))
     }
 

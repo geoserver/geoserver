@@ -107,8 +107,8 @@ existing SLD.
 
       page.catalog.save(page.styleInfo)
 
-      page.sldPreview.foreach(target.addComponent(_))
-      page.map.foreach { m => target.appendJavascript(m.getUpdateCommand()) }
+      if (page.sldPreview != null) target.addComponent(page.sldPreview)
+      if (page.map != null) target.appendJavascript(page.map.getUpdateCommand())
     }
   })
 
@@ -336,7 +336,6 @@ class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, 
 class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
   def this() = this(new PageParameters)
 
-  val styleName = "cssdemo"
   val defaultStyle = """ * {
   fill: lightgrey;
   stroke: black;
@@ -375,8 +374,8 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
     else
       catalog.getLayers(layerInfo).get(0).getDefaultStyle()
 
-  var map: Option[OpenLayersMapPanel] = None
-  var sldPreview: Option[Label] = None
+  var map: OpenLayersMapPanel = null
+  var sldPreview: Label = null
 
   if (layerInfo != null && styleInfo != null) {
     val mainContent = new Fragment("main-content", "normal", this) {
@@ -432,8 +431,8 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
       })
       tabs.add(new PanelCachingTab(new AbstractTab(new Model("Map")) {
         override def getPanel(id: String): Panel = {
-          map = Some(new OpenLayersMapPanel(id, layerInfo, styleInfo))
-          map.get
+          map = new OpenLayersMapPanel(id, layerInfo, styleInfo)
+          map
         }
       }))
       tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
@@ -443,13 +442,17 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
         override def getPanel(id: String): Panel = {
           val sldModel: IModel[String] = 
             new org.apache.wicket.model.AbstractReadOnlyModel[String] {
-              override def getObject() = sldText getOrElse ("""
-        No SLD file found for this style.  One will be generated automatically if you
-        submit a CSS file.
-              """.trim)
+              override def getObject() = 
+                if (sldText != null)
+                  sldText
+                else
+                  """
+                  |No SLD file found for this style.  One will be generated automatically if you
+                  |submit a CSS file.
+                  """.stripMargin
             }
           val panel = new SLDPreviewPanel(id, sldModel)
-          sldPreview = Some(panel.label)
+          sldPreview = panel.label
           panel
         }
       }))
@@ -503,8 +506,11 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
 
   def sldText = {
     val filename = styleInfo.getFilename()
-    val file = Some(findStyleFile(filename)) filter (null !=)
-    file map { file => Source.fromFile(file).mkString }
+    val file = findStyleFile(filename)
+    if (file != null)
+      Source.fromFile(file).mkString
+    else
+      ""
   }
 
   def cssSource = styleInfo.getFilename.replaceAll("\\.sld$","") + ".css"

@@ -273,10 +273,29 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertFalse(targetNamespace.isEmpty());
         int numberOfImports = getMatchingNodes("//xsd:import", doc).getLength();
         int numberOfIncludes = getMatchingNodes("//xsd:include", doc).getLength();
+        
+        ArrayList<String> namespaces = new ArrayList<String>();
+        namespaces.add(AbstractAppSchemaMockData.GSML_URI);
+        namespaces.add(FeatureChainingMockData.OM_URI);
+        namespaces.add(FeatureChainingMockData.EX_URI);
         // targetNamespace depends on load order which is platform dependent
         if (targetNamespace.equals(FeatureChainingMockData.EX_URI)) {
             assertEquals(2, numberOfImports); // gsml and om schemas
             assertEquals(2, numberOfIncludes); // two ex schemas
+            
+            // two includes for ex schemas
+            String schemaLocation = "//xsd:include[" + 1 + "]/@schemaLocation";            
+            String firstLoc = evaluate(schemaLocation, doc);            
+            assertTrue(firstLoc.equals(getExSchemaOneLocation())
+                    || firstLoc.equals(getExSchemaTwoLocation()));
+           
+            schemaLocation = "//xsd:include[" + 2 + "]/@schemaLocation";            
+            String secondLoc = evaluate(schemaLocation, doc);            
+            assertTrue(secondLoc.equals(getExSchemaOneLocation())
+                    || secondLoc.equals(getExSchemaTwoLocation()));            
+            assertFalse(secondLoc.equals(firstLoc));
+            
+            namespaces.remove(FeatureChainingMockData.EX_URI);
         } else {
             // If the targetNamespace is not the ex namespace, only one ex schema can be imported.
             // The other ex schema is ignored (a warning is logged).
@@ -285,23 +304,27 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
             // not do it.
             assertEquals(2, numberOfImports);
             assertEquals(1, numberOfIncludes);
-        }
-        ArrayList<String> namespaces = new ArrayList<String>();
-        namespaces.add(AbstractAppSchemaMockData.GSML_URI);
-        namespaces.add(FeatureChainingMockData.EX_URI);
-        namespaces.add(FeatureChainingMockData.OM_URI);
-        // order is unimportant, and could change, so we don't test the order
-        for (int i = 1; i <= numberOfImports + numberOfIncludes; i++) {
-            String namespace;
-            String schemaLocation;
-            if (i <= numberOfImports) {
-                namespace = evaluate("//xsd:import[" + i + "]/@namespace", doc);
-                schemaLocation = "//xsd:import[" + i + "]/@schemaLocation";
-                assertFalse(namespace.equals(targetNamespace));
+            
+            String schemaLocation = "//xsd:include[" + 1 + "]/@schemaLocation";            
+            String loc = evaluate(schemaLocation, doc);            
+            if (targetNamespace.equals(AbstractAppSchemaMockData.GSML_URI)) {
+                // gsml include
+                assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
+                        loc, doc);
+                namespaces.remove(AbstractAppSchemaMockData.GSML_URI);
             } else {
-                namespace = targetNamespace;
-                schemaLocation = "//xsd:include[" + (i - numberOfImports) + "]/@schemaLocation";
+                // om include
+                assertEquals(FeatureChainingMockData.OM_URI, targetNamespace);
+                assertXpathEvaluatesTo(FeatureChainingMockData.OM_SCHEMA_LOCATION_URL,
+                        loc, doc);
+                namespaces.remove(FeatureChainingMockData.OM_URI);
             }
+        }                
+        
+        // order is unimportant, and could change, so we don't test the order
+        for (int i = 1; i <= numberOfImports; i++) {
+            String namespace = evaluate("//xsd:import[" + i + "]/@namespace", doc);
+            String schemaLocation = "//xsd:import[" + i + "]/@schemaLocation";            
             if (namespace.equals(AbstractAppSchemaMockData.GSML_URI)) {
                 // gsml import
                 assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
@@ -1013,6 +1036,31 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf1", "//gsml:MappedFeature/@gml:id", doc);
+//TODO: This test case no longer serves its purpose. It should be changed to below, but it fails at the moment.
+//      String xml = //
+//      "<wfs:GetFeature " //
+//              + GETFEATURE_ATTRIBUTES //
+//              + ">" //
+//              + "    <wfs:Query typeName=\"gsml:MappedFeature\">" //
+//              + "        <ogc:Filter>" //
+//              + "            <ogc:PropertyIsEqualTo>" //
+//              + "                <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gml:name</ogc:PropertyName>" //
+//              + "                <ogc:Literal>Yaugher Volcanic Group 2</ogc:Literal>" //
+//              + "            </ogc:PropertyIsEqualTo>" //
+//              + "        </ogc:Filter>" //
+//              + "    </wfs:Query> " //
+//              + "</wfs:GetFeature>";
+//      validate(xml);
+//      Document doc = postAsDOM("wfs", xml);
+//      LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+//      assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+//      // there should be 2:
+//      // - mf2/gu.25678
+//      // - mf3/gu.25678
+//      assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+//      assertXpathCount(2, "//gsml:MappedFeature", doc);
+//      assertXpathEvaluatesTo("mf2", "//gsml:MappedFeature[1]/@gml:id", doc);
+//      assertXpathEvaluatesTo("mf3", "//gsml:MappedFeature[2]/@gml:id", doc);
     }
     
     /**

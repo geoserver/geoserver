@@ -305,18 +305,17 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
             assertEquals(2, numberOfImports);
             assertEquals(1, numberOfIncludes);
             
-            String schemaLocation = "//xsd:include[" + 1 + "]/@schemaLocation";            
-            String loc = evaluate(schemaLocation, doc);            
+            String schemaLocation = "//xsd:include[" + 1 + "]/@schemaLocation";   
             if (targetNamespace.equals(AbstractAppSchemaMockData.GSML_URI)) {
                 // gsml include
                 assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
-                        loc, doc);
+                        schemaLocation, doc);
                 namespaces.remove(AbstractAppSchemaMockData.GSML_URI);
             } else {
                 // om include
                 assertEquals(FeatureChainingMockData.OM_URI, targetNamespace);
                 assertXpathEvaluatesTo(FeatureChainingMockData.OM_SCHEMA_LOCATION_URL,
-                        loc, doc);
+                        schemaLocation, doc);
                 namespaces.remove(FeatureChainingMockData.OM_URI);
             }
         }                

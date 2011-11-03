@@ -136,10 +136,6 @@ class DataPanel(
 abstract class DemoPanel(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.Property
   def cat = demo.catalog
-  def prop[A](name: String)(f: A => (_ <: AnyRef)): Property[A] =
-    new GeoServerDataProvider.AbstractProperty[A](name) {
-      override def getPropertyValue(x: A) = f(x)
-    }
 }
 
 class SLDPreviewPanel(id: String, sldModel: IModel[String]) extends Panel(id, sldModel) {
@@ -151,14 +147,16 @@ class SLDPreviewPanel(id: String, sldModel: IModel[String]) extends Panel(id, sl
 class DocsPanel(id: String) extends Panel(id)
 
 class StyleChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
-  import GeoServerDataProvider.Property
+  import GeoServerDataProvider.{ AbstractProperty, Property }
 
   object styleProvider extends GeoServerDataProvider[StyleInfo] {
     override def getItems(): java.util.List[StyleInfo] = 
       cat.getStyles().asScala.sortBy(_.getName).asJava
 
     override def getProperties(): java.util.List[Property[StyleInfo]] =
-      List(prop("Name"){ (x: StyleInfo) => x.getName }).asJava
+      List[Property[StyleInfo]](new AbstractProperty[StyleInfo]("Name") {
+        override def getPropertyValue(x: StyleInfo) = x.getName
+      }).asJava
   }
 
   object styleTable extends GeoServerTablePanel[StyleInfo]("style.table", styleProvider) {
@@ -187,18 +185,28 @@ class StyleChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
 }
 
 class LayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
-  import GeoServerDataProvider.Property
+  import GeoServerDataProvider.{ AbstractProperty, Property }
 
   object layerProvider extends GeoServerDataProvider[FeatureTypeInfo] {
     override def getItems(): java.util.List[FeatureTypeInfo] = 
       cat.getFeatureTypes()
 
-    val workspace = prop("Workspace"){ (x: FeatureTypeInfo) => x.getStore.getWorkspace.getName }
-    val store = prop("Store"){ (x: FeatureTypeInfo) => x.getStore.getName }
-    val name = prop("Layer"){ (x: FeatureTypeInfo) => x.getName }
+    val workspace =
+      new AbstractProperty[FeatureTypeInfo]("Workspace") {
+        override def getPropertyValue(x: FeatureTypeInfo) = x.getStore.getWorkspace.getName
+      }
+
+    val store =
+      new AbstractProperty[FeatureTypeInfo]("Store") {
+        override def getPropertyValue(x: FeatureTypeInfo) = x.getStore.getName
+      }
+    val name =
+      new AbstractProperty[FeatureTypeInfo]("Layer") {
+        override def getPropertyValue(x: FeatureTypeInfo) = x.getName
+      }
 
     override def getProperties(): java.util.List[Property[FeatureTypeInfo]] =
-      List(workspace, store, name).asJava
+      List[Property[FeatureTypeInfo]](workspace, store, name).asJava
   }
 
   object layerTable extends GeoServerTablePanel[FeatureTypeInfo]("layer.table", layerProvider) {
@@ -266,7 +274,7 @@ class LayerNameInput(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) 
 }
 
 class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
-  import GeoServerDataProvider.Property
+  import GeoServerDataProvider.{ AbstractProperty, Property }
 
   def usesEditedStyle(l: LayerInfo): Boolean =
     (l.getStyles.asScala + l.getDefaultStyle).exists { _.getName == demo.styleInfo.getName }
@@ -275,12 +283,21 @@ class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, 
     override def getItems(): java.util.List[LayerInfo] = 
       cat.getLayers().asScala.sortBy(_.getName).asJava
 
-    val workspace = prop("Workspace"){ (x: LayerInfo) => x.getResource.getStore.getWorkspace.getName }
-    val name = prop("Layer"){ (x: LayerInfo) => x.getName }
-    val associated = prop("Associated"){ (x: LayerInfo) => Boolean.box(usesEditedStyle(x)) }
+    val workspace =
+      new AbstractProperty[LayerInfo]("Workspace") {
+        override def getPropertyValue(x: LayerInfo) = x.getResource.getStore.getWorkspace.getName
+      }
+    val name =
+      new AbstractProperty[LayerInfo]("Layer") {
+        override def getPropertyValue(x: LayerInfo) = x.getName
+      }
+    val associated =
+      new AbstractProperty[LayerInfo]("Associated") {
+        override def getPropertyValue(x: LayerInfo) = Boolean.box(usesEditedStyle(x))
+      }
 
     override def getProperties(): java.util.List[Property[LayerInfo]] =
-      List(workspace, name, associated).asJava
+      List[Property[LayerInfo]](workspace, name, associated).asJava
   }
 
   object layerTable extends GeoServerTablePanel[LayerInfo]("layer.table", layerProvider) {

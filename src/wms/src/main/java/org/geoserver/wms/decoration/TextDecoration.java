@@ -116,6 +116,7 @@ public class TextDecoration implements MapDecoration {
             font = FontCache.getDefaultInstance().getFont(fontFamily);
             if(font == null) {
                 LOGGER.log(Level.WARNING, "Font " + fontFamily + " not found, falling back on the default");
+                font = DEFAULT_FONT;
             }
         }
         if(fontSize > 0) {

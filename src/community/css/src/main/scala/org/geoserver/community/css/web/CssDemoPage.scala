@@ -55,63 +55,37 @@ class CssValidator extends IValidator[String] {
   }
 }
 
-class StylePanel(
-  id: String,
-  model: IModel[CssDemoPage],
+class CssSubmitButton(id: String,
+  styleEditor: Form[_],
   page: CssDemoPage,
-  feedback: Component,
-  cssSource: String
-) extends Panel(id, model) {
-  var styleBody = {
-    val file = page.findStyleFile(cssSource)
-    if (file != null && file.exists) {
-      Source.fromFile(file).mkString
-    } else {
-      """
-No CSS file was found for this style.  Please
-make sure this is the style you intended to
-edit, since saving the CSS will destroy the
-existing SLD.
-      """.trim
-    }
-  }
+  cssSource: String,
+  styleBody: String
+) extends AjaxButton("submit", styleEditor) {
+  override def onSubmit(target: AjaxRequestTarget, form: Form[_]) = {
+    try {
+      val file = page.findStyleFile(cssSource)
 
-  val styleEditor = new Form("style-editor")
-  styleEditor.add(new Label("label", "The stylesheet for this map..."))
-  val textArea =
-    new UpdatingTextArea("editor", new PropertyModel(this, "styleBody"), feedback)
-  textArea.add(new CssValidator)
-  styleEditor.add(textArea)
-  styleEditor.add(new AjaxButton("submit", styleEditor) {
-    override def onSubmit(target: AjaxRequestTarget, form: Form[_]) = {
-      try {
-        val file = page.findStyleFile(cssSource)
-
-        page.cssText2sldText(styleBody) match {
-          case Left(noSuccess) => println(noSuccess.toString)
-          case Right(sld) => {
-            val writer = new FileWriter(file)
-            writer.write(styleBody)
-            writer.close()
-            page.catalog.getResourcePool.writeStyle(
-              page.styleInfo,
-              new ByteArrayInputStream(sld.getBytes)
-            )
-          }
+      page.cssText2sldText(styleBody) match {
+        case Left(noSuccess) => println(noSuccess.toString)
+        case Right(sld) => {
+          val writer = new FileWriter(file)
+          writer.write(styleBody)
+          writer.close()
+          page.catalog.getResourcePool.writeStyle(
+            page.styleInfo,
+            new ByteArrayInputStream(sld.getBytes)
+          )
         }
-      } catch {
-        case e => throw new WicketRuntimeException(e);
       }
-
-      page.catalog.save(page.styleInfo)
-
-      if (page.sldPreview != null) target.addComponent(page.sldPreview)
-      if (page.map != null) target.appendJavascript(page.map.getUpdateCommand())
+    } catch {
+      case e => throw new WicketRuntimeException(e);
     }
-  })
 
-  AjaxFormValidatingBehavior.addToAllFormComponents(styleEditor, "onkeyup", Duration.ONE_SECOND)
-  add(styleEditor)
+    page.catalog.save(page.styleInfo)
+
+    if (page.sldPreview != null) target.addComponent(page.sldPreview)
+    if (page.map != null) target.appendJavascript(page.map.getUpdateCommand())
+  }
 }
 
 class DataPanel(

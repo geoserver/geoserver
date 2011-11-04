@@ -326,5 +326,39 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         bi.getRaster().getPixel(0, 250, pixel);
         assertTrue(Arrays.equals(new int[] {255,255,255,0}, pixel));
     }
+    
+    
+    public void testDefaultContentDisposition() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+    }
+    
+    public void testForcedContentDisposition() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&content-disposition=attachment");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("attachment; filename=sf-states.png", response.getHeader("Content-Disposition"));
+    }
+    
+    public void testForcedFilename() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&filename=dude.png");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("inline; filename=dude.png", response.getHeader("Content-Disposition"));
+    }
+    
+    public void testForcedContentDispositionFilename() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&content-disposition=attachment&filename=dude.png");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("attachment; filename=dude.png", response.getHeader("Content-Disposition"));
+    }
+    
 
 }

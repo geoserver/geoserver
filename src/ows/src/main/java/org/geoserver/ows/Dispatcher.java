@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -32,14 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 
-import org.springframework.security.SpringSecurityException;
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.RequestUtils;
-import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -48,6 +44,7 @@ import org.geotools.util.Version;
 import org.geotools.xml.EMFUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.SpringSecurityException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.xml.sax.SAXException;
@@ -111,6 +108,9 @@ public class Dispatcher extends AbstractController {
      * Logging instance
      */
     static Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    
+    static final String DISPOSITION_INLINE = "inline";
+    static final String DISPOSITION_ATTACH = "attachment";
 
     /** flag to control wether the dispatcher is cite compliant */
     boolean citeCompliant = false;
@@ -740,16 +740,10 @@ public class Dispatcher extends AbstractController {
             }
 
             //set the mime type
-            req.getHttpResponse().setContentType(response.getMimeType(result, opDescriptor));
+            String mimeType = response.getMimeType(result, opDescriptor);
+            req.getHttpResponse().setContentType(mimeType);
 
-            //set any extra headers, other than the mime-type
-            if (response.getHeaders(result, opDescriptor) != null) {
-                String[][] headers = response.getHeaders(result, opDescriptor);
-
-                for (int i = 0; i < headers.length; i++) {
-                    req.getHttpResponse().addHeader(headers[i][0], headers[i][1]);
-                }
-            }
+            setHeaders(req,opDescriptor,result,response, mimeType);
             
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
             
@@ -765,6 +759,85 @@ public class Dispatcher extends AbstractController {
 
             //flush the underlying out stream for good meaure
             req.getHttpResponse().getOutputStream().flush();
+        }
+    }
+    
+    void setHeaders(Request req, Operation opDescriptor, Object result, Response response, String mimeType) {
+        // get the basics using the new api
+        Map rawKvp = req.getRawKvp();
+        String disposition = null;
+        String filename = null;
+        
+        // get user overrides, if any
+        if (rawKvp != null) {
+            // check if the filename and content disposition were provided
+            if(rawKvp.get("FILENAME") != null) {
+                filename = (String) rawKvp.get("FILENAME");
+            }
+            if(rawKvp.get("CONTENT-DISPOSITION") != null) {
+                disposition = (String) rawKvp.get("CONTENT-DISPOSITION");
+            }
+        }
+        
+        // make sure the disposition obtained so far is valid
+        // check and prevent invalid header injection
+        if(disposition != null && !DISPOSITION_ATTACH.equals(disposition)
+                && !DISPOSITION_INLINE.equals(disposition)) {
+            disposition = null;
+        } 
+        
+        // set any extra headers, other than the mime-type
+        String[][] headers = response.getHeaders(result, opDescriptor);
+        boolean contentDispositionProvided = false;
+        if (headers != null) {
+            for (int i = 0; i < headers.length; i++) {
+                String value = headers[i][1];
+                if (headers[i][0].equalsIgnoreCase("Content-Disposition")) {
+                    if(disposition == null) {
+                        contentDispositionProvided = true;
+                        if(filename != null) {
+                            int idx = value.indexOf("filename=");
+                            if(idx > -1) {
+                                value = value.substring(0, idx + "filename=".length()) + filename;
+                            }   
+                        }
+                        req.getHttpResponse().addHeader(headers[i][0], value);
+                    } else if(filename == null) {
+                        int idx = value.indexOf("filename=");
+                        if(idx > -1) {
+                            filename = value.substring(idx + "filename=".length());
+                        }
+                    }
+                } else {
+                    req.getHttpResponse().addHeader(headers[i][0], value);
+                }
+            }
+        }
+        
+        // build some default for the filename if none was provided
+        if(filename == null) {
+            String opName = opDescriptor.getId();
+            if (mimeType != null) {
+                filename = "geoserver";
+                if (opName != null) {
+                    filename = filename + "-" + opName;
+                }
+                String[] typeParts = mimeType.split(";");
+                String extension = typeParts[0].split("/")[1];
+                filename = filename + "." + extension;
+            }
+        }
+        
+        // default disposition value and set if not forced by the user and not set 
+        // directly by the response
+        if(!contentDispositionProvided) {
+            if (disposition == null) {
+                disposition = DISPOSITION_INLINE;
+            }
+        
+            // override any existing header
+            String disp = disposition + "; filename=" + filename;
+            req.getHttpResponse().setHeader("Content-Disposition", disp);
         }
     }
 

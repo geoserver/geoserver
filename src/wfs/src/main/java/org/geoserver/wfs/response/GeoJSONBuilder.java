@@ -6,8 +6,11 @@
 package org.geoserver.wfs.response;
 
 import java.io.Writer;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.geotools.util.Converters;
 
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
@@ -249,5 +252,20 @@ public class GeoJSONBuilder extends JSONBuilder {
             throw new IllegalArgumentException(
                 "Unable to determine geometry type " + geometry.getClass());
         }
+    }
+    
+    /**
+     * Overrides to handle the case of encoding {@code java.util.Date} and its date/time/timestamp
+     * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.
+     * 
+     * @see net.sf.json.util.JSONBuilder#value(java.lang.Object)
+     */
+    @Override
+    public GeoJSONBuilder value(Object value) {
+        if (value instanceof java.util.Date || value instanceof Calendar) {
+            value = Converters.convert(value, String.class);
+        }
+        super.value(value);
+        return this;
     }
 }

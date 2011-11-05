@@ -143,4 +143,20 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo> impl
         delegate.setMaxConnections(maxConcurrentConnections);        
     }
 
+    public int getReadTimeout() {
+        return delegate.getReadTimeout();
+    }
+
+    public void setReadTimeout(int timeoutSeconds) {
+        delegate.setReadTimeout(timeoutSeconds);
+    }
+
+    public int getConnectTimeout() {
+        return delegate.getConnectTimeout();
+    }
+
+    public void setConnectTimeout(int timeoutSeconds) {
+        delegate.setConnectTimeout(timeoutSeconds);
+    }
+
 }

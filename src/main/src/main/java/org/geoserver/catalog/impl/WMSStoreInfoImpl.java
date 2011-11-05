@@ -14,6 +14,12 @@ import org.opengis.util.ProgressListener;
 @SuppressWarnings("serial")
 public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
 
+    public static final int DEFAULT_MAX_CONNECTIONS = 6;
+
+    public static final int DEFAULT_CONNECT_TIMEOUT = 30;
+
+    public static final int DEFAULT_READ_TIMEOUT = 60;
+
     String capabilitiesURL;
 
     protected WMSStoreInfoImpl() {
@@ -54,12 +60,30 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     //@Override
     public int getMaxConnections() {
         Integer maxconnections = getMetadata().get("maxConnections", Integer.class);
-        return maxconnections == null? 0 : maxconnections;
+        return maxconnections == null? DEFAULT_MAX_CONNECTIONS : maxconnections;
     }
 
     //@Override
     public void setMaxConnections(int maxConcurrentConnections) {
         getMetadata().put("maxConnections", Integer.valueOf(maxConcurrentConnections));        
+    }
+
+    public int getReadTimeout() {
+        Integer readTimeout = getMetadata().get("readTimeout", Integer.class);
+        return readTimeout == null? DEFAULT_READ_TIMEOUT : readTimeout;
+    }
+
+    public void setReadTimeout(int timeoutSeconds) {
+        getMetadata().put("readTimeout", Integer.valueOf(timeoutSeconds));        
+    }
+
+    public int getConnectTimeout() {
+        Integer connectTimeout = getMetadata().get("connectTimeout", Integer.class);
+        return connectTimeout == null? DEFAULT_CONNECT_TIMEOUT : connectTimeout;
+    }
+
+    public void setConnectTimeout(int timeoutSeconds) {
+        getMetadata().put("connectTimeout", Integer.valueOf(timeoutSeconds));        
     }
 
     public void accept(CatalogVisitor visitor) {

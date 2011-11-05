@@ -58,4 +58,25 @@ public interface WMSStoreInfo extends StoreInfo {
     
     void setMaxConnections(int maxConcurrentConnections);
     
+    /**
+     * @return number of seconds to wait on read before time out, defaults to 60
+     */
+    int getReadTimeout();
+
+    /**
+     * @param timeoutSeconds
+     *            seconds to wait before timing out a read request
+     */
+    void setReadTimeout(int timeoutSeconds);
+
+    /**
+     * @return seconds to wait for connect requests before timing out, defaults to 30
+     */
+    int getConnectTimeout();
+
+    /**
+     * @param seconds
+     *            to wait for connect requests before timing out
+     */
+    void setConnectTimeout(int timeoutSeconds);
 }

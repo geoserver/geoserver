@@ -1266,7 +1266,7 @@ public class XStreamPersister {
         }
     }
     /**
-     * Converter for data stores and coverage stores.
+     * Converter for {@link DataStoreInfo}, {@link CoverageStoreInfo}, and {@link WMSStoreInfo}
      */
     class StoreInfoConverter extends AbstractReflectionConverter {
 
@@ -1283,15 +1283,49 @@ public class XStreamPersister {
                 callback.postEncodeDataStore( (DataStoreInfo) store, writer, context );
             } else if( store instanceof CoverageStoreInfo ){
                 callback.postEncodeCoverageStore( (CoverageStoreInfo) store, writer, context );
-            } else {
+            } else if (store instanceof WMSStoreInfo){
                 callback.postEncodeWMSStore( (WMSStoreInfo) store, writer, context );
+            } else {
+                throw new IllegalArgumentException("Unknown store type: "
+                        + (store == null ? "null" : store.getClass().getName()));
             }
-            
         }
+        
+        @Override
         public Object doUnmarshal(Object result,
                 HierarchicalStreamReader reader, UnmarshallingContext context) {
             StoreInfo store = (StoreInfo) super.doUnmarshal(result, reader, context);
             
+            // 2.1.3+ backwards compatibility check
+            if (store instanceof WMSStoreInfo) {
+                WMSStoreInfo wmsStore = (WMSStoreInfo) store;
+                MetadataMap metadata = wmsStore.getMetadata();
+                Integer maxConnections = null;
+                Integer connectTimeout = null;
+                Integer readTimeout = null;
+                if (metadata != null) {
+                    maxConnections = metadata.get("maxConnections", Integer.class);
+                    connectTimeout = metadata.get("connectTimeout", Integer.class);
+                    readTimeout = metadata.get("readTimeout", Integer.class);
+                    metadata.remove("maxConnections");
+                    metadata.remove("connectTimeout");
+                    metadata.remove("readTimeout");
+                }
+                if (wmsStore.getMaxConnections() <= 0) {
+                    wmsStore.setMaxConnections(maxConnections != null
+                            && maxConnections.intValue() > 0 ? maxConnections
+                            : WMSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS);
+                }
+                if (wmsStore.getConnectTimeout() <= 0) {
+                    wmsStore.setConnectTimeout(connectTimeout != null
+                            && connectTimeout.intValue() > 0 ? connectTimeout
+                            : WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT);
+                }
+                if (wmsStore.getReadTimeout() <= 0) {
+                    wmsStore.setReadTimeout(readTimeout != null && readTimeout.intValue() > 0 ? readTimeout
+                            : WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
+                }
+            }
             LOGGER.info( "Loaded store '" +  store.getName() +  "', " + (store.isEnabled() ? "enabled" : "disabled") );
             return store;
         }

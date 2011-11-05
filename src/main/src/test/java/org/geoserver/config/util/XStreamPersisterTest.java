@@ -27,6 +27,7 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerFactory;
 import org.geoserver.config.GeoServerInfo;
@@ -300,6 +301,9 @@ public class XStreamPersisterTest extends TestCase {
         
         WMSStoreInfo wms2 = persister.load( in( out ), WMSStoreInfo.class );
         assertEquals( "bar", wms2.getName() );
+        assertEquals(WMSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS, wms2.getMaxConnections());
+        assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
+        assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
         
         //TODO: reenable when resolving proxy commited
         assertNotNull( wms2.getWorkspace() );
@@ -309,6 +313,40 @@ public class XStreamPersisterTest extends TestCase {
         assertEquals( "wmsStore", dom.getDocumentElement().getNodeName() );
     }
     
+    /**
+     * Check maxConnections, connectTimeout, and readTimeout, stored as metadata properties in a
+     * 2.1.3+ configuration are read back as actual properties.
+     */
+    public void testWMSStoreBackwardsCompatibility() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        WMSStoreInfo wms1 = cFactory.createWebMapServer();
+        wms1.setName( "bar" );
+        wms1.setWorkspace( ws );
+        wms1.setCapabilitiesURL( "http://fake.host/wms?request=GetCapabilities&service=wms");
+        wms1.getMetadata().put("maxConnections", Integer.valueOf(18));
+        wms1.getMetadata().put("connectTimeout", Integer.valueOf(25));
+        wms1.getMetadata().put("readTimeout", Integer.valueOf(78));
+        
+        ByteArrayOutputStream out = out();
+        persister.save( wms1, out );
+        
+        WMSStoreInfo wms2 = persister.load( in( out ), WMSStoreInfo.class );
+        assertEquals( "bar", wms2.getName() );
+
+        assertEquals(18, wms2.getMaxConnections());
+        assertEquals(25, wms2.getConnectTimeout());
+        assertEquals(78, wms2.getReadTimeout());
+        
+        assertNull(wms2.getMetadata().get("maxConnections"));
+        assertNull(wms2.getMetadata().get("connectTimeout"));
+        assertNull(wms2.getMetadata().get("readTimeout"));
+    }
+
     public void testStyle() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();

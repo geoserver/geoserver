@@ -1153,9 +1153,12 @@ public class ResourcePool {
                         }
                         String username = info.getUsername();
                         String password = info.getPassword();
-
+                        int connectTimeout = info.getConnectTimeout();
+                        int readTimeout = info.getReadTimeout();
                         client.setUser(username);
                         client.setPassword(password);
+                        client.setConnectTimeout(connectTimeout);
+                        client.setReadTimeout(readTimeout);
 
                         URL serverURL = new URL(info.getCapabilitiesURL());
                         wms = new WebMapServer(serverURL, client);

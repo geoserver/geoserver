@@ -21,6 +21,7 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.ows.util.OwsUtils;
@@ -283,6 +284,9 @@ public class CatalogBuilder {
         WMSStoreInfo info = catalog.getFactory().createWebMapServer();
         buildStore(info, name);
         info.setType("WMS");
+        info.setMaxConnections(WMSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS);
+        info.setConnectTimeout(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT);
+        info.setReadTimeout(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
 
         return info;
     }

@@ -13,6 +13,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -88,12 +89,19 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         
         // max concurrent connections
         PropertyModel connectionsModel = new PropertyModel(model, "maxConnections");
-        if (store.getMaxConnections() <= 0) {
-            connectionsModel.setObject(Integer.valueOf(6));
-        }
         form.add(new TextParamPanel("maxConnectionsPanel", connectionsModel, new ResourceModel(
-                "AbstractWMSStorePage.maxConnections"), false));
+                "AbstractWMSStorePage.maxConnections"), true, new RangeValidator<Integer>(1, 128)));
         
+        // connect timeout
+        PropertyModel<Integer> connectTimeoutModel = new PropertyModel<Integer>(model, "connectTimeout");
+        form.add(new TextParamPanel("connectTimeoutPanel", connectTimeoutModel, new ResourceModel(
+                "AbstractWMSStorePage.connectTimeout"), true, new RangeValidator<Integer>(1, 240)));
+
+        // read timeout
+        PropertyModel<Integer> readTimeoutModel = new PropertyModel<Integer>(model, "readTimeout");
+        form.add(new TextParamPanel("readTimeoutPanel", readTimeoutModel, new ResourceModel(
+                "AbstractWMSStorePage.readTimeout"), true, new RangeValidator<Integer>(1, 360)));
+
         // cancel/submit buttons
         form.add(new BookmarkablePageLink("cancel", StorePage.class));
         form.add(saveLink());
@@ -153,6 +161,8 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         target.setUsername(source.getUsername());
         target.setPassword(source.getPassword());
         target.setMaxConnections(source.getMaxConnections());
+        target.setConnectTimeout(source.getConnectTimeout());
+        target.setReadTimeout(source.getReadTimeout());
     }
 
     

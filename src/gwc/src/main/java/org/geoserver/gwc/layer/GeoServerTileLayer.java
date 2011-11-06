@@ -694,7 +694,7 @@ public class GeoServerTileLayer extends TileLayer {
             if (gridSet == null) {
                 throw new ConfigurationException("No GWC GridSet named '" + gridSetId + "' exists.");
             }
-            BoundingBox extent = getBoundsFromWGS84Bounds(latLonBbox, gridSet.getSRS());
+            BoundingBox extent = getBoundsFromWGS84Bounds(latLonBbox, gridSet.getSrs());
             Integer zoomStart = 0;
             Integer zoomStop = gridSet.getGrids().length - 1;
             GridSubset gridSubSet;

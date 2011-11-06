@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.layer;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -106,7 +108,7 @@ public class CatalogConfiguration implements Configuration {
      * @see org.geowebcache.config.Configuration#getServiceInformation()
      * @return {@code null}
      */
-    public ServiceInformation getServiceInformation() throws GeoWebCacheException {
+    public ServiceInformation getServiceInformation() {
         return null;
     }
 
@@ -331,10 +333,12 @@ public class CatalogConfiguration implements Configuration {
     }
 
     /**
+     * @return 
      * @see GWC#layerRemoved(String)
      */
-    public void removeLayer(final String tileLayerName) {
+    public boolean removeLayer(final String tileLayerName) {
         getGWC().layerRemoved(tileLayerName);
+        return true;
     }
 
     /**
@@ -488,6 +492,16 @@ public class CatalogConfiguration implements Configuration {
             }
         }
         return response;
+    }
+
+    // @Override
+    public void modifyLayer(TileLayer tl) throws NoSuchElementException {
+        // TODO Auto-generated method stub        
+    }
+
+    // @Override
+    public void save() throws IOException {
+        // TODO Auto-generated method stub
     }
 
 }

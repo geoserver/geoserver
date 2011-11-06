@@ -244,7 +244,7 @@ public class GWC implements DisposableBean, InitializingBean {
             ReferencedEnvelope bounds) {
         final GridSet gridSet = layerGrid.getGridSet();
         final String gridSetId = gridSet.getName();
-        final SRS srs = gridSet.getSRS();
+        final SRS srs = gridSet.getSrs();
         final CoordinateReferenceSystem gridSetCrs;
         try {
             gridSetCrs = CRS.decode("EPSG:" + srs.getNumber(), true);
@@ -409,8 +409,6 @@ public class GWC implements DisposableBean, InitializingBean {
      *            the name of the layer to remove.
      */
     public synchronized void layerRemoved(final String prefixedName) {
-        // embeddedConfig.removeLayer(prefixedName);
-        tld.remove(prefixedName);
         try {
             storageBroker.delete(prefixedName);
         } catch (StorageException e) {

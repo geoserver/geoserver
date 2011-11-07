@@ -4,7 +4,7 @@
   <description>
    Bean configuration file for the gwc-tms module
   </description>
-  <bean id="gwcServiceTMS"
+  <bean id="gwcServiceTMSTarget"
 	class="org.geowebcache.service.tms.TMSService">
 	<constructor-arg ref="gwcStorageBroker"/>
 	<constructor-arg ref="gwcTLDispatcher"/>
@@ -15,7 +15,7 @@
   </bean>
   <bean id="gwcServiceTMSProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="targetName">
-      <value>gwcServiceWMTSTarget</value>
+      <value>gwcServiceTMSTarget</value>
     </property>
     <property name="interceptorNames">
       <list>

@@ -88,33 +88,6 @@ class CssSubmitButton(id: String,
   }
 }
 
-class DataPanel(
-  id: String,
-  model: IModel[CssDemoPage],
-  layerInfo: FeatureTypeInfo
-) extends Panel(id, model) {
-  add(new Label(
-    "summary-message",
-    "For reference, here is a listing of the attributes in this data set."
-  ))
-
-  val states =
-    new SummaryProvider(
-      layerInfo.getFeatureSource(null,null)
-      .asInstanceOf[FeatureSource[SimpleFeatureType, SimpleFeature]]
-      .getFeatures
-    )
-  add(new SummaryTable("summary", states))
-}
-
-class SLDPreviewPanel(id: String, sldModel: IModel[String]) extends Panel(id, sldModel) {
-  val label = new Label("sld-preview", sldModel)
-  label.setOutputMarkupId(true)
-  add(label)
-}
-
-class DocsPanel(id: String) extends Panel(id)
-
 class StyleChooser(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.{ AbstractProperty, Property }
 
@@ -425,7 +398,7 @@ class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage {
       tabs.add(new PanelCachingTab(new AbstractTab(new Model("Generated SLD")) {
         override def getPanel(id: String): Panel = {
           val panel = new SLDPreviewPanel(id, sldModel)
-          sldPreview = panel.label
+          sldPreview = panel.getLabel()
           panel
         }
       }))

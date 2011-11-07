@@ -107,11 +107,6 @@ class DataPanel(
   add(new SummaryTable("summary", states))
 }
 
-abstract class DemoPanel(id: String, demo: CssDemoPage) extends Panel(id) {
-  import GeoServerDataProvider.Property
-  def cat = demo.catalog
-}
-
 class SLDPreviewPanel(id: String, sldModel: IModel[String]) extends Panel(id, sldModel) {
   val label = new Label("sld-preview", sldModel)
   label.setOutputMarkupId(true)
@@ -120,12 +115,12 @@ class SLDPreviewPanel(id: String, sldModel: IModel[String]) extends Panel(id, sl
 
 class DocsPanel(id: String) extends Panel(id)
 
-class StyleChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+class StyleChooser(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.{ AbstractProperty, Property }
 
   object styleProvider extends GeoServerDataProvider[StyleInfo] {
     override def getItems(): java.util.List[StyleInfo] = 
-      cat.getStyles().asScala.sortBy(_.getName).asJava
+      demo.catalog.getStyles().asScala.sortBy(_.getName).asJava
 
     override def getProperties(): java.util.List[Property[StyleInfo]] =
       List[Property[StyleInfo]](new AbstractProperty[StyleInfo]("Name") {
@@ -158,12 +153,12 @@ class StyleChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
   add(styleTable)
 }
 
-class LayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+class LayerChooser(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.{ AbstractProperty, Property }
 
   object layerProvider extends GeoServerDataProvider[FeatureTypeInfo] {
     override def getItems(): java.util.List[FeatureTypeInfo] = 
-      cat.getFeatureTypes()
+      demo.catalog.getFeatureTypes()
 
     val workspace =
       new AbstractProperty[FeatureTypeInfo]("Workspace") {
@@ -213,7 +208,7 @@ class LayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
   add(layerTable)
 }
 
-class LayerNameInput(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+class LayerNameInput(id: String, demo: CssDemoPage) extends Panel(id) {
   object form extends Form("layer.name.form") {
     var name: String = ""
 
@@ -223,7 +218,7 @@ class LayerNameInput(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) 
         def error(x: String) = text.error(new ValidationError().setMessage(x))
         if (value.matches("\\s"))
           error("Spaces not allowed in style names")
-        else if (cat.getStyle(value) != null)
+        else if (demo.catalog.getStyle(value) != null)
           error("That name is already taken!")
       }
     }
@@ -232,7 +227,7 @@ class LayerNameInput(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) 
 
     object submitButton extends AjaxButton("submit.button", this) {
       override def onSubmit(target: AjaxRequestTarget, form: Form[_]) {
-        require(cat.getStyleByName(name) == null, "Trying to create style with same name as existing one!")
+        require(demo.catalog.getStyleByName(name) == null, "Trying to create style with same name as existing one!")
         demo.createCssTemplate(name)
         val params = new PageParameters
         params.put("layer", demo.layerInfo.getPrefixedName)
@@ -247,7 +242,7 @@ class LayerNameInput(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) 
   add(form)
 }
 
-class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, demo) {
+class MultipleLayerChooser(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.{ AbstractProperty, Property }
 
   def usesEditedStyle(l: LayerInfo): Boolean =
@@ -255,7 +250,7 @@ class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, 
 
   object layerProvider extends GeoServerDataProvider[LayerInfo] {
     override def getItems(): java.util.List[LayerInfo] = 
-      cat.getLayers().asScala.sortBy(_.getName).asJava
+      demo.catalog.getLayers().asScala.sortBy(_.getName).asJava
 
     val workspace =
       new AbstractProperty[LayerInfo]("Workspace") {
@@ -291,7 +286,7 @@ class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, 
               } else {
                 if (layer.getDefaultStyle.getName == demo.styleInfo.getName) {
                   if (layer.getStyles.asScala.isEmpty) {
-                    layer.setDefaultStyle(cat.getStyleByName("point"))
+                    layer.setDefaultStyle(demo.catalog.getStyleByName("point"))
                   } else {
                     val s = layer.getStyles().iterator.next
                     layer.setDefaultStyle(s)
@@ -301,7 +296,7 @@ class MultipleLayerChooser(id: String, demo: CssDemoPage) extends DemoPanel(id, 
                   layer.getStyles.asScala --= layer.getStyles.asScala.filter(_.getName == demo.styleInfo.getName)
                 }
               }
-              cat.save(layer)
+              demo.catalog.save(layer)
             }
             override def detach() {}
           }

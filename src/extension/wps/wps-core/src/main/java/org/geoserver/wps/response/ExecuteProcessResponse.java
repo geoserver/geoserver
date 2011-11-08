@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import net.opengis.ows11.BoundingBoxType;
+import net.opengis.wps10.ComplexDataType;
 import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.LiteralDataType;
@@ -24,8 +25,10 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.BinaryEncoderDelegate;
 import org.geoserver.wps.CDataEncoderDelegate;
 import org.geoserver.wps.Execute;
+import org.geoserver.wps.GetExecutionStatusType;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.XMLEncoderDelegate;
+import org.geoserver.wps.executor.ExecutionStatus;
 import org.geotools.ows.v1_1.OWS;
 import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.xml.Encoder;
@@ -47,39 +50,118 @@ public class ExecuteProcessResponse extends Response {
     @Override
     public String getMimeType(Object value, Operation operation)
             throws ServiceException {
-        ExecuteType execute = (ExecuteType) operation.getParameters()[0];
-        if (execute.getResponseForm().getRawDataOutput() == null) {
+        if (isStandardDocumentResponse(operation)) {
             // normal execute response encoding
             return standardResponse.getMimeType(value, operation);
         } else {
             // raw response, let's see what the output is
             ExecuteResponseType response = (ExecuteResponseType) value;
-            OutputDataType result = (OutputDataType) response
-                    .getProcessOutputs().getOutput().get(0);
+            if(response.getProcessOutputs() == null) {
+                // just a status report or a failure report
+                return "text/xml";
+            }
+            OutputDataType result = (OutputDataType) response.getProcessOutputs().getOutput().get(0);
             LiteralDataType literal = result.getData().getLiteralData();
+            ComplexDataType complex = result.getData().getComplexData();
             if(literal != null) {
                 // literals are encoded as plain strings
                 return "text/plain";
-            } else {
+            } else if(complex != null) {
                 // Execute should have properly setup the mime type
-                OutputDefinitionType definition = (OutputDefinitionType) response
-                    .getOutputDefinitions().getOutput().get(0);
-                return definition.getMimeType();
+                return complex.getMimeType();
+            } else {
+                // bbox
+                return "text/xml";
             }
         }
 
     }
 
+    private boolean isStandardDocumentResponse(Operation operation) {
+        if(operation.getParameters()[0] instanceof ExecuteType) {
+            ExecuteType execute = (ExecuteType) operation.getParameters()[0];
+            return execute.getResponseForm() != null && execute.getResponseForm().getRawDataOutput() == null;
+        }
+        return true;
+    }
+    
+    @Override
+    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+        String disposition = getPreferredDisposition(value, operation);
+        String filename = getAttachmentFileName(value, operation);
+        return (String[][]) new String[][] { { "Content-Disposition",
+             disposition + "; filename=" + filename  } };
+    }
+
+    public String getPreferredDisposition(Object value, Operation operation) {
+        String mimeType = getMimeType(value, operation);
+        String disposition = "inline";
+        if (mimeType != null) {
+            // if there is a BinaryEncoder we could expose a method that allows
+            // expressing preferred type as opposed to this ugliness
+            if (mimeType.indexOf("image") == 0) {
+                // tiff for download
+                if (mimeType.indexOf("tiff") > 0) {
+                    disposition = "attachment";
+                }
+            } else if (mimeType.equals("application/zip")) {
+                disposition = "attachment";
+            } else if (mimeType.equals("application/arcgrid")) {
+                disposition = "attachment";
+            }
+        }
+        return disposition;
+    }
+
+    public String getAttachmentFileName(Object value, Operation operation) {
+        if(isStandardDocumentResponse(operation)) {
+            return "execute.xml";
+        } else {
+            ExecuteResponseType response = (ExecuteResponseType) value;
+            if(response.getProcessOutputs() == null) {
+                // just a status report or a failure report
+                return "execute.xml";
+            }
+            OutputDataType result = (OutputDataType) response.getProcessOutputs().getOutput().get(0);
+            String fname = result.getIdentifier().getValue();
+            LiteralDataType literal = result.getData().getLiteralData();
+            ComplexDataType complex = result.getData().getComplexData();
+            String fext;
+            // this is not the most robust way to get mime type...
+            if (literal != null) {
+                fext = "txt";
+            } else if(complex != null) {
+                String mimeType = result.getData().getComplexData().getMimeType();
+                if (mimeType == null) {
+                    fext = "txt";
+                } else {
+                    fext = mimeType.split("/")[1].toLowerCase();
+                }
+            } else {
+                fext = "xml";
+            }
+            return fname + "." + fext;
+        }
+    }
+    
     @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
-        ExecuteType execute = (ExecuteType) operation.getParameters()[0];
-        if (execute.getResponseForm().getRawDataOutput() == null) {
+        ExecuteResponseType response = (ExecuteResponseType) value;
+        
+        // From the spec:
+        // In the most primitive case, when a response form of ―RawDataOutput‖ is requested,
+        // process execution is successful, and only one complex output is produced, then the
+        // Execute operation response will consist simply of that one complex output in its raw form
+        // returned directly to the client.
+        // In all other cases, the response to a valid Execute operation request is an
+        // ExecuteResponse XML document
+        if (isStandardDocumentResponse(operation) ||
+                response.getStatus().getProcessSucceeded() == null) {
             // normal execute response encoding
             standardResponse.write(value, output, operation);
         } else {
             // raw response, let's see what the output is
-            ExecuteResponseType response = (ExecuteResponseType) value;
             OutputDataType result = (OutputDataType) response
                     .getProcessOutputs().getOutput().get(0);
             LiteralDataType literal = result.getData().getLiteralData();

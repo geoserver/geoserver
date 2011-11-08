@@ -49,5 +49,10 @@ public class ArcGridPPIO extends CDataPPIO {
         new ArcGridFormat().getWriter(os).write((GridCoverage2D) value, 
                 new GeneralParameterValue[] {forceSquareCells});
     }
+    
+    @Override
+    public String getFileExtension() {
+        return "zip";
+    }
 
 }

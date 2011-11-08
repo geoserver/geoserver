@@ -31,6 +31,18 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         TextField connectionTimeout = new TextField("connectionTimeout", Integer.class);
         connectionTimeout.add(new MinimumValidator<Integer>(-1));
         form.add(connectionTimeout);
+        
+        TextField maxSynchProcesses = new TextField("maxSynchronousProcesses", Integer.class);
+        maxSynchProcesses.add(new MinimumValidator<Integer>(1));
+        form.add(maxSynchProcesses);
+        
+        TextField maxAsynchProcesses = new TextField("maxAsynchronousProcesses", Integer.class);
+        maxAsynchProcesses.add(new MinimumValidator<Integer>(1));
+        form.add(maxAsynchProcesses);
+        
+        TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
+        resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
+        form.add(resourceExpirationTimeout);
     }
 
 }

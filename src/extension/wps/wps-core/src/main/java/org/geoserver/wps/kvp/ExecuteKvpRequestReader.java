@@ -10,6 +10,7 @@ import net.opengis.ows11.BoundingBoxType;
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.wps10.ComplexDataType;
 import net.opengis.wps10.DataInputsType1;
+import net.opengis.wps10.DocumentOutputDefinitionType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
@@ -65,6 +66,38 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
             execute.setResponseForm(parseResponseDocument(pf.getResultInfo(processName, null), (String) rawKvp.get("responseDocument")));
         } else if(rawKvp.containsKey("rawDataOutput")) {
             execute.setResponseForm(parseRawDataOutput(pf.getResultInfo(processName, null), (String) rawKvp.get("rawDataOutput")));
+        } else {
+            ResponseFormType responseForm = factory.createResponseFormType();
+            responseForm.setResponseDocument(factory.createResponseDocumentType());
+            execute.setResponseForm(responseForm);
+        }
+        
+        if("true".equals(kvp.get("storeExecuteResponse"))) {
+            if(execute.getResponseForm().getResponseDocument() == null) {
+                throw new WPSException("InvalidParameterValue", "Cannot store the response for raw data outputs, " +
+                		"please use response document instead");
+            }
+            execute.getResponseForm().getResponseDocument().setStoreExecuteResponse(true);
+        }
+        
+        if("true".equals(kvp.get("lineage"))) {
+            if(execute.getResponseForm().getResponseDocument() == null) {
+                throw new WPSException("InvalidParameterValue", "Cannot provide lineage in the response for raw data outputs, " +
+                        "please use response document instead");
+            }
+            execute.getResponseForm().getResponseDocument().setLineage(true);
+        }
+        
+        if("true".equals(kvp.get("status"))) {
+            if(execute.getResponseForm().getResponseDocument() == null) {
+                throw new WPSException("InvalidParameterValue", "Cannot add status with raw data outputs, " +
+                        "please use response document with store option instead");
+            }
+            if(!execute.getResponseForm().getResponseDocument().isStoreExecuteResponse()) {
+                throw new WPSException("InvalidParameterValue", "Cannot add status if the response " +
+                		"is not stored, please add storeExecuteResponse=true your request");
+            }
+            execute.getResponseForm().getResponseDocument().setStatus(true);
         }
         
         return execute;
@@ -116,6 +149,10 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
      */
     List<IOParam> parseIOParameters(String inputString) {
         List<IOParam> result = new ArrayList<IOParam>();
+        
+        if(inputString == null || "".equals(inputString.trim())) {
+            return Collections.emptyList();
+        }
         
         // inputs are separated by ;
         String[] inputs = inputString.split(";");
@@ -242,7 +279,9 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
         
         OutputDefinitionType odt;
         if(inDocument) {
-            odt = factory.createDocumentOutputDefinitionType();
+            DocumentOutputDefinitionType dout = factory.createDocumentOutputDefinitionType();
+            dout.setAsReference(Boolean.parseBoolean(ioParam.attributes.get("asReference")));
+            odt = dout;
         } else {
             odt = factory.createOutputDefinitionType();
         }

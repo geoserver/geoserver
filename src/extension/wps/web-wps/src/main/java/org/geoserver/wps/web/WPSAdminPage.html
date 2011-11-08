@@ -9,8 +9,26 @@
             <label><wicket:message key="connectionTimeout">Connection Timeout</wicket:message></label>
             <input type="text" wicket:id="connectionTimeout" class="field text"/>
           </li>
+          <li>
+            <label><wicket:message key="maxSynchronousProcesses">MaxSynchProcesses</wicket:message></label>
+            <input type="text" wicket:id="maxSynchronousProcesses" class="field"/>
+          </li>
+          <li>
+            <label><wicket:message key="maxAsynchronousProcesses">MaxAsynchProcesses</wicket:message></label>
+            <input type="text" wicket:id="maxAsynchronousProcesses" class="field"/>
+          </li>
         </ul>
       </fieldset>
+      <fieldset>
+        <legend><span><wicket:message key="resourceSettings">ResourceSettings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="resourceExpirationTimeout">ResourceExpirationTimeout</wicket:message></label>
+            <input type="text" wicket:id="resourceExpirationTimeout" class="field text"/>
+          </li>
+        </ul>
+      </fieldset>
+      
     </li>
 </wicket:extend>
 </body>

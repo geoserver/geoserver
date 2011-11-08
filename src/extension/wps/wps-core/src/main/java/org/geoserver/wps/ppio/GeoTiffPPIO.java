@@ -94,5 +94,10 @@ public class GeoTiffPPIO extends BinaryPPIO {
             }
         }
     }
+    
+    @Override
+    public String getFileExtension() {
+        return "tiff";
+    }
 
 }

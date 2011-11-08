@@ -8,11 +8,21 @@
     <!-- TODO: remove this thing -->    
     <bean id="wpsServiceLegacyLoader" class="org.geoserver.wps.WPSLegacyLoader"/>
 
-    <!-- WPS Service -->
-    
+    <!-- Resource manager -->
+    <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>
 
+    <!--  Execution manager, the thing that actually orchestrates the process execution -->
+    <bean id="executionManager" class="org.geoserver.wps.executor.WPSExecutionManager">
+        <constructor-arg ref="wpsResourceManager" />
+    </bean>    
+    
+    <!-- The default process runner, others may be around -->
+    <bean id="defaultProcessManager" class="org.geoserver.wps.executor.DefaultProcessManager"/>
+
+    <!-- WPS Service -->
     <bean id="wpsService" class="org.geoserver.wps.DefaultWebProcessingService">
         <constructor-arg ref="geoServer" />
+        <constructor-arg ref="executionManager" />
     </bean>
 
     <!-- Service Descriptor(s) -->
@@ -26,6 +36,8 @@
 		    <value>GetCapabilities</value>
 		    <value>DescribeProcess</value>
 		    <value>Execute</value>
+            <value>GetExecutionStatus</value>
+            <value>GetExecutionResult</value>
 		  </list>
 		</constructor-arg>
     </bean>
@@ -42,6 +54,8 @@
     <bean id="wpsDescribeProcessKvpReader"
         class="org.geoserver.wps.kvp.DescribeProcessKvpRequestReader" />
     <bean id="executeKvpRequestReader" class="org.geoserver.wps.kvp.ExecuteKvpRequestReader"/>
+    <bean id="statusKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionStatusKvpRequestReader"/>
+    <bean id="resultKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionResultKvpRequestReader"/>
     
 
     <!-- XML Configuration -->
@@ -103,6 +117,9 @@
       <constructor-arg index="1" value="ExecuteResponse"/>
       <constructor-arg index="2" value="org.geoserver.wps.xml.WPSConfiguration"/>
     </bean>
+    <bean id="wpsStoredFileResponse" class="org.geoserver.wps.response.StoredFileResponse">
+      <constructor-arg index="0" ref="wpsStorageCleaner"/>
+    </bean>
     
     <!-- Exception handler, we need to output ows 1.1 exceptions -->
     <bean id="wpsExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
@@ -112,9 +129,6 @@
         </list>
       </constructor-arg>
     </bean>
-    
-    <!-- Resource manager -->
-    <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>
     
     <!-- The PPIO that need to be registered into SPI because of their dependencies -->
     <bean id="shapeZipPPIO" class="org.geoserver.wps.ppio.ShapeZipPPIO">
@@ -155,7 +169,7 @@
     <bean id="scaleCoverageProcess" class="org.geoserver.wps.gs.ScaleCoverage" />
     <bean id="styleCoverageProcess" class="org.geoserver.wps.gs.StyleCoverage" />
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
-      <constructor-arg index="0" ref="wpsStorageHandler"></constructor-arg>
+      <constructor-arg index="0" ref="wpsStorageCleaner"></constructor-arg>
     </bean>
     <bean id="vectorZonalStatistics" class="org.geoserver.wps.gs.VectorZonalStatistics" />
     <bean id="pointBuffersProces" class="org.geoserver.wps.gs.PointBuffers" />
@@ -183,23 +197,18 @@
     </bean>
   
     <!-- Temp storage cleanup -->
-    <!-- The actual scheduled task -->
-    <bean id="wpsStorageHandler" class="org.geoserver.wps.WPSStorageHandler">
+    <bean id="wpsStorageCleaner" class="org.geoserver.wps.WPSStorageCleaner">
       <constructor-arg index="0" ref="dataDirectory" />
-      <property name="expirationDelay" value="300" />
-      <!--
-        300 seconds, 5 minutes
-      -->
     </bean>
   
     <!-- Definition of how often the scheduled task runs -->
-    <bean id="wpsStorageHandlerTask"
+    <bean id="wpsStorageCleanerTask"
       class="org.springframework.scheduling.timer.ScheduledTimerTask">
       <!-- wait 10 seconds before starting repeated execution -->
       <property name="delay" value="10000" />
       <!-- run every 60 seconds -->
       <property name="period" value="60000" />
-      <property name="timerTask" ref="wpsStorageHandler" />
+      <property name="timerTask" ref="wpsStorageCleaner" />
     </bean>
   
     <!--
@@ -210,10 +219,17 @@
       lazy-init="false">
       <property name="scheduledTimerTasks">
         <list>
-          <ref bean="wpsStorageHandlerTask" />
+          <ref bean="wpsStorageCleanerTask" />
         </list>
       </property>
       <property name="daemon" value="true" />
+    </bean>
+    
+    <!-- Configures some WPS subsystems with the current config values and keeps them up to date -->
+    <bean id="wpsInitializer" class="org.geoserver.wps.WPSInitializer">
+      <constructor-arg index="0" ref="executionManager"/>
+      <constructor-arg index="1" ref="defaultProcessManager"/>
+      <constructor-arg index="2" ref="wpsStorageCleaner"/>
     </bean>
 
 </beans>

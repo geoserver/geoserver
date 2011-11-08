@@ -370,7 +370,7 @@ public class NearestTest extends WPSTestSupport {
         Document d = postAsDOM( "wps", xml );
 //        print(d);
         
-        assertEquals("ows:ExceptionReport", d.getDocumentElement().getNodeName());
+        assertXpathExists("//wps:Status/wps:ProcessFailed", d);
     }
 
     public void testMissingPoint() throws Exception {
@@ -397,7 +397,7 @@ public class NearestTest extends WPSTestSupport {
         Document d = postAsDOM( "wps", xml );
 //        print(d);
         
-        assertEquals("ows:ExceptionReport", d.getDocumentElement().getNodeName());
+        assertXpathExists("//wps:Status/wps:ProcessFailed", d);
     }
 
     public void testWrongCRS() throws Exception {
@@ -436,6 +436,6 @@ public class NearestTest extends WPSTestSupport {
         Document d = postAsDOM( "wps", xml );
 //        print(d);
         
-        assertEquals("ows:ExceptionReport", d.getDocumentElement().getNodeName());
+        assertXpathExists("//wps:Status/wps:ProcessFailed", d);
     }
 }

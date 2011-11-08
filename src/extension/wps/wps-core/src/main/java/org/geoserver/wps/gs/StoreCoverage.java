@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.geoserver.wps.WPSStorageHandler;
+import org.geoserver.wps.WPSStorageCleaner;
 import org.geoserver.wps.jts.DescribeParameter;
 import org.geoserver.wps.jts.DescribeProcess;
 import org.geoserver.wps.jts.DescribeResult;
@@ -42,9 +42,9 @@ public class StoreCoverage implements GeoServerProcess {
         DEFAULT_WRITE_PARAMS.setTiling(512, 512);
     }
 
-    WPSStorageHandler storage;
+    WPSStorageCleaner storage;
 
-    public StoreCoverage(WPSStorageHandler storage) {
+    public StoreCoverage(WPSStorageCleaner storage) {
         this.storage = storage;
     }
 

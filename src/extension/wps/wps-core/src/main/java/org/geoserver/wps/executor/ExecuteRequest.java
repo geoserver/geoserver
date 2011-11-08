@@ -85,6 +85,10 @@ public class ExecuteRequest {
         // get the input descriptors
         Name processName = Ows11Util.name(request.getIdentifier());
         ProcessFactory pf = Processors.createProcessFactory(processName);
+        if(pf == null) {
+            throw new WPSException("Unknown process " + processName);
+        }
+        
         final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
 
         // turn them into a map of input providers

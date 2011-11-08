@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
@@ -36,8 +37,11 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     ThreadPoolExecutor synchService;
 
     ThreadPoolExecutor asynchService;
+    
+    WPSResourceManager resourceManager;
 
-    public DefaultProcessManager() {
+    public DefaultProcessManager(WPSResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses) {
@@ -167,7 +171,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
         return ExtensionPriority.LOWEST;
     }
 
-    static class ProcessCallable implements Callable<Map<String, Object>> {
+    class ProcessCallable implements Callable<Map<String, Object>> {
 
         Map<String, Object> inputs;
 
@@ -180,6 +184,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
 
         
         public Map<String, Object> call() throws Exception {
+            resourceManager.setCurrentExecutionId(status.getExecutionId());
             status.setPhase(ProcessState.RUNNING);
             ProcessListener listener = status.listener;
             Name processName = status.getProcessName();

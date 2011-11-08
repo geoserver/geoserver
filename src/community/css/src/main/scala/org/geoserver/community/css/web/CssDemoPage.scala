@@ -88,44 +88,6 @@ class CssSubmitButton(id: String,
   }
 }
 
-class StyleChooser(id: String, demo: CssDemoPage) extends Panel(id) {
-  import GeoServerDataProvider.{ AbstractProperty, Property }
-
-  object styleProvider extends GeoServerDataProvider[StyleInfo] {
-    override def getItems(): java.util.List[StyleInfo] = 
-      demo.catalog.getStyles().asScala.sortBy(_.getName).asJava
-
-    override def getProperties(): java.util.List[Property[StyleInfo]] =
-      List[Property[StyleInfo]](new AbstractProperty[StyleInfo]("Name") {
-        override def getPropertyValue(x: StyleInfo) = x.getName
-      }).asJava
-  }
-
-  object styleTable extends GeoServerTablePanel[StyleInfo]("style.table", styleProvider) {
-    override def getComponentForProperty(
-      id: String, value: IModel[_],
-      property: Property[StyleInfo]
-    ): Component = {
-      val style = value.getObject.asInstanceOf[StyleInfo]
-      new Fragment(id, "style.link", StyleChooser.this) {
-        add(
-          new AjaxLink("link") {
-            add(new Label("style.name", new Model(property.getPropertyValue(style).toString)))
-            override def onClick(target: AjaxRequestTarget) = {
-              val params = new PageParameters
-              params.put("layer", demo.layerInfo.getPrefixedName)
-              params.put("style", style.getName)
-              setResponsePage(classOf[CssDemoPage], params)
-            }
-          }
-        )
-      }
-    }
-  }
-
-  add(styleTable)
-}
-
 class LayerChooser(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.{ AbstractProperty, Property }
 

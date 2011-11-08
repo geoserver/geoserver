@@ -13,7 +13,7 @@ public class DescribeProcessTest extends WPSTestSupport {
     
     public void testGetBuffer() throws Exception { // Standard Test A.4.3.1
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
-        print(d);
+        // print(d);
         testBufferDescription(d);
     }
     
@@ -26,22 +26,27 @@ public class DescribeProcessTest extends WPSTestSupport {
         		"    <ows:Identifier>JTS:buffer</ows:Identifier>\r\n" + 
         		"</DescribeProcess>";
         Document d = postAsDOM(root(), request);
-        print(d);
+        // print(d);
         testBufferDescription(d);
     }
 
     public void testGetBufferFeatureCollection() throws Exception { // Standard Test A.4.3.1
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
-        print(d);
+        // print(d);
     }
     
     private void testBufferDescription(Document d) throws Exception { // Standard Test A.4.3.3
-        // first off, let's check it's schema compliant ... it's not unfortunately, prefix issues
-        // prevent even the most basic validation...
+        // first off, let's check it's schema compliant 
         checkValidationErrors(d);
         assertXpathExists( "/wps:ProcessDescriptions", d );
         
+        assertXpathEvaluatesTo("true", "//ProcessDescription/@storeSupported", d);
+        assertXpathEvaluatesTo("true", "//ProcessDescription/@statusSupported", d);
+        
         String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
+        
+        // check store and status
+        
         
         //first parameter
         assertXpathExists( base + "/Input[1]" , d );

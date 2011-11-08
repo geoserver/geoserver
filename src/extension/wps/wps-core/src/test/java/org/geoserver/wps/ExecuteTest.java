@@ -14,12 +14,15 @@ import java.util.zip.ZipInputStream;
 
 import net.opengis.ows11.BoundingBoxType;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.ows.v1_1.OWSConfiguration;
+import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.Parser;
 import org.w3c.dom.Document;
@@ -115,6 +118,7 @@ public class ExecuteTest extends WPSTestSupport {
            "</wps:Execute>";
         
         Document d = postAsDOM( "wps", xml );
+        // print(d);
         checkValidationErrors(d, new GMLConfiguration());
         
         assertEquals( "gml:Polygon", d.getDocumentElement().getNodeName() );
@@ -205,8 +209,8 @@ public class ExecuteTest extends WPSTestSupport {
                "</wps:Execute>";
         
         Document d = postAsDOM( "wps", xml );
-        print(d);
-        // checkValidationErrors(d);
+        // print(d);
+        checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
         
@@ -246,7 +250,7 @@ public class ExecuteTest extends WPSTestSupport {
         
         Document d = postAsDOM( "wps", xml );
         // print(d);
-        // checkValidationErrors(d);
+        checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
         
@@ -263,13 +267,77 @@ public class ExecuteTest extends WPSTestSupport {
         
         Document d = getAsDOM(request);
         // print(d);
-        // checkValidationErrors(d);
+        checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
         
         assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
         assertXpathExists( 
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
+    }
+    
+    public void testReferenceOutputXML() throws Exception { // Standard Test A.4.4.2, A.4.4.4
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+              "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
+               "<wps:DataInputs>" + 
+                  "<wps:Input>" + 
+                      "<ows:Identifier>feature collection</ows:Identifier>" + 
+                      "<wps:Data>" +
+                        "<wps:ComplexData mimeType=\"text/xml; subtype=wfs-collection/1.0\">" + 
+                             readFileIntoString("restricted-FeatureCollection.xml") + 
+                        "</wps:ComplexData>" + 
+                      "</wps:Data>" +     
+                  "</wps:Input>" + 
+                  "<wps:Input>" + 
+                     "<ows:Identifier>width of the buffer</ows:Identifier>" + 
+                     "<wps:Data>" + 
+                       "<wps:LiteralData>1000</wps:LiteralData>" + 
+                     "</wps:Data>" + 
+                  "</wps:Input>" + 
+                 "</wps:DataInputs>" +
+                 "<wps:ResponseForm>" +  
+                   "<wps:ResponseDocument storeExecuteResponse='false'>" + 
+                     "<wps:Output asReference=\"true\">" +
+                       "<ows:Identifier>result</ows:Identifier>" +
+                     "</wps:Output>" + 
+                   "</wps:ResponseDocument>" +
+                 "</wps:ResponseForm>" + 
+               "</wps:Execute>";
+        
+        Document d = postAsDOM( "wps", xml );
+        
+        // check we got a valid response with the document as a reference
+        checkValidationErrors(d);
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathExists("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference", d);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullLocation = xpath.evaluate("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href", d);
+        String resourceLocation = fullLocation.substring(fullLocation.indexOf('?') - 3);
+        d = getAsDOM(resourceLocation);
+        assertXpathExists("wfs:FeatureCollection", d);
+    }
+    
+    public void testReferenceOutputKVP() throws Exception { 
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection" +
+            "&DataInputs=" + urlEncode("feature collection=" + readFileIntoString("states-FeatureCollection.xml") + 
+            "@mimetype=application/wfs-collection-1.1;width of the buffer=10") +
+            "&ResponseDocument=" + urlEncode("result=@asReference=true");
+        
+        Document d = getAsDOM(request);
+        // print(d);
+
+        // check we got a valid response with the document as a reference
+        checkValidationErrors(d);
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathExists("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference", d);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullLocation = xpath.evaluate("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href", d);
+        String resourceLocation = fullLocation.substring(fullLocation.indexOf('?') - 3);
+        d = getAsDOM(resourceLocation);
+        assertXpathExists("wfs:FeatureCollection", d);
     }
     
     public void testFeatureCollectionFileReference() throws Exception { // Standard Test A.4.4.2, A.4.4.4
@@ -301,7 +369,7 @@ public class ExecuteTest extends WPSTestSupport {
         
         Document d = postAsDOM( "wps", xml );
         // print(d);
-        // checkValidationErrors(d);
+        checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
         
@@ -318,7 +386,7 @@ public class ExecuteTest extends WPSTestSupport {
         
         Document d = getAsDOM(request);
         // print(d);
-        // checkValidationErrors(d);
+        checkValidationErrors(d);
         
         assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
         
@@ -423,6 +491,7 @@ public class ExecuteTest extends WPSTestSupport {
         		"</wps:Execute>";
         
         Document dom = postAsDOM(root(), request);
+        // print(dom);
         assertXpathEvaluatesTo("-4.0E-4 -0.0024", "/ows:BoundingBox/ows:LowerCorner", dom);
         assertXpathEvaluatesTo("0.0036 0.0024", "/ows:BoundingBox/ows:UpperCorner", dom);
     }
@@ -449,7 +518,7 @@ public class ExecuteTest extends WPSTestSupport {
                 "</wps:Execute>";
         
         Document dom = postAsDOM(root(), request);
-        print(dom);
+        // print(dom);
         
         assertXpathEvaluatesTo("-4.0E-4 -0.0024", "/ows:BoundingBox/ows:LowerCorner", dom);
         assertXpathEvaluatesTo("0.0036 0.0024", "/ows:BoundingBox/ows:UpperCorner", dom);
@@ -671,6 +740,89 @@ public class ExecuteTest extends WPSTestSupport {
         assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
     }
     
+    public void testProcessFailure() throws Exception {
+        // have the monkey throw an exception 
+        MonkeyProcess.exception(new ProcessException("Sorry dude, things went pear shaped..."), false);
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey";
+        Document dom = getAsDOM(request);
+        checkValidationErrors(dom);
+        assertXpathExists("//wps:ProcessFailed", dom);
+        assertXpathEvaluatesTo("Process failed during execution\nSorry dude, things went pear shaped...", 
+                "//wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText", dom);
+    }
+    
+    public void testStoredNoStatus() throws Exception {
+        // submit asynch request with no updates
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true";
+        Document dom = getAsDOM(request);
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        
+        // we move the clock forward, but we asked no status, nothing should change
+        MonkeyProcess.progress(0.5f, true);
+        dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        
+        // now schedule the exit and wait for it to exit
+        MonkeyProcess.exit("Hi there", true);
+        dom = waitForProcessEnd(statusLocation, 60);
+        assertXpathExists("//wps:ProcessSucceeded", dom);
+    }
+    
+    public void testStoredWithStatus() throws Exception {
+        // submit asynch request with no updates
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true";
+        Document dom = getAsDOM(request);
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        
+        // we move the clock forward, but we asked no status, nothing should change
+        MonkeyProcess.progress(0.1f, true);
+        dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("10", "//wps:ProcessStarted/@percentCompleted", dom);
+        
+        // we move the clock forward, but we asked no status, nothing should change
+        MonkeyProcess.progress(0.5f, true);
+        dom = getAsDOM(statusLocation);
+        // print(dom);
+        assertXpathExists("//wps:ProcessStarted", dom);
+        assertXpathEvaluatesTo("50", "//wps:ProcessStarted/@percentCompleted", dom);
+
+        
+        // now schedule the exit and wait for it to exit
+        MonkeyProcess.exit("Hi there", true);
+        dom = waitForProcessEnd(statusLocation, 60);
+        // print(dom);
+        assertXpathExists("//wps:ProcessSucceeded", dom);
+    }
+    
+    private Document waitForProcessEnd(String statusLocation, long maxWaitSeconds) throws Exception {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        Document dom = null;
+        long start = System.currentTimeMillis();
+        while(((System.currentTimeMillis() - start) / 1000 < maxWaitSeconds)) {
+            dom = getAsDOM(statusLocation);
+            // print(dom);
+            // are we still waiting for termination?
+            if(xpath.getMatchingNodes("//wps:Status/ProcessAccepted", dom).getLength() > 0 ||
+                    xpath.getMatchingNodes("//wps:Status/ProcessStarted", dom).getLength() > 0 ||
+                    xpath.getMatchingNodes("//wps:Status/ProcessQueued", dom).getLength() > 0 
+                    ) {
+                Thread.sleep(100);
+            } else {
+                return dom;
+            }
+        }
+        throw new Exception("Waited for the process to complete more than " + maxWaitSeconds);
+    }
+
     /**
      * Checks the bounds process returned the expected envelope
      * @param request

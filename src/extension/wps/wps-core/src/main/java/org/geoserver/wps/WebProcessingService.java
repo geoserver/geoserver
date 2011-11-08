@@ -5,6 +5,8 @@
 
 package org.geoserver.wps;
 
+import java.io.File;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,7 +36,16 @@ public interface WebProcessingService {
     /**
      * Executes a execute request and writes output to the Servlet response
      */
-    ExecuteResponseType execute(ExecuteType reques) throws WPSException;
+    ExecuteResponseType execute(ExecuteType request) throws WPSException;
+    
+    /**
+     * Returns the status of a given process execution, either as a {@link ExecuteResponseType} or
+     * as a stored response File
+     * @param request
+     * @return
+     * @throws WPSException
+     */
+    Object getExecutionStatus(GetExecutionStatusType request) throws WPSException;
 
     /**
      * Executes a get schema request and writes the output to the Servlet response
@@ -44,4 +55,13 @@ public interface WebProcessingService {
      * @throws WPSException
      */
     void getSchema(HttpServletRequest request, HttpServletResponse response) throws WPSException;
+
+    /**
+     * Returns a file stored as a reference in the specified execution 
+     * 
+     * @param request
+     * @return
+     * @throws WPSException
+     */
+    File getExecutionResult(GetExecutionResultType request) throws WPSException;
 }

@@ -64,6 +64,11 @@ public abstract class ImagePPIO extends BinaryPPIO {
         public final ImageDecoder getDecoder(InputStream inputStream) {
             return new PNGImageDecoder(inputStream, null);        
         }
+        
+        @Override
+        public String getFileExtension() {
+            return "png";
+        }
     }
     
     public static class JPEGPPIO extends ImagePPIO {
@@ -80,6 +85,11 @@ public abstract class ImagePPIO extends BinaryPPIO {
         @Override
         public ImageEncoder getEncoder(OutputStream outputStream){
             return new JPEGImageEncoder(outputStream, null);
+        }
+        
+        @Override
+        public String getFileExtension() {
+            return "jpeg";
         }
     }
 }

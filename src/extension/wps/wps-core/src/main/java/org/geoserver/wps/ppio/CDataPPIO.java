@@ -18,10 +18,6 @@ public abstract class CDataPPIO extends ComplexPPIO {
 		super(externalType, internalType, mimeType);
 	}
 	
-	/**
-     * Encodes the internal object representation to the provided writer
-     */
-    public abstract void encode( Object value, OutputStream os) throws IOException;
     
     @Override
     public Object decode(Object input) throws Exception {
@@ -35,4 +31,6 @@ public abstract class CDataPPIO extends ComplexPPIO {
      * @throws Exception
      */
     public abstract Object decode(String input) throws Exception;
+    
+    
 }

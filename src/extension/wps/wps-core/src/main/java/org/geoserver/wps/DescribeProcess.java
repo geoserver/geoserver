@@ -5,7 +5,6 @@
 package org.geoserver.wps;
 
 import java.math.BigInteger;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,10 +39,8 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geotools.data.Parameter;
-import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
-import org.geotools.referencing.CRS;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
@@ -116,6 +113,8 @@ public class DescribeProcess {
         pd.setIdentifier( Ows11Util.code( id.getValue() ) );
         pd.setTitle( Ows11Util.languageString(pf.getTitle(name)) );
         pd.setAbstract( Ows11Util.languageString(pf.getDescription(name)) );
+        pd.setStatusSupported(true);
+        pd.setStoreSupported(true);
         
         //data inputs
         DataInputsType inputs = wpsf.createDataInputsType();

@@ -46,5 +46,10 @@ public class WKTPPIO extends CDataPPIO {
             w.flush();
         }
     }
+    
+    @Override
+    public String getFileExtension() {
+        return "wkt";
+    }
 
 }

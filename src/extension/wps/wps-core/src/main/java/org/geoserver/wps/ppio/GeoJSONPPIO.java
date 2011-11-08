@@ -41,5 +41,10 @@ public class GeoJSONPPIO extends CDataPPIO {
     public Object decode(String input) throws Exception {
         return new FeatureJSON().readFeatureCollection(input);
     }
+    
+    @Override
+    public String getFileExtension() {
+        return "json";
+    }
 
 }

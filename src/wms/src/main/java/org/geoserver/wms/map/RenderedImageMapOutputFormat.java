@@ -994,7 +994,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 bgValues = new double[] { bgColorIndex };
             }
             
-            //collect alpha channels if we have them in order to reuse them later on for mosaic operation
+            // collect alpha channels if we have them in order to reuse them later on for mosaic operation
             if (cm.hasAlpha()) {
                 worker.forceComponentColorModel();
                 final RenderedImage alpha =worker.retainLastBand().getRenderedImage();

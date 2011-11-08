@@ -42,4 +42,9 @@ public class CQLFilterPPIO extends CDataPPIO {
         return decode(IOUtils.toString(input));
     }
 
+    @Override
+    public String getFileExtension() {
+        return "txt";
+    }
+
 }

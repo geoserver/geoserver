@@ -4,8 +4,12 @@
  */
 package org.geoserver.wps.ppio;
 
+import java.io.OutputStream;
+
 import javax.xml.namespace.QName;
 
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 import org.xml.sax.ContentHandler;
 
 /**
@@ -47,5 +51,22 @@ public abstract class XMLPPIO extends ComplexPPIO {
      * @param handler An XML content handler.
      */
     public abstract void encode( Object object, ContentHandler handler ) throws Exception;
+    
+    /**
+     * Encodes the internal object representation of a parameter as a string.
+     */
+    public void encode( Object value, OutputStream os) throws Exception {
+        // create the document serializer
+        XMLSerializer serializer = new XMLSerializer(os, new OutputFormat());
+        serializer.setNamespaces(true);
+        // cascade on the other encode method
+        encode(value, serializer);
+    }
+    
+    @Override
+    public String getFileExtension() {
+        return "xml";
+    }
+
 
 }

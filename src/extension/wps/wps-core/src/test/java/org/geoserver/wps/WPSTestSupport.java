@@ -15,6 +15,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.wps.xml.WPSConfiguration;
+import org.geotools.process.Processors;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.w3c.dom.Document;
@@ -22,6 +23,10 @@ import org.xml.sax.SAXParseException;
 
 public abstract class WPSTestSupport extends GeoServerTestSupport {
 
+    static {
+        Processors.addProcessFactory(MonkeyProcess.getFactory());
+    }
+    
     protected void setUpInternal() throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();

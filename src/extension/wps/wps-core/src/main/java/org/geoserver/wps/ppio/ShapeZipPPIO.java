@@ -115,5 +115,10 @@ public class ShapeZipPPIO extends BinaryPPIO {
         }
 
     }
+    
+    @Override
+    public String getFileExtension() {
+        return "zip";
+    }
 
 }

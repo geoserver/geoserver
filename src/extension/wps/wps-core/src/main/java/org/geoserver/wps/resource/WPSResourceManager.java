@@ -246,8 +246,7 @@ public class WPSResourceManager implements DispatcherCallback,
             for (String id : resourceCache.keySet()) {
                 cleanProcess(id);
             }
+            resourceCache.clear();
         }
-
-        resourceCache.clear();
     }
 }

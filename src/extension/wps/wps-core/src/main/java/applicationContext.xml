@@ -17,7 +17,9 @@
     </bean>    
     
     <!-- The default process runner, others may be around -->
-    <bean id="defaultProcessManager" class="org.geoserver.wps.executor.DefaultProcessManager"/>
+    <bean id="defaultProcessManager" class="org.geoserver.wps.executor.DefaultProcessManager">
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
 
     <!-- WPS Service -->
     <bean id="wpsService" class="org.geoserver.wps.DefaultWebProcessingService">

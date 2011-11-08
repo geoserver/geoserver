@@ -35,7 +35,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
                 return provider.getValue();
             } catch (Exception e) {
                 throw new WPSException("Failed to retrieve value for input "
-                        + provider.getInputId());
+                        + provider.getInputId(), e);
             }
         }
     }

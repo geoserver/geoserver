@@ -160,14 +160,13 @@ public class TextDecoration implements MapDecoration {
 
     @Override
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception {
-        
         Font font = getFont();
         String message = evaluateMessage(mapContent);
         GlyphVector gv = font.createGlyphVector(g2d.getFontRenderContext(), message.toCharArray());
         Shape outline = gv.getOutline();
         Rectangle2D bounds = outline.getBounds2D();
         double width = bounds.getWidth() + haloRadius * 2; 
-        double height = bounds.getWidth() + haloRadius * 2;
+        double height = bounds.getHeight() + haloRadius * 2;
         return new Dimension((int) Math.ceil(width), (int) Math.ceil(height));
     }
 
@@ -182,7 +181,7 @@ public class TextDecoration implements MapDecoration {
             // extract the glyph vector outline (paint like the labelling system does)
             GlyphVector gv = font.createGlyphVector(g2d.getFontRenderContext(), message.toCharArray());
             AffineTransform at = AffineTransform.getTranslateInstance(paintArea.x + haloRadius, 
-                    paintArea.y + paintArea.height - haloRadius * 2);
+                    paintArea.y + paintArea.height - haloRadius);
             Shape outline = gv.getOutline();
             outline = at.createTransformedShape(outline);
             

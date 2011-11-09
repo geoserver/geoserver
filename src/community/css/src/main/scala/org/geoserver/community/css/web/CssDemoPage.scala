@@ -88,61 +88,6 @@ class CssSubmitButton(id: String,
   }
 }
 
-class LayerChooser(id: String, demo: CssDemoPage) extends Panel(id) {
-  import GeoServerDataProvider.{ AbstractProperty, Property }
-
-  object layerProvider extends GeoServerDataProvider[FeatureTypeInfo] {
-    override def getItems(): java.util.List[FeatureTypeInfo] = 
-      demo.catalog.getFeatureTypes()
-
-    val workspace =
-      new AbstractProperty[FeatureTypeInfo]("Workspace") {
-        override def getPropertyValue(x: FeatureTypeInfo) = x.getStore.getWorkspace.getName
-      }
-
-    val store =
-      new AbstractProperty[FeatureTypeInfo]("Store") {
-        override def getPropertyValue(x: FeatureTypeInfo) = x.getStore.getName
-      }
-    val name =
-      new AbstractProperty[FeatureTypeInfo]("Layer") {
-        override def getPropertyValue(x: FeatureTypeInfo) = x.getName
-      }
-
-    override def getProperties(): java.util.List[Property[FeatureTypeInfo]] =
-      List[Property[FeatureTypeInfo]](workspace, store, name).asJava
-  }
-
-  object layerTable extends GeoServerTablePanel[FeatureTypeInfo]("layer.table", layerProvider) {
-    override def getComponentForProperty(
-      id: String, value: IModel[_],
-      property: Property[FeatureTypeInfo]
-    ): Component = {
-      val layer = value.getObject.asInstanceOf[FeatureTypeInfo]
-      val text = property.getPropertyValue(layer).toString
-      if (property eq layerProvider.name) {
-        new Fragment(id, "layer.link", LayerChooser.this) {
-          add(
-            new AjaxLink("link") {
-              add(new Label("layer.name", new Model(text)))
-              override def onClick(target: AjaxRequestTarget) = {
-                val params = new PageParameters
-                params.put("layer", layer.getPrefixedName)
-                params.put("style", demo.styleInfo.getName)
-                setResponsePage(classOf[CssDemoPage], params)
-              }
-            }
-          )
-        }
-      } else {
-        new Label(id, text)
-      }
-    }
-  }
-
-  add(layerTable)
-}
-
 class LayerNameInput(id: String, demo: CssDemoPage) extends Panel(id) {
   object form extends Form("layer.name.form") {
     var name: String = ""

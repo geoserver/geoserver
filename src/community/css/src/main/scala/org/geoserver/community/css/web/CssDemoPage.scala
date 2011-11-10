@@ -88,40 +88,6 @@ class CssSubmitButton(id: String,
   }
 }
 
-class LayerNameInput(id: String, demo: CssDemoPage) extends Panel(id) {
-  object form extends Form("layer.name.form") {
-    var name: String = ""
-
-    object nameValidation extends IValidator[String] {
-      override def validate(text: IValidatable[String]) {
-        val value = text.getValue()
-        def error(x: String) = text.error(new ValidationError().setMessage(x))
-        if (value.matches("\\s"))
-          error("Spaces not allowed in style names")
-        else if (demo.catalog.getStyle(value) != null)
-          error("That name is already taken!")
-      }
-    }
-
-    object nameField extends TextField("layer.name.field", new PropertyModel[String](this, "name")) { add(nameValidation) }
-
-    object submitButton extends AjaxButton("submit.button", this) {
-      override def onSubmit(target: AjaxRequestTarget, form: Form[_]) {
-        require(demo.catalog.getStyleByName(name) == null, "Trying to create style with same name as existing one!")
-        demo.createCssTemplate(name)
-        val params = new PageParameters
-        params.put("layer", demo.layerInfo.getPrefixedName)
-        params.put("style", name)
-        setResponsePage(classOf[CssDemoPage], params)
-      }
-    }
-
-    add(nameField)
-    add(submitButton)
-  }
-  add(form)
-}
-
 class MultipleLayerChooser(id: String, demo: CssDemoPage) extends Panel(id) {
   import GeoServerDataProvider.{ AbstractProperty, Property }
 

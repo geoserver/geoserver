@@ -32,6 +32,19 @@
 			<groupId>org.geoserver</groupId>
 			<artifactId>wfs</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>restconfig</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>restconfig</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>

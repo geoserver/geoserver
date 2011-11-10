@@ -103,33 +103,35 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         
         // now, does the feature type exist? If not, create it
         DataStoreInfo ds = catalog.getDataStoreByName( workspace, dataStore );
-        String typeName = featureType.getName();
-        if(featureType.getNativeName() != null) {
-            typeName = featureType.getNativeName(); 
-        } 
-        boolean typeExists = false;
-        DataStore gtds = (DataStore) ds.getDataStore(null);
-        for(String name : gtds.getTypeNames()) {
-            if(name.equals(typeName)) {
-                typeExists = true;
-                break;
+        if (ds.getDataStore(null) instanceof DataStore) {
+            String typeName = featureType.getName();
+            if(featureType.getNativeName() != null) {
+                typeName = featureType.getNativeName(); 
+            } 
+            boolean typeExists = false;
+            DataStore gtds = (DataStore) ds.getDataStore(null);
+            for(String name : gtds.getTypeNames()) {
+                if(name.equals(typeName)) {
+                    typeExists = true;
+                    break;
+                }
             }
-        }
-        
-        //check to see if this is a virtual JDBC feature type
-        MetadataMap mdm = featureType.getMetadata();
-        boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
-        
-        if(!virtual && !typeExists) {
-            gtds.createSchema(buildFeatureType(featureType));
-            // the attributes created might not match up 1-1 with the actual spec due to
-            // limitations of the data store, have it re-compute them
-            featureType.getAttributes().clear();
-            List<String> typeNames = Arrays.asList(gtds.getTypeNames());
-            // handle Oracle oddities
-            // TODO: use the incoming store capabilites API to better handle the name transformation
-            if(!typeNames.contains(typeName) && typeNames.contains(typeName.toUpperCase())) {
-                featureType.setNativeName(featureType.getName().toLowerCase());
+
+            //check to see if this is a virtual JDBC feature type
+            MetadataMap mdm = featureType.getMetadata();
+            boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+
+            if(!virtual && !typeExists) {
+                gtds.createSchema(buildFeatureType(featureType));
+                // the attributes created might not match up 1-1 with the actual spec due to
+                // limitations of the data store, have it re-compute them
+                featureType.getAttributes().clear();
+                List<String> typeNames = Arrays.asList(gtds.getTypeNames());
+                // handle Oracle oddities
+                // TODO: use the incoming store capabilites API to better handle the name transformation
+                if(!typeNames.contains(typeName) && typeNames.contains(typeName.toUpperCase())) {
+                    featureType.setNativeName(featureType.getName().toLowerCase());
+                }
             }
         }
         

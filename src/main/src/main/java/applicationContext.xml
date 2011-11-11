@@ -87,6 +87,9 @@
       <constructor-arg ref="resourceLoader" />
     </bean>
     
+    <!-- classpath publisher, allows resources in the classpath to be published as static files -->
+    <bean id="classpathPublisher" class="org.geoserver.ows.ClasspathPublisher"/>
+    
   <!-- jai initializer -->
   <bean id="jaiInitializer" class="org.geoserver.jai.JAIInitializer"/>
   
@@ -128,6 +131,18 @@
        <props>
         <prop key="/styles/**">filePublisher</prop>
         <prop key="/www/**">filePublisher</prop>
+       </props>
+     </property>
+  </bean>
+  
+  <bean id="classpathPublisherMapping"
+    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="alwaysUseFullPath" value="true"/>
+     <property name="mappings">
+       <props>
+        <prop key="/schemas/**">classpathPublisher</prop>
+        <prop key="/j_acegi_security_check">classpathPublisher</prop>
+        <prop key="/j_spring_security_check">classpathPublisher</prop>
        </props>
      </property>
   </bean>

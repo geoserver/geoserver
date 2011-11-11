@@ -700,4 +700,15 @@
     <bean id="envVariableCleaner" class="org.geoserver.wms.EnvVariableCleaner"/>
     
     <bean id="rasterCleaner" class="org.geoserver.wms.RasterCleaner"/>
+    
+    <bean id="wmsClasspathPublisherMapping"
+    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="alwaysUseFullPath" value="true"/>
+     <property name="mappings">
+       <props>
+        <prop key="/openlayers/**">classpathPublisher</prop>
+        <prop key="/options.png">classpathPublisher</prop>
+       </props>
+     </property>
+  </bean>
 </beans>

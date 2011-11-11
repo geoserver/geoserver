@@ -36,18 +36,8 @@
         <prop key="/web">wicket</prop>
         <prop key="/web/**">wicket</prop>
         <prop key="/web/resources/**">wicket</prop>
-        <prop key="/**/*.css">filePublisher</prop>
-        <prop key="/**/*.png">filePublisher</prop>
-        <prop key="/**/*.gif">filePublisher</prop>
-        <prop key="/**/*.jpg">filePublisher</prop>
-        <prop key="/openlayers/**">filePublisher</prop>
-        <prop key="/schemas/**">filePublisher</prop>
-        
-        <!-- these mappings allow file publisher to forward to index.html when it is not explicitly
-             specified -->
-        <prop key="/index.html">filePublisher</prop>
-        <prop key="/index.html/">filePublisher</prop>
         <prop key="/">filePublisher</prop>
+        <prop key="/index.html">filePublisher</prop>
       </props>
     </property>
   </bean>

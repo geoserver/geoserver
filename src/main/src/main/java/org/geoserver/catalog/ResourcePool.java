@@ -297,9 +297,9 @@ public class ResourcePool {
      * @throws IOException Any errors that occur connecting to the resource.
      */
     public DataAccess<? extends FeatureType, ? extends Feature> getDataStore( DataStoreInfo info ) throws IOException {
+        DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
         try {
             String id = info.getId();
-            DataAccess<? extends FeatureType, ? extends Feature> dataStore;
             dataStore = (DataAccess<? extends FeatureType, ? extends Feature>) dataStoreCache.get(id);
             if ( dataStore == null ) {
                 synchronized (dataStoreCache) {
@@ -388,12 +388,20 @@ public class ResourcePool {
             }
             
             return dataStore;
-        } 
-        catch (IOException ioe){
-            throw ioe;
-        }
-        catch (Exception e) {
-            throw (IOException) new IOException().initCause(e);
+        } catch (Exception e) {
+            // if anything goes wrong we have to clean up the store anyways
+            if(dataStore != null) {
+                try {
+                    dataStore.dispose();
+                } catch(Exception ex) {
+                    // fine, we had to try
+                }
+            }
+            if(e instanceof IOException) {
+                throw (IOException) e;
+            } else {
+                throw (IOException) new IOException().initCause(e);
+            }
         }
     }
         

@@ -135,8 +135,9 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                     // we fall back on the default style (since we cannot roll back the
                     // entire operation, no transactions in the catalog)
                     LOGGER.log(Level.WARNING, "Could not find default style for resource " 
-                            + li.getResource() + " resetting the default to null");
-                    li.setDefaultStyle(null);
+                            + li.getResource() + " resetting the default to point", e);
+                    li.setDefaultStyle(catalog.getStyleByName(StyleInfo.DEFAULT_POINT));
+                    catalog.save(li);
                 }
             }
             // remove it also from the associated styles

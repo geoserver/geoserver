@@ -6,6 +6,7 @@ package org.geoserver.wfs;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureLocking;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
@@ -52,6 +54,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
@@ -224,7 +227,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             // region
             // for validation
             //
-            Set fids = new HashSet();
+            Set<FeatureId> fids = new HashSet<FeatureId>();
             LOGGER.finer("Preprocess to remember modification as a set of fids");
             
             SimpleFeatureCollection features = store.getFeatures(filter);
@@ -239,7 +242,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             try {
                 while (preprocess.hasNext()) {
                     SimpleFeature feature = (SimpleFeature) preprocess.next();
-                    fids.add(feature.getID());
+                    fids.add(feature.getIdentifier());
                 }
             } catch (NoSuchElementException e) {
                 throw new WFSException(request, "Could not aquire FeatureIDs", e);
@@ -271,20 +274,35 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             if (!fids.isEmpty()) {
                 LOGGER.finer("Post process update for boundary update and featureValidation");
 
-                Set featureIds = new HashSet();
+                Set<FeatureId> featureIds = new HashSet<FeatureId>();
 
                 FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
-                for (Iterator f = fids.iterator(); f.hasNext();) {
-                    featureIds.add(ff.featureId((String) f.next()));
+                for (Iterator<FeatureId> f = fids.iterator(); f.hasNext();) {
+                    // create new FeatureIds without any possible version information in order to
+                    // query for the latest version
+                    featureIds.add(ff.featureId(f.next().getID()));
                 }
 
                 Id modified = ff.id(featureIds);
 
-                response.addUpdatedFeatures(handle, featureIds);
-                
                 SimpleFeatureCollection changed = store.getFeatures(modified);
+                
+                // grab final ids. Not using fetureIds as they may contain different version
+                // information after the update
+                Set<FeatureId> changedIds = new HashSet<FeatureId>();
+                SimpleFeatureIterator iterator = changed.features();
+                try{
+                    while(iterator.hasNext()){
+                        changedIds.add(iterator.next().getIdentifier());
+                    }
+                }finally{
+                    iterator.close();
+                }
+                response.addUpdatedFeatures(handle, changedIds);
+
                 listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_UPDATE,
                         request, elementName, changed, update));
+                
             }
 
             // update the update counter

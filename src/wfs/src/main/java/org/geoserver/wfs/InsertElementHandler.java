@@ -193,10 +193,10 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                 SimpleFeatureType schema = feature.getFeatureType();
 
                 // get the next fid
-                LinkedList fids = (LinkedList) schema2fids.get(schema.getTypeName());
-                String fid = ((FeatureId) fids.removeFirst()).getID();
+                LinkedList<FeatureId> fids = (LinkedList<FeatureId>) schema2fids.get(schema.getTypeName());
+                FeatureId fid = fids.removeFirst();
 
-                response.addInsertedFeature(insert.getHandle(), filterFactory.featureId(fid));
+                response.addInsertedFeature(insert.getHandle(), fid);
             }
 
             // update the insert counter

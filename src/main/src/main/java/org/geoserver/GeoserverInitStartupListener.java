@@ -5,6 +5,7 @@
 package org.geoserver;
 
 import java.beans.Introspector;
+import java.lang.reflect.Method;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
@@ -172,7 +173,13 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             while (drivers.hasMoreElements()) {
                     Driver driver = drivers.nextElement();
             }
-            org.h2.Driver.unload();
+            try {
+                Class h2Driver = Class.forName("org.h2.Driver");
+                Method m = h2Driver.getMethod("unload");
+                m.invoke(null);
+            } catch(Exception e) {
+                LOGGER.log(Level.WARNING, "Failed to unload the H2 driver", e);
+            }
             
             // unload all deferred authority factories so that we get rid of the timer tasks in them
             try {

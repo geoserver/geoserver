@@ -364,7 +364,7 @@ public class PutStyles extends AbstractService {
             // validate the SLD
             SLDValidator validator = new SLDValidator();
             String baseURL = ResponseUtils.baseURL(request);
-            List errors = validator.validateSLD(fs, baseURL);
+            List errors = validator.validateSLD(fs);
     
             if (errors.size() != 0) {
                 throw new SldException(SLDValidator.getErrorMessage(xml, errors));

@@ -291,7 +291,7 @@ public class Styles {
             
             @Override
             protected List<Exception> validate(Object input) throws IOException {
-                return new SLDValidator().validateSLD(new InputSource(toReader(input)), null);
+                return new SLDValidator().validateSLD(new InputSource(toReader(input)));
             }
             
             @Override

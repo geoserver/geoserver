@@ -10,23 +10,14 @@
 package org.vfny.geoserver.util;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
-
 import org.apache.xerces.parsers.SAXParser;
-import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geotools.data.DataUtilities;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -40,19 +31,28 @@ public class SLDValidator {
     }
 
     /**
-     * validates against the "normal" location of the schema (ie.
-     * ".../schemas/sld/StyleLayerDescriptor.xsd" uses the geoserver_home
-     * patch
+     * validates against the SLD schema in the classpath 
      *
      * @param xml
      * @param baseUrl GeoServer base URL
      *
      * @return
      */
+    @Deprecated
     public List validateSLD(InputStream xml, String baseUrl) {
-        // a riminder not to use the data directory for the schemas
-        //String url = GeoserverDataDirectory.getGeoserverDataDirectory(servContext).toString();
-        return validateSLD(new InputSource(xml), baseUrl);
+        return validateSLD(new InputSource(xml));
+    }
+    
+    /**
+     * validates against the SLD schema in the classpath 
+     *
+     * @param xml
+     * @param baseUrl GeoServer base URL
+     *
+     * @return
+     */
+    public List validateSLD(InputStream xml) {
+        return validateSLD(new InputSource(xml));
     }
 
     public static String getErrorMessage(InputStream xml, List errors) {
@@ -165,25 +165,7 @@ public class SLDValidator {
 
         return result.toString();
     }
-
-    /*public List validateSLD(InputStream xml, String SchemaUrl) {
-        return validateSLD(new InputSource(xml), SchemaUrl);
-    }*/
-
-    /*public List validateSLD(InputSource xml, ServletContext servContext) {
-        File schemaFile = new File(servContext.getRealPath("/"),
-        "/schemas/sld/StyledLayerDescriptor.xsd");
-
-        try {
-            return validateSLD(xml, schemaFile.toURL().toString());
-        } catch (Exception e) {
-            ArrayList al = new ArrayList();
-            al.add(new SAXException(e));
-
-            return al;
-        }
-    }*/
-
+    
     /**
      * validate a .sld against the schema
      *
@@ -194,32 +176,23 @@ public class SLDValidator {
      *
      * @return list of SAXExceptions (0 if the file's okay)
      */
-    public List validateSLD(InputSource xml, String baseURL) {
+    @Deprecated 
+    public List validateSLD(InputSource xml, String baseUrl) {
+        return validateSLD(xml);
+    }
+
+    /**
+     * validate a .sld against the schema
+     *
+     * @param xml input stream representing the .sld file
+     *
+     * @return list of SAXExceptions (0 if the file's okay)
+     */
+    public List validateSLD(InputSource xml) {
         SAXParser parser = new SAXParser();
 
         try {
-            String schemaUrl = null;
-            if (baseURL != null) {
-                String schemaLoction = ResponseUtils.buildSchemaURL(baseURL, "sld/StyledLayerDescriptor.xsd");
-                // this takes care of spaces in the path to the file
-                URL schemaFile = new URL(schemaLoction);
-    
-                if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(new StringBuffer("Validating SLD with ").append(schemaFile.toString())
-                                                                        .toString());
-                }
-    
-                schemaUrl = schemaFile.toString();
-            }
-            else {
-                File file = GeoServerExtensions.bean(GeoServerResourceLoader.class)
-                    .find("schemas", "sld", "StyledLayerDescriptor.xsd");
-                if (file == null) {
-                    throw new RuntimeException("base url not specified and unable to find internal SLD schema");
-                }
-                
-                schemaUrl = DataUtilities.fileToURL(file).toString();
-            }
+            String schemaUrl = SLDValidator.class.getResource("/schemas/sld/StyledLayerDescriptor.xsd").toExternalForm();
 
             //     1. tell the parser to validate the XML document vs the schema
             //     2. does not validate the schema (the GML schema is *not* valid.  This is

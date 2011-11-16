@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:temporalTopology:3.2.1">temporalTopology.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 15.3.
+Temporal topology is described in terms of time complexes, nodes, and edges, and the connectivity between these. Temporal topology does not directly provide information about temporal position. It is used in the case of describing a lineage or a history (e.g. a family tree expressing evolution of species, an ecological cycle, a lineage of lands or buildings, or a history of separation and merger of administrative boundaries). The following Subclauses specifies the temporal topology as temporal characteristics of features in compliance with ISO 19108.</documentation>
+	</annotation>
+	<include schemaLocation="temporal.xsd"/>
+	<element name="AbstractTimeTopologyPrimitive" type="gml:AbstractTimeTopologyPrimitiveType" abstract="true" substitutionGroup="gml:AbstractTimePrimitive">
+		<annotation>
+			<documentation>gml:TimeTopologyPrimitive acts as the head of a substitution group for topological temporal primitives.
+Temporal topology primitives shall imply the ordering information between features or feature properties. The temporal connection of features can be examined if they have temporal topology primitives as values of their properties. Usually, an instantaneous feature associates with a time node, and a static feature associates with a time edge.  A feature with both modes associates with the temporal topology primitive: a supertype of time nodes and time edges.
+A topological primitive is always connected to one or more other topological primitives, and is, therefore, always a member of a topological complex. In a GML instance, this will often be indicated by the primitives being described by elements that are descendents of an element describing a complex. However, in order to support the case where a temporal topological primitive is described in another context, the optional complex property is provided, which carries a reference to the parent temporal topological complex.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractTimeTopologyPrimitiveType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractTimePrimitiveType">
+				<sequence>
+					<element name="complex" type="gml:ReferenceType" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimeTopologyPrimitivePropertyType">
+		<annotation>
+			<documentation>gml:TimeTopologyPrimitivePropertyType provides for associating a gml:AbstractTimeTopologyPrimitive with an object.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractTimeTopologyPrimitive"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="TimeTopologyComplex" type="gml:TimeTopologyComplexType" substitutionGroup="gml:AbstractTimeComplex">
+		<annotation>
+			<documentation>A temporal topology complex shall be the connected acyclic directed graph composed of temporal topological primitives, i.e. time nodes and time edges. Because a time edge may not exist without two time nodes on its boundaries, static features have time edges from a temporal topology complex as the values of their temporal properties, regardless of explicit declarations.
+A temporal topology complex expresses a linear or a non-linear graph. A temporal linear graph, composed of a sequence of time edges, provides a lineage described only by "substitution" of feature instances or feature element values. A time node as the start or the end of the graph connects with at least one time edge. A time node other than the start and the end shall connect to at least two time edges: one of starting from the node, and another ending at the node.
+A temporal topological complex is a set of connected temporal topological primitives. The member primtives are indicated, either by reference or by value, using the primitive property.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimeTopologyComplexType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractTimeComplexType">
+				<sequence>
+					<element name="primitive" type="gml:TimeTopologyPrimitivePropertyType" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimeTopologyComplexPropertyType">
+		<annotation>
+			<documentation>gml:TimeTopologyComplexPropertyType provides for associating a gml:TimeTopologyComplex with an object.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TimeTopologyComplex"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="TimeNode" type="gml:TimeNodeType" substitutionGroup="gml:AbstractTimeTopologyPrimitive">
+		<annotation>
+			<documentation>A time node is a zero-dimensional topological primitive that represents an identifiable node in time (it is equivalent to a point in space). A node may act as the termination or initiation of any number of time edges. A time node may be realised as a geometry, its position, whose value is a time instant.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimeNodeType">
+		<complexContent>
+			<extension base="gml:AbstractTimeTopologyPrimitiveType">
+				<sequence>
+					<element name="previousEdge" type="gml:TimeEdgePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="nextEdge" type="gml:TimeEdgePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="position" type="gml:TimeInstantPropertyType" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimeNodePropertyType">
+		<annotation>
+			<documentation>gml:TimeNodePropertyType provides for associating a gml:TimeNode with an object</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TimeNode"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="TimeEdge" type="gml:TimeEdgeType" substitutionGroup="gml:AbstractTimeTopologyPrimitive">
+		<annotation>
+			<documentation>A time edge is a one-dimensional topological primitive. It is an open interval that starts and ends at a node. The edge may be realised as a geometry whose value is a time period.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimeEdgeType">
+		<complexContent>
+			<extension base="gml:AbstractTimeTopologyPrimitiveType">
+				<sequence>
+					<!--element name="start" type="gml:TimeNodePropertyType"/>
+					<element name="end" type="gml:TimeNodePropertyType"/-->
+					<element name="extent" type="gml:TimePeriodPropertyType" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimeEdgePropertyType">
+		<annotation>
+			<documentation>gml:TimeEdgePropertyType provides for associating a gml:TimeEdge with an object.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TimeEdge"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+</schema>

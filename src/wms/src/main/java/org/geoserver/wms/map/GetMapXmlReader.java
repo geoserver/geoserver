@@ -710,7 +710,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
             try {
                 in = new FileInputStream(f);
-                errors = validator.validateSLD(in, getMapRequest.getBaseUrl());
+                errors = validator.validateSLD(in);
             } finally {
                 if (in != null) {
                     in.close();

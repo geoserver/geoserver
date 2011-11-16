@@ -15,7 +15,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -29,7 +28,6 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
@@ -97,14 +95,6 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
         registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         
-        //copy over some schema files
-        copySchemaFile("gml/2.1.2.1/geometry.xsd");
-        copySchemaFile("gml/2.1.2.1/feature.xsd");
-        copySchemaFile("xlink/1.0.0/xlinks.xsd");
-        copySchemaFile("filter/1.0.0/expr.xsd");
-        copySchemaFile("filter/1.0.0/filter.xsd");
-        copySchemaFile("sld/StyledLayerDescriptor.xsd");
-        
         // setup a layer group
         Catalog catalog = getCatalog();
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
@@ -129,11 +119,6 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
     protected void registerNamespaces(Map<String, String> namespaces) {
     }
 
-    protected void copySchemaFile(String file) throws IOException {
-        File f = new File("../web/app/src/main/webapp/schemas/" + file);
-        FileUtils.copyFile(f, getResourceLoader().createFile("WEB-INF/schemas/"+file));
-    }
-    
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);

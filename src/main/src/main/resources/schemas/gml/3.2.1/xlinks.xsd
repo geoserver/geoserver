@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.w3.org/1999/xlink" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" version="2.1.2">
+  <annotation>
+    <appinfo>xlinks.xsd v2.1.2 2002-07</appinfo>
+    <documentation xml:lang="en">
+      This schema provides the XLink attributes for general use.
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+       global declarations
+  =============================================================== -->
+  <!-- locator attribute -->
+  <attribute name="href" type="anyURI"/>
+  <!-- semantic attributes -->
+  <attribute name="role" type="anyURI"/>
+  <attribute name="arcrole" type="anyURI"/>
+  <attribute name="title" type="string"/>
+  <!-- behavior attributes -->
+  <attribute name="show">
+    <annotation>
+      <documentation>
+        The 'show' attribute is used to communicate the desired presentation 
+        of the ending resource on traversal from the starting resource; it's 
+        value should be treated as follows: 
+        new - load ending resource in a new window, frame, pane, or other 
+              presentation context
+        replace - load the resource in the same window, frame, pane, or 
+                  other presentation context
+        embed - load ending resource in place of the presentation of the 
+                starting resource
+        other - behavior is unconstrained; examine other markup in the 
+                link for hints 
+        none - behavior is unconstrained 
+      </documentation>
+    </annotation>
+    <simpleType>
+      <restriction base="string">
+        <enumeration value="new"/>
+        <enumeration value="replace"/>
+        <enumeration value="embed"/>
+        <enumeration value="other"/>
+        <enumeration value="none"/>
+      </restriction>
+    </simpleType>
+  </attribute>
+  <attribute name="actuate">
+    <annotation>
+      <documentation>
+        The 'actuate' attribute is used to communicate the desired timing 
+        of traversal from the starting resource to the ending resource; 
+        it's value should be treated as follows:
+        onLoad - traverse to the ending resource immediately on loading 
+                 the starting resource 
+        onRequest - traverse from the starting resource to the ending 
+                    resource only on a post-loading event triggered for 
+                    this purpose 
+        other - behavior is unconstrained; examine other markup in link 
+                for hints 
+        none - behavior is unconstrained
+      </documentation>
+    </annotation>
+    <simpleType>
+      <restriction base="string">
+        <enumeration value="onLoad"/>
+        <enumeration value="onRequest"/>
+        <enumeration value="other"/>
+        <enumeration value="none"/>
+      </restriction>
+    </simpleType>
+  </attribute>
+  <!-- traversal attributes -->
+  <attribute name="label" type="string"/>
+  <attribute name="from" type="string"/>
+  <attribute name="to" type="string"/>
+  <!-- ==============================================================
+       Attributes grouped by XLink type, as specified by the allowed usage patterns 
+       in sec. 4.1 of the W3C Recommendation (dated 2001-06-27)
+  =================================================================== -->
+  <attributeGroup name="simpleLink">
+    <attribute name="type" type="string" use="optional" fixed="simple" form="qualified"/>
+    <attribute ref="xlink:href" use="optional"/>
+    <attribute ref="xlink:role" use="optional"/>
+    <attribute ref="xlink:arcrole" use="optional"/>
+    <attribute ref="xlink:title" use="optional"/>
+    <attribute ref="xlink:show" use="optional"/>
+    <attribute ref="xlink:actuate" use="optional"/>
+  </attributeGroup>
+  <attributeGroup name="extendedLink">
+    <attribute name="type" type="string" use="required" fixed="extended" form="qualified"/>
+    <attribute ref="xlink:role" use="optional"/>
+    <attribute ref="xlink:title" use="optional"/>
+  </attributeGroup>
+  <attributeGroup name="locatorLink">
+    <attribute name="type" type="string" use="required" fixed="locator" form="qualified"/>
+    <attribute ref="xlink:href" use="required"/>
+    <attribute ref="xlink:role" use="optional"/>
+    <attribute ref="xlink:title" use="optional"/>
+    <attribute ref="xlink:label" use="optional"/>
+  </attributeGroup>
+  <attributeGroup name="arcLink">
+    <attribute name="type" type="string" use="required" fixed="arc" form="qualified"/>
+    <attribute ref="xlink:arcrole" use="optional"/>
+    <attribute ref="xlink:title" use="optional"/>
+    <attribute ref="xlink:show" use="optional"/>
+    <attribute ref="xlink:actuate" use="optional"/>
+    <attribute ref="xlink:from" use="optional"/>
+    <attribute ref="xlink:to" use="optional"/>
+  </attributeGroup>
+  <attributeGroup name="resourceLink">
+    <attribute name="type" type="string" use="required" fixed="resource" form="qualified"/>
+    <attribute ref="xlink:role" use="optional"/>
+    <attribute ref="xlink:title" use="optional"/>
+    <attribute ref="xlink:label" use="optional"/>
+  </attributeGroup>
+  <attributeGroup name="titleLink">
+    <attribute name="type" type="string" use="required" fixed="title" form="qualified"/>
+  </attributeGroup>
+  <attributeGroup name="emptyLink">
+    <attribute name="type" type="string" use="required" fixed="empty" form="qualified"/>
+  </attributeGroup>
+</schema>

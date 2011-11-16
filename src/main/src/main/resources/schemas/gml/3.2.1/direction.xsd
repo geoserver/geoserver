@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.2.1">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:direction:3.2.1">direction.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 Clause 18.
+The direction schema components provide the GML Application Schema developer with a standard property element to describe direction, and associated objects that may be used to express orientation, direction, heading, bearing or other directional aspects of geographic features. </documentation>
+	</annotation>
+	<include schemaLocation="geometryBasic0d1d.xsd"/>
+	<element name="direction" type="gml:DirectionPropertyType">
+		<annotation>
+			<documentation>The property gml:direction is intended as a pre-defined property expressing a direction to be assigned to features defined in a GML application schema.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DirectionPropertyType">
+		<choice minOccurs="0">
+			<element name="DirectionVector" type="gml:DirectionVectorType"/>
+			<element name="DirectionDescription" type="gml:DirectionDescriptionType"/>
+			<element name="CompassPoint" type="gml:CompassPointEnumeration"/>
+			<element name="DirectionKeyword" type="gml:CodeType"/>
+			<element name="DirectionString" type="gml:StringOrRefType"/>
+		</choice>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<complexType name="DirectionVectorType">
+		<annotation>
+			<documentation>Direction vectors are specified by providing components of a vector.</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:vector"/>
+			<sequence>
+				<annotation>
+					<appinfo>deprecated</appinfo>
+				</annotation>
+				<element name="horizontalAngle" type="gml:AngleType"/>
+				<element name="verticalAngle" type="gml:AngleType"/>
+			</sequence>
+		</choice>
+	</complexType>
+	<complexType name="DirectionDescriptionType">
+		<annotation>
+			<documentation>direction descriptions are specified by a compass point code, a keyword, a textual description or a reference to a description.
+A gml:compassPoint is specified by a simple enumeration.  	
+In addition, thre elements to contain text-based descriptions of direction are provided.  
+If the direction is specified using a term from a list, gml:keyword should be used, and the list indicated using the value of the codeSpace attribute. 
+if the direction is decribed in prose, gml:direction or gml:reference should be used, allowing the value to be included inline or by reference.</documentation>
+		</annotation>
+		<choice>
+			<element name="compassPoint" type="gml:CompassPointEnumeration"/>
+			<element name="keyword" type="gml:CodeType"/>
+			<element name="description" type="string"/>
+			<element name="reference" type="gml:ReferenceType"/>
+		</choice>
+	</complexType>
+	<simpleType name="CompassPointEnumeration">
+		<annotation>
+			<documentation>These directions are necessarily approximate, giving direction with a precision of 22.5°. It is thus generally unnecessary to specify the reference frame, though this may be detailed in the definition of a GML application language.</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="N"/>
+			<enumeration value="NNE"/>
+			<enumeration value="NE"/>
+			<enumeration value="ENE"/>
+			<enumeration value="E"/>
+			<enumeration value="ESE"/>
+			<enumeration value="SE"/>
+			<enumeration value="SSE"/>
+			<enumeration value="S"/>
+			<enumeration value="SSW"/>
+			<enumeration value="SW"/>
+			<enumeration value="WSW"/>
+			<enumeration value="W"/>
+			<enumeration value="WNW"/>
+			<enumeration value="NW"/>
+			<enumeration value="NNW"/>
+		</restriction>
+	</simpleType>
+</schema>

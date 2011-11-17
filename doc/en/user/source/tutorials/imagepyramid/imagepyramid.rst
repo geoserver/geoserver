@@ -14,7 +14,7 @@ This tutorial shows how to build an image pyramid with open source utilities and
 Building a pyramid
 ------------------
 
-For this tutorial we have prepared a `sample BlueMarble TNG subset <http://gridlock.opengeo.org/data/bmreduced.tiff>`_ in GeoTIFF form. The image is tiled and JPEG compressed, without overviews. Not exactly what you'd want to use for high performance data serving, but good for redistribution and as a starting point to build a pyramid.
+For this tutorial we have prepared a `sample BlueMarble TNG subset <http://data.opengeo.org/bmreduced.tiff>`_ in GeoTIFF form. The image is tiled and JPEG compressed, without overviews. Not exactly what you'd want to use for high performance data serving, but good for redistribution and as a starting point to build a pyramid.
 
 In order to build the pyramid we'll use the `gdal_retile.py <http://www.gdal.org/gdal_retile.html>`_ utility, part of the GDAL command line utilities and available for various operating systems (if you're using Microsoft Windows look for `FWTools <http://fwtools.maptools.org/>`_).
 

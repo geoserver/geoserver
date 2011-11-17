@@ -34,7 +34,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class ExecuteTest extends WPSTestSupport {
     
-	/* TODO GET requests A.4.4.1 */
+    /* TODO GET requests A.4.4.1 */
 
     public void testDataInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml =  
@@ -163,8 +163,8 @@ public class ExecuteTest extends WPSTestSupport {
     
     public void testWKTInlineKVPRawOutput() throws Exception {
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=JTS:buffer" +
-        		"&DataInputs=" + urlEncode("geom=POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))@mimetype=application/wkt;distance=1") +
-        		"&RawDataOutput=" + urlEncode("result=@mimetype=application/wkt");
+                "&DataInputs=" + urlEncode("geom=POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))@mimetype=application/wkt;distance=1") +
+                "&RawDataOutput=" + urlEncode("result=@mimetype=application/wkt");
         MockHttpServletResponse response = getAsServletResponse(request);
         // System.out.println(response.getOutputStreamContent());
         assertEquals("application/wkt", response.getContentType());
@@ -422,17 +422,17 @@ public class ExecuteTest extends WPSTestSupport {
            "</wps:ResponseForm>" + 
          "</wps:Execute>";
   
-		MockHttpServletResponse r = postAsServletResponse("wps", xml);
-		assertEquals("application/json", r.getContentType());
-		// System.out.println(r.getOutputStreamContent());
-		FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
-		assertEquals(2, fc.size());
-		
+        MockHttpServletResponse r = postAsServletResponse("wps", xml);
+        assertEquals("application/json", r.getContentType());
+        // System.out.println(r.getOutputStreamContent());
+        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
+        assertEquals(2, fc.size());
+        
     }
     
     public void testShapeZip() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
-        		"xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:wfs='http://www.opengis.net/wfs' " + 
+                "xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:wfs='http://www.opengis.net/wfs' " + 
         "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
         "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>" + 
          "<wps:DataInputs>" + 
@@ -469,26 +469,26 @@ public class ExecuteTest extends WPSTestSupport {
      */
     public void testBoundsPost() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        		"<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
-        		"  <ows:Identifier>gs:Bounds</ows:Identifier>\n" + 
-        		"  <wps:DataInputs>\n" + 
-        		"    <wps:Input>\n" + 
-        		"      <ows:Identifier>features</ows:Identifier>\n" + 
-        		"      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n" + 
-        		"        <wps:Body>\n" + 
-        		"          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n" + 
-        		"            <wfs:Query typeName=\"cite:Streams\"/>\n" + 
-        		"          </wfs:GetFeature>\n" + 
-        		"        </wps:Body>\n" + 
-        		"      </wps:Reference>\n" + 
-        		"    </wps:Input>\n" + 
-        		"  </wps:DataInputs>\n" + 
-        		"  <wps:ResponseForm>\n" + 
-        		"    <wps:RawDataOutput>\n" + 
-        		"      <ows:Identifier>bounds</ows:Identifier>\n" + 
-        		"    </wps:RawDataOutput>\n" + 
-        		"  </wps:ResponseForm>\n" + 
-        		"</wps:Execute>";
+                "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
+                "  <ows:Identifier>gs:Bounds</ows:Identifier>\n" + 
+                "  <wps:DataInputs>\n" + 
+                "    <wps:Input>\n" + 
+                "      <ows:Identifier>features</ows:Identifier>\n" + 
+                "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n" + 
+                "        <wps:Body>\n" + 
+                "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n" + 
+                "            <wfs:Query typeName=\"cite:Streams\"/>\n" + 
+                "          </wfs:GetFeature>\n" + 
+                "        </wps:Body>\n" + 
+                "      </wps:Reference>\n" + 
+                "    </wps:Input>\n" + 
+                "  </wps:DataInputs>\n" + 
+                "  <wps:ResponseForm>\n" + 
+                "    <wps:RawDataOutput>\n" + 
+                "      <ows:Identifier>bounds</ows:Identifier>\n" + 
+                "    </wps:RawDataOutput>\n" + 
+                "  </wps:ResponseForm>\n" + 
+                "</wps:Execute>";
         
         Document dom = postAsDOM(root(), request);
         // print(dom);
@@ -682,50 +682,50 @@ public class ExecuteTest extends WPSTestSupport {
     }
     
     public void testProcessChaining() throws Exception {
-    	// chain two JTS processes
-    	String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-    			"<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
-    			"  <ows:Identifier>JTS:area</ows:Identifier>\n" + 
-    			"  <wps:DataInputs>\n" + 
-    			"    <wps:Input>\n" + 
-    			"      <ows:Identifier>geom</ows:Identifier>\n" + 
-    			"      <wps:Reference mimeType=\"text/xml; subtype=gml/3.1.1\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n" + 
-    			"        <wps:Execute>\n" + 
-    			"          <ows:Identifier>JTS:buffer</ows:Identifier>\n" + 
-    			"          <wps:DataInputs>\n" + 
-    			"            <wps:Input>\n" + 
-    			"              <ows:Identifier>geom</ows:Identifier>\n" + 
-    			"              <wps:Data>\n" + 
-    			"                <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POINT(0 0)]]></wps:ComplexData>\n" + 
-    			"              </wps:Data>\n" + 
-    			"            </wps:Input>\n" + 
-    			"            <wps:Input>\n" + 
-    			"              <ows:Identifier>distance</ows:Identifier>\n" + 
-    			"              <wps:Data>\n" + 
-    			"                <wps:LiteralData>10</wps:LiteralData>\n" + 
-    			"              </wps:Data>\n" + 
-    			"            </wps:Input>\n" + 
-    			"          </wps:DataInputs>\n" + 
-    			"          <wps:ResponseForm>\n" + 
-    			"            <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 
-    			"              <ows:Identifier>result</ows:Identifier>\n" + 
-    			"            </wps:RawDataOutput>\n" + 
-    			"          </wps:ResponseForm>\n" + 
-    			"        </wps:Execute>\n" + 
-    			"      </wps:Reference>\n" + 
-    			"    </wps:Input>\n" + 
-    			"  </wps:DataInputs>\n" + 
-    			"  <wps:ResponseForm>\n" + 
-    			"    <wps:RawDataOutput>\n" + 
-    			"      <ows:Identifier>result</ows:Identifier>\n" + 
-    			"    </wps:RawDataOutput>\n" + 
-    			"  </wps:ResponseForm>\n" + 
-    			"</wps:Execute>";
-    	
-    	MockHttpServletResponse resp = postAsServletResponse(root(), xml);
-    	assertEquals("text/plain", resp.getContentType());
-    	// the result is inaccurate since the buffer is just a poor approximation of a circle
-    	assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
+        // chain two JTS processes
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+                "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
+                "  <ows:Identifier>JTS:area</ows:Identifier>\n" + 
+                "  <wps:DataInputs>\n" + 
+                "    <wps:Input>\n" + 
+                "      <ows:Identifier>geom</ows:Identifier>\n" + 
+                "      <wps:Reference mimeType=\"text/xml; subtype=gml/3.1.1\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n" + 
+                "        <wps:Execute>\n" + 
+                "          <ows:Identifier>JTS:buffer</ows:Identifier>\n" + 
+                "          <wps:DataInputs>\n" + 
+                "            <wps:Input>\n" + 
+                "              <ows:Identifier>geom</ows:Identifier>\n" + 
+                "              <wps:Data>\n" + 
+                "                <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POINT(0 0)]]></wps:ComplexData>\n" + 
+                "              </wps:Data>\n" + 
+                "            </wps:Input>\n" + 
+                "            <wps:Input>\n" + 
+                "              <ows:Identifier>distance</ows:Identifier>\n" + 
+                "              <wps:Data>\n" + 
+                "                <wps:LiteralData>10</wps:LiteralData>\n" + 
+                "              </wps:Data>\n" + 
+                "            </wps:Input>\n" + 
+                "          </wps:DataInputs>\n" + 
+                "          <wps:ResponseForm>\n" + 
+                "            <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 
+                "              <ows:Identifier>result</ows:Identifier>\n" + 
+                "            </wps:RawDataOutput>\n" + 
+                "          </wps:ResponseForm>\n" + 
+                "        </wps:Execute>\n" + 
+                "      </wps:Reference>\n" + 
+                "    </wps:Input>\n" + 
+                "  </wps:DataInputs>\n" + 
+                "  <wps:ResponseForm>\n" + 
+                "    <wps:RawDataOutput>\n" + 
+                "      <ows:Identifier>result</ows:Identifier>\n" + 
+                "    </wps:RawDataOutput>\n" + 
+                "  </wps:ResponseForm>\n" + 
+                "</wps:Execute>";
+        
+        MockHttpServletResponse resp = postAsServletResponse(root(), xml);
+        assertEquals("text/plain", resp.getContentType());
+        // the result is inaccurate since the buffer is just a poor approximation of a circle
+        assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
     }
     
     public void testProcessChainingKVP() throws Exception {
@@ -884,8 +884,8 @@ public class ExecuteTest extends WPSTestSupport {
         }
         zis.close();
     }
-	
-	/* TODO Updating of Response requests A.4.4.5 */
-	
-	/* TODO Language selection requests A.4.4.6 */
+    
+    /* TODO Updating of Response requests A.4.4.5 */
+    
+    /* TODO Language selection requests A.4.4.6 */
 }

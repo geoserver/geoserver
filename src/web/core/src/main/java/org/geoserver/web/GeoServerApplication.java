@@ -25,8 +25,6 @@ import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.request.IRequestCycleProcessor;
 import org.apache.wicket.request.RequestParameters;
-import org.apache.wicket.resource.loader.ClassStringResourceLoader;
-import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.apache.wicket.util.convert.ConverterLocator;
@@ -44,11 +42,10 @@ import org.springframework.context.ApplicationContext;
 import org.wicketstuff.htmlvalidator.HtmlValidationResponseFilter;
 
 /**
- * The GeoServer application, the main entry point for any Wicket application.
- * In particular, this one sets up, among the others, custom resource loader,
- * custom localizers, and custom converters (wrapping the GeoTools ones), as
- * well as providing some convenience methods to access the GeoServer Spring
- * context and principal GeoServer objects.
+ * The GeoServer application, the main entry point for any Wicket application. In particular, this
+ * one sets up, among the others, custom resource loader, custom localizers, and custom converters
+ * (wrapping the GeoTools ones), as well as providing some convenience methods to access the
+ * GeoServer Spring context and principal GeoServer objects.
  * 
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
@@ -67,8 +64,8 @@ public class GeoServerApplication extends SpringWebApplication {
         return GeoServerHomePage.class;
     }
 
-    public static GeoServerApplication get(){
-        return (GeoServerApplication)Application.get();
+    public static GeoServerApplication get() {
+        return (GeoServerApplication) Application.get();
     }
 
     /**
@@ -102,22 +99,19 @@ public class GeoServerApplication extends SpringWebApplication {
     /**
      * Loads a bean from the spring application context of a specific type.
      * <p>
-     * If there are multiple beans of the specfied type in the context an
-     * exception is thrown.
+     * If there are multiple beans of the specfied type in the context an exception is thrown.
      * </p>
      * 
-     * @param type
-     *                The class of the bean to return.
+     * @param type The class of the bean to return.
      */
     public <T> T getBeanOfType(Class<T> type) {
         return GeoServerExtensions.bean(type, getApplicationContext());
     }
-    
+
     /**
      * Loads a bean from the spring application context with a specific name.
      * 
-     * @param type
-     *                The class of the bean to return.
+     * @param type The class of the bean to return.
      */
     public Object getBean(String name) {
         return GeoServerExtensions.bean(name);
@@ -126,8 +120,7 @@ public class GeoServerApplication extends SpringWebApplication {
     /**
      * Loads beans from the spring application context of a specific type.
      * 
-     * @param type
-     *                The type of beans to return.
+     * @param type The type of beans to return.
      * 
      * @return A list of objects of the specified type, possibly empty.
      * @see {@link GeoServerExtensions#extensions(Class, ApplicationContext)}
@@ -135,7 +128,7 @@ public class GeoServerApplication extends SpringWebApplication {
     public <T> List<T> getBeansOfType(Class<T> type) {
         return GeoServerExtensions.extensions(type, getApplicationContext());
     }
-    
+
     /**
      * Clears all the wicket caches so that resources and localization files will be re-read
      */
@@ -144,14 +137,12 @@ public class GeoServerApplication extends SpringWebApplication {
         getResourceSettings().getLocalizer().clearCache();
     }
 
-
     /**
      * Initialization override which sets up a locator for i18n resources.
      */
     protected void init() {
-    	// enable GeoServer custom resource locators
-        getResourceSettings().setResourceStreamLocator(
-                new GeoServerResourceStreamLocator());
+        // enable GeoServer custom resource locators
+        getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
 
         /*
          * The order string resource loaders are added to IResourceSettings is of importance so we
@@ -166,83 +157,81 @@ public class GeoServerApplication extends SpringWebApplication {
         }
 
         getResourceSettings().addStringResourceLoader(0, new GeoServerStringResourceLoader());
-        //getResourceSettings().addStringResourceLoader(new ComponentStringResourceLoader());
-        //getResourceSettings().addStringResourceLoader(new ClassStringResourceLoader(this.getClass()));
-        
-        // we have our own application wide gzip compression filter 
+        // getResourceSettings().addStringResourceLoader(new ComponentStringResourceLoader());
+        // getResourceSettings().addStringResourceLoader(new
+        // ClassStringResourceLoader(this.getClass()));
+
+        // we have our own application wide gzip compression filter
         getResourceSettings().setDisableGZipCompression(true);
-        
+
         // enable toggable XHTML validation
-        if(DEVELOPMENT.equalsIgnoreCase(getConfigurationType())) {
+        if (DEVELOPMENT.equalsIgnoreCase(getConfigurationType())) {
             getMarkupSettings().setStripWicketTags(true);
-            HtmlValidationResponseFilter htmlvalidator = 
-                new GeoServerHTMLValidatorResponseFilter();
-                htmlvalidator.setIgnoreAutocomplete(true);
-                htmlvalidator.setIgnoreKnownWicketBugs(true);
-                getRequestCycleSettings().addResponseFilter(htmlvalidator);
+            HtmlValidationResponseFilter htmlvalidator = new GeoServerHTMLValidatorResponseFilter();
+            htmlvalidator.setIgnoreAutocomplete(true);
+            htmlvalidator.setIgnoreKnownWicketBugs(true);
+            getRequestCycleSettings().addResponseFilter(htmlvalidator);
         }
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
     }
-    
+
     @Override
     public String getConfigurationType() {
-        String config = GeoServerExtensions.getProperty("wicket." + Application.CONFIGURATION, 
+        String config = GeoServerExtensions.getProperty("wicket." + Application.CONFIGURATION,
                 getApplicationContext());
-        if(config == null) {
+        if (config == null) {
             return DEPLOYMENT;
-        } else if(!DEPLOYMENT.equalsIgnoreCase(config) && !DEVELOPMENT.equalsIgnoreCase(config)) {
-            LOGGER.warning("Unknown Wicket configuration value '" +  config + "', defaulting to DEPLOYMENT");
+        } else if (!DEPLOYMENT.equalsIgnoreCase(config) && !DEVELOPMENT.equalsIgnoreCase(config)) {
+            LOGGER.warning("Unknown Wicket configuration value '" + config
+                    + "', defaulting to DEPLOYMENT");
             return DEPLOYMENT;
         } else {
             return config;
         }
     }
-    
+
     @Override
     public Session newSession(Request request, Response response) {
         Session s = new GeoServerSession(request);
-        if(s.getLocale() == null)
+        if (s.getLocale() == null)
             s.setLocale(Locale.ENGLISH);
         return s;
     }
-    
+
     /*
-     * Overrides to return a custom request cycle processor. This is done in
-     * order to support "dynamic dispatching" from web.xml.
+     * Overrides to return a custom request cycle processor. This is done in order to support
+     * "dynamic dispatching" from web.xml.
      */
     protected IRequestCycleProcessor newRequestCycleProcessor() {
         return new RequestCycleProcessor();
     }
 
     public final RequestCycle newRequestCycle(final Request request, final Response response) {
-        return new RequestCycle(this, (WebRequest)request, (WebResponse)response);
+        return new RequestCycle(this, (WebRequest) request, (WebResponse) response);
     }
 
     /*
-     * Overrides to return a custom converter locator which loads converters
-     * from the GeoToools converter subsystem.
+     * Overrides to return a custom converter locator which loads converters from the GeoToools
+     * converter subsystem.
      */
     protected IConverterLocator newConverterLocator() {
         // TODO: load converters from application context
         ConverterLocator locator = new ConverterLocator();
-        locator.set(ReferencedEnvelope.class, 
-            new GeoToolsConverterAdapter(new StringBBoxConverter(), ReferencedEnvelope.class)
-        );
+        locator.set(ReferencedEnvelope.class, new GeoToolsConverterAdapter(
+                new StringBBoxConverter(), ReferencedEnvelope.class));
         DataDirectoryConverterLocator dd = new DataDirectoryConverterLocator(getResourceLoader());
         locator.set(File.class, dd.getConverter(File.class));
         locator.set(URI.class, dd.getConverter(URI.class));
         locator.set(URL.class, dd.getConverter(URL.class));
-        
+
         return locator;
     }
 
     static class RequestCycleProcessor extends WebRequestCycleProcessor {
-        public IRequestTarget resolve(RequestCycle requestCycle,
-                RequestParameters requestParameters) {
-            IRequestTarget target = super.resolve(requestCycle,
-                    requestParameters);
+        public IRequestTarget resolve(RequestCycle requestCycle, RequestParameters requestParameters) {
+            IRequestTarget target = super.resolve(requestCycle, requestParameters);
             if (target != null) {
                 return target;
             }
@@ -252,23 +241,57 @@ public class GeoServerApplication extends SpringWebApplication {
     }
 
     static class RequestCycle extends WebRequestCycle {
+        private List<WicketCallback> callbacks;
+
         public RequestCycle(GeoServerApplication app, WebRequest req, WebResponse resp) {
             super(app, req, resp);
+            callbacks = app.getBeansOfType(WicketCallback.class);
+        }
+
+        @Override
+        protected void onBeginRequest() {
+            for (WicketCallback callback : callbacks) {
+                callback.onBeginRequest();
+            }
+        }
+
+        @Override
+        protected void onAfterTargetsDetached() {
+            for (WicketCallback callback : callbacks) {
+                callback.onAfterTargetsDetached();
+            }
+        }
+
+        @Override
+        protected void onEndRequest() {
+            for (WicketCallback callback : callbacks) {
+                callback.onEndRequest();
+            }
         }
 
         @Override
         public final Page onRuntimeException(final Page cause, final RuntimeException ex) {
+            for (WicketCallback callback : callbacks) {
+                callback.onRuntimeException(cause, ex);
+            }
             if (ex instanceof PageExpiredException) {
                 return super.onRuntimeException(cause, ex);
             } else {
                 return new GeoServerErrorPage(cause, ex);
             }
         }
+
+        @Override
+        protected void onRequestTargetSet(IRequestTarget requestTarget) {
+            for (WicketCallback callback : callbacks) {
+                callback.onRequestTargetSet(requestTarget);
+            }
+            super.onRequestTargetSet(requestTarget);
+        }
     }
 
-    private IConverterLocator buildConverterLocator(){
+    private IConverterLocator buildConverterLocator() {
         ConverterLocator locator = new ConverterLocator();
-        
 
         return locator;
     }

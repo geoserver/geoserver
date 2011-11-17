@@ -1177,19 +1177,25 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         dispatch(request, response);
         return response;
     } 
- 
-    private void dispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //create an instance of the spring dispatcher
+    
+    protected DispatcherServlet getDispatcher() throws Exception {
+        // create an instance of the spring dispatcher
         ServletContext context = applicationContext.getServletContext();
         
         MockServletConfig config = new MockServletConfig();
         config.setServletContext(context);
         config.setServletName("dispatcher");
         
-        final DispatcherServlet dispatcher = new DispatcherServlet();
+        DispatcherServlet dispatcher = new DispatcherServlet();
         
         dispatcher.setContextConfigLocation(GeoServerAbstractTestSupport.class.getResource("dispatcher-servlet.xml").toString());
         dispatcher.init(config);
+        
+        return dispatcher;
+    }
+ 
+    private void dispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final DispatcherServlet dispatcher = getDispatcher();
         
         // build a filter chain so that we can test with filters as well
         MockFilterChain chain = new MockFilterChain();
@@ -1236,6 +1242,17 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         chain.doFilter(request, response);
         
     }
+
+//    private DispatcherServlet getDispatcher() throws ServletException {
+//        if(dispatcher == null) {
+//            synchronized (this) {
+//                if(dispatcher == null) {
+//                    
+//                }
+//            }
+//        }
+//        return dispatcher;
+//    }
 
     /**
      * Subclasses needed to do integration tests with servlet filters can override this method

@@ -63,9 +63,9 @@ public class MultipleLayerChooser extends Panel {
 
     protected Boolean usesEditedStyle(LayerInfo l) {
         for (StyleInfo s : l.getStyles()) {
-            if (s.getName().equals(demo.styleInfo().getName())) return true;
+            if (s.getName().equals(demo.getStyleInfo().getName())) return true;
         }
-        return l.getDefaultStyle().getName().equals(demo.styleInfo().getName());
+        return l.getDefaultStyle().getName().equals(demo.getStyleInfo().getName());
     }
 
     private CssDemoPage demo;
@@ -93,9 +93,9 @@ public class MultipleLayerChooser extends Panel {
 
                                 public void setObject(java.lang.Boolean b) {
                                     if (b) {
-                                        layer.getStyles().add(demo.styleInfo());
+                                        layer.getStyles().add(demo.getStyleInfo());
                                     } else {
-                                        if (layer.getDefaultStyle().getName() == demo.styleInfo().getName()) {
+                                        if (layer.getDefaultStyle().getName() == demo.getStyleInfo().getName()) {
                                             if (layer.getStyles().size() == 0) {
                                                 layer.setDefaultStyle(demo.catalog().getStyleByName("point"));
                                             } else {
@@ -106,7 +106,7 @@ public class MultipleLayerChooser extends Panel {
                                         } else {
                                             StyleInfo s = null;
                                             for (StyleInfo candidate : layer.getStyles()) {
-                                                if (candidate.getName().equals(demo.styleInfo().getName())) {
+                                                if (candidate.getName().equals(demo.getStyleInfo().getName())) {
                                                     s = candidate;
                                                     break;
                                                 }

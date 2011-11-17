@@ -55,7 +55,7 @@ public class LayerNameInput extends Panel {
                      demo.createCssTemplate(name);
 
                      PageParameters params = new PageParameters();
-                     params.put("layer", demo.layerInfo().getPrefixedName());
+                     params.put("layer", demo.getLayer().getPrefixedName());
                      params.put("style", name);
                      setResponsePage(CssDemoPage.class, params);
                  }

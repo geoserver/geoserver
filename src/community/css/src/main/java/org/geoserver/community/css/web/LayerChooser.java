@@ -82,7 +82,7 @@ public class LayerChooser extends Panel {
                                     public void onClick(AjaxRequestTarget target) {
                                         PageParameters params = new PageParameters();
                                         params.put("layer", layer.getPrefixedName());
-                                        params.put("style", demo.styleInfo().getName());
+                                        params.put("style", demo.getStyleInfo().getName());
                                         setResponsePage(CssDemoPage.class, params);
                                     }
                                 });

@@ -60,7 +60,7 @@ public class StyleChooser extends Panel {
                                 PageParameters params = new PageParameters();
                                 params.put(
                                     "layer",
-                                    demo.layerInfo().getPrefixedName()
+                                    demo.getLayer().getPrefixedName()
                                 );
                                 params.put("style", style.getName());
                                 setResponsePage(CssDemoPage.class, params);

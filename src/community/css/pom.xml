@@ -45,7 +45,7 @@
     <dependency>
       <groupId>org.geoscript</groupId>
       <artifactId>geocss_${scala.version}</artifactId>
-      <version>0.7.1</version>
+      <version>0.7.4</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -70,7 +70,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <scala.version>2.8.1</scala.version>
+    <scala.version>2.9.1</scala.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
   <build>

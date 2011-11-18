@@ -37,21 +37,17 @@ import org.geoscript.geocss._, CssParser._
 
 class CssValidator extends IValidator[String] {
   override def validate(text: IValidatable[String]) = {
-    text.getValue() match {
-      case css: String =>
-        parse(css) match {
-          case ns: NoSuccess =>
-            val errorMessage = 
-              "Line %d, column %d: %s".format(
-                ns.next.pos.line,
-                ns.next.pos.column,
-                ns.msg
-              )
-            text.error(new ValidationError().setMessage(errorMessage))
-          case _ => ()
-        }
-      case _ => text.error(new ValidationError().setMessage("CSS text must not be empty"))
-    }
+    if (text.getValue() != null) {
+      try {
+        import org.geoscript.geocss.compat.CSS2SLD
+        val in = new java.io.StringReader(text.getValue())
+        CSS2SLD.convert(in)
+        in.close();
+      } catch {
+        case e => text.error(new ValidationError().setMessage(e.getMessage()))
+      }
+    } else
+      text.error(new ValidationError().setMessage("CSS text must not be empty"))
   }
 }
 

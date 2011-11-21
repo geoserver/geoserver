@@ -22,6 +22,8 @@
  		<constructor-arg ref="wms"/>
  	</bean>
  	
+ 	<bean id="wmsFactoryExtension" class="org.geoserver.wms.WMSFactoryExtension"/>
+ 	
  	<!-- 
 		operation beans for handling incoming requests 
 	-->

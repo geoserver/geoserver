@@ -49,6 +49,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
 
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
+        super.initXStreamPersister(xp, gs);
         xp.getXStream().alias("wms", WMSInfo.class, WMSInfoImpl.class);
         xp.getXStream().registerConverter(new WMSInfoConverter(xp.getXStream()));
     }

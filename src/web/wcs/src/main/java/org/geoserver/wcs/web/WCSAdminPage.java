@@ -6,6 +6,7 @@ package org.geoserver.wcs.web;
 
 import java.util.Arrays;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -19,6 +20,19 @@ import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 
 public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
+    
+    public WCSAdminPage() {
+        super();
+    }
+
+    public WCSAdminPage(PageParameters pageParams) {
+        super(pageParams);
+    }
+
+    public WCSAdminPage(WCSInfo service) {
+        super(service);
+    }
+
     protected Class<WCSInfo> getServiceClass() {
         return WCSInfo.class;
     }

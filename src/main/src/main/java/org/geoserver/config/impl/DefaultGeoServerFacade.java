@@ -1,25 +1,28 @@
 package org.geoserver.config.impl;
 
 import java.lang.reflect.Proxy;
+import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.ows.util.OwsUtils;
 
 public class DefaultGeoServerFacade implements GeoServerFacade {
 
     GeoServerInfo global;
     LoggingInfo logging;
     List<ServiceInfo> services = new ArrayList<ServiceInfo>();
-    
+
     GeoServer geoServer;
     
     public DefaultGeoServerFacade(GeoServer geoServer) {
@@ -90,7 +93,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     public void add(ServiceInfo service) {
         //may be adding a proxy, need to unwrap
         service = unwrap(service);
+        setId(service);
         service.setGeoServer(geoServer);
+
         services.add( service );
     }
     
@@ -108,48 +113,51 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     }
     
     public void remove(ServiceInfo service) {
-        services.remove( service );
+        services.remove(service);
     }
 
     public <T extends ServiceInfo> T getService(Class<T> clazz) {
-        for ( ServiceInfo si : services ) {
-            if( clazz.isAssignableFrom( si.getClass() ) ) {
-                return ModificationProxy.create( (T) si, clazz );
-            }
-         }
-         
-         return null;
+        return find(clazz, null, services);
     }
-    
+
+    @Override
+    public <T extends ServiceInfo> T getService(WorkspaceInfo workspace, Class<T> clazz) {
+        return find(clazz, workspace, services);
+    }
+
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
         for ( ServiceInfo si : services ) {
             if( id.equals( si.getId() ) ) {
                 return ModificationProxy.create( (T) si, clazz );
             }
          }
-         
-         return null;
+        return null;
     }
-    
+
     public <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz) {
-        for ( ServiceInfo si : services ) {
-            if( name.equals( si.getName() ) ) {
-                return ModificationProxy.create( (T) si, clazz );
-            }
-         }
-         
-         return null;
+        return findByName(name, null, clazz, services);
     }
-    
+
+    @Override
+    public <T extends ServiceInfo> T getServiceByName(String name, WorkspaceInfo workspace,
+            Class<T> clazz) {
+        return findByName(name, workspace, clazz, services);
+    }
+
     public Collection<? extends ServiceInfo> getServices() {
-        return ModificationProxy.createList( services, ServiceInfo.class );
+        return ModificationProxy.createList(filter(services, null), ServiceInfo.class );
     }
-    
+
+    @Override
+    public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
+        return ModificationProxy.createList(filter(services, workspace), ServiceInfo.class );
+    }
+
     public void dispose() {
         if ( global != null ) global.dispose();
         if ( services != null ) services.clear();
     }
-    
+
     public static <T> T unwrap(T obj) {
         return ModificationProxy.unwrap(obj);
     }
@@ -166,4 +174,52 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             global.setCoverageAccess(new CoverageAccessInfoImpl());
         }
     }
+
+     <T extends ServiceInfo> T find(Class<T> clazz, WorkspaceInfo workspace, List<ServiceInfo> services) {
+         for ( ServiceInfo si : services ) {
+             if( clazz.isAssignableFrom( si.getClass() ) && wsEquals(workspace, si.getWorkspace())) {
+                 
+                 return ModificationProxy.create( (T) si, clazz );
+             }
+          }
+          
+          return null;
+     }
+
+ <T extends ServiceInfo> T findByName(String name, WorkspaceInfo workspace, Class<T> clazz, 
+        List<ServiceInfo> services) {
+        for ( ServiceInfo si : services ) {
+            if( name.equals( si.getName() ) && wsEquals(workspace, si.getWorkspace())) {
+                return ModificationProxy.create( (T) si, clazz );
+            }
+        }
+
+        return null;
+    }
+
+    public List filter(List<ServiceInfo> services, WorkspaceInfo workspace) {
+        List<ServiceInfo> list = new ArrayList();
+        for (ServiceInfo si : services) {
+            if (wsEquals(workspace, si.getWorkspace())) {
+                list.add(si);
+            }
+        }
+        return list;
+    }
+
+    boolean wsEquals(WorkspaceInfo ws1, WorkspaceInfo ws2) {
+        if (ws1 == null) {
+            return ws2 == null;
+        }
+
+        return ws1.equals(ws2);
+    }
+    
+    protected void setId( Object o ) {
+        if ( OwsUtils.get( o, "id") == null ) {
+            String uid = new UID().toString();
+            OwsUtils.set( o, "id", o.getClass().getSimpleName() + "-"+uid );
+        }
+    }
 }
+ 

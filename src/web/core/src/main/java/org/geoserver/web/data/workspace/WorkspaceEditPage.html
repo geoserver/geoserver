@@ -22,13 +22,24 @@
       <div wicket:id="storeTable"></div>
     </li>
     -->
-    
+    <li>
+      <fieldset style="margin-top: 2em; width:40%;">
+        <legend>
+          <span>Services</span>
+          <a href="#" wicket:id="servicesHelp" class="help-link"></a>
+        </legend>
+        <div wicket:id="services" style="padding-top: 1em;">
+        </div>
+       
+      </fieldset>
+    </li>
     <li class="button-group selfclear">
       <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
       <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 
     </li>
   </ul>
 </form>
+<div wicket:id="dialog"></div>
 </wicket:extend>
 </body>
 </html>

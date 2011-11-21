@@ -18,6 +18,15 @@ import org.geoserver.wps.WPSInfo;
  * 
  */
 public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
+
+    public WPSAdminPage() {
+        super();
+    }
+    
+    public WPSAdminPage(WPSInfo service) {
+        super(service);
+    }
+
     protected Class<WPSInfo> getServiceClass() {
         return WPSInfo.class;
     }

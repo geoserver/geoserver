@@ -4,31 +4,49 @@
  */
 package org.geoserver.web.services;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
+import org.geoserver.web.data.workspace.WorkspaceDetachableModel;
+import org.geoserver.web.data.workspace.WorkspacesModel;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.web.wicket.LiveCollectionModel;
 
@@ -58,16 +76,49 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  */
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
 
+    protected Page responsePage;
+    
+    protected GeoServerDialog dialog;
+
     public BaseServiceAdminPage() {
-        final IModel infoModel = new LoadableDetachableModel() {
-            public Object load() {
-                return getGeoServer().getService(getServiceClass());
-            }
-        };
-        
+        this(new PageParameters());
+    }
+    
+    public BaseServiceAdminPage(PageParameters pageParams) {
+        String wsName = pageParams.getString("workspace");
+        init(new ServiceModel(getServiceClass(), wsName));
+    }
+
+    public BaseServiceAdminPage(T service) {
+        init(new ServiceModel(service));
+    }
+    
+    void init(final IModel<T> infoModel) {
+        T service = infoModel.getObject();
+
         Form form = new Form( "form", new CompoundPropertyModel(infoModel));
         add(form);
-        
+
+        if (service.getWorkspace() == null) {
+            //create the panel that has the drop down list to switch between workspace
+            form.add(new GlobalWorkspacePanel("workspace"));
+        }
+        else {
+            //create just a panel with a label that signifies the workspace
+            form.add(new LocalWorkspacePanel("workspace", service));
+        }
+
+        form.add(new AjaxLink("workspaceHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(target, 
+                    new StringResourceModel("workspaceHelp.title",BaseServiceAdminPage.this, null), 
+                    new StringResourceModel("workspaceHelp.message.1",BaseServiceAdminPage.this, null),
+                    new StringResourceModel("workspaceHelp.message.2",BaseServiceAdminPage.this, null),
+                    new StringResourceModel("workspaceHelp.message.3",BaseServiceAdminPage.this, null));
+            }
+        });
+
         form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this, null, new Object[]{
             getServiceName()
         })));
@@ -94,7 +145,12 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             public void onSubmit() {
                 try {
                     handleSubmit((T)infoModel.getObject());
-                    setResponsePage(GeoServerHomePage.class);    
+                    if (responsePage != null) {
+                        setResponsePage(responsePage);
+                    }
+                    else {
+                        setResponsePage(GeoServerHomePage.class);
+                    }
                 }
                 catch(Exception e) {
                     error(e);
@@ -105,13 +161,31 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         
         Button cancel = new Button( "cancel", new StringResourceModel( "cancel", (Component)null, null) ) {
             public void onSubmit() {
-                setResponsePage(GeoServerHomePage.class);
+                if (responsePage != null) {
+                    setResponsePage(responsePage);
+                }
+                else {
+                    setResponsePage(GeoServerHomePage.class);
+                }
             }
         };
         form.add( cancel );
         //cancel.setDefaultFormProcessing( false );
+
+        dialog = new GeoServerDialog("dialog");
+        add(dialog);
     }
-    
+
+    /**
+     * Sets the response page that will be returned to when the user submits/or cancels.
+     * <p>
+     * If unset, GeoServerHomePage is used.
+     * </p>
+     */
+    public void responsePage(Page responsePage) {
+        this.responsePage = responsePage;
+    }
+
     protected ListView createExtensionPanelList(String id, final IModel infoModel) {
         List<AdminPagePanelInfo> panels = 
             getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
@@ -173,7 +247,13 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * @param info
      */
     protected void handleSubmit( T info ) {
-        getGeoServer().save( info );
+        if (info.getId() != null) {
+            getGeoServer().save( info );
+        }
+        else {
+            //means a non attached instance was passed to us, do nothing, up to caller to add it
+            // to configuration
+        }
     }
 
     /**
@@ -181,4 +261,112 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
      * Subclasses must override.
      */
     protected abstract String getServiceName();
+
+    class ServiceModel<T extends ServiceInfo> extends LoadableDetachableModel<T> {
+
+        /* id reference */
+        String id;
+
+        /* reference via local workspace */
+        Class<T> serviceClass;
+        String workspaceName;
+
+        /* direct reference */
+        T service;
+
+        ServiceModel(T service) {
+            this.id = service.getId();
+            if (this.id == null) {
+                this.service = service;
+            }
+        }
+
+        ServiceModel(Class<T> serviceClass, String workspaceName) {
+            this.serviceClass = serviceClass;
+            this.workspaceName = workspaceName;
+        }
+
+        @Override
+        protected T load() {
+            if (id != null) {
+                return (T) getGeoServer().getService(id, getServiceClass());
+            }
+            if (serviceClass != null) {
+                if (workspaceName != null) {
+                    WorkspaceInfo ws = getCatalog().getWorkspaceByName(workspaceName);
+                    return (T) getGeoServer().getService(ws, getServiceClass());
+                }
+                
+                return (T) getGeoServer().getService(getServiceClass());
+            }
+            return service;
+        }
+
+        @Override
+        public void detach() {
+            if (id == null && serviceClass == null) {
+                //keep reference serialize service object
+                service = getObject();
+            }
+            else {
+                service = null;
+            }
+        }
+    }
+
+    class ServiceFilteredWorkspacesModel extends LoadableDetachableModel {
+
+        WorkspacesModel wsModel;
+
+        ServiceFilteredWorkspacesModel(WorkspacesModel wsModel) {
+            this.wsModel = wsModel;
+        }
+
+        @Override
+        protected Object load() {
+            Collection<WorkspaceInfo> workspaces = (Collection<WorkspaceInfo>) wsModel.getObject();
+
+            GeoServer gs = getGeoServer();
+            for (Iterator<WorkspaceInfo> it = workspaces.iterator(); it.hasNext();) {
+                if (gs.getService(it.next(), getServiceClass()) == null) {
+                    it.remove();
+                }
+            }
+            return workspaces;
+        }
+    }
+
+    class GlobalWorkspacePanel extends Panel {
+
+        public GlobalWorkspacePanel(String id) {
+            super(id);
+
+            final DropDownChoice<WorkspaceInfo> wsChoice = new DropDownChoice<WorkspaceInfo>("workspace", 
+                new ServiceFilteredWorkspacesModel(new WorkspacesModel()), new WorkspaceChoiceRenderer());
+            wsChoice.setNullValid(true);
+            wsChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    WorkspaceInfo ws = wsChoice.getModelObject();
+                    PageParameters pp = new PageParameters();
+
+                    if (ws != null) {
+                        pp.put("workspace", ws.getName());
+                    }
+
+                    setResponsePage(BaseServiceAdminPage.this.getClass(), pp);
+                }
+            });
+            add(wsChoice);
+        }
+    }
+
+    class LocalWorkspacePanel extends Panel {
+
+        public LocalWorkspacePanel(String id, T service) {
+            super(id);
+
+            add(new Label("workspace", new PropertyModel(service, "workspace.name")));
+        }
+    }
 }

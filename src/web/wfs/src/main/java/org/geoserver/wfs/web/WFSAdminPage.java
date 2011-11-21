@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -34,6 +35,19 @@ import org.geoserver.wfs.response.ShapeZipOutputFormat;
 
 @SuppressWarnings("serial")
 public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
+
+    
+    public WFSAdminPage() {
+        super();
+    }
+
+    public WFSAdminPage(PageParameters pageParams) {
+        super(pageParams);
+    }
+
+    public WFSAdminPage(WFSInfo service) {
+        super(service);
+    }
 
     protected Class<WFSInfo> getServiceClass() {
         return WFSInfo.class;

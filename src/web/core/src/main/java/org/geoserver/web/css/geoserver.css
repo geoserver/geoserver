@@ -8,6 +8,16 @@ font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif
 text-align:left !important; /* override blueprint's ie.css */
 }
 
+body.help {
+padding: 2em;
+}
+body.help ul {
+padding-top: 1em;
+}
+body.help p {
+color: black;
+}
+
 h1, 
 h2, 
 h3, 
@@ -311,6 +321,12 @@ position: absolute;
 width: 29.2em;
 top: -1.5em;
 left: 0;
+}
+
+legend a {
+position: absolute;
+top: -1.5em;
+right: 1px;
 }
 
 label, span.fieldname {
@@ -1048,6 +1064,16 @@ padding: 2px 0px 2px 20px;
 .info-link {
 background: transparent url(../img/icons/silk/information.png) scroll no-repeat left center;
 padding: 2px 0px 2px 20px;
+}
+
+.help-link {
+background: transparent url(../img/icons/silk/help.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+legend a.help-link {
+width: 16px;
+height: 16px;
 }
 
 .computeLink { 

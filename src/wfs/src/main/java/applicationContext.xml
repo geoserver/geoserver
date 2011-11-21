@@ -38,6 +38,7 @@
 	  	</list>
 	  </property>
 	</bean>
+
     <bean id="wfsService20" class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="proxyInterfaces">
         <value>org.geoserver.wfs.WebFeatureService20</value>
@@ -51,6 +52,10 @@
     </bean>
 
     <!-- 1.0 Transaction element handlers -->
+  
+    <bean id="wfsFactoryExtension" class="org.geoserver.wfs.WFSFactoryExtension"/>
+    
+    <!-- Transaction element handlers -->
     <bean id="wfsInsertElementHandler" class="org.geoserver.wfs.InsertElementHandler">
       <constructor-arg ref="geoServer"/>
       <constructor-arg ref="filterFactory"/>

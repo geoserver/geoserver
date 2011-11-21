@@ -50,18 +50,10 @@ public class GeoServerImplTest extends TestCase {
     public void testAddService() throws Exception {
         ServiceInfo service = geoServer.getFactory().createService();
         service.setName( "foo" );
-        
-        try {
-            geoServer.add( service );
-            fail( "adding without id should throw exception" );
-        }
-        catch( Exception e ) {};
-        
-        ((ServiceInfoImpl)service).setId( "id" );
         geoServer.add( service );
         
         ServiceInfo s2 = geoServer.getFactory().createService();
-        ((ServiceInfoImpl)s2).setId( "id" );
+        ((ServiceInfoImpl)s2).setId(service.getId());
         
         try {
             geoServer.add( s2 );

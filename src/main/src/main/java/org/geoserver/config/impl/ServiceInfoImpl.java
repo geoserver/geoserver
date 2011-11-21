@@ -12,12 +12,15 @@ import java.util.Map;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 
 public class ServiceInfoImpl implements ServiceInfo {
 
     protected String id;
+
+    protected WorkspaceInfo workspace;
 
     protected transient GeoServer geoServer;
 
@@ -63,6 +66,16 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public WorkspaceInfo getWorkspace() {
+        return workspace;
+    }
+
+    @Override
+    public void setWorkspace(WorkspaceInfo workspace) {
+        this.workspace = workspace;
     }
 
     public GeoServer getGeoServer() {
@@ -350,6 +363,11 @@ public class ServiceInfoImpl implements ServiceInfo {
             if (other.getVersions() != null)
                 return false;
         } else if (!versions.equals(other.getVersions()))
+            return false;
+        if (workspace == null) {
+            if (other.getWorkspace() != null)
+                return false;
+        } else if (!workspace.equals(other.getWorkspace()))
             return false;
         return true;
     }

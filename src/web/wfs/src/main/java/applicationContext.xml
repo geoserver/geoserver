@@ -2,13 +2,14 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean id="wfsServicePage" class="org.geoserver.web.MenuPageInfo">
+  <bean id="wfsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wfs"/>
     <property name="titleKey" value="wfs.title"/>
     <property name="descriptionKey" value="wfs.description"/>
     <property name="componentClass" value="org.geoserver.wfs.web.WFSAdminPage"/>
     <property name="icon" value="server_vector.png"/>
     <property name="category" ref="servicesCategory"/>
+    <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
   </bean>
     
   <bean id="wfsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">

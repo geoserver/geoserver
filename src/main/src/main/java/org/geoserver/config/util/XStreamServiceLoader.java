@@ -35,15 +35,23 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         this.resourceLoader = resourceLoader;
         this.filenameBase = filenameBase;
     }
+
+    public String getFilename() {
+        return filenameBase + ".xml";
+    }
     
     public void setXStreamPeristerFactory(XStreamPersisterFactory xpf) {
         this.xpf = xpf;
     }
     
-    public final T load( GeoServer gs ) throws Exception {
+    public final T load(GeoServer gs) throws Exception {
+        return load(gs, null);
+    }
+
+    public final T load(GeoServer gs, File directory) throws Exception {
         //look for file matching classname
-        String filename = this.filenameBase + ".xml";
-        File file = resourceLoader.find( filename );
+        String filename = getFilename();
+        File file = resourceLoader.find(directory, filename);
         
         if ( file != null && file.exists() ) {
             //xstream it in
@@ -96,12 +104,16 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
 
         return service;
     }
-    
-    public void save(T service, GeoServer gs) throws Exception {
-        String filename = filenameBase + ".xml";
-        File file = resourceLoader.find( filename );
+
+    public final void save(T service, GeoServer gs) throws Exception {
+        
+    }
+
+    public final void save(T service, GeoServer gs, File directory) throws Exception {
+        String filename = getFilename();
+        File file = resourceLoader.find( directory, filename );
         if ( file == null ) {
-            file = resourceLoader.createFile(filename);
+            file = resourceLoader.createFile(directory, filename);
         }
         
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));

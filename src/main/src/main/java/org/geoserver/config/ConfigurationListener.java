@@ -60,7 +60,14 @@ public interface ConfigurationListener {
      * @param service The service config object.
      */
     void handlePostServiceChange( ServiceInfo service );
-    
+
+    /**
+     * Handles the event fired when a service configuration is removed.
+     * 
+     * @param service The service config object.
+     */
+    void handleServiceRemove( ServiceInfo service );
+
     /**
      * A callback notifying when GeoServer configuration has been reloaded.
      * <p>

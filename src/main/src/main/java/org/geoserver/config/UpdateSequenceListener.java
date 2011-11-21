@@ -91,4 +91,9 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
         // we use the post version        
     }
 
+    @Override
+    public void handleServiceRemove(ServiceInfo service) {
+        incrementSequence();
+    }
+
 }

@@ -4,6 +4,8 @@
  */
 package org.geoserver.web;
 
+import org.geoserver.web.services.ServiceMenuPageInfo;
+
 /**
  * Information about a page that should be linked from the main menu in the GeoServer UI.
  * The "category" field is a category object identifying the menu section into which the 
@@ -13,6 +15,9 @@ package org.geoserver.web;
  * The "order" field is a sort key for the link within the category. 
  * (Categories also have an order field.)
  *
+ * <p>
+ * Menu pages for OGC service configuration should use the subclass {@link ServiceMenuPageInfo}.
+ * </p>
  * @author David Winslow <dwinslow@opengeo.org>
  */
 @SuppressWarnings("serial")

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
@@ -21,11 +22,15 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.GeoServerLoaderProxy;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class GeoServerImpl implements GeoServer {
+public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     
     private static final Logger LOGGER = Logging.getLogger(GeoServerImpl.class);
 
@@ -97,13 +102,25 @@ public class GeoServerImpl implements GeoServer {
         facade.setLogging(logging);
         fireLoggingPostModified();
     }
-    
-    public void add(ServiceInfo service) {
-        if ( service.getId() == null ) {
-            throw new NullPointerException( "service id must not be null" );
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        if (factory instanceof ApplicationContextAware) {
+            ((ApplicationContextAware)factory).setApplicationContext(context);
         }
-        if ( facade.getService(service.getId(), ServiceInfo.class) != null) {
+    }
+
+    public void add(ServiceInfo service) {
+        if (service.getId() != null && facade.getService(service.getId(), ServiceInfo.class) != null) {
             throw new IllegalArgumentException( "service with id '" + service.getId() + "' already exists" );
+        }
+
+        WorkspaceInfo workspace = service.getWorkspace(); 
+        if (workspace != null) {
+            if (facade.getServiceByName(service.getName(), workspace, ServiceInfo.class) != null) {
+                throw new IllegalArgumentException( "service with name '" + service.getName() + 
+                    "' already exists in workspace '" + workspace.getName() + "'" );
+            }
         }
         facade.add(service);
         
@@ -116,7 +133,14 @@ public class GeoServerImpl implements GeoServer {
     }
     
     public <T extends ServiceInfo> T getService(Class<T> clazz) {
-        return facade.getService(clazz);
+        T service =
+            LocalWorkspace.get() != null ? facade.getService(LocalWorkspace.get(), clazz) : null;
+        return service != null ? service : facade.getService(clazz);
+    }
+
+    @Override
+    public <T extends ServiceInfo> T getService(WorkspaceInfo workspace, Class<T> clazz) {
+       return facade.getService(workspace, clazz);
     }
 
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
@@ -124,15 +148,30 @@ public class GeoServerImpl implements GeoServer {
     }
 
     public <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz) {
-        return facade.getServiceByName(name, clazz);
+        T service = LocalWorkspace.get() != null ? 
+            facade.getServiceByName(name, LocalWorkspace.get(), clazz) : null;
+        return service != null ? service : facade.getServiceByName(name, clazz);
+    }
+
+    public <T extends ServiceInfo> T getServiceByName(WorkspaceInfo workspace, String name, Class<T> clazz) {
+        return facade.getServiceByName(name, workspace, clazz);
     }
 
     public Collection<? extends ServiceInfo> getServices() {
-        return facade.getServices();
+        Collection<? extends ServiceInfo> services = 
+            LocalWorkspace.get() != null ? facade.getServices(LocalWorkspace.get()) : null; 
+        return services != null ? services : facade.getServices();
     }
-    
+
+    @Override
+    public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
+        return facade.getServices(workspace);
+    }
+
     public void remove(ServiceInfo service) {
         facade.remove(service);
+
+        fireServiceRemoved(service);
     }
 
     public void save(GeoServerInfo geoServer) {
@@ -233,7 +272,17 @@ public class GeoServerImpl implements GeoServer {
             }
         }
     }
-    
+
+    void fireServiceRemoved(ServiceInfo service) {
+        for ( ConfigurationListener l : getListeners() ) {
+            try {
+                l.handleServiceRemove(service);
+            }
+            catch( Exception e ) {
+                LOGGER.log(Level.SEVERE, "Error occurred processing a configuration change listener", e);
+            }
+        }
+    }
     public void addListener(ConfigurationListener listener) {
         listeners.add( listener );
     }

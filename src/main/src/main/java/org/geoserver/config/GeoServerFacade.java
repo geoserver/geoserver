@@ -2,6 +2,8 @@ package org.geoserver.config;
 
 import java.util.Collection;
 
+import org.geoserver.catalog.WorkspaceInfo;
+
 /**
  * Data access facade for geoserver configuration.
  *
@@ -67,12 +69,25 @@ public interface GeoServerFacade {
     Collection<? extends ServiceInfo> getServices();
 
     /**
+     * GeoServer services specific to the specified workspace.
+     */
+    Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace);
+
+    /**
      * GeoServer services filtered by class.
      * 
      * @param clazz
      *                The class of the services to return.
      */
     <T extends ServiceInfo> T getService(Class<T> clazz);
+
+    /**
+     * GeoServer service specific to the specified workspace and filtered by class.
+     *
+     * @param workspace The workspace the service is specific to.
+     * @param clazz The class of the service to return.
+     */
+    <T extends ServiceInfo> T getService(WorkspaceInfo workspace, Class<T> clazz);
 
     /**
      * Looks up a service by id.
@@ -96,7 +111,19 @@ public interface GeoServerFacade {
      *         such service could be found.
      */
     <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz );
-    
+
+    /**
+     * Looks up a service by name, specific to the specified workspace.
+     * 
+     * @param name The name of the service.
+     * @param workspace The workspace the service is specific to.
+     * @param clazz The type of the service.
+     * 
+     * @return The service with the specified name or <code>null</code> if no such service could be 
+     * found.
+     */
+    <T extends ServiceInfo> T getServiceByName(String name, WorkspaceInfo workspace, Class<T> clazz );
+
     /**
      * Disposes the configuration. 
      */

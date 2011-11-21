@@ -5,6 +5,8 @@
 package org.geoserver.web.wicket;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -14,10 +16,14 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.IFeedback;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 
 /**
  * An abstract OK/cancel dialog, subclasses will have to provide the actual contents and behavior
@@ -127,6 +133,23 @@ public class GeoServerDialog extends Panel {
     }
 
     /**
+     * Shows an information style dialog box.
+     * 
+     * @param heading The heading of the information topic.
+     * @param messages A list of models, displayed each as a separate paragraphs, containing the 
+     *   information dialog content.
+     */
+    public void showInfo(AjaxRequestTarget target, final IModel<String> heading, 
+            final IModel<String>... messages) {
+        window.setPageCreator(new ModalWindow.PageCreator() {
+            public Page createPage() {
+                return new InfoPage(heading, messages);
+            }
+        });
+        window.show(target);
+    }
+
+    /**
      * Forcibly closes the dialog.
      * <p>
      * Note that calling this method does not result in any {@link DialogDelegate} callbacks being
@@ -201,6 +224,18 @@ public class GeoServerDialog extends Panel {
             form.setDefaultButton(submit);
         }
 
+    }
+
+    protected class InfoPage extends WebPage {
+        public InfoPage(IModel title,IModel... messages) {
+            add(new Label("title", title));
+            add(new ListView<IModel>("messages", Arrays.asList(messages)) {
+                @Override
+                protected void populateItem(ListItem<IModel> item) {
+                    item.add(new Label("message", item.getModelObject()));
+                }
+            });
+        }
     }
 
     /**

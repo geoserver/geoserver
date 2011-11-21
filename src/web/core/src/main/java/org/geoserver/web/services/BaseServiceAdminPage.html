@@ -1,8 +1,21 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-<form wicket:id="form">
+<form wicket:id="form"  style="padding-top: 1em;">
   <ul>
+    <li>
+      <fieldset>
+        <legend>
+          <span><wicket:message key="workspace">Workspace</wicket:message></span>
+          <a href="#" wicket:id="workspaceHelp" class="help-link"></a>
+        </legend>
+        <ul>
+          <li>
+            <div wicket:id="workspace"></div>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
     <li>
       <fieldset>
         <legend><span><wicket:message key="serviceMetadata">Service Metadata</wicket:message></span></legend>
@@ -56,6 +69,7 @@
     </li>
   </ul>    
 </form>
+<div wicket:id="dialog"></div>
 </wicket:extend>
 </body>
 </html>

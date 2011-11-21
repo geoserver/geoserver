@@ -2,13 +2,14 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean id="wmsServicePage" class="org.geoserver.web.MenuPageInfo">
+  <bean id="wmsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wms"/>
     <property name="titleKey" value="wms.title"/>
     <property name="descriptionKey" value="wms.description"/>
     <property name="componentClass" value="org.geoserver.wms.web.WMSAdminPage"/>
     <property name="icon" value="server_map.png"/>
     <property name="category" ref="servicesCategory"/>
+    <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
   </bean> 
     
   <bean id="wmsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">

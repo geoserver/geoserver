@@ -25,16 +25,15 @@ public class WorkspaceDetachableModel implements IModel {
     
     public Object getObject() {
         if(workspace == null) {
-            workspace = GeoServerApplication.get().getCatalog().getWorkspace( id );
+            workspace = id != null 
+                ? GeoServerApplication.get().getCatalog().getWorkspace( id ) : null;
         }
         return workspace;
     }
 
-
-
     public void setObject(Object object) {
         this.workspace = (WorkspaceInfo) object;
-        this.id = workspace.getId();
+        this.id = workspace != null ? workspace.getId() : null;
     }
 
     public void detach() {

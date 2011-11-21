@@ -11,6 +11,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.Version;
 
 /**
@@ -42,6 +43,17 @@ public interface ServiceInfo extends Info {
      * @uml.property name="name"
      */
     void setName(String name);
+
+    /**
+     * The workspace the service is specific or local to, or <code>null</code> if the service is 
+     * global.
+     */
+    WorkspaceInfo getWorkspace();
+
+    /**
+     * Sets the workspace the service is specific or local to.
+     */
+    void setWorkspace(WorkspaceInfo workspace);
 
     /**
      * The global geoserver configuration.

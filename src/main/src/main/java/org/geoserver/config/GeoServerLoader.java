@@ -637,18 +637,18 @@ public abstract class GeoServerLoader {
             //load services
             final List<XStreamServiceLoader> loaders = 
                 GeoServerExtensions.extensions( XStreamServiceLoader.class );
-            for ( XStreamServiceLoader<ServiceInfo> l : loaders ) {
-                try {
-                    ServiceInfo s = l.load( geoServer );
-                    geoServer.add( s );
-                    
-                    LOGGER.info( "Loaded service '" +  s.getId() + "', " + (s.isEnabled()?"enabled":"disabled") );
-                }
-                catch( Throwable t ) {
-                    //TODO: log this
-                    t.printStackTrace();
+            loadServices(null, loaders, geoServer);
+
+            //load services specific to workspace
+            File workspaces = resourceLoader.find("workspaces");
+            if (workspaces != null) {
+                for (File dir : workspaces.listFiles()) {
+                    if (!dir.isDirectory() && !dir.isHidden()) continue;
+
+                    loadServices(dir, loaders, geoServer);
                 }
             }
+            
         } else {
             //add listener now as a converter which will convert from the old style 
             // data directory to the new
@@ -663,9 +663,25 @@ public abstract class GeoServerLoader {
             //rename the services.xml file
             f.renameTo( new File( f.getParentFile(), "services.xml.old" ) );
         }
-        
     }
-    
+
+    void loadServices(File directory, List<XStreamServiceLoader> loaders, GeoServer geoServer) {
+        for ( XStreamServiceLoader<ServiceInfo> l : loaders ) {
+            try {
+                ServiceInfo s = l.load( geoServer, directory);
+                if (directory != null && s.getWorkspace() == null) continue;
+
+                geoServer.add( s );
+                
+                LOGGER.info( "Loaded service '" +  s.getId() + "', " + (s.isEnabled()?"enabled":"disabled") );
+            }
+            catch( Throwable t ) {
+                //TODO: log this
+                t.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Helper method which uses xstream to persist an object as xml on disk.
      */

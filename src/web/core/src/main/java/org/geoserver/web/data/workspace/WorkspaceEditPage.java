@@ -4,22 +4,57 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.MenuPageInfo;
 import org.geoserver.web.data.namespace.NamespaceDetachableModel;
+import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.services.ServiceMenuPageInfo;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
@@ -36,6 +71,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     IModel wsModel;
     IModel nsModel;
     boolean defaultWs;
+
+    ServicesPanel servicesPanel;
+    GeoServerDialog dialog;
     
     /**
      * Uses a "name" parameter to locate the workspace
@@ -91,10 +129,24 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 //        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws), false);
 //        form.add(storePanel);
         
+        //local services
+        form.add(servicesPanel = new ServicesPanel("services", wsModel));
+        form.add(new AjaxLink("servicesHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(target, 
+                    new StringResourceModel("servicesHelp.title",WorkspaceEditPage.this, null), 
+                    new StringResourceModel("servicesHelp.message.1",WorkspaceEditPage.this, null),
+                    new StringResourceModel("servicesHelp.message.2",WorkspaceEditPage.this, null));
+            }
+        });
+
         SubmitLink submit = new SubmitLink("save");
         form.add(submit);
         form.setDefaultButton(submit);
         form.add(new BookmarkablePageLink("cancel", WorkspacePage.class));
+
+        add(dialog = new GeoServerDialog("dialog"));
     }
 
     private void saveWorkspace() {
@@ -112,7 +164,197 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         if(defaultWs) {
             catalog.setDefaultWorkspace(workspaceInfo);
         }
+
+        //persist/depersist any services configured local to this workspace
+        GeoServer geoServer = getGeoServer();
+        for (Service s : servicesPanel.services) {
+            if (s.enabled) {
+                if (s.model instanceof ExistingServiceModel) {
+                    //nothing to do, service has already been added
+                    continue;
+                }
+                geoServer.add(s.model.getObject());
+            }
+            else {
+                //remove if necessary
+                if (s.model instanceof ExistingServiceModel) {
+                    //means they are removing an existing service, look it up and remove
+                    geoServer.remove(s.model.getObject());
+                }
+            }
+        }
         setResponsePage(WorkspacePage.class);
     }
 
+    /*
+     * Data object to hold onto transient services, and maintain state of selected services for 
+     * the workspace.
+     */
+    static class Service implements Serializable {
+        /** track selection */
+        Boolean enabled;
+
+        /** the admin page for the service */ 
+        ServiceMenuPageInfo adminPage;
+
+        /** created service, not yet added to configuration */
+        IModel<ServiceInfo> model;
+    }
+
+    static class NewServiceModel extends Model<ServiceInfo> {
+        
+        IModel<WorkspaceInfo> wsModel;
+        Class<ServiceInfo> serviceClass;
+        ServiceInfo service;
+
+        NewServiceModel(IModel<WorkspaceInfo> wsModel, Class<ServiceInfo> serviceClass) {
+            this.wsModel = wsModel;
+            this.serviceClass = serviceClass;
+        }
+
+        @Override
+        public ServiceInfo getObject() {
+            if (service == null) {
+                service = create();
+            }
+            return service;
+        }
+
+        ServiceInfo create() {
+            //create it
+            GeoServer gs = GeoServerApplication.get().getGeoServer();
+            
+            ServiceInfo newService = gs.getFactory().create(serviceClass);
+
+            //initialize from global service
+            ServiceInfo global = gs.getService(serviceClass);
+            OwsUtils.copy(global,newService, serviceClass);
+            newService.setWorkspace(wsModel.getObject());
+
+            //hack, but need id to be null so its considered unattached
+            ((ServiceInfoImpl)newService).setId(null);
+            
+            return newService;
+        }
+    }
+
+    static class ExistingServiceModel extends LoadableDetachableModel<ServiceInfo> {
+
+        IModel<WorkspaceInfo> wsModel;
+        Class<ServiceInfo> serviceClass;
+
+        ExistingServiceModel(IModel<WorkspaceInfo> wsModel, Class<ServiceInfo> serviceClass) {
+            this.wsModel = wsModel;
+            this.serviceClass = serviceClass;
+        }
+
+        @Override
+        protected ServiceInfo load() {
+            return GeoServerApplication.get().getGeoServer().getService(wsModel.getObject(), serviceClass);
+        }
+    }
+
+    class ServicesPanel extends FormComponentPanel {
+
+        List<Service> services;
+        
+        public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
+            super(id, new Model());
+
+            services = services(wsModel);
+            ListView<Service> serviceList = new ListView<Service>("services", services) {
+
+                @Override
+                protected void populateItem(ListItem<Service> item) {
+                    Service service = item.getModelObject();
+
+                    final Link<Service> link = new Link<Service>("link", new Model(service)) {
+                        @Override
+                        public void onClick() {
+                            Service s = getModelObject();
+                            Page page = null;
+
+                            if (s.model instanceof ExistingServiceModel) {
+                                //service that has already been added, 
+                                PageParameters pp = 
+                                        new PageParameters("workspace=" + wsModel.getObject().getName());
+                                try {
+                                    page = s.adminPage.getComponentClass()
+                                        .getConstructor(PageParameters.class).newInstance(pp);
+                                } catch (Exception e) {
+                                    throw new WicketRuntimeException(e);
+                                }
+                            }
+                            else {
+                                //service that has yet to be added
+                                try {
+                                    page = s.adminPage.getComponentClass().getConstructor(
+                                            s.adminPage.getServiceClass()).newInstance(s.model.getObject());
+                                }
+                                catch (Exception e) {
+                                    throw new WicketRuntimeException(e);
+                                }
+                                
+                            }
+                            ((BaseServiceAdminPage)page).responsePage(WorkspaceEditPage.this);
+                            setResponsePage(page);
+                        }
+                    };
+                    link.setOutputMarkupId(true);
+                    link.setEnabled(service.enabled);
+                    
+                    AjaxCheckBox enabled = 
+                        new AjaxCheckBox("enabled", new PropertyModel<Boolean>(service, "enabled")) {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            link.setEnabled(getModelObject());
+                            target.addComponent(link);
+                        }
+                    };
+                    item.add(enabled);
+                    
+                    ServiceMenuPageInfo info = service.adminPage;
+                    
+                    link.add(new AttributeModifier("title", true, 
+                        new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
+                    link.add(new Label("link.label", 
+                        new StringResourceModel(info.getTitleKey(), (Component) null, null)));
+                    
+                    Image image;
+                    if(info.getIcon() != null) {
+                        image = new Image("link.icon", 
+                            new ResourceReference(info.getComponentClass(), info.getIcon()));
+                    } else {
+                        image = new Image("link.icon", 
+                            new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                    }
+                    image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
+                    link.add(image);
+                    item.add(link);
+                }
+            };
+            add(serviceList);
+        }
+
+        List<Service> services(IModel<WorkspaceInfo> wsModel) {
+            List<Service> services = new ArrayList();
+            
+            for (ServiceMenuPageInfo page : 
+                    getGeoServerApplication().getBeansOfType(ServiceMenuPageInfo.class)) {
+                Service service = new Service();
+                service.adminPage = page;
+                service.enabled = 
+                    getGeoServer().getService(wsModel.getObject(), page.getServiceClass()) != null;
+
+                //if service is disabled, create a placeholder model to hold a newly created one,
+                // otherwise create a live model to the existing service
+                Class<ServiceInfo> serviceClass = (Class<ServiceInfo>) page.getServiceClass();
+                service.model = !service.enabled ? new NewServiceModel(wsModel, serviceClass) :  
+                    new ExistingServiceModel(wsModel, serviceClass);
+                services.add(service);
+            }
+
+            return services;
+        }
+    }
 }

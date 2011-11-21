@@ -37,6 +37,9 @@ public class ConfigurationListenerAdapter implements ConfigurationListener {
             List<Object> oldValues, List<Object> newValues) {
     }
 
+    public void handleServiceRemove(ServiceInfo service) {
+    }
+
     public void reloaded() {
     }
 

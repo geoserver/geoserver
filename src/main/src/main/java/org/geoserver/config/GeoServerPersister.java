@@ -277,7 +277,10 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     public void handlePostServiceChange(ServiceInfo service) {
     }
-    
+
+    public void handleServiceRemove(ServiceInfo service) {
+    }
+
     public void reloaded() {
     }
     

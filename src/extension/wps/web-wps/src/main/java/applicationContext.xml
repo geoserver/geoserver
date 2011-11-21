@@ -9,7 +9,7 @@
       <property name="componentClass" value="org.geoserver.wps.web.WPSRequestBuilder" />
     </bean>
     
-    <bean id="wpsServicePage" class="org.geoserver.web.MenuPageInfo">
+    <bean id="wpsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wps"/>
     <property name="titleKey" value="wps.title"/>
     <property name="descriptionKey" value="wps.description"/>
@@ -17,6 +17,7 @@
     <property name="icon" value="server_gear.png"/>
     <property name="category" ref="servicesCategory"/>
     <property name="order" value="100"></property>
+    <property name="serviceClass" value="org.geoserver.wps.WPSInfo"/>
   </bean>
     
 </beans>

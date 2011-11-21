@@ -283,6 +283,7 @@ public class XStreamPersister {
         // ServiceInfo
         xs.omitField(impl(ServiceInfo.class), "clientProperties");
         xs.omitField(impl(ServiceInfo.class), "geoServer");
+        xs.registerLocalConverter(impl(ServiceInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
         xs.registerLocalConverter(impl(ServiceInfo.class), "metadata", new MetadataMapConverter());
         xs.registerLocalConverter(impl(ServiceInfo.class), "keywords", new KeywordListConverter());
 
@@ -371,7 +372,7 @@ public class XStreamPersister {
         
         // ServiceInfo
         xs.omitField( impl(ServiceInfo.class), "geoServer" );
-        
+
         // Converters
         xs.registerConverter(new SpaceInfoConverter());
         xs.registerConverter(new StoreInfoConverter());

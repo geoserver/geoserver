@@ -21,6 +21,7 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
 
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
+        super.initXStreamPersister(xp, gs);
         xp.getXStream().alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
     }
     

@@ -52,20 +52,7 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
             // add event listener which persists changes
             final List<XStreamServiceLoader> loaders = 
                 GeoServerExtensions.extensions( XStreamServiceLoader.class );
-            listener = new ConfigurationListenerAdapter() {
-                        @Override
-                        public void handlePostServiceChange(ServiceInfo service) {
-                            for ( XStreamServiceLoader<ServiceInfo> l : loaders  ) {
-                                if ( l.getServiceClass().isInstance( service ) ) {
-                                    try {
-                                        l.save( service, geoServer );
-                                    } catch (Throwable t) {
-                                        LOGGER.log(Level.SEVERE, "Error occurred while saving configuration", t);
-                                    }
-                                }
-                            }
-                        }
-                    };
+            listener = new ServicePersister(loaders, geoServer);
             geoServer.addListener(listener);
         }
         

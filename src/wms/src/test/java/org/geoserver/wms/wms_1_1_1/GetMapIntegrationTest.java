@@ -149,6 +149,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("inline; filename=sf-states.tif", response.getHeader("Content-Disposition"));
     }
     
+    public void testPng8Mime() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+    }
+    
     public void testDefaultContentDisposition() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"

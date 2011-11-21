@@ -155,4 +155,6 @@ public class KMLVectorTransformerTest extends TestCase {
         expectedLink = "baseurl/rest/geos/TestPoints.kml?startindex=4&maxfeatures=2";
         assertXpathEvaluatesTo("next", "//Document/NetworkLink[2]/@id", dom);
     }
+    
+    
 }

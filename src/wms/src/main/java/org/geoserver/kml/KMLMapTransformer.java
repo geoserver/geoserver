@@ -149,7 +149,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
 
         dtformats.add(DateFormat.getDateTimeInstance());
         dtformats.add(FeatureTemplate.DATETIME_FORMAT);
-        addFormats(dtformats, "dd%MM%yy hh:mm:ss");
+        addFormats(dtformats, "dd%MM%yy hh:mm:ss");     
         addFormats(dtformats, "MM%dd%yy hh:mm:ss");
         // addFormats(formats,"yy%MM%dd hh:mm:ss" );
         addFormats(dtformats, "dd%MMM%yy hh:mm:ss");
@@ -1088,6 +1088,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                 try {
                     d = format.parse(date);
                 } catch (ParseException e) {
+                    e.printStackTrace();
                 }
 
                 if (d != null) {

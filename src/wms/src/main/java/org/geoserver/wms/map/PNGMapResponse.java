@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -56,6 +57,11 @@ public class PNGMapResponse extends RenderedImageMapResponse {
      */
     public PNGMapResponse(WMS wms) {
         super(OUTPUT_FORMATS, wms);
+    }
+    
+    @Override
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        return MIME_TYPE;
     }
 
     /**

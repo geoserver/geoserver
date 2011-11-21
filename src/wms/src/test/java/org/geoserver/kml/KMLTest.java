@@ -4,6 +4,11 @@
  */
 package org.geoserver.kml;
 
+import java.net.URL;
+import java.util.Collections;
+
+import javax.xml.namespace.QName;
+
 import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
@@ -13,6 +18,9 @@ import org.w3c.dom.Document;
 
 public class KMLTest extends WMSTestSupport {
     
+        
+    private static final QName STORM_OBS = new QName(MockData.CITE_URI, "storm_obs", MockData.CITE_PREFIX);
+
     /**
      * This is a READ ONLY TEST so we can use one time setup
      */
@@ -26,10 +34,17 @@ public class KMLTest extends WMSTestSupport {
     }
     
     @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
+    
+    @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
         dataDirectory.addStyle("notthere", KMLTest.class.getResource("notthere.sld"));
         dataDirectory.addStyle("scaleRange", KMLTest.class.getResource("scaleRange.sld"));
+        URL soProperty = KMLTest.class.getResource("storm_obs.properties");
+        dataDirectory.addPropertiesType(STORM_OBS, soProperty, Collections.EMPTY_MAP);
     }
     
     public void testVector() throws Exception {
@@ -86,7 +101,7 @@ public class KMLTest extends WMSTestSupport {
             "&remote_ows_url=" + RemoteOWSTestSupport.WFS_SERVER_URL +
             "&cql_filter=PERSONS>20000000"
         );
-        print(doc);
+        // print(doc);
         
         assertEquals( 1, doc.getElementsByTagName("Placemark").getLength());
     }
@@ -101,5 +116,15 @@ public class KMLTest extends WMSTestSupport {
                 "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
             );
         assertEquals( 1, doc.getElementsByTagName("Placemark").getLength());
+    }
+    
+    public void testEncodeTime() throws Exception {
+        setupTemplate(STORM_OBS, "time.ftl", "${obs_datetime.value}");
+        // AA: for the life of me I cannot make xpath work against this output, not sure why, so going
+        // to test with strings instead...
+        String doc = getAsString("wms?request=getmap&service=wms&version=1.1.1" + "&format="
+                + KMLMapOutputFormat.MIME_TYPE + "&layers=" + getLayerId(STORM_OBS)
+                + "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&featureId=storm_obs.1321870537475");
+        assertTrue(doc.contains("<when>1994-07-0"));
     }
 }

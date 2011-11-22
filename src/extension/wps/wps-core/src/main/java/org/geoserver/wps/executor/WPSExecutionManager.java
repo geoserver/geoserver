@@ -335,6 +335,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 } catch (Exception e) {
                     // maybe it was an exception during output encoding, try to write out
                     // the error if possible
+                    LOGGER.log(Level.SEVERE, "Request failed during output encoding", e);
                     responseBuilder.setException(e);
                     writeOutResponse(responseBuilder, output);
                 }

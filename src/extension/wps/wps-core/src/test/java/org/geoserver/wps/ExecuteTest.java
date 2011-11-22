@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -17,18 +18,24 @@ import net.opengis.ows11.BoundingBoxType;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.xml.Parser;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -767,9 +774,20 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists("//wps:ProcessAccepted", dom);
         
         // now schedule the exit and wait for it to exit
-        MonkeyProcess.exit("Hi there", true);
+        ListFeatureCollection fc = collectionOfThings();
+        MonkeyProcess.exit(fc, true);
         dom = waitForProcessEnd(statusLocation, 60);
         assertXpathExists("//wps:ProcessSucceeded", dom);
+    }
+
+    private ListFeatureCollection collectionOfThings() {
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.add("name", String.class);
+        tb.add("location", Point.class, DefaultGeographicCRS.WGS84);
+        tb.setName("thing");
+        SimpleFeatureType featureType = tb.buildFeatureType();
+        ListFeatureCollection fc = new ListFeatureCollection(featureType);
+        return fc;
     }
     
     public void testStoredWithStatus() throws Exception {
@@ -786,21 +804,57 @@ public class ExecuteTest extends WPSTestSupport {
         dom = getAsDOM(statusLocation);
         // print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("10", "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("" + Math.round(0.66 * 10), "//wps:ProcessStarted/@percentCompleted", dom);
         
         // we move the clock forward, but we asked no status, nothing should change
         MonkeyProcess.progress(0.5f, true);
         dom = getAsDOM(statusLocation);
         // print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
-        assertXpathEvaluatesTo("50", "//wps:ProcessStarted/@percentCompleted", dom);
-
+        assertXpathEvaluatesTo("" + Math.round(0.66 * 50), "//wps:ProcessStarted/@percentCompleted", dom);
         
         // now schedule the exit and wait for it to exit
-        MonkeyProcess.exit("Hi there", true);
+        MonkeyProcess.exit(collectionOfThings(), true);
         dom = waitForProcessEnd(statusLocation, 60);
         // print(dom);
         assertXpathExists("//wps:ProcessSucceeded", dom);
+    }
+    
+    public void testAsynchFailEncode() throws Exception {
+        // submit asynch request with no updates
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true";
+        Document dom = getAsDOM(request);
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        
+        // now schedule the exit and wait for it to exit
+        MonkeyProcess.exit(bombOutCollection(), true);
+        dom = waitForProcessEnd(statusLocation, 60);
+        print(dom);
+        assertXpathExists("//wps:ProcessFailed", dom);
+    }
+    
+    private ListFeatureCollection bombOutCollection() {
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.add("name", String.class);
+        tb.add("location", Point.class, DefaultGeographicCRS.WGS84);
+        tb.setName("bomb");
+        SimpleFeatureType featureType = tb.buildFeatureType();
+        ListFeatureCollection fc = new ListFeatureCollection(featureType) {
+            @Override
+            public SimpleFeatureIterator features() {
+                throw new RuntimeException("Toasted!");
+            }
+            
+            @Override
+            protected Iterator openIterator() {
+                throw new RuntimeException("Toasted!");
+            }
+
+        };
+        return fc;
     }
     
     private Document waitForProcessEnd(String statusLocation, long maxWaitSeconds) throws Exception {
@@ -811,9 +865,9 @@ public class ExecuteTest extends WPSTestSupport {
             dom = getAsDOM(statusLocation);
             // print(dom);
             // are we still waiting for termination?
-            if(xpath.getMatchingNodes("//wps:Status/ProcessAccepted", dom).getLength() > 0 ||
-                    xpath.getMatchingNodes("//wps:Status/ProcessStarted", dom).getLength() > 0 ||
-                    xpath.getMatchingNodes("//wps:Status/ProcessQueued", dom).getLength() > 0 
+            if(xpath.getMatchingNodes("//wps:Status/wps:ProcessAccepted", dom).getLength() > 0 ||
+                    xpath.getMatchingNodes("//wps:Status/wps:ProcessStarted", dom).getLength() > 0 ||
+                    xpath.getMatchingNodes("//wps:Status/wps:ProcessQueued", dom).getLength() > 0 
                     ) {
                 Thread.sleep(100);
             } else {

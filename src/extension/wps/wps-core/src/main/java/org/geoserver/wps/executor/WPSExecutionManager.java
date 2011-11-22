@@ -319,26 +319,50 @@ public class WPSExecutionManager implements ApplicationContextAware,
         }
 
         public void writeResponseFile() {
-            resourceManager.setCurrentExecutionId(executionId);
-            ExecuteResponseBuilder responseBuilder = new ExecuteResponseBuilder(request.getRequest(),
-                    applicationContext, started);
-            responseBuilder.setExecutionId(executionId);
             try {
-                Map<String, Object> outputs = processManager.getOutput(executionId, -1);
-                responseBuilder.setOutputs(outputs);
-            } catch (Exception exception) {
-                responseBuilder.setException(exception);
-            }
+                resourceManager.setCurrentExecutionId(executionId);
+                ExecuteResponseBuilder responseBuilder = new ExecuteResponseBuilder(
+                        request.getRequest(), applicationContext, started);
+                responseBuilder.setExecutionId(executionId);
+                try {
+                    Map<String, Object> outputs = processManager.getOutput(executionId, -1);
+                    responseBuilder.setOutputs(outputs);
+                } catch (Exception exception) {
+                    responseBuilder.setException(exception);
+                }
 
-            // write to a temp file (as that might take time) and only when done switch to the
-            // actual output file
-            ExecuteResponseType response = responseBuilder.build();
-            File output = resourceManager.getStoredResponseFile(executionId);
-            File tmpOutput = new File(output.getParent(), "tmp" + output.getName());
-            XmlObjectEncodingResponse encoder = new XmlObjectEncodingResponse(
-                    ExecuteResponseType.class, "ExecuteResponse", WPSConfiguration.class);
+                // write to a temp file (as that might take time) and only when done switch to the
+                // actual output file
+                File output = resourceManager.getStoredResponseFile(executionId);
+                try {
+                    writeOutResponse(responseBuilder, output);
+                } catch (Exception e) {
+                    // maybe it was an exception during output encoding, try to write out
+                    // the error if possible
+                    LOGGER.log(Level.SEVERE, "Request failed during output encoding", e);
+                    responseBuilder.setException(e);
+                    writeOutResponse(responseBuilder, output);
+                }
+            } catch (Exception e) {
+                // ouch, this is bad, we can just log the output...
+                LOGGER.log(Level.SEVERE,
+                        "Failed to write out the stored WPS response for executionId "
+                                + executionId, e);
+
+            } finally {
+                contexts.remove(executionId);
+            }
+        }
+
+        void writeOutResponse(ExecuteResponseBuilder responseBuilder, File output)
+                throws IOException {
             FileOutputStream fos = null;
+            File tmpOutput = new File(output.getParent(), "tmp" + output.getName());
             try {
+                ExecuteResponseType response = responseBuilder.build();
+                XmlObjectEncodingResponse encoder = new XmlObjectEncodingResponse(
+                        ExecuteResponseType.class, "ExecuteResponse", WPSConfiguration.class);
+
                 fos = new FileOutputStream(tmpOutput);
                 encoder.write(response, fos, null);
                 fos.flush();
@@ -346,15 +370,11 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 if (!tmpOutput.renameTo(output)) {
                     LOGGER.log(Level.SEVERE, "Failed to rename " + tmpOutput + " to " + output);
                 }
-            } catch (IOException e) {
-                // ouch, this is bad, we can just log the output...
-                LOGGER.log(Level.SEVERE,
-                        "Failed to write out the stored WPS response for executionId "
-                                + executionId, e);
             } finally {
                 IOUtils.closeQuietly(fos);
-                tmpOutput.delete();
-                contexts.remove(executionId);
+                if (tmpOutput != null) {
+                    tmpOutput.delete();
+                }
             }
         }
 

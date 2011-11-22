@@ -1,20 +1,14 @@
 package org.geoserver.wps;
 
-import java.lang.reflect.Method;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.factory.AnnotatedBeanProcessFactory;
-import org.geotools.process.factory.AnnotationDrivenProcessFactory;
 import org.geotools.process.factory.DescribeProcess;
-import org.geotools.process.feature.gs.BoundsProcess;
-import org.geotools.process.feature.gs.NearestProcess;
-import org.geotools.process.feature.gs.SnapProcess;
 import org.geotools.util.SimpleInternationalString;
-import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
 
 @DescribeProcess(title = "Monkey", description = "Process used to test asynch calls")
@@ -38,7 +32,7 @@ public class MonkeyProcess {
 
     }
 
-    public static void exit(String value, boolean wait) throws InterruptedException {
+    public static void exit(SimpleFeatureCollection value, boolean wait) throws InterruptedException {
         commands.offer(new Command(CommandType.Exit, value));
         if(wait) {
             while(commands.size() > 0) {
@@ -66,11 +60,11 @@ public class MonkeyProcess {
         }
     }
     
-    public String execute(ProgressListener listener) throws InterruptedException {
+    public SimpleFeatureCollection execute(ProgressListener listener) throws InterruptedException {
         while (true) {
             Command command = commands.take();
             if (command.type == CommandType.Exit) {
-                return (String) command.value;
+                return (SimpleFeatureCollection) command.value;
             } else if (command.type == CommandType.SetProgress) {
                 listener.progress(((Number) command.value).floatValue());
             } else {

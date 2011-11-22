@@ -153,7 +153,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
-        assertEquals("image/png", response.getContentType());
+        assertEquals("image/png; mode=8bit", response.getContentType());
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
     }
     

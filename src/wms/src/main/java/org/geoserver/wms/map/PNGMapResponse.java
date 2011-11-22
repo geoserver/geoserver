@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
@@ -34,8 +35,10 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     private static final Logger LOGGER = Logging.getLogger(PNGMapResponse.class);
 
     private static final String MIME_TYPE = "image/png";
+    
+    private static final String MIME_TYPE_8BIT = "image/png; mode=8bit";
 
-    private static final String[] OUTPUT_FORMATS = { MIME_TYPE, "image/png8" };
+    private static final String[] OUTPUT_FORMATS = { MIME_TYPE, MIME_TYPE_8BIT, "image/png8" };
     
     /** 
      * Default capabilities for PNG format.
@@ -61,7 +64,12 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return MIME_TYPE;
+        GetMapRequest request = (GetMapRequest) operation.getParameters()[0];
+        if(request.getFormat().contains("8")) {
+            return MIME_TYPE_8BIT;
+        } else {
+            return MIME_TYPE;
+        }
     }
 
     /**

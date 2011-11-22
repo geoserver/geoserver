@@ -400,12 +400,13 @@
     <bean id="PNG8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
       <constructor-arg>
         <description>The prescribed output format MIME-Type</description>
-        <value>image/png8</value>
+        <value>image/png; mode=8bit</value>
       </constructor-arg>
       <constructor-arg>
         <description>The declared output format MIME-Types in the capabilities document</description>
         <list>
           <value>image/png8</value>
+          <value>image/png; mode=8bit</value>
         </list>
       </constructor-arg>
       <constructor-arg ref="wms" />

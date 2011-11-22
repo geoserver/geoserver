@@ -149,7 +149,7 @@ public class GeoServerApplication extends SpringWebApplication {
      * Initialization override which sets up a locator for i18n resources.
      */
     protected void init() {
-    	// enable GeoServer custom resource locators
+        // enable GeoServer custom resource locators
         getResourceSettings().setResourceStreamLocator(
                 new GeoServerResourceStreamLocator());
 
@@ -252,17 +252,52 @@ public class GeoServerApplication extends SpringWebApplication {
     }
 
     static class RequestCycle extends WebRequestCycle {
+        private List<WicketCallback> callbacks;
+
         public RequestCycle(GeoServerApplication app, WebRequest req, WebResponse resp) {
             super(app, req, resp);
+            callbacks = app.getBeansOfType(WicketCallback.class);
+        }
+
+        @Override
+        protected void onBeginRequest() {
+            for (WicketCallback callback : callbacks) {
+                callback.onBeginRequest();
+            }
+        }
+
+        @Override
+        protected void onAfterTargetsDetached() {
+            for (WicketCallback callback : callbacks) {
+                callback.onAfterTargetsDetached();
+            }
+        }
+
+        @Override
+        protected void onEndRequest() {
+            for (WicketCallback callback : callbacks) {
+                callback.onEndRequest();
+            }
         }
 
         @Override
         public final Page onRuntimeException(final Page cause, final RuntimeException ex) {
+            for (WicketCallback callback : callbacks) {
+                callback.onRuntimeException(cause, ex);
+            }
             if (ex instanceof PageExpiredException) {
                 return super.onRuntimeException(cause, ex);
             } else {
                 return new GeoServerErrorPage(cause, ex);
             }
+        }
+
+        @Override
+        protected void onRequestTargetSet(IRequestTarget requestTarget) {
+            for (WicketCallback callback : callbacks) {
+                callback.onRequestTargetSet(requestTarget);
+            }
+            super.onRequestTargetSet(requestTarget);
         }
     }
 

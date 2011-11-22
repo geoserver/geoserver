@@ -183,4 +183,6 @@
   <!-- Hides non advertised resources and layers -->
   <bean id="advertisedResourceFilter" class="org.geoserver.catalog.AdvertisedResourceFilter"/>
 
+  <!-- Alllows to lock the config subsyste to that we serialize accesses to it -->
+  <bean id="configurationLock" class="org.geoserver.GeoServerConfigurationLock"/>
 </beans>

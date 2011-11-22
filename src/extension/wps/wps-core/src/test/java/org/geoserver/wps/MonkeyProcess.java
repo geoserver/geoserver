@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.geoserver.wps.jts.AnnotatedBeanProcessFactory;
 import org.geoserver.wps.jts.DescribeResult;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.SimpleInternationalString;
@@ -31,7 +32,7 @@ public class MonkeyProcess {
 
     }
 
-    public static void exit(String value, boolean wait) throws InterruptedException {
+    public static void exit(SimpleFeatureCollection value, boolean wait) throws InterruptedException {
         commands.offer(new Command(CommandType.Exit, value));
         if(wait) {
             while(commands.size() > 0) {
@@ -60,11 +61,11 @@ public class MonkeyProcess {
     }
     
     @DescribeResult(name="result")
-    public String execute(ProgressListener listener) throws InterruptedException, ProcessException {
+    public SimpleFeatureCollection execute(ProgressListener listener) throws Exception {
         while (true) {
             Command command = commands.take();
             if (command.type == CommandType.Exit) {
-                return (String) command.value;
+                return (SimpleFeatureCollection) command.value;
             } else if (command.type == CommandType.SetProgress) {
                 listener.progress(((Number) command.value).floatValue());
             } else {

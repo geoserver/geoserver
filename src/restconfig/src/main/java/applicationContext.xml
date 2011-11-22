@@ -312,4 +312,8 @@
   </bean>
 
   <bean id="fontFinder" class="org.geoserver.rest.FontListResource"/>
+  
+  <bean id="catalogLocker" class="org.geoserver.rest.RestConfigurationLockCallback">
+    <constructor-arg index="0" ref="configurationLock"/>
+  </bean>
 </beans>

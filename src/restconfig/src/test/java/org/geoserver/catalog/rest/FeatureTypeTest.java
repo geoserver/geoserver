@@ -16,6 +16,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -358,5 +359,22 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals(MultiPolygon.class, schema.getDescriptor("the_geom").getType().getBinding());
         assertNotNull(schema.getDescriptor("LAND_KM"));
         assertEquals(Double.class, schema.getDescriptor("LAND_KM").getType().getBinding());
+    }
+
+    public void testPostFillInMetadata() throws Exception {
+        addPropertyDataStore(false);
+        String xml = 
+            "<featureType>"+
+              "<name>pdsa</name>"+
+            "</featureType>";
+        
+        MockHttpServletResponse response = 
+            postAsServletResponse( "/rest/workspaces/gs/datastores/pds/featuretypes", xml, "text/xml");
+        assertEquals( 201, response.getStatusCode() );
+
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName("gs", "pdsa");
+        assertNotNull(ft);
+
+        assertTrue(ft.getKeywords().contains(new Keyword("features")));
     }
 }

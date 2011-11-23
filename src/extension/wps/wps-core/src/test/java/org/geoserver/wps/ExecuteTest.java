@@ -343,7 +343,9 @@ public class ExecuteTest extends WPSTestSupport {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         String fullLocation = xpath.evaluate("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href", d);
         String resourceLocation = fullLocation.substring(fullLocation.indexOf('?') - 3);
-        d = getAsDOM(resourceLocation);
+        MockHttpServletResponse response = getAsServletResponse(resourceLocation);
+        assertEquals("text/xml; subtype=wfs-collection/1.0", response.getContentType());
+        d = dom(new ByteArrayInputStream( response.getOutputStreamContent().getBytes()));
         assertXpathExists("wfs:FeatureCollection", d);
     }
     
@@ -832,7 +834,7 @@ public class ExecuteTest extends WPSTestSupport {
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit(bombOutCollection(), true);
         dom = waitForProcessEnd(statusLocation, 60);
-        print(dom);
+        // print(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
     }
     

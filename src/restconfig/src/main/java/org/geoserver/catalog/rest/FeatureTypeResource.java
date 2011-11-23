@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -20,7 +21,10 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
+import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
+import org.geotools.data.FeatureSource;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.restlet.Context;
@@ -103,13 +107,14 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         
         // now, does the feature type exist? If not, create it
         DataStoreInfo ds = catalog.getDataStoreByName( workspace, dataStore );
-        if (ds.getDataStore(null) instanceof DataStore) {
+        DataAccess gtda = ds.getDataStore(null);
+        if (gtda instanceof DataStore) {
             String typeName = featureType.getName();
             if(featureType.getNativeName() != null) {
                 typeName = featureType.getNativeName(); 
             } 
             boolean typeExists = false;
-            DataStore gtds = (DataStore) ds.getDataStore(null);
+            DataStore gtds = (DataStore) gtda;
             for(String name : gtds.getTypeNames()) {
                 if(name.equals(typeName)) {
                     typeExists = true;
@@ -137,6 +142,19 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.initFeatureType( featureType );
+
+        //attempt to fill in metadata from underlying feature source
+        try {
+            FeatureSource featureSource = 
+                    gtda.getFeatureSource(new NameImpl(featureType.getNativeName()));
+            if (featureSource != null) {
+                cb.setupMetadata(featureType, featureSource);
+            }
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.WARNING, 
+                "Unable to fill in metadata from underlying feature source", e);
+        }
         
         if ( featureType.getStore() == null ) {
             //get from requests

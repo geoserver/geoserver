@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.measure.unit.Unit;
 import javax.media.jai.PlanarImage;
 
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
@@ -374,9 +375,13 @@ public class CatalogBuilder {
         }
         setupProjectionPolicy(ftinfo);
 
-        // quick metadata
-        ftinfo.setTitle(featureType.getName().getLocalPart());
-
+        // fill in metadata, first check if the datastore itself can provide some metadata for us
+        try {
+            setupMetadata(ftinfo, featureSource);
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Metadata lookup failed", e);
+        }
+        
         return ftinfo;
     }
 
@@ -454,6 +459,31 @@ public class CatalogBuilder {
 
         // setup the geographic bbox if missing and we have enough info
         rinfo.setLatLonBoundingBox(getLatLonBounds(rinfo.getNativeBoundingBox(), rinfo.getCRS()));
+    }
+
+    /**
+     * Fills in metadata on the {@link FeatureTypeInfo} from an underlying feature source.
+     */
+    public void setupMetadata(FeatureTypeInfo ftinfo, FeatureSource featureSource) 
+        throws IOException {
+
+        org.geotools.data.ResourceInfo rinfo = featureSource.getInfo();
+        if (ftinfo.getTitle() == null) {
+            ftinfo.setTitle(rinfo != null ? rinfo.getTitle() : ftinfo.getName());
+        }
+        if (rinfo != null && ftinfo.getDescription() == null) {
+            ftinfo.setDescription(rinfo.getDescription());
+        }
+        if (rinfo != null && ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty()) {
+            if (rinfo.getKeywords() != null) {
+                if (ftinfo.getKeywords() == null) {
+                    ((FeatureTypeInfoImpl)ftinfo).setKeywords(new ArrayList());
+                }
+                for (String kw : rinfo.getKeywords()) {
+                    ftinfo.getKeywords().add(new Keyword(kw));
+                }
+            }
+        }
     }
 
     /**

@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
@@ -19,6 +21,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -27,8 +30,10 @@ import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.data.ResourceInfo;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -36,9 +41,15 @@ import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Point;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.replay;
 
 public class CatalogBuilderTest extends GeoServerTestSupport {
 
@@ -340,6 +351,36 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
 
         assertNotNull(ft.getNativeBoundingBox());
         assertNotNull(ft.getLatLonBoundingBox());
+    }
+
+    public void testMetadataFromFeatueSource() throws Exception {
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        cb.setStore(cb.buildDataStore("fooStore"));
+
+        FeatureType ft = createMock(FeatureType.class);
+        expect(ft.getName()).andReturn(new NameImpl("foo")).anyTimes();
+        expect(ft.getCoordinateReferenceSystem()).andReturn(null).anyTimes();
+        expect(ft.getGeometryDescriptor()).andReturn(null).anyTimes();
+        replay(ft);
+
+        ResourceInfo rInfo = createMock(ResourceInfo.class);
+        expect(rInfo.getTitle()).andReturn("foo title");
+        expect(rInfo.getDescription()).andReturn("foo description");
+        expect(rInfo.getKeywords()).andReturn(
+            new LinkedHashSet<String>(Arrays.asList("foo", "bar", "baz"))).anyTimes();
+        replay(rInfo);
+        
+        FeatureSource fs = createMock(FeatureSource.class);
+        expect(fs.getSchema()).andReturn(ft).anyTimes();
+        expect(fs.getInfo()).andReturn(rInfo).anyTimes();
+        replay(fs);
+            
+        FeatureTypeInfo ftInfo = cb.buildFeatureType(fs);
+        assertEquals("foo title", ftInfo.getTitle());
+        assertEquals("foo description", ftInfo.getDescription());
+        assertTrue(ftInfo.getKeywords().contains(new Keyword("foo")));
+        assertTrue(ftInfo.getKeywords().contains(new Keyword("bar")));
+        assertTrue(ftInfo.getKeywords().contains(new Keyword("baz")));
     }
 
     Name toName(QName qname) {

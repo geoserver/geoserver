@@ -273,7 +273,7 @@ public class ExecuteResponseBuilder {
                 kvp.put("request", "GetExecutionResult");
                 kvp.put("executionId", executionId);
                 kvp.put("outputId", file.getName());
-                kvp.put("mime", cppio.getMimeType());
+                kvp.put("mimetype", cppio.getMimeType());
                 outputReference.setHref(ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
                 outputReference.setMimeType(cppio.getMimeType());
             } else {

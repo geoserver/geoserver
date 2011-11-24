@@ -37,6 +37,8 @@ public class MapDecorationLayoutTest extends TestCase {
         throws Exception {
             assertEquals("Calculated width matches expected", expect.width, paintArea.width);
             assertEquals("Calculated height matches expected", expect.height, paintArea.height);
+            assertEquals("Calculated x matches expected", expect.x, paintArea.x);
+            assertEquals("Calculated y matches expected", expect.y, paintArea.y);
         }
     }
 
@@ -54,7 +56,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.addBlock(new MapDecorationLayout.Block(
             new MockMapDecoration(
                 new Dimension(100, 100),
-                new Rectangle(0, 0, 100, 100)
+                new Rectangle(156, 78, 100, 100)
             ),
             MapDecorationLayout.Block.Position.CR,
             null,
@@ -66,7 +68,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.addBlock(new MapDecorationLayout.Block(
             new MockMapDecoration(
                 new Dimension(100, 100),
-                new Rectangle(0, 0, 50, 50)
+                new Rectangle(206, 103, 50, 50)
             ),
             MapDecorationLayout.Block.Position.CR,
             new Dimension(50, 50),
@@ -342,4 +344,23 @@ public class MapDecorationLayoutTest extends TestCase {
 
         dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
     }
+    
+    public void testTopCenter() {
+        Graphics2D g2d = createMockGraphics(100, 100);
+        MapDecorationLayout dl = new MapDecorationLayout();
+
+        // try offsets with differing positions 
+        dl.addBlock(new MapDecorationLayout.Block(
+            new MockMapDecoration(
+                new Dimension(50, 10),
+                new Rectangle(25, 10, 50, 10)
+            ),
+            MapDecorationLayout.Block.Position.UC,
+            null,
+            new Point(0,10)
+        ));
+        
+        dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
+    }
+        
 }

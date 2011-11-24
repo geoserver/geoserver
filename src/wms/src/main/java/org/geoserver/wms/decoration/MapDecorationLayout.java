@@ -126,7 +126,7 @@ public class MapDecorationLayout {
                 case UC:
                 case CC:
                 case LC:
-                    x = (int) (container.getMinX() + container.getMaxX()) / 2;
+                    x = (int) (container.getMinX() + container.getMaxX() - dim.getWidth()) / 2;
                     break;
 
                 case UR:

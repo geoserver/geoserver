@@ -47,7 +47,6 @@ public class StyleEditPage extends AbstractStylePage {
             StyleInfo style = (StyleInfo) styleForm.getModelObject();
             Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
             style.setSLDVersion(version);
-            getCatalog().save(style);
             
             // write out the SLD
             try {
@@ -56,6 +55,7 @@ public class StyleEditPage extends AbstractStylePage {
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
+            getCatalog().save(style);
             setResponsePage( StylePage.class );
         } catch( Exception e ) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);

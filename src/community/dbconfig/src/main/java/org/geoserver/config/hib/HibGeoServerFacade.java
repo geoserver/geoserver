@@ -3,6 +3,7 @@ package org.geoserver.config.hib;
 import java.util.Collection;
 
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
@@ -77,6 +78,11 @@ public class HibGeoServerFacade extends AbstractHibFacade implements GeoServerFa
         return (T) first( query("from ", clazz) );
     }
 
+    @Override
+    public <T extends ServiceInfo> T getService(WorkspaceInfo workspace, Class<T> clazz) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
         return (T) first( query("from ", clazz, " where id = ", param(id)) );
     }
@@ -86,10 +92,21 @@ public class HibGeoServerFacade extends AbstractHibFacade implements GeoServerFa
         return (T) first(query);
     }
 
+    @Override
+    public <T extends ServiceInfo> T getServiceByName(String name, WorkspaceInfo workspace,
+            Class<T> clazz) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     public Collection<? extends ServiceInfo> getServices() {
         return list(ServiceInfo.class);
     }
-    
+
+    @Override
+    public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     public void dispose() {
     }
     

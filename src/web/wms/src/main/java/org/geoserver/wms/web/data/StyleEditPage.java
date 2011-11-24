@@ -43,7 +43,6 @@ public class StyleEditPage extends AbstractStylePage {
         // write out the file and save name modifications
         try {
             StyleInfo style = (StyleInfo) styleForm.getModelObject();
-            getCatalog().save(style);
             
             // write out the SLD
             try {
@@ -52,6 +51,7 @@ public class StyleEditPage extends AbstractStylePage {
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
+            getCatalog().save(style);
             setResponsePage( StylePage.class );
         } catch( Exception e ) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);

@@ -27,7 +27,7 @@
         <!-- note: we use depends to ensure that all datastore plugins are 
              loaded from the spring container before processing hte catalog -->
     
-    <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl">
+    <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="extensions">
          <property name="resourceLoader" ref="resourceLoader"/>  
     </bean>
     <bean id="secureCatalog" class="org.geoserver.security.SecureCatalogImpl" depends-on="accessRulesDao,extensions">

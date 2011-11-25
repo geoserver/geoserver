@@ -200,8 +200,7 @@ public class SnapTest extends WPSTestSupport {
                         "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\" " +
                         "xmlns:cite=\"http://www.opengis.net/cite\" " +
                         "xmlns:wfs=\"http://www.opengis.net/wfs\" " +
-                        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-                        "xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/wfs.xsd\">" +
+                        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"> " +
                         "<wfs:Query typeName=\"cite:Streams\" />" +
                       "</wfs:GetFeature>" +
                     "</wps:Body>" +
@@ -244,8 +243,7 @@ public class SnapTest extends WPSTestSupport {
                         "xmlns:cite=\"http://www.opengis.net/cite\" " +
                         "xmlns:wfs=\"http://www.opengis.net/wfs\" " +
                         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-                        "xmlns:ogc=\"http://www.opengis.net/ogc\" " +
-                        "xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/wfs.xsd http://www.opengis.net/gml http://schemas.opengis.net/gml/2.1.2/base/gml.xsd\">" +
+                        "xmlns:ogc=\"http://www.opengis.net/ogc\" >" +
                         "<wfs:Query typeName=\"cite:Streams\">" +
                           "<wfs:PropertyName>cite:the_geom</wfs:PropertyName>" +
                           "<wfs:PropertyName>cite:NAME</wfs:PropertyName>" +
@@ -298,8 +296,7 @@ public class SnapTest extends WPSTestSupport {
                         "xmlns:wfs=\"http://www.opengis.net/wfs\" " +
                         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
                         "xmlns:ogc=\"http://www.opengis.net/ogc\" " +
-                        "xmlns:gml=\"http://www.opengis.net/gml\" " +
-                        "xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/wfs.xsd http://www.opengis.net/gml http://schemas.opengis.net/gml/2.1.2/base/gml.xsd\">" +
+                        "xmlns:gml=\"http://www.opengis.net/gml\" >" +
                         "<wfs:Query typeName=\"cite:Streams\">" +
                           "<wfs:PropertyName>cite:the_geom</wfs:PropertyName>" +
                           "<wfs:PropertyName>cite:NAME</wfs:PropertyName>" +

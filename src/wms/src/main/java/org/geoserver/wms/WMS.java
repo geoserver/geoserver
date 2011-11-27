@@ -874,6 +874,8 @@ public class WMS implements ApplicationContextAware {
             if (values.size() <= 0) {
                 result = null;
             } else {
+                // we might get null values out of the visitor, strip them
+                values.remove(null);
                 result.addAll(values);
             }
         } else {

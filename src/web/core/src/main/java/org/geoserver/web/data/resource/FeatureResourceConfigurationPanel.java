@@ -1,12 +1,13 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -19,19 +20,23 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.jdbc.VirtualTable;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 
 @SuppressWarnings("serial")
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
+    static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
 
     ModalWindow reloadWarningDialog;
     
@@ -48,19 +53,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         // to the ResourcePoool
         
         // just use the direct attributes, this is not editable atm
-        ListView attributes = new ListView("attributes", new Model() {
-            @Override
-            public Serializable getObject() {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
-                try {
-                    final ResourcePool resourcePool = GeoServerApplication.get().getCatalog().getResourcePool();
-                    return (Serializable) resourcePool.getAttributes(typeInfo);
-                } catch (IOException e) {
-                    throw new WicketRuntimeException(e);
-                }
-            }
-        }) {
-
+        ListView attributes = new ListView("attributes", new AttributeListModel()) {
             @Override
             protected void populateItem(ListItem item) {
                 
@@ -161,5 +154,25 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         public ReloadWarningDialog(StringResourceModel message) {
             add(new Label("message", message));
         }
+    }
+    
+    class AttributeListModel extends LoadableDetachableModel<List<AttributeTypeInfo>> {
+
+        @Override
+        protected List<AttributeTypeInfo> load() {
+            try {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) getDefaultModelObject();
+                Catalog catalog = GeoServerApplication.get().getCatalog();
+                final ResourcePool resourcePool = catalog.getResourcePool();
+                return resourcePool.getAttributes(typeInfo);
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, "Grabbing the attribute list failed", e);
+                String error = new ParamResourceModel("attributeListingFailed", FeatureResourceConfigurationPanel.this, e.getMessage()).getString();
+                FeatureResourceConfigurationPanel.this.getPage().error(error);
+                return Collections.emptyList();
+            }
+
+        }
+        
     }
 }

@@ -70,10 +70,10 @@ public class EnvelopePanel extends FormComponentPanel {
     void initComponents() {
         updateFields();
         
-        add( new TextField( "minX", new PropertyModel(this, "minX")) );
-        add( new TextField( "minY", new PropertyModel(this, "minY")) );
-        add( new TextField( "maxX", new PropertyModel(this, "maxX") ));
-        add( new TextField( "maxY", new PropertyModel(this, "maxY")) );
+        add( new DecimalTextField( "minX", new PropertyModel(this, "minX")) );
+        add( new DecimalTextField( "minY", new PropertyModel(this, "minY")) );
+        add( new DecimalTextField( "maxX", new PropertyModel(this, "maxX") ));
+        add( new DecimalTextField( "maxY", new PropertyModel(this, "maxY")) );
         crsContainer = new WebMarkupContainer("crsContainer");
         crsContainer.setVisible(false);
         crsPanel = new CRSPanel("crs", new PropertyModel(this, "crs"));

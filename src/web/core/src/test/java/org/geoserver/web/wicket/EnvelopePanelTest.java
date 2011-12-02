@@ -83,4 +83,23 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         assertEquals( new Envelope(-2,2,-2,2), ep.getModelObject() );
         assertEquals( epsg4140, ((ReferencedEnvelope) ep.getModelObject()).getCoordinateReferenceSystem() );
     }
+
+    public void testDecimalsPreserved() throws Exception {
+        final ReferencedEnvelope e = new ReferencedEnvelope(-0.1E-10, 1.0E-9, -9E-11, 9E-11,
+                DefaultGeographicCRS.WGS84);
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+
+            public Component buildComponent(String id) {
+                return new EnvelopePanel(id, e);
+            }
+        }));
+
+        tester.assertComponent("form", Form.class);
+
+        FormTester ft = tester.newFormTester("form");
+        assertEquals("-0.00000000001", ft.getTextComponentValue("panel:minX"));
+        assertEquals("-0.00000000009", ft.getTextComponentValue("panel:minY"));
+        assertEquals("0.000000001", ft.getTextComponentValue("panel:maxX"));
+        assertEquals("0.00000000009", ft.getTextComponentValue("panel:maxY"));
+    }
 }

@@ -783,6 +783,11 @@ public class CatalogBuilder {
     		ReferencedEnvelope boundsLatLon = cinfo.getLatLonBoundingBox();
     		cinfo.setNativeBoundingBox(boundsLatLon.transform(cinfo.getNativeCRS(), true));
     	}
+
+        if (cinfo.getGrid() == null) {
+            GridEnvelope originalRange = reader.getOriginalGridRange();
+            cinfo.setGrid(new GridGeometry2D(originalRange, reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER), nativeCRS));
+        }
     }
 
     /**

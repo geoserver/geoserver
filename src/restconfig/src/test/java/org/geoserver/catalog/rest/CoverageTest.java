@@ -115,7 +115,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
                   "<miny>20.7052</miny>"+
                   "<maxy>54.1141</maxy>"+
                   "<crs>EPSG:4326</crs>"+
-                "</nativeBoundingBox>"+*/
+                "</nativeBoundingBox>"+
                 "<grid dimension=\"2\">"+
                     "<range>"+
                       "<low>0 0</low>"+
@@ -130,7 +130,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
                       "<translateY>54.08616613712375</translateY>"+
                     "</transform>"+
                     "<crs>EPSG:4326</crs>"+
-                "</grid>"+
+                "</grid>"+*/
                 "<supportedFormats>"+
                   "<string>PNG</string>"+
                   "<string>TIFF</string>"+
@@ -156,6 +156,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
 
         dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.xml");
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
+        assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
     }
 
 //    public void testPostAsJSON() throws Exception {

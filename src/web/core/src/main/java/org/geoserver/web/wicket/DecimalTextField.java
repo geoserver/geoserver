@@ -49,7 +49,8 @@ public class DecimalTextField extends TextField<Double> {
                 try {
                     parsed = format.parse(value);
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    error(e.getMessage());
+                    return null;
                 }
                 return Double.valueOf(parsed.doubleValue());
             }

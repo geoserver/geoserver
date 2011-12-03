@@ -124,7 +124,7 @@ public class EnvelopePanel extends FormComponentPanel {
         }
         
         // update the envelope model
-        if(minX != null && maxX != null && minY != null && maxX != null) {
+        if(minX != null && maxX != null && minY != null && maxY != null) {
             if(crsRequired && crs == null) {
                 setConvertedInput(null);
             } else {

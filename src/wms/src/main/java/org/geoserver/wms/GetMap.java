@@ -10,11 +10,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -42,7 +42,6 @@ import org.geotools.filter.Filters;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
-import org.geotools.map.GridReaderLayer;
 import org.geotools.map.WMSLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
@@ -470,11 +469,11 @@ public class GetMap {
         if (cachingPossible) {
             map.setResponseHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
 
-            Date expires = new Date();
-            expires.setTime(expires.getTime() + maxAge * 1000);
-            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+            final GregorianCalendar calendar= new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+            calendar.add(Calendar.SECOND, maxAge);
+            DateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            map.setResponseHeader("Expires", format.format(expires));
+            map.setResponseHeader("Expires", format.format(calendar.getTime()));
         }
 
         return map;

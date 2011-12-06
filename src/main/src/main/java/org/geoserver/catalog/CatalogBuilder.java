@@ -480,6 +480,10 @@ public class CatalogBuilder {
                     ((FeatureTypeInfoImpl)ftinfo).setKeywords(new ArrayList());
                 }
                 for (String kw : rinfo.getKeywords()) {
+                    if (kw == null || "".equals(kw.trim())) {
+                        LOGGER.fine("Empty keyword ignored");
+                        continue;
+                    }
                     ftinfo.getKeywords().add(new Keyword(kw));
                 }
             }

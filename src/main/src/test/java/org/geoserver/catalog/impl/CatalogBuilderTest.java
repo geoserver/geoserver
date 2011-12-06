@@ -367,7 +367,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         expect(rInfo.getTitle()).andReturn("foo title");
         expect(rInfo.getDescription()).andReturn("foo description");
         expect(rInfo.getKeywords()).andReturn(
-            new LinkedHashSet<String>(Arrays.asList("foo", "bar", "baz"))).anyTimes();
+            new LinkedHashSet<String>(Arrays.asList("foo", "bar", "baz", ""))).anyTimes();
         replay(rInfo);
         
         FeatureSource fs = createMock(FeatureSource.class);

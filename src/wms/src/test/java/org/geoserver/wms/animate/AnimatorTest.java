@@ -4,9 +4,14 @@
  */
 package org.geoserver.wms.animate;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.media.jai.RenderedImageList;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
@@ -15,6 +20,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMapService;
+import org.geoserver.wms.map.RenderedImageMap;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -97,7 +103,7 @@ public class AnimatorTest extends WMSTestSupport {
     	
     	assertEquals(4, visitor.framesNumber);
     	
-    	RenderedImageList frames = visitor.produce(getWMS());
+    	List<RenderedImageMap> frames = visitor.produce(getWMS());
     	
     	assertNotNull(frames);
     	assertEquals(4, frames.size());
@@ -110,10 +116,31 @@ public class AnimatorTest extends WMSTestSupport {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
             MockData.BASIC_POLYGONS.getLocalPart();
 
-        String requestURL = "wms/animate?format=" + URLEncoder.encode(GIF_ANIMATED_FORMAT, "UTF-8") + "&layers=" + layerName + "&aparam=fake_param&avalues=val0,val\\,1,val2\\,\\,,val3";
+        String requestURL = "wms/animate?layers=" + layerName + "&aparam=fake_param&avalues=val0,val\\,1,val2\\,\\,,val3";
         
         MockHttpServletResponse resp = getAsServletResponse(requestURL);
         
         assertEquals("image/gif", resp.getContentType());
+    }
+    
+    /**
+     * Animate layers
+     */
+    public void testAnimatorLayers() throws Exception {
+        final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
+            MockData.BASIC_POLYGONS.getLocalPart();
+
+        String requestURL = "cite/wms/animate?&aparam=layers&avalues=MapNeatline,Buildings,Lakes";
+        
+        // check we got a gif
+        MockHttpServletResponse resp = getAsServletResponse(requestURL);
+        assertEquals("image/gif", resp.getContentType());
+        
+        // check it has three frames
+        ByteArrayInputStream bis = getBinaryInputStream(resp);
+        ImageInputStream iis = ImageIO.createImageInputStream(bis);
+        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+        reader.setInput(iis);
+        assertEquals(3, reader.getNumImages(true));
     }
 }

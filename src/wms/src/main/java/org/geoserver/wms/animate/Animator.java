@@ -5,14 +5,25 @@
 package org.geoserver.wms.animate;
 
 import java.awt.image.RenderedImage;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
+import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.geotools.styling.Style;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * GIF Animated reflecting service.
@@ -82,6 +93,33 @@ public class Animator {
         if (frameCatalog == null) {
             throw new RuntimeException("Animator initialization error!");
         }
+        
+        // Setup AnimGifOUTputFormat as default if not specified
+        if (request.getFormat() == null) {
+            request.setFormat(GIF_ANIMATED_FORMAT);
+        }
+        
+        // if we have a case of layers being the param, stick the first value into the request
+        if(frameCatalog.getParameter().equalsIgnoreCase("LAYERS")) {
+            List<String> layers0 = Arrays.asList(frameCatalog.getValues()[0].replaceAll("\\\\,", ",").split("\\s*,\\s*"));
+            LayerParser parser = new LayerParser(wmsConfiguration);
+            List<MapLayerInfo> layers = parser.parseLayerInfos(layers0, 
+                    request.getRemoteOwsURL(), request.getRemoteOwsType());
+            request.setLayers(layers);
+        }
+        
+        // set rest of the wms defaults
+        request = DefaultWebMapService.autoSetMissingProperties(request);
+        
+        // if we have a case of layers being the param, we should also try to get uniform
+        // width and height and bbox
+        if(frameCatalog.getParameter().equalsIgnoreCase("LAYERS")) {
+            Envelope bbox = request.getBbox();
+            request.getRawKvp().put("BBOX", bbox.getMinX() + "," + request.getBbox().getMinY() + "," 
+                    + request.getBbox().getMaxX() + "," + request.getBbox().getMaxY());
+            request.getRawKvp().put("WIDTH", String.valueOf(request.getWidth()));
+            request.getRawKvp().put("HEIGHT", String.valueOf(request.getHeight()));
+        }
 
         // initializing the catalog visitor. This takes care of producing single
         // RenderedImages.
@@ -89,14 +127,7 @@ public class Animator {
         frameCatalog.getFrames(visitor);
         RenderedImage imageList = visitor.produce(frameCatalog.getWmsConfiguration());
 
-        // set rest of the wms defaults
-        request = DefaultWebMapService.autoSetMissingProperties(request);
-
-        // Setup AnimGifOUTputFormat as default if not specified
-        if (request.getFormat() == null) {
-            request.setFormat(GIF_ANIMATED_FORMAT);
-        }
-
+        // run a single getmap to get the right mime type and map context
         WebMap wmsResponse = wms.getMap(request);
 
         return new RenderedImageMap(((RenderedImageMap) wmsResponse).getMapContext(), imageList,
@@ -113,5 +144,40 @@ public class Animator {
     private static FrameCatalog initRequestManager(GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         return new FrameCatalog(request, wms, wmsConfiguration);
     }
+    
+    /**
+     * A helper that avoids duplicating the code to parse a layer
+     * @author Andrea Aime - GeoSolutions
+     */
+    static class LayerParser extends GetMapKvpRequestReader {
+
+        public LayerParser(WMS wmsConfiguration) {
+            super(wmsConfiguration);
+        }
+
+        public List<MapLayerInfo> parseLayerInfos(List<String> requestedLayerNames, URL remoteOwsUrl,
+                String remoteOwsType) throws Exception {
+            List requestedLayerInfos = super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
+            
+            List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+            for (Object o : requestedLayerInfos) {
+                if (o instanceof LayerInfo) {
+                    layers.add(new MapLayerInfo((LayerInfo) o));
+                } else if (o instanceof LayerGroupInfo) {
+                    for (LayerInfo l : ((LayerGroupInfo) o).getLayers()) {
+                        layers.add(new MapLayerInfo(l));
+                    }
+                } else if (o instanceof MapLayerInfo) {
+                    // it was a remote OWS layer, add it directly
+                    layers.add((MapLayerInfo) o);
+                }
+            }
+            
+            return layers;
+        }
+        
+    }
+
+    
 
 }

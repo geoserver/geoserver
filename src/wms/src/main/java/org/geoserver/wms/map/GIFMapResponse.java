@@ -50,7 +50,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
 
     private final static Logger LOGGER = Logging.getLogger(GIFMapResponse.class);
 
-    private static final String IMAGE_GIF_SUBTYPE_ANIMATED = "image/gif;subtype=animated";
+    public static final String IMAGE_GIF_SUBTYPE_ANIMATED = "image/gif;subtype=animated";
 
     private static final GIFImageWriterSpi ORIGINATING_PROVIDER = new GIFImageWriterSpi();
 
@@ -314,6 +314,10 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
 
     @Override
     public MapProducerCapabilities getCapabilities(String outputFormat) {
-        return /* CAPABILITIES */CAPABILITIES_ANIM;
+        if(IMAGE_GIF_SUBTYPE_ANIMATED.equals(outputFormat)) {
+            return CAPABILITIES_ANIM;
+        } else {
+            return CAPABILITIES;
+        }
     }
 }

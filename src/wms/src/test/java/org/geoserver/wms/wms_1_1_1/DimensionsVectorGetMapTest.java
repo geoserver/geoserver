@@ -6,10 +6,18 @@ package org.geoserver.wms.wms_1_1_1;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geoserver.wms.map.GIFMapResponse;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
 
@@ -173,6 +181,24 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 10, Color.BLACK);
         assertPixel(image, 20, 30, Color.WHITE);
         assertPixel(image, 60, 30, Color.BLACK);
+    }
+    
+    public void testTimeListAnimated() throws Exception {
+        // adding a extra elevation that is simply not there, should not break
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null);
+        MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
+                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&layers=" + getLayerId(V_TIME_ELEVATION)
+                + "&time=2011-05-02,2011-05-04,2011-05-10&format=" + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
+
+        // check we did not get a service exception
+        assertEquals("image/gif", response.getContentType());
+        // check it is a animated gif withthree frames
+        ByteArrayInputStream bis = getBinaryInputStream(response);
+        ImageInputStream iis = ImageIO.createImageInputStream(bis);
+        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+        reader.setInput(iis);
+        assertEquals(3, reader.getNumImages(true));
     }
 
     public void testTimeInterval() throws Exception {

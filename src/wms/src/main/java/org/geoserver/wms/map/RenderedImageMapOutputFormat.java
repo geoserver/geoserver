@@ -214,11 +214,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // the capabilities of this produce are actually linked to the map response that is going to
         // be used, this class just generates a rendered image
         final Collection<RenderedImageMapResponse> responses = this.wms.getAvailableMapResponses();
-        for(RenderedImageMapResponse response: responses){
-            for(String outFormat:outputFormats){
-                MapProducerCapabilities cap=response.getCapabilities(outFormat);
-                if(cap!=null)
-                    capabilities.put(outFormat, cap);
+        for (RenderedImageMapResponse response : responses) {
+            for (String outFormat : outputFormats) {
+                if (response.getOutputFormats().contains(outFormat)) {
+                    MapProducerCapabilities cap = response.getCapabilities(outFormat);
+                    if (cap != null) {
+                        capabilities.put(outFormat, cap);
+                    }
+                }
             }
         }
     }

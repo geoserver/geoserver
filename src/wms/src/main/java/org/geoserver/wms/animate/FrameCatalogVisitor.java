@@ -22,6 +22,7 @@ import javax.media.jai.RenderedImageList;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
@@ -233,7 +234,7 @@ class FrameLoader implements Callable<RenderedImage> {
         GetMapRequest request = (GetMapRequest) BeanUtils.cloneBean(theRequest);
 
         // looking for composite parameters like env:color or viewparams:param ...
-        Map<String, String> rawKvp = new HashMap<String, String>(theRequest.getRawKvp());
+        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>(theRequest.getRawKvp()));
         if (param.contains(":")) {
             // going to replace composite param values for each frame in the KVP map
             String compositeParamKey = param.split(":")[0].toUpperCase();

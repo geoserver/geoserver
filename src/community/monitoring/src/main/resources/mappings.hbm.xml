@@ -53,7 +53,7 @@
     <list name="resources" table="REQUEST_RESOURCES">
       <key column="REQUEST_ID" not-null="true"/>
       <list-index column="IDX"/>
-      <element column="RESOURCE" type="string"/>
+      <element column="NAME" type="string"/>
     </list>
     
     <!--list name="layers" table="REQUEST_LAYERS">

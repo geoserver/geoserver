@@ -55,6 +55,19 @@ Alternatively the migration may occur *post* upgrade::
     UPDATE TABLE request_resources SET name = resource where name is NULL;
     ALTER TABLE request_resources DROP COLUMN resource;
 
+Column ``remote_user_agent`` added to ``request`` table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* *Version*: n/a, extension still community status
+* *Date*: Dec 09, 2011
+* *Subversion revision*: 16634
+* *Reference*: `GEOS-4872 <https://jira.codehaus.org/browse/GEOS-4871>`_
+
+No action should be required here as Hibernate will simply append the new column to the table. If for some reason this does
+not happen the column can be added manually::
+
+    ALTER TABLE request ADD COLUMN remote_user_agent VARCHAR(1024);
+
 Major upgrades
 --------------
 

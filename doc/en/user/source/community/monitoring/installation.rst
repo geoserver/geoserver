@@ -5,6 +5,10 @@ Installing the Monitoring Extension
 
 Monitoring is a community extension, and thus is not found on the standard GeoServer release download pages.  Community extensions are only available via `Nightly builds <http://geoserver.org/display/GEOS/Nightly>`_ or by compiling from source.
 
+  .. note::
+  
+     If performing an upgrade of the monitoring extension please see :ref:`monitor_upgrade`. 
+     
 #. Download the proper "monitoring" extension linked from the `GeoServer nightly builds page <http://geoserver.org/display/GEOS/Nightly>`_.
 
    .. warning:: Ensure the extension matching the version of the GeoServer installation is downloaded.

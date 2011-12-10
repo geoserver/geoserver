@@ -114,7 +114,9 @@ public class MonitorFilter implements GeoServerFilter {
                 data.setRemoteUser(((User)auth.getPrincipal()).getUsername());
             }
         }
-        
+
+        data.setRemoteUserAgent(req.getHeader("user-agent"));
+
         //wrap the request and response
         request = new MonitorServletRequest(req, monitor.getConfig().getMaxBodySize());
         response = new MonitorServletResponse(resp);

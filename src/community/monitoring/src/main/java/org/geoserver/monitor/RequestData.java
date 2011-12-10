@@ -122,6 +122,11 @@ public class RequestData implements Serializable {
     private String remoteUser;
 
     /**
+     * Remote user agent (user-agent header from request)
+     */
+    private String remoteUserAgent;
+
+    /**
      * Country request originated from (if available), obtained via geoip lookup.
      */
     private String remoteCountry;
@@ -343,6 +348,14 @@ public class RequestData implements Serializable {
 
     public void setRemoteUser(String remoteUser) {
         this.remoteUser = remoteUser;
+    }
+
+    public String getRemoteUserAgent() {
+        return remoteUserAgent;
+    }
+
+    public void setRemoteUserAgent(String remoteUserAgent) {
+        this.remoteUserAgent = remoteUserAgent;
     }
 
     public String getRemoteCountry() {

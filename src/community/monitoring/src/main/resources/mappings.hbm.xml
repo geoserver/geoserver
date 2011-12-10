@@ -34,6 +34,7 @@
     <property column="REMOTE_ADDRESS" name="remoteAddr" />
     <property column="REMOTE_HOST" name="remoteHost"/>
     <property column="REMOTE_USER" name="remoteUser"/>
+    <property column="REMOTE_USER_AGENT" name="remoteUserAgent" length="1024"/>
     <property column="REMOTE_COUNTRY" name="remoteCountry"/>
     <property column="REMOTE_CITY" name="remoteCity"/>
     <property column="REMOTE_LAT" name="remoteLat"/>

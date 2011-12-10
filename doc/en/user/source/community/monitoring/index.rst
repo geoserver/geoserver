@@ -11,6 +11,7 @@ based on the request data.
    :maxdepth: 2
 
    installation/
+   upgrade/
    overview/
    configuration/
    audit/

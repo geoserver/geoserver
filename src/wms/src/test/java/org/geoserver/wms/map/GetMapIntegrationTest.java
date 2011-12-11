@@ -1,7 +1,11 @@
 package org.geoserver.wms.map;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -128,5 +132,34 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals("image/png", response.getContentType());
+    }
+    
+    /**
+     * http://jira.codehaus.org/browse/GEOS-4893, make meta-tiler work
+     * with WMS 1.3 as well
+     * @throws Exception 
+     */
+    public void testMetaWMS13() throws Exception {
+        String wms11 = "wms?LAYERS=cite%3ALakes&STYLES=&FORMAT=image%2Fpng&TILED=true&TILESORIGIN=0.0006%2C-0.0018" +
+        		"&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=0.0006,-0.0018,0.0031,0.0007&WIDTH=256&HEIGHT=256";
+        String wms13 = "wms?LAYERS=cite%3ALakes&STYLES=&FORMAT=image%2Fpng&TILED=true&TILESORIGIN=-0.0018%2C0.0006" +
+        		"&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG%3A4326&BBOX=-0.0018,0.0006,0.0007,0.0031&WIDTH=256&HEIGHT=256";
+
+        BufferedImage image11 = getAsImage(wms11, "image/png");
+        BufferedImage image13 = getAsImage(wms13, "image/png");
+        
+        // compare the general structure
+        assertEquals(image11.getWidth(), image13.getWidth());
+        assertEquals(image11.getHeight(), image13.getHeight());
+        assertEquals(image11.getColorModel(), image13.getColorModel());
+        assertEquals(image11.getSampleModel(), image13.getSampleModel());
+        // compare the actual data
+        DataBufferByte db11 = (DataBufferByte) image11.getData().getDataBuffer();
+        DataBufferByte db13 = (DataBufferByte) image13.getData().getDataBuffer();
+        byte[][] bankData11 = db11.getBankData();
+        byte[][] bankData13 = db13.getBankData();
+        for (int i = 0; i < bankData11.length; i++) {
+            assertTrue(Arrays.equals(bankData11[i], bankData13[i]));
+        }
     }
 }

@@ -21,10 +21,14 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionListener;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wms.GetMapRequest;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.CanonicalSet;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -89,13 +93,22 @@ public class QuickTileCache implements TransactionListener {
      */
     public MetaTileKey getMetaTileKey(GetMapRequest request) {
         String mapDefinition = buildMapDefinition(request.getRawKvp());
-        Envelope bbox = request.getBbox();
+        ReferencedEnvelope bbox = new ReferencedEnvelope(request.getBbox(), request.getCrs());
         Point2D origin = request.getTilesOrigin();
+        if(CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
+            try {
+                bbox = new ReferencedEnvelope(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX(), 
+                        CRS.decode("EPSG:" + CRS.lookupEpsgCode(request.getCrs(), false)));
+                origin = new Point2D.Double(origin.getY(), origin.getX());
+            } catch(Exception e) {
+                throw new ServiceException("Failed to bring the bbox back in a EN order", e);
+            }
+        }
         MapKey mapKey = new MapKey(mapDefinition, normalize(bbox.getWidth() / request.getWidth()),
                 origin);
         Point tileCoords = getTileCoordinates(bbox, origin);
         Point metaTileCoords = getMetaTileCoordinates(tileCoords);
-        Envelope metaTileEnvelope = getMetaTileEnvelope(request, tileCoords, metaTileCoords);
+        ReferencedEnvelope metaTileEnvelope = getMetaTileEnvelope(bbox, tileCoords, metaTileCoords);
         MetaTileKey key = new MetaTileKey(mapKey, metaTileCoords, metaTileEnvelope);
 
         // since this will be used for thread synchronization, we have to make
@@ -104,14 +117,12 @@ public class QuickTileCache implements TransactionListener {
         return (MetaTileKey) metaTileKeys.unique(key);
     }
 
-    private Envelope getMetaTileEnvelope(GetMapRequest request, Point tileCoords,
-            Point metaTileCoords) {
-        Envelope bbox = request.getBbox();
+    private ReferencedEnvelope getMetaTileEnvelope(ReferencedEnvelope bbox, Point tileCoords, Point metaTileCoords) {
         double minx = bbox.getMinX() + (metaTileCoords.x - tileCoords.x) * bbox.getWidth();
         double miny = bbox.getMinY() + (metaTileCoords.y - tileCoords.y) * bbox.getHeight();
         double maxx = minx + bbox.getWidth() * 3;
         double maxy = miny + bbox.getHeight() * 3;
-        return new Envelope(minx, maxx, miny, maxy);
+        return new ReferencedEnvelope(minx, maxx, miny, maxy, bbox.getCoordinateReferenceSystem());
     }
 
     /**
@@ -248,16 +259,16 @@ public class QuickTileCache implements TransactionListener {
 
         Point metaTileCoords;
 
-        Envelope metaTileEnvelope;
+        ReferencedEnvelope metaTileEnvelope;
 
-        public MetaTileKey(MapKey mapKey, Point metaTileCoords, Envelope metaTileEnvelope) {
+        public MetaTileKey(MapKey mapKey, Point metaTileCoords, ReferencedEnvelope metaTileEnvelope) {
             super();
             this.mapKey = mapKey;
             this.metaTileCoords = metaTileCoords;
             this.metaTileEnvelope = metaTileEnvelope;
         }
 
-        public Envelope getMetaTileEnvelope() {
+        public ReferencedEnvelope getMetaTileEnvelope() {
             // This old code proved to be too much unstable, numerically wise, to be used
             // when very much zoomed in, so we moved to a local meta tile envelope computation
             // based on the requested tile bounds instead
@@ -322,7 +333,11 @@ public class QuickTileCache implements TransactionListener {
      * @return
      */
     public RenderedImage getTile(MetaTileKey key, GetMapRequest request, RenderedImage[] tiles) {
-        Point tileCoord = getTileCoordinates(request.getBbox(), key.mapKey.origin);
+        Envelope bbox = request.getBbox();
+        if(CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
+            bbox = new Envelope(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX());
+        }
+        Point tileCoord = getTileCoordinates(bbox, key.mapKey.origin);
         Point metaCoord = key.metaTileCoords;
 
         return tiles[tileCoord.x - metaCoord.x

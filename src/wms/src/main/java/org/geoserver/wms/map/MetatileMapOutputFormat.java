@@ -103,8 +103,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                 // alter the map definition so that we build a meta-tile instead
                 // of just the tile
                 ReferencedEnvelope origEnv = mapContent.getRenderingArea();
-                mapContent.getViewport().setBounds(new ReferencedEnvelope(key.getMetaTileEnvelope(),
-                        origEnv.getCoordinateReferenceSystem()));
+                mapContent.getViewport().setBounds(key.getMetaTileEnvelope());
                 mapContent.setMapWidth(key.getTileSize() * key.getMetaFactor());
                 mapContent.setMapHeight(key.getTileSize() * key.getMetaFactor());
                 mapContent.setTileSize(key.getTileSize());

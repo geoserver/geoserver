@@ -73,13 +73,5 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
             BeanDefinition def = reader.getBeanFactory().getBeanDefinition("geoServerLoader");
             def.setBeanClassName( "org.geoserver.test.TestGeoServerLoaderProxy");
         }
-        
-        try {
-            BeanDefinition def = reader.getBeanFactory().getBeanDefinition("wcsLoader");
-            def.getConstructorArgumentValues().clear();
-            def.setBeanClassName( "org.geoserver.wcs.WCSLoader");
-        }
-        catch( NoSuchBeanDefinitionException e ) {}
-
     }
 }

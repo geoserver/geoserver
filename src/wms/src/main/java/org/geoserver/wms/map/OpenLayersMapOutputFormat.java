@@ -31,6 +31,8 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.WMSLayer;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -140,6 +142,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             map.put("pureCoverage", hasOnlyCoverages(mapContent));
             map.put("styles", styleNames(mapContent));
             map.put("request", mapContent.getRequest());
+            map.put("yx", String.valueOf(isWms13FlippedCRS(mapContent.getRequest().getCrs())));
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
 
             String baseUrl = mapContent.getRequest().getBaseUrl();
@@ -172,6 +175,18 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             return result;
         } catch (TemplateException e) {
             throw new ServiceException(e);
+        }
+    }
+
+    private boolean isWms13FlippedCRS(CoordinateReferenceSystem crs) {
+        try {
+            String code = "EPSG:" + CRS.lookupIdentifier(crs, false);
+            code = WMS.toInternalSRS(code, WMS.version("1.3.0"));
+            CoordinateReferenceSystem crs13 = CRS.decode(code);
+            return CRS.getAxisOrder(crs13) == AxisOrder.NORTH_EAST;
+        } catch(Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to determine CRS axis order, assuming is EN", e);
+            return false;
         }
     }
 

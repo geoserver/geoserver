@@ -158,7 +158,8 @@
                     {
                         buffer: 0,
                         displayOutsideMaxExtent: true,
-                        isBaseLayer: true
+                        isBaseLayer: true,
+                        yx : {'${request.SRS?js_string}' : ${yx}}
                     } 
                 );
             
@@ -171,7 +172,12 @@
                         </#list>
                         format: format
                     },
-                    {singleTile: true, ratio: 1, isBaseLayer: true} 
+                    {
+                       singleTile: true, 
+                       ratio: 1, 
+                       isBaseLayer: true,
+                       yx : {'${request.SRS?js_string}' : ${yx}}
+                    } 
                 );
         
                 map.addLayers([untiled, tiled]);
@@ -197,9 +203,6 @@
                         EXCEPTIONS: "application/vnd.ogc.se_xml",
                         BBOX: map.getExtent().toBBOX(),
                         SERVICE: "WMS",
-                        VERSION: "1.1.1",
-                        X: e.xy.x,
-                        Y: e.xy.y,
                         INFO_FORMAT: 'text/html',
                         QUERY_LAYERS: map.layers[0].params.LAYERS,
                         FEATURE_COUNT: 50,
@@ -214,6 +217,18 @@
                         format: format,
                         styles: map.layers[0].params.STYLES,
                         srs: map.layers[0].params.SRS};
+                    
+                    // handle the wms 1.3 vs wms 1.1 madness
+                    if(map.layers[0].params.VERSION == "1.3.0") {
+                        params.version = "1.3.0";
+                        params.j = e.xy.x;
+                        params.i = e.xy.y;
+                    } else {
+                        params.version = "1.1.1";
+                        params.x = e.xy.x;
+                        params.y = e.xy.y;
+                    }
+                        
                     // merge filters
                     if(map.layers[0].params.CQL_FILTER != null) {
                         params.cql_filter = map.layers[0].params.CQL_FILTER;
@@ -298,17 +313,24 @@
                 */
             }
             
-            // sets the chosen style
-            function setStyle(style){
+            // sets the chosen WMS version
+            function setWMSVersion(wmsVersion){
                 // we may be switching style on setup
-                if(tiled == null)
+                if(wmsVersion == null)
                   return;
                   
+                if(wmsVersion == "1.3.0") {
+                   origin = map.maxExtent.bottom + ',' + map.maxExtent.left;
+                } else {
+                   origin = map.maxExtent.left + ',' + map.maxExtent.bottom;
+                }
+                  
                 tiled.mergeNewParams({
-                    styles: style
+                    version: wmsVersion,
+                    tilesOrigin : origin
                 });
                 untiled.mergeNewParams({
-                    styles: style
+                    version: wmsVersion
                 });
             }
             
@@ -413,6 +435,13 @@
     <body onload="init()">
         <div id="toolbar" style="display: none;">
             <ul>
+                <li>
+                    <a>WMS version:</a>
+                    <select id="wmsVersionSelector" onchange="setWMSVersion(value)">
+                        <option value="1.1.1">1.1.1</option>
+                        <option value="1.3.0">1.3.0</option>
+                    </select>
+                </li>
                 <li>
                     <a>Tiling:</a>
                     <select id="tilingModeSelector" onchange="setTileMode(value)">

@@ -16,6 +16,7 @@ A styling layer used for the unit tests of sldstyler
             categories of population, drawn in different colors</Abstract>
     <FeatureTypeStyle>
       <Rule>
+        <Title>2M - 4M</Title>
         <!-- like a linesymbolizer but with a fill too -->
         <Filter xmlns:gml="http://www.opengis.net/gml">
           <PropertyIsBetween>
@@ -36,6 +37,7 @@ A styling layer used for the unit tests of sldstyler
         </PolygonSymbolizer>
       </Rule>
       <Rule>
+        <Title>&lt; 2M</Title>
         <!-- like a linesymbolizer but with a fill too -->
         <Filter xmlns:gml="http://www.opengis.net/gml">
           <PropertyIsLessThan>
@@ -51,6 +53,7 @@ A styling layer used for the unit tests of sldstyler
         </PolygonSymbolizer>
       </Rule>
       <Rule>
+        <Title>&gt; 4M</Title>
         <!-- like a linesymbolizer but with a fill too -->
         <Filter xmlns:gml="http://www.opengis.net/gml">
           <PropertyIsGreaterThan>

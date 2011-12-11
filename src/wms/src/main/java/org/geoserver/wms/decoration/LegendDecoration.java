@@ -129,8 +129,12 @@ public class LegendDecoration implements MapDecoration {
                             g2d
                             );
                     x = Math.max(x, (int)legend.width);
-                    x = Math.max(x, TITLE_INDENT + metrics.stringWidth(findTitle(layer, catalog)));
-                    y += legend.height + metrics.getHeight(); 
+					y += legend.height;
+                    String title = findTitle(layer, catalog);
+                    if (title != null) {
+                        x = Math.max(x, TITLE_INDENT + metrics.stringWidth(title));
+						y += metrics.getHeight(); 
+                    }
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Error sizing legend for " + layer);
                     continue;
@@ -180,9 +184,12 @@ public class LegendDecoration implements MapDecoration {
             SimpleFeatureType type = (SimpleFeatureType)layer.getFeatureSource().getSchema();
             if (!isGridLayer(type)) {
                 try { 
-                    g2d.translate(0, metrics.getHeight());
-                    g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
-                    g2d.drawString(findTitle(layer, catalog), TITLE_INDENT, 0 - metrics.getDescent());
+                    String title = findTitle(layer, catalog);
+                    if (title != null) {
+                        g2d.translate(0, metrics.getHeight());
+                        g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
+                        g2d.drawString(title, TITLE_INDENT, 0 - metrics.getDescent());
+                    }
                     g2d.setFont(g2d.getFont().deriveFont(Font.PLAIN));
                     Dimension dim = drawLegend(
                             type,
@@ -210,6 +217,9 @@ public class LegendDecoration implements MapDecoration {
     }
 
     private String findTitle(Layer layer, Catalog catalog) {
+        if(layer.getTitle() == null) {
+            return null;
+        }
         String[] nameparts = layer.getTitle().split(":");
 
         ResourceInfo resource = nameparts.length > 1 

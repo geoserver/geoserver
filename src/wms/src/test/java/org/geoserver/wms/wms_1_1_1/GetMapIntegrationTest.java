@@ -4,8 +4,10 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
@@ -17,7 +19,9 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
@@ -139,6 +143,29 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         checkImage(response);
+    }
+    
+    public void testLayoutLegendNPE() throws Exception {
+        // set the title to null
+        FeatureTypeInfo states = getCatalog().getFeatureTypeByName("states");
+        states.setTitle(null);
+        getCatalog().save(states);
+        
+        // add the layout to the data dir
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("test-layout.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout.xml"));
+        
+        // get a map with the layout, it used to NPE
+        BufferedImage image = getAsImage("wms?bbox=" + bbox
+                + "&styles=Population&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&format_options=layout:test-layout", "image/png");
+        //RenderedImageBrowser.showChain(image);
+        
+        // check the pixels that should be in the legend
+        assertPixel(image, 12, 20, Color.RED);
+        assertPixel(image, 12, 36, Color.GREEN);
+        assertPixel(image, 12, 56, Color.BLUE);
     }
     
     public void testGeotiffMime() throws Exception {

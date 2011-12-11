@@ -101,12 +101,17 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
 
                 // alter the map definition so that we build a meta-tile instead
                 // of just the tile
-                ReferencedEnvelope origEnv = mapContext.getAreaOfInterest();
-                mapContext.setAreaOfInterest(new ReferencedEnvelope(key.getMetaTileEnvelope(),
-                        origEnv.getCoordinateReferenceSystem()));
+                mapContext.setAreaOfInterest(key.getMetaTileEnvelope());
                 mapContext.setMapWidth(key.getTileSize() * key.getMetaFactor());
                 mapContext.setMapHeight(key.getTileSize() * key.getMetaFactor());
                 mapContext.setTileSize(key.getTileSize());
+//=======
+//                ReferencedEnvelope origEnv = mapContent.getRenderingArea();
+//                mapContent.getViewport().setBounds(key.getMetaTileEnvelope());
+//                mapContent.setMapWidth(key.getTileSize() * key.getMetaFactor());
+//                mapContent.setMapHeight(key.getTileSize() * key.getMetaFactor());
+//                mapContent.setTileSize(key.getTileSize());
+//>>>>>>> 9cce1e1... [GEOS-4893] GeoServer own on the fly meta-tiling won't work with WMS 1.3
 
                 RenderedImageMap metaTileMap = delegate.produceMap(mapContext);
 

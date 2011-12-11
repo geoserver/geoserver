@@ -1,0 +1,5 @@
+<layout>
+    <decoration type="scaleline" affinity="bottom,left" offset="36,6"/>
+
+    <decoration type="legend" affinity="top,left" offset="6,6" size="auto"/>
+</layout>

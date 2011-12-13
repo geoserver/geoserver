@@ -26,6 +26,7 @@ import org.geoserver.data.test.TestData;
 public class WMSDimensionsTestSupport extends WMSTestSupport {
 
     protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
 
     @Override
@@ -34,6 +35,8 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
     	dataDirectory.addStyle("TimeElevation", getClass().getResource("../TimeElevation.sld"));
         dataDirectory.addPropertiesType(V_TIME_ELEVATION, getClass().getResource("../TimeElevation.properties"), 
         		Collections.singletonMap(MockData.KEY_STYLE, "TimeElevation"));
+        dataDirectory.addPropertiesType(V_TIME_ELEVATION_EMPTY, getClass().getResource("../TimeElevationEmpty.properties"),
+                Collections.singletonMap(MockData.KEY_STYLE, "TimeElevation"));
         
         // add a raster mosaic with time and elevation
         URL style = getClass().getResource("../temperature.sld");
@@ -66,8 +69,8 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
     
-    protected void setupVectorDimension(String metadata, String attribute, DimensionPresentation presentation, Double resolution) {
-        FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevation");
+    protected void setupVectorDimension(String featureTypeName, String metadata, String attribute, DimensionPresentation presentation, Double resolution) {
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setAttribute(attribute);
@@ -77,6 +80,10 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         }
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
+    }
+
+    protected void setupVectorDimension(String metadata, String attribute, DimensionPresentation presentation, Double resolution) {
+        setupVectorDimension("TimeElevation", metadata, attribute, presentation, resolution);
     }
     
     protected void setupRasterDimension(String metadata, DimensionPresentation presentation, Double resolution) {

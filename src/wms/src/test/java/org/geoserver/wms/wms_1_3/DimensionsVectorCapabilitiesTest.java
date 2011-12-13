@@ -7,6 +7,7 @@ package org.geoserver.wms.wms_1_3;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.w3c.dom.Document;
@@ -18,6 +19,51 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
         assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='sf:TimeElevation'])", dom);
         assertXpathEvaluatesTo("0", "count(//wms:Layer/wms:Dimension)", dom);
+    }
+    
+    public void testEmptyDataSet() throws Exception {
+        for (DimensionPresentation p : DimensionPresentation.values()) {
+            setupVectorDimension(V_TIME_ELEVATION_EMPTY.getLocalPart(), ResourceInfo.TIME, "time", p, null);
+            checkEmptyTimeDimensionAndExtent();
+        }
+
+        // clear time metadata
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(V_TIME_ELEVATION_EMPTY.getLocalPart());
+        info.getMetadata().remove(ResourceInfo.TIME);
+        getCatalog().save(info);
+
+        for (DimensionPresentation p : DimensionPresentation.values()) {
+            setupVectorDimension(V_TIME_ELEVATION_EMPTY.getLocalPart(), ResourceInfo.ELEVATION, "elevation", p, null);
+            checkEmptyElevationDimensionAndExtent();
+        }
+    }
+
+    void checkEmptyElevationDimensionAndExtent() throws Exception {
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+        
+        // check dimension info exists
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("EPSG:5030", "//wms:Layer/wms:Dimension/@units", dom);
+        // check we have the extent
+        assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("0.0", "//wms:Layer/wms:Dimension/@default", dom);
+        // and that it is empty
+        assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension", dom);
+    }
+
+    void checkEmptyTimeDimensionAndExtent() throws Exception {
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+
+        // check dimension info exists
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
+        // check we have the extent
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        // and that it is empty
+        assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension", dom);
     }
 
     public void testElevationList() throws Exception {

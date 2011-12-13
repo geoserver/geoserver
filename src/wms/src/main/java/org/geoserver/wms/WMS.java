@@ -51,6 +51,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
@@ -881,10 +882,14 @@ public class WMS implements ApplicationContextAware {
         } else {
             final MinVisitor min = new MinVisitor(time.getAttribute());
             collection.accepts(min, null);
-            result.add((Date) min.getMin());
-            final MaxVisitor max = new MaxVisitor(time.getAttribute());
-            collection.accepts(max, null);
-            result.add((Date) max.getMax());
+            CalcResult minResult = min.getResult();
+            // check calcresult first to avoid potential IllegalStateException if no features are in collection
+            if (minResult != CalcResult.NULL_RESULT) {
+                result.add((Date) min.getMin());
+                final MaxVisitor max = new MaxVisitor(time.getAttribute());
+                collection.accepts(max, null);
+                result.add((Date) max.getMax());
+            }
         }
 
         return result;
@@ -928,10 +933,14 @@ public class WMS implements ApplicationContextAware {
         } else {
             final MinVisitor min = new MinVisitor(elevation.getAttribute());
             collection.accepts(min, null);
-            result.add(((Number) min.getMin()).doubleValue());
-            final MaxVisitor max = new MaxVisitor(elevation.getAttribute());
-            collection.accepts(max, null);
-            result.add(((Number) max.getMax()).doubleValue());
+            // check calcresult first to avoid potential IllegalStateException if no features are in collection
+            CalcResult calcResult = min.getResult();
+            if (calcResult != CalcResult.NULL_RESULT) {
+                result.add(((Number) min.getMin()).doubleValue());
+                final MaxVisitor max = new MaxVisitor(elevation.getAttribute());
+                collection.accepts(max, null);
+                result.add(((Number) max.getMax()).doubleValue());
+            }
         }
 
         return result;

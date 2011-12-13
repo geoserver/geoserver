@@ -331,19 +331,27 @@ abstract class DimensionHelper {
     private void handleTimeDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
         // build the time dim representation
         TreeSet<Date> values = wms.getFeatureTypeTimes(typeInfo);
-        DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME,
+        String timeMetadata;
+        if (values != null && !values.isEmpty()) {
+            DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME,
                 DimensionInfo.class);
-        String timeMetadata = getTemporalDomainRepresentation(timeInfo, (TreeSet<Date>) values);
-
+            timeMetadata = getTemporalDomainRepresentation(timeInfo, values);
+        } else {
+            timeMetadata = "";
+        }
         writeTimeDimension(timeMetadata);
     }
     
     private void handleElevationDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
-        
-        TreeSet<Double> elevations = new TreeSet<Double>(wms.getFeatureTypeElevations(typeInfo));
-        DimensionInfo di = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
-                DimensionInfo.class);
-        final String elevationMetadata = getZDomainRepresentation(di, elevations);
+        TreeSet<Double> elevations = wms.getFeatureTypeElevations(typeInfo);
+        String elevationMetadata;
+        if (elevations != null && !elevations.isEmpty()) {
+            DimensionInfo di = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
+                    DimensionInfo.class);
+            elevationMetadata = getZDomainRepresentation(di, elevations);
+        } else {
+            elevationMetadata = "";
+        }
 
         writeElevationDimension(elevations, elevationMetadata);
     }
@@ -364,13 +372,14 @@ abstract class DimensionHelper {
 
     private void writeElevationDimension(TreeSet<Double> elevations, final String elevationMetadata) {
         AttributesImpl elevDim = new AttributesImpl();
+        Double defaultValue = elevations == null || elevations.isEmpty() ? 0 : elevations.first();
         if (mode == Mode.WMS11) {
             elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(elevations.first()));
+            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
             element("Extent", elevationMetadata, elevDim);
         } else {
             elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(elevations.first()));
+            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
             elevDim.addAttribute("", "units", "units", "", "EPSG:5030");
             elevDim.addAttribute("", "unitSymbol", "unitSymbol", "", "m");
             element("Dimension", elevationMetadata, elevDim);

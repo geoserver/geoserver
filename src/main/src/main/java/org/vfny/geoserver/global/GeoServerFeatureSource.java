@@ -15,7 +15,6 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.FeatureListener;
 import org.geotools.data.FeatureLocking;
 import org.geotools.data.FeatureSource;
@@ -30,9 +29,10 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
+import org.geotools.feature.collection.MaxSimpleFeatureCollection;
+import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
-import org.geotools.feature.collection.MaxSimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
@@ -43,6 +43,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.OperationNotFoundException;
@@ -347,6 +348,17 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      */
     public SimpleFeatureCollection getFeatures(Query query)
             throws IOException {
+        // check for a sort in the query, if the underlying store does not do sorting
+        // then we need to apply it after the fact
+        SortBy[] sortBy = query.getSortBy();
+        if(sortBy != null && sortBy != SortBy.UNSORTED) {
+            if(!source.getQueryCapabilities().supportsSorting(sortBy)) {
+                query.setSortBy(null);
+            } else {
+                sortBy = null;
+            }
+        }
+        
         //check for an offset in the query, if the underlying store does not do offsets then 
         // we need to apply it after the fact along with max features
         Integer offset = null, maxFeatures = null;
@@ -367,6 +379,11 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         try {
             //this is the raw "unprojected" feature collection
             SimpleFeatureCollection fc = source.getFeatures(newQuery);
+            
+            // apply sorting if necessary
+            if(sortBy != null) {
+                fc = new SortedSimpleFeatureCollection(fc, sortBy);
+            }
             
             //apply limit offset if necessary
             if (offset != null) {
@@ -643,6 +660,18 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     }
 
     public QueryCapabilities getQueryCapabilities() {
-        return source.getQueryCapabilities();
+        // we can do both sorting and offset locally if necessary
+        return new QueryCapabilitiesDecorator(source.getQueryCapabilities()) {
+            @Override
+            public boolean isOffsetSupported() {
+                return true;
+            }
+            
+            @Override
+            public boolean supportsSorting(SortBy[] sortAttributes) {
+                return true;
+            }
+        };
+        
     }   
 }

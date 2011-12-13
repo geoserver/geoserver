@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs.kvp;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -246,6 +247,11 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         if (kvp.containsKey("featureVersion")) {
             querySet(eObject, "featureVersion",
                 Collections.singletonList((String) kvp.get("featureVersion")));
+        }
+        
+        //count, in WFS 2.0 maxFeatures -> count
+        if (kvp.containsKey("count") && !eObject.eIsSet(EMFUtils.feature(eObject, "maxFeatures"))) {
+            ((GetFeatureType) eObject).setMaxFeatures((BigInteger)kvp.get("count"));
         }
         
         if(kvp.containsKey("format_options")) {

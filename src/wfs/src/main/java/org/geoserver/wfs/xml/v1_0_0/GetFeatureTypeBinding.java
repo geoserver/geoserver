@@ -12,6 +12,7 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
 
+import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
@@ -114,19 +115,19 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         }
 
         //get the max features
-        BigInteger maxFeatures = null;
         Number number = (Number) node.getAttributeValue("maxFeatures");
-
         if (number != null) {
-            if (number instanceof BigInteger) {
-                maxFeatures = (BigInteger) number;
-            } else {
-                maxFeatures = BigInteger.valueOf(number.longValue());
-            }
-
-            getFeature.setMaxFeatures(maxFeatures);
+            getFeature.setMaxFeatures(WFSBindingUtils.asBigInteger(number));
         }
-
+        
+        //startIndex (wfs 2.0)
+        if (node.hasAttribute("startIndex")) {
+            //convert manually since this is not standard schema for wfs 1.1
+            BigInteger startIndex = 
+                Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class);
+            getFeature.setStartIndex(startIndex);
+        }
+        
         //queries
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
 

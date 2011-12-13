@@ -447,6 +447,20 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathExists("//sf:description", dom);
     }
     
+    public void testSortedAscending() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS) + "&version=1.1.0&service=wfs&sortBy=ADDRESS");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
+        XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[2]/cite:FID", dom);
+    }
+    
+    public void testSortedDescending() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS) + "&version=1.1.0&service=wfs&sortBy=ADDRESS D");
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[1]/cite:FID", dom);
+        XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[2]/cite:FID", dom);
+    }
+    
     public static void main(String[] args) {
         TestRunner runner = new TestRunner();
         runner.run(GetFeatureTest.class);

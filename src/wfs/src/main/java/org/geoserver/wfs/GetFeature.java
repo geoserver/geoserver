@@ -162,6 +162,11 @@ public class GetFeature {
         }
 
         int count = 0; //should probably be long
+        
+        // offset into result set in which to return features
+        int offset = request.getStartIndex() != null ? request.getStartIndex().intValue() : -1;
+
+        
         List results = new ArrayList();
         try {
             for (int i = 0; (i < request.getQuery().size()) && (count < maxFeatures); i++) {
@@ -365,7 +370,7 @@ public class GetFeature {
                 if(meta.getMaxFeatures() > 0 && meta.getMaxFeatures() < queryMaxFeatures)
                     queryMaxFeatures = meta.getMaxFeatures();
                 Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
-                org.geotools.data.Query gtQuery = toDataQuery(query, queryMaxFeatures, source, request, viewParam);
+                org.geotools.data.Query gtQuery = toDataQuery(query, offset, queryMaxFeatures, source, request, viewParam);
                 
                 LOGGER.fine("Query is " + query + "\n To gt2: " + gtQuery);
 
@@ -379,13 +384,47 @@ public class GetFeature {
                     features.getSchema().getUserData().put("targetCrs", query.getSrsName());
                     features.getSchema().getUserData().put("targetVersion", request.getVersion());
                 }
+
                 // optimization: WFS 1.0 does not require count unless we have multiple query elements
                 // and we are asked to perform a global limit on the results returned
-                if(("1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion())) && 
-                        (request.getQuery().size() == 1 || maxFeatures == Integer.MAX_VALUE)) {
-                    // skip the count update, in this case we don't need it
+                boolean wfs10 = "1.0".equals(request.getVersion()) || "1.0.0".equals(request.getVersion());
+                boolean hasMaxFeatures = maxFeatures < Integer.MAX_VALUE;
+                boolean lastQuery = (i == request.getQuery().size() - 1);
+                boolean hasOffset = offset > 0;
+                boolean calculateSize;
+                if(!wfs10) {
+                    calculateSize = true;
                 } else {
-                	count += features.size();
+                    calculateSize = (hasMaxFeatures || hasOffset) &&  !lastQuery; 
+                }
+                  
+                // get the size and update count if necessary
+                int size = 0;
+                if(calculateSize) {
+                    size = features.size();
+                    count += size;
+                }
+                
+                
+                // if offset is present we need to check the size of this returned feature
+                // collection
+                // and adjust the offset for the next feature collection accordingly
+                if (offset > 0) {
+                    if (size > 0) {
+                        // features returned, offset can be set to zero
+                        offset = 0;
+                    } else {
+                        // no features might have been because of the offset that was specified,
+                        // check the size of the same query but with no offset
+                        Query q2 = toDataQuery(query, 0, queryMaxFeatures, source, request, viewParam);
+
+                        // int size2 = getFeatures(request, source, q2).size();
+                        int size2 = source.getCount(q2);
+                        if (size2 > 0) {
+                            // adjust the offset for the next query
+                            offset = Math.max(0, offset - size2);
+                        }
+                    }
                 }
                 
                 // we may need to shave off geometries we did load only to make bounds
@@ -398,12 +437,6 @@ public class GetFeature {
                     SimpleFeatureType targetType = DataUtilities.createSubType((SimpleFeatureType) features.getSchema(), residualNames);
                     features = new FeatureBoundsFeatureCollection((SimpleFeatureCollection) features, targetType);
                 }
-
-                //JD: TODO reoptimize
-                //                if ( i == request.getQuery().size() - 1 ) { 
-                //                	//DJB: dont calculate feature count if you dont have to. The MaxFeatureReader will take care of the last iteration
-                //                	maxFeatures -= features.getCount();
-                //                }
 
                 //GR: I don't know if the featuresults should be added here for later
                 //encoding if it was a lock request. may be after ensuring the lock
@@ -497,10 +530,9 @@ public class GetFeature {
      * @return A Query for use with the FeatureSource interface
      *
      */
-    public org.geotools.data.Query toDataQuery(QueryType query, int maxFeatures,
+    public org.geotools.data.Query toDataQuery(QueryType query, int offset, int maxFeatures,
         FeatureSource<? extends FeatureType, ? extends Feature> source, GetFeatureType request, 
         Map<String, String> viewParams) throws WFSException {
-       
         String wfsVersion = request.getVersion();
         
         if (maxFeatures <= 0) {
@@ -571,6 +603,12 @@ public class GetFeature {
         //handle version, datastore may be able to use it
         if (query.getFeatureVersion() != null) {
             dataQuery.setVersion(query.getFeatureVersion());
+        }
+        
+        //handle offset / start index
+        if (offset > 0) {
+            // GeoServer makes sure offset is always supported
+            dataQuery.setStartIndex(offset);
         }
 
         //create the Hints to set at the end

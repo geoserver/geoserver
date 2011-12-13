@@ -237,6 +237,15 @@
 		<constructor-arg index="0" value="maxFeatures"/>
 		<constructor-arg index="1" value="java.math.BigInteger"/>
 	</bean>
+	<bean id="countKvpParser" class="org.geoserver.ows.util.NumericKvpParser">
+        <constructor-arg index="0" value="count"/>
+        <constructor-arg index="1" value="java.math.BigInteger"/>
+    </bean>
+    <bean id="wfsStartIndexKvpParser" class="org.geoserver.ows.util.NumericKvpParser">
+        <constructor-arg index="0" value="startIndex"/>
+        <constructor-arg index="1" value="java.math.BigInteger"/>
+        <property name="service" value="WFS"/>
+    </bean>
 	
 	<bean id="srsNameKvpParser" class="org.geoserver.wfs.kvp.SrsNameKvpParser"/>
 	<bean id="sortByKvpParser" class="org.geoserver.wfs.kvp.SortByKvpParser">

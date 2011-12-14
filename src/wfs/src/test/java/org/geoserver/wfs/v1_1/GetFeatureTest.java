@@ -453,6 +453,24 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("2", "count(//cite:Buildings)", dom);
         XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
         XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[2]/cite:FID", dom);
+        
+        // with max features
+        dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&sortBy=ADDRESS&maxFeatures=1");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
+        
+        // and with paging, first page
+        dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&sortBy=ADDRESS&maxFeatures=1&startIndex=0");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
+        
+        // second page
+        dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&sortBy=ADDRESS&maxFeatures=1&startIndex=1");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[1]/cite:FID", dom);
     }
 
     public void testSortedDescending() throws Exception {
@@ -461,6 +479,24 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("2", "count(//cite:Buildings)", dom);
         XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[1]/cite:FID", dom);
         XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[2]/cite:FID", dom);
+        
+        // with max features
+        dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&sortBy=ADDRESS D&maxFeatures=1");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[1]/cite:FID", dom);
+        
+        // and with paging, first page
+        dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&sortBy=ADDRESS D&maxFeatures=1&startIndex=0");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("114", "//cite:Buildings[1]/cite:FID", dom);
+        
+        // second page
+        dom = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&sortBy=ADDRESS D&maxFeatures=1&startIndex=1");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
+        XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
     }
     
     public static void main(String[] args) {

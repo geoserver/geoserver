@@ -336,9 +336,19 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         // check for a sort in the query, if the underlying store does not do sorting
         // then we need to apply it after the fact
         SortBy[] sortBy = query.getSortBy();
+        Integer offset = null, maxFeatures = null;
         if(sortBy != null && sortBy != SortBy.UNSORTED) {
             if(!source.getQueryCapabilities().supportsSorting(sortBy)) {
                 query.setSortBy(null);
+                
+                // if paging is in and we cannot do sorting natively
+                // we should not let the datastore handle it: we need to sort first, then
+                // page on it
+                offset = query.getStartIndex();
+                maxFeatures = query.getMaxFeatures() == Integer.MAX_VALUE ? null : query.getMaxFeatures();
+                
+                query.setStartIndex(null);
+                query.setMaxFeatures(Query.DEFAULT_MAX);
             } else {
                 sortBy = null;
             }
@@ -346,12 +356,11 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         
         // check for an offset in the query, if the underlying store does not do offsets then
         // we need to apply it after the fact along with max features
-        Integer offset = null, maxFeatures = null;
         if (query.getStartIndex() != null) {
             if (!source.getQueryCapabilities().isOffsetSupported()) {
                 offset = query.getStartIndex();
-                maxFeatures = query.getMaxFeatures();
-
+                maxFeatures = query.getMaxFeatures() == Integer.MAX_VALUE ? null : query.getMaxFeatures();
+                
                 query.setStartIndex(null);
                 query.setMaxFeatures(Query.DEFAULT_MAX);
             }
@@ -369,10 +378,10 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             if(sortBy != null) {
                 fc = new SortedSimpleFeatureCollection(fc, sortBy);
             }
-
-            // apply limit offset if necessary
-            if (offset != null) {
-                fc = new MaxSimpleFeatureCollection(fc, offset, maxFeatures);
+            //apply limit offset if necessary
+            if (offset != null || maxFeatures != null) {
+                fc = new MaxSimpleFeatureCollection(fc, offset == null ? 0 : offset, 
+                        maxFeatures == null ? Integer.MAX_VALUE : maxFeatures);
             }
 
             // apply reprojection

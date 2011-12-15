@@ -1034,11 +1034,11 @@ public class WMS implements ApplicationContextAware {
      * native capabilities allow for it
      * 
      * @param typeInfo
-     * @param time
+     * @param dimension
      * @return
      * @throws IOException
      */
-    FeatureCollection getDimensionCollection(FeatureTypeInfo typeInfo, DimensionInfo time)
+    FeatureCollection getDimensionCollection(FeatureTypeInfo typeInfo, DimensionInfo dimension)
             throws IOException {
         // grab the feature source
         FeatureSource source = null;
@@ -1050,21 +1050,10 @@ public class WMS implements ApplicationContextAware {
                             + typeInfo.getPrefixedName(), e);
         }
 
-        // build query to grab the time info
+        // build query to grab the dimension values
         final Query dimQuery = new Query(source.getSchema().getName().getLocalPart());
-        final SortBy[] sortBy = new SortBy[] { new SortByImpl(
-                FeatureUtilities.DEFAULT_FILTER_FACTORY.property(time.getAttribute()),
-                SortOrder.ASCENDING) };
-
-        // are able to sort at the store level?
-        // if the store does not support sorting we have to do it by hand
-        final QueryCapabilities queryCapabilities = source.getQueryCapabilities();
-        if (queryCapabilities.supportsSorting(sortBy)) {
-            dimQuery.setSortBy(sortBy);
-        }
-        dimQuery.setPropertyNames(Arrays.asList(time.getAttribute()));
-        FeatureCollection collection = (SimpleFeatureCollection) source.getFeatures(dimQuery);
-        return collection;
+        dimQuery.setPropertyNames(Arrays.asList(dimension.getAttribute()));
+        return source.getFeatures(dimQuery);
     }
 
     /**

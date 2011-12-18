@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 /**
@@ -21,8 +22,15 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     public static Property<WorkspaceInfo> NAME = 
         new BeanProperty<WorkspaceInfo>( "name", "name" );
     
-    public static Property<WorkspaceInfo> DEFAULT = 
-        new BeanProperty<WorkspaceInfo>( "default", "default" );
+    public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<WorkspaceInfo>("default") {
+
+        @Override
+        public Object getPropertyValue(WorkspaceInfo item) {
+            Catalog catalog = GeoServerApplication.get().getCatalog();
+            WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
+            return Boolean.valueOf(defaultWorkspace != null && defaultWorkspace.equals(item));
+        }
+    };
 
     static List PROPERTIES = Arrays.asList(NAME, DEFAULT);
     

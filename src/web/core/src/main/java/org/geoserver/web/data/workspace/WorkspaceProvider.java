@@ -24,7 +24,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     
     public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<WorkspaceInfo>("default") {
 
-        @Override
+        // @Override
         public Object getPropertyValue(WorkspaceInfo item) {
             Catalog catalog = GeoServerApplication.get().getCatalog();
             WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();

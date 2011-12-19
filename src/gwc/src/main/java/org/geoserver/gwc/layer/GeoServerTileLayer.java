@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -274,9 +275,9 @@ public class GeoServerTileLayer extends TileLayer {
         possibleValues.add(defaultStyle);
         possibleValues.addAll(styleNames);
         StringParameterFilter styleParamFilter = new StringParameterFilter();
-        styleParamFilter.key = "STYLES";
-        styleParamFilter.defaultValue = defaultStyle;
-        styleParamFilter.values = new ArrayList<String>(possibleValues);
+        styleParamFilter.setKey("STYLES");
+        styleParamFilter.setDefaultValue(defaultStyle);
+        styleParamFilter.getValues().addAll(possibleValues);
         return styleParamFilter;
     }
 
@@ -504,12 +505,17 @@ public class GeoServerTileLayer extends TileLayer {
         synchronized (metaGridLoc) {
             // got the lock on the meta tile, try again
             if (tryCache && tryCacheFetch(tile)) {
-                LOGGER.finest("--> " + Thread.currentThread().getName() + " returns cache hit for "
-                        + Arrays.toString(metaTile.getMetaGridPos()));
+                if (LOGGER.isLoggable(Level.FINEST)) {
+                    LOGGER.finest("--> " + Thread.currentThread().getName()
+                            + " returns cache hit for "
+                            + Arrays.toString(metaTile.getMetaGridPos()));
+                }
             } else {
-                LOGGER.finer("--> " + Thread.currentThread().getName()
-                        + " submitting getMap request for meta grid location "
-                        + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
+                if (LOGGER.isLoggable(Level.FINER)) {
+                    LOGGER.finer("--> " + Thread.currentThread().getName()
+                            + " submitting getMap request for meta grid location "
+                            + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
+                }
                 RenderedImageMap map;
                 try {
                     map = dispatchGetMap(tile, metaTile);
@@ -696,7 +702,7 @@ public class GeoServerTileLayer extends TileLayer {
             }
             BoundingBox extent = getBoundsFromWGS84Bounds(latLonBbox, gridSet.getSrs());
             Integer zoomStart = 0;
-            Integer zoomStop = gridSet.getGrids().length - 1;
+            Integer zoomStop = gridSet.getGridLevels().length - 1;
             GridSubset gridSubSet;
             gridSubSet = GridSubsetFactory.createGridSubSet(gridSet, extent, zoomStart, zoomStop);
             grids.put(gridSetId, gridSubSet);
@@ -767,8 +773,11 @@ public class GeoServerTileLayer extends TileLayer {
         return info;
     }
 
+    /**
+     * @see org.geowebcache.layer.TileLayer#getGridSubsets()
+     */
     @Override
-    public synchronized Map<String, GridSubset> getGridSubsets() {
+    public Set<String> getGridSubsets() {
         if (this.subSets == null) {
             ReferencedEnvelope latLongBbox = getLatLonBbox();
             try {
@@ -778,12 +787,38 @@ public class GeoServerTileLayer extends TileLayer {
                 String msg = "Can't create grids for '" + getName() + "': " + e.getMessage();
                 LOGGER.log(Level.WARNING, msg, e);
                 setConfigErrorMessage(msg);
-                return Collections.emptyMap();
+                return Collections.emptySet();
             }
         }
-        return this.subSets;
+        return new HashSet<String>(this.subSets.keySet());
     }
 
+    /**
+     * @see org.geowebcache.layer.TileLayer#getGridSubset(java.lang.String)
+     */
+    @Override
+    public GridSubset getGridSubset(String gridSetId) {
+        if (!getGridSubsets().contains(gridSetId)) {
+            return null;
+        }
+        return subSets.get(gridSetId);
+    }
+
+    /**
+     * @see org.geowebcache.layer.TileLayer#removeGridSubset(java.lang.String)
+     */
+    @Override
+    public GridSubset removeGridSubset(String gridSetId) {
+        throw new UnsupportedOperationException("not yet implemented nor used");
+    }
+
+    /**
+     * @see org.geowebcache.layer.TileLayer#addGridSubset(org.geowebcache.grid.GridSubset)
+     */
+    @Override
+    public void addGridSubset(GridSubset gridSubset) {
+        throw new UnsupportedOperationException("not yet implemented nor used");
+    }
     /**
      * @see org.geowebcache.layer.TileLayer#getUpdateSources()
      */

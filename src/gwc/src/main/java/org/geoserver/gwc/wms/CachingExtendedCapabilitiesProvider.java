@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
@@ -105,11 +106,10 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
 
         for (TileLayer layer : tileLayers) {
 
-            Map<String, GridSubset> gridSubsets = layer.getGridSubsets();
+            Set<String> layerGrids = layer.getGridSubsets();
 
-            Collection<GridSubset> layerGrids = gridSubsets.values();
-
-            for (GridSubset grid : layerGrids) {
+            for (String gridId : layerGrids) {
+                GridSubset grid = layer.getGridSubset(gridId);
                 for (MimeType mime : layer.getMimeTypes()) {
                     vendorSpecificTileset(tx, layer, grid, mime.getFormat());
                 }

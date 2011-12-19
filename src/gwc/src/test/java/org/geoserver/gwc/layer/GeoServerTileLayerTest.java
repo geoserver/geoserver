@@ -331,7 +331,7 @@ public class GeoServerTileLayerTest extends TestCase {
 
     public void testGetGridSubsets() throws Exception {
         layerInfoTileLayer = new GeoServerTileLayer(catalogConfig, layerInfo);
-        Map<String, GridSubset> gridSubsets = layerInfoTileLayer.getGridSubsets();
+        Set<String> gridSubsets = layerInfoTileLayer.getGridSubsets();
         assertNotNull(gridSubsets);
         assertEquals(2, gridSubsets.size());
 
@@ -429,7 +429,8 @@ public class GeoServerTileLayerTest extends TestCase {
             assertTrue(e.getMessage().contains("gridset not found"));
         }
 
-        long[] tileIndex = { 0, 0, 1 };
+        long[] coverage = layerInfoTileLayer.getGridSubset("EPSG:4326").getCoverage(1);
+        long[] tileIndex = { coverage[0] - 1, coverage[1], 1 };// outside coverage bounds
         MimeType mimeType = MimeType.createFromFormat("image/png");
         tile = new ConveyorTile(storageBroker, layerInfoTileLayer.getName(), "EPSG:900913",
                 tileIndex, mimeType, null, servletReq, servletResp);

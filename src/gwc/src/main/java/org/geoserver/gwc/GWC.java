@@ -223,12 +223,13 @@ public class GWC implements DisposableBean, InitializingBean {
             throws GeoWebCacheException {
 
         final TileLayer tileLayer = tld.getTileLayer(layerName);
-        final Collection<GridSubset> gridSubSets = tileLayer.getGridSubsets().values();
+        final Collection<String> gridSubSets = tileLayer.getGridSubsets();
 
         /*
          * Create a truncate task for each gridSubset (CRS), format and style
          */
-        for (GridSubset layerGrid : gridSubSets) {
+        for (String layerGridId : gridSubSets) {
+            GridSubset layerGrid = tileLayer.getGridSubset(layerGridId);
             BoundingBox intersectingBounds = getIntersectingBounds(layerName, layerGrid, bounds);
             if (intersectingBounds == null) {
                 continue;
@@ -310,7 +311,7 @@ public class GWC implements DisposableBean, InitializingBean {
             styleNames = Collections.singleton(styleName);
         }
         if (gridSetName == null) {
-            gridSetIds = layer.getGridSubsets().keySet();
+            gridSetIds = layer.getGridSubsets();
         } else {
             gridSetIds = Collections.singleton(gridSetName);
         }

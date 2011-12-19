@@ -130,6 +130,7 @@ public class CatalogConfiguration implements Configuration {
      * @see #createLayer(LayerGroupInfo)
      * @see org.geowebcache.config.Configuration#getTileLayers()
      */
+    @Override
     public List<GeoServerTileLayer> getTileLayers() {
         List<LayerGroupInfo> layerGroups = catalog.getLayerGroups();
         List<LayerInfo> layerInfos = catalog.getLayers();
@@ -137,6 +138,11 @@ public class CatalogConfiguration implements Configuration {
         CompositeList composite = new CompositeList(sublists);
         LazyGeoServerTileLayerList tileLayers = new LazyGeoServerTileLayerList(composite, this);
         return tileLayers;
+    }
+
+    @Override
+    public Iterable<GeoServerTileLayer> getLayers() {
+        return getTileLayers();
     }
 
     /**

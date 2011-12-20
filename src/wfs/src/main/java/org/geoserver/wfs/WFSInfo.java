@@ -12,7 +12,7 @@ public interface WFSInfo extends ServiceInfo {
         V_10,
         V_11;
         
-        static Version get( String v ) {
+        public static Version get( String v ) {
             if ( v.startsWith( "1.0") ) {
                 return V_10;
             }

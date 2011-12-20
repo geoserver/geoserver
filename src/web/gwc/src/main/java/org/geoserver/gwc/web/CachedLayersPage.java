@@ -131,7 +131,8 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         header.add(removal = new CachedLayerSelectionRemovalLink("removeSelected", table, dialog));
         // removal.setOutputMarkupId(true);
         // removal.setEnabled(false);
-
+        
+        header.setVisible(false);
         return header;
     }
 

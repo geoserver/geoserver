@@ -53,6 +53,10 @@ public abstract class RequestObject {
         return eGet(adaptee, "baseUrl", String.class);
     }
     
+    public void setBaseUrl(String baseUrl) {
+        eSet(adaptee, "baseUrl", baseUrl);
+    }
+
     public String getVersion() {
         return eGet(adaptee, "version", String.class);
     }

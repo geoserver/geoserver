@@ -50,6 +50,10 @@ public interface WFSInfo extends ServiceInfo {
             }
             return V_20;
         }
+
+        public static Version latest() {
+            return V_20;
+        }
     };
     
     static enum Operation {

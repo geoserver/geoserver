@@ -13,8 +13,10 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geotools.util.Version;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
@@ -32,23 +34,24 @@ public class WfsXmlReader extends XmlRequestReader {
      */
     Configuration configuration;
     /**
-     * Catalog, to access namespaces
+     * geoserver configuration
      */
-    Catalog catalog;
+    GeoServer geoServer;
 
-    public WfsXmlReader(String element, Configuration configuration, Catalog catalog) {
-        this(element, configuration, catalog, "wfs");
+    public WfsXmlReader(String element, Configuration configuration, GeoServer geoServer) {
+        this(element, configuration, geoServer, "wfs");
     }
     
-    protected WfsXmlReader(String element, Configuration configuration, Catalog catalog, String serviceId) {
+    protected WfsXmlReader(String element, Configuration configuration, GeoServer geoServer, String serviceId) {
         super(new QName(WFS.NAMESPACE, element), new Version("1.0.0"), serviceId);
         this.configuration = configuration;
-        this.catalog = catalog;
+        this.geoServer = geoServer;
     }
 
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         //TODO: refactor this method to use WFSXmlUtils
-        
+        Catalog catalog = geoServer.getCatalog();
+
         //check the strict flag to determine if we should validate or not
         Boolean strict = (Boolean) kvp.get("strict");
         if ( strict == null ) {
@@ -69,7 +72,8 @@ public class WfsXmlReader extends XmlRequestReader {
         }
         //set validation based on strict or not
         parser.setValidating(strict.booleanValue());
-        
+        parser.getURIHandlers().add(new WFSURIHandler(geoServer));
+
         //parse
         Object parsed = parser.parse(reader); 
         

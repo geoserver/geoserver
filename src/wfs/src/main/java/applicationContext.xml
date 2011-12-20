@@ -455,7 +455,7 @@
 	<!-- 1.0 xml readers -->
 	<bean id="xmlReader-1.0.0" class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" abstract="true">
 		<constructor-arg index="1" ref="xmlConfiguration-1.0"/>
-		<constructor-arg index="2" ref="catalog"/>
+		<constructor-arg index="2" ref="geoServer"/>
 	</bean>
 	<bean id="wfsGetCapabilitiesXmlReader"
 		class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">

@@ -34,7 +34,7 @@ import org.xml.sax.InputSource;
  */
 public class WFSXmlUtils {
 
-    public static void initRequestParser(Parser parser, WFSInfo wfs, Catalog catalog, Map kvp) {
+    public static void initRequestParser(Parser parser, WFSInfo wfs, GeoServer geoServer, Map kvp) {
       //check the strict flag to determine if we should validate or not
         Boolean strict = (Boolean) kvp.get("strict");
         if ( strict == null ) {
@@ -46,7 +46,9 @@ public class WFSXmlUtils {
             strict = Boolean.TRUE;
         }
         parser.setValidating(strict.booleanValue());
-        
+        parser.getURIHandlers().add(new WFSURIHandler(geoServer));
+
+        Catalog catalog = geoServer.getCatalog();
         //"inject" namespace mappings
         List<NamespaceInfo> namespaces = catalog.getNamespaces();
         for ( NamespaceInfo ns : namespaces ) {

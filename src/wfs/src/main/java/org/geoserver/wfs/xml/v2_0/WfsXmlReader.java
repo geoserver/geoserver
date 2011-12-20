@@ -47,7 +47,7 @@ public class WfsXmlReader extends XmlRequestReader {
         
         WFSInfo wfs = wfs();
         
-        WFSXmlUtils.initRequestParser(parser, wfs, gs.getCatalog(), kvp);
+        WFSXmlUtils.initRequestParser(parser, wfs, gs, kvp);
         Object parsed = null;
         try {
             parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);    

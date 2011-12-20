@@ -5,23 +5,17 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.io.Reader;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
-import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
-import org.xml.sax.InputSource;
 
 /**
  * Xml reader for wfs 1.1.0 xml requests.
@@ -42,9 +36,9 @@ public class WfsXmlReader extends XmlRequestReader {
     Configuration configuration;
     
     /**
-     * The catalog, used to access namespaces
+     * geoserver configuartion
      */
-    Catalog catalog;
+    GeoServer geoServer;
 
     public WfsXmlReader(String element, GeoServer gs, Configuration configuration) {
         this(element, gs, configuration, "wfs");
@@ -53,8 +47,8 @@ public class WfsXmlReader extends XmlRequestReader {
     protected WfsXmlReader(String element, GeoServer gs, Configuration configuration, String serviceId) {
         super(new QName(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE, element), new Version("1.1.0"),
             serviceId);
+        this.geoServer = gs;
         this.wfs = gs.getService( WFSInfo.class );
-        this.catalog = gs.getCatalog();
         this.configuration = configuration;
     }
 
@@ -63,7 +57,7 @@ public class WfsXmlReader extends XmlRequestReader {
         configuration.getProperties().add(Parser.Properties.PARSE_UNKNOWN_ELEMENTS);
 
         Parser parser = new Parser(configuration);
-        WFSXmlUtils.initRequestParser(parser, wfs, catalog, kvp);
+        WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
         
         Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
         

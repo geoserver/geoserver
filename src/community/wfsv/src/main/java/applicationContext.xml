@@ -206,7 +206,7 @@
   
   <!-- 1.0 wfs readers handling extended elements -->
   <bean id="wfs-x-xmlReader-1.0.0" class="org.geoserver.wfsv.xml.v1_0_0.WfsXmlReader" abstract="true">
-    <constructor-arg ref="catalog"/>
+    <constructor-arg ref="geoServer"/>
     <constructor-arg ref="wfsvXmlConfiguration-1.0"/>
   </bean>
   <bean id="wfs-x-TransactionXmlReader-1.0.0" parent="wfs-x-xmlReader-1.0.0">

@@ -4,7 +4,7 @@
  */
 package org.geoserver.wfsv.xml.v1_0_0;
 
-import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ExtensionPriority;
 import org.geotools.xml.Configuration;
 
@@ -15,8 +15,8 @@ import org.geotools.xml.Configuration;
  */
 public class WfsXmlReader extends org.geoserver.wfs.xml.v1_0_0.WfsXmlReader implements ExtensionPriority {
 
-    public WfsXmlReader(String element, Configuration configuration, Catalog catalog) {
-        super(element, configuration, catalog, "wfsv");
+    public WfsXmlReader(String element, Configuration configuration, GeoServer geoServer) {
+        super(element, configuration, geoServer, "wfsv");
     }
 
     /**

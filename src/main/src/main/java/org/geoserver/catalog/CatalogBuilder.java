@@ -6,7 +6,6 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -39,10 +38,10 @@ import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.Version;
@@ -1081,10 +1080,25 @@ public class CatalogBuilder {
                         + " definition, it was not recognized by the referencing subsystem");
             }
         }
-        // fall back on WGS84 if necessary
-        if (wli.getSRS() == null) {
-            wli.setSRS("EPSG:4326");
-            wli.setNativeCRS(DefaultGeographicCRS.WGS84);
+        
+        // fall back on WGS84 if necessary, and handle well known WMS CRS codes
+        String srs = wli.getSRS();
+        try {
+            if (srs == null || srs.equals("CRS:84")) {
+                wli.setSRS("EPSG:4326");
+                srs = "EPSG:4326";
+                wli.setNativeCRS(CRS.decode("EPSG:4326"));
+            } else if(srs.equals("CRS:83")) {
+                wli.setSRS("EPSG:4269");
+                srs = "EPSG:4269";
+                wli.setNativeCRS(CRS.decode("EPSG:4269"));
+            } else if(srs.equals("CRS:27")) {
+                wli.setSRS("EPSG:4267");
+                srs = "EPSG:4267";
+                wli.setNativeCRS(CRS.decode("EPSG:4267"));
+            }
+        } catch(Exception e) {
+            throw (IOException) new IOException("Failed to compute the layer declared SRS code").initCause(e);
         }
         wli.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
 
@@ -1095,17 +1109,15 @@ public class CatalogBuilder {
                     .getMaximum(0), envelope.getMinimum(1), envelope.getMaximum(1), wli
                     .getNativeCRS());
             // are we in crazy wms 1.3 land?
-            if(wli.getNativeCRS() instanceof GeographicCRS) {
-                WebMapServer mapServer = wms.getWebMapServer(null);
-                Version version = new Version(mapServer.getCapabilities().getVersion());
-                if(version.compareTo(new Version("1.3.0")) >= 0) {
-                    // flip axis, the wms code won't actually use the crs
-                    double minx = re.getMinX();
-                    double miny = re.getMinY();
-                    double maxx = re.getMaxX();
-                    double maxy = re.getMaxY();
-                    re = new ReferencedEnvelope(miny, maxy, minx, maxx, wli.getNativeCRS());
-                }
+            WebMapServer mapServer = wms.getWebMapServer(null);
+            Version version = new Version(mapServer.getCapabilities().getVersion());
+            if(axisFlipped(version, srs)) {
+                // flip axis, the wms code won't actually use the crs
+                double minx = re.getMinX();
+                double miny = re.getMinY();
+                double maxx = re.getMaxX();
+                double maxy = re.getMaxY();
+                re = new ReferencedEnvelope(miny, maxy, minx, maxx, wli.getNativeCRS());
             }
             wli.setNativeBoundingBox(re);
         }
@@ -1142,6 +1154,28 @@ public class CatalogBuilder {
         }
 
         return wli;
+    }
+    
+    private boolean axisFlipped(Version version, String srsName) {
+        if(version.compareTo(new Version("1.3.0")) < 0) {
+            // aah, sheer simplicity
+            return false;
+        } else {
+            // gah, hell gates breaking loose
+            if(srsName.startsWith("EPSG:")) {
+                try {
+                    String epsgNative =  "urn:x-ogc:def:crs:EPSG:".concat(srsName.substring(5));
+                    return CRS.getAxisOrder(CRS.decode(epsgNative)) == AxisOrder.NORTH_EAST;
+                } catch(Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed to determine axis order for " 
+                            + srsName + ", assuming east/north", e);
+                    return false;
+                }
+            } else {
+                // CRS or AUTO, none of them is flipped so far
+                return false;
+            }
+        }
     }
 
     void parseUOM(StringBuilder label, Unit uom) {

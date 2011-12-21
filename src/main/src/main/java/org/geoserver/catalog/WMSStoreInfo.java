@@ -54,6 +54,10 @@ public interface WMSStoreInfo extends StoreInfo {
     
     void setPassword(String password);
     
+    /**
+     * @return Upper limit on the number of http connections the store should hold in the pool if
+     *         {@link #isUseConnectionPooling()} is {@code true}.
+     */
     int getMaxConnections();
     
     void setMaxConnections(int maxConcurrentConnections);
@@ -79,4 +83,20 @@ public interface WMSStoreInfo extends StoreInfo {
      *            to wait for connect requests before timing out
      */
     void setConnectTimeout(int timeoutSeconds);
+    
+    /**
+     * @return {@code true} (default) if the store shall use an http connection managed that pools
+     *         connections, {@code false} otherwise.
+     * @see #getMaxConnections()
+     */
+    public boolean isUseConnectionPooling();
+
+    /**
+     * @param useHttpConnectionPooling
+     *            {@code true} if the store shall use an http connection managed that pools
+     *            connections, {@code false} otherwise.
+     * @see #setMaxConnections(int)
+     */
+    public void setUseConnectionPooling(boolean useHttpConnectionPooling);
+    
 }

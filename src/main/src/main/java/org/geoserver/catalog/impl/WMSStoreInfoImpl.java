@@ -94,4 +94,14 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
         return getCatalog().getResourcePool().getWebMapServer(this);
     }
 
+    // @Override
+    public boolean isUseConnectionPooling() {
+        Boolean useConnectionPooling = getMetadata().get("useConnectionPooling", Boolean.class);
+        return useConnectionPooling == null ? Boolean.TRUE : useConnectionPooling;
+    }
+
+    // @Override
+    public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
+        getMetadata().put("useConnectionPooling", Boolean.valueOf(useHttpConnectionPooling));
+    }
 }

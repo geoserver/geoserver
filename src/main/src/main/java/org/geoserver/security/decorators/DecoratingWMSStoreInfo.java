@@ -159,4 +159,12 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo> impl
         delegate.setConnectTimeout(timeoutSeconds);
     }
 
+    public boolean isUseConnectionPooling() {
+        return delegate.isUseConnectionPooling();
+    }
+
+    public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
+        delegate.setUseConnectionPooling(useHttpConnectionPooling);
+    }
+
 }

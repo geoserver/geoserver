@@ -5,7 +5,9 @@
 package org.geoserver.web.data.store;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -88,12 +90,30 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                 "AbstractWMSStorePage.password"), false));
         
         // max concurrent connections
-        PropertyModel connectionsModel = new PropertyModel(model, "maxConnections");
-        if (store.getMaxConnections() <= 0) {
-            connectionsModel.setObject(Integer.valueOf(6));
-        }
-        form.add(new TextParamPanel("maxConnectionsPanel", connectionsModel, new ResourceModel(
-                "AbstractWMSStorePage.maxConnections"), true, new RangeValidator<Integer>(1, 128)));
+        final PropertyModel<Boolean> useHttpConnectionPoolModel = new PropertyModel<Boolean>(model,
+                "useConnectionPooling");
+        CheckBoxParamPanel useConnectionPooling = new CheckBoxParamPanel(
+                "useConnectionPoolingPanel", useHttpConnectionPoolModel, new ResourceModel(
+                        "AbstractWMSStorePage.useHttpConnectionPooling"));
+        form.add(useConnectionPooling);
+
+        PropertyModel<String> connectionsModel = new PropertyModel<String>(model, "maxConnections");
+        final TextParamPanel maxConnections = new TextParamPanel("maxConnectionsPanel",
+                connectionsModel, new ResourceModel("AbstractWMSStorePage.maxConnections"), true,
+                new RangeValidator<Integer>(1, 128));
+        maxConnections.setOutputMarkupId(true);
+        maxConnections.setEnabled(useHttpConnectionPoolModel.getObject());
+        form.add(maxConnections);
+
+        useConnectionPooling.getFormComponent().add(new OnChangeAjaxBehavior() {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean enabled = useHttpConnectionPoolModel.getObject();
+                maxConnections.setEnabled(enabled);
+                target.addComponent(maxConnections);
+            }
+        });
         
         // connect timeout
         PropertyModel<Integer> connectTimeoutModel = new PropertyModel<Integer>(model, "connectTimeout");
@@ -163,6 +183,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         target.setWorkspace(source.getWorkspace());
         target.setUsername(source.getUsername());
         target.setPassword(source.getPassword());
+        target.setUseConnectionPooling(source.isUseConnectionPooling());
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());

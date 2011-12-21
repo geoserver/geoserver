@@ -72,14 +72,6 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
         this.maxConnections = maxConcurrentConnections;        
     }
 
-    public void accept(CatalogVisitor visitor) {
-        visitor.visit(this);
-    }
-
-    public WebMapServer getWebMapServer(ProgressListener listener) throws IOException {
-        return getCatalog().getResourcePool().getWebMapServer(this);
-    }
-
     @Override
     public int getReadTimeout() {
         return readTimeout;
@@ -98,5 +90,24 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     @Override
     public void setConnectTimeout(int timeoutSeconds) {
         this.connectTimeout = timeoutSeconds;
+    }
+
+    public void accept(CatalogVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public WebMapServer getWebMapServer(ProgressListener listener) throws IOException {
+        return getCatalog().getResourcePool().getWebMapServer(this);
+    }
+
+    @Override
+    public boolean isUseConnectionPooling() {
+        Boolean useConnectionPooling = getMetadata().get("useConnectionPooling", Boolean.class);
+        return useConnectionPooling == null ? Boolean.TRUE : useConnectionPooling;
+    }
+
+    @Override
+    public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
+        getMetadata().put("useConnectionPooling", Boolean.valueOf(useHttpConnectionPooling));
     }
 }

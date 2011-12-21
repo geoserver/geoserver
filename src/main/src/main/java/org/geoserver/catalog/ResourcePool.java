@@ -58,8 +58,10 @@ import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.MultithreadedHttpClient;
+import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wms.WebMapServer;
@@ -1155,9 +1157,16 @@ public class ResourcePool {
                 synchronized (wmsCache) {
                     wms = (WebMapServer) wmsCache.get(id);
                     if (wms == null) {
-                        MultithreadedHttpClient client = new MultithreadedHttpClient();
-                        if(info.getMaxConnections() > 0){
-                            client.setMaxConnections(info.getMaxConnections());
+                        HTTPClient client;
+                        if (info.isUseConnectionPooling()) {
+                            client = new MultithreadedHttpClient();
+                            if (info.getMaxConnections() > 0) {
+                                int maxConnections = info.getMaxConnections();
+                                MultithreadedHttpClient mtClient = (MultithreadedHttpClient) client;
+                                mtClient.setMaxConnections(maxConnections);
+                            }
+                        } else {
+                            client = new SimpleHttpClient();
                         }
                         String username = info.getUsername();
                         String password = info.getPassword();

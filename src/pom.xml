@@ -1082,6 +1082,7 @@
            too many classes in the permanent generation, similar to GEOT-2462  
        -->
       <fork>true</fork> 
+      <maxmem>${javac.maxHeapSize}</maxmem>
      </configuration>
    </plugin>
 
@@ -1393,6 +1394,7 @@
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
+  <javac.maxHeapSize>256m</javac.maxHeapSize>
  </properties>
 
  <profiles>

@@ -88,7 +88,7 @@ public class WPSResourceManager implements DispatcherCallback,
         if (id == null) {
             id = UUID.randomUUID().toString();
             executionId.set(id);
-            resourceCache.put(id, new ExecutionResources(synch));
+            resourceCache.put(id, new ExecutionResources(synch != null ? synch : true));
         }
         return id;
     }

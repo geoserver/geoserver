@@ -1,7 +1,6 @@
 package org.geoserver.wms.map;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -12,7 +11,6 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.map.viewer.RenderedImageBrowser;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 

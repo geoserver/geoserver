@@ -11,6 +11,8 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.viewer.RenderedImageBrowser;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -48,6 +50,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     	assertEquals("image/png", response.getContentType());
     	
     	RenderedImage image = ImageIO.read(getBinaryInputStream(response));
+    	// ImageAssert does not work with indexed images
+    	image = new ImageWorker(image).forceComponentColorModel().getRenderedImage();
     	ImageAssert.assertEquals(new File("src/test/resources/org/geoserver/wms/map/indexed-expected.png"), image, 0);
     }
     

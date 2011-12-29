@@ -28,7 +28,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.map.viewer.RenderedImageBrowser;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.w3c.dom.Document;
 

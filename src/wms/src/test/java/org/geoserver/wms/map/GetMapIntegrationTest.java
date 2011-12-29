@@ -11,7 +11,6 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.map.viewer.RenderedImageBrowser;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 

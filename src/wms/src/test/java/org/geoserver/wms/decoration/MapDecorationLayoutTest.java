@@ -371,18 +371,15 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.addBlock(new MapDecorationLayout.Block(
             new MapDecoration() {
                 
-                @Override
                 public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext context) throws Exception {
                     AlphaComposite c = (AlphaComposite) g2d.getComposite();
                     assertEquals(1.0f, c.getAlpha());
                 }
                 
-                @Override
                 public void loadOptions(Map<String, String> options) throws Exception {
                     // nothing to do
                 }
                 
-                @Override
                 public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContent) throws Exception {
                     return new Dimension(10, 10);
                 }

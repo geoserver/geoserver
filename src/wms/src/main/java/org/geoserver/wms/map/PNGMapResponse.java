@@ -90,7 +90,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
 
         // get the one required by the GetMapRequest
         final String format = mapContent.getRequest().getFormat();
-        if ("image/png8".equalsIgnoreCase(format) || (mapContent.getPaletteInverter() != null)) {
+        if (mapContent.getPaletteInverter() != null) {
             InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
             image = forceIndexed8Bitmask(image, paletteInverter);
         }
@@ -102,8 +102,8 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
         boolean nativeAcceleration = PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
         ImageWorker iw = new ImageWorker(image);
-        boolean indexed = image.getColorModel() instanceof IndexColorModel;
-        iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, indexed);
+        boolean png8 = "image/png8".equalsIgnoreCase(format); 
+        iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, png8);
         RasterCleaner.addImage(iw.getRenderedImage());
 
         if (LOGGER.isLoggable(Level.FINE)) {

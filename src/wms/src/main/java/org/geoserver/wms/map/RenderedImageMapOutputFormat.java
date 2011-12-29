@@ -40,6 +40,7 @@ import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
 import javax.media.jai.operator.BandMergeDescriptor;
 import javax.media.jai.operator.ConstantDescriptor;
+import javax.media.jai.operator.FormatDescriptor;
 import javax.media.jai.operator.LookupDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 
@@ -57,6 +58,7 @@ import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
 import org.geoserver.wms.decoration.WatermarkDecoration;
+import org.geoserver.wms.map.viewer.RenderedImageBrowser;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -833,13 +835,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             //
             // SG added gutter to the drawing. We need to investigate much more and also we need to do this only when needed
             //
-//            final int bPadding=interpolation.getBottomPadding();
-//            final int lPadding=interpolation.getLeftPadding();
-//            final int rPadding=interpolation.getRightPadding();
-//            final int uPadding=interpolation.getTopPadding();
-//            final Rectangle bufferedTargetArea = (Rectangle) rasterArea.clone();
-//            bufferedTargetArea.add(rasterArea.x+rasterArea.width+-rPadding*2, rasterArea.y+rasterArea.height+-uPadding*2);
-//            bufferedTargetArea.add(rasterArea.x-lPadding*2, rasterArea.y-bPadding*2);             
             bufferedTargetArea = (Rectangle) mapRasterArea.clone();
             bufferedTargetArea.add(mapRasterArea.x+mapRasterArea.width+10, mapRasterArea.y+mapRasterArea.height+10);
             bufferedTargetArea.add(mapRasterArea.x-10, mapRasterArea.y-10);
@@ -973,16 +968,32 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // in case of index color model we try to preserve it, so that output
         // formats that can work with it can enjoy its extra compactness
         if (cm instanceof IndexColorModel) {
-            final IndexColorModel icm = (IndexColorModel) cm;
+            IndexColorModel icm = (IndexColorModel) cm;
             // try to find the index that matches the requested background color
             final int bgColorIndex;
             if(transparent) {
                 bgColorIndex = icm.getTransparentPixel();
             } else {
-                bgColorIndex = ColorUtilities.findColorIndex(bgColor, icm);
+                if(icm.hasAlpha() && icm.isAlphaPremultiplied()) {
+                    // uncommon case that we don't have the code to handle directly
+                    bgColorIndex = -1;
+                } else {
+                    if(icm.getTransparency() != Transparency.OPAQUE) {
+                        // we have a translucent image, so the bg color needs to be merged into 
+                        // the palette
+                        icm = ColorUtilities.applyBackgroundColor(icm, bgColor);
+                        cm = icm;
+                        ImageLayout ilColorModel = new ImageLayout(image);
+                        ilColorModel.setColorModel(icm);
+                        RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, ilColorModel);
+                        image = FormatDescriptor.create(image, image.getSampleModel().getDataType(), hints);
+                        worker.setImage(image);
+                    } 
+                    bgColorIndex = ColorUtilities.findColorIndex(bgColor, icm);
+                }
             }
             
-            //we did not find the background color, well we have to expand to RGB and then tell Mosaic to use the RGB(A) color as the
+            // we did not find the background color, well we have to expand to RGB and then tell Mosaic to use the RGB(A) color as the
             // background
             if (bgColorIndex == -1) {
                 // we need to expand the image to RGB
@@ -1004,7 +1015,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // collect alpha channels if we have them in order to reuse them later on for mosaic operation
             if (cm.hasAlpha()) {
                 worker.forceComponentColorModel();
-                final RenderedImage alpha =worker.retainLastBand().getRenderedImage();
+                final RenderedImage alpha = worker.retainLastBand().getRenderedImage();
                 alphaChannels = new PlanarImage[] { PlanarImage.wrapRenderedImage(alpha) };
             } 
         }
@@ -1120,6 +1131,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         
+        // RenderedImageBrowser.showChain(image);
         return image;
     }
 

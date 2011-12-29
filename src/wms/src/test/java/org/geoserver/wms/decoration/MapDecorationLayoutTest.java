@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.decoration;
 
+import java.awt.AlphaComposite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -355,6 +356,37 @@ public class MapDecorationLayoutTest extends TestCase {
                 new Dimension(50, 10),
                 new Rectangle(25, 10, 50, 10)
             ),
+            MapDecorationLayout.Block.Position.UC,
+            null,
+            new Point(0,10)
+        ));
+        
+        dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
+    }
+    
+    public void testResetGraphics() {
+        Graphics2D g2d = createMockGraphics(100, 100);
+        MapDecorationLayout dl = new MapDecorationLayout();
+
+        dl.addBlock(new MapDecorationLayout.Block(
+            new MapDecoration() {
+                
+                @Override
+                public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContext context) throws Exception {
+                    AlphaComposite c = (AlphaComposite) g2d.getComposite();
+                    assertEquals(1.0f, c.getAlpha());
+                }
+                
+                @Override
+                public void loadOptions(Map<String, String> options) throws Exception {
+                    // nothing to do
+                }
+                
+                @Override
+                public Dimension findOptimalSize(Graphics2D g2d, WMSMapContext mapContent) throws Exception {
+                    return new Dimension(10, 10);
+                }
+            },
             MapDecorationLayout.Block.Position.UC,
             null,
             new Point(0,10)

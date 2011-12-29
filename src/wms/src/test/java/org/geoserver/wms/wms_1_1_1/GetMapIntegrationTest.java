@@ -5,7 +5,10 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import java.awt.Color;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.Serializable;
@@ -25,6 +28,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.viewer.RenderedImageBrowser;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.w3c.dom.Document;
 
@@ -134,6 +138,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         dataDirectory.addStyle(styleName, style);
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX), 
                 GetMapIntegrationTest.class.getResource("mosaic_holes.zip"), null, "raster");
+        
+        // add a raster style with translucent color map
+        dataDirectory.addWcs11Coverages();
+        dataDirectory.addStyle("demTranslucent", GetMapIntegrationTest.class.getResource("demTranslucent.sld"));
     }
 
     // protected String getDefaultLogConfiguration() {
@@ -411,6 +419,88 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         bi = getAsImage(url, "image/png");
         bi.getRaster().getPixel(0, 250, pixel);
         assertTrue(Arrays.equals(new int[] {255,255,255,0}, pixel));
+    }
+    
+    public void testTransparentPaletteOpaqueOutput() throws Exception {
+        String url = "wms?LAYERS=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&"
+                + "FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=145,-43,146,-41&WIDTH=100&HEIGHT=200&bgcolor=0xFF0000";
+        BufferedImage bi = getAsImage(url, "image/png");
+        
+        ColorModel cm = bi.getColorModel();
+        assertTrue(cm instanceof IndexColorModel);
+        assertEquals(Transparency.OPAQUE, cm.getTransparency());
+        
+        // grab a pixel in the low left corner, should be red (BG color)
+        int[] pixel = new int[1];
+        bi.getRaster().getPixel(4, 196, pixel);
+        int[] color = new int[3];
+        cm.getComponents(pixel[0], color, 0);
+        assertEquals(255, color[0]);
+        assertEquals(0, color[1]);
+        assertEquals(0, color[2]);
+        
+        // a pixel high enough to be solid, should be fully green
+        bi.getRaster().getPixel(56, 49, pixel);
+        cm.getComponents(pixel[0], color, 0);
+        assertEquals(0, color[0]);
+        assertEquals(255, color[1]);
+        assertEquals(0, color[2]);
+    }
+    
+    public void testTransparentPaletteTransparentOutput() throws Exception {
+        String url = "wms?LAYERS=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&"
+                + "FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=145,-43,146,-41&WIDTH=100&HEIGHT=200&transparent=true";
+        BufferedImage bi = getAsImage(url, "image/png");
+        
+        ColorModel cm = bi.getColorModel();
+        assertTrue(cm instanceof IndexColorModel);
+        assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+        
+        // grab a pixel in the low left corner, should be transparent
+        int[] pixel = new int[1];
+        bi.getRaster().getPixel(4, 196, pixel);
+        int[] color = new int[4];
+        cm.getComponents(pixel[0], color, 0);
+        assertEquals(0, color[3]);
+        
+        // a pixel high enough to be solid, should be solid green
+        bi.getRaster().getPixel(56, 49, pixel);
+        cm.getComponents(pixel[0], color, 0);
+        assertEquals(0, color[0]);
+        assertEquals(255, color[1]);
+        assertEquals(0, color[2]);
+        assertEquals(255, color[3]);
+    }
+    
+    public void testTransparentPaletteTransparentOutputPng8() throws Exception {
+        String url = "wms?LAYERS=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&"
+                + "FORMAT=image%2Fpng8&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=145,-43,146,-41&WIDTH=100&HEIGHT=200&transparent=true";
+        BufferedImage bi = getAsImage(url, "image/png; mode=8bit");
+        
+        ColorModel cm = bi.getColorModel();
+        assertTrue(cm instanceof IndexColorModel);
+        assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+        
+        // grab a pixel in the low left corner, should be transparent
+        int[] pixel = new int[1];
+        bi.getRaster().getPixel(4, 196, pixel);
+        int[] color = new int[4];
+        cm.getComponents(pixel[0], color, 0);
+        assertEquals(0, color[3]);
+        
+        // a pixel high enough to be solid, should be solid green
+        bi.getRaster().getPixel(56, 49, pixel);
+        cm.getComponents(pixel[0], color, 0);
+        assertEquals(0, color[0]);
+        assertEquals(255, color[1]);
+        assertEquals(0, color[2]);
+        assertEquals(255, color[3]);
     }
 
 }

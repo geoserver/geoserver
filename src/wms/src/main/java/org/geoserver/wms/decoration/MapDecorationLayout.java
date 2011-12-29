@@ -4,6 +4,9 @@
  */
 package org.geoserver.wms.decoration;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -335,11 +338,28 @@ public class MapDecorationLayout {
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) { 
         for (Block b : blocks) {
             try {
+                resetGraphics(g2d);
                 b.paint(g2d, paintArea, mapContent);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "couldn't paint due to: ", e);
             }
         }
+    }
+
+    /**
+     * Resets the graphics to most of its default values, making each block paint
+     * independent of what happened before the decoration layout was called, and from each other
+     * @param g2d
+     */
+    private void resetGraphics(Graphics2D g2d) {
+        g2d.setComposite(AlphaComposite.SrcOver);
+        g2d.setColor(Color.WHITE);
+        g2d.setBackground(Color.BLACK);
+        g2d.setClip(null);
+        g2d.setPaint(Color.WHITE);
+        g2d.setStroke(new BasicStroke());
+
+        
     }
 
     /**

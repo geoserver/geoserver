@@ -703,6 +703,8 @@ public class CatalogImplTest extends TestCase {
         catch( Exception e ) {}
         
         ft2.setStore( ds );
+        ft2.getKeywords().add(new Keyword("keyword"));
+
         catalog.add( ft2 );
         
         FeatureTypeInfo ft3 = catalog.getFactory().createFeatureType();

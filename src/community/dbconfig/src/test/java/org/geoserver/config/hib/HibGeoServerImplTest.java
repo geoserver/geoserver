@@ -1,5 +1,6 @@
 package org.geoserver.config.hib;
 
+import org.geoserver.catalog.Keyword;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerImplTest;
 import org.geoserver.config.GeoServerInfo;
@@ -85,11 +86,13 @@ public class HibGeoServerImplTest extends GeoServerImplTest {
         catch( Exception e ) {};
         
         ((ServiceInfoImpl)service).setId( "id" );
+        service.getKeywords().add(new Keyword("keyword"));
         geoServer.add( service );
-        
+
+        assertEquals(service.getKeywords(), geoServer.getService("id", ServiceInfo.class).getKeywords());
+
         ServiceInfo s2 = geoServer.getFactory().createService();
         ((ServiceInfoImpl)s2).setId( "id" );
-        
         try {
             geoServer.add( s2 );
             fail( "adding service with duplicate id should throw exception" );

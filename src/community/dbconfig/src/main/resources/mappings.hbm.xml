@@ -20,6 +20,7 @@
   <typedef class="org.geoserver.config.hib.types.WFSVersionType" name="WfsVersion"/>
   <typedef class="org.geoserver.config.hib.types.WFSServiceLevelType" name="WfsServiceLevel"/>
   <typedef class="org.geoserver.config.hib.types.WMSWatermarkType" name="WmsWatermarkType"/>
+  <typedef class="org.geoserver.config.hib.types.KeywordInfoType" name="KeywordInfo"/>
   
   
   <!-- ===================================================================== -->
@@ -196,7 +197,7 @@
       <!--cache usage="read-write"/-->
       <key column="RESOURCE_ID"/>
       <list-index column="RES_KW_INDEX"/>
-      <element type="java.lang.String"/>
+      <element type="KeywordInfo"/>
     </list>
     <list cascade="all"  name="metadataLinks" table="RESOURCE_METADATA_LINK">
       <!--cache usage="read-write"/-->
@@ -510,7 +511,7 @@
       <!--cache usage="read-write"/-->
       <key column="ID"/>
       <list-index column="SERVICE_KEYWORD_INDEX"/>
-      <element type="java.lang.String"/>
+      <element type="KeywordInfo"/>
     </list>
     <list cascade="all"  name="versions" table="SERVICE_VERSIONS">
       <!--cache usage="read-write"/-->

@@ -130,15 +130,16 @@ public class CatalogImpl implements Catalog {
         validate(store, true);
 
         //TODO: remove synchronized block, need transactions
+        StoreInfo added;
         synchronized (facade) {
-            facade.add(resolve(store));
+            added = facade.add(resolve(store));
             
             // if there is no default store use this one as the default
             if(getDefaultDataStore(store.getWorkspace()) == null && store instanceof DataStoreInfo) {
                 setDefaultDataStore(store.getWorkspace(), (DataStoreInfo) store);
             }
         }
-        added(store);
+        added(added);
     }
 
     public List<RuntimeException> validate(StoreInfo store, boolean isNew) {
@@ -355,8 +356,8 @@ public class CatalogImpl implements Catalog {
         }
         validate(resource,true);
         
-        facade.add(resolve(resource));
-        added(resource);
+        ResourceInfo added = facade.add(resolve(resource));
+        added(added);
     }
 
     public List<RuntimeException> validate(ResourceInfo resource, boolean isNew) {
@@ -608,8 +609,8 @@ public class CatalogImpl implements Catalog {
             }
         }
         
-        facade.add(resolve(layer));
-        added(layer);
+        LayerInfo added = facade.add(resolve(layer));
+        added(added);
     }
 
     public List<RuntimeException> validate( LayerInfo layer, boolean isNew) {
@@ -735,8 +736,8 @@ public class CatalogImpl implements Catalog {
             }
         }
         
-        layerGroup = facade.add(layerGroup);
-        added( layerGroup );
+        LayerGroupInfo added = facade.add(layerGroup);
+        added( added );
     }
     
     public List<RuntimeException> validate( LayerGroupInfo layerGroup, boolean isNew ) {
@@ -788,8 +789,8 @@ public class CatalogImpl implements Catalog {
     }
     
     public void add(MapInfo map) {
-        facade.add(resolve(map));
-        added(map);
+        MapInfo added = facade.add(resolve(map));
+        added(added);
     }
 
     public void remove(MapInfo map) {
@@ -832,14 +833,15 @@ public class CatalogImpl implements Catalog {
     public void add(NamespaceInfo namespace) {
         validate(namespace,true);
         
+        NamespaceInfo added;
         synchronized (facade) {
-            facade.add(resolve(namespace));
+            added = facade.add(resolve(namespace));
             if ( getDefaultNamespace() == null ) {
                 setDefaultNamespace(namespace);
             }
         }
         
-        added(namespace);
+        added(added);
     }
 
     public List<RuntimeException> validate(NamespaceInfo namespace, boolean isNew) {
@@ -937,15 +939,16 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException( "Workspace with name '" + workspace.getName() + "' already exists.");
         }
         
+        WorkspaceInfo added;
         synchronized (facade) {
-            facade.add(resolve(workspace));
+            added = facade.add(resolve(workspace));
             // if there is no default workspace use this one as the default
             if ( getDefaultWorkspace() == null ) {
                 setDefaultWorkspace(workspace);
             }
         }
         
-        added( workspace );
+        added( added );
     }
     
     public List<RuntimeException> validate(WorkspaceInfo workspace, boolean isNew) {
@@ -1055,8 +1058,8 @@ public class CatalogImpl implements Catalog {
 
     public void add(StyleInfo style) {
         validate(style,true);
-        facade.add(resolve(style));
-        added(style);
+        StyleInfo added = facade.add(resolve(style));
+        added(added);
     }
 
     public List<RuntimeException> validate( StyleInfo style, boolean isNew ) {

@@ -101,8 +101,11 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         int numBits = sm.getSampleSize(0);
         // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
         boolean nativeAcceleration = PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
+        boolean png8 = "image/png8".equalsIgnoreCase(format);
+        if(png8 && !(image.getColorModel() instanceof IndexColorModel)) {
+            image = forceIndexed8Bitmask(image, null);
+        }
         ImageWorker iw = new ImageWorker(image);
-        boolean png8 = "image/png8".equalsIgnoreCase(format); 
         iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, png8);
         RasterCleaner.addImage(iw.getRenderedImage());
 

@@ -27,7 +27,7 @@ public class ProxifyingURLMangler implements URLMangler {
         String proxyBase = GeoServerExtensions.getProperty("PROXY_BASE_URL");
         if (proxyBase == null) {
             //if no system property fall back to configuration
-            proxyBase = geoServer.getGlobal().getProxyBaseUrl();
+            proxyBase = geoServer.getSettings().getProxyBaseUrl();
         }
 
         // perform the replacement if the proxy base is set

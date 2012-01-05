@@ -7,9 +7,12 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.ows.LocalWorkspace;
 
 public class GeoServerImplTest extends TestCase {
 
@@ -22,7 +25,9 @@ public class GeoServerImplTest extends TestCase {
     }
     
     protected GeoServerImpl createGeoServer() {
-        return new GeoServerImpl();
+        GeoServerImpl gs = new GeoServerImpl();
+        gs.setCatalog(new CatalogImpl());
+        return gs;
     }
     
     public void testGlobal() throws Exception {
@@ -143,5 +148,33 @@ public class GeoServerImplTest extends TestCase {
 		gsii.setClientProperties(newProps);
 		
 		assertFalse(before.equals(newProps));
+    }
+
+    public void testGetSettings() throws Exception {
+        SettingsInfo s = geoServer.getSettings();
+        assertNotNull(s);
+
+        assertEquals(4, s.getNumDecimals());
+       
+        WorkspaceInfo ws = geoServer.getCatalog().getFactory().createWorkspace();
+        ws.setName("acme");
+
+        SettingsInfo t = geoServer.getFactory().createSettings();
+        t.setNumDecimals(7);
+        t.setWorkspace(ws);
+        geoServer.add(t);
+
+        assertNotNull(geoServer.getSettings(ws));
+        assertEquals(7, geoServer.getSettings(ws).getNumDecimals());
+
+        assertEquals(4, geoServer.getSettings().getNumDecimals());
+        LocalWorkspace.set(ws);
+        try {
+            assertNotNull(geoServer.getSettings());
+            assertEquals(7, geoServer.getSettings().getNumDecimals());
+        }
+        finally {
+            LocalWorkspace.remove();
+        }
     }
 }

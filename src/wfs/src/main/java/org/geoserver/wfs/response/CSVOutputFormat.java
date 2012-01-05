@@ -103,7 +103,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         
         // prepare the formatter for numbers
         NumberFormat coordFormatter = NumberFormat.getInstance(Locale.US);
-        coordFormatter.setMaximumFractionDigits(getInfo().getGeoServer().getGlobal().getNumDecimals());
+        coordFormatter.setMaximumFractionDigits(getInfo().getGeoServer().getSettings().getNumDecimals());
         coordFormatter.setGroupingUsed(false);
            
         //write out the features

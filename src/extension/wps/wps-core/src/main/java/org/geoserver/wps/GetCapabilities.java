@@ -32,6 +32,7 @@ import net.opengis.wps10.Wps10Factory;
 
 import org.eclipse.emf.common.util.ECollections;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.wps.ppio.ProcessParameterIO;
@@ -109,16 +110,16 @@ public class GetCapabilities {
         caps.setServiceProvider(sp);
 
         // TODO: set provder name from context
-        GeoServerInfo geoServer = wps.getGeoServer().getGlobal();
-        if (geoServer.getContact().getContactOrganization() != null) {
-            sp.setProviderName(geoServer.getContact().getContactOrganization());
+        SettingsInfo settings = wps.getGeoServer().getSettings();
+        if (settings.getContact().getContactOrganization() != null) {
+            sp.setProviderName(settings.getContact().getContactOrganization());
         } else {
             sp.setProviderName("GeoServer");
         }
 
         sp.setProviderSite(owsf.createOnlineResourceType());
-        sp.getProviderSite().setHref(geoServer.getOnlineResource());
-        sp.setServiceContact(responsibleParty(geoServer, owsf));
+        sp.getProviderSite().setHref(settings.getOnlineResource());
+        sp.setServiceContact(responsibleParty(settings, owsf));
 
         // OperationsMetadata
         OperationsMetadataType om = owsf.createOperationsMetadataType();
@@ -241,7 +242,7 @@ public class GetCapabilities {
         return PROCESS_BLACKLIST;
     }
 
-    ResponsiblePartySubsetType responsibleParty(GeoServerInfo global, Ows11Factory f) {
+    ResponsiblePartySubsetType responsibleParty(SettingsInfo settings, Ows11Factory f) {
         ResponsiblePartySubsetType rp = f.createResponsiblePartySubsetType();
         return rp;
     }

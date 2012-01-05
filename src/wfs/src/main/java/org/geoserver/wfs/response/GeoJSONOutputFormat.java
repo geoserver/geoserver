@@ -79,7 +79,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
         // TODO: investigate setting proper charsets in this
         // it's part of the constructor, just need to hook it up.
         Writer outWriter = new BufferedWriter(
-            new OutputStreamWriter(output,wfs.getGeoServer().getGlobal().getCharset()));
+            new OutputStreamWriter(output,wfs.getGeoServer().getSettings().getCharset()));
         
         // let's check if a callback has been set
         GetFeatureRequest gft = GetFeatureRequest.adapt(getFeature.getParameters()[0]);

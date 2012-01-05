@@ -43,7 +43,7 @@ public class GeometryResponse extends WFSResponse {
             throws IOException, ServiceException {
     
         Encoder encoder = new Encoder( new GMLConfiguration() );
-        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getGlobal().getCharset() ));
+        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getSettings().getCharset() ));
         
         if ( value instanceof Point ) {
             encoder.encode( value, GML.Point, output );

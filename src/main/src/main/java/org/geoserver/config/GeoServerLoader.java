@@ -126,7 +126,9 @@ public abstract class GeoServerLoader {
         if ( bean instanceof GeoServer ) {
             geoserver = (GeoServer) bean;
             try {
-                loadGeoServer( geoserver, xpf.createXMLPersister() );
+                XStreamPersister xp = xpf.createXMLPersister() ;
+                xp.setCatalog(geoserver.getCatalog());
+                loadGeoServer(geoserver, xp);
                 
                 //load initializers
                 loadInitializers(geoserver);
@@ -611,36 +613,35 @@ public abstract class GeoServerLoader {
             //assume 2.x style
             f = resourceLoader.find( "global.xml");
             if ( f != null ) {
-                BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
-                try {
-                    GeoServerInfoImpl global = 
-                        (GeoServerInfoImpl) xpf.createXMLPersister().load( in, GeoServerInfo.class );
-                    geoServer.setGlobal( global );
-                }
-                finally {
-                    in.close();
-                }
+                GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
+                geoServer.setGlobal( global );
             }
             
             //load logging
             f = resourceLoader.find( "logging.xml" );
             if ( f != null ) {
-                BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
-                try {
-                    LoggingInfo logging = xpf.createXMLPersister().load( in, LoggingInfo.class );
-                    geoServer.setLogging( logging );
-                }
-                finally {
-                    in.close();
+                LoggingInfo logging = depersist(xp, f, LoggingInfo.class );
+                geoServer.setLogging( logging );
+            }
+
+            // load workspace specific settings
+            File workspaces = resourceLoader.find("workspaces");
+            for (File dir : workspaces.listFiles()) {
+                if (!dir.isDirectory() && !dir.isHidden()) continue;
+
+                f = resourceLoader.find(dir, "settings.xml");
+                if (f != null) {
+                    SettingsInfo settings = depersist(xp, f, SettingsInfo.class );
+                    geoServer.add(settings);
                 }
             }
+
             //load services
             final List<XStreamServiceLoader> loaders = 
                 GeoServerExtensions.extensions( XStreamServiceLoader.class );
             loadServices(null, loaders, geoServer);
 
             //load services specific to workspace
-            File workspaces = resourceLoader.find("workspaces");
             if (workspaces != null) {
                 for (File dir : workspaces.listFiles()) {
                     if (!dir.isDirectory() && !dir.isHidden()) continue;
@@ -691,18 +692,20 @@ public abstract class GeoServerLoader {
         out.flush();
         out.close();
     }
-    
+
     /**
      * Helper method which uses xstream to depersist an object as xml from disk.
      */
     <T> T depersist( XStreamPersister xp, File f , Class<T> clazz ) throws IOException {
         BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
-        T obj = xp.load( in, clazz );
-
-        in.close();
-        return obj;
+        try {
+            return xp.load( in, clazz );
+        }
+        finally {
+            in.close();
+        }
     }
-    
+
     /**
      * Helper method for listing files in a directory.
      */

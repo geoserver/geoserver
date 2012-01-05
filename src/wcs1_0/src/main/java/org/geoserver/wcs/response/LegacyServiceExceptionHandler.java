@@ -165,7 +165,7 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
             sb.append("\n" + tab + tab);
             OwsUtils.dumpExceptionMessages(exception, sb, true);
 
-            if(geoServer.getGlobal().isVerboseExceptions()) {
+            if(geoServer.getSettings().isVerboseExceptions()) {
                 ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
                 exception.printStackTrace(new PrintStream(stackTrace));
 

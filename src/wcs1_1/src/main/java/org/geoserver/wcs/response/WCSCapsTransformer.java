@@ -26,6 +26,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -233,10 +234,11 @@ public class WCSCapsTransformer extends TransformerBase {
          */
         private void handleServiceProvider() {
             start("ows:ServiceProvider");
-            GeoServerInfo gs = wcs.getGeoServer().getGlobal();
-			element("ows:ProviderName", gs.getContact().getContactOrganization());
+            SettingsInfo settings = wcs.getGeoServer().getSettings();
+            element("ows:ProviderName", settings.getContact().getContactOrganization());
             AttributesImpl attributes = new AttributesImpl();
-            attributes.addAttribute("", "xlink:href", "xlink:href", "", gs.getOnlineResource() != null ? gs.getOnlineResource() : "");
+            attributes.addAttribute("", "xlink:href", "xlink:href", "", 
+                settings.getOnlineResource() != null ? settings.getOnlineResource() : "");
             element("ows:ProviderSite", null, attributes);
 
             handleContact();
@@ -350,7 +352,7 @@ public class WCSCapsTransformer extends TransformerBase {
             final GeoServer gs = wcs.getGeoServer();
             start("ows:ServiceContact");
 
-            ContactInfo contact = gs.getGlobal().getContact();
+            ContactInfo contact = gs.getSettings().getContact();
             elementIfNotEmpty("ows:IndividualName", contact.getContactPerson());
             elementIfNotEmpty("ows:PositionName", contact.getContactPosition());
 
@@ -368,7 +370,7 @@ public class WCSCapsTransformer extends TransformerBase {
             elementIfNotEmpty("ows:ElectronicMailAddress", contact.getContactEmail());
             end("ows:Address");
 
-            String or = gs.getGlobal().getOnlineResource();
+            String or = gs.getSettings().getOnlineResource();
             if ((or != null) && !"".equals(or.trim())) {
                 AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "xlink:href", "xlink:href", "", or);

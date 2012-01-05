@@ -91,7 +91,7 @@ public abstract class WfsXmlWriter {
         this.output = output;
 
         //default to wfs configured charset
-        charSetEncoding = wfs.getGeoServer().getGlobal().getCharset();
+        charSetEncoding = wfs.getGeoServer().getSettings().getCharset();
 
         //schema locations
         schemaLocations = new HashMap();
@@ -161,7 +161,7 @@ public abstract class WfsXmlWriter {
 
         if (root) {
             writer = new BufferedWriter(new OutputStreamWriter(output, 
-                wfs.getGeoServer().getGlobal().getCharset()));
+                wfs.getGeoServer().getSettings().getCharset()));
 
             //write the processing instruction
             writer.write("<?xml version=\"1.0\" encoding=\"" + charSetEncoding + "\"?>");

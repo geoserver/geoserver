@@ -1,4 +1,11 @@
 <html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <style type="text/css">
+       #tableBody fieldset.leftwise, #tableBody fieldset.rightwise {
+         width: 40%;
+       }
+     </style>
+</wicket:head>
 <body>
 <wicket:extend>
 <form wicket:id="form">
@@ -23,16 +30,27 @@
     </li>
     -->
     <li>
-      <fieldset style="margin-top: 2em; width:40%;">
-        <legend>
-          <span>Services</span>
-          <a href="#" wicket:id="servicesHelp" class="help-link"></a>
-        </legend>
-        <div wicket:id="services" style="padding-top: 1em;">
-        </div>
-       
-      </fieldset>
+      <div id="tableBody" class="selfclear clearBoth" style="padding-top: 2em;">
+          <fieldset class="leftwise">
+            <legend>
+              <span>Settings</span>
+              <a href="#" wicket:id="settingsHelp" class="help-link"></a>
+            </legend>
+            <div wicket:id="settings" style="padding-top: 1em;">
+            </div>
+          </fieldset>
+          <fieldset class="rightwise" style="margin-right: 10%;">
+            <legend>
+              <span>Services</span>
+              <a href="#" wicket:id="servicesHelp" class="help-link"></a>
+            </legend>
+            <div wicket:id="services" style="padding-top: 1em;">
+            </div>
+           
+          </fieldset>
+      </div>
     </li>
+    
     <li class="button-group selfclear">
       <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
       <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 

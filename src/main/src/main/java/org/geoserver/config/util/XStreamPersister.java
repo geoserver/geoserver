@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +77,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerImpl;
@@ -83,6 +85,7 @@ import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
@@ -114,6 +117,8 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.converters.collections.MapConverter;
+import com.thoughtworks.xstream.converters.javabean.BeanProvider;
+import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 import com.thoughtworks.xstream.converters.reflection.FieldDictionary;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
@@ -250,6 +255,7 @@ public class XStreamPersister {
         
         // Aliases
         xs.alias("global", GeoServerInfo.class);
+        xs.alias("settings", SettingsInfo.class);
         xs.alias("logging", LoggingInfo.class);
         xs.alias("jai", JAIInfo.class);
         xs.alias("coverageAccess", CoverageAccessInfo.class);
@@ -279,7 +285,7 @@ public class XStreamPersister {
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");
         xs.omitField(impl(GeoServerInfo.class), "geoServer");
         xs.registerLocalConverter(impl(GeoServerInfo.class), "metadata", new MetadataMapConverter());
-        
+
         // ServiceInfo
         xs.omitField(impl(ServiceInfo.class), "clientProperties");
         xs.omitField(impl(ServiceInfo.class), "geoServer");
@@ -385,7 +391,7 @@ public class XStreamPersister {
         xs.registerConverter(new ProxyCollectionConverter( xs.getMapper() ) );
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
-        
+
         // register VirtulaTable handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
         registerBreifMapComplexType("dimensionInfo", DimensionInfoImpl.class);
@@ -520,6 +526,7 @@ public class XStreamPersister {
     protected void initImplementationDefaults(XStream xs) {
         //configuration
         xs.addDefaultImplementation(GeoServerInfoImpl.class, GeoServerInfo.class);
+        xs.addDefaultImplementation(SettingsInfoImpl.class, SettingsInfo.class);
         xs.addDefaultImplementation(LoggingInfoImpl.class, LoggingInfo.class);
         xs.addDefaultImplementation(JAIInfoImpl.class, JAIInfo.class);
         xs.addDefaultImplementation(CoverageAccessInfoImpl.class, CoverageAccessInfo.class);
@@ -1667,7 +1674,8 @@ public class XStreamPersister {
             super.doMarshal(source, writer, context);
         }
     }
-    
+
+
     class VirtualTableConverter implements Converter {
 
         public void marshal(Object source, HierarchicalStreamWriter writer,

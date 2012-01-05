@@ -20,6 +20,11 @@ public interface GeoServerFactory {
     GeoServerInfo createGlobal();
 
     /**
+     * Creates a new settings.
+     */
+    SettingsInfo createSettings();
+
+    /**
      * Creates a new contact.
      */
     ContactInfo createContact();

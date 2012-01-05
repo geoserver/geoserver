@@ -124,7 +124,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
         if ("1.0.0".equals(version)) {
             Wcs10CapsTransformer capsTransformer = new Wcs10CapsTransformer(geoServer);
-            capsTransformer.setEncoding(Charset.forName((getServiceInfo().getGeoServer().getGlobal()
+            capsTransformer.setEncoding(Charset.forName((getServiceInfo().getGeoServer().getSettings()
                     .getCharset())));
             return capsTransformer;
         }
@@ -141,7 +141,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             WCSInfo wcs = getServiceInfo();
             Wcs10DescribeCoverageTransformer describeTransformer = new Wcs10DescribeCoverageTransformer(
                     wcs, catalog);
-            describeTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getGlobal()
+            describeTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings()
                     .getCharset())));
             return describeTransformer;
         }

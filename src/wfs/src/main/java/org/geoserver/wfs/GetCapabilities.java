@@ -90,7 +90,7 @@ public class GetCapabilities {
         }else{
             throw new WFSException(request, "Could not understand version:" + version);
         }
-        capsTransformer.setEncoding(Charset.forName( wfs.getGeoServer().getGlobal().getCharset() ));
+        capsTransformer.setEncoding(Charset.forName( wfs.getGeoServer().getSettings().getCharset() ));
         return capsTransformer;
     }
     

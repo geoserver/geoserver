@@ -77,7 +77,7 @@ public class KMLVectorTransformer extends KMLMapTransformer {
             geometryTransformer.setNamespaceDeclarationEnabled(true);
 
             GeoServer config = wms.getGeoServer();
-            geometryTransformer.setNumDecimals(config.getGlobal().getNumDecimals());
+            geometryTransformer.setNumDecimals(config.getSettings().getNumDecimals());
 
             geometryTranslator = (KMLGeometryTransformer.KMLGeometryTranslator) geometryTransformer
                     .createTranslator(contentHandler, mapContent);

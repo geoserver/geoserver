@@ -31,7 +31,9 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.WCSInfo;
@@ -329,13 +331,14 @@ public class Wcs10CapsTransformer extends TransformerBase {
             final GeoServer gs = wcs.getGeoServer();
             String tmp = "";
 
-            if (((gs.getGlobal().getContact() != null) && (gs.getGlobal().getContact()
-                    .getContactPerson() != ""))
-                    || ((gs.getGlobal().getContact().getContactOrganization() != null) && (gs
-                            .getGlobal().getContact().getContactOrganization() != ""))) {
+            SettingsInfo settings = gs.getSettings();
+            ContactInfo contact = settings.getContact();
+
+            if (((contact != null) && (contact.getContactPerson() != "")) || 
+                ((contact.getContactOrganization() != null) && (contact.getContactOrganization() != ""))) {
                 start("wcs:responsibleParty");
 
-                tmp = gs.getGlobal().getContact().getContactPerson();
+                tmp = contact.getContactPerson();
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:individualName", tmp);
                 }
@@ -344,12 +347,12 @@ public class Wcs10CapsTransformer extends TransformerBase {
                     element("wcs:individualName", "");
                 }
                 
-                tmp = gs.getGlobal().getContact().getContactOrganization();
+                tmp = contact.getContactOrganization();
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:organisationName", tmp);
                 }
                 
-                tmp = gs.getGlobal().getContact().getContactPosition();
+                tmp = contact.getContactPosition();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:positionName", tmp);
@@ -358,13 +361,13 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 start("wcs:contactInfo");
 
                 start("wcs:phone");
-                tmp = gs.getGlobal().getContact().getContactVoice();
+                tmp = contact.getContactVoice();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:voice", tmp);
                 }
 
-                tmp = gs.getGlobal().getContact().getContactFacsimile();
+                tmp = contact.getContactFacsimile();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:facsimile", tmp);
@@ -373,48 +376,48 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 end("wcs:phone");
 
                 start("wcs:address");
-                tmp = gs.getGlobal().getContact().getAddressType();
+                tmp = contact.getAddressType();
 
                 if ((tmp != null) && (tmp != "")) {
                     String addr = "";
-                    addr = gs.getGlobal().getContact().getAddress();
+                    addr = contact.getAddress();
 
                     if ((addr != null) && (addr != "")) {
                         element("wcs:deliveryPoint", tmp + " " + addr);
                     }
                 } else {
-                    tmp = gs.getGlobal().getContact().getAddress();
+                    tmp = contact.getAddress();
 
                     if ((tmp != null) && (tmp != "")) {
                         element("wcs:deliveryPoint", tmp);
                     }
                 }
 
-                tmp = gs.getGlobal().getContact().getAddressCity();
+                tmp = contact.getAddressCity();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:city", tmp);
                 }
 
-                tmp = gs.getGlobal().getContact().getAddressState();
+                tmp = contact.getAddressState();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:administrativeArea", tmp);
                 }
 
-                tmp = gs.getGlobal().getContact().getAddressPostalCode();
+                tmp = contact.getAddressPostalCode();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:postalCode", tmp);
                 }
 
-                tmp = gs.getGlobal().getContact().getAddressCountry();
+                tmp = contact.getAddressCountry();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:country", tmp);
                 }
 
-                tmp = gs.getGlobal().getContact().getContactEmail();
+                tmp = contact.getContactEmail();
 
                 if ((tmp != null) && (tmp != "")) {
                     element("wcs:electronicMailAddress", tmp);
@@ -422,7 +425,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
                 end("wcs:address");
 
-                tmp = gs.getGlobal().getContact().getOnlineResource();
+                tmp = contact.getOnlineResource();
 
                 if ((tmp != null) && (tmp != "")) {
                     AttributesImpl attributes = new AttributesImpl();

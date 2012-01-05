@@ -103,7 +103,7 @@ public class ReverseProxyFilter implements Filter {
      */
     private final Set<Pattern> mimeTypePatterns = new HashSet<Pattern>();
 
-    private GeoServerInfo geoServer;
+    private GeoServer geoServer;
 
     /**
      * Parses the <code>mime-types</code> init parameter, which is a comma separated list of regular
@@ -124,13 +124,12 @@ public class ReverseProxyFilter implements Filter {
                         + "configured or the method to get to the GeoServer "
                         + "config instance have changed!");
             }
-            geoServer = geoServerConfig.getGlobal();
-
-            if (geoServer == null) {
+            this.geoServer = geoServerConfig;
+            if (geoServerConfig.getSettings() == null) {
                 throw new ServletException(
                         "No GeoServerInfo instance found. Needed to look for the proxy base URL");
             }
-            Set<Pattern> patterns = parsePatterns(geoServer, mimeTypesInitParam);
+            Set<Pattern> patterns = parsePatterns(geoServerConfig, mimeTypesInitParam);
             this.mimeTypePatterns.addAll(patterns);
             LOGGER.finer("Reverse Proxy Filter configured");
         } else {
@@ -138,7 +137,7 @@ public class ReverseProxyFilter implements Filter {
         }
     }
 
-    static Set<Pattern> parsePatterns(final GeoServerInfo geoServer, final String mimeTypesInitParam)
+    static Set<Pattern> parsePatterns(final GeoServer geoServer, final String mimeTypesInitParam)
             throws ServletException {
 
         final String[] split = mimeTypesInitParam.split(",");
@@ -184,7 +183,7 @@ public class ReverseProxyFilter implements Filter {
             return;
         }
 
-        final String proxyBaseUrl = geoServer.getProxyBaseUrl();
+        final String proxyBaseUrl = geoServer.getSettings().getProxyBaseUrl();
 
         if (proxyBaseUrl == null || "".equals(proxyBaseUrl)) {
             chain.doFilter(request, response);

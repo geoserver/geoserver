@@ -13,15 +13,15 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         login();
         tester.startPage(ContactPage.class);
-        tester.assertComponent("form:address", TextField.class);
-        tester.assertModelValue("form:address", info.getAddress());
+        tester.assertComponent("form:contact:address", TextField.class);
+        tester.assertModelValue("form:contact:address", info.getAddress());
     }
 
     public void testSave() {
         login();
         tester.startPage(ContactPage.class);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("address", "newAddress");
+        ft.setValue("contact:address", "newAddress");
         ft.submit("submit");
         tester.assertRenderedPage(GeoServerHomePage.class);
 

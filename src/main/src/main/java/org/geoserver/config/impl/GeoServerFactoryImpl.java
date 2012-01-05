@@ -16,6 +16,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -37,6 +38,10 @@ public class GeoServerFactoryImpl implements GeoServerFactory,
 
     public GeoServerInfo createGlobal() {
         return new GeoServerInfoImpl(gs);
+    }
+
+    public SettingsInfo createSettings() {
+        return new SettingsInfoImpl();
     }
 
     public ContactInfo createContact() {

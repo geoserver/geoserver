@@ -84,17 +84,4 @@ public class WcsException extends ServiceException {
         super(e, preMessage, locator);
     }
 
-    /**
-     * Returns the mime type that should be exposed to the client when sending the exception
-     * message.
-     * 
-     * <p>
-     * Defaults to <code>geoserver.getMimeType()</code>
-     * </p>
-     * 
-     * @return
-     */
-    public String getMimeType(GeoServerInfo geoserver) {
-        return SE_XML + "; charset=" + geoserver.getCharset();
-    }
 }

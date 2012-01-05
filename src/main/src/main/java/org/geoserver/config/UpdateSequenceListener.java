@@ -69,6 +69,27 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
         
     }
 
+    @Override
+    public void handleSettingsAdded(SettingsInfo settings) {
+        incrementSequence();
+    }
+
+    @Override
+    public void handleSettingsModified(SettingsInfo settings, List<String> propertyNames,
+            List<Object> oldValues, List<Object> newValues) {
+        // we use post event
+    }
+
+    @Override
+    public void handleSettingsPostModified(SettingsInfo settings) {
+        incrementSequence();
+    }
+
+    @Override
+    public void handleSettingsRemoved(SettingsInfo settings) {
+        incrementSequence();
+    }
+
     public void handleLoggingChange(LoggingInfo logging, List<String> propertyNames,
             List<Object> oldValues, List<Object> newValues) {
         // we don't update the sequence for a logging change, the client cannot notice it   

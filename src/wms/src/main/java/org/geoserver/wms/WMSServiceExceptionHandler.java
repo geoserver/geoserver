@@ -260,7 +260,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             sb.append("\n" + tab + tab);
             OwsUtils.dumpExceptionMessages(exception, sb, true);
 
-            if (geoServer.getGlobal().isVerboseExceptions()) {
+            if (geoServer.getSettings().isVerboseExceptions()) {
                 ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
                 exception.printStackTrace(new PrintStream(stackTrace));
 
@@ -306,7 +306,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         if ((exception.getMessage() != null)) {
             OwsUtils.dumpExceptionMessages(exception, sb, false);
 
-            if (geoServer.getGlobal().isVerboseExceptions()) {
+            if (geoServer.getSettings().isVerboseExceptions()) {
                 ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
                 exception.printStackTrace(new PrintStream(stackTrace));
 

@@ -4,13 +4,15 @@
  */
 package org.geoserver.config;
 
+import org.geoserver.catalog.Info;
+
 /**
  * GeoServer contact information.
  * 
  * @author Justin Deoliveira, The Open Planning Project
  * 
  */
-public interface ContactInfo {
+public interface ContactInfo extends Info {
 
     /**
      * Identifier.

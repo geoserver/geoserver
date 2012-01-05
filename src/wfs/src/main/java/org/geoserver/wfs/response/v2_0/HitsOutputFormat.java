@@ -39,7 +39,7 @@ public class HitsOutputFormat extends org.geoserver.wfs.response.HitsOutputForma
             throws IOException {
         hits.setNumberOfFeatures(BigInteger.valueOf(0));
         Encoder e = new Encoder(new WFSConfiguration());
-        e.setEncoding(Charset.forName( wfs.getGeoServer().getGlobal().getCharset()) );
+        e.setEncoding(Charset.forName( wfs.getGeoServer().getSettings().getCharset()) );
         e.setSchemaLocation(WFS.NAMESPACE,
             ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/2.0/wfs.xsd"));
         

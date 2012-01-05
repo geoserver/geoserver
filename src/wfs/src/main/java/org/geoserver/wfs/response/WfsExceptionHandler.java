@@ -45,7 +45,7 @@ public class WfsExceptionHandler extends DefaultServiceExceptionHandler {
      * Encodes a ogc:ServiceExceptionReport to output.
      */
     public void handleServiceException(ServiceException e, Request request) {
-        verboseExceptions = getInfo().getGeoServer().getGlobal().isVerboseExceptions();
+        verboseExceptions = getInfo().getGeoServer().getSettings().isVerboseExceptions();
         if ("1.0.0".equals(request.getVersion())) {
             handle1_0(e, request.getHttpResponse());
         } else {

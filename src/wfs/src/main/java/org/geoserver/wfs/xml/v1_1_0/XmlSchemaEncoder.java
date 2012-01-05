@@ -98,7 +98,6 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     
     protected void doWrite(FeatureTypeInfo[] featureTypeInfos, OutputStream output,
             Operation describeFeatureType) throws IOException {
-        GeoServerInfo global = gs.getGlobal();
 
         //create the schema
         Object request = describeFeatureType.getParameters()[0];
@@ -108,7 +107,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
 
         //serialize
         schema.updateElement();
-        final String encoding = global.getCharset();
+        final String encoding = gs.getSettings().getCharset();
         XSDResourceImpl.serialize(output, schema.getElement(), encoding);
     }
     

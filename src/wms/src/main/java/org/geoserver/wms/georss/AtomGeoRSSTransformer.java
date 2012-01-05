@@ -109,7 +109,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
             element("title", feature.getID());
 
             start("author");
-            element("name", wms.getGeoServer().getGlobal().getContact().getContactPerson());
+            element("name", wms.getGeoServer().getSettings().getContact().getContactPerson());
             end("author");
 
             //id

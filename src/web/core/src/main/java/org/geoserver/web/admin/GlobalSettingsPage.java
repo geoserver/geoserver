@@ -35,7 +35,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
             "VERBOSE_LOGGING.properties", "PRODUCTION_LOGGING.properties",
             "GEOTOOLS_DEVELOPER_LOGGING.properties", "GEOSERVER_DEVELOPER_LOGGING.properties");
 
-    private static final ArrayList<String> AVAILABLE_CHARSETS = new ArrayList<String>(Charset.availableCharsets().keySet());
+    public static final ArrayList<String> AVAILABLE_CHARSETS = new ArrayList<String>(Charset.availableCharsets().keySet());
 
     public GlobalSettingsPage() {
         final IModel globalInfoModel = getGlobalInfoModel();

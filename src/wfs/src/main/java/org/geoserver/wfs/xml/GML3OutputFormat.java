@@ -67,7 +67,6 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     
     GeoServer geoServer;
     Catalog catalog;
-    GeoServerInfo global;
     WFSConfiguration configuration;
     protected static DOMSource xslt;
     
@@ -95,7 +94,6 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
 
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
-        this.global = geoServer.getGlobal();
         
         this.configuration = configuration;
     }
@@ -190,7 +188,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         Object gft = getFeature.getParameters()[0];
         
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
-        encoder.setEncoding(Charset.forName( global.getCharset() ));
+        encoder.setEncoding(Charset.forName( geoServer.getSettings().getCharset() ));
 
         if (wfs.isCanonicalSchemaLocation()) {
             encoder.setSchemaLocation(getWfsNamespace(), getCanonicalWfsSchemaLocation());

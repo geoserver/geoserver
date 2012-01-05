@@ -27,6 +27,7 @@ public interface GeoServerInfo extends Info {
      * 
      * @uml.property name="contactInfo"
      * @uml.associationEnd inverse="geoServer:org.geoserver.config.ContactInfo"
+     * @deprecated use {@link #getSettings()}
      */
     ContactInfo getContact();
 
@@ -36,8 +37,23 @@ public interface GeoServerInfo extends Info {
      * @param contactInfo
      *                The contactInfo to set.
      * @uml.property name="contactInfo"
+     * @deprecated use {@link #getSettings()}
      */
     void setContact(ContactInfo contactInfo);
+
+    /**
+     * The global settings.
+     * <p>
+     * Generally client code shoudl not call this method directly, and rather call 
+     * {@link GeoServer#getSettings()}.
+     * </p>
+     */
+    SettingsInfo getSettings();
+
+    /**
+     * Sets the global settings.
+     */
+    void setSettings(SettingsInfo settings);
 
     /**
      * The Java Advanced Imaging configuration.
@@ -63,6 +79,7 @@ public interface GeoServerInfo extends Info {
      * The default character set.
      * 
      * @uml.property name="charset"
+     * @deprecated use {@link #getSettings()}
      */
     String getCharset();
 
@@ -70,6 +87,7 @@ public interface GeoServerInfo extends Info {
      * Sets the default character set.
      * 
      * @uml.property name="charset"
+     * @deprecated use {@link #getSettings()}
      */
     void setCharset(String charset);
 
@@ -98,6 +116,7 @@ public interface GeoServerInfo extends Info {
      * The title of the GeoServer instance.
      * 
      * @uml.property name="title"
+     * @deprecated use {@link #getSettings()}
      */
     String getTitle();
 
@@ -105,6 +124,7 @@ public interface GeoServerInfo extends Info {
      * Sets the title of the GeoServer instance.
      * .
      * @uml.property name="title"
+     * @deprecated use {@link #getSettings()}
      */
     void setTitle(String title);
 
@@ -113,6 +133,7 @@ public interface GeoServerInfo extends Info {
      * point numbers.
      * 
      * @uml.property name="numDecimals"
+     * @deprecated use {@link #getSettings()}
      */
     int getNumDecimals();
 
@@ -120,13 +141,19 @@ public interface GeoServerInfo extends Info {
      * Sets the global cap on the number of decimals to use when encoding floating 
      * point numbers.
      * @uml.property name="numDecimals"
+     * @deprecated use {@link #getSettings()}
      */
     void setNumDecimals(int numDecimals);
 
     /**
      * TODO: not sure what this is supposed to do.
+     * @deprecated use {@link #getSettings()}
      */
     String getOnlineResource();
+    
+    /**
+     * @deprecated use {@link #getSettings()}
+     */
     void setOnlineResource(String onlineResource);
 
     /**
@@ -136,12 +163,14 @@ public interface GeoServerInfo extends Info {
      * be made in a response.
      * </p>
      * @uml.property name="proxyBaseUrl"
+     * @deprecated use {@link #getSettings()}
      */
     String getProxyBaseUrl();
 
     /**
      * Sets The url of a proxy in front of the GeoServer instance.
      * @uml.property name="proxyBaseUrl"
+     * @deprecated use {@link #getSettings()}
      */
     void setProxyBaseUrl(String proxyBaseUrl);
 
@@ -149,6 +178,7 @@ public interface GeoServerInfo extends Info {
      * The base url to use when including a reference to an xml schema document 
      * in a response.
      * @uml.property name="schemaBaseUrl"
+     * @deprecated use {@link #getSettings()}
      */
     String getSchemaBaseUrl();
 
@@ -156,6 +186,7 @@ public interface GeoServerInfo extends Info {
      * Sets the base url to use when including a reference to an xml schema document 
      * in a response.
      * @uml.property name="schemaBaseUrl"
+     * @deprecated use {@link #getSettings()}
      */
     void setSchemaBaseUrl(String schemaBaseUrl);
 
@@ -165,12 +196,14 @@ public interface GeoServerInfo extends Info {
      * When set GeoServer will log extra information it normally would not.
      * </p>
      * @uml.property name="verbose"
+     * @deprecated use {@link #getSettings()}
      */
     boolean isVerbose();
 
     /**
      * Sets verbosity flag.
      * @uml.property name="verbose"
+     * @deprecated use {@link #getSettings()}
      */
     void setVerbose(boolean verbose);
 
@@ -180,12 +213,14 @@ public interface GeoServerInfo extends Info {
      * When set GeoServer will include full stack traces for exceptions.
      * </p>
      * @uml.property name="verboseExceptions"
+     * @deprecated use {@link #getSettings()}
      */
     boolean isVerboseExceptions();
 
     /**
      * Sets verbosity flag for exceptions.
      * @uml.property name="verboseExceptions"
+     * @deprecated use {@link #getSettings()}
      */
     void setVerboseExceptions(boolean verboseExceptions);
     

@@ -54,7 +54,7 @@ public class FeatureResponse extends WFSResponse {
         
         //create teh encoder
         Encoder encoder = new Encoder( configuration );
-        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getGlobal().getCharset() ) );
+        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getSettings().getCharset() ) );
         encoder.encode( feature, 
             new QName( meta.getNamespace().getURI(), meta.getName()), output );
     }

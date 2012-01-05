@@ -254,7 +254,47 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             throw new RuntimeException( e );
         }
     }
-    
+
+    public void handleSettingsAdded(SettingsInfo settings) {
+        handleSettingsPostModified(settings);
+    }
+
+    public void handleSettingsModified(SettingsInfo settings, List<String> propertyNames,
+            List<Object> oldValues, List<Object> newValues) {
+        //handle case of settings changing workspace
+        int i = propertyNames.indexOf( "workspace");
+        if ( i > -1 ) {
+            WorkspaceInfo newWorkspace = (WorkspaceInfo) newValues.get( i );
+            LOGGER.fine( "Moving settings '" + settings + " to workspace: " + newWorkspace);
+
+            try {
+                File oldFile = file(settings);
+                oldFile.renameTo( new File( dir( newWorkspace ), oldFile.getName() ) );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void handleSettingsPostModified(SettingsInfo settings) {
+        LOGGER.fine( "Persisting settings " + settings );
+        try {
+            persist(settings, file(settings));
+        }
+        catch(IOException e) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public void handleSettingsRemoved(SettingsInfo settings) {
+        LOGGER.fine( "Removing settings " + settings );
+        try {
+            file(settings).delete();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void handleLoggingChange(LoggingInfo logging, List<String> propertyNames,
             List<Object> oldValues, List<Object> newValues) {
     }
@@ -650,7 +690,14 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     File file( LayerGroupInfo lg ) throws IOException {
         return new File( dir( lg ), lg.getName() + ".xml" );
     }
-    
+
+    // settings
+    File file(SettingsInfo settings) throws IOException {
+        File dir = settings.getWorkspace() != null ? dir(settings.getWorkspace()) : 
+            rl.getBaseDirectory();
+        return new File(dir, "settings.xml");
+    }
+
     //helpers
     void backupDirectory(File dir) throws IOException {
         File bak = new File( dir.getCanonicalPath() + ".bak");

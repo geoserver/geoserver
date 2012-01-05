@@ -59,7 +59,38 @@ public interface GeoServer {
      * Sets the global configuration.
      */
     void setGlobal( GeoServerInfo global );
-    
+
+    /**
+     * Returns the global settings configuration.
+     * <p>
+     * This method will return {@link GeoServerInfo#getSettings()} unless a local workspace is 
+     * set. In that case the settings for that workspace will be checked via 
+     * {@link #getSettings(WorkspaceInfo)}, and if one exists will be returned. If local workspace
+     * settings do not exist the global settings ({@link GeoServerInfo#getSettings()}) are returned.
+     * </p>
+     */
+    SettingsInfo getSettings();
+
+    /**
+     * The settings configuration for the specified workspoace, or <code>null</code> if non exists.
+     */
+    SettingsInfo getSettings(WorkspaceInfo workspace);
+
+    /**
+     * Adds a settings configuration for the specified workspace.
+     */
+    void add(SettingsInfo settings);
+
+    /**
+     * Saves the settings configuration for the specified workspace.
+     */
+    void save(SettingsInfo settings);
+
+    /**
+     * Removes the settings configuration for the specified workspace.
+     */
+    void remove(SettingsInfo settings);
+
     /**
      * The logging configuration.
      */
@@ -216,7 +247,16 @@ public interface GeoServer {
      * </p>
      */
     void fireGlobalModified(GeoServerInfo global, List<String> propertyNames, List oldValues, List newValues);
-    
+
+    /**
+     * Fires the event for a settings configuration being modified.
+     * <p> 
+     * This method should not be called by client code. It is meant to be called
+     * internally by the configuration subsystem.
+     * </p>
+     */
+    void fireSettingsModified(SettingsInfo global, List<String> propertyNames, List oldValues, List newValues);
+
     /**
      * Fires the event for the logging configuration being modified.
      * <p> 

@@ -521,14 +521,85 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
     
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
+        global.setAdminUsername("roadRunner");
         global.setTitle( "ACME");
         getGeoServer().save( global );
         
         File f = new File( testData.getDataDirectoryRoot(), "global.xml" ); 
         Document dom = dom( f );
-        assertXpathEvaluatesTo( "ACME", "/global/title", dom );
+        assertXpathEvaluatesTo( "roadRunner", "/global/adminUsername", dom );
+        assertXpathEvaluatesTo( "ACME", "/global/settings/title", dom );
     }
-    
+
+    public void testAddSettings() throws Exception {
+        testAddWorkspace();
+        WorkspaceInfo ws = catalog.getWorkspaceByName("acme");
+       
+        SettingsInfo settings = getGeoServer().getFactory().createSettings();
+        settings.setTitle("ACME");
+        settings.setWorkspace(ws);
+        
+        File f = catalog.getResourceLoader().find("workspaces", ws.getName(), "settings.xml");
+        assertNull(f);
+
+        getGeoServer().add(settings);
+        f = catalog.getResourceLoader().find("workspaces", ws.getName(), "settings.xml");
+        assertNotNull(f);
+        Document dom = dom( f );
+        assertXpathEvaluatesTo( "ACME", "/settings/title", dom );
+    }
+
+    public void testModifySettings() throws Exception {
+        testAddSettings();
+        WorkspaceInfo ws = catalog.getWorkspaceByName("acme");
+
+        SettingsInfo settings = getGeoServer().getSettings(ws);
+        settings.setTitle("FOO");
+        getGeoServer().save(settings);
+        
+        File f = catalog.getResourceLoader().find("workspaces", ws.getName(), "settings.xml");
+        assertNotNull(f);
+
+        Document dom = dom( f );
+        assertXpathEvaluatesTo( "FOO", "/settings/title", dom );
+    }
+
+    public void testModifySettingsChangeWorkspace() throws Exception {
+        testAddSettings();
+
+        WorkspaceInfo ws1 = catalog.getWorkspaceByName("acme");
+        WorkspaceInfo ws2 = catalog.getFactory().createWorkspace();
+        ws2.setName("foo");
+        catalog.add(ws2);
+
+        SettingsInfo settings = getGeoServer().getSettings(ws1);
+        settings.setWorkspace(ws2);
+        getGeoServer().save(settings);
+
+        File f = catalog.getResourceLoader().find("workspaces", ws1.getName(), "settings.xml");
+        assertNull(f);
+
+        f = catalog.getResourceLoader().find("workspaces", ws2.getName(), "settings.xml");
+        assertNotNull(f);
+
+        Document dom = dom( f );
+        assertXpathEvaluatesTo( ws2.getId(), "/settings/workspace/id", dom );   
+    }
+
+    public void testRemoveSettings() throws Exception {
+        testAddSettings();
+        WorkspaceInfo ws = catalog.getWorkspaceByName("acme");
+
+        File f = catalog.getResourceLoader().find("workspaces", ws.getName(), "settings.xml");
+        assertNotNull(f);
+
+        SettingsInfo settings = getGeoServer().getSettings(ws);
+        getGeoServer().remove(settings);
+        
+        f = catalog.getResourceLoader().find("workspaces", ws.getName(), "settings.xml");
+        assertNull(f);
+    }
+
     Document dom( File f ) throws Exception {
         return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( f );
     }

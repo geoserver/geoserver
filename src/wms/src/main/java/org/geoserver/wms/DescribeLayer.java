@@ -32,7 +32,7 @@ public class DescribeLayer {
         transformer = new DescribeLayerTransformer(baseURL);
         Charset encoding = wms.getCharSet();
         transformer.setEncoding(encoding);
-        if (wms.getGeoServer().getGlobal().isVerbose()) {
+        if (wms.getGeoServer().getSettings().isVerbose()) {
             transformer.setIndentation(2);
         }
         return transformer;

@@ -310,16 +310,13 @@ public class WMS implements ApplicationContextAware {
 
     public Charset getCharSet() {
         GeoServer geoServer2 = getGeoServer();
-        GeoServerInfo global = geoServer2.getGlobal();
-        String charset = global.getCharset();
+        String charset = geoServer2.getSettings().getCharset();
         return Charset.forName(charset);
     }
 
     public String getProxyBaseUrl() {
         GeoServer geoServer = getGeoServer();
-        GeoServerInfo global = geoServer.getGlobal();
-        String proxyBaseUrl = global.getProxyBaseUrl();
-        return proxyBaseUrl;
+        return geoServer.getSettings().getProxyBaseUrl();
     }
 
     public long getUpdateSequence() {
@@ -515,8 +512,7 @@ public class WMS implements ApplicationContextAware {
     }
     
     public int getNumDecimals() {
-        GeoServerInfo global = getGeoServer().getGlobal();
-        return global.getNumDecimals();
+        return getGeoServer().getSettings().getNumDecimals();
     }
 
     public String getNameSpacePrefix(final String nsUri) {

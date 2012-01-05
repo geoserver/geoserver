@@ -51,10 +51,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
  */
 public class VersionedGML3OutputFormat extends Response {
 
-    private WFSInfo wfs;
-
+    private GeoServer gs;
     private Catalog catalog;
-
     private WFSVConfiguration configuration;
 
     public VersionedGML3OutputFormat(GeoServer gs,
@@ -63,7 +61,7 @@ public class VersionedGML3OutputFormat extends Response {
                 new HashSet<String>(Arrays.asList(new String[] { "gml3",
                         "text/xml; subtype=gml/3.1.1" })));
 
-        this.wfs = gs.getService( WFSInfo.class );
+        this.gs = gs;
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
     }
@@ -104,9 +102,10 @@ public class VersionedGML3OutputFormat extends Response {
             metas.add(meta);
         }
 
+        WFSInfo wfs = gs.getService(WFSInfo.class);
         GeoServerInfo global = wfs.getGeoServer().getGlobal();
         Encoder encoder = new Encoder(configuration, configuration.schema());
-        encoder.setEncoding(Charset.forName( global.getCharset() ));
+        encoder.setEncoding(Charset.forName( gs.getSettings().getCharset() ));
 
         // declare wfs schema location
         BaseRequestType gft = (BaseRequestType) getFeature.getParameters()[0];

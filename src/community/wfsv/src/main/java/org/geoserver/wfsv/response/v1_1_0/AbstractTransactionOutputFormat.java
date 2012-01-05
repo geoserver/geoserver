@@ -46,11 +46,9 @@ import org.opengis.filter.FilterFactory;
  */
 public abstract class AbstractTransactionOutputFormat extends Response {
     /**
-     * WFS configuration
+     * configuration
      */
-    WFSInfo wfs;
-    Catalog catalog;
-    GeoServerInfo global;
+    GeoServer geoServer;
 
     /**
      * Xml configuration
@@ -76,10 +74,8 @@ public abstract class AbstractTransactionOutputFormat extends Response {
         FilterFactory filterFactory, QName element, String mime) {
         super(FeatureDiffReader[].class);
 
-        this.wfs = gs.getService( WFSInfo.class );
-        this.global = gs.getGlobal();
+        this.geoServer = gs;
         this.configuration = configuration;
-        this.catalog = gs.getCatalog();
         this.filterFactory = filterFactory;
         this.element = element;
         this.mime = mime;
@@ -119,7 +115,7 @@ public abstract class AbstractTransactionOutputFormat extends Response {
         encodeWfsSchemaLocation(encoder, gft.getBaseUrl());
 
         encoder.setIndenting(true);
-        encoder.setEncoding(Charset.forName( global.getCharset() ));
+        encoder.setEncoding(Charset.forName( geoServer.getSettings().getCharset() ));
 
         // set up schema locations
         // round up the info objects for each feature collection
@@ -131,7 +127,7 @@ public abstract class AbstractTransactionOutputFormat extends Response {
 
             // load the metadata for the feature type
             String namespaceURI = featureType.getName().getNamespaceURI();
-            FeatureTypeInfo meta = catalog.getFeatureTypeByName( namespaceURI, featureType.getName().getLocalPart() );
+            FeatureTypeInfo meta = geoServer.getCatalog().getFeatureTypeByName( namespaceURI, featureType.getName().getLocalPart() );
 
             // add it to the map
             Set metas = (Set) ns2metas.get(namespaceURI);

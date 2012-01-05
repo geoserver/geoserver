@@ -15,11 +15,13 @@ import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.util.OwsUtils;
 
 public class DefaultGeoServerFacade implements GeoServerFacade {
 
     GeoServerInfo global;
+    List<SettingsInfo> settings = new ArrayList<SettingsInfo>();
     LoggingInfo logging;
     List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
@@ -64,7 +66,43 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         
         proxy.commit();
     }
-    
+
+    public SettingsInfo getSettings(WorkspaceInfo workspace) {
+        for (SettingsInfo s : settings) {
+            if (s.getWorkspace().equals(workspace)) {
+                return ModificationProxy.create(s, SettingsInfo.class);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void add(SettingsInfo s) {
+        s = unwrap(s);
+        settings.add(s);
+    }
+
+    @Override
+    public void save(SettingsInfo settings) {
+        ModificationProxy proxy = 
+            (ModificationProxy) Proxy.getInvocationHandler( settings );
+        
+        List propertyNames = proxy.getPropertyNames();
+        List oldValues = proxy.getOldValues();
+        List newValues = proxy.getNewValues();
+        
+        settings = (SettingsInfo) proxy.getProxyObject();
+        geoServer.fireSettingsModified(settings, propertyNames, oldValues, newValues);
+
+        proxy.commit();
+    }
+
+    @Override
+    public void remove(SettingsInfo s) {
+        s = unwrap(s);
+        settings.remove(s);
+    }
+
     public LoggingInfo getLogging() {
         if ( logging == null ) {
             return null;

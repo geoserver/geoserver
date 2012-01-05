@@ -41,7 +41,7 @@ public class VersionedGML2OutputFormat extends GML2OutputFormat {
         super(geoServer);
     }
     
-    protected String wfsSchemaLocation(GeoServerInfo global, String baseUrl) {
+    protected String wfsSchemaLocation(String baseUrl) {
         return ResponseUtils.buildSchemaURL(baseUrl, "/wfs/1.0.0/WFS-versioning.xsd");
     }
 

@@ -9,6 +9,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 
@@ -102,4 +104,38 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         
         assertEquals(MockData.CITE_PREFIX, getCatalog().getDefaultWorkspace().getName());
     }
+
+    public void testEnableSettings() throws Exception {
+        GeoServer gs = getGeoServer();
+
+        assertNull(gs.getSettings(citeWorkspace));
+        
+        FormTester form = tester.newFormTester("form");
+        form.setValue("settings:enabled", true);
+        form.submit();
+
+        tester.assertNoErrorMessage();
+        assertNotNull(gs.getSettings(citeWorkspace));
+    }
+
+    public void testDisableSettings() throws Exception {
+        GeoServer gs = getGeoServer();
+        SettingsInfo settings = gs.getFactory().createSettings();
+        settings.setProxyBaseUrl("http://foo.org");
+        settings.setWorkspace(citeWorkspace);
+        gs.add(settings);
+
+        assertNotNull(gs.getSettings(citeWorkspace));
+        tester.startPage(new WorkspaceEditPage(citeWorkspace));
+        tester.assertRenderedPage(WorkspaceEditPage.class);
+
+        FormTester form = tester.newFormTester("form");
+        assertEquals("http://foo.org", 
+            form.getTextComponentValue("settings:settingsContainer:otherSettings:proxyBaseUrl"));
+        form.setValue("settings:enabled", false);
+        form.submit();
+
+        assertNull(gs.getSettings(citeWorkspace));
+    }
+
 }

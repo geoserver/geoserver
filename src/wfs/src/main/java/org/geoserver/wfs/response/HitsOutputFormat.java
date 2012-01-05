@@ -112,7 +112,7 @@ public class HitsOutputFormat extends WFSResponse {
     protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs) 
         throws IOException {
         Encoder encoder = new Encoder(configuration, configuration.schema());
-        encoder.setEncoding(Charset.forName( wfs.getGeoServer().getGlobal().getCharset()) );
+        encoder.setEncoding(Charset.forName( wfs.getGeoServer().getSettings().getCharset()) );
         encoder.setSchemaLocation(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
             ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
 

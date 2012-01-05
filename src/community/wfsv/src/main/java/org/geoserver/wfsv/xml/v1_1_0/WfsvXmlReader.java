@@ -60,7 +60,7 @@ public class WfsvXmlReader extends XmlRequestReader {
 
         // set the input source with the correct encoding
         InputSource source = new InputSource(reader);
-        source.setEncoding(wfs.getGeoServer().getGlobal().getCharset());
+        source.setEncoding(wfs.getGeoServer().getSettings().getCharset());
 
         Object parsed = parser.parse(source);
 

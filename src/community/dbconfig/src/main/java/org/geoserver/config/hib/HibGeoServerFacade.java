@@ -9,6 +9,7 @@ import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.hibernate.AbstractHibFacade;
 import org.geoserver.ows.util.OwsUtils;
 import org.hibernate.Query;
@@ -40,6 +41,25 @@ public class HibGeoServerFacade extends AbstractHibFacade implements GeoServerFa
     
     public void save(GeoServerInfo geoServer) {
         merge(geoServer);
+    }
+
+    //
+    // settings
+    //
+    public SettingsInfo getSettings(WorkspaceInfo workspace) {
+        throw new UnsupportedOperationException("not implemnted");
+    }
+
+    public void add(SettingsInfo settings) {
+        throw new UnsupportedOperationException("not implemnted");
+    }
+
+    public void save(SettingsInfo settings) {
+        throw new UnsupportedOperationException("not implemnted");
+    }
+
+    public void remove(SettingsInfo settings) {
+        throw new UnsupportedOperationException("not implemnted");
     }
 
     //

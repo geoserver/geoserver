@@ -977,7 +977,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  *
                  */
             void serviceProvider(GeoServer gs) {
-                ContactInfo contact = gs.getGlobal().getContact();
+                ContactInfo contact = gs.getSettings().getContact();
                 start("ows:ServiceProvider");
 
                 element("ows:ProviderName", contact.getContactOrganization());

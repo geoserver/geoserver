@@ -25,6 +25,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -193,10 +194,10 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
             }
         }
 
-        GeoServerInfo global = geoServer.getGlobal();
+        SettingsInfo settings = geoServer.getSettings();
         
         if (numDecimals == -1) {
-            numDecimals = global.getNumDecimals();
+            numDecimals = settings.getNumDecimals();
         }
         
         WFSInfo wfs = getInfo();
@@ -205,12 +206,12 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         transformer.setNumDecimals(numDecimals);
         transformer.setFeatureBounding(wfs.isFeatureBounding());
         transformer.setCollectionBounding(wfs.isFeatureBounding());
-        transformer.setEncoding(Charset.forName(global.getCharset()));
+        transformer.setEncoding(Charset.forName(settings.getCharset()));
 
         if (wfs.isCanonicalSchemaLocation()) {
             transformer.addSchemaLocation(WFS.NAMESPACE, wfsCanonicalSchemaLocation());
         } else {
-            String wfsSchemaloc = wfsSchemaLocation(global,request.getBaseUrl());
+            String wfsSchemaloc = wfsSchemaLocation(request.getBaseUrl());
             transformer.addSchemaLocation(WFS.NAMESPACE, wfsSchemaloc);
         }
 
@@ -298,7 +299,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         return new FeatureTransformer();
     }
 
-    protected String wfsSchemaLocation(GeoServerInfo global, String baseUrl) {
+    protected String wfsSchemaLocation(String baseUrl) {
         return buildSchemaURL(baseUrl, "wfs/1.0.0/WFS-basic.xsd");
     }
 

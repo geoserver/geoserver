@@ -102,11 +102,11 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             element("name", title);
             element("visibility", "1");
             element("open", "1");
-            GeoServerInfo geoServerInfo = wms.getGeoServer().getGlobal();
-            element("atom:author", geoServerInfo.getContact().getContactPerson());
+            
+            element("atom:author", wms.getGeoServer().getSettings().getContact().getContactPerson());
 
             AttributesImpl href = new AttributesImpl();
-            href.addAttribute("", "href", "href", "", wms.getGeoServer().getGlobal()
+            href.addAttribute("", "href", "href", "", wms.getGeoServer().getSettings()
                     .getOnlineResource());
             element("atom:link", null, href);
 

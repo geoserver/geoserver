@@ -33,6 +33,26 @@ public interface GeoServerFacade {
     void save(GeoServerInfo geoServer);
 
     /**
+     * The settings configuration for the specified workspoace, or <code>null</code> if non exists.
+     */
+    SettingsInfo getSettings(WorkspaceInfo workspace);
+
+    /**
+     * Adds a settings configuration for the specified workspace.
+     */
+    void add(SettingsInfo settings);
+
+    /**
+     * Saves the settings configuration for the specified workspace.
+     */
+    void save(SettingsInfo settings);
+
+    /**
+     * Removes the settings configuration for the specified workspace.
+     */
+    void remove(SettingsInfo settings);
+
+    /**
      * The logging configuration.
      */
     LoggingInfo getLogging();

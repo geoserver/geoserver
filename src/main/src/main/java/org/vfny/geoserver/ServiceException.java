@@ -308,6 +308,6 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
      * @return
      */
     public String getMimeType(GeoServer geoserver) {
-        return "text/xml; charset=" + geoserver.getGlobal().getCharset();
+        return "text/xml; charset=" + geoserver.getSettings().getCharset();
     }
 }

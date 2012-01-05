@@ -80,7 +80,7 @@ public final class Requests {
         // try with the web interface configuration, if it fails, look into
         // web.xml just to keep compatibility (should be removed next version)
         // and finally, if nothing is found, give up and return the default base URL
-        String url = ((geoserver != null) ? geoserver.getGlobal().getProxyBaseUrl() : null);
+        String url = ((geoserver != null) ? geoserver.getSettings().getProxyBaseUrl() : null);
 
         //if ((geoserver != null) && (url != null)) {
         //    url = appendContextPath(url, httpServletRequest.getContextPath());
@@ -116,7 +116,7 @@ public final class Requests {
         // try with the web interface configuration, if it fails, look into
         // web.xml just to keep compatibility (should be removed next version)
         // and finally, if nothing is found, give up and return the default base URL
-        String url = geoserver.getGlobal().getProxyBaseUrl();
+        String url = geoserver.getSettings().getProxyBaseUrl();
 
         if ((geoserver != null) && (url != null)) {
             url = appendContextPath(url, httpServletRequest.getRequestURI());

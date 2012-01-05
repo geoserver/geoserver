@@ -46,7 +46,7 @@ public abstract class WFSResponse extends org.geoserver.wfs.response.WFSResponse
             ServiceException {
 
         Encoder encoder = new Encoder(new WFSConfiguration());
-        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getGlobal().getCharset()) );
+        encoder.setEncoding(Charset.forName( getInfo().getGeoServer().getSettings().getCharset()) );
         encoder.setOmitXMLDeclaration(Dispatcher.REQUEST.get().isSOAP());
 
         String baseURL = (String) EMFUtils.get((EObject)operation.getParameters()[0], "baseUrl");

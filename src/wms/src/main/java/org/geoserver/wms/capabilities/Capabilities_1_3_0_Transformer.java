@@ -318,7 +318,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("OnlineResource", null, attributes);
 
             GeoServer geoServer = wmsConfig.getGeoServer();
-            ContactInfo contact = geoServer.getGlobal().getContact();
+            ContactInfo contact = geoServer.getSettings().getContact();
             handleContactInfo(contact);
 
             element("Fees", serviceInfo.getFees());

@@ -73,7 +73,7 @@ public class ReverseProxyFilterTest extends TestCase {
         String mimeTypesInitParam = "*wrong*expression*";
 
         try {
-            ReverseProxyFilter.parsePatterns(geoserver.getGlobal(), mimeTypesInitParam);
+            ReverseProxyFilter.parsePatterns(geoserver, mimeTypesInitParam);
             fail("expected ServletException with an illegal regular expression to match mime types");
         } catch (ServletException e) {
             assertTrue(true);
@@ -81,7 +81,7 @@ public class ReverseProxyFilterTest extends TestCase {
 
         mimeTypesInitParam = DEFAULT_MIME_TYPES_REGEX;
 
-        ReverseProxyFilter.parsePatterns(geoserver.getGlobal(), mimeTypesInitParam);
+        ReverseProxyFilter.parsePatterns(geoserver, mimeTypesInitParam);
     }
 
     public void testDoFilterDisabled() throws ServletException, IOException {

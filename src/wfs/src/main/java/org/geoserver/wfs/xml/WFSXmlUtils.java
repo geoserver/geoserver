@@ -63,7 +63,7 @@ public class WFSXmlUtils {
     public static Object parseRequest(Parser parser, Reader reader, WFSInfo wfs) throws Exception {
         //set the input source with the correct encoding
         InputSource source = new InputSource(reader);
-        source.setEncoding(wfs.getGeoServer().getGlobal().getCharset());
+        source.setEncoding(wfs.getGeoServer().getSettings().getCharset());
 
         return parser.parse(source);
     }

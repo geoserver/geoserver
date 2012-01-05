@@ -3,7 +3,8 @@
 Lines
 =====
 
-While lines can also seem to be simple shapes, having length but no width, there are many options and tricks for making lines display nicely.
+While lines can also seem to be simple shapes, having length but no width, there are many options and tricks for making
+lines display nicely.
 
 .. warning:: The code examples shown on this page are **not the full SLD code**, as they omit the SLD header and footer information for the sake of brevity.  Please use the links to download the full SLD for each example.
 
@@ -13,7 +14,8 @@ While lines can also seem to be simple shapes, having length but no width, there
 Example lines layer
 -------------------
 
-The :download:`lines layer <artifacts/sld_cookbook_line.zip>` used in the examples below contains road information for a fictional country.  For reference, the attribute table for the points in this layer is included below.
+The :download:`lines layer <artifacts/sld_cookbook_line.zip>` used in the examples below contains road information for a
+fictional country.  For reference, the attribute table for the points in this layer is included below.
 
 .. list-table::
    :widths: 30 40 30
@@ -133,7 +135,10 @@ Code
 Details
 ~~~~~~~
 
-There is one ``<Rule>`` in one ``<FeatureTypeStyle>`` for this SLD, which is the simplest possible situation.  (All subsequent examples will contain one ``<Rule>`` and one ``<FeatureTypeStyle>`` unless otherwise specified.)  Styling lines is accomplished via the ``<LineSymbolizer>`` (**lines 3-8**).  **Line 5** specifies the color of the line to be black (``#000000``), while **line 6** specifies the width of the lines to be 3 pixels.
+There is one ``<Rule>`` in one ``<FeatureTypeStyle>`` for this SLD, which is the simplest possible situation.  (All
+subsequent examples will contain one ``<Rule>`` and one ``<FeatureTypeStyle>`` unless otherwise specified.)  Styling
+lines is accomplished via the ``<LineSymbolizer>`` (**lines 3-8**).  **Line 5** specifies the color of the line to be
+black (``#000000``), while **line 6** specifies the width of the lines to be 3 pixels.
 
 
 Line with border
@@ -180,20 +185,35 @@ Code
 Details
 ~~~~~~~
 
-Lines in SLD have no notion of a "fill", only "stroke". Thus, unlike points or polygons, it is not possible to style the "edge" of the line geometry. It is, however, possible to achieve this effect by drawing each line twice: once with a certain width and again with a slightly smaller width.  This gives the illusion of fill and stroke by obscuring the larger lines everywhere except along the edges of the smaller lines.
+Lines in SLD have no notion of a "fill", only "stroke". Thus, unlike points or polygons, it is not possible to style the
+"edge" of the line geometry. It is, however, possible to achieve this effect by drawing each line twice: once with a
+certain width and again with a slightly smaller width.  This gives the illusion of fill and stroke by obscuring the
+larger lines everywhere except along the edges of the smaller lines.
 
-Since every line is drawn twice, the order of the rendering is *very* important.  In this style, all of the gray lines are drawn first via the first ``<FeatureTypeStyle>``, followed by all of the blue lines in a second ``<FeatureTypeStyle>``.  GeoServer will render every ``<FeatureTypeStyle>`` in the order that they are presented in the SLD.  This not only ensures that the blue lines won't be obscured by the gray lines, but also ensures proper rendering at intersections, so that the blue lines "connect".
+Since every line is drawn twice, the order of the rendering is *very* important.  In this style, all of the gray lines
+are drawn first via the first ``<FeatureTypeStyle>``, followed by all of the blue lines in a second
+``<FeatureTypeStyle>``.  GeoServer will render every ``<FeatureTypeStyle>`` in the order that they are presented in the
+SLD.  This not only ensures that the blue lines won't be obscured by the gray lines, but also ensures proper rendering
+at intersections, so that the blue lines "connect".
 
-In this example, **lines 1-11** comprise the first ``<FeatureTypeStyle>``, which is the outer line (or "stroke").  **Line 5** specifies the color of the line to be dark gray (``#333333``), **line 6** specifies the width of this line to be 5 pixels, and **line 7** renders the edges of the line to be rounded instead of flat.  (When working with lines that have borders, using the ``stroke-linecap`` parameter ensures that the ends of the lines will have a properly-drawn border.)
+In this example, **lines 1-11** comprise the first ``<FeatureTypeStyle>``, which is the outer line (or "stroke"). 
+**Line 5** specifies the color of the line to be dark gray (``#333333``), **line 6** specifies the width of this line
+to be 5 pixels, and **line 7** renders the edges of the line to be rounded instead of flat.  (When working with lines
+that have borders, using the ``stroke-linecap`` parameter ensures that the ends of the lines will have a properly-drawn
+border.)
 
-**Lines 12-22** comprise the second ``<FeatureTypeStyle>``, which is the the inner line (or "fill").  **Line 16** specifies the color of the line to be a medium blue (``#6699FF``), **line 17** specifies the width of this line to be 3 pixels, and **line 18** again renders the edges of the line to be rounded instead of flat.
+**Lines 12-22** comprise the second ``<FeatureTypeStyle>``, which is the the inner line (or "fill").  **Line 16**
+specifies the color of the line to be a medium blue (``#6699FF``), **line 17** specifies the width of this line to be 3
+pixels, and **line 18** again renders the edges of the line to be rounded instead of flat.
 
-The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel gray line will display 1 pixel on each side of the 3 pixel blue line.
+The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel gray line will display 1 pixel on each
+side of the 3 pixel blue line.
 
 Dashed line
 -----------
 
-This example alters the :ref:`sld_cookbook_lines_simpleline` to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
+This example alters the :ref:`sld_cookbook_lines_simpleline` to create a dashed line consisting of 5 pixels of drawn
+line alternating with 2 pixels of blank space.
 
 .. figure:: images/line_dashedline.png
    :align: center
@@ -223,13 +243,16 @@ Code
 Details
 ~~~~~~~
 
-In this example, **line 5** sets the color of the lines to be blue (``#0000FF``) and **line 6** sets the width of the lines to be 3 pixels.  **Line 7** determines the composition of the line dashes.  The value of ``5 2`` creates a repeating pattern of 5 pixels of drawn line, followed by 2 pixels of omitted line.
+In this example, **line 5** sets the color of the lines to be blue (``#0000FF``) and **line 6** sets the width of the
+lines to be 3 pixels.  **Line 7** determines the composition of the line dashes.  The value of ``5 2`` creates a
+repeating pattern of 5 pixels of drawn line, followed by 2 pixels of omitted line.
 
 
 Railroad (hatching)
 -------------------
 
-This example uses hatching to create a railroad style.  Both the line and the hatches are black, with a 2 pixel thickness for the main line and a 1 pixel width for the perpendicular hatches.
+This example uses hatching to create a railroad style.  Both the line and the hatches are black, with a 2 pixel
+thickness for the main line and a 1 pixel width for the perpendicular hatches.
 
 .. note:: This example leverages an SLD extension in GeoServer.  Hatching is not part of the standard SLD 1.0 specification.
 
@@ -278,14 +301,20 @@ Code
 Details
 ~~~~~~~
 
-In this example, there are two rules, each containing a ``<LineSymbolizer>``.  (Each ``<LineSymbolizer>`` must exist in its own rule.)  The first rule, on **lines 2-8**, draws a standard line, with **line 5** drawing the lines as dark gray (``#333333``) and **line 6** setting the width of the lines to be 2 pixels.
+In this example, there are two rules, each containing a ``<LineSymbolizer>``.  (Each ``<LineSymbolizer>`` must exist in
+its own rule.)  The first rule, on **lines 2-8**, draws a standard line, with **line 5** drawing the lines as dark gray
+(``#333333``) and **line 6** setting the width of the lines to be 2 pixels.
 
-The hatching is invoked in the second rule, on **lines 10-27**. **Line 16** specifies that the rule draw a vertical line hatch (``shape://vertline``) perpendicular to the line geometry. **Lines 18-19** set the hatch color to dark gray (``#333333``) and width to 1 pixel. Finally, ``line 22`` specifies both the length of the hatch and the distance between each hatch to both be 12 pixels.
+The hatching is invoked in the second rule, on **lines 10-27**. **Line 16** specifies that the rule draw a vertical line
+hatch (``shape://vertline``) perpendicular to the line geometry. **Lines 18-19** set the hatch color to dark gray
+(``#333333``) and width to 1 pixel. Finally, ``line 22`` specifies both the length of the hatch and the distance
+between each hatch to both be 12 pixels.
 
 Spaced graphic symbols
 ----------------------
 
-This example uses a graphic stroke along with dash arrays to create a "dot and space" line type.  Without using the dash array the lines would be densely populated with subsequent dots, each one touching the previous one.
+This example uses a graphic stroke along with dash arrays to create a "dot and space" line type.  Without using the dash
+array the lines would be densely populated with subsequent dots, each one touching the previous one.
 
 Adding the dash array specification allows to control the amount of space between one symbol and the next one.
 
@@ -331,9 +360,10 @@ Code
       
 Details
 ~~~~~~~
-This example, like others before, uses a ``GraphicStroke`` to place a graphic symbol along a line.
-The symbol, defined at **lines 7-16** is a 4 pixels gray circle with a dark gray outline.
-The spacing between symbols is controlled with the ``dasharray`` at **line 18**, setting 4 pixels pen down, just enough to draw the circle, and 6 pixels pen up, which results in the spacing.
+This example, like others before, uses a ``GraphicStroke`` to place a graphic symbol along a line. The symbol, defined
+at **lines 7-16** is a 4 pixels gray circle with a dark gray outline. The spacing between symbols is controlled with
+the ``dasharray`` at **line 18**, setting 4 pixels pen down, just enough to draw the circle, and 6 pixels pen up, which
+results in the spacing.
 
 
 .. _sld_cookbook_lines_defaultlabel:
@@ -341,16 +371,20 @@ The spacing between symbols is controlled with the ``dasharray`` at **line 18**,
 Alternating symbols with dash offsets
 -------------------------------------
 
-This example shows how to create a complex line style which alternates a symbol and a line segment.
-The example builds on the knowledge gathered in previous sections:
+This example shows how to create a complex line style which alternates a symbol and a line segment. The example builds
+on the knowledge gathered in previous sections:
 
   * `dasharray` allows to control pen down/pen up behavior and generate dashed lines
   * `GraphicStroke` allows to place symbols along a line
   * combining the two togheter it's possible to control symbol spacing
   
-This example adds the usage of `dashoffset`, which controls at which point of the ``dasharray`` sequence the renderer starts drawing the repeating pattern. For example, having a dash array of ``5 10`` and a dash offset of ``7`` the renderer would start the repeating pattern 7 pixels after its beginnig, so it would jump over the "5 pixels pen down" section and 2 more pixels in the pen up section, performing a residual of 8 pixels up, then 5 down, 10 up, and so on.
+This example adds the usage of `dashoffset`, which controls at which point of the ``dasharray`` sequence the renderer
+starts drawing the repeating pattern. For example, having a dash array of ``5 10`` and a dash offset of ``7`` the
+renderer would start the repeating pattern 7 pixels after its beginnig, so it would jump over the "5 pixels pen down"
+section and 2 more pixels in the pen up section, performing a residual of 8 pixels up, then 5 down, 10 up, and so on.
 
-This can be used to create two synchronized sequences of dash arrays, one drawing line segments, and the other symbols along a line, like in the following example.
+This can be used to create two synchronized sequences of dash arrays, one drawing line segments, and the other symbols
+along a line, like in the following example.
 
 .. note:: This example is not likely to work with other systems supporting SLD. While the SLD is perfectly compliant we are not aware of other systems allowing to combine the usage of ``dasharray`` and graphics strokes (the SLD specification does not say what this combination is supposed to produce). 
 
@@ -400,15 +434,18 @@ Code
 Details
 ~~~~~~~
 
-In this example two dash array based line symbolizers are used to generate an alternating sequence.
-The first one, defined at **lines 3-9** is a simple line dash array alternating 10 pixels of pen down with 10 pixels of pen up. 
-The second one, defined at **lines 10-27** alternates a 5 pixels wide empty circle with 15 pixels of white space.
-In order to have the two symbolizers alternate the second one uses a dashoffset of 7.5, making the sequence start with 12.5 pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), then 15 pixels of white space, and so on.
+In this example two dash array based line symbolizers are used to generate an alternating sequence. The first one,
+defined at **lines 3-9** is a simple line dash array alternating 10 pixels of pen down with 10 pixels of pen up. The
+second one, defined at **lines 10-27** alternates a 5 pixels wide empty circle with 15 pixels of white space. In order
+to have the two symbolizers alternate the second one uses a dashoffset of 7.5, making the sequence start with 12.5
+pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), then
+15 pixels of white space, and so on.
 
 Line with default label
 -----------------------
 
-This example shows a text label on the simple line.  This is how a label will be displayed in the absence of any other customization.
+This example shows a text label on the simple line.  This is how a label will be displayed in the absence of any other
+customization.
 
 .. figure:: images/line_linewithdefaultlabel.png
    :align: center
@@ -444,7 +481,13 @@ Code
 Details
 ~~~~~~~
 
-In this example, there is one rule with a ``<LineSymbolizer>`` and a ``<TextSymbolizer>``.  The ``<LineSymbolizer>`` (**lines 3-7**) draws red lines (``#FF0000``).  Since no width is specified, the default is set to 1 pixel.  The ``<TextSymbolizer>`` (**lines 8-15**) determines the labeling of the lines.  **Lines 9-11** specify that the text of the label will be determined by the value of the "name" attribute for each line.  (Refer to the attribute table in the :ref:`sld_cookbook_lines_attributes` section if necessary.)  **Line 13** sets the text color to black.  All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
+In this example, there is one rule with a ``<LineSymbolizer>`` and a ``<TextSymbolizer>``.  The ``<LineSymbolizer>``
+(**lines 3-7**) draws red lines (``#FF0000``).  Since no width is specified, the default is set to 1 pixel.  The
+``<TextSymbolizer>`` (**lines 8-15**) determines the labeling of the lines.  **Lines 9-11** specify that the text of
+the label will be determined by the value of the "name" attribute for each line.  (Refer to the attribute table in the
+:ref:`sld_cookbook_lines_attributes` section if necessary.)  **Line 13** sets the text color to black.  All other
+details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font
+size of 10 pixels.
 
 
 .. _sld_cookbook_lines_labelfollowingline:
@@ -494,9 +537,13 @@ Code
 Details
 ~~~~~~~
 
-As the :ref:`sld_cookbook_lines_defaultlabel` example showed, the default label behavior isn't very optimal.  The label is displayed at a tangent to the line itself, leading to uncertainty as to which label corresponds to which line.
+As the :ref:`sld_cookbook_lines_defaultlabel` example showed, the default label behavior isn't very optimal.  The label
+is displayed at a tangent to the line itself, leading to uncertainty as to which label corresponds to which line.
 
-This example is similar to the :ref:`sld_cookbook_lines_defaultlabel` example with the exception of **lines 15-18**.  **Line 15** sets the option to have the label follow the line, while **lines 16-18** specify that the label is placed along a line.  If ``<LinePlacement />`` is not specified in an SLD, then ``<PointPlacement />`` is assumed, which isn't compatible with line-specific rendering options.
+This example is similar to the :ref:`sld_cookbook_lines_defaultlabel` example with the exception of **lines 15-18**. 
+**Line 15** sets the option to have the label follow the line, while **lines 16-18** specify that the label is placed
+along a line.  If ``<LinePlacement />`` is not specified in an SLD, then ``<PointPlacement />`` is assumed, which isn't
+compatible with line-specific rendering options.
 
 .. note:: Not all labels are shown due to label conflict resolution.  See the next section on :ref:`sld_cookbook_lines_optimizedlabel` for an example of how to maximize label display.
 
@@ -552,9 +599,20 @@ Code
 Details
 ~~~~~~~
 
-GeoServer uses "conflict resolution" to ensure that labels aren't drawn on top of other labels, obscuring them both.  This accounts for the reason why many lines don't have labels in the previous example, :ref:`sld_cookbook_lines_labelfollowingline`.  While this setting can be toggled, it is usually a good idea to leave it on and use other label placement options to ensure that labels are drawn as often as desired and in the correct places.  This example does just that.
+GeoServer uses "conflict resolution" to ensure that labels aren't drawn on top of other labels, obscuring them both. 
+This accounts for the reason why many lines don't have labels in the previous example,
+:ref:`sld_cookbook_lines_labelfollowingline`.  While this setting can be toggled, it is usually a good idea to leave it
+on and use other label placement options to ensure that labels are drawn as often as desired and in the correct places.
+This example does just that.
 
-This example is similar to the previous example, :ref:`sld_cookbook_lines_labelfollowingline`.  The only differences are contained in **lines 16-18**.  **Line 16** sets the maximum angle that the label will follow.  This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle.  **Line 17** sets the maximum displacement of the label to be 400 pixels.  In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping.  This value sets how far the label can be moved relative to its original placement.  Finally, **line 18** sets the labels to be repeated every 150 pixels.  A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
+This example is similar to the previous example, :ref:`sld_cookbook_lines_labelfollowingline`.  The only differences are
+contained in **lines 16-18**.  **Line 16** sets the maximum angle that the label will follow.  This sets the label to
+never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. 
+**Line 17** sets the maximum displacement of the label to be 400 pixels.  In order to resolve conflicts with
+overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping.  This value
+sets how far the label can be moved relative to its original placement.  Finally, **line 18** sets the labels to be
+repeated every 150 pixels.  A feature will typically receive only one label, but this can cause confusion for long
+lines. Setting the label to repeat ensures that the line is always labeled locally.
 
 
 .. _sld_cookbook_lines_optimizedstyledlabel:
@@ -611,7 +669,10 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`sld_cookbook_lines_optimizedlabel`.  The only difference is in the font information, which is contained in **lines 15-20**.  **Line 16** sets the font family to be "Arial", **line 17** sets the font size to 10, **line 18** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 19** sets the font weight to "bold" (as opposed to "normal").
+This example is similar to the :ref:`sld_cookbook_lines_optimizedlabel`.  The only difference is in the font
+information, which is contained in **lines 15-20**.  **Line 16** sets the font family to be "Arial", **line 17** sets
+the font size to 10, **line 18** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 19**
+sets the font weight to "bold" (as opposed to "normal").
 
 
 Attribute-based line
@@ -690,7 +751,10 @@ Details
 
 .. note:: Refer to the :ref:`sld_cookbook_lines_attributes` to see the attributes for the layer.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`sld_cookbook_lines_optimizedstyledlabel` to see which attributes correspond to which points.
 
-There are three types of road classes in our fictional country, ranging from back roads to high-speed freeways: "highway", "secondary", and "local-road".  In order to handle each case separately, there is more than one ``<FeatureTypeStyle>``, each containing a single rule.  This ensures that each road type is rendered in order, as each ``<FeatureTypeStyle>`` is drawn based on the order in which it appears in the SLD.
+There are three types of road classes in our fictional country, ranging from back roads to high-speed freeways:
+"highway", "secondary", and "local-road".  In order to handle each case separately, there is more than one
+``<FeatureTypeStyle>``, each containing a single rule.  This ensures that each road type is rendered in order, as each
+``<FeatureTypeStyle>`` is drawn based on the order in which it appears in the SLD.
 
 The three rules are designed as follows:
 
@@ -714,11 +778,22 @@ The three rules are designed as follows:
      - ``#FF0000`` (red)
      - 6
 
-**Lines 2-16** comprise the first ``<Rule>``.  **Lines 4-9** set the filter for this rule, such that the "type" attribute has a value of "local-road".  If this condition is true for a particular line, the rule is rendered according to the ``<LineSymbolizer>`` which is on **lines 10-15**.  **Lines 12-13** set the color of the line to be a dark green (``#009933``) and the width to be 2 pixels.
+**Lines 2-16** comprise the first ``<Rule>``.  **Lines 4-9** set the filter for this rule, such that the "type"
+attribute has a value of "local-road".  If this condition is true for a particular line, the rule is rendered according
+to the ``<LineSymbolizer>`` which is on **lines 10-15**.  **Lines 12-13** set the color of the line to be a dark green
+(``#009933``) and the width to be 2 pixels.
 
-**Lines 19-33** comprise the second ``<Rule>``.  **Lines 21-26** set the filter for this rule, such that the "type" attribute has a value of "secondary".  If this condition is true for a particular line, the rule is rendered according to the ``<LineSymbolizer>`` which is on **lines 27-32**.  **Lines 29-30** set the color of the line to be a dark blue (``#0055CC``) and the width to be 3 pixels, making the lines slightly thicker than the "local-road" lines and also a different color.
+**Lines 19-33** comprise the second ``<Rule>``.  **Lines 21-26** set the filter for this rule, such that the "type"
+attribute has a value of "secondary".  If this condition is true for a particular line, the rule is rendered according
+to the ``<LineSymbolizer>`` which is on **lines 27-32**.  **Lines 29-30** set the color of the line to be a dark blue
+(``#0055CC``) and the width to be 3 pixels, making the lines slightly thicker than the "local-road" lines and also a
+different color.
 
-**Lines 36-50** comprise the third and final ``<Rule>``.  **Lines 38-43** set the filter for this rule, such that the "type" attribute has a value of "primary".  If this condition is true for a particular line, the rule is rendered according to the ``<LineSymbolizer>`` which is on **lines 44-49**.  **Lines 46-47** set the color of the line to be a bright red (``#FF0000``) and the width to be 6 pixels, so that these lines are rendered on top of and thicker than the other two road classes.  In this way, the "primary" roads are given priority in the map rendering.
+**Lines 36-50** comprise the third and final ``<Rule>``.  **Lines 38-43** set the filter for this rule, such that the
+"type" attribute has a value of "primary".  If this condition is true for a particular line, the rule is rendered
+according to the ``<LineSymbolizer>`` which is on **lines 44-49**.  **Lines 46-47** set the color of the line to be a
+bright red (``#FF0000``) and the width to be 6 pixels, so that these lines are rendered on top of and thicker than the
+other two road classes.  In this way, the "primary" roads are given priority in the map rendering.
 
 
 Zoom-based line
@@ -788,7 +863,10 @@ Code
 Details
 ~~~~~~~
 
-It is often desirable to make shapes larger at higher zoom levels when creating a natural-looking map. This example varies the thickness of the lines according to the zoom level (or more accurately, scale denominator).  Scale denominators refer to the scale of the map.  A scale denominator of 10,000 means the map has a scale of 1:10,000 in the units of the map projection.
+It is often desirable to make shapes larger at higher zoom levels when creating a natural-looking map. This example
+varies the thickness of the lines according to the zoom level (or more accurately, scale denominator).  Scale
+denominators refer to the scale of the map.  A scale denominator of 10,000 means the map has a scale of 1:10,000 in the
+units of the map projection.
 
 .. note:: Determining the appropriate scale denominators (zoom levels) to use is beyond the scope of this example.
 
@@ -816,11 +894,20 @@ This style contains three rules.  The three rules are designed as follows:
 
 The order of these rules does not matter since the scales denominated in each rule do not overlap.
 
-The first rule (**lines 2-11**) is the smallest scale denominator, corresponding to when the view is "zoomed in".  The scale rule is set on **line 4**, so that the rule will apply to any map with a scale denominator of 180,000,000 or less.  **Line 7-8** draws the line to be dark green (``#009933``) with a width of 6 pixels.
+The first rule (**lines 2-11**) is the smallest scale denominator, corresponding to when the view is "zoomed in".  The
+scale rule is set on **line 4**, so that the rule will apply to any map with a scale denominator of 180,000,000 or
+less.  **Line 7-8** draws the line to be dark green (``#009933``) with a width of 6 pixels.
 
-The second rule (**lines 12-22**) is the intermediate scale denominator, corresponding to when the view is "partially zoomed".  **Lines 14-15** set the scale such that the rule will apply to any map with scale denominators between 180,000,000 and 360,000,000.  (The ``<MinScaleDenominator>`` is inclusive and the ``<MaxScaleDenominator>`` is exclusive, so a zoom level of exactly 360,000,000 would *not* apply here.)  Aside from the scale, the only difference between this rule and the previous is the width of the lines, which is set to 4 pixels on **line 19**.
+The second rule (**lines 12-22**) is the intermediate scale denominator, corresponding to when the view is "partially
+zoomed".  **Lines 14-15** set the scale such that the rule will apply to any map with scale denominators between
+180,000,000 and 360,000,000.  (The ``<MinScaleDenominator>`` is inclusive and the ``<MaxScaleDenominator>`` is
+exclusive, so a zoom level of exactly 360,000,000 would *not* apply here.)  Aside from the scale, the only difference
+between this rule and the previous is the width of the lines, which is set to 4 pixels on **line 19**.
 
-The third rule (**lines 23-32**) is the largest scale denominator, corresponding to when the map is "zoomed out".  The scale rule is set on **line 25**, so that the rule will apply to any map with a scale denominator of 360,000,000 or greater.  Again, the only other difference between this rule and the others is the width of the lines, which is set to 2 pixels on **line 29**.
+The third rule (**lines 23-32**) is the largest scale denominator, corresponding to when the map is "zoomed out".  The
+scale rule is set on **line 25**, so that the rule will apply to any map with a scale denominator of 360,000,000 or
+greater.  Again, the only other difference between this rule and the others is the width of the lines, which is set to
+2 pixels on **line 29**.
 
 The result of this style is that lines are drawn with larger widths as one zooms in and smaller widths as one zooms out.
 

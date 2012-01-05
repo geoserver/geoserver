@@ -19,37 +19,37 @@ import org.hibernate.usertype.UserType;
  */
 public class KeywordInfoType implements UserType {
 
-    @Override
+    
     public Object assemble(Serializable cached, Object owner) throws HibernateException {
         return cached;
     }
 
-    @Override
+    
     public Object deepCopy(Object value) throws HibernateException {
         return value;
     }
 
-    @Override
+    
     public Serializable disassemble(Object value) throws HibernateException {
         return (Serializable) value;
     }
 
-    @Override
+    
     public boolean equals(Object x, Object y) throws HibernateException {
         return Utilities.equals(x, y);
     }
 
-    @Override
+    
     public int hashCode(Object x) throws HibernateException {
         return Utilities.deepHashCode(x);
     }
 
-    @Override
+    
     public boolean isMutable() {
         return false;
     }
 
-    @Override
+    
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
             throws HibernateException, SQLException {
 
@@ -58,7 +58,7 @@ public class KeywordInfoType implements UserType {
         return kwInfo;
     }
 
-    @Override
+    
     public void nullSafeSet(PreparedStatement st, Object value, int index)
             throws HibernateException, SQLException {
 
@@ -72,12 +72,12 @@ public class KeywordInfoType implements UserType {
         }
     }
 
-    @Override
+    
     public Object replace(Object original, Object target, Object owner) throws HibernateException {
         return original;
     }
 
-    @Override
+    
     public Class<?> returnedClass() {
         return Keyword.class;
     }

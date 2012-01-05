@@ -711,6 +711,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>authkey</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>authkey</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>gt-ogr</id>
       <dependencies>
         <dependency>

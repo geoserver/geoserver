@@ -27,6 +27,7 @@
       <version>2.1</version>
       <configuration>
         <descriptors>
+          <descriptor>release/ext-authkey.xml</descriptor>
           <descriptor>release/ext-css.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-printing.xml</descriptor>
@@ -115,6 +116,7 @@
     <profile>
       <id>communityRelease</id>
       <modules>
+        <module>authkey</module>
         <module>css</module>
 	<module>dds</module>
         <module>printing</module>
@@ -194,6 +196,12 @@
      <modules>
        <module>wfsv</module>
      </modules>
+    </profile>
+    <profile>      
+      <id>authkey</id>
+      <modules>
+        <module>authkey</module>
+      </modules>
     </profile>
   </profiles>
 </project>

@@ -43,12 +43,7 @@
 			<artifactId>app-schema-test</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-webservice</artifactId>
-			<version>${gt.version}</version>
-		</dependency>	  		
+		</dependency> 		
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-webservice</artifactId>
@@ -64,6 +59,8 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-jdbc</artifactId>
             <version>${gt.version}</version>
+            <type>test-jar</type>			
+			<scope>test</scope>
         </dependency>
 	     <dependency>
 		    <groupId>log4j</groupId>

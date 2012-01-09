@@ -4,7 +4,6 @@
  */
 package org.geoserver.rest;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -110,13 +109,15 @@ public abstract class AbstractResource extends Resource {
         }
         
         List<Preference<MediaType>> accepts = null;
+        boolean acceptsAll = false;
         if ( df == null ) {
             //next check the Accepts header
-            accepts = new ArrayList( getRequest().getClientInfo().getAcceptedMediaTypes() );
+            accepts = getRequest().getClientInfo().getAcceptedMediaTypes();
+            acceptsAll = accepts.isEmpty();
             for ( Iterator<Preference<MediaType>> i = accepts.iterator(); i.hasNext(); ) {
                 Preference<MediaType> pref = i.next();
                 if ( pref.getMetadata().equals( MediaType.ALL ) ) {
-                    i.remove();
+                    acceptsAll = true;
                     continue;
                 }
                 
@@ -127,9 +128,9 @@ public abstract class AbstractResource extends Resource {
             }
         }
         
-        if ( df == null && accepts.isEmpty()  ) {
+        if ( df == null && acceptsAll ) {
             //could not find suitable format, if client specifically did not specify 
-            // any accepted formats, just return the first
+            // any accepted formats or accepts all media types, just return the first
             df = getFormats().values().iterator().next();
         }
         

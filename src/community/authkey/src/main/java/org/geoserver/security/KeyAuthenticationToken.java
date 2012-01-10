@@ -4,8 +4,8 @@
  */
 package org.geoserver.security;
 
-import org.springframework.security.providers.AbstractAuthenticationToken;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * An authentication based on a unique key. Allows the unique key to be retrieved later

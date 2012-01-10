@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 import org.geoserver.security.impl.GeoserverUserDao;
 import org.geotools.util.logging.Logging;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.security.userdetails.User;
+import org.springframework.security.core.userdetails.User;
 import org.vfny.geoserver.global.ConfigurationException;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 

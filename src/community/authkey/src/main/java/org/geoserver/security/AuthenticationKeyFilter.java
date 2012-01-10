@@ -15,7 +15,7 @@ import javax.servlet.ServletResponse;
 
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ExtensionPriority;
-import org.springframework.security.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * A dispatcher callback checking for an <code>authkey</code> parameter in the request. If the

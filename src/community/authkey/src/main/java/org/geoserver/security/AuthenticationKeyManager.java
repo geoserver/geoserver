@@ -9,12 +9,12 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.security.Authentication;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.ProviderNotFoundException;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UserDetailsService;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.ProviderNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 public class AuthenticationKeyManager implements ApplicationContextAware {
 

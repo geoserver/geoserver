@@ -6,20 +6,27 @@
 
 package org.geoserver.test;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
+import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
+import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geotools.data.complex.AppSchemaDataAccessTest;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -121,7 +128,16 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
 
     /** the 'featureTypes' directory, under 'data' */
     private File featureTypesBaseDir;
+    
+    /**
+     * Pair of property file name and feature type directory to create db tables for online tests
+     */
+    private Map<String, File> propertiesFiles;
 
+    /**
+     * Indicates fixture id (postgis or oracle) if running in online mode
+     */
+    private String onlineTestId;
     /**
      * Constructor with the default namespaces, schema directory, and catalog file.
      */
@@ -147,7 +163,17 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
         styles = new File(data, "styles");
         styles.mkdir();
         
+        propertiesFiles = new HashMap<String, File>();
+
         addContent();
+        // create corresponding tables in the test db using the properties files
+        if (!propertiesFiles.isEmpty()) {
+            try {
+                createTablesInTestDatabase();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         setUpCatalog();
     }
 
@@ -260,6 +286,33 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
             IOUtils.copy(input, new File(data, location));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Copies a String content to a file in the path under the mock data directory.
+     * 
+     * @param content
+     *            file content
+     * @param location
+     *            path relative to mock data directory
+     */
+    private void copy(String content, String location) {
+        File file = new File(data, location);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+            writer.write(content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -392,10 +445,27 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }    
+    
+    /**
+     * Determine which setup class to use based on the fixture id specified in the vm arg.
+     * 
+     * @throws Exception
+     */
+    private void createTablesInTestDatabase() throws Exception {
+        if (onlineTestId != null) {
+            AbstractReferenceDataSetup setup = null;
+            if (onlineTestId.equals("oracle")) {
+                setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
+            } else if (onlineTestId.equals("postgis")) {
+                setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
+            }
+            // Run the sql script through setup
+            setup.setUp();
+            setup.tearDown();
+        }
     }
-    
-    
-       
+
     /**
      * Adds the specified style to the data directory
      * @param styleId the style id
@@ -499,10 +569,119 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
      */
     private void copyMappingAndSupportFiles(String namespacePrefix, String typeName,
             String mappingFileName, String... supportFileNames) {
-        copyFileToFeatureTypeDir(namespacePrefix, typeName, mappingFileName);
-        for (String propertyFileName : supportFileNames) {
-            copyFileToFeatureTypeDir(namespacePrefix, typeName, propertyFileName);
+        onlineTestId = System.getProperty("testDatabase");
+        if (onlineTestId != null) {
+            onlineTestId = onlineTestId.toLowerCase().trim();
+            // special handling for running app-schema-test with online mode
+            try {
+                // new content with modified dataStore "parameters" tag
+                String newContent = modifyOnlineMappingFileContent(mappingFileName);
+                copy(newContent, "featureTypes/"
+                        + getDataStoreName(namespacePrefix, typeName)
+                        + "/"
+                        + mappingFileName.substring(mappingFileName.lastIndexOf("/") + 1,
+                                mappingFileName.length()));
+
+                for (String propertyFileName : supportFileNames) {
+                    if (propertyFileName.endsWith(".xml")) {
+                        // also update the datastore "parameters" for supporting mapping files
+                        newContent = modifyOnlineMappingFileContent(propertyFileName);
+                        copy(newContent, "featureTypes/"
+                                + getDataStoreName(namespacePrefix, typeName)
+                                + "/"
+                                + propertyFileName.substring(propertyFileName.lastIndexOf("/") + 1,
+                                        propertyFileName.length()));
+                    } else {
+                        copyFileToFeatureTypeDir(namespacePrefix, typeName, propertyFileName);
+                        if (propertyFileName.endsWith(".properties")) {
+                            propertiesFiles.put(propertyFileName, getFeatureTypeDir(
+                                    featureTypesBaseDir, namespacePrefix, typeName));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            copyFileToFeatureTypeDir(namespacePrefix, typeName, mappingFileName);
+            for (String propertyFileName : supportFileNames) {
+                copyFileToFeatureTypeDir(namespacePrefix, typeName, propertyFileName);
+            }
         }
+    }
+    
+    /**
+     * Modify the mapping file stream that is to be copied to the target directory. This is so the
+     * mapping file copy has the right datastore parameters to use the test database.
+     * 
+     * @param mappingFileName
+     *            Mapping file to be copied
+     * @return Modified content string
+     * @throws IOException
+     */
+    private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
+        InputStream is = AppSchemaDataAccessTest.class.getResourceAsStream(TEST_DATA
+                + mappingFileName);
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        StringBuffer content = new StringBuffer();
+        boolean parametersStartFound = false;
+        boolean parametersEndFound = false;
+        String idColumn = "id";
+        boolean isOracle = onlineTestId.equals("oracle");
+        for (String line = br.readLine(); line != null; line = br.readLine()) {
+            if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
+                // before <parameters> or after </parameters>
+                if (!parametersStartFound) {
+                    // look for start tag
+                    if (line.trim().equals("<parameters>")) {
+                        parametersStartFound = true;
+                        // copy <parameters> with new db params
+                        if (isOracle) {
+                            content.append(AppSchemaTestOracleSetup.DB_PARAMS);
+                        } else {
+                            content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                        }
+                    } else {
+                        // copy content
+                        content.append(line);
+                    }
+                } else if (isOracle && line.trim().startsWith("<sourceType>")) {
+                    // TODO: Nasty.. I will report this bug in OracleDialect and remove this when
+                    // fixed
+                    // oracle table names need to be in upper case because OracleDialect doesn't
+                    // wrap
+                    // them in quotes in encodeTableName
+                    line = line.trim();
+                    String sourceTypeTag = "<sourceType>";
+                    content.append(sourceTypeTag);
+                    String tableName = line.substring(line.indexOf(sourceTypeTag)
+                            + sourceTypeTag.length(), line.indexOf("</sourceType>"));
+                    content.append(tableName.toUpperCase());
+                    content.append("</sourceType>");
+                    content.append("\n");
+                } else {
+                    // replace getID() and "@id" with id column since joining doesn't support
+                    // functions
+                    String regex = "getI[dD]\\(\\)";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(line);
+                    line = matcher.replaceAll(idColumn);
+
+                    regex = "\"@id\"";
+                    line = line.replaceAll(regex, idColumn);
+
+                    content.append(line);
+                }
+                content.append("\n");
+            } else {
+                // else skip <parameters> content and do nothing
+                // look for end tag
+                if (line.trim().equals("</parameters>")) {
+                    parametersEndFound = true;
+                }
+            }
+        }
+        return content.toString();
     }
 
 }

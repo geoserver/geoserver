@@ -148,37 +148,60 @@
         </dependency>
 	</dependencies>
 
-	<build>
-
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>**/DataReferenceWfsOracleTest.java</exclude>
-						<exclude>**/DataReferenceWfsPostgisTest.java</exclude>
-                                                <exclude>**/DataReferenceWfsOracleWithJoiningTest.java</exclude>
-                                                <exclude>**/DataReferenceWfsPostgisWithJoiningTest.java</exclude>
-						<exclude>**/WfsOnlineOracleTest.java</exclude>
-						<exclude>**/WfsOnlinePostgisTest.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<includes>
-					<include>**/*.properties</include>
-					<include>**/*.xml</include>
-					<include>**/*.xsd</include>
-					<include>**/*.sql</include>
-                    <include>**/*.sld</include>
-				</includes>
-			</testResource>
-		</testResources>
-
-	</build>
+    <profiles>
+        <profile>
+            <id>app-schema-online-test</id>
+            <build>
+		        <testResources>
+			        <testResource>
+				        <directory>src/test/resources</directory>
+				        <includes>
+					        <include>**/*.properties</include>
+					        <include>**/*.xml</include>
+					        <include>**/*.xsd</include>
+				    	    <include>**/*.sql</include>
+                            <include>**/*.sld</include>
+				        </includes>
+			        </testResource>
+		        </testResources>
+	        </build>
+        </profile>
+        <profile>
+        <!-- Default profile, exclude online tests -->
+            <id>offline</id>
+            <activation><activeByDefault>true</activeByDefault></activation>
+	        <build>
+		        <plugins>
+			        <plugin>
+			            <groupId>org.apache.maven.plugins</groupId>
+			            <artifactId>maven-surefire-plugin</artifactId>
+			            <configuration>
+				            <excludes>
+						        <exclude>**/DataReferenceWfsOracleTest.java</exclude>
+						        <exclude>**/DataReferenceWfsPostgisTest.java</exclude>
+                                <exclude>**/DataReferenceWfsOracleWithJoiningTest.java</exclude>
+                                <exclude>**/DataReferenceWfsPostgisWithJoiningTest.java</exclude>
+						        <exclude>**/WfsOnlineOracleTest.java</exclude>
+						        <exclude>**/WfsOnlinePostgisTest.java</exclude>
+					        </excludes>
+				        </configuration>
+			        </plugin>
+		        </plugins>
+		        <testResources>
+			        <testResource>
+				        <directory>src/test/resources</directory>
+				        <includes>
+					        <include>**/*.properties</include>
+					        <include>**/*.xml</include>
+					        <include>**/*.xsd</include>
+				    	    <include>**/*.sql</include>
+                            <include>**/*.sld</include>
+				        </includes>
+			        </testResource>
+		        </testResources>
+	        </build>
+	    </profile>
+	</profiles>
+	
 
 </project>

@@ -43,6 +43,9 @@
                     <targetAttribute>
 						ex:MyTestFeature
 					</targetAttribute>
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>ex:geometry</targetAttribute>  

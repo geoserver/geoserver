@@ -56,17 +56,16 @@ public class NestedIdSupportTest extends AbstractAppSchemaWfsTestSupport {
         Document doc = postAsDOM("wfs", xml);
 
         LOGGER.info("MappedFeature: WFS GetFeature response:\n" + prettyString(doc));
-        assertXpathCount(1, "//gsml:MappedFeature", doc); 
+        assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf4",
                 "wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/@gml:id", doc);
-        
+
     }
 
     /**
      * Test Nested Id with InlineMapping
      * */
     public void testNestedIdInlineMapping() {
-
         String xml = "<wfs:GetFeature " //
                 + "service=\"WFS\" " //
                 + "version=\"1.1.0\" " //
@@ -81,14 +80,15 @@ public class NestedIdSupportTest extends AbstractAppSchemaWfsTestSupport {
                 + "<wfs:Query typeName=\"gsml:Borehole\">"
                 + "<ogc:Filter>"
                 + "     <ogc:PropertyIsEqualTo>"
-                + "        <ogc:PropertyName>sa:surveyDetails/sa:SurveyProcedure/@gml:id</ogc:PropertyName>"
-                + "        <ogc:Literal>bh.11.sp</ogc:Literal>"
-                + "     </ogc:PropertyIsEqualTo>"
-                + " </ogc:Filter>" + "</wfs:Query>" + "</wfs:GetFeature>";
+                + "        <ogc:PropertyName>gsml:indexData/gsml:BoreholeDetails/@gml:id</ogc:PropertyName>"
+                + "        <ogc:Literal>bh.details.11.sp</ogc:Literal>"
+                + "     </ogc:PropertyIsEqualTo>" + " </ogc:Filter>"
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
         Document doc = postAsDOM("wfs", xml);
 
         LOGGER.info("Borehole: WFS GetFeature response:\n" + prettyString(doc));
-        assertXpathCount(1, "//gsml:Borehole", doc); 
+        assertXpathCount(1, "//gsml:Borehole", doc);
         assertXpathEvaluatesTo("11",
                 "wfs:FeatureCollection/gml:featureMember/gsml:Borehole/@gml:id", doc);
     }

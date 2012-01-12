@@ -46,7 +46,10 @@
 			<groupBy />
 			<attributeMappings>
 				<AttributeMapping>
-					<targetAttribute>gsml:Borehole</targetAttribute>
+					<targetAttribute>gsml:Borehole</targetAttribute>					
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
 				</AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>gml:name[1]</targetAttribute>

@@ -154,7 +154,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
     @Override
     protected void oneTimeTearDown() throws Exception {
         super.oneTimeTearDown();
-        DataAccessRegistry.unregisterAll();
+        DataAccessRegistry.unregisterAndDisposeAll();
         AppSchemaDataAccessRegistry.clearAppSchemaProperties();
         AppSchemaXSDRegistry.getInstance().dispose();
     }

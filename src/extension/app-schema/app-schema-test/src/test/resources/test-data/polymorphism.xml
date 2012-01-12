@@ -38,6 +38,12 @@
             <targetElement>ex:PolymorphicFeature</targetElement>
             <attributeMappings>
                 <AttributeMapping>
+			        <targetAttribute>ex:PolymorphicFeature</targetAttribute>			        							
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
+			    </AttributeMapping>
+                <AttributeMapping>
                     <!-- Test feature chaining and polymorphism -->
                     <targetAttribute>ex:firstValue</targetAttribute>
                     <sourceExpression>

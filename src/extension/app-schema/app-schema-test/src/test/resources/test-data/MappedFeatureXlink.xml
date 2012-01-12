@@ -42,7 +42,10 @@
                 <AttributeMapping>
                     <targetAttribute>
 						gsml:MappedFeature
-					</targetAttribute>
+					</targetAttribute>					
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>gml:name[1]</targetAttribute>

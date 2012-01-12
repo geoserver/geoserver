@@ -59,7 +59,7 @@ public class ReferenceDataOracleSetup extends AbstractReferenceDataSetup {
         return fixture;
     }
 
-    private void runSqlInsertScript() throws Exception {
+    protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitOracleSQLScript(script);
         for (String sql : sqls) {

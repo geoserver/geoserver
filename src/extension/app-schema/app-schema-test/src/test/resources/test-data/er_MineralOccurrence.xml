@@ -40,7 +40,10 @@
                 <AttributeMapping>
                     <targetAttribute>
 						er:MineralOccurrence
-					</targetAttribute>
+					</targetAttribute>					
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>

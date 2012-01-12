@@ -41,12 +41,18 @@
 			<sourceType>PolymorphicFeature</sourceType>
 			<targetElement>ex:PolymorphicFeature</targetElement>
 			<attributeMappings>
+			    <AttributeMapping>
+			        <targetAttribute>ex:PolymorphicFeature</targetAttribute>			        							
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
+			    </AttributeMapping>
 				<AttributeMapping>
 					<!--
 						This is made conditional on purpose, to test that the rest are
 						encoded correctly when this is omitted
 					-->
-					<targetAttribute>ex:firstValue[1]</targetAttribute>
+					<targetAttribute>ex:firstValue[1]</targetAttribute>		
 					<sourceExpression>
 						<OCQL>VALUE_ID</OCQL>
 						<linkElement>
@@ -54,7 +60,7 @@
 						</linkElement>
 						<linkField>FEATURE_LINK</linkField>
 					</sourceExpression>
-				</AttributeMapping>
+			    </AttributeMapping>	
 				<AttributeMapping>
 					<!--
 						This didn't get encoded correctly when the first attribute above

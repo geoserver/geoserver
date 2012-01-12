@@ -37,7 +37,7 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
         return new PostgisNGDataStoreFactory();
     }
 
-    private void runSqlInsertScript() throws Exception {
+    protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitPostgisSQLScript(script);
         for (String sql : sqls) {

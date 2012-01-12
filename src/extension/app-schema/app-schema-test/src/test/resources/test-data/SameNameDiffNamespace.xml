@@ -50,6 +50,12 @@
                     </sourceExpression>
                 </AttributeMapping>    -->  
                 <AttributeMapping>
+                    <targetAttribute>ex:MyTestFeature</targetAttribute>
+                    <idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
                     <targetAttribute>ex:name</targetAttribute>
                     <sourceExpression>
                         <OCQL>NAME2</OCQL>

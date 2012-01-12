@@ -8,6 +8,8 @@ package org.geoserver.test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import junit.framework.Test;
 
@@ -529,12 +531,21 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("Yaugher Volcanic Group", "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification"
                 + "/gsml:GeologicUnit/gml:name[@codeSpace='urn:ietf:rfc:2141']", doc);
-        assertXpathEvaluatesTo("Yaugher Volcanic Group", "//gsml:MappedFeature[@gml:id='" + id
+        // multi-valued leaf attributes that are feature chained come in random order
+        // when joining is used
+        List<String> names = new ArrayList<String>();
+        names.add("Yaugher Volcanic Group");
+        names.add("-Py");
+        String name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
-        assertXpathEvaluatesTo("urn:ietf:rfc:2141", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]/@codeSpace", doc);
-        assertXpathEvaluatesTo("-Py", "//gsml:MappedFeature[@gml:id='" + id
+        assertTrue(names.contains(name));
+        names.remove(name);
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
+        assertTrue(names.contains(name));
+        names.remove(name);
+        assertTrue(names.isEmpty());
+        
         // feature link shouldn't appear as it's not in the schema
         assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK", doc);
@@ -619,16 +630,34 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         // name
         assertXpathCount(3, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
                 + "/gsml:GeologicUnit/gml:name", doc);
-        assertXpathEvaluatesTo("Yaugher Volcanic Group 1", "//gsml:MappedFeature[@gml:id='"
-                + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
-        assertXpathEvaluatesTo("urn:ietf:rfc:2141", "//gsml:MappedFeature[@gml:id='" + id
+        // multi-valued leaf attributes that are feature chained come in random order
+        // when joining is used
+        HashMap<String, String> names = new HashMap<String, String>();
+        names.put("Yaugher Volcanic Group 1", "urn:ietf:rfc:2141");
+        names.put("Yaugher Volcanic Group 2", "urn:ietf:rfc:2141");
+        names.put("-Py", "");
+        String name = evaluate("//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
+        assertTrue(names.containsKey(name));
+        assertXpathEvaluatesTo(names.get(name), "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]/@codeSpace", doc);
-        assertXpathEvaluatesTo("Yaugher Volcanic Group 2", "//gsml:MappedFeature[@gml:id='"
-                + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
-        assertXpathEvaluatesTo("urn:ietf:rfc:2141", "//gsml:MappedFeature[@gml:id='" + id
+        names.remove(name);
+        
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
+        assertTrue(names.containsKey(name));
+        assertXpathEvaluatesTo(names.get(name), "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]/@codeSpace", doc);
-        assertXpathEvaluatesTo("-Py", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gml:name[3]", doc);
+        names.remove(name);
+        
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:specification/gsml:GeologicUnit/gml:name[3]", doc);        
+        assertTrue(names.containsKey(name));
+        assertXpathEvaluatesTo(names.get(name), "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:specification/gsml:GeologicUnit/gml:name[3]/@codeSpace", doc);
+        names.remove(name);
+        assertTrue(names.isEmpty());
+     
         assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK", doc);
         // occurrence
@@ -651,7 +680,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         // exposureColor
         assertXpathCount(2, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
                 + "/gsml:GeologicUnit/gsml:exposureColor", doc);
-        assertXpathEvaluatesTo("Yellow", "//gsml:MappedFeature[@gml:id='" + id
+        assertXpathEvaluatesTo("Blue", "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gsml:exposureColor[1]"
                 + "/gsml:CGI_TermValue/gsml:value", doc);
         assertXpathEvaluatesTo(
@@ -660,7 +689,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
                         + id
                         + "']/gsml:specification/gsml:GeologicUnit/gsml:exposureColor[1]/gsml:CGI_TermValue/gsml:value/@codeSpace",
                 doc);
-        assertXpathEvaluatesTo("Blue", "//gsml:MappedFeature[@gml:id='" + id
+        assertXpathEvaluatesTo("Yellow", "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gsml:exposureColor[2]"
                 + "/gsml:CGI_TermValue/gsml:value", doc);
         assertXpathEvaluatesTo(
@@ -675,10 +704,10 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         // outcropCharacter
         assertXpathCount(2, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
                 + "/gsml:GeologicUnit/gsml:outcropCharacter", doc);
-        assertXpathEvaluatesTo("y", "//gsml:MappedFeature[@gml:id='" + id
+        assertXpathEvaluatesTo("x", "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gsml:outcropCharacter[1]"
                 + "/gsml:CGI_TermValue/gsml:value", doc);
-        assertXpathEvaluatesTo("x", "//gsml:MappedFeature[@gml:id='" + id
+        assertXpathEvaluatesTo("y", "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gsml:outcropCharacter[2]"
                 + "/gsml:CGI_TermValue/gsml:value", doc);
         assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
@@ -770,12 +799,19 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("New Group", "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification"
                 + "/gsml:GeologicUnit/gml:name[@codeSpace='urn:ietf:rfc:2141']", doc);
-        assertXpathEvaluatesTo("New Group", "//gsml:MappedFeature[@gml:id='" + id
+        List<String> names = new ArrayList<String>();
+        names.add("New Group");
+        names.add("-Xy");
+        String name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
-        assertXpathEvaluatesTo("urn:ietf:rfc:2141", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]/@codeSpace", doc);
-        assertXpathEvaluatesTo("-Xy", "//gsml:MappedFeature[@gml:id='" + id
+        assertTrue(names.contains(name));
+        names.remove(name);
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
+        assertTrue(names.contains(name));
+        names.remove(name);
+        assertTrue(names.isEmpty());
+        
         assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK", doc);
         // occurrence
@@ -833,18 +869,29 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathCount(3, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
                 + "/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:lithology[1]"
                 + "/gsml:ControlledConcept/gml:name", doc);
-        assertXpathEvaluatesTo("name_a", "//gsml:MappedFeature[@gml:id='" + id
+        // Order depends on what the database returns in case of joining queries
+        names = new ArrayList<String>();
+        names.add("name_a");
+        names.add("name_b");
+        names.add("name_c");
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit"
                 + "/gsml:composition/gsml:CompositionPart/gsml:lithology[1]"
                 + "/gsml:ControlledConcept/gml:name[1]", doc);
-        assertXpathEvaluatesTo("name_b", "//gsml:MappedFeature[@gml:id='" + id
+        assertTrue(names.contains(name));
+        names.remove(name);
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit"
                 + "/gsml:composition/gsml:CompositionPart/gsml:lithology[1]"
                 + "/gsml:ControlledConcept/gml:name[2]", doc);
-        assertXpathEvaluatesTo("name_c", "//gsml:MappedFeature[@gml:id='" + id
+        assertTrue(names.contains(name));
+        names.remove(name);
+        name = evaluate("//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit"
                 + "/gsml:composition/gsml:CompositionPart/gsml:lithology[1]"
                 + "/gsml:ControlledConcept/gml:name[3]", doc);
+        assertTrue(names.contains(name));
+        names.remove(name);
         assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
                 + "']/gsml:specification/gsml:GeologicUnit/gsml:composition"
                 + "/gsml:CompositionPart/gsml:lithology[1]/FEATURE_LINK", doc);
@@ -1165,13 +1212,13 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathCount(3, "//gsml:GeologicUnit", doc);
 
         // check that we get features we're expecting
-        String id = "gu.25699";
+        String id = "gu.25678";
         assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[1]/@gml:id", doc);
 
-        id = "gu.25678";
-        assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[2]/@gml:id", doc);
-
         id = "gu.25682";
+        assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[2]/@gml:id", doc);
+        
+        id = "gu.25699";
         assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[3]/@gml:id", doc);
     }
 

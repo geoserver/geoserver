@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -25,6 +26,9 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
+import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
+import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
@@ -122,6 +126,13 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
             + "<numDecimals>0</numDecimals>" //
             + "</featureType>";
 
+    public static final String DS_PARAMETERS = "<parameters>" //
+            + "<Parameter>" //
+            + "<name>directory</name>" //
+            + "<value>file:./</value>" //
+            + "</Parameter>" //
+            + "</parameters>"; //
+    
     public static final String MAPPING = "<as:AppSchemaDataAccess xmlns:as='http://www.geotools.org/app-schema'>" //
             + "<namespaces>" //
             + "<Namespace>" //
@@ -132,12 +143,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
             + "<sourceDataStores>" //
             + "<DataStore>" //
             + "<id>datastore</id>" //
-            + "<parameters>" //
-            + "<Parameter>" //
-            + "<name>directory</name>" //
-            + "<value>file:./</value>" //
-            + "</Parameter>" //
-            + "</parameters>" //
+            + DS_PARAMETERS
             + "</DataStore>" //
             + "</sourceDataStores>" //
             + "<targetTypes>" //
@@ -212,10 +218,34 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         File dir = new File(new File(new File(getTestData().getDataDirectoryRoot(), "workspaces"),
                 "gsml"), "MappedFeature");
         dir.mkdirs();
-        IOUtils.copy(new ByteArrayInputStream(MAPPING.getBytes("UTF-8")), new File(dir,
+        File propertiesFile = new File(dir, "MappedFeature.properties");
+        IOUtils.copy(new ByteArrayInputStream(PROPERTIES.getBytes("UTF-8")), propertiesFile);
+        
+        String mapping = MAPPING;
+        String onlineTestId = System.getProperty("testDatabase");
+        if (onlineTestId != null) {
+            // if test if running in online mode, need to use db params
+            onlineTestId = onlineTestId.trim().toLowerCase();
+            Map<String, File> propertyFiles = new HashMap<String, File>();
+            propertyFiles.put(propertiesFile.getName(), dir);
+            AbstractReferenceDataSetup setup;
+            if (onlineTestId.equals("oracle")) {
+                // oracle
+                mapping = mapping.replaceAll(DS_PARAMETERS, Matcher
+                        .quoteReplacement(AppSchemaTestOracleSetup.DB_PARAMS));
+                setup = AppSchemaTestOracleSetup.getInstance(propertyFiles);
+            } else {
+                // postgis
+                mapping = mapping.replaceAll(DS_PARAMETERS, Matcher
+                        .quoteReplacement(AppSchemaTestPostgisSetup.DB_PARAMS));
+                setup = AppSchemaTestPostgisSetup.getInstance(propertyFiles);
+            }
+            // Run the sql script to create the tables from properties files
+            setup.setUp();
+            setup.tearDown();
+        }
+        IOUtils.copy(new ByteArrayInputStream(mapping.getBytes("UTF-8")), new File(dir,
                 "MappedFeature.xml"));
-        IOUtils.copy(new ByteArrayInputStream(PROPERTIES.getBytes("UTF-8")), new File(dir,
-                "MappedFeature.properties"));
     }
 
     /**

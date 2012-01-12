@@ -38,8 +38,14 @@
 			<sourceType>MeasureTypeBindingTest</sourceType>
 			<targetElement>ex:PolymorphicFeature</targetElement>
 			<attributeMappings>
+			    <AttributeMapping>
+				    <targetAttribute>ex:PolymorphicFeature</targetAttribute>
+					<idExpression>
+						<OCQL>getID()</OCQL>
+					</idExpression>
+				</AttributeMapping>
 				<AttributeMapping>					
-					<targetAttribute>ex:firstValue</targetAttribute>
+					<targetAttribute>ex:firstValue</targetAttribute>	
 					<sourceExpression>
 						<OCQL>VALUE_ID</OCQL>
 						<linkElement>NumericType</linkElement>

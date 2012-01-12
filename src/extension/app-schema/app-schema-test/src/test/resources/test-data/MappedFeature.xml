@@ -68,6 +68,14 @@
                         <OCQL>SHAPE</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>
+                       gsml:shape
+					</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>SHAPE</OCQL>
+                    </sourceExpression>
+                </AttributeMapping>
             </attributeMappings>
         </FeatureTypeMapping>
     </typeMappings>

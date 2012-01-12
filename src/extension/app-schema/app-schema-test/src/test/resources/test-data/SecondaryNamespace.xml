@@ -35,6 +35,9 @@
             <attributeMappings>
                 <AttributeMapping>
                     <targetAttribute>ex:ShapeContent</targetAttribute>
+                    <idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>sa:shape</targetAttribute>

@@ -39,6 +39,9 @@
                     <targetAttribute>
 						ex:geomContainer
 					</targetAttribute>
+					<idExpression>
+                        <OCQL>getId()</OCQL>
+                    </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>ex:geom</targetAttribute>

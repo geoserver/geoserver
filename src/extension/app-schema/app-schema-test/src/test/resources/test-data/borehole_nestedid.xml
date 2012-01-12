@@ -58,6 +58,12 @@
                 </AttributeMapping>
 
                 <AttributeMapping>
+                    <targetAttribute>gsml:indexData/gsml:BoreholeDetails</targetAttribute>
+                    <idExpression>
+                        <OCQL>strConcat('bh.details.', strConcat(CSIRONR, '.sp'))</OCQL>
+                    </idExpression>
+                </AttributeMapping>
+                <AttributeMapping>
                     <targetAttribute>gsml:indexData/gsml:BoreholeDetails/gsml:dateOfDrilling</targetAttribute>
                     <sourceExpression>
                         <OCQL>DRILLED_DATE</OCQL>
@@ -129,15 +135,7 @@
                         <name>uomLabels</name>
                         <value>'m'</value>
                     </ClientProperty>
-                </AttributeMapping>  
-
-                <AttributeMapping>
-                    <targetAttribute>sa:surveyDetails/sa:SurveyProcedure</targetAttribute>
-                    <idExpression>
-                        <OCQL>strConcat('bh.', strConcat(CSIRONR, '.sp'))</OCQL>
-                    </idExpression>
-                </AttributeMapping>
-               
+                </AttributeMapping>                 
                 <AttributeMapping>
                     <targetAttribute>sa:sampledFeature</targetAttribute>
                     <ClientProperty>

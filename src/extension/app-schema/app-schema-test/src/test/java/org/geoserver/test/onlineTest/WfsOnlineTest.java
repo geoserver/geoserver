@@ -25,7 +25,7 @@ public abstract class WfsOnlineTest extends AbstractDataReferenceWfsTest {
     protected static final String OM_SCHEMA_LOCATION_URL = "http://schemas.opengis.net/om/1.0.0/observation.xsd";
 
     public void testNoPrimaryKey() {
-        String path = "wfs?request=GetFeature&typename=gsml:ShearDisplacementStructure&featureid=gsml.sheardisplacementstructure.46216";
+        String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:ShearDisplacementStructure&featureid=gsml.sheardisplacementstructure.46216";
         Document doc = getAsDOM(path);
         LOGGER.info(prettyString(doc));
         assertXpathCount(

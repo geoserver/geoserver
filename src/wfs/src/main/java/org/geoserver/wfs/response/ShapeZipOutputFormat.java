@@ -49,7 +49,9 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
@@ -297,8 +299,14 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         try {
             if(request.isGet()) {
                 final HttpServletRequest httpRequest = request.getHttpRequest();
-                String url = httpRequest.getRequestURL().append("?").append(httpRequest.getQueryString()).toString();
-                FileUtils.writeStringToFile(target, url);
+                String baseUrl = ResponseUtils.baseURL(httpRequest);
+                String path = request.getPath();
+                //encode proxy url if existing
+                String mangledUrl = ResponseUtils.buildURL(baseUrl, path, null, URLType.SERVICE);
+                StringBuilder url = new StringBuilder();
+                String parameters = httpRequest.getQueryString();
+				url.append(mangledUrl).append("?").append(parameters);
+                FileUtils.writeStringToFile(target, url.toString());
             } else {
                 org.geotools.xml.Configuration cfg = null;
                 QName elementName = null;

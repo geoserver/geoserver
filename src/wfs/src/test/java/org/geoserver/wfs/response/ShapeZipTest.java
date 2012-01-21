@@ -26,6 +26,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
@@ -124,6 +125,31 @@ public class ShapeZipTest extends WFSTestSupport {
                 new ByteArrayInputStream(bos.toByteArray()));
         assertEquals("ISO-8859-15", getCharset(new ByteArrayInputStream(bos.toByteArray())));
     }
+    
+    public void testRequestUrlNoProxy() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.0.0" +
+        		"&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS) + "&outputFormat=SHAPE-ZIP");
+        assertEquals("application/zip", response.getContentType());
+        checkShapefileIntegrity(new String[] { "BasicPolygons" }, getBinaryInputStream(response));
+        assertEquals("http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=cite:BasicPolygons&outputFormat=SHAPE-ZIP", 
+                getRequest(getBinaryInputStream(response)));
+    }
+    
+    public void testRequestUrlWithProxyBase() throws Exception {
+        // setup a proxy base url
+        GeoServerInfo gs = getGeoServer().getGlobal();
+        gs.getSettings().setProxyBaseUrl("https://www.geoserver.org/geoserver");
+        getGeoServer().save(gs);
+        
+        // check it has been honored
+        MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.0.0" +
+                "&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS) + "&outputFormat=SHAPE-ZIP");
+        assertEquals("application/zip", response.getContentType());
+        checkShapefileIntegrity(new String[] { "BasicPolygons" }, getBinaryInputStream(response));
+        assertEquals("https://www.geoserver.org/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=cite:BasicPolygons&outputFormat=SHAPE-ZIP", 
+                getRequest(getBinaryInputStream(response)));
+    }
+
 
     public void testMultiType() throws Exception {
         byte[] zip = writeOut(getFeatureSource(ALL_TYPES).getFeatures());
@@ -525,6 +551,10 @@ public class ShapeZipTest extends WFSTestSupport {
         }
         while ((entry = zis.getNextEntry()) != null) {
             final String name = entry.getName();
+            if(name.endsWith(".txt")) {
+                // not part of the shapefile, it's the request dump
+                continue;
+            }
             assertTrue("Missing " + name, names.contains(name));
             names.remove(name);
             zis.closeEntry();
@@ -566,6 +596,23 @@ public class ShapeZipTest extends WFSTestSupport {
         byte[] bytes = new byte[1024];
         while ((entry = zis.getNextEntry()) != null) {
             if (entry.getName().endsWith(".cst")) {
+                zis.read(bytes);
+            }
+        }
+        zis.close();
+
+        if (bytes == null)
+            return null;
+        else
+            return new String(bytes).trim();
+    }
+    
+    private String getRequest(final InputStream in) throws IOException {
+        ZipInputStream zis = new ZipInputStream(in);
+        ZipEntry entry = null;
+        byte[] bytes = new byte[1024];
+        while ((entry = zis.getNextEntry()) != null) {
+            if (entry.getName().endsWith(".txt")) {
                 zis.read(bytes);
             }
         }

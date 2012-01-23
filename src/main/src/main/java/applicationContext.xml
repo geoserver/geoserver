@@ -185,4 +185,7 @@
 
   <!-- Alllows to lock the config subsyste to that we serialize accesses to it -->
   <bean id="configurationLock" class="org.geoserver.GeoServerConfigurationLock"/>
+  
+  <!-- Automatically injects a env map into the env function -->
+  <bean id="enviromentInjector" class="org.geoserver.ows.EnviromentInjectionCallback"/>
 </beans>

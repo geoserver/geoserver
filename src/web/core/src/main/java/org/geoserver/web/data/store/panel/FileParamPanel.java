@@ -31,7 +31,7 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("serial")
-public class FileParamPanel extends Panel {
+public class FileParamPanel extends Panel implements ParamPanel {
 
     TextField textField;
     ModalWindow dialog;

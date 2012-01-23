@@ -13,13 +13,12 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 
 /**
  * A label + locale dropdown form panel
  */
 @SuppressWarnings("serial")
-public class CharsetPanel extends Panel {
+public class CharsetPanel extends Panel implements ParamPanel {
 
     private DropDownChoice choice;
     

@@ -45,8 +45,6 @@ public class GetLegendGraphic {
             throw new ServiceException("There is no support for creating legends in "
                     + outputFormat + " format", "InvalidFormat");
         }
-        // the 
-        EnvFunction.setLocalValues(request.getEnv());
         Object legend = format.produceLegendGraphic(request);
         return legend;
     }

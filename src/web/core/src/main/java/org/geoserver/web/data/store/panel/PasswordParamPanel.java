@@ -15,7 +15,7 @@ import org.apache.wicket.model.IModel;
  * 
  * @author Gabriel Roldan
  */
-public class PasswordParamPanel extends Panel {
+public class PasswordParamPanel extends Panel implements ParamPanel {
 
     private static final long serialVersionUID = -7801141820174575611L;
 

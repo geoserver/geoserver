@@ -45,12 +45,20 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
     
     String storeId;
     
+    transient List<Resource> cachedItems;
+    
     @Override
     protected List<Resource> getItems() {
         // return an empty list in case we still don't know about the store
-        if(storeId == null)
+        if(storeId == null) {
             return new ArrayList<Resource>();
-        
+        } else if(cachedItems == null) {
+            cachedItems = getItemsInternal();
+        }
+        return cachedItems;
+    }
+
+    private List<Resource> getItemsInternal() {
         // else, grab the resource list
         try {
             List<Resource> result;
@@ -115,7 +123,6 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
             throw new RuntimeException("Could not list layers for this store, "
                     + "an error occurred retrieving them: " + e.getMessage(), e);
         }
-            
     }
     
     public String getStoreId() {
@@ -123,6 +130,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
     }
 
     public void setStoreId(String storeId) {
+        this.cachedItems = null;
         this.storeId = storeId;
     }
 

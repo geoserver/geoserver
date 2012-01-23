@@ -17,7 +17,7 @@ import org.apache.wicket.model.IModel;
  * @author Gabriel Roldan
  * @todo: extend {@link FormComponentPanel} instead
  */
-public class CheckBoxParamPanel extends Panel {
+public class CheckBoxParamPanel extends Panel implements ParamPanel {
 
     private static final long serialVersionUID = -8587266542399491587L;
 

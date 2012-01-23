@@ -17,7 +17,7 @@ import org.apache.wicket.model.IModel;
  * A DataStore parameter panel that presents a dropdown choice
  * 
  */
-public class DropDownChoiceParamPanel extends Panel {
+public class DropDownChoiceParamPanel extends Panel implements ParamPanel {
 
     private static final long serialVersionUID = 1L;
 

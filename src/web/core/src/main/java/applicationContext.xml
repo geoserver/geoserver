@@ -387,4 +387,7 @@
   <bean id="wicketConfigurationLocker" class="org.geoserver.web.WicketConfigurationLockCallback">
     <constructor-arg index="0" ref="configurationLock" />
   </bean>
+  
+  <bean id="wicketEnvVariableInjector" class="org.geoserver.web.WicketEnvironmentVariableCallback"/>
+ 
 </beans>

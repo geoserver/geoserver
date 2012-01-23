@@ -118,7 +118,6 @@ public class GetFeatureInfo {
 
         List<FeatureCollection> results;
 
-        EnvFunction.setLocalValues(request.getGetMapRequest().getEnv());
         results = execute(request);
         return buildResults(results);
     }

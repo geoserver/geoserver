@@ -443,15 +443,12 @@ public class GetMap {
             }
         }
 
-        // setup the SLD variable substitution environment
-        Map envMap = new HashMap(request.getEnv());
-        envMap.put("wms_bbox", mapContent.getRenderingArea());
-        envMap.put("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
-        envMap.put("wms_srs", mapContent.getRequest().getSRS());
-        envMap.put("wms_width", mapContent.getMapWidth());
-        envMap.put("wms_height", mapContent.getMapHeight());
-        // they will be cleaned up by EnvVariableCleaner
-        EnvFunction.setLocalValues(envMap);
+        // setup some SLD variable substitution environment used by rendering transformations
+        EnvFunction.setLocalValue("wms_bbox", mapContent.getRenderingArea());
+        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
+        EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
+        EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
+        EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
         
         // set the buffer value if the admin has set a specific value for some layers
         // in this map

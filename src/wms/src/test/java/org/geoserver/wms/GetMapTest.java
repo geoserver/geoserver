@@ -14,6 +14,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMockData.DummyRasterMapProducer;
 import org.geotools.data.wms.response.GetMapResponse;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.function.EnvFunction;
 import org.opengis.filter.FilterFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -127,7 +128,7 @@ public class GetMapTest extends TestCase {
 
     public void testEnviroment() {
         final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        request.setEnv(Collections.singletonMap("myParam", 23));
+        EnvFunction.setLocalValues(Collections.singletonMap("myParam", (Object) 23));
 
         final DummyRasterMapProducer producer = new DummyRasterMapProducer() {
             @Override

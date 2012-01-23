@@ -17,7 +17,7 @@ import org.geoserver.web.data.workspace.WorkspacesModel;
  * A label + workspace dropdown form panel
  */
 @SuppressWarnings("serial")
-public class WorkspacePanel extends Panel {
+public class WorkspacePanel extends Panel implements ParamPanel {
 
     private DropDownChoice choice;
     

@@ -13,9 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -32,7 +35,9 @@ import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.LabelParamPanel;
 import org.geoserver.web.data.store.panel.NamespacePanel;
+import org.geoserver.web.data.store.panel.ParamPanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
+import org.geoserver.web.data.store.panel.TextAreaParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -185,11 +190,19 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
                 model = new MapModel(paramsModel, paramName);
             }
             
-            TextParamPanel tp = new TextParamPanel(componentId,
-                    model, new ResourceModel(paramLabel, paramLabel), required);
+            Panel tp;
+            if(paramMetadata.isLargeText()) {
+                tp = new TextAreaParamPanel(componentId,
+                        model, new ResourceModel(paramLabel, paramLabel), required);
+            } else {
+                tp = new TextParamPanel(componentId,
+                        model, new ResourceModel(paramLabel, paramLabel), required);
+            }
+            
             // if it can be a reference to the local filesystem make sure it's valid
+            FormComponent<String> fc = ((ParamPanel) tp).getFormComponent();
             if (paramName.equalsIgnoreCase("url")) {
-                tp.getFormComponent().add(new FileExistsValidator());
+                fc.add(new FileExistsValidator());
             }
             // make sure the proper value is returned, but don't set it for strings otherwise
             // we incur in a wicket bug (the empty string is not converter back to a null)
@@ -198,7 +211,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             // absolute and bye bye data dir portability
             if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
                     && !URL.class.equals(binding)) {
-                tp.getFormComponent().setType(binding);
+                fc.setType(binding);
             }
             parameterPanel = tp;
         }

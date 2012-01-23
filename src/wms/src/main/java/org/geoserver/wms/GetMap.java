@@ -360,9 +360,6 @@ public class GetMap {
             }
         }
 
-        // setup the SLD variable substitution environment
-        EnvFunction.setLocalValues(request.getEnv());
-
         // set the buffer value if the admin has set a specific value for some layers
         // in this map
         // GR: question: does setupRenderingBuffer need EnvFunction.setLocalValues to be already

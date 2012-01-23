@@ -194,12 +194,6 @@
     <groupId>org.geotools</groupId>
     <artifactId>gt-imagemosaic</artifactId>
     <version>${gt.version}</version>
-    <exclusions>
-     <exclusion>
-      <groupId>org.geotools</groupId>
-       <artifactId>gt-jp2k</artifactId>
-     </exclusion>
-    </exclusions> 
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>

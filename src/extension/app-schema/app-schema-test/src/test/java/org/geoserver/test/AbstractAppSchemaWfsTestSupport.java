@@ -144,7 +144,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
         // disable schema caching in tests, as schemas are expected to provided on the classpath
-        AppSchemaCache.disableGeoserverSupport();
+        AppSchemaCache.disableAutomaticConfiguration();
     }
 
     /**

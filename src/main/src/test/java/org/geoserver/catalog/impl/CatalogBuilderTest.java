@@ -1,5 +1,7 @@
 package org.geoserver.catalog.impl;
 
+import static org.easymock.EasyMock.*;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,14 +32,12 @@ import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ResourceInfo;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -45,11 +45,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Point;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.replay;
 
 public class CatalogBuilderTest extends GeoServerTestSupport {
 
@@ -227,6 +222,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
             cb.setStore(store);
             CoverageInfo ci = cb.buildCoverage();
             cat.add(ci);
+            cat.getResourcePool().dispose();
         } finally {
             if(mosaic.exists() && mosaic.isDirectory()) {
                 FileUtils.deleteDirectory(mosaic);
@@ -257,6 +253,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
             System.out.println(ci.getParameters());
             assertEquals(String.valueOf(-1), ci.getParameters().get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
             assertEquals("", ci.getParameters().get(ImageMosaicFormat.FILTER.getName().toString()));
+            cat.getResourcePool().dispose();
         } finally {
             if(mosaic.exists() && mosaic.isDirectory()) {
                 FileUtils.deleteDirectory(mosaic);

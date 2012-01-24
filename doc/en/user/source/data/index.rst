@@ -57,6 +57,7 @@ Other data sources require the use of GeoServer extensions, extra downloads that
    connection-pooling
    sqlview
    primarykey
+   sqlsession
    app-schema/index
 
    

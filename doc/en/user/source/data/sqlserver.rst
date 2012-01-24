@@ -1,16 +1,16 @@
 .. _data_sqlserver:
 
-Microsoft SQL Server
-====================
+Microsoft SQL Server and SQL Azure
+==================================
 
 .. note:: GeoServer does not come built-in with support for SQL Server; it must be installed through an extension. Proceed to :ref:`sqlserver_install` for installation details.
 
-Microsoft's `SQL Server <http://www.microsoft.com/sqlserver/2008>`_ is a relational database with spatial functionality.
+Microsoft's `SQL Server <http://www.microsoft.com/sqlserver/2008>`_ is a relational database with spatial functionality. SQL Azure is the database option provided in the Azure cloud solution which is in many respects similar to SQL Server 2008.
 
 Supported versions
 ------------------
 
-The extension supports SQL Server 2008.
+The extension supports SQL Server 2008 and SQL Azure.
 
 .. _sqlserver_install:
 
@@ -31,15 +31,12 @@ GeoServer files
 Microsoft files
 ```````````````
 
-#. Navigate to `Microsoft's JDBC driver download page <http://msdn.microsoft.com/en-us/data/aa937724.aspx>`_.
-
-#. Download using the ``Download SQL Server JDBC Driver 3.0`` link.
-
-#. Accept the license and download the appropriate archive for your operating system.
+#. Navigate to `Microsoft's JDBC driver for SQL Server and SQL Azure download page <http://www.microsoft.com/download/en/details.aspx?id=19847>`_.
 
 #. Extract the contents of the archive
 
-#. Copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. If you are running Java 6 or above, copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
+   If you are running Java 5 instead (supported up to GeoServer 2.1.x) copy the file ``sqljdbc.jar`` to the ``WEB-INF/lib`` directory
 
 #. For GeoServer installed on Windows, copy ``\x86\sqljdbc_auth.dll`` and ``\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``
 
@@ -69,7 +66,7 @@ Configuring a SQL Server data store
    * - ``port``
      - The port on which the SQL server instance is accepting connections.  See the :ref:`note <port_notes>` below.
    * - ``database``
-     - The name of the database to connect to.
+     - The name of the database to connect to. Might be left blank if the user connecting to SQL Server has a "default database" set in the user configuration
    * - ``schema``
      - The database schema to access tables from (optional).
    * - ``user``
@@ -80,7 +77,7 @@ Configuring a SQL Server data store
  
        ``min connections``
 
-     - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details.
+     - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details. If you are connecting to SQL Azure make sure to set the ``validate connections`` flag as SQL Azure closes inactive connections after a very short delay.
 
 .. _port_notes:
 
@@ -91,10 +88,3 @@ You can determine the port in use by connecting to your SQL server instance usin
 ::
   C:\>netstat -a | find "sql1"
   TCP   DPI908194:1918   maittestsql1.dpi.nsw.gov.au:2646   ESTABLISHED
-
-
-Adding a SQL Server database with JNDI
---------------------------------------
-
-Configuring a SQL Server database with JNDI
--------------------------------------------

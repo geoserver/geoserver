@@ -62,7 +62,7 @@
                        FEATURE_LINK
 					</targetAttribute>
                     <sourceExpression>
-                        <OCQL>MappedFeature_id</OCQL>
+                        <OCQL>MAPPEDFEATURE_ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>

@@ -43,7 +43,7 @@
                         gsml:GeologicUnit
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConCat('gsml.geologicunit.',geologicunit_id)</OCQL>
+                        <OCQL>strConCat('gsml.geologicunit.',GEOLOGICUNIT_ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -51,11 +51,11 @@
                         gml:name
 					</targetAttribute>
                     <sourceExpression>
-                        <OCQL>name_value</OCQL>
+                        <OCQL>NAME_VALUE</OCQL>
                     </sourceExpression>
                     <ClientProperty>
                         <name>codeSpace</name>
-                        <value>name_codespace</value>
+                        <value>NAME_CODESPACE</value>
                     </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -67,11 +67,11 @@
                        gsml:bodyMorphology/gsml:CGI_TermValue/gsml:value
 					</targetAttribute>
                     <sourceExpression>
-                        <OCQL>body_value</OCQL>
+                        <OCQL>BODY_VALUE</OCQL>
                     </sourceExpression>
                     <ClientProperty>
                         <name>codeSpace</name>
-                        <value>body_codespace</value>
+                        <value>BODY_CODESPACE</value>
                     </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -79,7 +79,7 @@
                         gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept
                     </targetAttribute>
                     <idExpression>
-                        <OCQL>strConCat('cc.1.',geologicunit_id)</OCQL>
+                        <OCQL>strConCat('cc.1.',GEOLOGICUNIT_ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -95,7 +95,7 @@
                         gsml:composition/gsml:CompositionPart/gsml:lithology[2]/gsml:ControlledConcept
                     </targetAttribute>
                     <idExpression>
-                        <OCQL>strConCat('cc.2.',geologicunit_id)</OCQL>
+                        <OCQL>strConCat('cc.2.',GEOLOGICUNIT_ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -103,7 +103,7 @@
                        gsml:composition/gsml:CompositionPart/gsml:lithology[2]/gsml:ControlledConcept/gml:name
 					</targetAttribute>
                     <sourceExpression>
-                        <OCQL>body_value</OCQL>
+                        <OCQL>BODY_VALUE</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -120,11 +120,11 @@
                        gsml:rank
 					</targetAttribute>
                     <sourceExpression>
-                        <OCQL>body_value</OCQL>
+                        <OCQL>BODY_VALUE</OCQL>
                     </sourceExpression>
                     <ClientProperty>
                         <name>codeSpace</name>
-                        <value>body_codespace</value>
+                        <value>BODY_CODESPACE</value>
                     </ClientProperty>
                 </AttributeMapping>
             </attributeMappings>

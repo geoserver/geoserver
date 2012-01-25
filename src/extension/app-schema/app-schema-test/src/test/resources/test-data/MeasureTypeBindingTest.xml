@@ -106,7 +106,7 @@
 			            FEATURE_LINK
   		            </targetAttribute>
 					<sourceExpression>
-						<OCQL>strTrim(getId())</OCQL>
+						<OCQL>getId()</OCQL>
 					</sourceExpression>
 				</AttributeMapping>
 			</attributeMappings>

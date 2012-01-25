@@ -85,7 +85,9 @@
 		                FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>strTrim(getId())</OCQL>
+                    <!-- Removed strTrim for online test because it'd fail
+                        <OCQL>strTrim(getId())</OCQL> -->
+                        <OCQL>getId()</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>

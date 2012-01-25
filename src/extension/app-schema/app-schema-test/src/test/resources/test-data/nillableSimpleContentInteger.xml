@@ -38,7 +38,7 @@
 						er:Commodity
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConCat('er.commodity.',geologicunit_id)</OCQL>
+                        <OCQL>strConCat('er.commodity.',GEOLOGICUNIT_ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -46,11 +46,11 @@
 			         	gml:name
   		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>name_value</OCQL>
+                        <OCQL>NAME_VALUE</OCQL>
                     </sourceExpression>
                     <ClientProperty>
                         <name>codeSpace</name>
-                        <value>name_codespace</value>
+                        <value>NAME_CODESPACE</value>
                     </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -58,7 +58,7 @@
 			         	er:commodityRank
   		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>commodityrank</OCQL>
+                        <OCQL>COMMODITYRANK</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>

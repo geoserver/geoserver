@@ -126,14 +126,10 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             buf.append("CREATE TABLE ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                     .append("\"(");
             List<GeometryDescriptor> geoms = new ArrayList<GeometryDescriptor>();
-            int size = schema.getAttributeCount();
-            // TODO: should be null for MappedFeatureNoId
-            // add primary key?
-            if (schema.isIdentified()) {
-                buf.append("\"id\" TEXT");
-            }
+            // + id
+            int size = schema.getAttributeCount() + 1;
             String[] fieldNames = new String[size];
-            List<String> nameTypePairs = new ArrayList<String>();
+            List<String> createParams = new ArrayList<String>();
             int j = 0;
             String field;
             String type;
@@ -147,16 +143,17 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                         type = "TEXT";
                     }
                     field += type;
-                    nameTypePairs.add(field);
+                    createParams.add(field);
                 }
                 fieldNames[j] = desc.getName().toString();
                 j++;
             }
-            if (!nameTypePairs.isEmpty()) {
-                if (schema.isIdentified()) {
-                    buf.append(", ");
-                }
-                buf.append(StringUtils.join(nameTypePairs.iterator(), ", "));
+            if (schema.isIdentified()) {
+                fieldNames[j] = "ROW_ID";
+                createParams.add("\"ROW_ID\" TEXT");
+            }
+            if (!createParams.isEmpty()) {
+                buf.append(StringUtils.join(createParams.iterator(), ", "));
             }
             buf.append(");\n");
 
@@ -181,25 +178,11 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 buf.append("INSERT INTO ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                         .append("\"(\"");
                 feature = reader.next();
-                id = feature.getIdentifier();
-                if (id != null) {
-                    buf.append("id\"");
-                    if (size > 0) {
-                        buf.append(", \"");
-                    }
-                }
                 buf.append(StringUtils.join(fieldNames, "\", \""));
                 buf.append("\") ");
                 buf.append("VALUES (");
-                if (id != null) {
-                    buf.append("'");
-                    buf.append(id.toString());
-                    if (size > 0) {
-                        buf.append("', ");
-                    }
-                }
                 Collection<Property> properties = feature.getProperties();
-                String[] values = new String[properties.size()];
+                String[] values = new String[size];
                 int valueIndex = 0;
                 for (Property prop : properties) {
                     Object value = prop.getValue();
@@ -217,6 +200,11 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                         values[valueIndex] = "'" + value + "'";
                     }
                     valueIndex++;
+                }
+
+                id = feature.getIdentifier();
+                if (id != null) {
+                    values[valueIndex] = "'" + id.toString() + "'";
                 }
                 buf.append(StringUtils.join(values, ","));
                 buf.append(");\n");

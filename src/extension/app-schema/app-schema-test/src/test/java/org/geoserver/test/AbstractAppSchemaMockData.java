@@ -626,7 +626,7 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
         StringBuffer content = new StringBuffer();
         boolean parametersStartFound = false;
         boolean parametersEndFound = false;
-        String idColumn = "id";
+        String idColumn = "ROW_ID";
         boolean isOracle = onlineTestId.equals("oracle");
         for (String line = br.readLine(); line != null; line = br.readLine()) {
             if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {

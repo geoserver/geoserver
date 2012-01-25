@@ -154,7 +154,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
             + "<typeMappings>" //
             + "<FeatureTypeMapping>" //
             + "<sourceDataStore>datastore</sourceDataStore>" //
-            + "<sourceType>MappedFeature</sourceType>" //
+            + "<sourceType>MAPPEDFEATURE</sourceType>" //
             + "<targetElement>gsml:MappedFeature</targetElement>" //
             + "<attributeMappings>" //
             + "<AttributeMapping>" //
@@ -218,7 +218,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         File dir = new File(new File(new File(getTestData().getDataDirectoryRoot(), "workspaces"),
                 "gsml"), "MappedFeature");
         dir.mkdirs();
-        File propertiesFile = new File(dir, "MappedFeature.properties");
+        File propertiesFile = new File(dir, "MAPPEDFEATURE.properties");
         IOUtils.copy(new ByteArrayInputStream(PROPERTIES.getBytes("UTF-8")), propertiesFile);
         
         String mapping = MAPPING;

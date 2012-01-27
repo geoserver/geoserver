@@ -38,7 +38,15 @@
           <ref bean="gwcSeedRestlet" />
         </entry>
         <entry>
+          <key><value>/rest/seed.json</value></key>
+          <ref bean="gwcSeedRestlet" />
+        </entry>
+        <entry>
           <key><value>/rest/seed/{layer}</value></key>
+          <ref bean="gwcSeedFormRestlet" />
+        </entry>
+        <entry>
+          <key><value>/rest/seed</value></key>
           <ref bean="gwcSeedFormRestlet" />
         </entry>
         <entry>

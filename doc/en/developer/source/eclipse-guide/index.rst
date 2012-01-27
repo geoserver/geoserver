@@ -120,11 +120,11 @@ Code templates
 ^^^^^^^^^^^^^^
 
 #. Download http://svn.osgeo.org/geotools/trunk/build/eclipse/codetemplates.xml
-#. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
+#. Navigate to ``Java``, ``Code Style``, ``Code Templates`` and click ``Import...``
 
    .. image:: code_templates.jpg
 
-#. Select the ``formatter.xml`` file downloaded in step 1
+#. Select the ``codetemplates.xml`` file downloaded in step 1
 #. Click ``Apply``
 
 Text editors

@@ -25,6 +25,13 @@ The ``audit.path`` is the directory where the log files will be created.
 The ``audit.roll_limit`` is the number of requests logged into a file before rolling happens. 
 The files are also automatically rolled at the beginning of each day.
 
+In clustered installations with a shared data directory the audit path will need to be different
+for each node. In this case it's possible to specify the audit path by using a JVM system variable,
+add the following to the JVM startup options and it will override whatever is specified in 
+``monitor.properties``:
+
+  -DGEOSERVER_AUDIT_PATH=/path/to/the/logs/directory
+
 Outputs and contents
 --------------------
 

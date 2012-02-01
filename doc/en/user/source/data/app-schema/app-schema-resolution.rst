@@ -6,23 +6,6 @@ Application Schema Resolution
 To be able to encode XML responses conforming to a GML application schema, the app-schema plugin must be able to locate the application schema files (XSDs) that define the schema. This page describes the schema resolution process.
 
 
-GML 3.1.1
----------
-
-* GML 3.1.1 application schemas are supported for WFS 1.1.0.
-* Clients must specify WFS 1.1.0 in requests.
-* GET URLs must contain ``version=1.1.0`` to set the WFS version to 1.1.0.
-
-
-GML 3.2.1
----------
-
-* GML 3.2.1 application schemas are supported for WFS 1.1.0.
-* Clients must specify WFS 1.1.0 in requests and select the ``gml32`` output format.
-* GET URLs must contain ``version=1.1.0`` to set the WFS version to 1.1.0 and ``outputFormat=gml32`` to set the output format to GML 3.2.1.
-* GML 3.2 responses are contained in a WFS 2.0 ``FeatureCollection`` element.
-
-
 Schema downloading is now automatic for most users
 --------------------------------------------------
 

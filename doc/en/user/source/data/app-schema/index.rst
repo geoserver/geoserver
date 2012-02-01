@@ -28,6 +28,7 @@ Contents
    configuration
    mapping-file
    app-schema-resolution
+   supported-gml-versions
    secondary-namespaces
    vocab-functions
    property-interpolation
@@ -37,6 +38,5 @@ Contents
    data-access-integration
    wms-support
    joining
-   gml32
    tutorial
 

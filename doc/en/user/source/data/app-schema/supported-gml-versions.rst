@@ -70,3 +70,8 @@ In this example, ``getId()`` returns the ``gml:id`` of the containing feature, s
 If a multigeometry (such as a ``MultiPoint`` or ``MultiSurface``) is assigned a ``gml:id`` of (for example) ``parentid``, to permit GML 3.2.1 schema-validity, each geometry that the multigeometry contains will be automatically assigned a ``gml:id`` of the form ``parentid.1``, ``parentid.2``, ... in order.
 
 
+GML 3.3
+-------
+
+The proposed GML 3.3 is itself a GML 3.2.1 application schema; preliminary testing with drafts of GML 3.3 indicates that it works with app-schema as expected.
+

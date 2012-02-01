@@ -84,6 +84,16 @@
     <enabled>false</enabled>
    </releases>
   </pluginRepository>
+  <pluginRepository>
+   <id>maven-svn-revision-number-plugin.googlecode.com</id>
+   <url>http://maven-svn-revision-number-plugin.googlecode.com/svn/m2/releases</url>
+   <releases>
+    <enabled>true</enabled>
+   </releases>
+   <snapshots>
+    <enabled>false</enabled>
+   </snapshots>
+  </pluginRepository>
  </pluginRepositories>
 
  <dependencyManagement>
@@ -1199,8 +1209,8 @@
    <!-- initialize svn revision info -->
    <plugin>
      <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-     <artifactId>maven-svn-revision-number-plugin</artifactId>
-     <version>1.5</version>
+     <artifactId>svn-revision-number-maven-plugin</artifactId>
+     <version>1.8-SVN7</version>
      <executions>
        <execution>
          <goals>

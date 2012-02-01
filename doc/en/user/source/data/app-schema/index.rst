@@ -37,5 +37,6 @@ Contents
    data-access-integration
    wms-support
    joining
+   gml32
    tutorial
 

@@ -9,15 +9,20 @@ import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.List;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -30,6 +35,10 @@ import org.geoserver.wms.GetCapabilities;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * OWS {@link Response} bean to handle WMS {@link GetCapabilities} results.
@@ -157,7 +166,33 @@ public class GetCapabilitiesResponse extends Response {
             // ExtendedCapabilitiesProviders, as an stylesheet parameter
             dtdIncludeTransformer.setParameter("DTDDeclaration", internalDTDDeclaration.toString());
 
-            Source source = new StreamSource(new ByteArrayInputStream(rawCapabilities));
+            Source source;
+            try {
+                /*
+                 * As per GEOS-4945, we need to provide the XSL transformer a namespace aware input
+                 * source that doesn't complain if the resulting DTD location is unreachable. To do
+                 * so, a SAX XMLReader with an EntityResolver that resolves to the local copy of the
+                 * DTD will be used.
+                 */
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                spf.setNamespaceAware(true); // xslt _needs_ namespace aware input source
+                SAXParser sp = spf.newSAXParser();
+                XMLReader rawCapsReader = sp.getXMLReader();
+                rawCapsReader.setEntityResolver(new EntityResolver() {
+                    // @Override
+                    public InputSource resolveEntity(String publicId, String systemId)
+                            throws SAXException {
+                        final String dtdLocation = "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";
+                        String dtdSystemId = getClass().getResource(dtdLocation).toExternalForm();
+                        return new InputSource(dtdSystemId);
+                    }
+                });
+
+                source = new SAXSource(rawCapsReader, new InputSource(new ByteArrayInputStream(
+                        rawCapabilities)));
+            } catch (Exception e) {
+                throw new ServiceException(e);
+            }
             Result result = new StreamResult(output);
             try {
                 dtdIncludeTransformer.transform(source, result);

@@ -17,23 +17,20 @@
                 <Graphic>
                   <Mark>
                     <WellKnownName>circle</WellKnownName>
+                    <Fill>
+                      <CssParameter name="stroke">#666666</CssParameter>  
+                    </Fill>
                     <Stroke>
                       <CssParameter name="stroke">#333333</CssParameter>
                       <CssParameter name="stroke-width">1</CssParameter>
                     </Stroke>
-                    <Fill>
-                      <CssParameter name="stroke">#666666</CssParameter>  
-                    </Fill>
                   </Mark>
                   <Size>4</Size>
-                  <CssParameter name="stroke-dasharray">4 6</CssParameter>
                 </Graphic>
               </GraphicStroke>
+              <CssParameter name="stroke-dasharray">4 6</CssParameter>
             </Stroke>
           </LineSymbolizer>
         </Rule>
       </FeatureTypeStyle>
     </UserStyle>
-  </NamedLayer>
-</StyledLayerDescriptor>
-

@@ -20,6 +20,9 @@
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
+            <LabelPlacement>
+              <LinePlacement />
+            </LabelPlacement>
             <Fill>
               <CssParameter name="fill">#000000</CssParameter>
             </Fill>
@@ -33,9 +36,6 @@
             <VendorOption name="maxAngleDelta">90</VendorOption>
             <VendorOption name="maxDisplacement">400</VendorOption>
             <VendorOption name="repeat">150</VendorOption>
-            <LabelPlacement>
-              <LinePlacement />
-            </LabelPlacement>
           </TextSymbolizer>
         </Rule>
       </FeatureTypeStyle>

@@ -30,10 +30,10 @@
                     </Stroke>
                   </Mark>
                   <Size>5</Size>
-                  <CssParameter name="stroke-dasharray">5 15</CssParameter>
-                  <CssParameter name="stroke-dashoffset">7.5</CssParameter>
                 </Graphic>
               </GraphicStroke>
+              <CssParameter name="stroke-dasharray">5 15</CssParameter>
+              <CssParameter name="stroke-dashoffset">7.5</CssParameter>
             </Stroke>
           </LineSymbolizer>
         </Rule>
@@ -41,5 +41,3 @@
     </UserStyle>
   </NamedLayer>
 </StyledLayerDescriptor>
-
-

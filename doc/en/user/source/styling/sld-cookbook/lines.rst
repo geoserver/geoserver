@@ -471,6 +471,9 @@ Code
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
+            <LabelPlacement>
+              <LinePlacement />
+            </LabelPlacement>
             <Fill>
               <CssParameter name="fill">#000000</CssParameter>
             </Fill>
@@ -523,13 +526,13 @@ Code
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
+            <LabelPlacement>
+              <LinePlacement />
+            </LabelPlacement>
             <Fill>
               <CssParameter name="fill">#000000</CssParameter>
             </Fill>
             <VendorOption name="followLine">true</VendorOption>
-            <LabelPlacement>
-              <LinePlacement />
-            </LabelPlacement>
           </TextSymbolizer>
         </Rule>
       </FeatureTypeStyle>
@@ -540,8 +543,8 @@ Details
 As the :ref:`sld_cookbook_lines_defaultlabel` example showed, the default label behavior isn't very optimal.  The label
 is displayed at a tangent to the line itself, leading to uncertainty as to which label corresponds to which line.
 
-This example is similar to the :ref:`sld_cookbook_lines_defaultlabel` example with the exception of **lines 15-18**. 
-**Line 15** sets the option to have the label follow the line, while **lines 16-18** specify that the label is placed
+This example is similar to the :ref:`sld_cookbook_lines_defaultlabel` example with the exception of **lines 12-18**. 
+**Line 18** sets the option to have the label follow the line, while **lines 12-14** specify that the label is placed
 along a line.  If ``<LinePlacement />`` is not specified in an SLD, then ``<PointPlacement />`` is assumed, which isn't
 compatible with line-specific rendering options.
 
@@ -582,6 +585,9 @@ Code
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
+            <LabelPlacement>
+               <LinePlacement />
+            </LabelPlacement>
             <Fill>
               <CssParameter name="fill">#000000</CssParameter>
             </Fill>
@@ -589,9 +595,6 @@ Code
             <VendorOption name="maxAngleDelta">90</VendorOption>
             <VendorOption name="maxDisplacement">400</VendorOption>
             <VendorOption name="repeat">150</VendorOption>
-            <LabelPlacement>
-              <LinePlacement />
-            </LabelPlacement>
           </TextSymbolizer>
         </Rule>
       </FeatureTypeStyle>
@@ -605,14 +608,8 @@ This accounts for the reason why many lines don't have labels in the previous ex
 on and use other label placement options to ensure that labels are drawn as often as desired and in the correct places.
 This example does just that.
 
-This example is similar to the previous example, :ref:`sld_cookbook_lines_labelfollowingline`.  The only differences are
-contained in **lines 16-18**.  **Line 16** sets the maximum angle that the label will follow.  This sets the label to
-never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. 
-**Line 17** sets the maximum displacement of the label to be 400 pixels.  In order to resolve conflicts with
-overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping.  This value
-sets how far the label can be moved relative to its original placement.  Finally, **line 18** sets the labels to be
-repeated every 150 pixels.  A feature will typically receive only one label, but this can cause confusion for long
-lines. Setting the label to repeat ensures that the line is always labeled locally.
+This example is similar to the previous example, :ref:`sld_cookbook_lines_labelfollowingline`.  The only differences are contained in **lines 18-21**.  **Line 19** sets the maximum angle that the label will follow.  This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle.  **Line 20** sets the maximum displacement of the label to be 400 pixels.  In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping.  This value sets how far the label can be moved relative to its original placement.  Finally, **line 21** sets the labels to be repeated every 150 pixels.  A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
+ 
 
 
 .. _sld_cookbook_lines_optimizedstyledlabel:
@@ -646,6 +643,9 @@ Code
             <Label>
               <ogc:PropertyName>name</ogc:PropertyName>
             </Label>
+            <LabelPlacement>
+              <LinePlacement />
+            </LabelPlacement>
             <Fill>
               <CssParameter name="fill">#000000</CssParameter>
             </Fill>
@@ -659,9 +659,6 @@ Code
             <VendorOption name="maxAngleDelta">90</VendorOption>
             <VendorOption name="maxDisplacement">400</VendorOption>
             <VendorOption name="repeat">150</VendorOption>
-            <LabelPlacement>
-              <LinePlacement />
-            </LabelPlacement>
           </TextSymbolizer>
         </Rule>
       </FeatureTypeStyle>
@@ -669,10 +666,7 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`sld_cookbook_lines_optimizedlabel`.  The only difference is in the font
-information, which is contained in **lines 15-20**.  **Line 16** sets the font family to be "Arial", **line 17** sets
-the font size to 10, **line 18** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 19**
-sets the font weight to "bold" (as opposed to "normal").
+This example is similar to the :ref:`sld_cookbook_lines_optimizedlabel`.  The only difference is in the font information, which is contained in **lines 18-23**.  **Line 19** sets the font family to be "Arial", **line 20** sets the font size to 10, **line 21** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 22** sets the font weight to "bold" (as opposed to "normal").
 
 
 Attribute-based line

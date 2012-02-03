@@ -1,14 +1,13 @@
 package org.geoserver.wfs.response;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
@@ -33,55 +32,8 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         assertEquals("attachment; filename=PrimitiveGeoFeature.xls",
                 resp.getHeader("Content-Disposition"));
 
-        // check we have the expected sheet
         HSSFWorkbook wb = new HSSFWorkbook(in);
-        HSSFSheet sheet = wb.getSheet("PrimitiveGeoFeature");
-        assertNotNull(sheet);
-
-        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
-
-        // check the number of rows in the output
-        final int feautureRows = fs.getCount(Query.ALL);
-        assertEquals(feautureRows + 1, sheet.getPhysicalNumberOfRows());
-
-        // check the header is what we expect
-        final SimpleFeatureType schema = (SimpleFeatureType) fs.getSchema();
-        final HSSFRow header = sheet.getRow(0);
-        assertEquals("FID", header.getCell(0).getRichStringCellValue().toString());
-        for (int i = 0; i < schema.getAttributeCount(); i++) {
-            assertEquals(schema.getDescriptor(i).getLocalName(), header.getCell(i + 1)
-                    .getRichStringCellValue().toString());
-        }
-
-        // check some selected values to see if the content and data type is the one
-        // we expect
-        FeatureIterator fi = fs.getFeatures().features();
-        SimpleFeature sf = (SimpleFeature) fi.next();
-        fi.close();
-
-        // ... a string cell
-        HSSFCell cell = sheet.getRow(1).getCell(1);
-        assertEquals(HSSFCell.CELL_TYPE_STRING, cell.getCellType());
-        assertEquals(sf.getAttribute(0), cell.getRichStringCellValue().toString());
-        // ... a geom cell
-        cell = sheet.getRow(1).getCell(4);
-        assertEquals(HSSFCell.CELL_TYPE_STRING, cell.getCellType());
-        assertEquals(sf.getAttribute(3).toString(), cell.getRichStringCellValue().toString());
-        // ... a number cell
-        cell = sheet.getRow(1).getCell(6);
-        assertEquals(HSSFCell.CELL_TYPE_NUMERIC, cell.getCellType());
-        assertEquals(((Number) sf.getAttribute(5)).doubleValue(), cell.getNumericCellValue());
-        // ... a date cell (they are mapped as numeric in xms?)
-        cell = sheet.getRow(1).getCell(10);
-        assertEquals(HSSFCell.CELL_TYPE_NUMERIC, cell.getCellType());
-        assertEquals(sf.getAttribute(9), cell.getDateCellValue());
-        // ... a boolean cell (they are mapped as numeric in xms?)
-        cell = sheet.getRow(1).getCell(12);
-        assertEquals(HSSFCell.CELL_TYPE_BOOLEAN, cell.getCellType());
-        assertEquals(sf.getAttribute(11), cell.getBooleanCellValue());
-        // ... an empty cell (original value is null -> no cell)
-        cell = sheet.getRow(1).getCell(3);
-        assertNull(cell);
+        testExcelOutputFormat( wb );
     }
 
     public void testExcel2007OutputFormat() throws Exception {
@@ -97,9 +49,12 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         assertEquals("attachment; filename=PrimitiveGeoFeature.xlsx",
                 resp.getHeader("Content-Disposition"));
 
-        // check we have the expected sheet
         XSSFWorkbook wb = new XSSFWorkbook(in);
-        XSSFSheet sheet = wb.getSheet("PrimitiveGeoFeature");
+        testExcelOutputFormat( wb );
+    }
+
+    private void testExcelOutputFormat( Workbook wb ) throws IOException{
+        Sheet sheet = wb.getSheet("PrimitiveGeoFeature");
         assertNotNull(sheet);
 
         FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
@@ -110,7 +65,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
 
         // check the header is what we expect
         final SimpleFeatureType schema = (SimpleFeatureType) fs.getSchema();
-        final XSSFRow header = sheet.getRow(0);
+        final Row header = sheet.getRow(0);
         assertEquals("FID", header.getCell(0).getRichStringCellValue().toString());
         for (int i = 0; i < schema.getAttributeCount(); i++) {
             assertEquals(schema.getDescriptor(i).getLocalName(), header.getCell(i + 1)
@@ -124,50 +79,37 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         fi.close();
 
         // ... a string cell
-        XSSFCell cell = sheet.getRow(1).getCell(1);
-        assertEquals(XSSFCell.CELL_TYPE_STRING, cell.getCellType());
+        Cell cell = sheet.getRow(1).getCell(1);
+        assertEquals( Cell.CELL_TYPE_STRING, cell.getCellType() );
         assertEquals(sf.getAttribute(0), cell.getRichStringCellValue().toString());
         // ... a geom cell
         cell = sheet.getRow(1).getCell(4);
-        assertEquals(XSSFCell.CELL_TYPE_STRING, cell.getCellType());
+        assertEquals( Cell.CELL_TYPE_STRING, cell.getCellType() );
         assertEquals(sf.getAttribute(3).toString(), cell.getRichStringCellValue().toString());
         // ... a number cell
         cell = sheet.getRow(1).getCell(6);
-        assertEquals(XSSFCell.CELL_TYPE_NUMERIC, cell.getCellType());
+        assertEquals( Cell.CELL_TYPE_NUMERIC, cell.getCellType() );
         assertEquals(((Number) sf.getAttribute(5)).doubleValue(), cell.getNumericCellValue());
         // ... a date cell (they are mapped as numeric in xms?)
         cell = sheet.getRow(1).getCell(10);
-        assertEquals(XSSFCell.CELL_TYPE_NUMERIC, cell.getCellType());
+        assertEquals( Cell.CELL_TYPE_NUMERIC, cell.getCellType() );
         assertEquals(sf.getAttribute(9), cell.getDateCellValue());
         // ... a boolean cell (they are mapped as numeric in xms?)
         cell = sheet.getRow(1).getCell(12);
-        assertEquals(XSSFCell.CELL_TYPE_BOOLEAN, cell.getCellType());
+        assertEquals( Cell.CELL_TYPE_BOOLEAN, cell.getCellType() );
         assertEquals(sf.getAttribute(11), cell.getBooleanCellValue());
         // ... an empty cell (original value is null -> no cell)
         cell = sheet.getRow(1).getCell(3);
-        assertNull(cell);
+        assertNull(cell);    	
     }
-
+    
     public void testExcel97MultipleFeatureTypes() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel");
         InputStream in = getBinaryInputStream(resp);
 
-        // check we have the expected sheets
-        HSSFWorkbook wb = new HSSFWorkbook(in);
-        HSSFSheet sheet = wb.getSheet("PrimitiveGeoFeature");
-        assertNotNull(sheet);
-
-        // check the number of rows in the output
-        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
-        assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());
-
-        sheet = wb.getSheet("GenericEntity");
-        assertNotNull(sheet);
-
-        // check the number of rows in the output
-        fs = getFeatureSource(MockData.GENERICENTITY);
-        assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());
+        Workbook wb = new HSSFWorkbook(in);
+        testMultipleFeatureTypes( wb );        
     }
 
     public void testExcel2007MultipleFeatureTypes() throws Exception {
@@ -175,9 +117,13 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");
         InputStream in = getBinaryInputStream(resp);
 
+        Workbook wb = new XSSFWorkbook(in);
+        testMultipleFeatureTypes( wb );
+    }
+    
+    private void testMultipleFeatureTypes( Workbook wb ) throws IOException{
         // check we have the expected sheets
-        XSSFWorkbook wb = new XSSFWorkbook(in);
-        XSSFSheet sheet = wb.getSheet("PrimitiveGeoFeature");
+    	Sheet sheet = wb.getSheet("PrimitiveGeoFeature");
         assertNotNull(sheet);
 
         // check the number of rows in the output
@@ -189,6 +135,6 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
 
         // check the number of rows in the output
         fs = getFeatureSource(MockData.GENERICENTITY);
-        assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());
+        assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());    	
     }
 }

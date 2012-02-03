@@ -13,10 +13,6 @@
   <packaging>jar</packaging>
   <name>Excel Output Format</name>
 
-  <properties>
-  	<poi-version>3.7</poi-version>
-  </properties>
-
   <repositories>
     <repository>
       <id>codehaus</id>
@@ -35,13 +31,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-      <version>${poi-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>${poi-version}</version>
+      <version>3.8-beta5</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -59,7 +50,6 @@
     <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
-      <version>0.3.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>

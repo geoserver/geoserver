@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"> 
-
 <beans>
-  <bean id="ExcelOutputFormat" class="org.geoserver.wfs.response.ExcelOutputFormat">
+  <bean id="Excel97OutputFormat" class="org.geoserver.wfs.response.Excel97OutputFormat">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="Excel2007OutputFormat" class="org.geoserver.wfs.response.Excel2007OutputFormat">
     <constructor-arg ref="geoServer"/>
   </bean>
 </beans>

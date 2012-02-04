@@ -197,10 +197,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             throws IOException {
 
         parseStyleAndRule(req, mli, rawKvp);
-
-        String legendOptions = (String) rawKvp.get("LEGEND_OPTIONS");
-        // the LEGEND_OPTIONS parameter gets parsed here.
-        req.setLegendOptions(Requests.parseOptionParameter(legendOptions));
     }
 
     /**

@@ -202,6 +202,9 @@
  	<bean id="wmsEnviromentKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
  		<constructor-arg index="0" value="env"/>
  	</bean>
+ 	<bean id="wmsLegendOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
+ 		<constructor-arg index="0" value="legend_options"/>
+ 	</bean>
   <bean id="wmsSqlViewKvpParser" class="org.geoserver.ows.kvp.ViewParamsKvpParser">
     <!-- cannot set the service or it won't work for the reflectors -->
   </bean>
@@ -246,7 +249,7 @@
     <bean id="dpiKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
         <constructor-arg value="dpi"/>
     </bean>
- 	
+
  	
  	<!-- kvp request readers -->
  	<bean id="wmsGetCapabilitiesKvpReader" 

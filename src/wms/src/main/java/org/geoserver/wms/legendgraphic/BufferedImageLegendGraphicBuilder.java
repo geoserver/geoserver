@@ -50,6 +50,12 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+import java.util.Collections;
+import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.styling.AnchorPoint;
+import org.geotools.styling.visitor.DuplicatingStyleVisitor;
+import org.geotools.styling.visitor.RescaleStyleVisitor;
+import org.geotools.styling.visitor.UomRescaleStyleVisitor;
 
 /**
  * Template {@linkPlain org.vfny.geoserver.responses.wms.GetLegendGraphicProducer} based on
@@ -141,9 +147,13 @@ public class BufferedImageLegendGraphicBuilder {
     public BufferedImage buildLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
 
-        final Style gt2Style = request.getStyle();
+        Style gt2Style = request.getStyle();
         if (gt2Style == null) {
             throw new NullPointerException("request.getStyle()");
+        }
+
+        if (request.getScale() > 0) {
+            gt2Style = applyUnitRescale(gt2Style, request);
         }
 
         final FeatureType layer = request.getLayer();
@@ -214,7 +224,7 @@ public class BufferedImageLegendGraphicBuilder {
                     Style2D style2d = styleFactory.createStyle(sampleFeature, symbolizer,
                             scaleRange);
                     LiteShape2 shape = getSampleShape(symbolizer, w, h);
-
+                    
                     if (style2d != null) {
                         shapePainter.paint(graphics, shape, style2d, scaleDenominator);
                     }
@@ -229,6 +239,31 @@ public class BufferedImageLegendGraphicBuilder {
         // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
         BufferedImage image = mergeLegends(legendsStack, applicableRules, request);
         return image;
+    }
+
+    /**
+     * Applies Unit Of Measure rescaling against all symbolizers, the result will be symbolizers
+     * that operate purely in pixels
+     * @param sld
+     */
+    private Style applyUnitRescale(Style sld, GetLegendGraphicRequest request) {
+        // apply UOM rescaling
+        double pixelsPerMeters = RendererUtilities.calculatePixelsPerMeterRatio(request.getScale(), request.getLegendOptions());
+        UomRescaleStyleVisitor rescaleVisitor = new UomRescaleStyleVisitor(pixelsPerMeters);
+        rescaleVisitor.visit(sld);
+        Style newSld = (Style) rescaleVisitor.getCopy();
+
+        // apply dpi rescale
+        double dpi = RendererUtilities.getDpi(request.getLegendOptions());
+        double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
+        if(dpi != standardDpi) {
+            double scaleFactor = dpi / standardDpi;
+            RescaleStyleVisitor dpiVisitor = new RescaleStyleVisitor(scaleFactor);
+            dpiVisitor.visit(sld);
+            newSld = (Style) dpiVisitor.getCopy();
+        }
+
+        return newSld;
     }
 
     /**
@@ -251,14 +286,7 @@ public class BufferedImageLegendGraphicBuilder {
             GetLegendGraphicRequest req) {
 
         Font labelFont = LegendUtils.getLabelFont(req);
-        boolean useAA = false;
-        if (req.getLegendOptions().get("fontAntiAliasing") instanceof String) {
-            String aaVal = (String) req.getLegendOptions().get("fontAntiAliasing");
-            if (aaVal.equalsIgnoreCase("on") || aaVal.equalsIgnoreCase("true")
-                    || aaVal.equalsIgnoreCase("yes") || aaVal.equalsIgnoreCase("1")) {
-                useAA = true;
-            }
-        }
+        boolean useAA = LegendUtils.isFontAntiAliasing(req);
 
         boolean forceLabelsOn = false;
         boolean forceLabelsOff = false;
@@ -435,8 +463,8 @@ public class BufferedImageLegendGraphicBuilder {
 
         if (symbolizer instanceof LineSymbolizer) {
             if (this.sampleLine == null) {
-                Coordinate[] coords = { new Coordinate(hpad, legendHeight - vpad),
-                        new Coordinate(legendWidth - hpad, vpad) };
+                Coordinate[] coords = { new Coordinate(hpad, legendHeight - vpad - 1),
+                        new Coordinate(legendWidth - hpad - 1, vpad) };
                 LineString geom = geomFac.createLineString(coords);
 
                 try {
@@ -450,8 +478,8 @@ public class BufferedImageLegendGraphicBuilder {
         } else if ((symbolizer instanceof PolygonSymbolizer)
                 || (symbolizer instanceof RasterSymbolizer)) {
             if (this.sampleRect == null) {
-                final float w = legendWidth - (2 * hpad);
-                final float h = legendHeight - (2 * vpad);
+                final float w = legendWidth - (2 * hpad) - 1;
+                final float h = legendHeight - (2 * vpad) - 1;
 
                 Coordinate[] coords = { new Coordinate(hpad, vpad), new Coordinate(hpad, vpad + h),
                         new Coordinate(hpad + w, vpad + h), new Coordinate(hpad + w, vpad),

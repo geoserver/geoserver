@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -27,6 +28,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.renderer.i18n.ErrorKeys;
 import org.geotools.renderer.i18n.Errors;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.FeatureTypeStyle;
@@ -170,6 +172,13 @@ public class LegendUtils {
 			}
 		}
 
+		double dpi = RendererUtilities.getDpi(req.getLegendOptions());
+		double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
+		if (dpi != standardDpi) {
+			double scaleFactor = dpi / standardDpi;
+			legendFontSize = (int) Math.ceil(legendFontSize * scaleFactor);
+		}
+
 		if(legendFontFamily==LegendUtils.DEFAULT_FONT_TYPE&& legendFontName.equalsIgnoreCase(LegendUtils.DEFAULT_FONT_NAME)&& 
 				(legendFontSize==LegendUtils.DEFAULT_FONT_SIZE||legendFontSize<=0))
 			return DEFAULT_FONT;
@@ -205,6 +214,25 @@ public class LegendUtils {
 						+ ", default to " + DEFAULT_FONT_COLOR.toString());
 			return DEFAULT_FONT_COLOR;
 		}
+	}
+
+	/**
+	 * Checks if the graphics should be text antialiasing
+	 *
+	 * @param req the {@link GetLegendGraphicRequest} from which to extract font antialiasing information.
+	 *
+	 * @return true if the fontAntiAliasing is set to on
+	 */
+	public static boolean isFontAntiAliasing(final GetLegendGraphicRequest req) {
+		if (req.getLegendOptions().get("fontAntiAliasing") instanceof String) {
+			String aaVal = (String) req.getLegendOptions().get("fontAntiAliasing");
+			if (aaVal.equalsIgnoreCase("on") || aaVal.equalsIgnoreCase("true")
+					|| aaVal.equalsIgnoreCase("yes") || aaVal.equalsIgnoreCase("1")) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

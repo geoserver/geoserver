@@ -75,10 +75,10 @@ public class ScaleLineDecoration implements MapDecoration {
     		}
     	}
 
-        Color tmp = LegendDecoration.parseColor(options.get("bgcolor"));
+        Color tmp = MapDecorationLayout.parseColor(options.get("bgcolor"));
         if (tmp != null) bgcolor = tmp;
 
-        tmp = LegendDecoration.parseColor(options.get("fgcolor"));
+        tmp = MapDecorationLayout.parseColor(options.get("fgcolor"));
         if (tmp != null) fgcolor = tmp;
     }
 

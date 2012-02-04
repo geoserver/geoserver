@@ -169,12 +169,35 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         BufferedImage image = getAsImage("wms?bbox=" + bbox
                 + "&styles=Population&layers=" + layers + "&Format=image/png" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326&format_options=layout:test-layout", "image/png");
-        //RenderedImageBrowser.showChain(image);
-        
+        // RenderedImageBrowser.showChain(image);
+
         // check the pixels that should be in the legend
-        assertPixel(image, 12, 20, Color.RED);
-        assertPixel(image, 12, 36, Color.GREEN);
-        assertPixel(image, 12, 56, Color.BLUE);
+        assertPixel(image, 12, 16, Color.RED);
+        assertPixel(image, 12, 32, Color.GREEN);
+        assertPixel(image, 12, 52, Color.BLUE);
+    }
+    
+    public void testLayoutLegendStyleTitle() throws Exception {
+        // set the title to null
+        FeatureTypeInfo states = getCatalog().getFeatureTypeByName("states");
+        states.setTitle(null);
+        getCatalog().save(states);
+        
+        // add the layout to the data dir
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("test-layout-sldtitle.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-sldtitle.xml"));
+        
+        // get a map with the layout, it used to NPE
+        BufferedImage image = getAsImage("wms?bbox=" + bbox
+                + "&styles=Population&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&format_options=layout:test-layout-sldtitle", "image/png");
+        // RenderedImageBrowser.showChain(image);
+
+        // check the pixels that should be in the legend
+        assertPixel(image, 12, 36, Color.RED);
+        assertPixel(image, 12, 52, Color.GREEN);
+        assertPixel(image, 12, 72, Color.BLUE);
     }
     
     public void testLayoutTranslucent() throws Exception {

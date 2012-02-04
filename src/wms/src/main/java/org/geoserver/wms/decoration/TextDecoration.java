@@ -82,7 +82,7 @@ public class TextDecoration implements MapDecoration {
         }
         if (options.get("font-color") != null) {
             try {
-                this.fontColor = LegendDecoration.parseColor(options.get("font-color"));
+                this.fontColor = MapDecorationLayout.parseColor(options.get("font-color"));
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "'font-color' must be a color in #RRGGBB[AA] format.", e);
             }
@@ -100,7 +100,7 @@ public class TextDecoration implements MapDecoration {
         }
         if (options.get("halo-color") != null) {
             try {
-                this.haloColor = LegendDecoration.parseColor(options.get("halo-color"));
+                this.haloColor = MapDecorationLayout.parseColor(options.get("halo-color"));
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "'halo-color' must be a color in #RRGGBB[AA] format.", e);
             }

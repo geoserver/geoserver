@@ -11,6 +11,9 @@
       <includes>
         <include>excel-*.jar</include>
         <include>poi-*.jar</include>
+        <include>xmlbeans-*.jar</include>
+        <include>dom4j-*.jar</include>
+        <include>stax-api-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

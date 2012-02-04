@@ -42,6 +42,6 @@ Excel 2007 URL:
 Limitations
 ***********
 
-Excel 97-2003 files are stored as binary and thus space efficient, but have several inherent limitations (65,526 rows per sheet; 256 columns per sheet). Excel 2007 files are XML based, and have much higher limits (1,048,576 rows per sheet; 16,384 columns per sheet). However, because they are text based Excel 2007 files are much larger than Excel 97-2003 files.  Generating Excel 2007 files also uses much more memory than Excel 97-2003 files.
+Excel 97-2003 files are stored as binary and thus space efficient, but have several inherent limitations (65,526 rows per sheet; 256 columns per sheet). Excel 2007 files are XML based, and have much higher limits (1,048,576 rows per sheet; 16,384 columns per sheet). However, because they are text based Excel 2007 files are usually larger than Excel 97-2003 files.
 
 If the number of rows or characters in a cell exceeds the limits of the chosen Excel file format, warning text will be inserted indicating the truncation.

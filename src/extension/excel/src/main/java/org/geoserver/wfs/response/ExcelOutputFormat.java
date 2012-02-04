@@ -16,11 +16,13 @@ import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
@@ -32,34 +34,41 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
-
 /**
- * WFS output format for a GetFeature operation in which the outputFormat is "excel".
- *
- * @author Sebastian Benthall, OpenGeo, seb@opengeo.org
+ * Abstract base class for Excel WFS output format
+ * 
+ * @author Sebastian Benthall, OpenGeo, seb@opengeo.org and Shane StClair, Axiom Consulting,
+ *         shane@axiomalaska.com
  */
-public class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
-    
-    static final int EXCELL_CELL_CHAR_LIMIT = (int) Math.pow(2,15) - 1; //32,767
-    static final String STRING_LENGTH_WARNING = "DATA TRUNCATED (EXCEEDS EXCEL LIMIT)";
+public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
+    private static Logger log = Logger.getLogger(ExcelOutputFormat.class);
 
-    public ExcelOutputFormat(GeoServer gs) {
-        //this is the name of your output format, it is the string
-        // that will be used when requesting the format in a 
-        // GEtFeature request: 
-        // ie ;.../geoserver/wfs?request=getfeature&outputFormat=myOutputFormat
-        super(gs, "excel");
+    protected static int CELL_CHAR_LIMIT = (int) Math.pow(2, 15) - 1; // 32,767
+
+    protected static String TRUNCATE_WARNING = "DATA TRUNCATED";
+
+    protected int rowLimit;
+
+    protected int colLimit;
+
+    protected String fileExtension;
+
+    protected String mimeType;
+
+    public ExcelOutputFormat(GeoServer gs, String formatName) {
+        super(gs, formatName);
     }
-    
+
+    protected abstract Workbook getNewWorkbook();
+
     /**
-     * @return "application/msexcel";
+     * @return mime type;
      */
     @Override
-    public String getMimeType(Object value, Operation operation)
-               throws ServiceException {
-         return "application/msexcel";
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        return mimeType;
     }
-    
+
     @Override
     public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
         GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
@@ -67,86 +76,105 @@ public class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
         String outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName().get(0))
             .getLocalPart();
         return (String[][]) new String[][] {
-                { "Content-Disposition", "attachment; filename=" + outputFileName + ".xls" }
-            };
-    }
+           { "Content-Disposition", "attachment; filename=" + outputFileName + "." + fileExtension }
+        };
+    }    
     
     /**
      * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
      */
     @Override
-    protected void write(FeatureCollectionType featureCollection,
-            OutputStream output, Operation getFeature) throws IOException,
-            ServiceException {
-        //Create the workbook 
-        HSSFWorkbook wb = new HSSFWorkbook();
-        
+    protected void write(FeatureCollectionType featureCollection, OutputStream output, 
+        Operation getFeature) throws IOException, ServiceException {
+    
+        // Create the workbook
+        Workbook wb = getNewWorkbook();
+        CreationHelper helper = wb.getCreationHelper();
+        ExcelCellStyles styles = new ExcelCellStyles(wb);
+
         for (Iterator it = featureCollection.getFeature().iterator(); it.hasNext();) {
             SimpleFeatureCollection fc = (SimpleFeatureCollection) it.next();
-    	
-            // create the sheet for this feature collection    	
-        	HSSFSheet sheet = wb.createSheet(fc.getSchema().getTypeName());
-      
+
+            // create the sheet for this feature collection
+            Sheet sheet = wb.createSheet(fc.getSchema().getTypeName());
+
             // write out the header
-        	HSSFRow header = sheet.createRow((short) 0);
-        	
-            SimpleFeatureType ft = (SimpleFeatureType) fc.getSchema();
-            HSSFCell cell;
-            
+            Row header = sheet.createRow(0);
+
+            SimpleFeatureType ft = fc.getSchema();
+            Cell cell;
+
             cell = header.createCell(0);
-            cell.setCellValue(new HSSFRichTextString("FID"));
-            for ( int i = 0; i < ft.getAttributeCount(); i++ ) {
+            cell.setCellValue(helper.createRichTextString("FID"));
+            for (int i = 0; i < ft.getAttributeCount() && i < colLimit; i++) {
                 AttributeDescriptor ad = ft.getDescriptor(i);
-                
-                cell = header.createCell(i+1);
-                cell.setCellValue(new HSSFRichTextString(ad.getLocalName()));
+                cell = header.createCell(i + 1);
+                cell.setCellValue(helper.createRichTextString(ad.getLocalName()));
+                cell.setCellStyle(styles.getHeaderStyle());
             }
-            
+
             // write out the features
             SimpleFeatureIterator i = fc.features();
             int r = 0; // row index
             try {
-            	HSSFRow row;
-                while( i.hasNext() ) {
-                	r++; //start at 1, since header is at 0
-                    SimpleFeature f = i.next();
-                    row = sheet.createRow((short) r);
+                Row row;
+                while (i.hasNext()) {
+                    r++; // start at 1, since header is at 0
+
+                    row = sheet.createRow(r);
                     cell = row.createCell(0);
-                    cell.setCellValue(new HSSFRichTextString(f.getID()));
-                    for ( int j = 0; j < f.getAttributeCount(); j++ ) {
-                        Object att = f.getAttribute( j );
-                        if ( att != null ) {
-                        	cell = row.createCell(j+1);
-                        	if(att instanceof Number) {
-                      	        cell.setCellValue(((Number) att).doubleValue());
-                        	} else if(att instanceof Date) {
-                        	    cell.setCellValue((Date) att);
-                        	} else if(att instanceof Calendar) {
-                        	    cell.setCellValue((Calendar) att);
-                        	} else if(att instanceof Boolean) {
-                        	    cell.setCellValue((Boolean) att);
-                        	} else {
+
+                    if (r == (rowLimit - 1) && i.hasNext()) {
+                        // there are more features than rows available in this
+                        // Excel format. write out a warning line and break
+                        RichTextString rowWarning = helper.createRichTextString(TRUNCATE_WARNING
+                                + ": ROWS " + r + " - " + fc.size() + " NOT SHOWN");
+                        cell.setCellValue(rowWarning);
+                        cell.setCellStyle(styles.getWarningStyle());
+                        break;
+                    }
+
+                    SimpleFeature f = i.next();
+                    cell.setCellValue(helper.createRichTextString(f.getID()));
+                    for (int j = 0; j < f.getAttributeCount() && j < colLimit; j++) {
+                        Object att = f.getAttribute(j);
+                        if (att != null) {
+                            cell = row.createCell(j + 1);
+                            if (att instanceof Number) {
+                                cell.setCellValue(((Number) att).doubleValue());
+                            } else if (att instanceof Date) {
+                                cell.setCellValue((Date) att);
+                                cell.setCellStyle(styles.getDateStyle());
+                            } else if (att instanceof Calendar) {
+                                cell.setCellValue((Calendar) att);
+                                cell.setCellStyle(styles.getDateStyle());
+                            } else if (att instanceof Boolean) {
+                                cell.setCellValue((Boolean) att);
+                            } else {
                                 // ok, it seems we have no better way than dump it as a string
                                 String stringVal = att.toString();
 
                                 // if string length > excel cell limit, truncate it and warn the
                                 // user, otherwise excel workbook will be corrupted
-                                if (stringVal.length() > EXCELL_CELL_CHAR_LIMIT) {
-                                    stringVal = STRING_LENGTH_WARNING + " "
-                                            + stringVal.substring(0, EXCELL_CELL_CHAR_LIMIT
-                                                    - STRING_LENGTH_WARNING.length() - 1);
+                                if (stringVal.length() > CELL_CHAR_LIMIT) {
+                                    stringVal = TRUNCATE_WARNING
+                                            + " "
+                                            + stringVal.substring(0, CELL_CHAR_LIMIT
+                                                    - TRUNCATE_WARNING.length() - 1);
+                                    cell.setCellStyle(styles.getWarningStyle());
                                 }
-                                cell.setCellValue(new HSSFRichTextString(stringVal));
-                        	}
+                                cell.setCellValue(helper.createRichTextString(stringVal));
+
+                            }
                         }
-                    }    
+                    }
                 }
             } finally {
-                fc.close( i );
+                fc.close(i);
             }
         }
-        
-        //write to output
+
+        // write to output
         wb.write(output);
     }
 }

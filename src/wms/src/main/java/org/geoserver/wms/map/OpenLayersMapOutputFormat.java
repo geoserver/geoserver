@@ -21,6 +21,9 @@ import java.util.logging.Logger;
 
 import org.geoserver.ows.LocalLayer;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
@@ -145,7 +148,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             map.put("yx", String.valueOf(isWms13FlippedCRS(mapContext.getRequest().getCrs())));
             map.put("maxResolution", new Double(getMaxResolution(mapContext.getAreaOfInterest())));
 
-            String baseUrl = mapContext.getRequest().getBaseUrl();
+            String baseUrl = ResponseUtils.buildURL(mapContext.getRequest().getBaseUrl(), "/", null, URLType.RESOURCE);
             map.put("baseUrl", canonicUrl(baseUrl));
 
             // TODO: replace service path with call to buildURL since it does this

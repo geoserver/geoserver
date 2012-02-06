@@ -1,18 +1,27 @@
 package org.geoserver.wms.map;
 
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
+import org.custommonkey.xmlunit.NamespaceContext;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -161,6 +170,29 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         byte[][] bankData13 = db13.getBankData();
         for (int i = 0; i < bankData11.length; i++) {
             assertTrue(Arrays.equals(bankData11[i], bankData13[i]));
+        }
+    }
+    
+    public void testOpenLayersProxy() throws Exception {
+        NamespaceContext oldContext = XMLUnit.getXpathNamespaceContext();
+        try {
+            Map<String, String> namespaces = new HashMap<String, String>();
+            namespaces.put("xhtml", "http://www.w3.org/1999/xhtml");
+            registerNamespaces(namespaces);
+            XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+            
+            // setup a proxy base url
+            GeoServerInfo global = getGeoServer().getGlobal();
+            global.getSettings().setProxyBaseUrl("http://www.geoserver.org:1234/gs");
+            getGeoServer().save(global);
+            
+            Document dom = getAsDOM("wms?LAYERS=sf:indexed&STYLES=&FORMAT=application/openlayers&SERVICE=WMS&VERSION=1.1.1"
+                    + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150");
+    
+            assertXpathEvaluatesTo("http://www.geoserver.org:1234/gs/openlayers/OpenLayers.js", 
+                    "//xhtml:script[contains(@src, 'OpenLayers.js')]/@src", dom);
+        } finally {
+            XMLUnit.setXpathNamespaceContext(oldContext);
         }
     }
 }

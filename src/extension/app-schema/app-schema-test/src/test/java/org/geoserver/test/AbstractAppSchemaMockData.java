@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
 public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
-
+    
     /**
      * Folder for for test data.
      */
@@ -59,6 +60,24 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     public static final String GSML_SCHEMA_LOCATION_URL = "http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd";
 
     /**
+     * Map of namespace prefix to namespace URI for GML 32 schema.
+     */
+    @SuppressWarnings("serial")
+    protected static final Map<String, String> GML32_NAMESPACES = Collections
+            .unmodifiableMap(new TreeMap<String, String>() {
+                {
+                    put("cgu", "urn:cgi:xmlns:CGI:Utilities:3.0.0");
+                    put("gco", "http://www.isotc211.org/2005/gco");
+                    put("gmd", "http://www.isotc211.org/2005/gmd");
+                    put("gml", "http://www.opengis.net/gml/3.2");
+                    put("gsml", "urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0");
+                    put("swe", "http://www.opengis.net/swe/1.0/gml32");
+                    put("wfs", "http://www.opengis.net/wfs/2.0");
+                    put("xlink", "http://www.w3.org/1999/xlink");
+                }
+            });
+    
+    /**
      * Map of namespace prefix to namespace URI.
      */
     @SuppressWarnings("serial")
@@ -75,7 +94,7 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
                     put("sml", "http://www.opengis.net/sensorML/1.0.1");
                 }
             });
-
+                        
     /**
      * Use FeatureTypeInfo constants for srs handling as values
      */
@@ -144,7 +163,7 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     public AbstractAppSchemaMockData() {
         this(NAMESPACES);
     }
-
+    
     public AbstractAppSchemaMockData(Map<String, String> namespaces) {
         this.namespaces = new LinkedHashMap<String, String>(namespaces);
         // create the mock data directory

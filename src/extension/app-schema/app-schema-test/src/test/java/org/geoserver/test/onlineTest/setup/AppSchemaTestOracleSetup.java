@@ -178,7 +178,10 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     type = Classes.getShortName(desc.getType().getBinding());
                     if (type.equalsIgnoreCase("String")) {
                         type = "NVARCHAR2(250)";
+                    } else if (type.equalsIgnoreCase("Double")) {
+                        type = "NUMBER";
                     }
+                    // etc. assign as required
                 }
                 createParams.add(field + " " + type);
                 j++;

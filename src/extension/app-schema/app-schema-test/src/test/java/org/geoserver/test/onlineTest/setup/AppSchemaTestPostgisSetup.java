@@ -141,6 +141,8 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                     type = Classes.getShortName(desc.getType().getBinding());
                     if (type.equalsIgnoreCase("String")) {
                         type = "TEXT";
+                    } else if (type.equalsIgnoreCase("Double")) {
+                        type = "DOUBLE PRECISION";
                     }
                     field += type;
                     createParams.add(field);

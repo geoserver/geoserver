@@ -273,9 +273,81 @@ Note that the GML encoding rules require that complex types are never the direct
 isMultiple (optional)
 `````````````````````
 
-The ``isMultiple`` element states whether there might be multiple values for this attribute.Because the default value is ``false`` and it is omitted in this case, it is most usually seen as::
+The ``isMultiple`` element states whether there might be multiple values for this attribute, coming from denormalised rows. Because the default value is ``false`` and it is omitted in this case, it is most usually seen as::
 
     <isMultiple>true</isMultiple>
+
+For example, the table below is denormalised with ``NAME`` column having multiple values:
+
+======== ======================== =================================
+ID       NAME                     DESCRIPTION
+======== ======================== =================================
+gu.25678 Yaugher Volcanic Group 1 Olivine basalt, tuff, microgabbro
+gu.25678 Yaugher Volcanic Group 2 Olivine basalt, tuff, microgabbro
+======== ======================== =================================
+
+The configuration file specifies ``isMultiple`` for ``gml:name`` attribute that is mapped to the ``NAME`` column::
+
+    <AttributeMapping>
+        <targetAttribute>gml:name</targetAttribute>                       
+        <sourceExpression>
+            <OCQL>NAME</OCQL>
+	</sourceExpression>					
+	<isMultiple>true</isMultiple>
+	<ClientProperty>
+	    <name>codeSpace</name>
+	    <value>'urn:ietf:rfc:2141'</value>
+	</ClientProperty>
+    </AttributeMapping>
+
+The output produces multiple ``gml:name`` attributes for each feature grouped by the id::
+
+    <gsml:GeologicUnit gml:id="gu.25678">
+        <gml:description>Olivine basalt, tuff, microgabbro</gml:description>
+        <gml:name codeSpace="urn:ietf:rfc:2141">Yaugher Volcanic Group 1</gml:name>
+        <gml:name codeSpace="urn:ietf:rfc:2141">Yaugher Volcanic Group 2</gml:name>
+     ...
+
+isList (optional)
+`````````````````
+
+The ``isList`` element states whether there might be multiple values for this attribute, concatenated as a list. The usage is similar with ``isMultiple``, except the values appear concatenated inside a single node instead of each value encoded in a separate node. Because the default value is ``false`` and it is omitted in this case, it is most usually seen as::
+
+    <isList>true</isList>
+
+For example, the table below has multiple ``POSITION`` for each feature:
+
+===== ========
+ ID   POSITION
+===== ========
+ID1.2  1948-01
+ID1.2  1948-02
+ID1.2  1948-03
+ID1.2  1948-04
+ID1.2  1948-05
+ID1.2  1948-06
+ID1.2  1948-07
+ID1.2  1948-08
+ID1.2  1948-09
+===== ========
+
+The configuration file uses ``isList`` on ``timePositionList`` attribute mapped to ``POSITION`` column::
+
+    <AttributeMapping>
+        <targetAttribute>csml:timePositionList</targetAttribute>
+        <sourceExpression>
+	    <OCQL>POSITION</OCQL>
+        </sourceExpression>
+        <isList>true</isList>
+    </AttributeMapping>
+
+The output produced::
+
+    <csml:pointSeriesDomain>
+        <csml:TimeSeries gml:id="ID2.2">
+            <csml:timePositionList>1949-05 1949-06 1949-07 1949-08 1949-09</csml:timePositionList>
+        </csml:TimeSeries>
+    </csml:pointSeriesDomain>
 
 
 ClientProperty (optional, multivalued)

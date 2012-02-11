@@ -221,12 +221,12 @@
                     // handle the wms 1.3 vs wms 1.1 madness
                     if(map.layers[0].params.VERSION == "1.3.0") {
                         params.version = "1.3.0";
-                        params.j = e.xy.x;
-                        params.i = e.xy.y;
+                        params.j = parseInt(e.xy.x);
+                        params.i = parseInt(e.xy.y);
                     } else {
                         params.version = "1.1.1";
-                        params.x = e.xy.x;
-                        params.y = e.xy.y;
+                        params.x = parseInt(e.xy.x);
+                        params.y = parseInt(e.xy.y);
                     }
                         
                     // merge filters

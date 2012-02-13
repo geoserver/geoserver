@@ -25,7 +25,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -219,31 +218,6 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
     }   
 
     
-
-    /**
-     * Model to wrap and unwrap a {@link NamespaceInfo} to and from a String for the Datastore's
-     * "namespace" parameter
-     * 
-     */
-    private final class NamespaceParamModel extends MapModel {
-        private NamespaceParamModel(IModel model, String expression) {
-            super(model, expression);
-        }
-
-        @Override
-        public Object getObject() {
-            String nsUri = (String) super.getObject();
-            NamespaceInfo namespaceInfo = getCatalog().getNamespaceByURI(nsUri);
-            return namespaceInfo;
-        }
-
-        @Override
-        public void setObject(Object object) {
-            NamespaceInfo namespaceInfo = (NamespaceInfo) object;
-            String nsUri = namespaceInfo.getURI();
-            super.setObject(nsUri);
-        }
-    }
 
     /**
      * Makes sure the file path for shapefiles do start with file:// otherwise

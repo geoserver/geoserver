@@ -344,7 +344,7 @@ The configuration file uses ``isList`` on ``timePositionList`` attribute mapped 
 The output produced::
 
     <csml:pointSeriesDomain>
-        <csml:TimeSeries gml:id="ID2.2">
+        <csml:TimeSeries gml:id="ID1.2">
             <csml:timePositionList>1949-05 1949-06 1949-07 1949-08 1949-09</csml:timePositionList>
         </csml:TimeSeries>
     </csml:pointSeriesDomain>

@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -48,19 +49,19 @@ public class CRSPanel extends FormComponentPanel {
     private static IBehavior READ_ONLY = new AttributeModifier("readonly", true, new Model("readonly"));
 
     /** pop-up window for WKT and SRS list */
-    ModalWindow popupWindow;
+    protected ModalWindow popupWindow;
     
     /** srs/epsg code text field */
-    TextField srsTextField;
+    protected TextField srsTextField;
     
     /** find link */
-    AjaxLink findLink;
+    protected AjaxLink findLink;
     
     /** wkt label */
-    Label wktLabel;
+    protected Label wktLabel;
 
     /** the wkt link that contains the wkt label **/
-    GeoServerAjaxFormLink wktLink;
+    protected GeoServerAjaxFormLink wktLink;
     
     /**
      * Constructs the CRS panel.
@@ -179,7 +180,7 @@ public class CRSPanel extends FormComponentPanel {
         
         super.onBeforeRender();
     }
-
+    
     @Override
     protected void convertInput() {
         String srs = srsTextField.getInput();
@@ -240,7 +241,7 @@ public class CRSPanel extends FormComponentPanel {
     /*
      * Goes from SRS to CRS.
      */
-    CoordinateReferenceSystem fromSRS( String srs ) {
+    protected CoordinateReferenceSystem fromSRS( String srs ) {
         try {
             return CRS.decode( srs );
         } 
@@ -254,7 +255,7 @@ public class CRSPanel extends FormComponentPanel {
      * Builds the srs list panel component.
      */
     @SuppressWarnings("serial")
-    SRSListPanel srsListPanel() {
+    protected SRSListPanel srsListPanel() {
         SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
             
             @Override

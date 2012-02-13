@@ -52,7 +52,7 @@ trait CssDemoConstants {
   mark: symbol(square);
 }"""
 
-  val Translator = new Translator()
+  def Translator = new Translator()
 
   private def styleSheetXML(stylesheet: Seq[Rule]): String = {
     val style = Translator.css2sld(stylesheet)
@@ -104,7 +104,7 @@ with CssDemoConstants
 {
   val datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
   val styledir = datadir.findStyleDir()
-  override val Translator =
+  override def Translator =
     new Translator(Option(styledir).map { _.toURI.toURL })
 
   def findStyleFile(f: String): java.io.File = new java.io.File(styledir, f)

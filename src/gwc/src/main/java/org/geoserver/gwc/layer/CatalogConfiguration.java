@@ -510,4 +510,15 @@ public class CatalogConfiguration implements Configuration {
         // TODO Auto-generated method stub
     }
 
+    // @Override
+    public boolean canSave(TileLayer tl) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    // @Override
+    public void addLayer(TileLayer tl) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
+
 }

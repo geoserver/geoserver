@@ -24,11 +24,14 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class EnvelopePanel extends FormComponentPanel {
 
-    Double minX,minY,maxX,maxY;
-    CoordinateReferenceSystem crs;
-    WebMarkupContainer crsContainer;
-    private CRSPanel crsPanel;
-    boolean crsRequired;
+    protected Double minX,minY,maxX,maxY;
+
+    protected DecimalTextField minXInput, minYInput, maxXInput, maxYInput;
+
+    protected CoordinateReferenceSystem crs;
+    protected WebMarkupContainer crsContainer;
+    protected  CRSPanel crsPanel;
+    protected boolean crsRequired;
     
     public EnvelopePanel(String id ) {
         super(id);
@@ -70,10 +73,10 @@ public class EnvelopePanel extends FormComponentPanel {
     void initComponents() {
         updateFields();
         
-        add( new DecimalTextField( "minX", new PropertyModel(this, "minX")) );
-        add( new DecimalTextField( "minY", new PropertyModel(this, "minY")) );
-        add( new DecimalTextField( "maxX", new PropertyModel(this, "maxX") ));
-        add( new DecimalTextField( "maxY", new PropertyModel(this, "maxY")) );
+        add( minXInput = new DecimalTextField( "minX", new PropertyModel(this, "minX")) );
+        add( minYInput = new DecimalTextField( "minY", new PropertyModel(this, "minY")) );
+        add( maxXInput = new DecimalTextField( "maxX", new PropertyModel(this, "maxX") ));
+        add( maxYInput = new DecimalTextField( "maxY", new PropertyModel(this, "maxY")) );
         crsContainer = new WebMarkupContainer("crsContainer");
         crsContainer.setVisible(false);
         crsPanel = new CRSPanel("crs", new PropertyModel(this, "crs"));

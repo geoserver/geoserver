@@ -150,6 +150,7 @@
 
     <profiles>
         <profile>
+        <!-- Include data ref set tests -->
             <id>app-schema-online-test</id>
             <build>
 		        <testResources>

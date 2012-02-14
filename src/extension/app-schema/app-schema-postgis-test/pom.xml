@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geoserver.extension</groupId>
+		<artifactId>app-schema</artifactId>
+		<version>2.2-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver.extension</groupId>
+	<artifactId>app-schema-postgis-test</artifactId>
+	<name>Application Schema Integration Online Test with Postgis Database</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+			<classifier>tests</classifier>
+		</dependency>
+		<dependency>
+			<!--
+				wfs required to get applicationContext.xml. Without it, code will
+				compile but will not run.
+			-->
+			<groupId>org.geoserver</groupId>
+			<artifactId>wfs</artifactId>
+		</dependency>
+        <dependency>
+            <!--
+                //NC - wms package required for wms support
+            -->
+            <groupId>org.geoserver</groupId>
+            <artifactId>wms</artifactId>
+        </dependency>
+        <dependency>
+            <!-- required for complex feature WFS output (see GML3OutputFormat) -->
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>restconfig</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>restconfig</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-app-schema</artifactId>
+			<version>${gt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-app-schema</artifactId>
+			<version>${gt.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+		<!--
+            maven-eclipse-plugin does not correctly add transitive test dependencies
+            geosciml-2.0 and earthresourceml-1.1 should be included by depending on
+            gt-app-schema tests
+        -->
+		<dependency>
+			<groupId>org.geotools.schemas</groupId>
+			<artifactId>geosciml-2.0</artifactId>
+			<version>2.0.2-4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools.schemas</groupId>
+			<artifactId>earthresourceml-1.1</artifactId>
+			<version>1.1.0-3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools.schemas</groupId>
+			<artifactId>wfs-1.1</artifactId>
+			<version>1.1.2-2</version>
+			<scope>test</scope>
+		</dependency>	
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-sample-data</artifactId>
+			<version>${gt.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-jdbc</artifactId>
+			<version>${gt.version}</version>
+			<type>test-jar</type>			
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools.jdbc</groupId>
+			<artifactId>gt-jdbc-postgis</artifactId>
+			<version>${gt.version}</version>				
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>geosciml-3.0-seegrid</artifactId>
+            <version>3.0.0-1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>wfs-2.0</artifactId>
+            <version>2.0.0-2</version>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>  
+	
+	<build>
+	    <testSourceDirectory>${app-schema-test-dir}/src/test/java</testSourceDirectory>
+	    <plugins>
+		    <plugin>     
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <configuration>	  
+		        <!-- These tests are already run on the parent module-->
+			        <excludes>
+				        <exclude>**/onlineTest/*.java</exclude>
+				        <exclude>**/onlineTest/setup/*Oracle*.java</exclude>
+				    </excludes>
+				    <argLine>-Dapp-schema.joining=true -DtestDatabase=postgis</argLine>
+				</configuration>
+	        </plugin>
+	   </plugins>
+	   <testResources>
+		    <testResource>
+		        <directory>${app-schema-test-dir}/src/test/resources</directory>
+		        <includes>
+			        <include>**/*.properties</include>
+			        <include>**/*.xml</include>
+			        <include>**/*.xsd</include>
+		    	    <include>**/*.sql</include>
+                    <include>**/*.sld</include>
+	            </includes>
+		    </testResource>
+	    </testResources>
+	</build>	
+</project>

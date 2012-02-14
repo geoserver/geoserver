@@ -18,5 +18,20 @@
     <module>app-schema-test</module>
     <module>sample-data-access-test</module>
   </modules>
+  
+  <profiles>
+    <profile>
+	    <id>app-schema-online-test</id>
+	    <modules>
+		    <module>app-schema-oracle-test</module>
+		    <module>app-schema-postgis-test</module>
+	    </modules>
+   </profile>
+ </profiles>
+	 
+ <properties> 
+    <!-- Relative to online test modules -->
+    <app-schema-test-dir>../app-schema-test</app-schema-test-dir>
+</properties> 
 
 </project>

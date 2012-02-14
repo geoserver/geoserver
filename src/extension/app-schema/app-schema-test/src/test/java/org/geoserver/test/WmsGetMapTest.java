@@ -39,18 +39,8 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("outcropcharacter", "styles/outcropcharacter.sld");
         mockData.addStyle("positionalaccuracy", "styles/positionalaccuracy.sld");
-        mockData.addStyle("borehole", "styles/borehole.sld");
         return mockData;
     }
-    
-//    public void testGetMapBorehole() throws Exception
-//    {
-//        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:Borehole&styles=borehole&bbox=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
-//        
-//        BufferedImage imageBuffer = ImageIO.read(is);
-//        
-//        assertNotBlank("app-schema test getmap borehole", imageBuffer, Color.WHITE);                
-//    }
      
     public void testGetMapOutcropCharacter() throws Exception
     {

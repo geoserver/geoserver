@@ -145,11 +145,11 @@
 			    </AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>gml:QuantityList</targetAttribute>	
-					<idExpression><OCQL>strConcat(ID, 'value')</OCQL></idExpression>
+					<idExpression><OCQL>strConcat(ID, 'value')</OCQL></idExpression>											
 					<sourceExpression>
 					    <OCQL>RANGE</OCQL>
-					</sourceExpression>																		
-					<isList>true</isList>						
+					</sourceExpression>												
+					<isList>true</isList>	
 				</AttributeMapping>
 	        </attributeMappings>
 		</FeatureTypeMapping>

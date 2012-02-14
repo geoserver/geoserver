@@ -1,4 +1,4 @@
 AppSchemaDataAccess.xsd in this directory is a copy included to aid manual editing of mapping files. This is not the canonical version of this file: it is merely a copy.
 
 From time-to-time, replace the content of this file with the latest version from the GeoTools app-schema module master copy. This is probably located somewhere like:
-http://svn.osgeo.org/geotools/trunk/modules/unsupported/app-schema/app-schema/src/test/resources/test-data/AppSchemaDataAccess.xsd
+http://svn.osgeo.org/geotools/trunk/modules/extension/app-schema/app-schema/src/test/resources/test-data/AppSchemaDataAccess.xsd

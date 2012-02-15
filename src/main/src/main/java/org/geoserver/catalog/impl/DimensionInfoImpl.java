@@ -21,6 +21,8 @@ public class DimensionInfoImpl implements DimensionInfo {
     boolean enabled;
 
     String attribute;
+    
+    String endAttribute;
 
     DimensionPresentation presentation;
 
@@ -40,6 +42,14 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     public void setAttribute(String attribute) {
         this.attribute = attribute;
+    }
+        
+    public String getEndAttribute() {
+        return this.endAttribute;
+    }
+
+    public void setEndAttribute(String attribute) {
+        this.endAttribute = attribute;
     }
 
     public DimensionPresentation getPresentation() {
@@ -61,8 +71,9 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     @Override
     public String toString() {
-        return "DimensionInfoImpl [attribute=" + attribute + ", enabled=" + enabled
-                + ", presentation=" + presentation + ", resolution=" + resolution + "]";
+        return "DimensionInfoImpl [attribute=" + attribute + ", endAttribute=" + endAttribute
+                + "enabled=" + enabled + ", presentation=" + presentation
+                + ", resolution=" + resolution + "]";
     }
 
     @Override
@@ -70,6 +81,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
+        result = prime * result + ((endAttribute == null) ? 0 : endAttribute.hashCode());
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((presentation == null) ? 0 : presentation.hashCode());
         result = prime * result + ((resolution == null) ? 0 : resolution.hashCode());
@@ -101,6 +113,11 @@ public class DimensionInfoImpl implements DimensionInfo {
             if (other.resolution != null)
                 return false;
         } else if (!resolution.equals(other.resolution))
+            return false;
+        if (endAttribute == null) {
+            if (other.endAttribute != null)
+                return false;
+        } else if (!endAttribute.equals(other.endAttribute))
             return false;
         return true;
     }

@@ -59,14 +59,12 @@ import org.geotools.filter.Filters;
 import org.geotools.filter.SortByImpl;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.Style;
-import org.geotools.util.Converters;
-import org.geotools.util.DateRange;
-import org.geotools.util.NumberRange;
-import org.geotools.util.Version;
+import org.geotools.util.*;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
@@ -1051,6 +1049,45 @@ public class WMS implements ApplicationContextAware {
         dimQuery.setPropertyNames(Arrays.asList(dimension.getAttribute()));
         return source.getFeatures(dimQuery);
     }
+    
+    /**
+     * Build a filter for a single value based on an attribute and optional
+     * endAttribute. The value is either a Range or object that can be used as
+     * a literal (Date,Number).
+     * @param value
+     * @param attribute
+     * @param endAttribute
+     * @return 
+     */
+    Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
+        Filter filter;
+        if (value instanceof Range) {
+            Range range = (Range) value;
+            if (endAttribute == null) {
+                filter = ff.between(attribute, ff.literal(range.getMinValue()),
+                         ff.literal(range.getMaxValue()));
+            } else {
+                // Range intersects valid range of feature
+                // @todo adding another option to dimensionInfo allows contains, versus intersects
+                Literal qlower = ff.literal(range.getMinValue());
+                Literal qupper = ff.literal(range.getMaxValue());
+                Filter lower = ff.between(attribute, qlower, qupper);
+                Filter upper = ff.between(endAttribute, qlower, qupper);
+                return ff.or(lower, upper);
+            }
+        } else {
+            // Single element is equal to
+            if (endAttribute == null) {
+                filter = ff.equal(attribute, ff.literal(value), true);
+            } else {
+                // Single element is contained by valid range of feature
+                Filter lower = ff.greaterOrEqual(ff.literal(value), attribute);
+                Filter upper = ff.lessOrEqual(ff.literal(value), endAttribute);
+                filter = ff.and(lower, upper);
+            }
+        }
+        return filter;
+    }
 
     /**
      * Builds a filter for the current time and elevation, should the layer support them. Only one
@@ -1067,28 +1104,21 @@ public class WMS implements ApplicationContextAware {
         DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         DimensionInfo elevationInfo = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
-
+        
         // handle time support
         Filter result = null;
         if (timeInfo != null && timeInfo.isEnabled() && times != null) {
             final List<Filter> timeFilters = new ArrayList<Filter>();
+            final PropertyName attribute = ff.property(timeInfo.getAttribute());
+            final PropertyName endAttribute = timeInfo.getEndAttribute() == null ? null :
+                ff.property(timeInfo.getEndAttribute());
 
             for (Object datetime : times) {
                 if (datetime == null) {
                     // this is "current"
                     datetime = getCurrentTime(typeInfo);
                 }
-                PropertyName attribute = ff.property(timeInfo.getAttribute());
-                if (datetime instanceof Date) {
-                    // Single element
-                    timeFilters.add(ff.equal(attribute, ff.literal(datetime), true));
-                } else {
-                    // Range
-                    // convert to range and create a correct range filter
-                    final DateRange range = (DateRange) datetime;
-                    timeFilters.add(ff.between(attribute, ff.literal(range.getMinValue()),
-                            ff.literal(range.getMaxValue())));
-                }
+                timeFilters.add(buildDimensionFilter(datetime, attribute, endAttribute));
             }
             final int sizeTime = timeFilters.size();
             if (sizeTime > 1) {
@@ -1101,23 +1131,15 @@ public class WMS implements ApplicationContextAware {
         // handle elevation support
         if (elevationInfo != null && elevationInfo.isEnabled() && elevations != null) {
             final List<Filter> elevationFilters = new ArrayList<Filter>();
-
+            final PropertyName attribute = ff.property(elevationInfo.getAttribute());
+            final PropertyName endAttribute = elevationInfo.getEndAttribute() == null ? null :
+                ff.property(elevationInfo.getEndAttribute());
             for (Object elevation : elevations) {
                 if (elevation == null) {
                     // this is "current"
                     elevation = getDefaultElevation(typeInfo);
                 }
-                PropertyName attribute = ff.property(elevationInfo.getAttribute());
-                if (elevation instanceof Double) {
-                    // Single element
-                    elevationFilters.add(ff.equal(attribute, ff.literal(elevation), true));
-                } else {
-                    // Range
-                    // convert to range and create a correct range filter
-                    final NumberRange range = (NumberRange) elevation;
-                    elevationFilters.add(ff.between(attribute, ff.literal(range.getMinValue()),
-                            ff.literal(range.getMaxValue())));
-                }
+                elevationFilters.add(buildDimensionFilter(elevation, attribute, endAttribute));
             }
             final int size = elevationFilters.size();
             Filter summary = null;

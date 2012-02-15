@@ -48,6 +48,8 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     private CheckBox enabled;
 
     private DropDownChoice<String> attribute;
+    
+    private DropDownChoice<String> endAttribute;
 
     private DropDownChoice<DimensionPresentation> presentation;
 
@@ -100,6 +102,14 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
 		attribute.setOutputMarkupId(true);
 		attribute.setRequired(true);
 		attContainer.add(attribute);
+        
+        List<String> endAttributes = new ArrayList<String>(attributes);
+        endAttributes.add(0, "-");
+        endAttribute = new DropDownChoice<String>("endAttribute", new PropertyModel<String>(model,
+                "endAttribute"), endAttributes);
+        endAttribute.setOutputMarkupId(true);
+        endAttribute.setRequired(false);
+        attContainer.add(endAttribute);
 
 		// do we show it?
         if(resource instanceof FeatureTypeInfo) { 
@@ -195,7 +205,13 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             DimensionInfoImpl info = new DimensionInfoImpl();
             info.setEnabled(true);
             attribute.processInput();
+            endAttribute.processInput();
             info.setAttribute(attribute.getModelObject());
+            String endAttributeValue = endAttribute.getModelObject();
+            if ("-".equals(endAttributeValue)) {
+                endAttributeValue = null;
+            }
+            info.setEndAttribute(endAttributeValue);
             info.setPresentation(presentation.getModelObject());
             if (info.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
                 if(time) {

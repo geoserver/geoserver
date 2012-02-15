@@ -33,6 +33,15 @@ public interface DimensionInfo extends Serializable {
     public String getAttribute();
 
     public void setAttribute(String attribute);
+    
+    /**
+     * The attribute on which the end of the dimension is based. Used only for vector data.
+     * This attribute is optional.
+     * @return
+     */
+    public String getEndAttribute();
+    
+    public void setEndAttribute(String attribute);
 
     /**
      * The way the dimension is going to be presented in the capabilities documents

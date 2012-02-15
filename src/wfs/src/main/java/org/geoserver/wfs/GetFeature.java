@@ -974,12 +974,7 @@ public class GetFeature {
         // check for sql view parameters
         if(viewParams != null) {
             hints.put(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams);
-        }
-        
-        Map metadata = request.getMetadata();
-        if(metadata != null && metadata.containsKey(SQL_VIEW_PARAMS)) {
-            hints.put(Hints.VIRTUAL_TABLE_PARAMETERS, metadata.get(SQL_VIEW_PARAMS));
-        }
+        } 
         
         //currently only used by app-schema, produce mandatory properties
         hints.put(org.geotools.data.Query.INCLUDE_MANDATORY_PROPS, true);

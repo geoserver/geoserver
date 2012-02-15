@@ -320,10 +320,6 @@ For example, the table below has multiple ``POSITION`` for each feature:
 ===== ========
  ID   POSITION
 ===== ========
-ID1.2  1948-01
-ID1.2  1948-02
-ID1.2  1948-03
-ID1.2  1948-04
 ID1.2  1948-05
 ID1.2  1948-06
 ID1.2  1948-07

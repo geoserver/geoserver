@@ -8,9 +8,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -136,6 +139,37 @@ public class TimeKvpParserTest extends TestCase {
         assertEquals(format.parse("2007-01-29T12Z"),(Date) l.get(4));
         
         
+    }
+    
+    public void testNegativeYearCompliance() throws Exception {
+        TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+        
+        // base assertion - 0001 is year 1
+        Date date = (Date) ((List)timeKvpParser.parse("0001-06-01")).get(0);
+        cal.setTime(date);
+        assertEquals(1, cal.get(Calendar.YEAR));
+        assertEquals(GregorianCalendar.AD, cal.get(Calendar.ERA));
+        
+        date = (Date) ((List)timeKvpParser.parse("0000-06-01")).get(0);
+        cal.setTime(date);
+        // calendar calls it year 1, ISO spec means it's year 0
+        // but we're just parsing here...
+        assertEquals(1, cal.get(Calendar.YEAR));
+        assertEquals(GregorianCalendar.BC, cal.get(Calendar.ERA));
+        
+        // so, the next year should be 2
+        date = (Date) ((List)timeKvpParser.parse("-0001-06-01")).get(0);
+        cal.setTime(date);
+        assertEquals(2, cal.get(Calendar.YEAR));
+        assertEquals(GregorianCalendar.BC, cal.get(Calendar.ERA));
+        
+        // now, big negative year compliance (see the spec, appendix D 2.2, pp 57-58)
+        date = (Date) ((List)timeKvpParser.parse("-18000-06-01")).get(0);
+        cal.setTime(date);
+        assertEquals(18001, cal.get(Calendar.YEAR));
+        assertEquals(GregorianCalendar.BC, cal.get(Calendar.ERA));
     }
 }
 

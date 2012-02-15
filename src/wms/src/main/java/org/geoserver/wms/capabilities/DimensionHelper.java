@@ -6,10 +6,9 @@ package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -265,21 +264,20 @@ abstract class DimensionHelper {
         String timeMetadata = null;
 
         final StringBuilder buff = new StringBuilder();
-        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final ISO8601Formatter df = new ISO8601Formatter();
 
         if (DimensionPresentation.LIST == dimension.getPresentation()) {
             for (Date date : values) {
-                buff.append(df.format(date)).append("Z");// ZULU
+                buff.append(df.format(date));
                 buff.append(",");
             }
             timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
                     .replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
-            buff.append(df.format(((TreeSet<Date>) values).first())).append("Z");// ZULU
+            buff.append(df.format(((TreeSet<Date>) values).first()));
             buff.append("/");
 
-            buff.append(df.format(((TreeSet<Date>) values).last())).append("Z");// ZULU
+            buff.append(df.format(((TreeSet<Date>) values).last()));
             buff.append("/");
 
             long durationInMilliSeconds = ((TreeSet<Date>) values).last().getTime()
@@ -288,10 +286,10 @@ abstract class DimensionHelper {
 
             timeMetadata = buff.toString();
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(df.format(((TreeSet<Date>) values).first())).append("Z");// ZULU
+            buff.append(df.format(((TreeSet<Date>) values).first()));
             buff.append("/");
 
-            buff.append(df.format(((TreeSet<Date>) values).last())).append("Z");// ZULU
+            buff.append(df.format(((TreeSet<Date>) values).last()));
             buff.append("/");
 
             final BigDecimal resolution = dimension.getResolution();
@@ -386,4 +384,62 @@ abstract class DimensionHelper {
         }
     }
 
+    static class ISO8601Formatter {
+
+        private final GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        
+        private void pad(StringBuilder buf, int value, int amt) {
+            if (amt == 2 && value < 10) {
+                buf.append('0');
+            } else if (amt == 4 && value < 1000) {
+                if (value >= 100) {
+                    buf.append("0");
+                } else if (value >= 10) {
+                    buf.append("00");
+                } else {
+                    buf.append("000");
+                }
+            } else if (amt == 3 && value < 100) {
+                if (value >= 10) {
+                    buf.append('0');
+                } else {
+                    buf.append("00");
+                }
+            }
+            buf.append(value);
+        }
+        
+        public String format(Date date) {
+            return format(date, new StringBuilder()).toString();
+        }
+
+        public StringBuilder format(Date date, StringBuilder buf) {
+            cal.setTime(date);
+            int year = cal.get(Calendar.YEAR);
+            if (cal.get(Calendar.ERA) == GregorianCalendar.BC) {
+                if (year > 1) {
+                    buf.append('-');
+                }
+                year = year - 1;
+            }
+            pad(buf, year, 4);
+            buf.append('-');
+            pad(buf, cal.get(Calendar.MONTH) + 1, 2);
+            buf.append('-');
+            pad(buf, cal.get(Calendar.DAY_OF_MONTH), 2);
+            buf.append('T');
+            pad(buf, cal.get(Calendar.HOUR_OF_DAY), 2);
+            buf.append(':');
+            pad(buf, cal.get(Calendar.MINUTE), 2);
+            buf.append(':');
+            pad(buf, cal.get(Calendar.SECOND), 2);
+            buf.append('.');
+            pad(buf, cal.get(Calendar.MILLISECOND), 3);
+            buf.append('Z');
+            
+            return buf;
+        }
+        
+        
+    }
 }

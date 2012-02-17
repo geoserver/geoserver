@@ -166,6 +166,13 @@
 			        </testResource>
 		        </testResources>
 	        </build>
+	        <dependencies>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>ojdbc14</artifactId> 
+                    <version>10.2.0.3.0</version>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
         <!-- Default profile, exclude online tests -->
@@ -203,6 +210,4 @@
 	        </build>
 	    </profile>
 	</profiles>
-	
-
 </project>

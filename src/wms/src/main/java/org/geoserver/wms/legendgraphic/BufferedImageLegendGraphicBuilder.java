@@ -146,14 +146,33 @@ public class BufferedImageLegendGraphicBuilder {
      */
     public BufferedImage buildLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
-
+        // the style we have to build a legend for
         Style gt2Style = request.getStyle();
         if (gt2Style == null) {
             throw new NullPointerException("request.getStyle()");
         }
+        
+        // width and height, we might have to rescale those in case of DPI usage
+        int w = request.getWidth();
+        int h = request.getHeight();
 
+        // apply dpi rescale
+        double dpi = RendererUtilities.getDpi(request.getLegendOptions());
+        double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
+        if(dpi != standardDpi) {
+            double scaleFactor = dpi / standardDpi;
+            w = (int) Math.round(w * scaleFactor);
+            h = (int) Math.round(h * scaleFactor);
+            RescaleStyleVisitor dpiVisitor = new RescaleStyleVisitor(scaleFactor);
+            dpiVisitor.visit(gt2Style);
+            gt2Style = (Style) dpiVisitor.getCopy();
+        }
+        // apply UOM rescaling if we have a scale
         if (request.getScale() > 0) {
-            gt2Style = applyUnitRescale(gt2Style, request);
+            double pixelsPerMeters = RendererUtilities.calculatePixelsPerMeterRatio(request.getScale(), request.getLegendOptions());
+            UomRescaleStyleVisitor rescaleVisitor = new UomRescaleStyleVisitor(pixelsPerMeters);
+            rescaleVisitor.visit(gt2Style);
+            gt2Style = (Style) rescaleVisitor.getCopy();
         }
 
         final FeatureType layer = request.getLayer();
@@ -196,8 +215,6 @@ public class BufferedImageLegendGraphicBuilder {
          * process is done and then painted on a "stack" like legend.
          */
         final List<RenderedImage> legendsStack = new ArrayList<RenderedImage>(ruleCount);
-        final int w = request.getWidth();
-        final int h = request.getHeight();
 
         final SLDStyleFactory styleFactory = new SLDStyleFactory();
         final Color bgColor = LegendUtils.getBackgroundColor(request);
@@ -239,31 +256,6 @@ public class BufferedImageLegendGraphicBuilder {
         // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
         BufferedImage image = mergeLegends(legendsStack, applicableRules, request);
         return image;
-    }
-
-    /**
-     * Applies Unit Of Measure rescaling against all symbolizers, the result will be symbolizers
-     * that operate purely in pixels
-     * @param sld
-     */
-    private Style applyUnitRescale(Style sld, GetLegendGraphicRequest request) {
-        // apply UOM rescaling
-        double pixelsPerMeters = RendererUtilities.calculatePixelsPerMeterRatio(request.getScale(), request.getLegendOptions());
-        UomRescaleStyleVisitor rescaleVisitor = new UomRescaleStyleVisitor(pixelsPerMeters);
-        rescaleVisitor.visit(sld);
-        Style newSld = (Style) rescaleVisitor.getCopy();
-
-        // apply dpi rescale
-        double dpi = RendererUtilities.getDpi(request.getLegendOptions());
-        double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
-        if(dpi != standardDpi) {
-            double scaleFactor = dpi / standardDpi;
-            RescaleStyleVisitor dpiVisitor = new RescaleStyleVisitor(scaleFactor);
-            dpiVisitor.visit(sld);
-            newSld = (Style) dpiVisitor.getCopy();
-        }
-
-        return newSld;
     }
 
     /**

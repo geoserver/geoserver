@@ -250,16 +250,18 @@ public class LegendUtils {
 		final Map legendOptions = req.getLegendOptions();
 		if(legendOptions==null)
 			return DEFAULT_BG_COLOR;
-		final String color = (String) legendOptions.get("bgColor");
-		if (color == null) {
+		Object clr = legendOptions.get("bgColor");
+		if(clr instanceof Color) {
+		    return (Color) clr;
+		} else if (clr == null) {
 			// return the default
 			return DEFAULT_BG_COLOR;
 		}
 
 		try {
-			return color(color);
+			return color((String) clr);
 		} catch (NumberFormatException e) {
-			LOGGER.warning("Could not decode background color: " + color
+			LOGGER.warning("Could not decode background color: " + clr
 					+ ", default to " + DEFAULT_BG_COLOR.toString());
 			return DEFAULT_BG_COLOR;
 		}
@@ -307,7 +309,8 @@ public class LegendUtils {
 	}
 
 	/**
-	 * Tries to decode the provided {@link String} into an HEX color definition.
+	 * Tries to decode the provided {@link String} into an HEX color definition in RRGGBB, 0xRRGGBB or
+	 * #RRGGBB format
 	 * 
 	 * <p>
 	 * In case the {@link String} is not correct a {@link NumberFormatException} will be thrown.
@@ -316,13 +319,13 @@ public class LegendUtils {
 	 * @return a {@link Color} representing the provided {@link String}.
 	 * @throws NumberFormatException in case the string is badly formatted.
 	 */
-	public static Color color(final String hex) {
+	public static Color color(String hex) {
 		ensureNotNull(hex,"hex value");
+		if(hex.startsWith("0x")) {
+		    hex = hex.substring(2);
+		}
 		if (!hex.startsWith("#")) {
-			final String hex_ = "#" + hex;
-			return Color.decode(hex_);
-
-			
+			hex = "#" + hex;
 		}
 		return Color.decode(hex);
 	}

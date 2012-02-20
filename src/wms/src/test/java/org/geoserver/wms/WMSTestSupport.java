@@ -434,6 +434,21 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
      * @param color
      */
     protected void assertPixel(BufferedImage image, int i, int j, Color color) {
+        Color actual = getPixelColor(image, i, j);
+        
+
+        assertEquals(color, actual);
+    }
+
+    /**
+     * Gets a specific pixel color from the specified buffered image
+     * @param image
+     * @param i
+     * @param j
+     * @param color
+     * @return
+     */
+    protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();
         Raster raster = image.getRaster();
         Object pixel = raster.getDataElements(i, j, null);
@@ -442,10 +457,9 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
         if(cm.hasAlpha()) {
             actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), cm.getAlpha(pixel));
         } else {
-            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), color.getAlpha());
+            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), 255);
         }
-
-        assertEquals(color, actual);
+        return actual;
     }
 
 }

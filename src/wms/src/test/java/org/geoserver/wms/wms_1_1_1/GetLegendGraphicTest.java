@@ -13,7 +13,6 @@ import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
-import org.geotools.renderedimage.viewer.RenderedImageBrowser;
 import org.geotools.util.Converters;
 
 public class GetLegendGraphicTest extends WMSTestSupport {
@@ -112,8 +111,6 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                 + "&format=image/png&width=20&height=20&scale=1000000";
         BufferedImage image = getAsImage(base, "image/png");
 
-        RenderedImageBrowser.showChain(image);
-        
         assertPixel(image, 10, 10, Color.BLUE);
         assertPixel(image, 5, 10, Color.WHITE);
         assertPixel(image, 1, 10, Color.WHITE);
@@ -139,8 +136,6 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                 + "&format=image/png&width=20&height=20&scale=1000000&&legend_options=dpi:180";
         BufferedImage image = getAsImage(base, "image/png");
         
-        RenderedImageBrowser.showChain(image);
-
         assertPixel(image, 30, 10, Color.BLUE);
         assertPixel(image, 20, 20, Color.BLUE);
         assertPixel(image, 10, 30, Color.BLUE);

@@ -48,6 +48,12 @@ To run online tests, enable the profile::
 This profile enables the data reference set tests and offline tests to run online. Data reference set tests are online tests based on data and use cases from GeoScience Victoria. Each is explicit for a database type (Oracle and Postgis) and has a copy to run with joining enabled. 
 
 The offline tests are configured to run online with joining through separate modules for each database: app-schema-oracle-test and app-schema-postgis-test. These modules are placeholders for pom.xml files containing database specific parameters. This makes it easy to identify when a test fails with a particular database when running from Maven/buildbot. 
+
+Memory requirements
+```````````````````
+
+The online tests require more memory than usual, so specifying the usual -Dtest.maxHeapSize=256m is not enough. Specify --Dtest.maxHeapSize=1024m instead.
+
 When the build is successful, you would see this in the "Reactor Summary"::
 
     [INFO] Application Schema Integration Online Test with Oracle Database  SUCCESS  [5:52.980s]

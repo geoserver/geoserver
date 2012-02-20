@@ -183,6 +183,14 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
             conn.close();
         }
     }
+    
+    public void run(String input, boolean replaceNewLine) throws Exception {
+        if (replaceNewLine) {
+            run(input);
+        } else {
+            super.run(input);
+        }
+    }
 
     @Override
     public void run(String input) throws Exception {

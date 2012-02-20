@@ -246,6 +246,6 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
     @Override
     protected void runSqlInsertScript() throws Exception {
         System.out.println(sql);
-        this.run(sql);
+        this.run(sql, false);
     }
 }

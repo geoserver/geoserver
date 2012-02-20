@@ -122,6 +122,12 @@
 			<version>${gt.version}</version>				
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.geotools.jdbc</groupId>
+			<artifactId>gt-jdbc-oracle</artifactId>
+			<version>${gt.version}</version>				
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.geotools.schemas</groupId>
             <artifactId>geosciml-3.0-seegrid</artifactId>
@@ -146,7 +152,6 @@
 		        <!-- These tests are already run on the parent module-->
 			        <excludes>
 				        <exclude>**/onlineTest/*.java</exclude>
-				        <exclude>**/onlineTest/setup/*Oracle*.java</exclude>
 				    </excludes>
 				    <argLine>-Dapp-schema.joining=true -DtestDatabase=postgis</argLine>
 				</configuration>

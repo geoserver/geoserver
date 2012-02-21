@@ -67,15 +67,17 @@ There is no need to import the online test modules as they are empty and you can
 To run offline tests (in app-schema-test/src/test/java/org/geoserver/test) with a test database, 
 enable joining and specify the database. Add these parameters in VM Arguments for postgis::
 
-    -Dapp-schema.joining=true -DtestDatabase=postgis
+    -Dapp-schema.joining=true -DtestDatabase=postgis -Xmx512m 
 
 Similarly, to test with oracle::
 
-    -Dapp-schema.joining=true -DtestDatabase=oracle
+    -Dapp-schema.joining=true -DtestDatabase=oracle -Xmx512m 
 
 Additionally for Oracle, you also need to add ojdbc14.jar in the test Classpath. 
 
-You do not need to specify these VM Arguments for running data reference tests (in app-schema-test/src/test/java/org/geoserver/test/onlineTest). However, you would still need to specify the Oracle JDBC driver in the Classpath for Oracle specific tests. 
+.. note:: Please note that you should only run the tests in org.geoserver.test package with the above parameters, since the data reference tests in org.geoserver.test.onlineTest package contain non-joining tests which would fail.   
+
+You do not need to specify these VM Arguments for running data reference tests (in app-schema-test/src/test/java/org/geoserver/test/onlineTest). However, you would still need to specify the Oracle JDBC driver in the Classpath for Oracle specific tests. Data reference tests package also requires 768m memory to run from JUnit. 
 
 Adding new tests
 ----------------

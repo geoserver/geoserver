@@ -67,11 +67,11 @@ There is no need to import the online test modules as they are empty and you can
 To run offline tests (in app-schema-test/src/test/java/org/geoserver/test) with a test database, 
 enable joining and specify the database. Add these parameters in VM Arguments for postgis::
 
-    -Dapp-schema.joining=true -DtestDatabase=postgis -Xmx512m 
+    -Dapp-schema.joining=true -DtestDatabase=postgis -Xmx256m 
 
 Similarly, to test with oracle::
 
-    -Dapp-schema.joining=true -DtestDatabase=oracle -Xmx512m 
+    -Dapp-schema.joining=true -DtestDatabase=oracle -Xmx256m 
 
 Additionally for Oracle, you also need to add ojdbc14.jar in the test Classpath. 
 

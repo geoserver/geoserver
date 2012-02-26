@@ -23,7 +23,7 @@ Total OWS request count
 The global number of OWS requests executing in parallel can be specified with::
 
    ows.global=<count>
-   
+
 Every request in excess will be queued and executed when other requests complete leaving some free execution slot.
 
 Per request control
@@ -47,23 +47,42 @@ A few examples::
   ows.wms.getmap=8
   # don't allow more than 2 WFS GetFeature requests with Excel output format
   ows.wfs.getfeature.application/msexcel=2
-  
+
 Per user control
 ................
 
-This avoid a single user to make too many requests in parallel::
-  
+There are two mechanisms to identify user requests. The first one is cookie based, so it will work fine for browsers but not as much for other kinds of clients. The second one is ip based, which works for any type of client but that can limit all the users sitting behind the same router
+
+This avoids a single user (as identified by a cookie) to make too many requests in parallel::
+
   user=<count>
-  
-Where ``<count>`` is the maximum number of parallel requests a single user can execute in parallel. The user tracking mechanism is cookie based, so it will work fine for browsers but not as much for other kinds of clients. An IP based mechanism is not provided at the time, but it would have its own fallacies as well, as it would limit all the users sitting behind a single router to ``<count>`` requests (imagine the effect on a big public administration).
+
+Where ``<count>`` is the maximum number of requests a single user can execute in parallel.
+
+
+The following avoids a single ip address from making too many requests in parallel::
+
+  ip=<count>
+
+Where ``<count>`` is the maximum number of requests a single ip address can execute in parallel.
+
+It is also possible to make this a bit more specific and throttle a single ip address instead by using the following::
+
+  ip.<ip_addr>=<count>
+
+Where ``<count>`` is the maximum number of requests the ip speficied in ``<ip_addr>`` will execute in parallel.
+
+To reject requests from a list of ip addresses::
+
+  ip.blacklist=<ip_addr1>,<ip_addr2>,...
 
 Timeout
 .......
 
 A request timeout is specified with the following syntax::
- 
+
    timeout=<seconds>
-   
+
 where ``<seconds>`` is the number of seconds a request can stay queued waiting for execution. If the request does not enter execution before the timeout expires it will be rejected.
 
 A complete example
@@ -71,18 +90,18 @@ A complete example
 
 Assuming the server we want to protect has 4 cores a sample configuration could be::
 
-  # if a request waits in queue for more than 60 seconds it's not worth executing, 
+  # if a request waits in queue for more than 60 seconds it's not worth executing,
   # the client will  likely have given up by then
   timeout=60
   # don't allow the execution of more than 100 requests total in parallel
   ows.global=100
-  # don't allow more than 10 GetMap in parallel 
+  # don't allow more than 10 GetMap in parallel
   ows.wms.getmap=10
   # don't allow more than 4 outputs with Excel output as it's memory bound
   ows.wfs.getfeature.application/msexcel=4
   # don't allow a single user to perform more than 6 requests in parallel
   # (6 being the Firefox default concurrency level at the time of writing)
   user=6
-  
 
-  
+
+

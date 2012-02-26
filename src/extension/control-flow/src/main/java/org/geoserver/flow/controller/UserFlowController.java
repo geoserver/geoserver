@@ -1,10 +1,6 @@
 package org.geoserver.flow.controller;
 
 import java.rmi.server.UID;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +8,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 
 import org.geoserver.flow.ControlFlowCallback;
-import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
@@ -25,26 +20,16 @@ import org.geotools.util.logging.Logging;
  * client is no more working actively against the server and the queue can thus be removed.
  * 
  * @author Andrea Aime - OpenGeo
- * 
+ * @author Juan Marin, OpenGeo
  */
-public class UserFlowController implements FlowController {
+public class UserFlowController extends QueueController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
     static String COOKIE_NAME = "GS_FLOW_CONTROL";
 
     static String COOKIE_PREFIX = "GS_CFLOW_";
 
-    /**
-     * Thread local holding the current request queue id TODO: consider having a user map in
-     * {@link Request} instead
-     */
-    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
-
-    /**
-     * The size of each queue
-     */
-    int queueSize;
-
+    
     /**
      * Last time we've performed a queue cleanup
      */
@@ -60,10 +45,7 @@ public class UserFlowController implements FlowController {
      */
     int maxAge = 10000;
 
-    /**
-     * The per user queue collection
-     */
-    Map<String, TimedBlockingQueue> queues = new ConcurrentHashMap<String, TimedBlockingQueue>();
+    
 
     /**
      * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
@@ -90,18 +72,6 @@ public class UserFlowController implements FlowController {
         this.queueSize = queueSize;
         this.maxQueues = maxQueues;
         this.maxAge = maxAge;
-    }
-
-    public int getPriority() {
-        return queueSize;
-    }
-
-    public void requestComplete(Request request) {
-        String queueId = QUEUE_ID.get();
-        QUEUE_ID.remove();
-        BlockingQueue<Request> queue = queues.get(queueId);
-        if (queue != null)
-            queue.remove(request);
     }
 
     public boolean requestIncoming(Request request, long timeout) {
@@ -175,25 +145,5 @@ public class UserFlowController implements FlowController {
         return retval;
     }
 
-    @SuppressWarnings("serial")
-    static class TimedBlockingQueue extends ArrayBlockingQueue<Request> {
-        long lastModified;
-
-        public TimedBlockingQueue(int capacity, boolean fair) {
-            super(capacity, fair);
-        }
-
-        @Override
-        public void put(Request o) throws InterruptedException {
-            super.put(o);
-            lastModified = System.currentTimeMillis();
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            lastModified = System.currentTimeMillis();
-            return super.remove(o);
-        }
-
-    }
+    
 }

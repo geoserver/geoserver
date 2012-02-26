@@ -11,31 +11,39 @@ import org.geoserver.flow.ControllerPriorityComparator;
 import org.geoserver.flow.FlowController;
 import org.geoserver.flow.controller.BasicOWSController;
 import org.geoserver.flow.controller.GlobalFlowController;
+import org.geoserver.flow.controller.IpFlowController;
+import org.geoserver.flow.controller.SingleIpFlowController;
 import org.geoserver.flow.controller.UserFlowController;
 import org.geoserver.security.PropertyFileWatcher;
 
 public class DefaultControlFlowConfigurationTest extends TestCase {
 
-    
     public void testParsing() throws Exception {
         Properties p = new Properties();
         p.put("timeout", "10");
         p.put("ows.global", "100");
         p.put("ows.wms.getmap", "8");
         p.put("user", "6");
-        
-        DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(new FixedWatcher(p));
+        p.put("ip", "12");
+        p.put("ip.192.168.1.8", "14");
+        p.put("ip.192.168.1.10", "15");
+
+        DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(
+                new FixedWatcher(p));
         assertTrue(configurator.isStale());
         List<FlowController> controllers = configurator.buildFlowControllers();
         Collections.sort(controllers, new ControllerPriorityComparator());
         assertFalse(configurator.isStale());
         assertEquals(10 * 1000, configurator.getTimeout());
-        
-        assertEquals(3, controllers.size());
+
+        assertEquals(6, controllers.size());
         assertTrue(controllers.get(0) instanceof UserFlowController);
         assertTrue(controllers.get(1) instanceof BasicOWSController);
-        assertTrue(controllers.get(2) instanceof GlobalFlowController);
-        
+        assertTrue(controllers.get(2) instanceof IpFlowController);
+        assertTrue(controllers.get(3) instanceof SingleIpFlowController);
+        assertTrue(controllers.get(4) instanceof SingleIpFlowController);
+        assertTrue(controllers.get(5) instanceof GlobalFlowController);
+
         UserFlowController uc = (UserFlowController) controllers.get(0);
         assertEquals(6, uc.getPriority());
         BasicOWSController oc = (BasicOWSController) controllers.get(1);
@@ -43,30 +51,34 @@ public class DefaultControlFlowConfigurationTest extends TestCase {
         assertEquals("wms", oc.getService());
         assertEquals("getmap", oc.getMethod());
         assertNull(oc.getOutputFormat());
-        GlobalFlowController gc = (GlobalFlowController) controllers.get(2);
+        GlobalFlowController gc = (GlobalFlowController) controllers.get(5);
         assertEquals(100, gc.getPriority());
+        IpFlowController ipFc = (IpFlowController) controllers.get(2);
+        assertEquals(12, ipFc.getPriority());
+        SingleIpFlowController ipSc = (SingleIpFlowController) controllers.get(3);
+        assertEquals(14, ipSc.getPriority());
     }
-    
-    
+
     static class FixedWatcher extends PropertyFileWatcher {
         boolean stale = true;
+
         Properties properties;
 
         public FixedWatcher(Properties properties) {
             super(null);
             this.properties = properties;
         }
-        
+
         @Override
         public boolean isStale() {
-            if(stale) {
+            if (stale) {
                 stale = false;
                 return true;
             } else {
                 return false;
             }
         }
-        
+
         @Override
         public Properties getProperties() throws IOException {
             return properties;

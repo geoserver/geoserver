@@ -41,7 +41,8 @@ public class FlowControllerTestingThread extends Thread {
             if(processingDelay > 0)
                 sleep(processingDelay);
         } catch(InterruptedException e) {
-            
+            System.out.println(e.getLocalizedMessage());
+            Thread.currentThread().interrupt();
         }
         
         try {

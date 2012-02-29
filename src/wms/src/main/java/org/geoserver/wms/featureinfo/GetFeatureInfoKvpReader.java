@@ -67,6 +67,22 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             throw new ServiceException("No QUERY_LAYERS has been requested, or no "
                     + "queriable layer in the request anyways");
         }
+        
+        if(kvp.containsKey("propertyName")) {
+            List<List<String>> propertyNames = (List<List<String>>) kvp.get("propertyName");
+            if(propertyNames.size() == 1 && request.getQueryLayers().size() > 1) {
+                // assume we asked the same list for all layers
+                while(propertyNames.size() < request.getQueryLayers().size()) {
+                    propertyNames.add(propertyNames.get(0));
+                }
+            }
+            if(propertyNames.size() != request.getQueryLayers().size()) {
+                throw new ServiceException("Mismatch between the property name set count " 
+                        + propertyNames.size() + " and the query layers count " + request.getQueryLayers().size(),
+                        "InvalidParameter", "propertyName");
+            }
+            request.setPropertyNames(propertyNames);
+        }
 
         GetMapRequest getMapPart = new GetMapRequest();
         try {

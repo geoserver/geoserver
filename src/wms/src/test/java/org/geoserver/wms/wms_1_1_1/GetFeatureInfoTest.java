@@ -8,17 +8,23 @@ import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.util.logging.Level;
 
-import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
+
+import com.sun.org.apache.bcel.internal.generic.IXOR;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
     
@@ -48,6 +54,22 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         wfsInfo.setFeatureBounding(true);
         getGeoServer().save(wfsInfo);
+        
+        // add a wms store too, if possible
+        if (RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
+            // setup the wms store, resource and layer
+            CatalogBuilder cb = new CatalogBuilder(getCatalog());
+            WMSStoreInfo wms = cb.buildWMSStore("demo");
+            wms.setCapabilitiesURL(RemoteOWSTestSupport.WMS_SERVER_URL
+                    + "service=WMS&request=GetCapabilities");
+            getCatalog().save(wms);
+            cb.setStore(wms);
+            WMSLayerInfo states = cb.buildWMSLayer("topp:states");
+            states.setName("rstates");
+            getCatalog().add(states);
+            LayerInfo layer = cb.buildLayer(states);
+            getCatalog().add(layer);
+        }
     }
 
     @Override
@@ -99,6 +121,29 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         //System.out.println(result);
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
+    }
+    
+    /**
+     * Tests property selection 
+     * expected polygon
+     * 
+     * @throws Exception
+     */
+    public void testSelectPropertiesVector() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10&propertyName=NAME,FID";
+        String result = getAsString(request);
+        System.out.println(result);
+        assertNotNull(result);
+        int idxGeom = result.indexOf("the_geom");
+        int idxFid = result.indexOf("FID");
+        int idxName = result.indexOf("NAME");
+        assertEquals(-1, idxGeom); // geometry filtered out
+        assertTrue(idxFid > 0); 
+        assertTrue(idxName > 0);
+        assertTrue(idxName < idxFid); // properties got reordered as expected
     }
     
     /**
@@ -234,12 +279,67 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
                 "&info_format=text/html&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10&info";
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
         String result = getAsString(request);
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
         // GEOS-2603 GetFeatureInfo returns html tables without css style if more than one layer is selected
         assertTrue(result.indexOf("<style type=\"text/css\">") > 0);
+    }
+    
+    /**
+     * Tests a GetFeatureInfo again works, and that the result contains the
+     * expected polygon
+     * 
+     * @throws Exception
+     */
+    public void testSelectPropertiesTwoVectorLayers() throws Exception {
+        String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10&buffer=10" 
+                + "&feature_count=2&propertyName=(FID)(NAME)";
+        String result = getAsString(request);
+        assertNotNull(result);
+        int idxGeom = result.indexOf("the_geom");
+        int idxLakes= result.indexOf("Lakes");
+        int idxFid = result.indexOf("FID");
+        int idxName = result.indexOf("NAME");
+        assertEquals(-1, idxGeom); // geometry filtered out
+        assertTrue(idxFid > 0); 
+        assertTrue(idxName > 0);
+        assertTrue(idxLakes > 0);
+        assertTrue(idxFid < idxLakes); // fid only for the first features
+        assertTrue(idxName > idxLakes); // name only for the second features
+    }
+    
+    /**
+     * Tests a GetFeatureInfo again works, and that the result contains the
+     * expected polygon
+     * 
+     * @throws Exception
+     */
+    public void testSelectPropertiesTwoVectorLayersOneList() throws Exception {
+        String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10&buffer=10" 
+                + "&feature_count=2&propertyName=NAME";
+        String result = getAsString(request);
+        // System.out.println(result);
+        assertNotNull(result);
+        int idxGeom = result.indexOf("the_geom");
+        int idxLakes= result.indexOf("Lakes");
+        int idxName1 = result.indexOf("NAME");
+        int idxName2 = result.indexOf("NAME", idxLakes);
+        assertEquals(-1, idxGeom); // geometry filtered out
+
+        assertTrue(idxName1 > 0);
+        assertTrue(idxName2 > 0);
+        assertTrue(idxLakes > 0);
+        // name in both features
+        assertTrue(idxName1 < idxLakes); 
+        assertTrue(idxName2 > idxLakes);
     }
     
     /**
@@ -298,6 +398,19 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
+    }
+    
+    public void testCoveragePropertySelection() throws Exception {
+        // http://jira.codehaus.org/browse/GEOS-2574
+        String layer = getLayerId(TASMANIA_BM);
+        String request = "wms?service=wms&request=GetFeatureInfo&version=1.1.1" +
+                "&layers=" + layer + "&styles=&bbox=146.5,-44.5,148,-43&width=600&height=600" + 
+                "&info_format=text/html&query_layers=" + layer + "&x=300&y=300&srs=EPSG:4326&propertyName=RED_BAND";
+        Document dom = getAsDOM(request);
+        // we also have the charset which may be platf. dep.
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
+        assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
     }
     
     public void testCoverageGML() throws Exception {
@@ -437,7 +550,30 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(response.indexOf("BLUE_BAND = 0.0") > 0);
     }
     
-   
+   public void testPropertySelectionWmsCascade() throws Exception {
+       if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
+           LOGGER.log(Level.WARNING, "Skipping testPropertySelectionWmsCascade");
+           return;
+       }
+       
+       String result = getAsString("wms?REQUEST=GetFeatureInfo" +
+       		"&BBOX=-132.835937%2C21.132813%2C-64.867187%2C55.117188" +
+       		"&SERVICE=WMS&INFO_FORMAT=text/plain" +
+       		"&QUERY_LAYERS=rstates&FEATURE_COUNT=50&Layers=rstates&WIDTH=300&HEIGHT=150" +
+       		"&format=image%2Fpng&styles=&srs=EPSG%3A4326&version=1.1.1&x=149&y=70&propertyName=STATE_ABBR,STATE_NAME");
+       
+       // System.out.println(result);
+       
+       int idxGeom = result.indexOf("the_geom");
+       int idxName = result.indexOf("STATE_NAME");
+       int idxFips = result.indexOf("STATE_FIPS");
+       int idxAbbr = result.indexOf("STATE_ABBR");
+       assertEquals(-1, idxGeom);
+       assertEquals(-1, idxFips);
+       assertTrue(idxAbbr > 0);
+       assertTrue(idxName > 0);
+       assertTrue(idxAbbr < idxName);
+   }
     
     
 }

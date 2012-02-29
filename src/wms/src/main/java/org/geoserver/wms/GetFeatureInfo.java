@@ -53,7 +53,6 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.Filters;
 import org.geotools.filter.IllegalFilterException;
-import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
@@ -205,30 +204,41 @@ public class GetFeatureInfo {
         int maxFeatures = request.getFeatureCount();
         for (int i = 0; i < requestedLayers.size(); i++) {
             final MapLayerInfo layer = requestedLayers.get(i);
+            
+            // look at the property names
+            String[] names;
+            List<List<String>> propertyNames = request.getPropertyNames();
+            if(propertyNames == null || propertyNames.size() == 0 || propertyNames.get(i) == null) {
+                names = Query.ALL_NAMES;
+            } else {
+                List<String> layerPropNames = propertyNames.get(i);
+                names = (String[]) layerPropNames.toArray(new String[layerPropNames.size()]);
+            }
 
             // check cascaded WMS first, it's a special case
             if (layer.getType() == MapLayerInfo.TYPE_WMS) {
                 List<FeatureCollection> cascadedResults;
                 cascadedResults = handleGetFeatureInfoCascade(request, maxFeatures, layer);
                 if (cascadedResults != null) {
-                    results.addAll(cascadedResults);
+                    for (FeatureCollection fc : cascadedResults) {
+                        results.add(selectProperties(fc, names));
+                    }
                 }
                 continue;
-            }
+            } 
             final Style style = styles[i];
             // ok, internally rendered layer then, we check the style to see what's active
             final List<Rule> rules = getActiveRules(style, scaleDenominator);
             if (rules.size() == 0) {
                 continue;
             }
-
+            
             FeatureCollection collection = null;
             if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
                 final Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
 				collection = identifyVectorLayer(filters, x, y, buffer, viewParam,
                         requestedCRS, width, height, bbox, ff, results, i, layer, rules, maxFeatures,
-                        times, elevations);
-
+                        times, elevations, names);
             } else if (layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 final CoverageInfo cinfo = requestedLayers.get(i).getCoverage();
                 final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo
@@ -269,12 +279,15 @@ public class GetFeatureInfo {
                 GeneralParameterValue[] parameters = wms.getWMSReadParameters(request.getGetMapRequest(), 
                         requestedLayers.get(i), filters[i], times, elevations, reader, true);
                 collection = identifyRasterLayer(reader, position, parameters, cinfo, getMapReq);
-
+                
+                // apply attribute selection
+                collection = selectProperties(collection, names);
             } else {
                 LOGGER.log(Level.SEVERE,
                         "Can't perform feature info " + "requests on " + layer.getName()
                                 + ", layer type not supported");
             }
+            
 
             if (collection != null) {
                 if (! (collection instanceof SimpleFeatureCollection)) {
@@ -296,6 +309,15 @@ public class GetFeatureInfo {
             }
         }
         return results;
+    }
+
+    private FeatureCollection selectProperties(FeatureCollection collection, String[] names) throws IOException {
+        if(names != Query.ALL_NAMES) {
+            Query q = new Query(collection.getSchema().getName().getLocalPart(), Filter.INCLUDE, names);
+            return DataUtilities.source(collection).getFeatures(q);
+        } else {
+            return collection;
+        }
     }
 
     @SuppressWarnings("rawtypes")
@@ -365,7 +387,7 @@ public class GetFeatureInfo {
             final CoordinateReferenceSystem requestedCRS, final int width, final int height,
             final ReferencedEnvelope bbox, final FilterFactory2 ff,
             List<FeatureCollection> results, int i, final MapLayerInfo layer, final List<Rule> rules,
-            final int maxFeatures, List<Object> times, List<Object> elevations)
+            final int maxFeatures, List<Object> times, List<Object> elevations, final String[] propertyNames)
             throws IOException {
 
         CoordinateReferenceSystem dataCRS = layer.getCoordinateReferenceSystem();
@@ -457,7 +479,7 @@ public class GetFeatureInfo {
         // build the query
         String typeName = schema.getName().getLocalPart();
         Query q = new Query(typeName, null, getFInfoFilter, maxFeatures,
-                Query.ALL_NAMES, null);
+                propertyNames, null);
 
         // handle sql view params
         if (viewParams != null && viewParams.size() > 0) {
@@ -545,6 +567,8 @@ public class GetFeatureInfo {
                    
                     FeatureCollection rfc = 
                         new ReTypingFeatureCollection(fc, builder.buildFeatureType());
+                    
+                    
                     
                     retypedResults.add(rfc);
                 }

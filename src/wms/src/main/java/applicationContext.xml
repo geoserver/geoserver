@@ -256,7 +256,11 @@
     <bean id="dpiKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
         <constructor-arg value="dpi"/>
     </bean>
-
+     <bean id="propertyNameWMSKvpParser" class="org.geoserver.ows.NestedKvpParser">
+        <constructor-arg index="0" value="propertyName"/>
+        <constructor-arg index="1" value="java.lang.String"/>
+        <property name="service" value="WMS"/>
+    </bean>
  	
  	<!-- kvp request readers -->
  	<bean id="wmsGetCapabilitiesKvpReader" 

@@ -67,7 +67,6 @@ public class IpBlacklistFilter implements GeoServerFilter {
     /**
      * Filters ip black list
      */
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         isBlocked = false;
@@ -104,12 +103,10 @@ public class IpBlacklistFilter implements GeoServerFilter {
         }
     }
 
-    @Override
     public void init(FilterConfig config) throws ServletException {
         // TODO Auto-generated method stub
     }
 
-    @Override
     public void destroy() {
         // TODO Auto-generated method stub
     }

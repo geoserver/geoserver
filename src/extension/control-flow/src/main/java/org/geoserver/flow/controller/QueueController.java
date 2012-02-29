@@ -39,12 +39,10 @@ public abstract class QueueController implements FlowController {
      */
     Map<String, TimedBlockingQueue> queues = new ConcurrentHashMap<String, TimedBlockingQueue>();
 
-    @Override
     public boolean requestIncoming(Request request, long timeout) {
         return false;
     }
 
-    @Override
     public void requestComplete(Request request) {
         String queueId = QUEUE_ID.get();
         QUEUE_ID.remove();
@@ -53,7 +51,6 @@ public abstract class QueueController implements FlowController {
             queue.remove(request);
     }
 
-    @Override
     public int getPriority() {
         return queueSize;
     }
@@ -66,13 +63,11 @@ public abstract class QueueController implements FlowController {
             super(capacity, fair);
         }
 
-        @Override
         public void put(Request o) throws InterruptedException {
             super.put(o);
             lastModified = System.currentTimeMillis();
         }
 
-        @Override
         public boolean remove(Object o) {
             lastModified = System.currentTimeMillis();
             return super.remove(o);

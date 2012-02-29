@@ -131,6 +131,20 @@ It is sometimes advisable (for speed and bandwidth reasons) to downsample the bi
 
 where ``<image>`` is the filename of the palette image (without the extension).  To force a web-safe palette, you can use the syntax ``palette=safe``.  For more information see the tutorial on :ref:`tutorials_palettedimages`
   
+propertyName
+------------
+
+Valid only for the ``GetFeatureInfo`` request, it allows to select which properties are going to be included in the output.
+Ror vector layers it works in the obvious way, for rasters it selects the bands, for cascaded WMS the GML properties returned
+by the remote server.
+The syntax is the same as ``WFS GetFeature``, in particular if you have a single layer in the request the syntax will be::
+
+   &propertyName=name1,...,nameN
+   
+whilst if you are requesting multiple layers in output the syntax will become::
+
+   &propertyName=(nameLayer11,...,nameLayer1N)...(name1LayerN,...,nameNLayerN)
+  
 
 tiled
 -----

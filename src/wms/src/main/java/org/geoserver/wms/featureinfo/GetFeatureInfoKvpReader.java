@@ -60,10 +60,29 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) super.read(req, kvp, rawKvp);
         request.setRawKvp(rawKvp);
 
-        request.setQueryLayers(new MapLayerInfoKvpParser("QUERY_LAYERS", wms).parse((String) rawKvp
-                .get("QUERY_LAYERS")));
+        GetMapRequest getMapPart = new GetMapRequest();
+        try {
+            getMapPart = getMapReader.read(getMapPart, kvp, rawKvp);
+        } catch (ServiceException se) {
+            throw se;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
 
-        if (request.getQueryLayers() == null || request.getQueryLayers().size() == 0) {
+        request.setGetMapRequest(getMapPart);
+        
+        List<MapLayerInfo> getMapLayers = getMapPart.getLayers();
+        
+        if ((getMapPart.getSldBody() != null || getMapPart.getSld() != null)
+                && (rawKvp.get("QUERY_LAYERS") == null || "".equals(rawKvp.get("QUERY_LAYERS")))) {
+            // in this case we assume all layers in SLD body are to be queried (GS own extension)(
+            request.setQueryLayers(getMapLayers);
+        } else {
+            request.setQueryLayers(new MapLayerInfoKvpParser("QUERY_LAYERS", wms).parse((String) rawKvp
+                    .get("QUERY_LAYERS")));
+        }
+        
+        if (request.getQueryLayers().isEmpty()) {
             throw new ServiceException("No QUERY_LAYERS has been requested, or no "
                     + "queriable layer in the request anyways");
         }
@@ -84,19 +103,7 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             request.setPropertyNames(propertyNames);
         }
 
-        GetMapRequest getMapPart = new GetMapRequest();
-        try {
-            getMapPart = getMapReader.read(getMapPart, kvp, rawKvp);
-        } catch (ServiceException se) {
-            throw se;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-        request.setGetMapRequest(getMapPart);
-
         // make sure they are a subset of layers
-        List<MapLayerInfo> getMapLayers = getMapPart.getLayers();
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>(request.getQueryLayers());
         queryLayers.removeAll(getMapLayers);
         if (queryLayers.size() > 0) {
@@ -105,6 +112,7 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             throw new ServiceException("QUERY_LAYERS contains layers not cited in LAYERS. "
                     + "It should be a proper subset of those instead");
         }
+
         for (MapLayerInfo l : request.getQueryLayers()) {
             LayerInfo layerInfo = l.getLayerInfo();
             if (!wms.isQueryable(layerInfo)) {

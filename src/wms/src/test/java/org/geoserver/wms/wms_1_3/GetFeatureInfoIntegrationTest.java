@@ -389,7 +389,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
-    public void testUnkonwnQueryLayer() throws Exception {
+    public void testUnknownQueryLayer() throws Exception {
         String layers1 = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String layers2 = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.BRIDGES);
         String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
@@ -397,6 +397,53 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         Document dom = getAsDOM(request + "");
         assertXpathEvaluatesTo("1", "count(/ogc:ServiceExceptionReport)", dom);
+    }
+
+    public void testDeriveLayersFromSLD() throws Exception {
+        String layers = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
+        
+        String sld =
+            "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" " +
+            "       xmlns:se=\"http://www.opengis.net/se\" version=\"1.1.0\"> "+
+            " <NamedLayer> "+
+            "  <se:Name>"+getLayerId(MockData.FORESTS)+"</se:Name> "+
+            " </NamedLayer> "+
+            " <NamedLayer> "+
+            "  <se:Name>"+getLayerId(MockData.LAKES)+"</se:Name> "+
+            " </NamedLayer> "+
+            "</StyledLayerDescriptor>";
+
+        // sld present & query_layers null/empty
+        String request1 = "wms?version=1.3&bbox=146.5,-44.5,148,-43&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&"
+                + "sld_body=" + sld.replaceAll("=", "%3D") + "&width=20&height=20&x=10&y=10&info";
+
+        // sld present & query_layers equals layers derived by sld
+        String request2 = "wms?version=1.3&bbox=146.5,-44.5,148,-43&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&"
+                + "sld_body=" + sld.replaceAll("=", "%3D") + "&query_layers=" + layers + "&width=20&height=20&x=10&y=10&info";
+
+        // normal request
+        String request3 = "wms?version=1.3&bbox=146.5,-44.5,148,-43&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&"
+                + "layers=" + layers + "&query_layers=" + layers + "&width=20&height=20&x=10&y=10&info";
+
+        // sld not present & query_layers null
+        String invalidRequest1 = "wms?version=1.3&bbox=146.5,-44.5,148,-43&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&"
+                + "layers=" + layers + "&width=20&height=20&x=10&y=10&info";
+
+        // sld present & query_layers contains unknown layer
+        String invalidRequest2 = "wms?version=1.3&bbox=146.5,-44.5,148,-43&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&"
+                + "sld_body=" + sld.replaceAll("=", "%3D") + "&query_layers=" + getLayerId(MockData.TASMANIA_BM) + "&width=20&height=20&x=10&y=10&info";
+
+        String result1 = getAsString(request1);
+        String result2 = getAsString(request2);
+        String result3 = getAsString(request3);
+
+        assertEquals(result1, result2);
+        assertEquals(result1, result3);
+
+        Document invalidResult1 = getAsDOM(invalidRequest1);
+        Document invalidResult2 = getAsDOM(invalidRequest2);
+        assertXpathEvaluatesTo("1", "count(//ServiceExceptionReport/ServiceException)", invalidResult1);
+        assertXpathEvaluatesTo("1", "count(//ServiceExceptionReport/ServiceException)", invalidResult2);
     }
 
     public void testLayerQualified() throws Exception {

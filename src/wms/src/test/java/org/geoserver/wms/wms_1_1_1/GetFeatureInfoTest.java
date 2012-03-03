@@ -24,8 +24,6 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
-import com.sun.org.apache.bcel.internal.generic.IXOR;
-
 public class GetFeatureInfoTest extends WMSTestSupport {
     
     public static String WCS_PREFIX = "wcs";

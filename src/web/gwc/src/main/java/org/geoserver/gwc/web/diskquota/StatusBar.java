@@ -2,17 +2,15 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.gwc.web;
+package org.geoserver.gwc.web.diskquota;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 
 public class StatusBar extends Panel {
 
@@ -56,8 +54,8 @@ public class StatusBar extends Panel {
         add(excessBar);
         add(new Label("progressLabel", progressMessageModel));
 
-        //TODO:make the argument models truly dynamic
-        //add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)));
+        // TODO:make the argument models truly dynamic
+        // add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)));
     }
 
 }

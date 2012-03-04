@@ -1,0 +1,32 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <div wicket:id="container">
+    <wicket:message key="defineGridsOn">Define grids based on</wicket:message> 
+    <span wicket:id="useResolutionsOrScalesGroup">
+      <input type="radio" wicket:id="preserveResolutions">Resolutions</input>
+      <input type="radio" wicket:id="preserveScales">Scale denominators</input>
+    </span>
+    <table wicket:id="table">
+      <tr>
+        <th><label wicket:id="level">Level</label></th>
+        <th><label wicket:id="resolution">Resolution</label></th>
+        <th><label wicket:id="scale">Scale</label></th>
+        <th><label wicket:id="name">Name</label></th>
+        <th><label wicket:id="tiles">Tiles</label></th>
+        <th></th>
+      </tr>
+      <tr wicket:id="gridLevels">
+        <td style="text-align: right;"><label wicket:id="zoomLevel"></label></td>
+        <td><input wicket:id="resolution" type="text" class="text" style="width: 140px;"></input></td>
+        <td>1:<input wicket:id="scale" type="text" class="text" style="width: 140px;"></input></td>
+        <td><input wicket:id="name" type="text" class="text" style="width: 140px;"></input></td>
+        <td style="text-align: center;"><label wicket:id="tiles"></label></td>
+        <td><a href="#" wicket:id="removeLink"></a></td>
+      </tr>
+    </table>
+  </div>
+</wicket:panel>
+</body>
+</html>

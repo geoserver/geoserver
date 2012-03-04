@@ -1,0 +1,24 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="layerList">Layer list</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+	<div wicket:id="table"></div>
+	
+	<wicket:fragment wicket:id="iconFragment">
+		<img wicket:id="layerIcon" />
+	</wicket:fragment>
+    
+    <wicket:fragment wicket:id="header">
+      <ul>
+        <li><a class="add-link" href="#" wicket:id="bulkConfig"><wicket:message key="bulkConfig">bulk config</wicket:message></a></li>
+        <li><label wicket:id="insaneDefaultsMessage"></label></li>
+      </ul>
+    </wicket:fragment>
+    
+    <!-- the cascade delete confirmation dialog -->
+    <div wicket:id="dialog"></div>
+</wicket:extend>
+</body>
+</html>

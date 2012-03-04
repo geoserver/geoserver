@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.gwc.web;
+package org.geoserver.gwc.web.diskquota;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,6 +34,12 @@ import org.geowebcache.diskquota.ExpirationPolicy;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.diskquota.storage.StorageUnit;
 
+/**
+ * A panel to configure the global disk quota settings.
+ * 
+ * @author groldan
+ * 
+ */
 public class DiskQuotaConfigPanel extends Panel {
     private static final long serialVersionUID = 1L;
 
@@ -101,7 +107,7 @@ public class DiskQuotaConfigPanel extends Panel {
         Object[] progressMessageParams = { globalUsedQuotaModel.getObject().toNiceString(),
                 globalQuotaModel.getObject().toNiceString() };
         IModel<String> progressMessageModel = new StringResourceModel(
-                "GWCSettingsPage.usedQuotaMessage", null, progressMessageParams);
+                "DiskQuotaConfigPanel.usedQuotaMessage", null, progressMessageParams);
         addGlobalQuotaStatusBar(globalQuotaModel, globalUsedQuotaModel, progressMessageModel);
 
         TextField<Double> quotaValue = new TextField<Double>("globalQuota", quotaValueModel);
@@ -154,16 +160,16 @@ public class DiskQuotaConfigPanel extends Panel {
         TextField<Integer> cleanUpFreq = new TextField<Integer>("cleanUpFreq", cleanUpFreqModel);
         cleanUpFreq.setRequired(true);
         cleanUpFreq.add(new AttributeModifier("title", true, new StringResourceModel(
-                "GWCSettingsPage.cleanUpFreq.title", (Component) null, null)));
+                "DiskQuotaConfigPanel.cleanUpFreq.title", (Component) null, null)));
         add(cleanUpFreq);
         {
             Date lastRun = diskQuotaConfig.getLastCleanUpTime();
             String resourceId;
             HashMap<String, String> params = new HashMap<String, String>();
             if (lastRun == null) {
-                resourceId = "GWCSettingsPage.cleanUpLastRunNever";
+                resourceId = "DiskQuotaConfigPanel.cleanUpLastRunNever";
             } else {
-                resourceId = "GWCSettingsPage.cleanUpLastRun";
+                resourceId = "DiskQuotaConfigPanel.cleanUpLastRun";
                 long timeAgo = (System.currentTimeMillis() - lastRun.getTime()) / 1000;
                 String timeUnits = "s";
                 if (timeAgo > 60 * 60 * 24) {
@@ -181,7 +187,7 @@ public class DiskQuotaConfigPanel extends Panel {
             }
             IModel<String> lastRunModel = new StringResourceModel(resourceId, this, new Model(
                     params));
-            add(new Label("GWCSettingsPage.cleanUpLastRun", lastRunModel));
+            add(new Label("cleanUpLastRun", lastRunModel));
         }
     }
 
@@ -191,14 +197,14 @@ public class DiskQuotaConfigPanel extends Panel {
         TextField<Integer> diskBlockSize = new TextField<Integer>("diskBlockSize", blockSizeModel);
         diskBlockSize.setRequired(true);
         diskBlockSize.add(new AttributeModifier("title", true, new StringResourceModel(
-                "GWCSettingsPage.diskBlockSize.title", (Component) null, null)));
+                "DiskQuotaConfigPanel.diskBlockSize.title", (Component) null, null)));
         add(diskBlockSize);
     }
 
     private void addDiskQuotaIntegrationEnablement(IModel<DiskQuotaConfig> diskQuotaModel) {
         IModel<Boolean> quotaEnablementModel = new PropertyModel<Boolean>(diskQuotaModel, "enabled");
-        CheckBox diskQuotaIntegration = GWCSettingsPage.checkbox("enableDiskQuota",
-                quotaEnablementModel, "GWCSettingsPage.enableDiskQuota.title");
+        CheckBox diskQuotaIntegration = checkbox("enableDiskQuota", quotaEnablementModel,
+                "DiskQuotaConfigPanel.enableDiskQuota.title");
         add(diskQuotaIntegration);
     }
 
@@ -236,5 +242,15 @@ public class DiskQuotaConfigPanel extends Panel {
     public Object getQuotaValue() {
         // REVISIT: it seems Wicket is sending back a plain string instead of a BigDecimal
         return configQuotaValueModel.getObject();
+    }
+
+    static CheckBox checkbox(String id, IModel<Boolean> model, String titleKey) {
+        CheckBox checkBox = new CheckBox(id, model);
+        if (null != titleKey) {
+            AttributeModifier attributeModifier = new AttributeModifier("title", true,
+                    new StringResourceModel(titleKey, (Component) null, null));
+            checkBox.add(attributeModifier);
+        }
+        return checkBox;
     }
 }

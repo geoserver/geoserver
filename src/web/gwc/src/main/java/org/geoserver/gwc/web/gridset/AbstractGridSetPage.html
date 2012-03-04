@@ -1,0 +1,57 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+  <form wicket:id="gridSetForm">
+    <fieldset>
+      <ul>
+        <li>
+          <div class="seflclear">
+            <span wicket:id="name">Name</span>
+          </div>
+        </li>
+        <li>
+ 	      <label for="description"><wicket:message key="descriptionField">Description</wicket:message></label>
+          <textarea wicket:id="description" class="field textarea" style="height: 45px; width: 100%"></textarea> 
+        </li>
+        <li>
+          <label for="crs"><wicket:message key="crs">CRS</wicket:message></label>
+          <span id="crs" wicket:id="crs"></span>
+        </li>
+        <li>
+          <label for="bounds"><wicket:message key="bounds">GridSet bounds</wicket:message></label>
+          <span id="bounds" wicket:id="bounds"></span>
+          <a href="#" wicket:id="computeBounds"><wicket:message key="computeBounds">Compute from CRS</wicket:message></a>
+        </li>
+        <li>
+          <div><span wicket:id="tileWidth">Tile width</span></div>
+        </li>
+        <li>
+          <div><span wicket:id="tileHeight">Tile Height</span></div>
+        </li>
+      </ul>
+    </fieldset>
+    <fieldset>
+      <legend>
+        <span><wicket:message key="tileMatrixSet">Tile Matrix Set</wicket:message></span>
+        <a href="#" class="help-link"></a>
+      </legend>
+      <ul>
+        <li><div wicket:id="tileMatrixSetEditor"></div></li>
+        <li>
+          <div>
+           <span>
+            <a href="#" wicket:id="addZoomLevel"><wicket:message key="addZoomLevel">Add zoom level</wicket:message></a>
+           </span>
+          </div>
+        </li>
+      </ul>
+    </fieldset>
+    <div wicket:id="feedback"></div>
+    <div class="button-group selfclear">
+      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </div>
+	</form>
+</wicket:extend>
+</body>
+</html>

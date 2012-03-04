@@ -1,0 +1,48 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+<li>
+  <div wicket:id="container">
+     <table wicket:id="table">
+      <tr>
+        <th><wicket:message key="GridSubsetsEditor.gridSet">GridSet</wicket:message></th>
+        <th><wicket:message key="GridSubsetsEditor.publishedLevels">Zoom start/stop</wicket:message>&nbsp;<a href="#" class="help-link"></a></th>
+        <th><wicket:message key="GridSubsetsEditor.cachedLevels">Min/max cached level</wicket:message>&nbsp;<a href="#" class="help-link"></a></th>
+        <th><wicket:message key="GridSubsetsEditor.bounds">Bounds</wicket:message></th>
+        <th></th>
+      </tr>
+      <tr wicket:id="gridSubsets">
+        <td><label wicket:id="gridSet"></label></td>
+        <td>
+          <div style="white-space: nowrap;">
+            <select class="select" id="zoomStart" wicket:id="zoomStart"></select>
+            /
+            <select class="select" id="zoomStop" wicket:id="zoomStop"></select>
+          </div>
+        </td>
+        <td>
+          <div style="white-space: nowrap;">
+            <select class="select" id="minCachedLevel" wicket:id="minCachedLevel"></select>
+            /
+            <select class="select" id="maxCachedLevel" wicket:id="maxCachedLevel"></select>
+          </div>
+        </td>
+        <td>
+          <span wicket:id="bounds"></span>
+        </td>
+        <td><a href="#" wicket:id="removeLink"></a></td>
+      </tr>
+    </table>
+  </div>
+  <div>
+   <span>
+    <wicket:message key="addGridSubsetFor">Add Grid Subset for GridSet</wicket:message>
+    <select style="max-width: 100%;" class="select" id="availableGridsets" wicket:id="availableGridsets"></select>
+    <a href="#" wicket:id="addGridSubset"><img wicket:id="addIcon"/></a>
+   </span>
+  </div>
+</li>
+</wicket:panel>
+</body>
+</html>

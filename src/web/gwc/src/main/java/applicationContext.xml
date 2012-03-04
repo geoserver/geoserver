@@ -21,9 +21,24 @@
     <property name="id" value="cachedLayers"/>
     <property name="titleKey" value="CachedLayersPage.title"/>
     <property name="descriptionKey" value="CachedLayersPage.description"/>
-    <property name="componentClass" value="org.geoserver.gwc.web.CachedLayersPage"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.layer.CachedLayersPage"/>
     <property name="category" ref="dataCategory"/>
-    <property name="icon" value="geowebcache-16.png"/>
+    <property name="icon" value="../geowebcache-16.png"/>
     <property name="order" value="30"/>
+  </bean>
+  
+  <bean id="layerCacheEditTabPanelInfo" class="org.geoserver.gwc.web.layer.LayerEditCacheOptionsTabPanelInfo">
+    <property name="id" value="layerCacheEditTabPanelInfo"/>
+    <property name="titleKey" value="LayerCacheOptionsTabPanel.title"/>
+    <property name="descriptionKey" value="LayerCacheOptionsTabPanel.shortDescription"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerCacheOptionsTabPanel"/>
+    <property name="order" value="200"/>
+  </bean>
+    
+  <bean id="layerGroupCacheEditPanelInfo" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
+    <property name="id" value="layerGroupCacheEditTabPanelInfo"/>
+    <property name="titleKey" value="LayerGroupCacheOptionsPanel.title"/>
+    <property name="descriptionKey" value="LayerGroupCacheOptionsPanel.shortDescription"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerGroupCacheOptionsPanel"/>
   </bean>
 </beans>

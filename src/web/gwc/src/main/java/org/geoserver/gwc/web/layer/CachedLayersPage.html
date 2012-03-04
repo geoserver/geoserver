@@ -17,6 +17,21 @@
       </ul>
     </wicket:fragment>
 
+    <!-- The fragment for the seed link -->
+    <wicket:fragment wicket:id="seedLinkFragment">
+      <div style="white-space: nowrap;">
+        <a target="_blank" wicket:id="seedLink"></a>
+      </div>
+    </wicket:fragment>
+    
+    <!--  The custom drop down with optgroups -->
+    <wicket:fragment wicket:id="menuFragment">
+      <select wicket:id="menu">
+        <option><wicket:message key="selectOne">Select one</wicket:message></option>
+        <option wicket:id="previewLink"></option>
+      </select>
+    </wicket:fragment>
+    
     <!-- the cascade delete confirmation dialog -->
     <div wicket:id="dialog"></div>
 </wicket:extend>

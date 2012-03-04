@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -23,8 +24,12 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.MapModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.web.diskquota.DiskQuotaConfigPanel;
+import org.geoserver.gwc.web.gridset.GridSetsPage;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.storage.StorageUnit;
@@ -125,13 +130,14 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
                 setResponsePage(GeoServerHomePage.class);
             }
         });
-        form.add(new Button("cancel") {
+        form.add(new GeoServerAjaxFormLink("cancel") {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void onSubmit() {
+            protected void onClick(AjaxRequestTarget target, Form form) {
                 setResponsePage(GeoServerHomePage.class);
             }
+
         });
 
     }
@@ -143,6 +149,16 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
+
+        // the manage GridSets button
+        header.add(new ImageAjaxLink("gridSets", GWCIconFactory.GRIDSET, "  Administer  GridSets") {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                setResponsePage(GridSetsPage.class);
+            }
+        });
 
         return header;
     }

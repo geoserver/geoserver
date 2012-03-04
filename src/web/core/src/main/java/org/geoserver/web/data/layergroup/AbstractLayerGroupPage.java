@@ -61,6 +61,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     String layerGroupId;
     
     protected Class<? extends Page> returnPage;
+    private ListView<LayerGroupConfigurationPanelInfo> extensionPanels;
     /**
      * Subclasses must call this method to initialize the UI for this page 
      * @param layerGroup
@@ -119,19 +120,19 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         form.add(lgEntryPanel = new LayerGroupEntryPanel( "layers", layerGroup ));
         
         //Add panels contributed through extension point
-        form.add(extensionPanels());
+        form.add(extensionPanels = extensionPanels());
         
         form.add(saveLink());
         form.add(cancelLink());
     }
 
-    private Component extensionPanels() {
+    private ListView<LayerGroupConfigurationPanelInfo> extensionPanels() {
 
         final GeoServerApplication gsapp = getGeoServerApplication();
         final List<LayerGroupConfigurationPanelInfo> extensions;
         extensions = gsapp.getBeansOfType(LayerGroupConfigurationPanelInfo.class);
 
-        Component list;
+        ListView<LayerGroupConfigurationPanelInfo> list;
         list = new ListView<LayerGroupConfigurationPanelInfo>("contributedPanels", extensions) {
 
             @Override
@@ -183,9 +184,21 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
                     lg.getStyles().add(entry.getStyle());
                 }
                 
-                AbstractLayerGroupPage.this.onSubmit();
+                AbstractLayerGroupPage.this.save();
             }
         };
+    }
+    
+    private final void save() {
+        onSubmit();
+        this.extensionPanels.visitChildren(LayerGroupConfigurationPanel.class,
+                new IVisitor<LayerGroupConfigurationPanel>() {
+                    @Override
+                    public Object component(LayerGroupConfigurationPanel extensionPanel) {
+                        extensionPanel.save();
+                        return CONTINUE_TRAVERSAL;
+                    }
+                });
     }
     
     /**

@@ -28,4 +28,12 @@ public abstract class LayerGroupConfigurationPanel extends Panel {
     public LayerGroupInfo getLayerGroupInfo() {
         return (LayerGroupInfo) getDefaultModelObject();
     }
+
+    /**
+     * Allows subclasses to override in case they need to save any other state than the
+     * {@link LayerGroupInfo} itself
+     */
+    public void save() {
+        // do nothing by default
+    }
 }

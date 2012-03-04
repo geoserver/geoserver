@@ -8,7 +8,11 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
@@ -59,7 +63,7 @@ import org.opengis.coverage.grid.GridGeometry;
  * modify anything in this class (especially the models), manually retest that the edits are not
  * lost on tab switch.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "rawtypes", "unchecked" })
 public class ResourceConfigurationPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 7870938096047218989L;
@@ -76,7 +80,14 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
 
     private TabbedPanel tabbedPanel;
 
-    private List<Class<? extends LayerEditTabPanel>> tabPanelClasses;
+    /**
+     * {@link LayerEditTabPanel} contributions may need to edit something different than the
+     * LayerInfo and ResourceInfo this page holds models to. In such cases
+     * {@link LayerEditTabPanelInfo#createOwnModel} will return a non null model and well pass it
+     * back to the concrete LayerEditTabPanel constructor. This is so because LayerEditTabPanel are
+     * re-created everytime the user switches tabs.
+     */
+    private LinkedHashMap<Class<? extends LayerEditTabPanel>, IModel<?>> tabPanelCustomModels;
 
     private Class<? extends Page> returnPage;
 
@@ -129,9 +140,12 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
         myLayerModel = new CompoundPropertyModel(new LayerModel(layer));
     }
 
+    /**
+     * 
+     */
     private void initComponents() {
         this.returnPage = LayerPage.class;
-        this.tabPanelClasses = new ArrayList<Class<? extends LayerEditTabPanel>>(5);
+        this.tabPanelCustomModels = new LinkedHashMap<Class<? extends LayerEditTabPanel>, IModel<?>>();
 
         add(new Label("resourcename", getResourceInfo().getPrefixedName()));
         Form theForm = new Form("resource", myResourceModel);
@@ -147,7 +161,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
                 return new DataLayerEditTabPanel(panelID, myLayerModel);
             }
         });
-        tabPanelClasses.add(DataLayerEditTabPanel.class);
+        tabPanelCustomModels.put(DataLayerEditTabPanel.class, null);
         
         tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel(
                 "ResourceConfigurationPage.Publishing")) {
@@ -156,7 +170,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
                 return new PublishingLayerEditTabPanel(panelID, myLayerModel);
             }
         });
-        tabPanelClasses.add(PublishingLayerEditTabPanel.class);
+        tabPanelCustomModels.put(PublishingLayerEditTabPanel.class, null);
 
         // add the tabs contributed via extension point
         List<LayerEditTabPanelInfo> tabPanels = getGeoServerApplication().getBeansOfType(
@@ -172,30 +186,43 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
             }
         });
 
-        for (LayerEditTabPanelInfo tabPanel : tabPanels) {
-            String titleKey = tabPanel.getTitleKey();
+        for (LayerEditTabPanelInfo tabPanelInfo : tabPanels) {
+            String titleKey = tabPanelInfo.getTitleKey();
             IModel titleModel = null;
             if (titleKey != null) {
                 titleModel = new org.apache.wicket.model.ResourceModel(titleKey);
             } else {
-                titleModel = new Model(tabPanel.getComponentClass().getSimpleName());
+                titleModel = new Model(tabPanelInfo.getComponentClass().getSimpleName());
             }
-
-            final Class<LayerEditTabPanel> panelClass = tabPanel.getComponentClass();
+            
+            final Class<LayerEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
+            IModel<?> panelCustomModel = tabPanelInfo.createOwnModel(myResourceModel, myLayerModel, isNew);
+            tabPanelCustomModels.put(panelClass, panelCustomModel);
+            
             tabs.add(new AbstractTab(titleModel) {
-
+                private final Class<LayerEditTabPanel> panelType = panelClass;
                 @Override
                 public Panel getPanel(String panelId) {
+                    LayerEditTabPanel tabPanel;
+                    final IModel<?> panelCustomModel = tabPanelCustomModels.get(panelType);
                     try {
-                        return panelClass.getConstructor(String.class, IModel.class).newInstance(
-                                panelId, myLayerModel);
+                        // if this tab needs a custom model instead of just our layer model, then
+                        // let it create it once
+                        if (panelCustomModel == null) {
+                            tabPanel = panelClass.getConstructor(String.class, IModel.class)
+                                    .newInstance(panelId, myLayerModel);
+                        } else {
+                            tabPanel = panelClass.getConstructor(String.class, IModel.class,
+                                    IModel.class).newInstance(panelId, myLayerModel,
+                                    panelCustomModel);
+                        }
                     } catch (Exception e) {
                         throw new WicketRuntimeException(e);
                         // LOGGER.log(Level.WARNING, "Error creating resource panel", e);
                     }
+                    return tabPanel;
                 }
             });
-            tabPanelClasses.add(panelClass);
         }
 
         // we need to override with submit links so that the various form
@@ -219,7 +246,9 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
 
     public void setSelectedTab(Class<? extends LayerEditTabPanel> selectedTabClass) {
         int selectedTabIndex;
-        selectedTabIndex = tabPanelClasses.indexOf(selectedTabClass);
+        //relying on LinkedHashMap here
+        selectedTabIndex = new ArrayList<Class<? extends LayerEditTabPanel>>(
+                tabPanelCustomModels.keySet()).indexOf(selectedTabClass);
         if (selectedTabIndex > -1) {
             tabbedPanel.setSelectedTab(selectedTabIndex);
         }
@@ -287,6 +316,18 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
                     throw e;
                 }
             }
+            
+            for(Entry<Class<? extends LayerEditTabPanel>, IModel<?>> e : tabPanelCustomModels.entrySet()){
+                Class<? extends LayerEditTabPanel> panelClass = e.getKey();
+                IModel<?> customModel = e.getValue();
+                if(customModel == null){
+                    continue;
+                }
+                LayerEditTabPanel tabPanel = panelClass.getConstructor(String.class, IModel.class,
+                        IModel.class).newInstance("temp", myLayerModel, customModel);
+                tabPanel.save();
+            }
+            
             onSuccessfulSave();
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error saving layer", e);

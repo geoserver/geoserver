@@ -32,8 +32,7 @@ public class LayerGroupEditPage extends AbstractLayerGroupPage {
         LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
         
         getCatalog().save( lg );
-        setResponsePage(LayerGroupPage.class);
+        setResponsePage(super.returnPage);
     }
-    
     
 }

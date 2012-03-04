@@ -268,6 +268,19 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
     
     /**
+     * @return the number of items selected in the current page
+     */
+    public int getNumSelected() {
+        int selected = 0;
+        for (boolean itemSelected : selection) {
+            if (itemSelected) {
+                selected++;
+            }
+        }
+        return selected;
+    }
+    
+    /**
      * Returns the items that have been selected by the user 
      * @return
      */

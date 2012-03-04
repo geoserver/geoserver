@@ -10,8 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -58,11 +60,13 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     LayerGroupEntryPanel lgEntryPanel;
     String layerGroupId;
     
+    protected Class<? extends Page> returnPage;
     /**
      * Subclasses must call this method to initialize the UI for this page 
      * @param layerGroup
      */
     protected void initUI(LayerGroupInfo layerGroup) {
+        this.returnPage = LayerGroupPage.class;
         lgModel = new LayerGroupDetachableModel( layerGroup );
         layerGroupId = layerGroup.getId();
         
@@ -151,8 +155,13 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         return list;
     }
 
-    private BookmarkablePageLink cancelLink() {
-        return new BookmarkablePageLink("cancel", LayerGroupPage.class);
+    private Component cancelLink() {
+        return new AjaxLink<String>("cancel") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(returnPage);
+            }
+        };
     }
 
     private SubmitLink saveLink() {
@@ -293,4 +302,15 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         }
         
     }
+
+    /**
+     * Allows to set a different return page, defaults to {@link LayerGroupPage} if not set
+     * 
+     * @param returnPage
+     *            the page to return to when this one is either submitted or cancelled
+     */
+    public void setReturnPage(Class<? extends Page> returnPage) {
+        this.returnPage = returnPage == null? LayerGroupPage.class : returnPage;
+    }
+    
 }

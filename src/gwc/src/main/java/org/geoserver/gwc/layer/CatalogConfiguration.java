@@ -162,11 +162,25 @@ public class CatalogConfiguration implements Configuration {
     }
 
     /**
+     * @see org.geowebcache.config.Configuration#getTileLayerById(java.lang.String)
+     */
+    // @Override
+    public TileLayer getTileLayerById(String layerId) {
+        LayerInfo layerInfo = catalog.getLayer(layerId);
+        if (layerInfo != null) {
+            return new GeoServerTileLayer(this, layerInfo);
+        }
+        LayerGroupInfo lgi = catalog.getLayerGroup(layerId);
+        if (lgi != null) {
+            return new GeoServerTileLayer(this, lgi);
+        }
+        return null;
+    }
+    
+    /**
      * @see org.geowebcache.config.Configuration#getTileLayer(java.lang.String)
      */
     public GeoServerTileLayer getTileLayer(final String layerName) {
-        // System.err.println("Returning new GeoServerTileLayer " + layerName);
-        // return layers.get(layerName);
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
         if (layerInfo != null) {
             return new GeoServerTileLayer(this, layerInfo);
@@ -176,6 +190,15 @@ public class CatalogConfiguration implements Configuration {
             return new GeoServerTileLayer(this, lgi);
         }
         return null;
+    }
+    
+    /**
+     * @param tileLayerId
+     * @return
+     */
+    @Override
+    public boolean containsLayer(String tileLayerId) {
+        return null != getTileLayerById(tileLayerId);
     }
 
     /**

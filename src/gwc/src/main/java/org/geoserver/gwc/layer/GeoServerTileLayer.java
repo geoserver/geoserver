@@ -111,6 +111,14 @@ public class GeoServerTileLayer extends TileLayer {
     }
 
     @Override
+    public String getId() {
+        if (layerGroupId != null) {
+            return layerGroupId;
+        }
+        return layerId;
+    }
+
+    @Override
     public String getName() {
         if (layerGroupId != null) {
             LayerGroupInfo layerGroupInfo = getLayerGroupInfo();
@@ -412,10 +420,11 @@ public class GeoServerTileLayer extends TileLayer {
         String featureCount;
         {
             Map<String, String> values = ServletUtils.selectedStringsFromMap(
-                    convTile.servletReq.getParameterMap(), convTile.servletReq.getCharacterEncoding(), "feature_count");
+                    convTile.servletReq.getParameterMap(),
+                    convTile.servletReq.getCharacterEncoding(), "feature_count");
             featureCount = values.get("feature_count");
         }
-        if(featureCount != null){
+        if (featureCount != null) {
             wmsParams.put("FEATURE_COUNT", featureCount);
         }
 
@@ -819,6 +828,7 @@ public class GeoServerTileLayer extends TileLayer {
     public void addGridSubset(GridSubset gridSubset) {
         throw new UnsupportedOperationException("not yet implemented nor used");
     }
+
     /**
      * @see org.geowebcache.layer.TileLayer#getUpdateSources()
      */

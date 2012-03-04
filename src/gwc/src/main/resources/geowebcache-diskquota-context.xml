@@ -21,7 +21,7 @@
     <constructor-arg ref="gwcTLDispatcher" />
   </bean>
 
-  <bean id="DiskQuotaStore" class="org.geowebcache.diskquota.storage.BDBQuotaStore">
+  <bean id="DiskQuotaStore" class="org.geowebcache.diskquota.storage.BDBQuotaStore" depends-on="geoServer">
     <constructor-arg ref="gwcDefaultStorageFinder" />
     <constructor-arg ref="gwcTilePageCalculator" />
   </bean>

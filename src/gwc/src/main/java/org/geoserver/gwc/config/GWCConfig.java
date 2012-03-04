@@ -4,17 +4,21 @@
  */
 package org.geoserver.gwc.config;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.util.Assert;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class GWCConfig implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 3287178222706781438L;
+
+    private String version;
 
     private boolean directWMSIntegrationEnabled;
 
@@ -28,15 +32,6 @@ public class GWCConfig implements Cloneable, Serializable {
      * Whether to automatically cache GeoServer layers or they should be enabled explicitly
      */
     private boolean cacheLayersByDefault = true;
-
-    /**
-     * Whether to cache the layer's declared CRS by default
-     * <p>
-     * TODO:this one is problematic until we have a steady way of defining new gridsets based on a
-     * CRS
-     * </p>
-     */
-    private transient boolean cacheDeclaredCRS;
 
     /**
      * Whether to cache any non default Style associated to the layer
@@ -78,12 +73,43 @@ public class GWCConfig implements Cloneable, Serializable {
      */
     public GWCConfig() {
         setOldDefaults();
+
         String png = "image/png";
         String jpeg = "image/jpeg";
-
         setDefaultCoverageCacheFormats(Collections.singleton(jpeg));
         setDefaultOtherCacheFormats(new HashSet<String>(Arrays.asList(png, jpeg)));
         setDefaultVectorCacheFormats(Collections.singleton(png));
+
+        readResolve();
+    }
+
+    private GWCConfig readResolve() {
+        if (null == version) {
+            version = "0.0.1";
+        }
+
+        if (defaultCachingGridSetIds == null) {
+            defaultCachingGridSetIds = new HashSet<String>();
+        }
+        if (defaultCoverageCacheFormats == null) {
+            defaultCoverageCacheFormats = new HashSet<String>();
+        }
+        if (defaultOtherCacheFormats == null) {
+            defaultOtherCacheFormats = new HashSet<String>();
+        }
+        if (defaultVectorCacheFormats == null) {
+            defaultVectorCacheFormats = new HashSet<String>();
+        }
+
+        return this;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public boolean isCacheLayersByDefault() {
@@ -124,17 +150,6 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setTMSEnabled(boolean tMSEnabled) {
         TMSEnabled = tMSEnabled;
-    }
-
-    /**
-     * see reason of getting rid of this property at the fields comment
-     */
-    private boolean isCacheDeclaredCRS() {
-        return cacheDeclaredCRS;
-    }
-
-    private void setCacheDeclaredCRS(boolean cacheDeclaredCRS) {
-        this.cacheDeclaredCRS = cacheDeclaredCRS;
     }
 
     public boolean isCacheNonDefaultStyles() {
@@ -178,6 +193,51 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     /**
+     * @return an instance of GWCConfig (possibly {@code this}) that is sane, in case the configured
+     *         defaults are not (like in missing some config option). This is just a safety measure
+     *         to ensure a mis configured gwc-gs.xml does not prevent the creation of tile layers
+     *         (ej, automatic creation of new tile layers may be disabled in gwc-gs.xml and its
+     *         contents may not lead to a sane state to be used as default settings).
+     */
+    public GWCConfig saneConfig() {
+        if (isSane()) {
+            return this;
+        }
+        GWCConfig sane = GWCConfig.getOldDefaults();
+
+        // sane.setCacheLayersByDefault(cacheLayersByDefault);
+        if (metaTilingX > 0) {
+            sane.setMetaTilingX(metaTilingX);
+        }
+        if (metaTilingY > 0) {
+            sane.setMetaTilingY(metaTilingY);
+        }
+        if (gutter >= 0) {
+            sane.setGutter(gutter);
+        }
+        if (!defaultCachingGridSetIds.isEmpty()) {
+            sane.setDefaultCachingGridSetIds(defaultCachingGridSetIds);
+        }
+        if (!defaultCoverageCacheFormats.isEmpty()) {
+            sane.setDefaultCoverageCacheFormats(defaultCoverageCacheFormats);
+        }
+        if (!defaultOtherCacheFormats.isEmpty()) {
+            sane.setDefaultOtherCacheFormats(defaultOtherCacheFormats);
+        }
+        if (!defaultVectorCacheFormats.isEmpty()) {
+            sane.setDefaultVectorCacheFormats(defaultVectorCacheFormats);
+        }
+        return sane;
+    }
+
+    public boolean isSane() {
+        return metaTilingX > 0 && metaTilingY > 0 && gutter >= 0
+                && !defaultCachingGridSetIds.isEmpty() && !defaultCoverageCacheFormats.isEmpty()
+                && !defaultOtherCacheFormats.isEmpty() && !defaultVectorCacheFormats.isEmpty();
+
+    }
+
+    /**
      * Returns a config suitable to match the old defaults when the integrated GWC behaivour was not
      * configurable.
      */
@@ -188,8 +248,6 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     private void setOldDefaults() {
-
-        setCacheDeclaredCRS(false);
         setCacheLayersByDefault(true);
         setMetaTilingX(4);
         setMetaTilingY(4);
@@ -250,16 +308,21 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     public boolean isEnabled(final String serviceId) {
-        Assert.notNull(serviceId);
-        if ("wms".equals(serviceId)) {
+        checkNotNull(serviceId);
+        if ("wms".equalsIgnoreCase(serviceId)) {
             return isWMSCEnabled();
         }
-        if ("wmts".equals(serviceId)) {
+        if ("wmts".equalsIgnoreCase(serviceId)) {
             return isWMTSEnabled();
         }
-        if ("tms".equals(serviceId)) {
+        if ("tms".equalsIgnoreCase(serviceId)) {
             return isTMSEnabled();
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 }

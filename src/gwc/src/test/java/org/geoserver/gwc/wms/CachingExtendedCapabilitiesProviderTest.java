@@ -56,7 +56,6 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Height (#PCDATA)>"));
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Layers (#PCDATA)>"));
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Styles (#PCDATA)>"));
-        System.out.println("so?");
     }
 
     public void testTileSets() throws Exception {

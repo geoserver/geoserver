@@ -28,7 +28,11 @@
       <groupId>org.geoserver</groupId>
       <artifactId>wms</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    
     <!-- GWC modules dependencies -->
     <dependency>
       <groupId>org.geowebcache</groupId>
@@ -112,11 +116,28 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/CatalogConfigurationTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <instrumentation>
+            <!-- ignores>
+             <ignore>**/*Exception.class</ignore>
+            </ignores-->
+            <excludes>
+              <exclude>**/FakeHttp*.class</exclude>
+              <exclude>**/ServletDebugException.class</exclude>
+            </excludes>
+            <!-- includes>
+              <include>**/*Test.class</include>
+            </includes-->
+          </instrumentation>
+        </configuration>
+      </plugin>   
     </plugins>
-      </build>
+   </build>
   
 </project>

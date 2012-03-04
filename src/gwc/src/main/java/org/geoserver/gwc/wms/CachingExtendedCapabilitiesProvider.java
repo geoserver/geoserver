@@ -6,11 +6,8 @@ package org.geoserver.gwc.wms;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
@@ -105,15 +102,13 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
             return;
         }
 
-        String namespacePrefixFilter = request.getNamespace();
-        Iterable<TileLayer> tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
+        final String namespacePrefixFilter = request.getNamespace();
+        Iterable<? extends TileLayer> tileLayers;
+        tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
 
         for (TileLayer layer : tileLayers) {
-
-            Set<String> layerGrids = layer.getGridSubsets();
-
-            for (String gridId : layerGrids) {
-                GridSubset grid = layer.getGridSubset(gridId);
+            for (String gridSetId : layer.getGridSubsets()) {
+                GridSubset grid = layer.getGridSubset(gridSetId);
                 for (MimeType mime : layer.getMimeTypes()) {
                     vendorSpecificTileset(tx, layer, grid, mime.getFormat());
                 }

@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.config;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,7 +20,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
-import org.springframework.util.Assert;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -32,7 +33,7 @@ public class GWCConfigPersister {
 
     private static final Logger LOGGER = Logging.getLogger(GWCConfigPersister.class);
 
-    public static final String GWC_CONFIG_FILE = "gwc-gs.xml";
+    static final String GWC_CONFIG_FILE = "gwc-gs.xml";
 
     private final XStreamPersisterFactory persisterFactory;
 
@@ -68,7 +69,7 @@ public class GWCConfigPersister {
 
     private synchronized void loadConfig() throws IOException {
         File configFile = findConfigFile();
-        Assert.notNull(configFile);
+        checkNotNull(configFile, "gwc config file does not exist: ", GWC_CONFIG_FILE);
 
         XStreamPersister xmlPersister = this.persisterFactory.createXMLPersister();
         configureXstream(xmlPersister.getXStream());

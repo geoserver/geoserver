@@ -20,8 +20,11 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.gwc.GWC;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Listens to changes in {@link StyleInfo styles} for the GeoServer {@link Catalog} and applies the
@@ -34,10 +37,10 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
     private static Logger log = Logging.getLogger(CatalogStyleChangeListener.class);
 
-    private final CatalogConfiguration catalogConfig;
+    private final GWC mediator;
 
-    public CatalogStyleChangeListener(final CatalogConfiguration catalogConfiguration) {
-        this.catalogConfig = catalogConfiguration;
+    public CatalogStyleChangeListener(final GWC mediator) {
+        this.mediator = mediator;
     }
 
     /**
@@ -55,7 +58,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * When a style is renamed, the {@link LayerInfo} and {@link LayerGroupInfo} that refer to it
      * are not modified, since they refer to the {@link StyleInfo} by id, so they don't really care
      * about the name of the style. For the tiled layer its different, because styles are referred
-     * to by {@link GeoServerTileLayerInfo#getCachedStyles() name} in order to create the
+     * to by {@link GeoServerTileLayerInfoImpl#cachedStyles() name} in order to create the
      * appropriate "STYLES" {@link ParameterFilter parameter filter}. This method will look for any
      * tile layer backed by a {@link LayerInfo} that has a cache for the renamed style as an
      * alternate style (i.e. through a parameter filter) and will truncate the cache for that
@@ -82,18 +85,29 @@ public class CatalogStyleChangeListener implements CatalogListener {
             return;
         }
         List<GeoServerTileLayer> affectedLayers;
-        affectedLayers = catalogConfig.getTileLayersForStyle(oldStyleName);
+        affectedLayers = mediator.getTileLayersForStyle(oldStyleName);
+
         for (GeoServerTileLayer tl : affectedLayers) {
+            LayerInfo layerInfo = tl.getLayerInfo();
+            if (layerInfo == null) {
+                // no extra styles for layer groups
+                continue;
+            }
+
             GeoServerTileLayerInfo info = tl.getInfo();
-            Set<String> styleNames = new HashSet<String>(info.getCachedStyles());
+            ImmutableSet<String> styleNames = info.cachedStyles();
             if (styleNames.contains(oldStyleName)) {
                 tl.resetParameterFilters();
                 // pity, we don't have a way to just rename a style in GWC
-                catalogConfig.truncate(tl.getName(), oldStyleName);
-                styleNames.remove(oldStyleName);
-                styleNames.add(newStyleName);
-                info.setCachedStyles(styleNames);
-                catalogConfig.save(tl);
+                mediator.truncateByLayerAndStyle(tl.getName(), oldStyleName);
+                Set<String> newStyles = new HashSet<String>(styleNames);
+                newStyles.remove(oldStyleName);
+                newStyles.add(newStyleName);
+                String defaultStyle = layerInfo.getDefaultStyle() == null ? null : layerInfo
+                        .getDefaultStyle().getName();
+                TileLayerInfoUtil.setCachedStyles(info, defaultStyle, newStyles);
+
+                mediator.save(tl);
             }
         }
     }
@@ -126,20 +140,20 @@ public class CatalogStyleChangeListener implements CatalogListener {
         final String styleName = modifiedStyle.getName();
         log.finer("Handling style modification: " + styleName);
         // First we collect all the layers that use this style
-        for (LayerInfo affectedLayer : catalogConfig.getLayerInfosFor(modifiedStyle)) {
+        for (LayerInfo affectedLayer : mediator.getLayerInfosFor(modifiedStyle)) {
             // If the style name changes, we need to update the layer's parameter filter
             String prefixedName = affectedLayer.getResource().getPrefixedName();
             log.info("Truncating layer '" + prefixedName + "' due to a change in style '"
                     + styleName + "'");
-            catalogConfig.truncate(prefixedName, styleName);
+            mediator.truncateByLayerAndStyle(prefixedName, styleName);
         }
 
         // Now we check for layer groups that are affected
-        for (LayerGroupInfo layerGroup : catalogConfig.getLayerGroupsFor(modifiedStyle)) {
+        for (LayerGroupInfo layerGroup : mediator.getLayerGroupsFor(modifiedStyle)) {
             String layerGroupName = layerGroup.getName();
             log.info("Truncating layer group '" + layerGroupName + "' due to a change in style '"
                     + styleName + "'");
-            catalogConfig.truncate(layerGroupName);
+            mediator.truncate(layerGroupName);
         }
     }
 

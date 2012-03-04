@@ -4,6 +4,9 @@
  */
 package org.geoserver.gwc.wms;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.geowebcache.conveyor.Conveyor.CacheResult.MISS;
+
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.nio.channels.Channels;
@@ -24,10 +27,10 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
-import org.springframework.util.Assert;
 
 /**
  * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to serve cached tiles
@@ -58,61 +61,71 @@ public class CachingWebMapService implements MethodInterceptor {
         }
 
         final Method method = invocation.getMethod();
-        Assert.isTrue(method.getDeclaringClass().equals(WebMapService.class));
-        Assert.isTrue("getMap".equals(method.getName()));
+        checkArgument(method.getDeclaringClass().equals(WebMapService.class));
+        checkArgument("getMap".equals(method.getName()));
 
         final Object[] arguments = invocation.getArguments();
 
-        Assert.isTrue(arguments.length == 1);
-        Assert.isInstanceOf(GetMapRequest.class, arguments[0]);
+        checkArgument(arguments.length == 1);
+        checkArgument(arguments[0] instanceof GetMapRequest);
 
         final GetMapRequest request = (GetMapRequest) arguments[0];
         boolean tiled = request.isTiled();
         if (!tiled) {
             return (WebMap) invocation.proceed();
         }
-        ConveyorTile cachedTile = gwc.dispatch(request);
-        if (cachedTile != null) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.finest("GetMap request intercepted, serving cached content: " + request);
-            }
+        final StringBuilder requestMistmatchTarget = new StringBuilder();
+        ConveyorTile cachedTile = gwc.dispatch(request, requestMistmatchTarget);
 
-            final byte[] tileBytes;
-            {
-                final Resource mapContents = cachedTile.getBlob();
-                if (mapContents instanceof ByteArrayResource) {
-                    tileBytes = ((ByteArrayResource) mapContents).getContents();
-                } else {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    mapContents.transferTo(Channels.newChannel(out));
-                    tileBytes = out.toByteArray();
-                }
-            }
-
-            // Handle Etags
-            final String ifNoneMatch = request.getHttpRequestHeader("If-None-Match");
-            final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
-            final String etag = toHexString(hash);
-            if (etag.equals(ifNoneMatch)) {
-                // Client already has the current version
-                LOGGER.finer("ETag matches, returning 304");
-                throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);
-            }
-
-            LOGGER.finer("No matching ETag, returning cached tile");
-            final String mimeType = cachedTile.getMimeType().getMimeType();
-
-            RawMap map = new RawMap(null, tileBytes, mimeType);
-
-            map.setResponseHeader("Cache-Control", "no-cache");
-            map.setResponseHeader("ETag", etag);
-            map.setResponseHeader("geowebcache-tile-index",
-                    Arrays.toString(cachedTile.getTileIndex()));
-            map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension());
-            return map;
+        if (cachedTile == null) {
+            WebMap dynamicResult = (WebMap) invocation.proceed();
+            dynamicResult.setResponseHeader("geowebcache-cache-result", MISS.toString());
+            dynamicResult.setResponseHeader("geowebcache-miss-reason",
+                    requestMistmatchTarget.toString());
+            return dynamicResult;
         }
 
-        return (WebMap) invocation.proceed();
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.finest("GetMap request intercepted, serving cached content: " + request);
+        }
+
+        final byte[] tileBytes;
+        {
+            final Resource mapContents = cachedTile.getBlob();
+            if (mapContents instanceof ByteArrayResource) {
+                tileBytes = ((ByteArrayResource) mapContents).getContents();
+            } else {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                mapContents.transferTo(Channels.newChannel(out));
+                tileBytes = out.toByteArray();
+            }
+        }
+
+        // Handle Etags
+        final String ifNoneMatch = request.getHttpRequestHeader("If-None-Match");
+        final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
+        final String etag = toHexString(hash);
+        if (etag.equals(ifNoneMatch)) {
+            // Client already has the current version
+            LOGGER.finer("ETag matches, returning 304");
+            throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);
+        }
+
+        LOGGER.finer("No matching ETag, returning cached tile");
+        final String mimeType = cachedTile.getMimeType().getMimeType();
+
+        RawMap map = new RawMap(null, tileBytes, mimeType);
+
+        map.setResponseHeader("Cache-Control", "no-cache");
+        map.setResponseHeader("ETag", etag);
+
+        CacheResult cacheResult = cachedTile.getCacheResult();
+        String cacheResultHeader = cacheResult == null ? "UNKNOWN" : cacheResult.toString();
+        map.setResponseHeader("geowebcache-cache-result", cacheResultHeader);
+        map.setResponseHeader("geowebcache-tile-index", Arrays.toString(cachedTile.getTileIndex()));
+        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension());
+        return map;
+
     }
 
     private String toHexString(byte[] hash) {

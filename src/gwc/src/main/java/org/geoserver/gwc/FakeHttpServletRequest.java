@@ -1,9 +1,6 @@
-/** 
- * Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2009 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- * 
- * @author Arne Kepp / OpenGeo
  */
 package org.geoserver.gwc;
 

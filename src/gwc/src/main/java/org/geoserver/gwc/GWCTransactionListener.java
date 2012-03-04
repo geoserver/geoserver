@@ -1,11 +1,10 @@
-/** 
- * Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2009 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- * 
- * @author Arne Kepp / OpenGeo
  */
 package org.geoserver.gwc;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,9 +23,6 @@ import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionPlugin;
@@ -38,7 +34,6 @@ import org.geowebcache.GeoWebCacheException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
-import org.springframework.util.Assert;
 
 /**
  * Listens to transactions (so far only issued by WFS) and truncates the cache for the affected area
@@ -62,7 +57,7 @@ public class GWCTransactionListener implements TransactionPlugin {
 
     final private GWC gwc;
 
-    private static final String GWC_TRANSACTION_INFO_PLACEHOLDER = "GWC_TRANSACTION_INFO_PLACEHOLDER";
+    static final String GWC_TRANSACTION_INFO_PLACEHOLDER = "GWC_TRANSACTION_INFO_PLACEHOLDER";
 
     /**
      * @param gwc
@@ -144,24 +139,13 @@ public class GWCTransactionListener implements TransactionPlugin {
             return null;
         }
 
-        final CoordinateReferenceSystem declaredCrs = getCrs(tileLayerName);
+        final CoordinateReferenceSystem declaredCrs = gwc.getDeclaredCrs(tileLayerName);
         ReferencedEnvelope merged = new ReferencedEnvelope(declaredCrs);
         for (ReferencedEnvelope env : dirtyList) {
-            ReferencedEnvelope transformedDirtyRegion = env.transform(declaredCrs, true);
+            ReferencedEnvelope transformedDirtyRegion = env.transform(declaredCrs, true, 1000);
             merged.expandToInclude(transformedDirtyRegion);
         }
         return merged;
-    }
-
-    private CoordinateReferenceSystem getCrs(final String tileLayerName) {
-        GeoServerTileLayer layer = (GeoServerTileLayer) gwc.getTileLayerByName(tileLayerName);
-        LayerInfo layerInfo = layer.getLayerInfo();
-        if (layerInfo != null) {
-            return layerInfo.getResource().getCRS();
-        }
-        LayerGroupInfo layerGroupInfo = layer.getLayerGroupInfo();
-        ReferencedEnvelope bounds = layerGroupInfo.getBounds();
-        return bounds.getCoordinateReferenceSystem();
     }
 
     /**
@@ -194,7 +178,7 @@ public class GWCTransactionListener implements TransactionPlugin {
         }
 
         final EObject originatingTransactionRequest = (EObject) source;
-        Assert.notNull(originatingTransactionRequest);
+        checkNotNull(originatingTransactionRequest, "No original transaction request exists");
         final TransactionEventType type = event.getType();
         if (TransactionEventType.POST_INSERT.equals(type)) {
             // no need to compute the bounds, they're the same than for PRE_INSERT

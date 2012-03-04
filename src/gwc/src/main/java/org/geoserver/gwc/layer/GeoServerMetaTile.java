@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.layer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -15,6 +17,7 @@ import java.io.OutputStream;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
 
+import org.geoserver.gwc.GWC;
 import org.geoserver.ows.Response;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -29,29 +32,21 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
-import org.springframework.util.Assert;
 
 public class GeoServerMetaTile extends MetaTile {
 
     private RenderedImageMap metaTileMap;
 
-    private final String layer;
-
-    private final CatalogConfiguration mediator;
-
-    public GeoServerMetaTile(final String layer, GridSubset gridSubset, MimeType responseFormat,
+    public GeoServerMetaTile(GridSubset gridSubset, MimeType responseFormat,
             FormatModifier formatModifier, long[] tileGridPosition, int metaX, int metaY,
-            Integer gutter, CatalogConfiguration mediator) {
+            Integer gutter) {
+
         super(gridSubset, responseFormat, formatModifier, tileGridPosition, metaX, metaY, gutter);
-        this.layer = layer;
-        this.mediator = mediator;
     }
 
     public void setWebMap(RenderedImageMap webMap) {
         this.metaTileMap = webMap;
-        if (webMap instanceof RenderedImageMap) {
-            setImage(((RenderedImageMap) webMap).getImage());
-        }
+        setImage(webMap.getImage());
     }
 
     /**
@@ -66,13 +61,14 @@ public class GeoServerMetaTile extends MetaTile {
     @Override
     public boolean writeTileToStream(final int tileIdx, Resource target) throws IOException {
 
-        Assert.notNull(metaTileMap, "webMap is not set");
+        checkNotNull(metaTileMap, "webMap is not set");
         if (!(metaTileMap instanceof RenderedImageMap)) {
             throw new IllegalArgumentException("Only RenderedImageMaps are supported so far: "
                     + metaTileMap.getClass().getName());
         }
         final RenderedImageMapResponse mapEncoder;
         {
+            final GWC mediator = GWC.get();
             final Response responseEncoder = mediator.getResponseEncoder(responseFormat,
                     metaTileMap);
             mapEncoder = (RenderedImageMapResponse) responseEncoder;

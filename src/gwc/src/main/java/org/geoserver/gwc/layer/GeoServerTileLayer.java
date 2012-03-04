@@ -4,16 +4,20 @@
  */
 package org.geoserver.gwc.layer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Throwables.propagate;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,16 +42,15 @@ import org.geotools.util.CanonicalSet;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterException;
 import org.geowebcache.filter.parameters.ParameterFilter;
-import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.filter.request.RequestFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
-import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.io.Resource;
@@ -64,11 +67,10 @@ import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.util.GWCVars;
 import org.geowebcache.util.ServletUtils;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
-import org.springframework.util.Assert;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class GeoServerTileLayer extends TileLayer {
 
@@ -80,53 +82,74 @@ public class GeoServerTileLayer extends TileLayer {
 
     public static final ThreadLocal<WebMap> WEB_MAP = new ThreadLocal<WebMap>();
 
-    private CatalogConfiguration mediator;
+    private final LayerInfo layerInfo;
 
-    private final String layerId;
-
-    private final String layerGroupId;
+    private final LayerGroupInfo layerGroupInfo;
 
     private String configErrorMessage;
-
-    private List<ParameterFilter> parameterFilters;
 
     private Map<String, GridSubset> subSets;
 
     private static LayerListenerList listeners = new LayerListenerList();
 
-    public GeoServerTileLayer(final CatalogConfiguration mediator, final LayerGroupInfo layerGroup) {
-        this.mediator = mediator;
-        this.layerId = null;
-        this.layerGroupId = layerGroup.getId();
-        GWCConfig configDefaults = mediator.getConfig();
-        this.info = GeoServerTileLayerInfo.create(layerGroup, configDefaults);
+    private final GridSetBroker gridSetBroker;
+
+    public GeoServerTileLayer(final LayerGroupInfo layerGroup, final GWCConfig configDefaults,
+            final GridSetBroker gridsets) {
+        checkNotNull(layerGroup, "layerGroup");
+        checkNotNull(gridsets, "gridsets");
+        checkNotNull(configDefaults, "configDefaults");
+
+        this.gridSetBroker = gridsets;
+        this.layerInfo = null;
+        this.layerGroupInfo = layerGroup;
+        this.info = TileLayerInfoUtil.loadOrCreate(layerGroup, configDefaults);
     }
 
-    public GeoServerTileLayer(final CatalogConfiguration mediator, final LayerInfo layerInfo) {
-        this.mediator = mediator;
-        this.layerId = layerInfo.getId();
-        this.layerGroupId = null;
-        GWCConfig configDefaults = mediator.getConfig();
-        this.info = GeoServerTileLayerInfo.create(layerInfo, configDefaults);
+    public GeoServerTileLayer(final LayerInfo layerInfo, final GWCConfig configDefaults,
+            final GridSetBroker gridsets) {
+        checkNotNull(layerInfo, "layerInfo");
+        checkNotNull(gridsets, "gridsets");
+        checkNotNull(configDefaults, "configDefaults");
+
+        this.gridSetBroker = gridsets;
+        this.layerInfo = layerInfo;
+        this.layerGroupInfo = null;
+        this.info = TileLayerInfoUtil.loadOrCreate(layerInfo, configDefaults);
+    }
+
+    public GeoServerTileLayer(final LayerGroupInfo layerGroup, final GridSetBroker gridsets,
+            final GeoServerTileLayerInfo state) {
+        checkNotNull(layerGroup, "layerGroup");
+        checkNotNull(gridsets, "gridsets");
+        checkNotNull(state, "state");
+
+        this.gridSetBroker = gridsets;
+        this.layerInfo = null;
+        this.layerGroupInfo = layerGroup;
+        this.info = state;
+    }
+
+    public GeoServerTileLayer(final LayerInfo layerInfo, final GridSetBroker gridsets,
+            final GeoServerTileLayerInfo state) {
+        checkNotNull(layerInfo, "layerInfo");
+        checkNotNull(gridsets, "gridsets");
+        checkNotNull(state, "state");
+
+        this.gridSetBroker = gridsets;
+        this.layerInfo = layerInfo;
+        this.layerGroupInfo = null;
+        this.info = state;
     }
 
     @Override
     public String getId() {
-        if (layerGroupId != null) {
-            return layerGroupId;
-        }
-        return layerId;
+        return info.getId();
     }
 
     @Override
     public String getName() {
-        if (layerGroupId != null) {
-            LayerGroupInfo layerGroupInfo = getLayerGroupInfo();
-            return layerGroupInfo.getName();
-        }
-        LayerInfo layerInfo = getLayerInfo();
-        ResourceInfo resource = layerInfo.getResource();
-        return resource.getPrefixedName();
+        return info.getName();
     }
 
     void setConfigErrorMessage(String configErrorMessage) {
@@ -139,32 +162,11 @@ public class GeoServerTileLayer extends TileLayer {
 
     @Override
     public List<ParameterFilter> getParameterFilters() {
-        if (parameterFilters == null) {
-            Set<String> cachedStyles = info.getCachedStyles();
-            if (cachedStyles.size() > 0) {
-                String defaultStyle = getStyles();
-                if (defaultStyle == null) {
-                    // may be null if backed by a LayerGroupInfo, but in that case
-                    // cachedStyles.size() can't be > 0
-                    throw new IllegalStateException(
-                            "TileLayer backed by a LayerGroup should not have alternate styles!");
-                }
-                ParameterFilter stylesParameterFilter;
-                stylesParameterFilter = createStylesParameterFilters(defaultStyle, cachedStyles);
-                if (stylesParameterFilter != null) {
-                    LOGGER.fine("Created STYLES parameter filter for layer " + getName()
-                            + " and styles " + stylesParameterFilter.getLegalValues());
-                    List<ParameterFilter> paramFilters = Arrays.asList(stylesParameterFilter);
-                    this.parameterFilters = paramFilters;
-                }
-            }
-        }
-        return parameterFilters;
+        return new ArrayList<ParameterFilter>(info.getParameterFilters());
     }
 
     public void resetParameterFilters() {
         super.defaultParameterFilterValues = null;// reset default values
-        this.parameterFilters = null;
     }
 
     /**
@@ -211,11 +213,7 @@ public class GeoServerTileLayer extends TileLayer {
 
     @Override
     public void setEnabled(final boolean enabled) {
-        boolean oldVal = info.isEnabled();
         info.setEnabled(enabled);
-        if (oldVal != enabled) {
-            mediator.save(this);
-        }
     }
 
     /**
@@ -226,7 +224,8 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public boolean isQueryable() {
-        return mediator.isQueryable(this);
+        boolean queryable = GWC.get().isQueryable(this);
+        return queryable;
     }
 
     private ReferencedEnvelope getLatLonBbox() throws IllegalStateException {
@@ -267,37 +266,10 @@ public class GeoServerTileLayer extends TileLayer {
     }
 
     /**
-     * Creates parameter filters for each additional layer style
-     * 
-     * @return
-     */
-    public static StringParameterFilter createStylesParameterFilters(final String defaultStyle,
-            final Set<String> styleNames) {
-        Assert.notNull(defaultStyle, "defaultStyle");
-        Assert.notNull(defaultStyle, "alternate styles");
-        if (styleNames.size() == 0) {
-            return null;
-        }
-
-        Set<String> possibleValues = new TreeSet<String>();
-        possibleValues.add(defaultStyle);
-        possibleValues.addAll(styleNames);
-        StringParameterFilter styleParamFilter = new StringParameterFilter();
-        styleParamFilter.setKey("STYLES");
-        styleParamFilter.setDefaultValue(defaultStyle);
-        styleParamFilter.getValues().addAll(possibleValues);
-        return styleParamFilter;
-    }
-
-    /**
      * @return the {@link LayerInfo} for this layer, or {@code null} if it's backed by a
      *         {@link LayerGroupInfo} instead
      */
     public LayerInfo getLayerInfo() {
-        if (layerId == null) {
-            return null;
-        }
-        LayerInfo layerInfo = mediator.getLayerInfoById(layerId);
         return layerInfo;
     }
 
@@ -306,10 +278,6 @@ public class GeoServerTileLayer extends TileLayer {
      *         {@link LayerInfo} instead
      */
     public LayerGroupInfo getLayerGroupInfo() {
-        if (layerGroupId == null) {
-            return null;
-        }
-        LayerGroupInfo layerGroupInfo = mediator.getLayerGroupById(layerGroupId);
         return layerGroupInfo;
     }
 
@@ -360,11 +328,10 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public String getStyles() {
-        if (layerGroupId != null) {
+        if (layerGroupInfo != null) {
             // there's no such thing as default style for a layer group
             return null;
         }
-        LayerInfo layerInfo = getLayerInfo();
         StyleInfo defaultStyle = layerInfo.getDefaultStyle();
         if (defaultStyle == null) {
             setConfigErrorMessage("Underlying GeoSever Layer has no default style");
@@ -384,7 +351,7 @@ public class GeoServerTileLayer extends TileLayer {
         Map<String, String> params = buildGetFeatureInfo(convTile, bbox, height, width, x, y);
         Resource response;
         try {
-            response = mediator.dispatchOwsRequest(params, (Cookie[]) null);
+            response = GWC.get().dispatchOwsRequest(params, (Cookie[]) null);
         } catch (Exception e) {
             throw new GeoWebCacheException(e);
         }
@@ -458,7 +425,7 @@ public class GeoServerTileLayer extends TileLayer {
         }
 
         final long[] gridLoc = tile.getTileIndex();
-        Assert.notNull(gridLoc);
+        checkNotNull(gridLoc);
 
         // Final preflight check, throws OutsideCoverageException if necessary
         gridSubset.checkCoverage(gridLoc);
@@ -473,6 +440,7 @@ public class GeoServerTileLayer extends TileLayer {
         } else {
             metaX = metaY = 1;
         }
+
         returnTile = getMetatilingReponse(tile, true, metaX, metaY);
 
         sendTileRequestedEvent(returnTile);
@@ -503,7 +471,10 @@ public class GeoServerTileLayer extends TileLayer {
     private ConveyorTile getMetatilingReponse(ConveyorTile tile, final boolean tryCache,
             final int metaX, final int metaY) throws GeoWebCacheException, IOException {
 
-        // Acquire lock
+        final GridSubset gridSubset = getGridSubset(tile.getGridSetId());
+        final int zLevel = (int) tile.getTileIndex()[2];
+        tile.setMetaTileCacheOnly(!gridSubset.shouldCacheAtZoom(zLevel));
+
         if (tryCache && tryCacheFetch(tile)) {
             return finalizeTile(tile);
         }
@@ -514,21 +485,16 @@ public class GeoServerTileLayer extends TileLayer {
         synchronized (metaGridLoc) {
             // got the lock on the meta tile, try again
             if (tryCache && tryCacheFetch(tile)) {
-                if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.finest("--> " + Thread.currentThread().getName()
-                            + " returns cache hit for "
-                            + Arrays.toString(metaTile.getMetaGridPos()));
-                }
+                LOGGER.finest("--> " + Thread.currentThread().getName() + " returns cache hit for "
+                        + Arrays.toString(metaTile.getMetaGridPos()));
             } else {
-                if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer("--> " + Thread.currentThread().getName()
-                            + " submitting getMap request for meta grid location "
-                            + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
-                }
+                LOGGER.finer("--> " + Thread.currentThread().getName()
+                        + " submitting getMap request for meta grid location "
+                        + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
                 RenderedImageMap map;
                 try {
                     map = dispatchGetMap(tile, metaTile);
-                    Assert.notNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
+                    checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
                     metaTile.setWebMap(map);
                     saveTiles(metaTile, tile);
                 } catch (Exception e) {
@@ -553,7 +519,7 @@ public class GeoServerTileLayer extends TileLayer {
             HttpServletRequest actualRequest = tile.servletReq;
             Cookie[] cookies = actualRequest == null ? null : actualRequest.getCookies();
 
-            mediator.dispatchOwsRequest(params, cookies);
+            GWC.get().dispatchOwsRequest(params, cookies);
             map = WEB_MAP.get();
             if (!(map instanceof RenderedImageMap)) {
                 throw new IllegalStateException("Expected: RenderedImageMap, got " + map);
@@ -574,9 +540,8 @@ public class GeoServerTileLayer extends TileLayer {
         FormatModifier formatModifier = null;
         long[] tileGridPosition = tile.getTileIndex();
         int gutter = info.getGutter();
-        String layerName = this.getName();
-        metaTile = new GeoServerMetaTile(layerName, gridSubset, responseFormat, formatModifier,
-                tileGridPosition, metaX, metaY, gutter, mediator);
+        metaTile = new GeoServerMetaTile(gridSubset, responseFormat, formatModifier,
+                tileGridPosition, metaX, metaY, gutter);
 
         return metaTile;
     }
@@ -676,6 +641,17 @@ public class GeoServerTileLayer extends TileLayer {
     public void seedTile(ConveyorTile tile, boolean tryCache) throws GeoWebCacheException,
             IOException {
 
+        // Ignore a seed call on a tile that's outside the cached grid levels range
+        final GridSubset gridSubset = getGridSubset(tile.getGridSetId());
+        final int zLevel = (int) tile.getTileIndex()[2];
+        if (!gridSubset.shouldCacheAtZoom(zLevel)) {
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.finest("Ignoring seed call on tile " + tile
+                        + " as it's outside the cacheable zoom level range");
+            }
+            return;
+        }
+
         int metaX = info.getMetaTilingX();
         int metaY = info.getMetaTilingY();
         if (!tile.getMimeType().supportsTiling()) {
@@ -686,147 +662,190 @@ public class GeoServerTileLayer extends TileLayer {
 
     @Override
     public void acquireLayerLock() {
-        throw new UnsupportedOperationException("not implemented yet");
+        // throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Override
     public void releaseLayerLock() {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    private Map<String, GridSubset> getGrids(final ReferencedEnvelope latLonBbox,
-            final GridSetBroker gridSetBroker) throws ConfigurationException {
-
-        Set<String> cachedGridSetIds = info.getCachedGridSetIds();
-        if (cachedGridSetIds.size() == 0) {
-            throw new IllegalStateException("TileLayer " + getName()
-                    + " has no gridsets configured");
-        }
-
-        Map<String, GridSubset> grids = new HashMap<String, GridSubset>(2);
-        for (String gridSetId : cachedGridSetIds) {
-            GridSet gridSet = gridSetBroker.get(gridSetId);
-            if (gridSet == null) {
-                throw new ConfigurationException("No GWC GridSet named '" + gridSetId + "' exists.");
-            }
-            BoundingBox extent = getBoundsFromWGS84Bounds(latLonBbox, gridSet.getSrs());
-            Integer zoomStart = 0;
-            Integer zoomStop = gridSet.getGridLevels().length - 1;
-            GridSubset gridSubSet;
-            gridSubSet = GridSubsetFactory.createGridSubSet(gridSet, extent, zoomStart, zoomStop);
-            grids.put(gridSetId, gridSubSet);
-        }
-
-        return grids;
-    }
-
-    private BoundingBox getBoundsFromWGS84Bounds(final ReferencedEnvelope latLonBbox, final SRS srs) {
-        Assert.notNull(latLonBbox);
-        Assert.notNull(latLonBbox.getCoordinateReferenceSystem());
-        Assert.notNull(srs);
-        final double minX = latLonBbox.getMinX();
-        final double minY = latLonBbox.getMinY();
-        final double maxX = latLonBbox.getMaxX();
-        final double maxY = latLonBbox.getMaxY();
-
-        final String epsgCode = srs.toString();
-        final boolean longitudeFirst = true;
-        ReferencedEnvelope transformedBounds;
-
-        BoundingBox bounds;
-        if ("EPSG:900913".equals(epsgCode) || "EPSG:3857".equals(epsgCode)) {
-            bounds = new BoundingBox(longToSphericalMercatorX(minX), latToSphericalMercatorY(minY),
-                    longToSphericalMercatorX(maxX), latToSphericalMercatorY(maxY));
-        } else {
-
-            try {
-                CoordinateReferenceSystem crs;
-                crs = CRS.decode(epsgCode, longitudeFirst);
-                Assert.notNull(crs);
-                transformedBounds = latLonBbox.transform(crs, true, 20);
-            } catch (NoSuchAuthorityCodeException e) {
-                throw new RuntimeException(e);
-            } catch (FactoryException e) {
-                throw new RuntimeException(e);
-            } catch (TransformException e) {
-                throw new RuntimeException(e);
-            }
-            bounds = new BoundingBox(transformedBounds.getMinX(), transformedBounds.getMinY(),
-                    transformedBounds.getMaxX(), transformedBounds.getMaxY());
-        }
-
-        // BoundingBox bounds4326 = new BoundingBox(minX, minY, maxX, maxY);
-
-        return bounds;
-    }
-
-    private double longToSphericalMercatorX(double x) {
-        return (x / 180.0) * 20037508.34;
-    }
-
-    private double latToSphericalMercatorY(double y) {
-        if (y > 85.05112) {
-            y = 85.05112;
-        }
-
-        if (y < -85.05112) {
-            y = -85.05112;
-        }
-
-        y = (Math.PI / 180.0) * y;
-        double tmp = Math.PI / 4.0 + y / 2.0;
-        return 20037508.34 * Math.log(Math.tan(tmp)) / Math.PI;
-    }
-
-    public GeoServerTileLayerInfo getInfo() {
-        return info;
+        // throw new UnsupportedOperationException("not implemented yet");
     }
 
     /**
      * @see org.geowebcache.layer.TileLayer#getGridSubsets()
      */
     @Override
-    public Set<String> getGridSubsets() {
+    public synchronized Set<String> getGridSubsets() {
+        checkGridSubsets();
+        return new HashSet<String>(subSets.keySet());
+    }
+
+    @Override
+    public GridSubset getGridSubset(final String gridSetId) {
+        checkGridSubsets();
+        return subSets.get(gridSetId);
+    }
+
+    private synchronized void checkGridSubsets() {
         if (this.subSets == null) {
             ReferencedEnvelope latLongBbox = getLatLonBbox();
             try {
-                GridSetBroker gridSetBroker = mediator.getGridSetBroker();
                 this.subSets = getGrids(latLongBbox, gridSetBroker);
             } catch (ConfigurationException e) {
                 String msg = "Can't create grids for '" + getName() + "': " + e.getMessage();
                 LOGGER.log(Level.WARNING, msg, e);
                 setConfigErrorMessage(msg);
-                return Collections.emptySet();
             }
         }
-        return new HashSet<String>(this.subSets.keySet());
     }
 
-    /**
-     * @see org.geowebcache.layer.TileLayer#getGridSubset(java.lang.String)
-     */
     @Override
-    public GridSubset getGridSubset(String gridSetId) {
-        if (!getGridSubsets().contains(gridSetId)) {
-            return null;
+    public synchronized GridSubset removeGridSubset(String gridSetId) {
+        checkGridSubsets();
+        final GridSubset oldValue = this.subSets.remove(gridSetId);
+
+        Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>(info.getGridSubsets());
+        for (Iterator<XMLGridSubset> it = gridSubsets.iterator(); it.hasNext();) {
+            if (it.next().getGridSetName().equals(gridSetId)) {
+                it.remove();
+                break;
+            }
         }
-        return subSets.get(gridSetId);
+        info.setGridSubsets(gridSubsets);
+        return oldValue;
     }
 
-    /**
-     * @see org.geowebcache.layer.TileLayer#removeGridSubset(java.lang.String)
-     */
-    @Override
-    public GridSubset removeGridSubset(String gridSetId) {
-        throw new UnsupportedOperationException("not yet implemented nor used");
-    }
-
-    /**
-     * @see org.geowebcache.layer.TileLayer#addGridSubset(org.geowebcache.grid.GridSubset)
-     */
     @Override
     public void addGridSubset(GridSubset gridSubset) {
-        throw new UnsupportedOperationException("not yet implemented nor used");
+        XMLGridSubset gridSubsetInfo = new XMLGridSubset(gridSubset);
+        Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>(info.getGridSubsets());
+        gridSubsets.add(gridSubsetInfo);
+        info.setGridSubsets(gridSubsets);
+        this.subSets = null;
+    }
+
+    private Map<String, GridSubset> getGrids(final ReferencedEnvelope latLonBbox,
+            final GridSetBroker gridSetBroker) throws ConfigurationException {
+
+        Set<XMLGridSubset> cachedGridSets = info.getGridSubsets();
+        if (cachedGridSets.size() == 0) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, GridSubset> grids = new HashMap<String, GridSubset>(2);
+        for (XMLGridSubset gridSubset : cachedGridSets) {
+            final String gridSetId = gridSubset.getGridSetName();
+            final GridSet gridSet = gridSetBroker.get(gridSetId);
+            if (gridSet == null) {
+                LOGGER.info("No GWC GridSet named '" + gridSetId + "' exists.");
+                continue;
+            }
+            BoundingBox extent = gridSubset.getExtent();
+            if (null == extent) {
+                try {
+                    SRS srs = gridSet.getSrs();
+                    try {
+                        extent = getBounds(srs);
+                    } catch (RuntimeException cantComputeBounds) {
+                        final String msg = "Can't compute bounds for tile layer " + getName()
+                                + " in CRS " + srs + ". Assuming full GridSet bounds. ("
+                                + cantComputeBounds.getMessage() + ")";
+                        if (LOGGER.isLoggable(Level.FINE)) {
+                            LOGGER.log(Level.FINE, msg, cantComputeBounds);
+                        } else {
+                            LOGGER.warning(msg);
+                        }
+                        extent = gridSet.getBounds();
+                    }
+
+                    BoundingBox maxBounds = gridSet.getBounds();
+                    if (!maxBounds.contains(extent)) {
+                        if (LOGGER.isLoggable(Level.FINER)) {
+                            LOGGER.finer("Layer bounds exceed GridSet bounds for " + gridSetId
+                                    + ", clipping.");
+                        }
+                        BoundingBox intersection = maxBounds.intersection(extent);
+                        extent = intersection;
+                    }
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.WARNING,
+                            "Error computing layer bounds, assuming whole GridSet bounds", e);
+                    extent = gridSet.getOriginalExtent();
+                }
+            }
+            gridSubset.setExtent(extent);
+
+            GridSubset gridSubSet = gridSubset.getGridSubSet(gridSetBroker);
+
+            grids.put(gridSetId, gridSubSet);
+        }
+
+        return grids;
+    }
+
+    private BoundingBox getBounds(final SRS srs) {
+
+        CoordinateReferenceSystem targetCrs;
+        try {
+            final String epsgCode = srs.toString();
+            final boolean longitudeFirst = true;
+            targetCrs = CRS.decode(epsgCode, longitudeFirst);
+            checkNotNull(targetCrs);
+        } catch (Exception e) {
+            throw propagate(e);
+        }
+
+        ReferencedEnvelope nativeBounds;
+        if (getLayerInfo() != null) {
+            // projection policy for these bounds are already taken care of by the geoserver
+            // configuration
+            nativeBounds = getLayerInfo().getResource().getNativeBoundingBox();
+        } else {
+            nativeBounds = getLayerGroupInfo().getBounds();
+        }
+        checkState(nativeBounds != null, getName(), " has no native bounds set");
+
+        Envelope transformedBounds;
+        // try reprojecting directly
+        try {
+            transformedBounds = nativeBounds.transform(targetCrs, true, 10000);
+        } catch (Exception e) {
+            // no luck, try the expensive way
+            final Geometry targetAov = GWC.getAreaOfValidityAsGeometry(targetCrs, gridSetBroker);
+            if (null == targetAov) {
+                String msg = "Can't compute tile layer bouds out of resource native bounds for CRS "
+                        + srs;
+                LOGGER.log(Level.WARNING, msg, e);
+                throw new IllegalArgumentException(msg, e);
+            }
+            LOGGER.log(Level.FINE, "Can't compute tile layer bouds out of resource "
+                    + "native bounds for CRS " + srs, e);
+
+            final CoordinateReferenceSystem nativeCrs = nativeBounds.getCoordinateReferenceSystem();
+
+            try {
+
+                ReferencedEnvelope targetAovBounds = new ReferencedEnvelope(
+                        targetAov.getEnvelopeInternal(), targetCrs);
+
+                ReferencedEnvelope targetAovInNativeCrs = targetAovBounds.transform(nativeCrs,
+                        true, 10000);
+                ReferencedEnvelope clipped = new ReferencedEnvelope(
+                        targetAovInNativeCrs.intersection(nativeBounds), nativeCrs);
+
+                transformedBounds = clipped.transform(targetCrs, true, 10000);
+            } catch (Exception e1) {
+                throw propagate(e1);
+            }
+        }
+
+        BoundingBox targetBbox = new BoundingBox(transformedBounds.getMinX(),
+                transformedBounds.getMinY(), transformedBounds.getMaxX(),
+                transformedBounds.getMaxY());
+        return targetBbox;
+    }
+
+    public GeoServerTileLayerInfo getInfo() {
+        return info;
     }
 
     /**
@@ -951,13 +970,18 @@ public class GeoServerTileLayer extends TileLayer {
     }
 
     /**
-     * Empty method that returns {@code true}
+     * Empty method, returns {@code true}, initialization is dynamic for this class.
      * 
      * @see org.geowebcache.layer.TileLayer#initialize(org.geowebcache.grid.GridSetBroker)
      */
     @Override
-    public boolean initialize(GridSetBroker gridSetBroker) {
+    public boolean initialize(final GridSetBroker gridSetBroker) {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).append("[").append(info).append("]")
+                .toString();
+    }
 }

@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -76,7 +78,7 @@ public class LegacyTileLayerInfoLoader {
                 TileLayerInfoUtil.setCachedStyles(tileLayerInfo, defaultStyle, cachedStyles);
             }
         }
-        tileLayerInfo.setName(layer.getResource().getPrefixedName());
+        tileLayerInfo.setName(tileLayerName(layer));
         tileLayerInfo.setId(layer.getId());
         return tileLayerInfo;
     }
@@ -92,7 +94,7 @@ public class LegacyTileLayerInfoLoader {
         }
         GeoServerTileLayerInfoImpl tileLayerInfo = load(metadataMap);
         if (tileLayerInfo != null) {
-            tileLayerInfo.setName(layerGroup.getName());
+            tileLayerInfo.setName(tileLayerName(layerGroup));
             tileLayerInfo.setId(layerGroup.getId());
         }
         return tileLayerInfo;

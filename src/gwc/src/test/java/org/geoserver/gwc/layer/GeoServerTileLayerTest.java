@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -219,10 +220,10 @@ public class GeoServerTileLayerTest extends TestCase {
     public void testGetName() {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
-        assertEquals(layerInfo.getResource().getPrefixedName(), layerInfoTileLayer.getName());
+        assertEquals(tileLayerName(layerInfo), layerInfoTileLayer.getName());
 
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
-        assertEquals(layerGroup.getName(), layerGroupInfoTileLayer.getName());
+        assertEquals(GWC.tileLayerName(layerGroup), layerGroupInfoTileLayer.getName());
 
     }
 
@@ -312,7 +313,7 @@ public class GeoServerTileLayerTest extends TestCase {
         description = metaInformation.getDescription();
         keywords = metaInformation.getKeywords();
         // these properties are missing from LayerGroupInfo interface
-        assertEquals(layerGroup.getName(), title);
+        assertEquals(GWC.tileLayerName(layerGroup), title);
         assertEquals("", description);
         assertEquals(0, keywords.size());
     }

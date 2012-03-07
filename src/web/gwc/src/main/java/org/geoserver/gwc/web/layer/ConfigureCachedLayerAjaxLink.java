@@ -5,18 +5,23 @@
 package org.geoserver.gwc.web.layer;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geowebcache.layer.TileLayer;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * A simple ajax link that links to the edit page for the given {@link GeoServerTileLayer} (that is,
@@ -61,8 +66,12 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             }
             setResponsePage(resourceConfigPage);
         } else {
-            PageParameters parameters = new PageParameters(Collections.singletonMap(
-                    LayerGroupEditPage.GROUP, geoserverTileLayer.getName()));
+            LayerGroupInfo layerGroup = geoserverTileLayer.getLayerGroupInfo();
+            WorkspaceInfo workspace = layerGroup.getWorkspace();
+            String wsName = workspace == null ? null : workspace.getName();
+            Map<String, ?> params = ImmutableMap.of(LayerGroupEditPage.GROUP, layerGroup.getName(),
+                    LayerGroupEditPage.WORKSPACE, wsName);
+            PageParameters parameters = new PageParameters(params);
             LayerGroupEditPage layerGroupEditPage = new LayerGroupEditPage(parameters);
             if (returnPage != null) {
                 layerGroupEditPage.setReturnPage(returnPage);

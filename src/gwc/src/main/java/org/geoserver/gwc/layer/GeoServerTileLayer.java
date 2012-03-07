@@ -7,6 +7,7 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Throwables.propagate;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -245,7 +246,8 @@ public class GeoServerTileLayer extends TileLayer {
                 boolean lenient = true;
                 latLongBbox = bounds.transform(wgs84LonFirst, lenient);
             } catch (Exception e) {
-                String msg = "Can't get lat long bounds for layer group " + groupInfo.getName();
+                String msg = "Can't get lat long bounds for layer group "
+                        + tileLayerName(groupInfo);
                 LOGGER.log(Level.WARNING, msg, e);
                 throw new IllegalStateException(msg, e);
             }

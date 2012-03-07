@@ -4,12 +4,14 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import junit.framework.TestCase;
 
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -39,7 +41,7 @@ public class TileLayerInfoUtilTest extends TestCase {
         LayerInfoImpl layer = mockLayer("testLayer");
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         defaultVectorInfo.setId(layer.getId());
-        defaultVectorInfo.setName(layer.getResource().getPrefixedName());
+        defaultVectorInfo.setName(tileLayerName(layer));
         assertNotNull(info);
         assertEquals(defaultVectorInfo, info);
     }
@@ -53,7 +55,7 @@ public class TileLayerInfoUtilTest extends TestCase {
 
         GeoServerTileLayerInfo expected = TileLayerInfoUtil.create(defaults);
         expected.setId(group.getId());
-        expected.setName(group.getName());
+        expected.setName(GWC.tileLayerName(group));
 
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(group, defaults);
         assertNotNull(info);
@@ -86,7 +88,7 @@ public class TileLayerInfoUtilTest extends TestCase {
 
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setId(lg.getId());
-        info.setName(lg.getName());
+        info.setName(GWC.tileLayerName(lg));
         info.getMimeFormats().clear();
         info.getMimeFormats().addAll(defaults.getDefaultOtherCacheFormats());
 

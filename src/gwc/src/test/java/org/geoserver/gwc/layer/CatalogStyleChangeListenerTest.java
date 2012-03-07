@@ -171,7 +171,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testLayerGroupInfoImplicitOrExplicitStyleChanged() throws Exception {
         LayerGroupInfo mockGroup = mock(LayerGroupInfo.class);
-        when(mockGroup.getName()).thenReturn("mockGroup");
+        when(GWC.tileLayerName(mockGroup)).thenReturn("mockGroup");
 
         when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(Collections.EMPTY_LIST);
         when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(

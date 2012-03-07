@@ -6,6 +6,7 @@ package org.geoserver.gwc.config;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.File;
 import java.io.IOException;
@@ -139,7 +140,7 @@ public class GWCInitializer implements GeoServerInitializer {
             } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING,
                         "Error occurred saving default GWC Tile Layer settings for LayerGroup '"
-                                + layer.getName() + "'", e);
+                                + tileLayerName(layer) + "'", e);
             }
         }
     }
@@ -182,7 +183,7 @@ public class GWCInitializer implements GeoServerInitializer {
             } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING,
                         "Error occurred saving default GWC Tile Layer settings for LayerGroup '"
-                                + layer.getName() + "'", e);
+                                + tileLayerName(layer) + "'", e);
             }
         }
     }

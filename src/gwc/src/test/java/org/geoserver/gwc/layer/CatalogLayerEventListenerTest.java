@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -30,6 +31,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
@@ -91,7 +93,7 @@ public class CatalogLayerEventListenerTest extends TestCase {
         mockResourceInfo = mock(FeatureTypeInfo.class);
         mockNamespaceInfo = mock(NamespaceInfo.class);
 
-        when(mockLayerGroupInfo.getName()).thenReturn(LAYER_GROUP_NAME);
+        when(GWC.tileLayerName(mockLayerGroupInfo)).thenReturn(LAYER_GROUP_NAME);
         when(mockResourceInfo.getPrefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);
         when(mockResourceInfo.getName()).thenReturn(RESOURCE_NAME);
         when(mockResourceInfo.getNamespace()).thenReturn(mockNamespaceInfo);
@@ -138,7 +140,8 @@ public class CatalogLayerEventListenerTest extends TestCase {
         when(mockMediator.hasTileLayer(same(mockLayerGroupInfo))).thenReturn(true);
         listener.handleRemoveEvent(event);
 
-        verify(mockMediator).removeTileLayers(eq(Arrays.asList(mockLayerGroupInfo.getName())));
+        verify(mockMediator).removeTileLayers(
+                eq(Arrays.asList(GWC.tileLayerName(mockLayerGroupInfo))));
     }
 
     public void testResourceInfoRenamed() throws Exception {
@@ -191,9 +194,6 @@ public class CatalogLayerEventListenerTest extends TestCase {
         final String oldGroupName = LAYER_GROUP_NAME;
         final String renamedGroupName = LAYER_GROUP_NAME + "_Renamed";
 
-        // rename mockResourceInfo
-        when(mockLayerGroupInfo.getName()).thenReturn(renamedGroupName);
-
         CatalogModifyEvent modifyEvent = mock(CatalogModifyEvent.class);
         when(modifyEvent.getSource()).thenReturn(mockLayerGroupInfo);
         when(modifyEvent.getPropertyNames()).thenReturn(Arrays.asList("name"));
@@ -210,7 +210,11 @@ public class CatalogLayerEventListenerTest extends TestCase {
         when(mockMediator.getTileLayer(same(mockLayerGroupInfo))).thenReturn(tileLayer);
         when(mockMediator.getTileLayerByName(eq(oldGroupName))).thenReturn(tileLayer);
 
+        // rename mockResourceInfo
+        when(GWC.tileLayerName(mockLayerGroupInfo)).thenReturn(renamedGroupName);
+
         listener.handleModifyEvent(modifyEvent);
+
         verify(mockMediator, times(1)).hasTileLayer(same(mockLayerGroupInfo));
         verify(mockMediator, times(1)).getTileLayer(same(mockLayerGroupInfo));
 
@@ -229,6 +233,56 @@ public class CatalogLayerEventListenerTest extends TestCase {
         GeoServerTileLayerInfo savedInfo = saved.getInfo();
         assertSame(info, savedInfo);
         assertEquals(renamedGroupName, savedInfo.getName());
+    }
+
+    public void testLayerGroupInfoRenamedDueToWorkspaceChanged() throws Exception {
+
+        WorkspaceInfo workspace = mock(WorkspaceInfo.class);
+        when(workspace.getName()).thenReturn("mockWs");
+
+        CatalogModifyEvent modifyEvent = mock(CatalogModifyEvent.class);
+        when(modifyEvent.getSource()).thenReturn(mockLayerGroupInfo);
+        when(modifyEvent.getPropertyNames()).thenReturn(Arrays.asList("workspace"));
+        when(modifyEvent.getOldValues()).thenReturn(Arrays.asList((Object) null));
+        when(modifyEvent.getNewValues()).thenReturn(Arrays.asList((Object) workspace));
+
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo,
+                GWCConfig.getOldDefaults());
+
+        GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
+        when(tileLayer.getInfo()).thenReturn(info);
+        when(tileLayer.getLayerGroupInfo()).thenReturn(mockLayerGroupInfo);
+
+        when(mockMediator.hasTileLayer(same(mockLayerGroupInfo))).thenReturn(true);
+        when(mockMediator.getTileLayer(same(mockLayerGroupInfo))).thenReturn(tileLayer);
+        final String oldLayerName = tileLayerName(mockLayerGroupInfo);
+        when(mockMediator.getTileLayerByName(eq(oldLayerName))).thenReturn(tileLayer);
+
+        listener.handleModifyEvent(modifyEvent);
+
+        verify(mockMediator, times(1)).hasTileLayer(same(mockLayerGroupInfo));
+        verify(mockMediator, times(1)).getTileLayer(same(mockLayerGroupInfo));
+
+        CatalogPostModifyEvent postModifyEvent = mock(CatalogPostModifyEvent.class);
+        when(postModifyEvent.getSource()).thenReturn(mockLayerGroupInfo);
+
+        // change group workspace
+        when(mockLayerGroupInfo.getWorkspace()).thenReturn(workspace);
+
+        listener.handlePostModifyEvent(postModifyEvent);
+
+        ArgumentCaptor<GeoServerTileLayer> captor = ArgumentCaptor
+                .forClass(GeoServerTileLayer.class);
+        verify(mockMediator).save(captor.capture());
+
+        GeoServerTileLayer saved = captor.getValue();
+        assertNotNull(saved);
+        assertNotNull(saved.getInfo());
+        GeoServerTileLayerInfo savedInfo = saved.getInfo();
+        assertSame(info, savedInfo);
+        String tileLayerName = tileLayerName(mockLayerGroupInfo);
+        String actual = savedInfo.getName();
+        assertEquals(tileLayerName, actual);
     }
 
     public void testResourceInfoNamespaceChanged() throws Exception {

@@ -5,6 +5,7 @@
 package org.geoserver.gwc.web.layer;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -154,7 +155,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayerGroup");
             // we need the _current_ name, regardless of if it's name is being changed
             LayerGroupInfo lgi = ModificationProxy.unwrap((LayerGroupInfo) info);
-            originalLayerName = lgi.getName();
+            originalLayerName = tileLayerName(lgi);
         } else {
             throw new IllegalArgumentException(
                     "Provided model does not target a LayerInfo nor a LayerGroupInfo: " + info);
@@ -301,11 +302,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         GeoServerTileLayer tileLayer;
         if (layer instanceof LayerGroupInfo) {
             LayerGroupInfo groupInfo = (LayerGroupInfo) layer;
-            name = groupInfo.getName();
+            name = tileLayerName(groupInfo);
             tileLayer = new GeoServerTileLayer(groupInfo, gridsets, tileLayerInfo);
         } else {
             LayerInfo layerInfo = (LayerInfo) layer;
-            name = layerInfo.getResource().getPrefixedName();
+            name = tileLayerName(layerInfo);
             tileLayer = new GeoServerTileLayer(layerInfo, gridsets, tileLayerInfo);
         }
 

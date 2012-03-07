@@ -6,6 +6,7 @@ package org.geoserver.gwc.layer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -229,9 +230,10 @@ public class CatalogLayerEventListener implements CatalogListener {
             /*
              * Handle the rename case. For LayerInfos it's actually the related ResourceInfo what
              * gets renamed, at least until the data/publish split is implemented in GeoServer. For
-             * LayerGroupInfo it's the group itself
+             * LayerGroupInfo it's either the group name itself or its workspace
              */
-            if (changedProperties.contains("name") || changedProperties.contains("namespace")) {
+            if (changedProperties.contains("name") || changedProperties.contains("namespace")
+                    || changedProperties.contains("workspace")) {
                 handleRename(tileLayerInfo, source, changedProperties, oldValues, newValues);
             }
         }
@@ -255,7 +257,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         checkNotNull(lgInfo);
         checkNotNull(tileLayerInfo);
 
-        final String layerName = lgInfo.getName();
+        final String layerName = tileLayerName(lgInfo);
 
         boolean truncate = false;
         if (changedProperties.contains("layers")) {
@@ -272,7 +274,7 @@ public class CatalogLayerEventListener implements CatalogListener {
             truncate = !oldStyles.equals(newStyles);
         }
         if (truncate) {
-            log.info("Truncating TileLayer for layer group '" + lgInfo.getName()
+            log.info("Truncating TileLayer for layer group '" + layerName
                     + "' due to a change in its layers or styles");
             mediator.truncate(layerName);
         }
@@ -301,7 +303,7 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         checkNotNull(tileLayerInfo);
 
-        final String layerName = li.getResource().getPrefixedName();
+        final String layerName = tileLayerName(li);
 
         boolean save = false;
 
@@ -387,8 +389,8 @@ public class CatalogLayerEventListener implements CatalogListener {
             oldLayerName = oldNamespace.getPrefix() + ":" + oldLayerName;
         } else {
             // it's a layer group, no need to worry about namespace
-            oldLayerName = (String) oldValues.get(nameIndex);
-            newLayerName = (String) newValues.get(nameIndex);
+            oldLayerName = tileLayerInfo.getName();
+            newLayerName = tileLayerName((LayerGroupInfo) source);
         }
 
         if (!oldLayerName.equals(newLayerName)) {
@@ -435,10 +437,10 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         if (obj instanceof LayerGroupInfo) {
             LayerGroupInfo lgInfo = (LayerGroupInfo) obj;
-            prefixedName = lgInfo.getName();
+            prefixedName = tileLayerName(lgInfo);
         } else if (obj instanceof LayerInfo) {
             LayerInfo layerInfo = (LayerInfo) obj;
-            prefixedName = layerInfo.getResource().getPrefixedName();
+            prefixedName = tileLayerName(layerInfo);
         }
 
         if (null != prefixedName) {

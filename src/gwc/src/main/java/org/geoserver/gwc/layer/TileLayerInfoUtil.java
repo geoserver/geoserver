@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,7 +49,7 @@ public class TileLayerInfoUtil {
         if (info == null) {
             info = create(defaults);
         }
-        info.setName(groupInfo.getName());
+        info.setName(tileLayerName(groupInfo));
         info.setId(groupInfo.getId());
         return info;
     }
@@ -68,7 +70,7 @@ public class TileLayerInfoUtil {
 
             checkStyles(layerInfo, info);
         }
-        info.setName(layerInfo.getResource().getPrefixedName());
+        info.setName(tileLayerName(layerInfo));
         info.setId(layerInfo.getId());
         return info;
     }

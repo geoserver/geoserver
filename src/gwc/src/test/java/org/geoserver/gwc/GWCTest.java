@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.updateAcceptAllFloatParameterFilter;
@@ -172,7 +173,7 @@ public class GWCTest extends TestCase {
         when(catalog.getLayer(eq(layer.getId()))).thenReturn(layer);
         when(catalog.getLayerGroup(layerGroup.getId())).thenReturn(layerGroup);
         when(catalog.getLayerByName(eq(layer.getResource().getPrefixedName()))).thenReturn(layer);
-        when(catalog.getLayerGroupByName(layerGroup.getName())).thenReturn(layerGroup);
+        when(catalog.getLayerGroupByName(tileLayerName(layerGroup))).thenReturn(layerGroup);
     }
 
     private void mockTileLayerDispatcher() throws Exception {
@@ -468,11 +469,10 @@ public class GWCTest extends TestCase {
         LayerInfo layer2 = mockLayer("layer2");
         LayerGroupInfo group2 = mockGroup("group2", layer, layer2);
 
-        when(catalog.getLayerByName(eq(layer2.getResource().getPrefixedName()))).thenReturn(layer2);
-        when(catalog.getLayerGroupByName(eq(group2.getName()))).thenReturn(group2);
+        when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);
+        when(catalog.getLayerGroupByName(eq(tileLayerName(group2)))).thenReturn(group2);
 
-        List<String> layerNames = Arrays.asList(layer2.getResource().getPrefixedName(),
-                group2.getName());
+        List<String> layerNames = Arrays.asList(tileLayerName(layer2), tileLayerName(group2));
 
         when(tld.addLayer(any(GeoServerTileLayer.class))).thenReturn(config);
         mediator.autoConfigureLayers(layerNames, defaults);

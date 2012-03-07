@@ -38,6 +38,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -1138,20 +1139,21 @@ public class GWC implements DisposableBean, InitializingBean {
         Set<String> affectedLayers = new HashSet<String>();
 
         for (LayerInfo layer : layers) {
-            // this is redundant now but I'm still hoping for the infamous resource/publish split
-            if (tileLayerExists(layer.getResource().getPrefixedName())) {
-                affectedLayers.add(layer.getResource().getPrefixedName());
+            final String tileLayerName = tileLayerName(layer);
+            if (tileLayerExists(tileLayerName)) {
+                affectedLayers.add(tileLayerName);
             }
         }
 
         for (LayerGroupInfo lgi : getLayerGroups()) {
-            if (!tileLayerExists(lgi.getName())) {
+            final String tileLayerName = tileLayerName(lgi);
+            if (!tileLayerExists(tileLayerName)) {
                 continue;
             }
             for (LayerInfo li : lgi.getLayers()) {
                 ResourceInfo resource = li.getResource();
                 if (typeInfo.equals(resource)) {
-                    affectedLayers.add(lgi.getName());
+                    affectedLayers.add(tileLayerName);
                 }
             }
         }
@@ -1687,9 +1689,9 @@ public class GWC implements DisposableBean, InitializingBean {
         if (source instanceof ResourceInfo) {
             name = ((ResourceInfo) source).getPrefixedName();
         } else if (source instanceof LayerInfo) {
-            name = ((LayerInfo) source).getResource().getPrefixedName();
+            name = tileLayerName(((LayerInfo) source));
         } else if (source instanceof LayerGroupInfo) {
-            name = ((LayerGroupInfo) source).getName();
+            name = tileLayerName(((LayerGroupInfo) source));
         } else {
             return null;
         }
@@ -1716,4 +1718,17 @@ public class GWC implements DisposableBean, InitializingBean {
         return bounds.getCoordinateReferenceSystem();
     }
 
+    public static String tileLayerName(LayerInfo li) {
+        return li.getResource().getPrefixedName();
+    }
+
+    public static String tileLayerName(LayerGroupInfo lgi) {
+        // TODO: change to LayerGroupInfo.getPrefixedName() once the method is added (see GEOS-4985)
+        WorkspaceInfo workspace = lgi.getWorkspace();
+        String name = lgi.getName();
+        if (workspace != null) {
+            name = new StringBuilder(workspace.getName()).append(':').append(name).toString();
+        }
+        return name;
+    }
 }

@@ -5,6 +5,7 @@
 package org.geoserver.gwc;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
+import static org.geoserver.gwc.GWC.tileLayerName;
 import junit.framework.Test;
 
 import org.geoserver.catalog.Catalog;
@@ -121,7 +122,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
 
         // 3) Basic get
         LayerInfo li = cat.getLayers().get(1);
-        String layerName = li.getResource().getPrefixedName();
+        String layerName = tileLayerName(li);
 
         TileLayer tl = tld.getTileLayer(layerName);
 

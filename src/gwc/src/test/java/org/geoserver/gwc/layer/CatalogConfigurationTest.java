@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.mockito.Matchers.anyString;
@@ -107,20 +108,20 @@ public class CatalogConfigurationTest extends TestCase {
         // catalog returns the three layer groups, two with tile layer and one without
         when(catalog.getLayerGroups()).thenReturn(
                 ImmutableList.of(group1, groupWithNoTileLayer, group2));
-        when(catalog.getLayerByName(eq(layer1.getResource().getPrefixedName()))).thenReturn(layer1);
-        when(catalog.getLayerByName(eq(layer2.getResource().getPrefixedName()))).thenReturn(layer2);
-        when(catalog.getLayerByName(eq(layerWithNoTileLayer.getResource().getPrefixedName())))
-                .thenReturn(layerWithNoTileLayer);
+        when(catalog.getLayerByName(eq(tileLayerName(layer1)))).thenReturn(layer1);
+        when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);
+        when(catalog.getLayerByName(eq(tileLayerName(layerWithNoTileLayer)))).thenReturn(
+                layerWithNoTileLayer);
 
-        when(catalog.getLayerGroupByName(eq(group1.getName()))).thenReturn(group1);
-        when(catalog.getLayerGroupByName(eq(group2.getName()))).thenReturn(group2);
-        when(catalog.getLayerGroupByName(eq(groupWithNoTileLayer.getName()))).thenReturn(
+        when(catalog.getLayerGroupByName(eq(tileLayerName(group1)))).thenReturn(group1);
+        when(catalog.getLayerGroupByName(eq(tileLayerName(group2)))).thenReturn(group2);
+        when(catalog.getLayerGroupByName(eq(tileLayerName(groupWithNoTileLayer)))).thenReturn(
                 groupWithNoTileLayer);
 
         gridSetBroker = new GridSetBroker(true, true);
 
-        Set<String> layerNames = ImmutableSet.of(layer1.getResource().getPrefixedName(), layer2
-                .getResource().getPrefixedName(), group1.getName(), group2.getName());
+        Set<String> layerNames = ImmutableSet.of(tileLayerName(layer1), tileLayerName(layer2),
+                tileLayerName(group1), tileLayerName(group2));
 
         tileLayerCatalog = mock(TileLayerCatalog.class);
         when(tileLayerCatalog.getLayerIds()).thenReturn(
@@ -137,12 +138,10 @@ public class CatalogConfigurationTest extends TestCase {
         when(tileLayerCatalog.exists(group1.getId())).thenReturn(true);
         when(tileLayerCatalog.exists(group2.getId())).thenReturn(true);
 
-        when(tileLayerCatalog.getLayerByName(layer1.getResource().getPrefixedName())).thenReturn(
-                layerInfo1);
-        when(tileLayerCatalog.getLayerByName(layer2.getResource().getPrefixedName())).thenReturn(
-                layerInfo2);
-        when(tileLayerCatalog.getLayerByName(group1.getName())).thenReturn(groupInfo1);
-        when(tileLayerCatalog.getLayerByName(group2.getName())).thenReturn(groupInfo2);
+        when(tileLayerCatalog.getLayerByName(tileLayerName(layer1))).thenReturn(layerInfo1);
+        when(tileLayerCatalog.getLayerByName(tileLayerName(layer2))).thenReturn(layerInfo2);
+        when(tileLayerCatalog.getLayerByName(tileLayerName(group1))).thenReturn(groupInfo1);
+        when(tileLayerCatalog.getLayerByName(tileLayerName(group2))).thenReturn(groupInfo2);
 
         config = new CatalogConfiguration(catalog, tileLayerCatalog, gridSetBroker);
 
@@ -171,8 +170,8 @@ public class CatalogConfigurationTest extends TestCase {
     }
 
     public void testGetTileLayerNames() {
-        Set<String> expected = ImmutableSet.of(layer1.getResource().getPrefixedName(), layer2
-                .getResource().getPrefixedName(), group1.getName(), group2.getName());
+        Set<String> expected = ImmutableSet.of(tileLayerName(layer1), tileLayerName(layer2),
+                tileLayerName(group1), tileLayerName(group2));
 
         Set<String> actual = config.getTileLayerNames();
 
@@ -207,14 +206,14 @@ public class CatalogConfigurationTest extends TestCase {
     }
 
     public void testGetTileLayer() {
-        String layerName = layerWithNoTileLayer.getResource().getPrefixedName();
+        String layerName = tileLayerName(layerWithNoTileLayer);
         assertNull(config.getTileLayer(layerName));
-        assertNull(config.getTileLayer(groupWithNoTileLayer.getName()));
+        assertNull(config.getTileLayer(tileLayerName(groupWithNoTileLayer)));
 
-        assertNotNull(config.getTileLayer(layer1.getResource().getPrefixedName()));
-        assertNotNull(config.getTileLayer(layer2.getResource().getPrefixedName()));
-        assertNotNull(config.getTileLayer(group1.getName()));
-        assertNotNull(config.getTileLayer(group2.getName()));
+        assertNotNull(config.getTileLayer(tileLayerName(layer1)));
+        assertNotNull(config.getTileLayer(tileLayerName(layer2)));
+        assertNotNull(config.getTileLayer(tileLayerName(group1)));
+        assertNotNull(config.getTileLayer(tileLayerName(group2)));
 
         assertNull(config.getTileLayer("anythingElse"));
     }
@@ -233,8 +232,8 @@ public class CatalogConfigurationTest extends TestCase {
             assertTrue(e.getMessage().contains("Can't save TileLayer of type"));
         }
 
-        GeoServerTileLayer tileLayer1 = config.getTileLayer(layer1.getResource().getPrefixedName());
-        GeoServerTileLayer tileLayer2 = config.getTileLayer(group1.getName());
+        GeoServerTileLayer tileLayer1 = config.getTileLayer(tileLayerName(layer1));
+        GeoServerTileLayer tileLayer2 = config.getTileLayer(tileLayerName(group1));
 
         testModifyLayer(tileLayer1);
         testModifyLayer(tileLayer2);
@@ -277,12 +276,12 @@ public class CatalogConfigurationTest extends TestCase {
             assertTrue(true);
         }
 
-        assertFalse(config.removeLayer(layerWithNoTileLayer.getResource().getPrefixedName()));
-        assertFalse(config.removeLayer(groupWithNoTileLayer.getName()));
+        assertFalse(config.removeLayer(GWC.tileLayerName(layerWithNoTileLayer)));
+        assertFalse(config.removeLayer(GWC.tileLayerName(groupWithNoTileLayer)));
 
         String layerName;
 
-        layerName = layer1.getResource().getPrefixedName();
+        layerName = tileLayerName(layer1);
         assertNotNull(config.getTileLayer(layerName));
 
         final int initialCount = config.getTileLayerCount();
@@ -293,7 +292,7 @@ public class CatalogConfigurationTest extends TestCase {
         assertFalse(config.getTileLayerNames().contains(layerName));
         assertEquals(initialCount - 1, config.getTileLayerCount());
 
-        layerName = group1.getName();
+        layerName = GWC.tileLayerName(group1);
         assertNotNull(config.getTileLayer(layerName));
         assertTrue(config.removeLayer(layerName));
         assertNull(config.getTileLayer(layerName));

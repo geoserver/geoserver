@@ -4,12 +4,14 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import junit.framework.TestCase;
 
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 
 import com.google.common.collect.ImmutableSet;
@@ -38,7 +40,7 @@ public class LegacyTileLayerInfoLoaderTest extends TestCase {
         GeoServerTileLayerInfo info2 = LegacyTileLayerInfoLoader.load(layer);
 
         defaultVectorInfo.setId(layer.getId());
-        defaultVectorInfo.setName(layer.getResource().getPrefixedName());
+        defaultVectorInfo.setName(tileLayerName(layer));
         assertEquals(defaultVectorInfo, info2);
     }
 
@@ -57,7 +59,7 @@ public class LegacyTileLayerInfoLoaderTest extends TestCase {
         actual = LegacyTileLayerInfoLoader.load(layer);
 
         info.setId(layer.getId());
-        info.setName(layer.getResource().getPrefixedName());
+        info.setName(tileLayerName(layer));
         assertEquals(info, actual);
 
         layer.setDefaultStyle(null);
@@ -82,7 +84,7 @@ public class LegacyTileLayerInfoLoaderTest extends TestCase {
         TileLayerInfoUtil.setCachedStyles(info, "default", ImmutableSet.of("style1", "style2"));
 
         info.setId(layer.getId());
-        info.setName(layer.getResource().getPrefixedName());
+        info.setName(tileLayerName(layer));
         assertEquals(info, actual);
 
         layer.setDefaultStyle(null);
@@ -106,7 +108,7 @@ public class LegacyTileLayerInfoLoaderTest extends TestCase {
         actual = LegacyTileLayerInfoLoader.load(lg);
 
         info.setId(lg.getId());
-        info.setName(lg.getName());
+        info.setName(GWC.tileLayerName(lg));
         assertEquals(info, actual);
     }
 

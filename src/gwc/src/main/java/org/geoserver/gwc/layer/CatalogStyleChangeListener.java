@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.layer;
 
+import static org.geoserver.gwc.GWC.tileLayerName;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -142,7 +144,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
         // First we collect all the layers that use this style
         for (LayerInfo affectedLayer : mediator.getLayerInfosFor(modifiedStyle)) {
             // If the style name changes, we need to update the layer's parameter filter
-            String prefixedName = affectedLayer.getResource().getPrefixedName();
+            String prefixedName = tileLayerName(affectedLayer);
             log.info("Truncating layer '" + prefixedName + "' due to a change in style '"
                     + styleName + "'");
             mediator.truncateByLayerAndStyle(prefixedName, styleName);
@@ -150,7 +152,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
         // Now we check for layer groups that are affected
         for (LayerGroupInfo layerGroup : mediator.getLayerGroupsFor(modifiedStyle)) {
-            String layerGroupName = layerGroup.getName();
+            String layerGroupName = tileLayerName(layerGroup);
             log.info("Truncating layer group '" + layerGroupName + "' due to a change in style '"
                     + styleName + "'");
             mediator.truncate(layerGroupName);

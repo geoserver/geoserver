@@ -162,6 +162,7 @@ public class ResourcePool {
     public ResourcePool(Catalog catalog) {
         this.catalog = catalog;
         this.repository = new CatalogRepository(catalog);
+
         crsCache = new HashMap<String, CoordinateReferenceSystem>();
         dataStoreCache = new DataStoreCache();
         featureTypeCache = new FeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
@@ -1291,7 +1292,7 @@ public class ResourcePool {
                     //JD: it is important that we call the SLDParser(File) constructor because
                     // if not the sourceURL will not be set which will mean it will fail to 
                     //resolve relative references to online resources
-                    File styleFile = GeoserverDataDirectory.findStyleFile( info.getFilename() );
+                    File styleFile = dataDir().findStyleSldFile(info);
                     if ( styleFile == null ){
                         throw new IOException( "No such file: " + info.getFilename());
                     }
@@ -1326,7 +1327,7 @@ public class ResourcePool {
      * @return A reader for the style.
      */
     public BufferedReader readStyle( StyleInfo style ) throws IOException {
-        File styleFile = GeoserverDataDirectory.findStyleFile(style.getFilename());
+        File styleFile = dataDir().findStyleSldFile(style);
         if( styleFile == null ) {
             throw new IOException( "No such file: " + style.getFilename() );
         }
@@ -1354,7 +1355,7 @@ public class ResourcePool {
      */
     public void writeStyle( StyleInfo info, Style style, boolean format) throws IOException {
         synchronized ( styleCache ) {
-            File styleFile = GeoserverDataDirectory.findStyleFile( info.getFilename(), true );
+            File styleFile = dataDir().findOrCreateStyleSldFile(info);
             BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( styleFile ) );
             
             try {
@@ -1376,7 +1377,7 @@ public class ResourcePool {
      */
     public void writeStyle( StyleInfo style, InputStream in ) throws IOException {
         synchronized ( styleCache ) {
-            File styleFile = GeoserverDataDirectory.findStyleFile( style.getFilename(), true );
+            File styleFile = dataDir().findOrCreateStyleSldFile(style);
             BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( styleFile ) );
             
             try {
@@ -1402,15 +1403,18 @@ public class ResourcePool {
         synchronized ( styleCache ) {
            
             if( purgeFile ){
-                File styleFile = GeoserverDataDirectory.findStyleFile( style.getFilename(), true );
-                if( styleFile.exists() ){
+                File styleFile = dataDir().findStyleSldFile(style);
+                if(styleFile != null && styleFile.exists() ){
                     styleFile.delete();
                 }
             }
         }
     }
-    
-    
+
+    GeoServerDataDirectory dataDir() {
+        return new GeoServerDataDirectory(catalog.getResourceLoader());
+    }
+
     /**
      * Disposes all cached resources.
      *

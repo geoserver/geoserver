@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -473,6 +474,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
 
             try {
                 return PropertyUtils.getProperty(bean, propertyPath);
+            } catch(NestedNullException nne) {
+                return null;
             } catch (Exception e) {
                 throw new RuntimeException("Could not find property " + propertyPath + " in "
                         + bean.getClass(), e);

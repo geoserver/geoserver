@@ -5,10 +5,13 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.styling.Style;
 import org.geotools.util.Version;
 
@@ -18,10 +21,12 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected String name;
 
+    protected WorkspaceInfo workspace;
+
     protected Version sldVersion = new Version("1.0.0");
     
     protected String filename;
-    
+
     protected transient Catalog catalog;
 
     protected StyleInfoImpl() {
@@ -51,6 +56,14 @@ public class StyleInfoImpl implements StyleInfo {
         this.name = name;
     }
 
+    public WorkspaceInfo getWorkspace() {
+        return workspace;
+    }
+
+    public void setWorkspace(WorkspaceInfo workspace) {
+        this.workspace = workspace;
+    }
+
     public Version getSLDVersion() {
         return sldVersion;
     }
@@ -66,7 +79,7 @@ public class StyleInfoImpl implements StyleInfo {
     public void setFilename(String filename) {
         this.filename = filename;
     }
-    
+
     public Style getStyle() throws IOException {
         return catalog.getResourcePool().getStyle( this );
     }
@@ -82,6 +95,7 @@ public class StyleInfoImpl implements StyleInfo {
                 + ((filename == null) ? 0 : filename.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
         result = prime * result + ((sldVersion == null) ? 0 : sldVersion.hashCode());
         return result;
     }
@@ -109,12 +123,16 @@ public class StyleInfoImpl implements StyleInfo {
                 return false;
         } else if (!name.equals(other.getName()))
             return false;
+        if (workspace == null) {
+            if (other.getWorkspace() != null)
+                return false;
+        } else if (!workspace.equals(other.getWorkspace()))
+            return false;
         if (sldVersion == null) {
             if (other.getSLDVersion() != null)
                 return false;
         } else if (!sldVersion.equals(other.getSLDVersion()))
             return false;
-
         return true;
     }
 

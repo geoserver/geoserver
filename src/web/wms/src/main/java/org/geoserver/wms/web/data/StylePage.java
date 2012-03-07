@@ -6,14 +6,17 @@ package org.geoserver.wms.web.data;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
+import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
@@ -43,7 +46,9 @@ public class StylePage extends GeoServerSecuredPage {
                 if ( property == StyleProvider.NAME ) {
                     return styleLink( id, itemModel );
                 }
-                
+                if (property == StyleProvider.WORKSPACE) {
+                    return workspaceLink(id, itemModel);
+                }
                 return null;
             }
             
@@ -90,8 +95,24 @@ public class StylePage extends GeoServerSecuredPage {
 
     Component styleLink( String id, IModel model ) {
         IModel nameModel = StyleProvider.NAME.getModel(model);
+        IModel wsModel = StyleProvider.WORKSPACE.getModel(model);
+        
         String name = (String) nameModel.getObject();
+        String wsName = (String) wsModel.getObject();
+
         return new SimpleBookmarkableLink(id, StyleEditPage.class, nameModel, 
-                StyleEditPage.NAME, name);
+            StyleEditPage.NAME, name, StyleEditPage.WORKSPACE, wsName);
+    }
+
+    Component workspaceLink( String id, IModel model ) {
+        IModel wsNameModel = StyleProvider.WORKSPACE.getModel(model);
+        String wsName = (String) wsNameModel.getObject();
+        if (wsName != null) {
+            return new SimpleBookmarkableLink(
+                id, WorkspaceEditPage.class, new Model(wsName), "name", wsName);
+        }
+        else {
+            return new WebMarkupContainer(id);
+        }
     }
 }

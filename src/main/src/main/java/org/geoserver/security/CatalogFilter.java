@@ -4,8 +4,10 @@
  */
 package org.geoserver.security;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 
@@ -31,6 +33,20 @@ public interface CatalogFilter {
      * @return
      */
     boolean hideLayer(LayerInfo layer);
+
+    /**
+     * Return true to hide the specified style from the catalog
+     * 
+     * @param style The style to potentially hide.
+     */
+    boolean hideStyle(StyleInfo style);
+
+    /**
+     * Return true to hide the specified layer group from the catalog
+     * 
+     * @param layerGroup The layer group to potentially hide.
+     */
+    boolean hideLayerGroup(LayerGroupInfo layerGroup);
 
     /**
      * Return true to hide the specified workspace from the catalog

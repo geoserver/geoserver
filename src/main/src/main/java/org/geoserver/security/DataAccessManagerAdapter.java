@@ -9,8 +9,10 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
@@ -23,7 +25,7 @@ import org.springframework.security.core.Authentication;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-public class DataAccessManagerAdapter implements ResourceAccessManager {
+public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
     static final Logger LOGGER = Logging.getLogger(DataAccessManagerAdapter.class);
 
     DataAccessManager delegate;
@@ -89,5 +91,4 @@ public class DataAccessManagerAdapter implements ResourceAccessManager {
             return new WorkspaceAccessLimits(mode, readable, writable);
         }
     }
-
 }

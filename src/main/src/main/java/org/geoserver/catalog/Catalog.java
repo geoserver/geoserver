@@ -1234,6 +1234,20 @@ public interface Catalog extends CatalogInfo {
     List<LayerGroupInfo> getLayerGroups();
 
     /**
+     * All layer groups in the specified workspace.
+     * 
+     * @param workspaceName The name of the workspace containing layer groups.
+     */
+    List<LayerGroupInfo> getLayerGroupsByWorkspace(String workspaceName);
+
+    /**
+     * All layer groups in the specified workspace.
+     * 
+     * @param workspace The workspace containing layer groups.
+     */
+    List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace);
+
+    /**
      * Returns the layer group matching a particular id, or <code>null</code> if no
      * such group could be found.
      */
@@ -1244,6 +1258,24 @@ public interface Catalog extends CatalogInfo {
      * such group could be found.
      */
     LayerGroupInfo getLayerGroupByName(String name);
+    
+    /**
+     * Returns the layer group matching a particular name in the specified workspace, or <code>null</code> 
+     * if no such layer group could be found.
+     * 
+     * @param workspaceName The name of the workspace containing the layer group.
+     * @param name The name of the layer group to return.
+     */
+    LayerGroupInfo getLayerGroupByName(String workspaceName, String name);
+
+    /**
+     * Returns the layer group matching a particular name in the specified workspace, or <code>null</code> 
+     * if no such layer group could be found.
+     * 
+     * @param workspace The workspace containing the layer group.
+     * @param name The name of the layer group to return.
+     */
+    LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name);
     
     /**
      * Adds a new style.
@@ -1292,6 +1324,24 @@ public interface Catalog extends CatalogInfo {
     StyleInfo getStyle(String id);
 
     /**
+     * Returns the style matching a particular name in the specified workspace, or <code>null</code> 
+     * if no such style could be found.
+     * 
+     * @param workspaceName The name of the workspace containing the style.
+     * @param name The name of the style to return.
+     */
+    StyleInfo getStyleByName(String workspaceName, String name);
+
+    /**
+     * Returns the style matching a particular name in the specified workspace, or <code>null</code> 
+     * if no such style could be found.
+     * 
+     * @param workspace The workspace containing the style.
+     * @param name The name of the style to return.
+     */
+    StyleInfo getStyleByName(WorkspaceInfo workspace, String name);
+    
+    /**
      * Returns the style matching a particular name, or <code>null</code> if
      * no such style could be found.
      * 
@@ -1309,6 +1359,20 @@ public interface Catalog extends CatalogInfo {
      *  </p>
      */
     List<StyleInfo> getStyles();
+
+    /**
+     * All styles in the specified workspace.
+     * 
+     * @param workspaceName The name of the workspace containing styles.
+     */
+    List<StyleInfo> getStylesByWorkspace(String workspaceName);
+
+    /**
+     * All styles in the specified workspace.
+     * 
+     * @param workspace The workspace containing styles.
+     */
+    List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace);
 
     /**
      * Adds a new namespace.

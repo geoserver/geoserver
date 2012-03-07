@@ -5,6 +5,7 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,6 +14,7 @@ import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.Style;
@@ -52,7 +54,31 @@ public class StyleTest extends CatalogRESTTestSupport {
             assertTrue( link.getAttribute("href").endsWith( s.getName()+ ".html"));
         }
     }
-    
+
+    public void testGetAllFromWorkspace() throws Exception {
+        Document dom = getAsDOM( "/rest/workspaces/gs/styles.xml" );
+        assertEquals("styles", dom.getDocumentElement().getNodeName());
+
+        assertXpathEvaluatesTo("0", "count(//style)", dom);
+
+        addStyleToWorkspace("foo");
+
+        dom = getAsDOM( "/rest/workspaces/gs/styles.xml" );
+        assertEquals("styles", dom.getDocumentElement().getNodeName());
+
+        assertXpathEvaluatesTo("1", "count(//style)", dom);
+        assertXpathExists("//style/name[text() = 'foo']", dom);
+    }
+
+    void addStyleToWorkspace(String name) {
+        Catalog cat = getCatalog();
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName(name);
+        s.setFilename(name + ".sld");
+        s.setWorkspace(cat.getWorkspaceByName("gs"));
+        cat.add(s);
+    }
+
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/styles/Ponds.xml" );
         
@@ -74,7 +100,21 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         assertEquals( "sld:StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
     }
-    
+
+    public void testGetFromWorkspace() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml"); 
+        assertEquals(404, resp.getStatusCode());
+
+        addStyleToWorkspace("foo");
+
+        resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml");
+        assertEquals(200, resp.getStatusCode());
+
+        Document dom = getAsDOM("/rest/workspaces/gs/styles/foo.xml");
+        assertXpathEvaluatesTo("foo", "/style/name", dom);
+        assertXpathEvaluatesTo("gs", "/style/workspace/name", dom);
+    }
+
     String newSLDXML() {
         return 
              "<sld:StyledLayerDescriptor xmlns:sld='http://www.opengis.net/sld'>"+
@@ -112,7 +152,22 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         assertNotNull( catalog.getStyleByName( "bar" ) );
     }
-    
+
+    public void testPostToWorkspace() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml = 
+            "<style>" +
+              "<name>foo</name>" +
+              "<filename>foo.sld</filename>" + 
+            "</style>";
+        MockHttpServletResponse response =
+            postAsServletResponse("/rest/workspaces/gs/styles", xml);
+        assertEquals(201, response.getStatusCode());
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+    }
+
     public void testPut() throws Exception {
         StyleInfo style = catalog.getStyleByName( "Ponds");
         assertEquals( "Ponds.sld", style.getFilename() );
@@ -145,7 +200,37 @@ public class StyleTest extends CatalogRESTTestSupport {
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
     }
-    
+
+    public void testPutToWorkspace() throws Exception {
+        testPostToWorkspace();
+
+        Catalog cat = getCatalog();
+        assertEquals("foo.sld", cat.getStyleByName("gs","foo").getFilename());
+
+        String xml = 
+            "<style>" +
+              "<filename>bar.sld</filename>" +
+            "</style>";
+        
+        MockHttpServletResponse response =
+            putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
+        assertEquals(200, response.getStatusCode());
+        assertEquals("bar.sld", cat.getStyleByName("gs","foo").getFilename());
+    }
+
+    public void testPutToWorkspaceChangeWorkspace() throws Exception {
+        testPostToWorkspace();
+
+        String xml = 
+                "<style>" +
+                  "<workspace>cite</workspace>" + 
+                "</style>";
+            
+        MockHttpServletResponse response =
+            putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
+        assertEquals(403, response.getStatusCode());
+    }
+
     public void testDelete() throws Exception {
         String xml = 
             "<style>" +
@@ -205,7 +290,19 @@ public class StyleTest extends CatalogRESTTestSupport {
         //ensure the style not deleted on disk
         assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
     }
-    
+
+    public void testDeleteFromWorkspace() throws Exception {
+        testPostToWorkspace();
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+        
+        MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/styles/foo");
+        assertEquals(200, response.getStatusCode());
+
+        assertNull(cat.getStyleByName("gs", "foo"));
+    }
+
     public void testGetAllByLayer() throws Exception {
         Document dom = getAsDOM( "/rest/layers/cite:BasicPolygons/styles.xml");
         LayerInfo layer = catalog.getLayerByName( "cite:BasicPolygons" );

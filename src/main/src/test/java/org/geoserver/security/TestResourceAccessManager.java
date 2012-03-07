@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.springframework.security.core.Authentication;
 
@@ -50,6 +52,25 @@ public class TestResourceAccessManager implements ResourceAccessManager {
         return (DataAccessLimits) getUserMap(name).get(resource.getId());
     }
 
+    public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style) {
+        if(user == null) {
+            return null;
+        }
+        
+        final String name = user.getName();
+        return (StyleAccessLimits) getUserMap(name).get(style.getId());
+    }
+
+    @Override
+    public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
+        if(user == null) {
+            return null;
+        }
+        
+        final String name = user.getName();
+        return (LayerGroupAccessLimits) getUserMap(name).get(layerGroup.getId());
+    }
+    
     /**
      * Saves the mock access limits for this user and secured item (this is meant only for testing,
      * it's the caller care to make sure the appropriate user limits class is used).

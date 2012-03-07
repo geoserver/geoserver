@@ -21,7 +21,10 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     public static Property<StyleInfo> NAME = 
         new BeanProperty<StyleInfo>( "name", "name" );
 
-    static List PROPERTIES = Arrays.asList(NAME);
+    public static Property<StyleInfo> WORKSPACE = 
+            new BeanProperty<StyleInfo>( "workspace", "workspace.name" );
+
+    static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
     public StyleProvider() {
         setSort(NAME.getName(), true);

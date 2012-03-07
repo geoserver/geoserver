@@ -30,6 +30,16 @@ public interface LayerGroupInfo extends CatalogInfo {
     void setName( String name );
     
     /**
+     * The workspace the layer group is part of, or <code>null</code> if the layer group is global.
+     */
+    WorkspaceInfo getWorkspace();
+
+    /**
+     * Sets the workspace the layer group is part of.
+     */
+    void setWorkspace(WorkspaceInfo workspace);
+
+    /**
      * The layers in the group.
      */
     List<LayerInfo> getLayers();

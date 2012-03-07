@@ -16,6 +16,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -570,27 +571,34 @@ public class GeoServerDataDirectory {
     }
     
     /**
-     * Returns the directory in which styles are persisted, if the directory does not exist null
-     * is returned.
+     * Returns the directory in which global styles are persisted, if the directory does not exist 
+     * null is returned.
      */
     public File findStyleDir() throws IOException {
-        return styleDir(false);
+        return styleDir(false, (WorkspaceInfo)null);
     }
-    
-    
+
     /**
-     * Returns the directory in which styles are persisted, if the directory does not exist it will
-     * be created.
+     * Returns the directory in which global styles are persisted, if the directory does not exist 
+     * it will be created.
      */
     public File findOrCreateStyleDir() throws IOException {
-        return styleDir(true);
+        return styleDir(true, (WorkspaceInfo)null);
     }
-    
-    File styleDir(boolean create) throws IOException {
-        return create ? resourceLoader.findOrCreateDirectory( "styles") : 
-            resourceLoader.find( "styles" );
+
+    File styleDir(boolean create, StyleInfo s) throws IOException {
+        return styleDir(create, s.getWorkspace());
     }
-    
+
+    File styleDir(boolean create, WorkspaceInfo ws) throws IOException {
+        File base = ws != null ? workspaceDir(true, ws) : null;
+        File d = resourceLoader.find( base, "styles" );
+        if ( d == null && create ) {
+            d = resourceLoader.createDirectory( base, "styles" );
+        }
+        return d;
+    }
+
     /**
      * Returns the configuration file for the specified style, if the file does not exist null is
      * returned.
@@ -598,7 +606,14 @@ public class GeoServerDataDirectory {
     public File findStyleFile( StyleInfo s ) throws IOException {
         return styleFile(false,s);
     }
-    
+
+    /**
+     * Returns the SLD file for the specified style, if the file does not exist null is returned.
+     */
+    public File findStyleSldFile(StyleInfo s) throws IOException {
+        return styleSldFile(false, s);
+    }
+
     /**
      * Returns the configuration file for the specified style, if the file does not exist a file 
      * object is still returned.
@@ -606,32 +621,88 @@ public class GeoServerDataDirectory {
     public File findOrCreateStyleFile( StyleInfo s ) throws IOException {
         return styleFile(true,s);
     }
-    
-    File styleFile( boolean create, StyleInfo s ) throws IOException {
-        File sdir = styleDir(create);
-        return sdir != null ? file(new File( sdir, s.getName()+".xml" ),create) : null;
-    }
-    
+
     /**
-     * Copies a file into the style configuration directory.
+     * Returns the SLD file for the specified style, if the file does not exist a file object is 
+     * still returned.
+     */
+    public File findOrCreateStyleSldFile(StyleInfo s) throws IOException {
+        return styleSldFile(true, s);
+    }
+
+    File styleFile( boolean create, StyleInfo s ) throws IOException {
+        File sdir = styleDir(create, s);
+        if (sdir == null) {
+            return null;
+        }
+
+        String configFileName = s.getName()+".xml";
+        if (configFileName.equals(s.getFilename())) {
+            configFileName = configFileName + ".xml";
+        }
+        return file(new File(sdir, configFileName), create);
+    }
+
+    File styleSldFile(boolean create, StyleInfo s) throws IOException {
+        File sdir = styleDir(create, s);
+        return sdir != null ? file(new File( sdir, s.getFilename()),create) : null;
+    }
+
+    /**
+     * Copies a file into the global style configuration directory.
      * <p>
      * If the resource directory does exist it will be created
      * </p>
+     * @deprecated use {@link #copyToStyleDir(File, StyleInfo)}
      */
     public void copyToStyleDir( File f ) throws IOException {
-        FileUtils.copyFileToDirectory( f, styleDir( true ) );
+        FileUtils.copyFileToDirectory( f, styleDir(true, (WorkspaceInfo)null) );
     }
-    
+
+    public void copyToStyleDir(File f, StyleInfo s) throws IOException {
+        FileUtils.copyFileToDirectory( f, styleDir( true, s ) );
+    }
+
     /**
-     * Copies data into the style directory.
+     * Copies data into the global style directory.
      * <p>
      * If the style directory does exist it will be created
      * </p>
      */
     public void copyToStyleDir( InputStream data, String filename ) throws IOException {
-        copy( data, styleDir(true), filename );
+        copy( data, styleDir(true, (WorkspaceInfo)null), filename );
     }
+
     
+    /**
+     * Returns the directory in which global layer groups are persisted, if the directory does not
+     * exist null is returned.
+     */
+    public File finLayerGroupDir() throws IOException {
+        return layerGroupDir(false, (WorkspaceInfo)null);
+    }
+
+    /**
+     * Returns the directory in which global layer groups are persisted, if the directory does not 
+     * exist it will be created.
+     */
+    public File findOrCreateLayerGroupDir() throws IOException {
+        return layerGroupDir(true, (WorkspaceInfo)null);
+    }
+
+    File layerGroupDir(boolean create, LayerGroupInfo lg) throws IOException {
+        return layerGroupDir(create, lg.getWorkspace());
+    }
+
+    File layerGroupDir(boolean create, WorkspaceInfo ws) throws IOException {
+        File base = ws != null ? workspaceDir(true, ws) : null;
+        File d = resourceLoader.find( base, "layergroups" );
+        if ( d == null && create ) {
+            d = resourceLoader.createDirectory( base, "layergroups" );
+        }
+        return d;
+    }
+
     //
     // Helper methods
     //

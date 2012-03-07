@@ -33,8 +33,13 @@
     <bean id="secureCatalog" class="org.geoserver.security.SecureCatalogImpl" depends-on="accessRulesDao,extensions">
         <constructor-arg ref="rawCatalog" />
     </bean>
+    <bean id="localWorkspaceCatalog" class="org.geoserver.catalog.impl.LocalWorkspaceCatalog">
+        <constructor-arg ref="secureCatalog" />
+    </bean>
+    
     <!-- Switch this when you want to enable the secure catalog by default -->
-    <alias name="secureCatalog" alias="catalog"/> 
+    <!--alias name="secureCatalog" alias="catalog"/-->
+    <alias name="localWorkspaceCatalog" alias="catalog"/> 
     
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
       <property name="catalog" ref="catalog"/>
@@ -179,7 +184,9 @@
   </bean>
   
   <!-- Hides resources in other workspaces when using virtual services -->
-  <bean id="localWorkspaceFilter" class="org.geoserver.ows.LocalWorkspaceCatalogFilter"/>
+  <bean id="localWorkspaceFilter" class="org.geoserver.ows.LocalWorkspaceCatalogFilter">
+    <constructor-arg ref="rawCatalog"/> 
+  </bean>
   <!-- Hides non advertised resources and layers -->
   <bean id="advertisedResourceFilter" class="org.geoserver.catalog.AdvertisedResourceFilter"/>
 

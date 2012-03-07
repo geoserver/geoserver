@@ -96,6 +96,40 @@
         </entry>
         
         <entry>
+          <key><value>/workspaces/{workspace}/styles/{style}.{format}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/styles/{style}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/styles.{format}</value></key>
+          <value>styleFinder2</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/styles</value></key>
+          <value>styleFinder2</value>
+        </entry>
+
+        <entry>
+          <key><value>/workspaces/{workspace}/layergroups/{layergroup}.{format}</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/layergroups/{layergroup}</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+        <entry>
+          <key><value>/workspaces/{workspace}/layergroups.{format}</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+         <entry>
+          <key><value>/workspaces/{workspace}/layergroups</value></key>
+          <value>layerGroupFinder2</value>
+        </entry>
+
+        <entry>
           <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}.{format}</value></key>
           <value>featureTypeFinder</value>
         </entry>

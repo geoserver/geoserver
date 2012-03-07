@@ -22,12 +22,16 @@ public class StyleListResource extends AbstractCatalogListResource {
 
     @Override
     protected Collection handleListGet() throws Exception {
+        String workspace = getAttribute("workspace");
         String layer = getAttribute("layer");
         if ( layer != null ) {
             LOGGER.fine( "GET styles for layer " + layer );
             return catalog.getLayerByName( layer ).getStyles();
         }
-        
+        else if (workspace != null) {
+            LOGGER.fine( "GET styles for workspace " + workspace );
+            return catalog.getStylesByWorkspace(workspace);
+        }
         LOGGER.fine( "GET styles" );
         return catalog.getStyles();
     }

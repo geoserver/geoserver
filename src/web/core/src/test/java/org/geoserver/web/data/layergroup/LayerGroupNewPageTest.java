@@ -1,6 +1,9 @@
 package org.geoserver.web.data.layergroup;
 
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.data.test.MockData;
 
 public class LayerGroupNewPageTest extends LayerGroupBaseTest {
     
@@ -9,7 +12,7 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
         super.setUpInternal();
         login();
     }
-    
+
     public void testMissingName() {
         LayerGroupNewPage page = new LayerGroupNewPage();
         // print(page, false, false);
@@ -31,13 +34,21 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupNewPage.class);
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "lakes");
-        form.submit();
-        
+        form.setValue("bounds:minX", "0");
+        form.setValue("bounds:minY", "0");
+        form.setValue("bounds:maxX", "0");
+        form.setValue("bounds:maxY", "0");
+
+        page.lgEntryPanel.getEntries().add(
+            new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+        form.submit("save");
+
         // should not work, duplicate provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupNewPage.class);
-        // System.out.println(tester.getMessages(FeedbackMessage.ERROR));
-        tester.assertErrorMessages(new String[] {"A layer group named lakes already exists", "Field 'Bounds' is required."});
+        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        assertTrue(tester.getMessages(FeedbackMessage.ERROR).get(0).toString()
+            .endsWith("Layer group named 'lakes' already exists"));
     }
     
     public void testNewName() {

@@ -744,11 +744,22 @@ public class CatalogImpl implements Catalog {
         if( isNull(layerGroup.getName()) ) {
             throw new NullPointerException( "Layer group name must not be null");
         }
-        
-        LayerGroupInfo existing = getLayerGroupByName( layerGroup.getName() );
+
+        WorkspaceInfo ws = layerGroup.getWorkspace();
+        LayerGroupInfo existing = getLayerGroupByName( ws, layerGroup.getName() );
         if ( existing != null && !existing.getId().equals( layerGroup.getId() ) ) {
-            throw new IllegalArgumentException( "Layer group named '" + layerGroup.getName() + "' already exists." );
+            // null workspace can cause layer group in any workspace to be returned, check that
+            // workspaces match
+            WorkspaceInfo ews = existing.getWorkspace();
+            if ((ws == null && ews == null) || (ws != null && ws.equals(ews))) {
+                String msg = "Layer group named '" + layerGroup.getName() + "' already exists";
+                if (ws != null) {
+                    msg += " in workspace " + ws.getName();
+                }
+                throw new IllegalArgumentException(msg);
+            }
         }
+
         
         if ( layerGroup.getLayers() == null || layerGroup.getLayers().isEmpty() ) {
             throw new IllegalArgumentException( "Layer group must not be empty");
@@ -759,6 +770,19 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException( "Layer group has different number of styles than layers");
         }
 
+        //if the layer group has a workspace assigned, ensure that every resource in that layer
+        // group lives within the same workspace
+        if (ws != null) {
+            for (LayerInfo l : layerGroup.getLayers()) {
+                ResourceInfo r = l.getResource();
+                if (!ws.equals(r.getStore().getWorkspace())) {
+                    throw new IllegalArgumentException("Layer group within a workspace (" + 
+                        ws.getName() + ") can not contain resoures from other workspace: " + 
+                        r.getStore().getWorkspace().getName());
+                }
+                
+            }
+        }
         return postValidate(layerGroup, isNew);
    }
     
@@ -779,7 +803,23 @@ public class CatalogImpl implements Catalog {
     public List<LayerGroupInfo> getLayerGroups() {
         return facade.getLayerGroups();
     }
-    
+
+    public List<LayerGroupInfo> getLayerGroupsByWorkspace(String workspaceName) {
+        WorkspaceInfo workspace = null;
+        if ( workspaceName != null ) {
+            workspace = getWorkspaceByName(workspaceName);
+            if ( workspace == null ) {
+                return Collections.EMPTY_LIST;
+            }
+        }
+        
+        return getLayerGroupsByWorkspace(workspace);
+    }
+
+    public List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace) {
+        return facade.getLayerGroupsByWorkspace(workspace);
+    }
+
     public LayerGroupInfo getLayerGroup(String id) {
         return facade.getLayerGroup(id);
     }
@@ -787,7 +827,33 @@ public class CatalogImpl implements Catalog {
     public LayerGroupInfo getLayerGroupByName(String name) {
         return facade.getLayerGroupByName(name);
     }
-    
+
+    public LayerGroupInfo getLayerGroupByName(String workspaceName, String name) {
+        if (workspaceName == null) {
+            return getLayerGroupByName((WorkspaceInfo)null, name);
+        }
+
+        WorkspaceInfo workspace = getWorkspaceByName(workspaceName);
+        if (workspace != null) {
+            return getLayerGroupByName(workspace, name);
+        }
+        return null;
+    }
+
+    public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace,
+            String name) {
+        WorkspaceInfo ws = workspace;
+        if (ws == null) {
+            ws = getDefaultWorkspace();
+        }
+
+        LayerGroupInfo layerGroup = facade.getLayerGroupByName(ws, name);
+        if (layerGroup == null && workspace == null) {
+            layerGroup = facade.getLayerGroupByName(DefaultCatalogFacade.ANY_WORKSPACE, name);
+        }
+        return layerGroup;
+    }
+
     public void add(MapInfo map) {
         MapInfo added = facade.add(resolve(map));
         added(added);
@@ -1052,8 +1118,49 @@ public class CatalogImpl implements Catalog {
         return facade.getStyleByName(name);
     }
 
+    public StyleInfo getStyleByName(String workspaceName, String name) {
+        if (workspaceName == null) {
+            return getStyleByName((WorkspaceInfo)null, name);
+        }
+
+        WorkspaceInfo workspace = getWorkspaceByName(workspaceName);
+        if (workspace != null) {
+            return getStyleByName(workspace, name);
+        }
+        return null;
+    }
+
+    public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
+        WorkspaceInfo ws = workspace;
+        if (ws == null) {
+            ws = getDefaultWorkspace();
+        }
+
+        StyleInfo style = facade.getStyleByName(ws, name);
+        if (style == null && workspace == null) {
+            style = facade.getStyleByName(DefaultCatalogFacade.ANY_WORKSPACE, name);
+        }
+        return style;
+    }
+
     public List getStyles() {
         return facade.getStyles();
+    }
+
+    public List<StyleInfo> getStylesByWorkspace(String workspaceName) {
+        WorkspaceInfo workspace = null;
+        if ( workspaceName != null ) {
+            workspace = getWorkspaceByName(workspaceName);
+            if ( workspace == null ) {
+                return Collections.EMPTY_LIST;
+            }
+        }
+        
+        return getStylesByWorkspace(workspace);
+    }
+
+    public List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace) {
+        return facade.getStylesByWorkspace(workspace);
     }
 
     public void add(StyleInfo style) {
@@ -1069,10 +1176,20 @@ public class CatalogImpl implements Catalog {
         if ( isNull(style.getFilename()) ) {
             throw new NullPointerException( "Style fileName must not be null");
         }
-        
-        StyleInfo existing = getStyleByName( style.getName() );
+
+        WorkspaceInfo ws = style.getWorkspace();
+        StyleInfo existing = getStyleByName( ws, style.getName() );
         if ( existing != null && !existing.getId().equals( style.getId() )) {
-            throw new IllegalArgumentException( "Style named '" +  style.getName() +"' already exists.");
+            // null workspace can cause style in any workspace to be returned, check that
+            // workspaces match
+            WorkspaceInfo ews = existing.getWorkspace();
+            if ((ws == null && ews == null) || (ws != null && ws.equals(ews))) {
+                String msg =  "Style named '" +  style.getName() +"' already exists";
+                if (ws != null) {
+                    msg += " in workspace " + ws.getName();
+                }
+                throw new IllegalArgumentException(msg); 
+            }
         }
 
         return postValidate(style, isNew);

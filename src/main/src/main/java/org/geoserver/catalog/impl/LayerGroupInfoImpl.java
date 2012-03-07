@@ -14,12 +14,14 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected String id;
     protected String name;
+    protected WorkspaceInfo workspace;
     protected String path;
     protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
@@ -59,7 +61,15 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    public WorkspaceInfo getWorkspace() {
+        return workspace;
+    }
+
+    public void setWorkspace(WorkspaceInfo workspace) {
+        this.workspace = workspace;
+    }
+
     public String getPath() {
         return path;
     }
@@ -113,6 +123,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((layers == null) ? 0 : layers.hashCode());
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
         result = prime * result + ((path == null) ? 0 : path.hashCode());
         result = prime * result + ((styles == null) ? 0 : styles.hashCode());
         result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
@@ -153,6 +164,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
             if (other.getName() != null)
                 return false;
         } else if (!name.equals(other.getName()))
+            return false;
+        if (workspace == null) {
+            if (other.getWorkspace() != null)
+                return false;
+        } else if (!workspace.equals(other.getWorkspace()))
             return false;
         if (styles == null) {
             if (other.getStyles() != null)

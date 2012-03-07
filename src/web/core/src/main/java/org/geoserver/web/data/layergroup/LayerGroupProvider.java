@@ -20,7 +20,10 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     public static Property<LayerGroupInfo> NAME = 
         new BeanProperty<LayerGroupInfo>( "name", "name" );
 
-    static List PROPERTIES = Arrays.asList( NAME);
+    public static Property<LayerGroupInfo> WORKSPACE = 
+            new BeanProperty<LayerGroupInfo>( "workspace", "workspace.name" );
+
+    static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
     @Override
     protected List<LayerGroupInfo> getItems() {

@@ -239,25 +239,9 @@ public abstract class GeoServerLoader {
         
         CatalogFactory factory = catalog.getFactory();
        
-        //styles
-        File styles = resourceLoader.find( "styles" );
-        for ( File sf : list(styles,new SuffixFileFilter(".xml") ) ) {
-            try {
-                //handle the .xml.xml case
-                if (new File(styles,sf.getName()+".xml").exists()) {
-                    continue;
-                }
-                
-                StyleInfo s = depersist( xp, sf, StyleInfo.class );
-                catalog.add( s );
-                
-                LOGGER.info( "Loaded style '" + s.getName() + "'" );
-            }
-            catch( Exception e ) {
-                LOGGER.log( Level.WARNING, "Failed to load style from file '" + sf.getName() + "'" , e );
-            }
-        }
-        
+        //global styles
+        loadStyles(resourceLoader.find( "styles" ), catalog, xp);
+
         //workspaces, stores, and resources
         File workspaces = resourceLoader.find( "workspaces" );
         if ( workspaces != null ) {
@@ -332,7 +316,12 @@ public abstract class GeoServerLoader {
                         
                     }
                 }
-                
+
+                //load the styles for the workspace
+                File styles = resourceLoader.find(wsd, "styles");
+                if (styles != null) {
+                    loadStyles(styles, catalog, xp);
+                }
             }
             
             for ( File wsd : list(workspaces, DirectoryFileFilter.INSTANCE ) ) {
@@ -505,6 +494,12 @@ public abstract class GeoServerLoader {
                         }
                     }
                 }
+
+                //load hte layer groups for this workspace
+                File layergroups = resourceLoader.find(wsd, "layergroups");
+                if (layergroups != null) {
+                    loadLayerGroups(layergroups, catalog, xp);
+                }
             }
         }
         else {
@@ -516,23 +511,9 @@ public abstract class GeoServerLoader {
         //layergroups
         File layergroups = resourceLoader.find( "layergroups" );
         if ( layergroups != null ) {
-            for ( File lgf : list( layergroups, new SuffixFileFilter( ".xml" ) ) ) {
-                try {
-                    LayerGroupInfo lg = depersist( xp, lgf, LayerGroupInfo.class );
-                    if(lg.getLayers() == null || lg.getLayers().size() == 0) {
-                        LOGGER.warning("Skipping empty layer group '" + lg.getName() + "', it is invalid");
-                        continue;
-                    }
-                    catalog.add( lg );
-                    
-                    LOGGER.info( "Loaded layer group '" + lg.getName() + "'" );    
-                }
-                catch( Exception e ) {
-                    LOGGER.log( Level.WARNING, "Failed to load layer group '" + lgf.getName() + "'", e );
-                }
-            }
+           loadLayerGroups(layergroups, catalog, xp);
         }
-                
+
         return catalog;
     }
     
@@ -663,6 +644,43 @@ public abstract class GeoServerLoader {
             
             //rename the services.xml file
             f.renameTo( new File( f.getParentFile(), "services.xml.old" ) );
+        }
+    }
+
+    void loadStyles(File styles, Catalog catalog, XStreamPersister xp) {
+        for ( File sf : list(styles,new SuffixFileFilter(".xml") ) ) {
+            try {
+                //handle the .xml.xml case
+                if (new File(styles,sf.getName()+".xml").exists()) {
+                    continue;
+                }
+                
+                StyleInfo s = depersist( xp, sf, StyleInfo.class );
+                catalog.add( s );
+                
+                LOGGER.info( "Loaded style '" + s.getName() + "'" );
+            }
+            catch( Exception e ) {
+                LOGGER.log( Level.WARNING, "Failed to load style from file '" + sf.getName() + "'" , e );
+            }
+        }
+    }
+
+    void loadLayerGroups(File layergroups, Catalog catalog, XStreamPersister xp) {
+        for ( File lgf : list( layergroups, new SuffixFileFilter( ".xml" ) ) ) {
+            try {
+                LayerGroupInfo lg = depersist( xp, lgf, LayerGroupInfo.class );
+                if(lg.getLayers() == null || lg.getLayers().size() == 0) {
+                    LOGGER.warning("Skipping empty layer group '" + lg.getName() + "', it is invalid");
+                    continue;
+                }
+                catalog.add( lg );
+                
+                LOGGER.info( "Loaded layer group '" + lg.getName() + "'" );    
+            }
+            catch( Exception e ) {
+                LOGGER.log( Level.WARNING, "Failed to load layer group '" + lgf.getName() + "'", e );
+            }
         }
     }
 

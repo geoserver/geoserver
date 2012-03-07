@@ -10,7 +10,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -22,28 +27,45 @@ import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
+import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
+import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
+import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StylesModel;
+import org.geotools.renderer.lite.gridcoverage2d.StyleVisitorAdapter;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.visitor.DuplicatingStyleVisitor;
+import org.opengis.metadata.citation.OnLineResource;
 
 /**
  * Base page for creating/editing styles
@@ -75,9 +97,13 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     protected void initUI(StyleInfo style) {
-        styleForm = new Form("form", new CompoundPropertyModel(style != null ? new StyleDetachableModel(style) : getCatalog().getFactory().createStyle())) {
+        IModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
+            new StyleDetachableModel(style) : getCatalog().getFactory().createStyle());
+        
+        styleForm = new Form("form", styleModel) {
             @Override
             protected void onSubmit() {
+                super.onSubmit();
                 onStyleFormSubmit();
             }
         };
@@ -87,6 +113,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(nameTextField = new TextField("name"));
         nameTextField.setRequired(true);
         
+        DropDownChoice<WorkspaceInfo> wsChoice = 
+            new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
+        wsChoice.setNullValid(true);
+        styleForm.add(wsChoice);
         styleForm.add( editor = new CodeMirrorEditor("SLD", new PropertyModel(this, "rawSLD")) );
         // force the id otherwise this blasted thing won't be usable from other forms
         editor.setTextAreaMarkupId("editor");
@@ -127,6 +157,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         add(uploadForm);
 
         uploadForm.add(fileUploadField = new FileUploadField("filename"));
+
+        
 
         add(validateLink());
         Link cancelLink = new Link("cancel") {
@@ -278,4 +310,5 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
      * Subclasses must implement to define the submit behavior
      */
     protected abstract void onStyleFormSubmit();
+
 }

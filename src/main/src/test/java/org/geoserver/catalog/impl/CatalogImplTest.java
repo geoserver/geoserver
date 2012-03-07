@@ -17,6 +17,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
@@ -44,6 +45,7 @@ public class CatalogImplTest extends TestCase {
     protected WMSLayerInfo wl;
     protected LayerInfo l;
     protected StyleInfo s;
+    protected LayerGroupInfo lg;
     
     protected void setUp() throws Exception {
         catalog = createCatalog();
@@ -100,6 +102,11 @@ public class CatalogImplTest extends TestCase {
         l.setEnabled(true);
         l.setResource( ft );
         l.setDefaultStyle( s );
+
+        lg = factory.createLayerGroup();
+        lg.setName("layerGroup");
+        lg.getLayers().add(l);
+        lg.getStyles().add(s);
     }
 
     protected Catalog createCatalog() {
@@ -156,7 +163,13 @@ public class CatalogImplTest extends TestCase {
         addStyle();
         catalog.add(l);
     }
-    
+
+    protected void addLayerGroup() {
+        addLayer();
+        addStyle();
+        catalog.add(lg);
+    }
+
     public void testAddNamespace() {
         assertTrue( catalog.getNamespaces().isEmpty() );
         catalog.add( ns );
@@ -1166,7 +1179,78 @@ public class CatalogImplTest extends TestCase {
         assertNotSame(s,s2);
         assertEquals(s,s2);
     }
-    
+
+    public void testGetStyleByNameWithWorkspace() {
+        addWorkspace();
+        addStyle();
+
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName( "styleNameWithWorkspace" );
+        s2.setFilename( "styleFilenameWithWorkspace" );
+        s2.setWorkspace(ws);
+        catalog.add(s2);
+
+        assertNotNull(catalog.getStyleByName("styleNameWithWorkspace"));
+        assertNotNull(catalog.getStyleByName(ws.getName(), "styleNameWithWorkspace"));
+        assertNotNull(catalog.getStyleByName(ws, "styleNameWithWorkspace"));
+        assertNotNull(catalog.getStyleByName((WorkspaceInfo)null, "styleNameWithWorkspace"));
+
+        assertNull(catalog.getStyleByName(ws.getName(), "styleName"));
+        assertNull(catalog.getStyleByName(ws, "styleName"));
+        assertNotNull(catalog.getStyleByName((WorkspaceInfo)null, "styleName"));
+    }
+
+    public void testGetStyleByNameWithWorkspace2() throws Exception {
+        addWorkspace();
+
+        WorkspaceInfo ws2 = catalog.getFactory().createWorkspace();
+        ws2.setName("wsName2");
+        catalog.add(ws2);
+
+        //add style with same name in each workspace
+        StyleInfo s1 = catalog.getFactory().createStyle();
+        s1.setName("foo");
+        s1.setFilename("foo1.sld");
+        s1.setWorkspace(ws);
+        catalog.add(s1);
+
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName("foo");
+        s2.setFilename("foo2.sld");
+        s2.setWorkspace(ws2);
+        catalog.add(s2);
+
+        //will randomly return one... we should probably return null with multiple matches
+        assertNotNull(catalog.getStyleByName("foo"));
+
+        assertEquals(s1, catalog.getStyleByName(ws.getName(), "foo"));
+        assertEquals(s1, catalog.getStyleByName(ws, "foo"));
+
+        assertEquals(s2, catalog.getStyleByName(ws2.getName(), "foo"));
+        assertEquals(s2, catalog.getStyleByName(ws2, "foo"));
+    }
+
+    public void testGetStyles() {
+        addWorkspace();
+        addStyle();
+
+        assertEquals(1, catalog.getStyles().size());
+        assertEquals(0, catalog.getStylesByWorkspace(ws.getName()).size());
+        assertEquals(0, catalog.getStylesByWorkspace(ws).size());
+        assertEquals(0, catalog.getStylesByWorkspace((WorkspaceInfo)null).size());
+
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName( "styleNameWithWorkspace" );
+        s2.setFilename( "styleFilenameWithWorkspace" );
+        s2.setWorkspace(ws);
+        catalog.add(s2);
+
+        assertEquals(2, catalog.getStyles().size());
+        assertEquals(1, catalog.getStylesByWorkspace(ws.getName()).size());
+        assertEquals(1, catalog.getStylesByWorkspace(ws).size());
+        assertEquals(1, catalog.getStylesByWorkspace((WorkspaceInfo)null).size());
+    }
+
     public void testModifyStyle() {
         addStyle();
         
@@ -1356,8 +1440,127 @@ public class CatalogImplTest extends TestCase {
         
         RunnerBase.checkForRunnerExceptions(runners);
     }
-    
-    
+
+    public void testAddLayerGroupWithWorkspaceWithResourceFromAnotherWorkspace() {
+        WorkspaceInfo ws = catalog.getFactory().createWorkspace();
+        ws.setName("other");
+        catalog.add(ws);
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(ws);
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        try {
+            catalog.add(ws);
+            fail();
+        }
+        catch(IllegalArgumentException expected) {}
+    }
+
+    public void testGetLayerGroupByName() {
+        addLayerGroup();
+        assertNotNull(catalog.getLayerGroupByName("layerGroup"));
+        assertNotNull(catalog.getLayerGroupByName((WorkspaceInfo)null, "layerGroup"));
+        assertNull(catalog.getLayerGroupByName(catalog.getDefaultWorkspace(), "layerGroup"));
+        
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+        assertNotNull(catalog.getLayerGroupByName("layerGroup2"));
+        assertNotNull(catalog.getLayerGroupByName(catalog.getDefaultWorkspace(), "layerGroup2"));
+        assertNull(catalog.getLayerGroupByName("cite", "layerGroup2"));
+    }
+
+    public void testGetLayerGroupByNameWithWorkspace() {
+        addLayer();
+        addStyle();
+
+        CatalogFactory factory = catalog.getFactory();
+        LayerGroupInfo lg1 = factory.createLayerGroup();
+        lg1.setName("lg");
+        lg1.setWorkspace(ws);
+        lg1.getLayers().add(l);
+        lg1.getStyles().add(s);
+        catalog.add(lg1);
+
+        WorkspaceInfo ws2 = factory.createWorkspace();
+        ws2.setName("ws2");
+        catalog.add(ws2);
+
+        NamespaceInfo ns2 = factory.createNamespace();
+        ns2.setPrefix("ns2");
+        ns2.setURI("http://ns2");
+        catalog.add(ns2);
+        
+        DataStoreInfo ds2 = factory.createDataStore();
+        ds2.setEnabled(true);
+        ds2.setName( "dsName");
+        ds2.setDescription("dsDescription");
+        ds2.setWorkspace( ws2 );
+        catalog.add(ds2);
+        
+        FeatureTypeInfo ft2 = factory.createFeatureType();
+        ft2.setEnabled(true);
+        ft2.setName( "ftName" );
+        ft2.setAbstract( "ftAbstract" );
+        ft2.setDescription( "ftDescription" );
+        ft2.setStore( ds2 );
+        ft2.setNamespace( ns2 );
+        catalog.add(ft2);
+
+        StyleInfo s2 = factory.createStyle();
+        s2.setName( "styleName" );
+        s2.setFilename( "styleFilename" );
+        s2.setWorkspace(ws2);
+
+        LayerInfo l2 = factory.createLayer();
+        l2.setEnabled(true);
+        l2.setResource(ft2);
+        l2.setDefaultStyle(s2);
+        catalog.add(l2);
+        
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setName("lg");
+        lg2.setWorkspace(ws2);
+        lg2.getLayers().add(l2);
+        lg2.getStyles().add(s2);
+        catalog.add(lg2);
+
+        //will randomly return one... we should probably return null with multiple matches
+        assertNotNull(catalog.getLayerGroupByName("lg"));
+
+        assertEquals(lg1, catalog.getLayerGroupByName(ws.getName(), "lg"));
+        assertEquals(lg1, catalog.getLayerGroupByName(ws, "lg"));
+
+        assertEquals(lg2, catalog.getLayerGroupByName(ws2.getName(), "lg"));
+        assertEquals(lg2, catalog.getLayerGroupByName(ws2, "lg"));
+    }
+
+    public void testGetLayerGroups() {
+        addLayerGroup();
+        assertEquals(1, catalog.getLayerGroups().size());
+        assertEquals(0, catalog.getLayerGroupsByWorkspace(ws.getName()).size());
+        assertEquals(0, catalog.getLayerGroupsByWorkspace(ws).size());
+        assertEquals(0, catalog.getLayerGroupsByWorkspace((WorkspaceInfo)null).size());
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+        assertEquals(2, catalog.getLayerGroups().size());
+        assertEquals(1, catalog.getLayerGroupsByWorkspace(ws.getName()).size());
+        assertEquals(1, catalog.getLayerGroupsByWorkspace(ws).size());
+        assertEquals(1, catalog.getLayerGroupsByWorkspace((WorkspaceInfo)null).size());
+    }
+
     static class TestListener implements CatalogListener {
 
         public List<CatalogAddEvent> added = new ArrayList();

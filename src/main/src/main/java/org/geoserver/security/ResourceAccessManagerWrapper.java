@@ -12,8 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.opengis.filter.Filter;
@@ -212,5 +214,13 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
 
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         return delegate.getAccessLimits(user, workspace);
+    }
+
+    public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style) {
+        return delegate.getAccessLimits(user, style);
+    }
+
+    public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
+        return delegate.getAccessLimits(user, layerGroup);
     }
 }

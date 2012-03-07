@@ -219,6 +219,13 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                     }
                 }
             }
+            else {
+                //try relative to base dir
+                file = new File(baseDirectory, file.getPath());
+                if (file.exists()) {
+                    return file;
+                }
+            }
         }
 
         //look for a generic resource if no parent specified
@@ -302,7 +309,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *  find or create.
      */
     public File findOrCreateDirectory( File parent, String... location ) throws IOException {
-        return findOrCreateDirectory(concat(location));
+        return findOrCreateDirectory(parent, concat(location));
     }
     
     /**
@@ -418,19 +425,24 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             return file;
         }
 
-        if ( parent == null ) {
-            //no base directory set, cannot create a relative path
-            if (baseDirectory == null) {
-                String msg = "No base location set, could not create directory: " + location;
-                throw new IOException(msg);
-            }
-    
-            file = new File(baseDirectory, location);
-            file.mkdirs();
-    
-            return file;
+        //no base directory set, cannot create a relative path
+        if (baseDirectory == null) {
+             String msg = "No base location set, could not create directory: " + location;
+             throw new IOException(msg);
         }
-        return null;
+
+        if (parent != null && parent.getPath().startsWith(baseDirectory.getPath())) {
+            //parent contains base directory path, make relative to it
+            file = new File(parent, location);
+        }
+        else {
+            //base relative to base directory
+            file = parent != null ? new File(new File(baseDirectory, parent.getPath()), location)
+                : new File(baseDirectory, location);
+        }
+
+        file.mkdirs();
+        return file;
     }
 
     /**

@@ -23,15 +23,10 @@ public class LayerGroupNewPage extends AbstractLayerGroupPage {
         LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
 
         Catalog catalog = getCatalog();
-        try {
-            catalog.add(lg);
+        catalog.add(lg);
 
-            lg = catalog.getLayerGroup(lg.getId());
-            setResponsePage(LayerGroupPage.class);
-        } catch (Exception e) {
-            error(e);
-            LOGGER.log(Level.WARNING, "Error creating new layer group.", e);
-        }
+        lg = catalog.getLayerGroup(lg.getId());
+        setResponsePage(LayerGroupPage.class);
     }
 
 }

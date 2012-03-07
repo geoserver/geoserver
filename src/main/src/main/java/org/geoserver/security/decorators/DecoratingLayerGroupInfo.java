@@ -13,6 +13,7 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -44,6 +45,10 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getName();
     }
 
+    public WorkspaceInfo getWorkspace() {
+        return delegate.getWorkspace();
+    }
+
     public List<StyleInfo> getStyles() {
         return delegate.getStyles();
     }
@@ -55,7 +60,11 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public void setName(String name) {
         delegate.setName(name);
     }
-    
+
+    public void setWorkspace(WorkspaceInfo workspace) {
+        delegate.setWorkspace(workspace);
+    }
+
     public MetadataMap getMetadata() {
         return delegate.getMetadata();
     }

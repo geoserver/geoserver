@@ -4,8 +4,10 @@
  */
 package org.geoserver.security;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
 /**
@@ -20,6 +22,16 @@ public abstract class AbstractCatalogFilter implements CatalogFilter {
 
     @Override
     public boolean hideLayer(LayerInfo layer) {
+        return false;
+    }
+
+    @Override
+    public boolean hideStyle(StyleInfo style) {
+        return false;
+    }
+
+    @Override
+    public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
         return false;
     }
 

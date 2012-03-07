@@ -20,12 +20,23 @@ public class StyleFinder extends AbstractCatalogFinder {
     
     @Override
     public Resource findTarget(Request request, Response response) {
+        String workspace = getAttribute(request, "workspace");
         String style = getAttribute(request, "style");
         String layer = getAttribute(request, "layer");
 
+        //check if workspace exists
+        if (workspace != null && catalog.getWorkspaceByName(workspace) == null) {
+            throw new RestletException( "No such workspace: " + workspace, Status.CLIENT_ERROR_NOT_FOUND );
+        }
         //check style exists if specified
-        if ( style != null && catalog.getStyleByName( style ) == null ) {
-            throw new RestletException( "No such style: " + style, Status.CLIENT_ERROR_NOT_FOUND );
+        if ( style != null) {
+            if (workspace != null && catalog.getStyleByName( workspace, style ) == null) {
+                throw new RestletException(String.format("No such style %s in workspace %s", 
+                    style, workspace), Status.CLIENT_ERROR_NOT_FOUND );
+            }
+            if (workspace == null && catalog.getStyleByName( style ) == null) {
+                throw new RestletException( "No such style: " + style, Status.CLIENT_ERROR_NOT_FOUND );
+            }
         }
 
         //check layer exists if specified

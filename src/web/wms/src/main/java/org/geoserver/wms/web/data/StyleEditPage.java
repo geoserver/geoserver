@@ -21,10 +21,14 @@ import org.geotools.util.Version;
 public class StyleEditPage extends AbstractStylePage {
     
     public static final String NAME = "name";
+    public static final String WORKSPACE = "workspace";
 
     public StyleEditPage(PageParameters parameters) {
         String name = parameters.getString(NAME);
-        StyleInfo si = getCatalog().getStyleByName(name);
+        String workspace = parameters.getString(WORKSPACE);
+
+        StyleInfo si = workspace != null ? getCatalog().getStyleByName(workspace, name) : 
+            getCatalog().getStyleByName(name);
         
         if(si == null) {
             error(new ParamResourceModel("StyleEditPage.notFound", this, name).getString());

@@ -20,11 +20,23 @@ public class LayerGroupFinder extends AbstractCatalogFinder {
     
     @Override
     public Resource findTarget(Request request, Response response) {
+        String ws = getAttribute(request, "workspace");
         String lg = getAttribute(request, "layergroup");
-        if ( lg != null && catalog.getLayerGroupByName( lg ) == null ) {
-            throw new RestletException( "No such layer group " + lg, Status.CLIENT_ERROR_NOT_FOUND );
-        }
         
+        if (ws != null && catalog.getWorkspaceByName(ws) == null) {
+            throw new RestletException("No such workspace: " + ws, Status.CLIENT_ERROR_NOT_FOUND);
+        }
+
+        if ( lg != null) { 
+            if (ws != null && catalog.getLayerGroupByName( ws, lg ) == null) {
+                throw new RestletException(String.format("No such layer group %s in workspace %s", 
+                    lg, ws), Status.CLIENT_ERROR_NOT_FOUND );
+            }
+            if (ws == null && catalog.getLayerGroupByName( lg ) == null) {
+                throw new RestletException( "No such layer group " + lg, Status.CLIENT_ERROR_NOT_FOUND );
+            }
+        }
+
         if ( lg == null && request.getMethod() == Method.GET ) {
             return new LayerGroupListResource( getContext(), request, response, catalog );
         }

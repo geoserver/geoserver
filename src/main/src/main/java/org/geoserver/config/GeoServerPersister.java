@@ -8,10 +8,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CoverageInfo;
@@ -34,6 +40,9 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.data.DataUtilities;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.ExternalGraphic;
 import org.geotools.util.logging.Logging;
 
 public class GeoServerPersister implements CatalogListener, ConfigurationListener {
@@ -44,10 +53,12 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     static Logger LOGGER = Logging.getLogger( "org.geoserver.config");
      
     GeoServerResourceLoader rl;
+    GeoServerDataDirectory dd;
     XStreamPersister xp;
     
     public GeoServerPersister(GeoServerResourceLoader rl, XStreamPersister xp) {
         this.rl = rl;
+        this.dd = new GeoServerDataDirectory(rl);
         this.xp = xp;
     }
     
@@ -138,7 +149,38 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
                     oldDir.renameTo( new File( dir( newStore ), oldDir.getName() ) );
                 }
             }
-            
+
+            //handle the case of a style changing workspace
+            if (source instanceof StyleInfo) {
+                i = event.getPropertyNames().indexOf("workspace");
+                if (i > -1) {
+                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get( i );
+                    File newDir = dd.styleDir(true, newWorkspace);
+
+                    //look for any resource files (image, etc...) and copy them over, don't move 
+                    // since they could be shared among other styles
+                    for (File oldFile : resources((StyleInfo) source)) {
+                        FileUtils.copyFile(oldFile, new File(newDir, oldFile.getName()));
+                    }
+
+                    //move over the config file and the sld
+                    for (File oldFile : files((StyleInfo)source)) {
+                        oldFile.renameTo(new File(newDir, oldFile.getName()));
+                    }
+
+                }
+            }
+
+            //handle the case of a layer group changing workspace
+            if (source instanceof LayerGroupInfo) {
+                i = event.getPropertyNames().indexOf("workspace");
+                if (i > -1) {
+                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get( i );
+                    File oldFile = file((LayerGroupInfo)source);
+                    oldFile.renameTo(new File(dd.layerGroupDir(true, newWorkspace), oldFile.getName()));
+                }
+            }
+
             //handle default workspace
             if ( source instanceof Catalog ) {
                 i = event.getPropertyNames().indexOf("defaultWorkspace");
@@ -364,7 +406,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     File file( WorkspaceInfo ws ) throws IOException {
         return new File( dir( ws ), "workspace.xml" );
     }
-    
+
     //namespaces
     void addNamespace( NamespaceInfo ns ) throws IOException {
         LOGGER.fine( "Persisting namespace " + ns.getPrefix() );
@@ -631,13 +673,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File dir( StyleInfo s, boolean create ) throws IOException {
-        File d = rl.find( "styles" );
-        if ( d == null && create ) {
-            d = rl.createDirectory( "styles" );
-        }
-        return d;
+        return dd.styleDir(create, s);
     }
-    
+
     File file( StyleInfo s ) throws IOException {
         //special case for styles, if the file name (minus the suffix) matches the id of the style
         // and the suffix is xml (rather than sld) we need to avoid overwritting the actual 
@@ -651,7 +689,55 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             return new File( dir( s ), s.getName() + ".xml");
         }
     }
+
+    /*
+     * returns the SLD file as well
+     */
+    List<File> files(StyleInfo s) throws IOException {
+        File f = file(s);
+        List<File> list = 
+            new ArrayList<File>(Arrays.asList(f, new File(f.getParentFile(), s.getFilename())));
+        return list;
+    }
+
+    /*
+     * returns additional resource files 
+     */
+    List<File> resources(StyleInfo s) throws IOException {
+        final List<File> files = new ArrayList<File>();
+        try {
+            s.getStyle().accept(new AbstractStyleVisitor() {
+                @Override
+                public void visit(ExternalGraphic exgr) {
+                    if (exgr.getOnlineResource() == null) {
+                        return;
+                    }
     
+                    URI uri = exgr.getOnlineResource().getLinkage();
+                    if (uri == null) {
+                        return;
+                    }
+    
+                    File f = null;
+                    try {
+                        f = DataUtilities.urlToFile(uri.toURL());
+                    } catch (MalformedURLException e) {
+                        LOGGER.log(Level.WARNING, "Error attemping to processing SLD resource", e);
+                    }
+    
+                    if (f != null && f.exists()) {
+                        files.add(f);
+                    }
+                }
+            });
+        }
+        catch(IOException e) {
+            LOGGER.log(Level.WARNING, "Error loading style", e);
+        }
+
+        return files;
+    }
+
     //layer groups
     void addLayerGroup( LayerGroupInfo lg ) throws IOException {
         LOGGER.fine( "Persisting layer group " + lg.getName() );
@@ -680,11 +766,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File dir( LayerGroupInfo lg, boolean create ) throws IOException {
-        File d = rl.find( "layergroups" );
-        if ( d == null && create ) {
-            d = rl.createDirectory( "layergroups"); 
-        }
-        return d;
+        return dd.layerGroupDir(create, lg);
     }
     
     File file( LayerGroupInfo lg ) throws IOException {

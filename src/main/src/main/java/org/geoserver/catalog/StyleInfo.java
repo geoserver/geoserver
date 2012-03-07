@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.geotools.styling.Style;
 import org.geotools.util.Version;
@@ -51,6 +52,16 @@ public interface StyleInfo extends CatalogInfo {
      * @uml.property name="name"
      */
     void setName(String name);
+
+    /**
+     * The workspace the style is part of, or <code>null</code> if the style is global.
+     */
+    WorkspaceInfo getWorkspace();
+
+    /**
+     * Sets the workspace the style is part of.
+     */
+    void setWorkspace(WorkspaceInfo workspace);
 
     /**
      * The sld version of the style.

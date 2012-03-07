@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -15,6 +16,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -30,10 +32,13 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.layer.LayerDetachableModel;
 import org.geoserver.web.data.style.StyleDetachableModel;
+import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
+import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.publish.LayerConfigurationPanel;
 import org.geoserver.web.publish.LayerConfigurationPanelInfo;
 import org.geoserver.web.publish.LayerGroupConfigurationPanel;
@@ -75,9 +80,15 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         add(form);
         TextField name = new TextField("name");
         name.setRequired(true);
-        name.add(new GroupNameValidator());
+        //JD: don't need this, this is validated at the catalog level
+        //name.add(new GroupNameValidator());
         form.add(name);
         
+        DropDownChoice<WorkspaceInfo> wsChoice = 
+                new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
+        wsChoice.setNullValid(true);
+        form.add(wsChoice);
+
         //bounding box
         form.add(envelopePanel = new EnvelopePanel( "bounds" )/*.setReadOnly(true)*/);
         envelopePanel.setRequired(true);
@@ -183,8 +194,15 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
                     lg.getLayers().add(entry.getLayer());
                     lg.getStyles().add(entry.getStyle());
                 }
+
+                try {
+                    AbstractLayerGroupPage.this.save();
+                }
+                catch(Exception e) {
+                    error(e);
+                    LOGGER.log(Level.WARNING, "Error adding/modifying layer group.", e);    
+                }
                 
-                AbstractLayerGroupPage.this.save();
             }
         };
     }

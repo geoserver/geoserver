@@ -29,10 +29,11 @@ public class LayerGroupResource extends AbstractCatalogResource {
 
     @Override
     protected Object handleObjectGet() throws Exception {
+        String ws = getAttribute("workspace");
         String lg = getAttribute( "layergroup" );
         
         LOGGER.fine( "GET layer group " + lg );
-        return catalog.getLayerGroupByName( lg ); 
+        return ws == null ? catalog.getLayerGroupByName( lg ) : catalog.getLayerGroupByName(ws,lg); 
     }
 
     @Override
@@ -42,8 +43,10 @@ public class LayerGroupResource extends AbstractCatalogResource {
     
     @Override
     protected String handleObjectPost(Object object) throws Exception {
+        String ws = getAttribute("workspace");
+
         LayerGroupInfo lg = (LayerGroupInfo) object;
-        LOGGER.info( "POST layer group " + lg.getName() );
+        LOGGER.info( "POST layer group " + lg.getName() + ws != null ? " to workspace " + ws : "");
         
         if ( lg.getLayers().isEmpty() ) {
             throw new RestletException( "layer group must not be empty", Status.CLIENT_ERROR_BAD_REQUEST );
@@ -53,7 +56,11 @@ public class LayerGroupResource extends AbstractCatalogResource {
             LOGGER.fine( "Auto calculating layer group bounds");
             new CatalogBuilder( catalog ).calculateLayerGroupBounds(lg);
         }
-        
+
+        if (ws != null) {
+            lg.setWorkspace(catalog.getWorkspaceByName(ws));
+        }
+
         catalog.add( lg );
         return lg.getName();
     }
@@ -65,8 +72,11 @@ public class LayerGroupResource extends AbstractCatalogResource {
     
     @Override
     protected void handleObjectPut(Object object) throws Exception {
+        String workspace = getAttribute("workspace");
         String layergroup = getAttribute("layergroup");
-        LOGGER.info( "PUT layer group " + layergroup );
+
+        LOGGER.info( "PUT layer group " + layergroup 
+                + workspace == null ? ", workspace " + workspace : "");
         
         LayerGroupInfo lg = (LayerGroupInfo) object;
         LayerGroupInfo original = catalog.getLayerGroupByName( layergroup );
@@ -75,7 +85,15 @@ public class LayerGroupResource extends AbstractCatalogResource {
         if ( lg.getName() != null && !lg.getName().equals( original.getName() ) ) {
             throw new RestletException( "Can't change name of a layer group", Status.CLIENT_ERROR_FORBIDDEN );
         }
-        
+
+        //ensure not a workspace change
+        if (lg.getWorkspace() != null) {
+            if (!lg.getWorkspace().equals(original.getWorkspace())) {
+                throw new RestletException( "Can't change the workspace of a layer group, instead " +
+                    "DELETE from existing workspace and POST to new workspace", Status.CLIENT_ERROR_FORBIDDEN );
+            }
+        }
+
         new CatalogBuilder( catalog ).updateLayerGroup( original, lg );
         catalog.save( original );
     }
@@ -87,10 +105,13 @@ public class LayerGroupResource extends AbstractCatalogResource {
     
     @Override
     protected void handleObjectDelete() throws Exception {
+        String workspace = getAttribute("workspace");
         String layergroup = getAttribute( "layergroup" );
         LOGGER.info( "DELETE layer group " + layergroup );
         
-        LayerGroupInfo lg = catalog.getLayerGroupByName( layergroup );
+        LayerGroupInfo lg = workspace == null ? catalog.getLayerGroupByName( layergroup ) : 
+            catalog.getLayerGroupByName(workspace, layergroup);
+                
         catalog.remove( lg );
     }
     

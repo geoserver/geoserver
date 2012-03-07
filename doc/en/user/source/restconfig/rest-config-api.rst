@@ -1076,6 +1076,87 @@ The ``purge`` parameter specifies whether the underlying SLD file for the style 
 - PUT that changes name of style -> 403
 - DELETE against style which is referenced by existing layers -> 403
 
+``/workspaces/<ws>/styles[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+     - Parameters
+   * - GET
+     - Return all styles within workspace ``ws``
+     - 200
+     - HTML, XML, JSON
+     - HTML
+     -
+   * - POST
+     - Create a new style within workspace ``ws``
+     - 201 with ``Location`` header
+     - SLD, XML, JSON
+       See :ref:`notes <sld_post_put>` below
+     -
+     - :ref:`name <name_parameter>`
+   * - PUT
+     - 
+     - 405
+     - 
+     - 
+     -
+   * - DELETE
+     - 
+     - 405
+     -
+     -
+     - :ref:`purge <purge_parameter>`
+
+*Representations*:
+
+- :download:`HTML <representations/styles_html.txt>`
+- :download:`XML <representations/styles_xml.txt>`
+- :download:`JSON <representations/styles_json.txt>`
+
+``/workspaces/<ws>/styles/<s>[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return style ``s`` within workspace ``ws``
+     - 200
+     - SLD, HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify style ``s`` within workspace ``ws``
+     - 200
+     - SLD, XML, JSON
+       See :ref:`notes <sld_post_put>` above
+     - 
+   * - DELETE
+     - Delete style ``s`` within workspace ``ws``
+     - 200
+     -
+     -
+
+*Representations*:
+
+ - :download:`SLD <representations/style_sld.txt>`
+ - :download:`HTML <representations/style_html.txt>`
+ - :download:`XML <representations/style_xml.txt>`
+ - :download:`JSON <representations/style_json.txt>`
 
 Layers
 ------
@@ -1303,6 +1384,79 @@ Operations
 - POST that specifies layer group with no layers -> 400
 - PUT that changes name of layer group -> 403 
 
+``/workspaces/<ws>/layergroups[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return all layer groups within workspace ``ws``
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - Add a new layer group within workspace ``ws``
+     - 201, with ``Location`` header
+     - XML,JSON
+     -
+   * - PUT
+     - 
+     - 405
+     - 
+     - 
+   * - DELETE
+     -
+     - 405
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/layergroups_html.txt>`
+- :download:`XML <representations/layergroups_xml.txt>`
+- :download:`JSON <representations/layergroups_json.txt>`
+
+``/workspaces/<ws>/layergroups/<lg>[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return layer group ``lg`` within workspace ``ws``
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify layer group ``lg`` within workspace ``ws``
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - Delete layer group ``lg`` within workspace ``ws``
+     - 200
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/layergroup_html.txt>`
+- :download:`XML <representations/layergroup_xml.txt>`
+- :download:`JSON <representations/layergroup_json.txt>`
 
 Configuration reloading 
 ----------------------- 

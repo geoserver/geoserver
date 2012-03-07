@@ -332,6 +332,7 @@ public class XStreamPersister {
         
         // StyleInfo
         xs.omitField(impl(StyleInfo.class), "catalog");
+        xs.registerLocalConverter(impl(StyleInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
         xs.registerLocalConverter(impl(StyleInfo.class), "metadata", new MetadataMapConverter() );
         
         // ResourceInfo
@@ -368,6 +369,7 @@ public class XStreamPersister {
         xs.registerLocalConverter( impl(LayerInfo.class), "metadata", new MetadataMapConverter() );
         
         // LayerGroupInfo
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "layers", new ReferenceCollectionConverter( LayerInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "styles", new ReferenceCollectionConverter( StyleInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "metadata", new MetadataMapConverter() );

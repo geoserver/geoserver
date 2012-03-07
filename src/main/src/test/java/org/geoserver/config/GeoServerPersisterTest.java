@@ -7,6 +7,8 @@ import java.io.File;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -437,7 +439,23 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         
         assertTrue( f.exists() );
     }
-    
+
+    public void testAddStyleWithWorkspace() throws Exception {
+        File f = new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml");
+        assertFalse( f.exists() );
+
+        StyleInfo s = catalog.getFactory().createStyle();
+        s.setName("foostyle");
+        s.setFilename( "foostyle.sld");
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.add( s );
+        
+        assertTrue( f.exists() );
+
+        Document dom = dom( f );
+        assertXpathEvaluatesTo(catalog.getDefaultWorkspace().getId(), "/style/workspace/id", dom );
+    }
+
     public void testModifyStyle() throws Exception {
         testAddStyle();
         
@@ -451,7 +469,70 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         
         assertXpathEvaluatesTo( "foostyle2.sld", "/style/filename", dom );
     }
-    
+
+    public void testModifyStyleChangeWorkspace() throws Exception {
+        testAddStyle();
+        
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        s.setFilename( "foostyle2.sld");
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.save( s );
+        
+        File f = new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml");
+        assertFalse(f.exists());
+
+        f = new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml");
+        Document dom = dom( f );
+        
+        assertXpathEvaluatesTo( "foostyle2.sld", "/style/filename", dom );
+    }
+
+    public void testModifyStyleChangeWorkspace2() throws Exception {
+        testAddStyle();
+
+        //copy an sld into place
+        FileUtils.copyURLToFile(getClass().getResource("default_line.sld"), 
+            new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"));
+        
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
+
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.save( s );
+
+        assertFalse(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
+        assertFalse(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
+
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
+    }
+
+    public void testModifyStyleWithResourceChangeWorkspace() throws Exception {
+        testAddStyle();
+
+        //copy an sld with its resource into place
+        FileUtils.copyURLToFile(getClass().getResource("burg.sld"), 
+            new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"));
+        FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
+            new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+        
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg").exists());
+        
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.save( s );
+
+        assertFalse(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
+        assertFalse(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg").exists());
+        
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg").exists());
+    }
     public void testRemoveStyle() throws Exception {
         testAddStyle();
         
@@ -462,6 +543,21 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         StyleInfo s = catalog.getStyleByName( "foostyle" );
         catalog.remove( s );
         
+        assertFalse( f.exists() );
+    }
+
+    public void testRemoveStyleWithWorkspace() throws Exception {
+        StyleInfo s = catalog.getFactory().createStyle();
+        s.setName("foostyle");
+        s.setFilename( "foostyle.sld");
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.add( s );
+
+        File f = new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml");
+        assertTrue( f.exists() );
+
+        s = catalog.getStyleByName("foostyle");
+        catalog.remove(s);
         assertFalse( f.exists() );
     }
 
@@ -487,6 +583,25 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( f.exists() );
     }
     
+    public void testAddLayerGroupWithWorkspace() throws Exception {
+        File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
+        assertFalse( f.exists() );
+
+        testAddLayer();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName("foolayergroup");
+        lg.setWorkspace(catalog.getWorkspaceByName("acme"));
+        lg.getLayers().add( catalog.getLayerByName( "foo") );
+        lg.getStyles().add( null );
+        catalog.add(lg);
+        
+        assertTrue( f.exists() );
+
+        Document dom = dom( f );
+        assertXpathEvaluatesTo(catalog.getWorkspaceByName("acme").getId(), "/layerGroup/workspace/id", dom );
+    }
+
     public void testModifyLayerGroup() throws Exception {
         testAddLayerGroup();
         
@@ -506,6 +621,21 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( s.getId(), "/layerGroup/styles/style/id", dom );
     }
     
+    public void testModifyLayerGroupChangeWorkspace() throws Exception {
+        testAddLayerGroup();
+        File f = 
+            new File( testData.getDataDirectoryRoot(), "layergroups/lg.xml");
+        assertTrue(f.exists());
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName("lg");
+        lg.setWorkspace(catalog.getWorkspaceByName("acme"));
+        catalog.save(lg);
+        
+        assertFalse(f.exists());
+        assertTrue(new File( testData.getDataDirectoryRoot(), 
+            "workspaces/acme/layergroups/lg.xml").exists());
+    }
+
     public void testRemoveLayerGroup() throws Exception {
         testAddLayerGroup();
         
@@ -518,7 +648,18 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         
         assertFalse( f.exists() );
     }
-    
+
+    public void testRemoveLayerGroupWithWorkspace() throws Exception {
+        testModifyLayerGroupChangeWorkspace();
+
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/lg.xml");
+        assertTrue(f.exists());
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName("lg");
+        assertNotNull(lg);
+        catalog.remove(lg);
+        assertFalse(f.exists());
+    }
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setAdminUsername("roadRunner");

@@ -21,8 +21,10 @@ public class LayerGroupListResource extends AbstractCatalogListResource {
 
     @Override
     protected List handleListGet() throws Exception {
-        LOGGER.fine( "GET all layer groups");
-        return catalog.getLayerGroups();
+        String ws = getAttribute("workspace");
+        LOGGER.fine( "GET all layer groups" + ws != null ? " in workspace " + ws : "");
+
+        return ws != null ? catalog.getLayerGroupsByWorkspace(ws) : catalog.getLayerGroups();
     }
 
 }

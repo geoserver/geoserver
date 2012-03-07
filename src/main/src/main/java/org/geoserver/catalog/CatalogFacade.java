@@ -466,11 +466,27 @@ public interface CatalogFacade {
     LayerGroupInfo getLayerGroupByName(String name);
 
     /**
+     * Returns the layer group matching a particular name in the specified workspace, or 
+     * <code>null</code> if no such layer group could be found.
+     * 
+     * @param workspace The workspace containing the layer group.
+     * @param name The name of the layer group to return.
+     */
+    LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name);
+
+    /**
      * Loads all layer groups from persistent storage.
      * 
      * @return A list of layer groups, possibly empty.
      */
     List<LayerGroupInfo> getLayerGroups();
+
+    /**
+     * All layer groups in the specified workspace.
+     * 
+     * @param workspace The workspace containing layer groups.
+     */
+    List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace);
 
     //
     // Namespaces
@@ -691,11 +707,27 @@ public interface CatalogFacade {
     StyleInfo getStyleByName(String name);
 
     /**
+     * Returns the style matching a particular name in the specified workspace, or <code>null</code> 
+     * if no such style could be found.
+     * 
+     * @param workspace The workspace containing the style.
+     * @param name The name of the style to return.
+     */
+    StyleInfo getStyleByName(WorkspaceInfo workspace, String name);
+
+    /**
      * Loads all styles from persistent storage.
      * 
      * @return A list of styles, possibly empty.
      */
     List<StyleInfo> getStyles();
+
+    /**
+     * All styles in the specified workspace.
+     * 
+     * @param workspace The workspace containing styles.
+     */
+    List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace);
 
     /**
      * Disposes the dao.

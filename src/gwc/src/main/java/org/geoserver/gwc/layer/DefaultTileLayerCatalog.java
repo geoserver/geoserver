@@ -186,7 +186,13 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 throw propagate(other);
             }
 
-            if (oldValue != null) {
+            if (oldValue == null) {
+                final String duplicateNameId = layersByName.get(newValue.getName());
+                if (null != duplicateNameId) {
+                    throw new IllegalArgumentException("TileLayer with same name already exists: "
+                            + newValue.getName() + ": <" + duplicateNameId + ">");
+                }
+            } else {
                 layersByName.remove(oldValue.getName());
             }
 

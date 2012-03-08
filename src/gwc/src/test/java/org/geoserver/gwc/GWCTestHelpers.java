@@ -42,7 +42,7 @@ public class GWCTestHelpers {
         resource.setStore(store);
 
         LayerInfoImpl layer = new LayerInfoImpl();
-        layer.setId("id-" + resource.getPrefixedName());
+        layer.setId("id-" + resource.prefixedName());
         layer.setResource(resource);
         layer.setEnabled(true);
 

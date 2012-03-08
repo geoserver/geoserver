@@ -172,7 +172,7 @@ public class GWCTest extends TestCase {
         when(catalog.getLayerGroups()).thenReturn(Arrays.asList(layerGroup));
         when(catalog.getLayer(eq(layer.getId()))).thenReturn(layer);
         when(catalog.getLayerGroup(layerGroup.getId())).thenReturn(layerGroup);
-        when(catalog.getLayerByName(eq(layer.getResource().getPrefixedName()))).thenReturn(layer);
+        when(catalog.getLayerByName(eq(layer.getResource().prefixedName()))).thenReturn(layer);
         when(catalog.getLayerGroupByName(tileLayerName(layerGroup))).thenReturn(layerGroup);
     }
 

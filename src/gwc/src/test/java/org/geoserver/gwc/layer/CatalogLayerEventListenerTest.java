@@ -93,8 +93,9 @@ public class CatalogLayerEventListenerTest extends TestCase {
         mockResourceInfo = mock(FeatureTypeInfo.class);
         mockNamespaceInfo = mock(NamespaceInfo.class);
 
-        when(GWC.tileLayerName(mockLayerGroupInfo)).thenReturn(LAYER_GROUP_NAME);
-        when(mockResourceInfo.getPrefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);
+        when(mockLayerGroupInfo.getName()).thenReturn(LAYER_GROUP_NAME);
+        when(mockLayerGroupInfo.prefixedName()).thenReturn(LAYER_GROUP_NAME);
+        when(mockResourceInfo.prefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);
         when(mockResourceInfo.getName()).thenReturn(RESOURCE_NAME);
         when(mockResourceInfo.getNamespace()).thenReturn(mockNamespaceInfo);
         when(mockNamespaceInfo.getPrefix()).thenReturn(NAMESPACE_PREFIX);
@@ -129,8 +130,7 @@ public class CatalogLayerEventListenerTest extends TestCase {
         when(mockMediator.hasTileLayer(same(mockLayerInfo))).thenReturn(true);
         listener.handleRemoveEvent(event);
 
-        verify(mockMediator)
-                .removeTileLayers(eq(Arrays.asList(mockResourceInfo.getPrefixedName())));
+        verify(mockMediator).removeTileLayers(eq(Arrays.asList(mockResourceInfo.prefixedName())));
     }
 
     public void testLayerGroupInfoRemoved() throws Exception {
@@ -146,13 +146,13 @@ public class CatalogLayerEventListenerTest extends TestCase {
 
     public void testResourceInfoRenamed() throws Exception {
 
-        final String oldTileLayerName = mockResourceInfo.getPrefixedName();
+        final String oldTileLayerName = mockResourceInfo.prefixedName();
         final String renamedResouceName = RESOURCE_NAME + "_Renamed";
         final String renamedPrefixedResouceName = PREFIXED_RESOURCE_NAME + "_Renamed";
 
         // rename mockResourceInfo
         when(mockResourceInfo.getName()).thenReturn(renamedResouceName);
-        when(mockResourceInfo.getPrefixedName()).thenReturn(renamedPrefixedResouceName);
+        when(mockResourceInfo.prefixedName()).thenReturn(renamedPrefixedResouceName);
 
         CatalogModifyEvent modifyEvent = mock(CatalogModifyEvent.class);
         when(modifyEvent.getSource()).thenReturn(mockResourceInfo);
@@ -268,6 +268,8 @@ public class CatalogLayerEventListenerTest extends TestCase {
 
         // change group workspace
         when(mockLayerGroupInfo.getWorkspace()).thenReturn(workspace);
+        String prefixedName = workspace.getName() + ":" + mockLayerGroupInfo.getName();
+        when(mockLayerGroupInfo.prefixedName()).thenReturn(prefixedName);
 
         listener.handlePostModifyEvent(postModifyEvent);
 
@@ -289,12 +291,12 @@ public class CatalogLayerEventListenerTest extends TestCase {
         NamespaceInfo newNamespace = mock(NamespaceInfo.class);
         when(newNamespace.getPrefix()).thenReturn("newMock");
 
-        final String oldPrefixedName = mockResourceInfo.getPrefixedName();
+        final String oldPrefixedName = mockResourceInfo.prefixedName();
         final String newPrefixedName = newNamespace.getPrefix() + ":" + mockResourceInfo.getName();
 
         // set the new namespace
         when(mockResourceInfo.getNamespace()).thenReturn(newNamespace);
-        when(mockResourceInfo.getPrefixedName()).thenReturn(newPrefixedName);
+        when(mockResourceInfo.prefixedName()).thenReturn(newPrefixedName);
 
         CatalogModifyEvent modifyEvent = mock(CatalogModifyEvent.class);
         when(modifyEvent.getSource()).thenReturn(mockResourceInfo);

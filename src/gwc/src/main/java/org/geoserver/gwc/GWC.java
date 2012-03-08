@@ -38,7 +38,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -1267,6 +1266,7 @@ public class GWC implements DisposableBean, InitializingBean {
         return mainConfig;
     }
 
+    @SuppressWarnings("unchecked")
     public Response getResponseEncoder(MimeType responseFormat, RenderedImageMap metaTileMap) {
         final String format = responseFormat.getFormat();
         final String mimeType = responseFormat.getMimeType();
@@ -1656,7 +1656,7 @@ public class GWC implements DisposableBean, InitializingBean {
         final String tileLayerId;
         if (source instanceof ResourceInfo) {
             LayerInfo layerInfo = getCatalog().getLayerByName(
-                    ((ResourceInfo) source).getPrefixedName());
+                    ((ResourceInfo) source).prefixedName());
             if (layerInfo == null) {
                 return false;
             }
@@ -1687,7 +1687,7 @@ public class GWC implements DisposableBean, InitializingBean {
     public GeoServerTileLayer getTileLayer(CatalogInfo source) {
         final String name;
         if (source instanceof ResourceInfo) {
-            name = ((ResourceInfo) source).getPrefixedName();
+            name = ((ResourceInfo) source).prefixedName();
         } else if (source instanceof LayerInfo) {
             name = tileLayerName(((LayerInfo) source));
         } else if (source instanceof LayerGroupInfo) {
@@ -1719,16 +1719,11 @@ public class GWC implements DisposableBean, InitializingBean {
     }
 
     public static String tileLayerName(LayerInfo li) {
-        return li.getResource().getPrefixedName();
+        // REVISIT when/if layerinfo.getName gets decoupled from LayerInfo.resource.name
+        return li.getResource().prefixedName();
     }
 
     public static String tileLayerName(LayerGroupInfo lgi) {
-        // TODO: change to LayerGroupInfo.getPrefixedName() once the method is added (see GEOS-4985)
-        WorkspaceInfo workspace = lgi.getWorkspace();
-        String name = lgi.getName();
-        if (workspace != null) {
-            name = new StringBuilder(workspace.getName()).append(':').append(name).toString();
-        }
-        return name;
+        return lgi.prefixedName();
     }
 }

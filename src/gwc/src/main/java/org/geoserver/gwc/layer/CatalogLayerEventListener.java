@@ -60,7 +60,7 @@ import com.google.common.collect.Sets;
  * cache and any other information (usage statistics, disk quota usage, etc).</li>
  * <li><b>Namespace changed</b>: a {@link ResourceInfo} has been assigned to a different
  * {@link NamespaceInfo namespace}. As the GWC tile layers are named after the resource's
- * {@link ResourceInfo#getPrefixedName() prefixed name} and not only after the
+ * {@link ResourceInfo#prefixedName() prefixed name} and not only after the
  * {@link LayerInfo#getName()} (at least until GeoServer separates out data from publication - the
  * famous data/publish split), GWC is instructed to rename the layer preserving the cache and any
  * other information for the layer.</li>
@@ -380,7 +380,7 @@ public class CatalogLayerEventListener implements CatalogListener {
                 oldNamespace = currNamespace;
             }
 
-            newLayerName = resourceInfo.getPrefixedName();
+            newLayerName = resourceInfo.prefixedName();
             if (nameIndex > -1) {
                 oldLayerName = (String) oldValues.get(nameIndex);
             } else {

@@ -66,7 +66,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
         when(mockStyle.getName()).thenReturn(STYLE_NAME);
 
         mockResourceInfo = mock(FeatureTypeInfo.class);
-        when(mockResourceInfo.getPrefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);
+        when(mockResourceInfo.prefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);
 
         mockLayerInfo = mock(LayerInfo.class);
         when(mockLayerInfo.getResource()).thenReturn(mockResourceInfo);

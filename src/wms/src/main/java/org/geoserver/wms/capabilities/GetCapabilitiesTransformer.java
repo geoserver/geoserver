@@ -927,7 +927,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             });
 
             for (LayerGroupInfo layerGroup : layerGroups) {
-                String layerName = layerGroup.getName();
+                //String layerName = layerGroup.getName();
+                String layerName = layerGroup.prefixedName();
 
                 AttributesImpl qatts = new AttributesImpl();
                 boolean queryable = wmsConfig.isQueryable(layerGroup);

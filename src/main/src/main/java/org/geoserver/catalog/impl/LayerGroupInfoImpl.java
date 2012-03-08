@@ -70,6 +70,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.workspace = workspace;
     }
 
+    public String prefixedName() {
+        return workspace != null ? workspace.getName()+":"+name : name;
+    }
+
     public String getPath() {
         return path;
     }

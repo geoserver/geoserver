@@ -180,6 +180,10 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
         return delegate.getPrefixedName();
     }
 
+    public String prefixedName() {
+        return delegate.prefixedName();
+    }
+
     public ProjectionPolicy getProjectionPolicy() {
         return delegate.getProjectionPolicy();
     }

@@ -122,6 +122,10 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo> impl
         return delegate.getPrefixedName();
     }
 
+    public String prefixedName() {
+        return prefixedName();
+    }
+
     public ProjectionPolicy getProjectionPolicy() {
         return delegate.getProjectionPolicy();
     }

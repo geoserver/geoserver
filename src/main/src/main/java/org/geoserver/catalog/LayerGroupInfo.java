@@ -40,6 +40,18 @@ public interface LayerGroupInfo extends CatalogInfo {
     void setWorkspace(WorkspaceInfo workspace);
 
     /**
+     * The derived prefixed name of the layer group.
+     * <p>
+     * If a workspace is set for the layer group this method returns:
+     * <pre>
+     *   getWorkspace().getName() + ":" + getName();
+     * </pre>
+     * Otherwise it simply returns: <pre>getName()</pre>
+     * </p>
+     */
+    String prefixedName();
+
+    /**
      * The layers in the group.
      */
     List<LayerInfo> getLayers();

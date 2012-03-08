@@ -825,7 +825,28 @@ public class CatalogImpl implements Catalog {
     }
     
     public LayerGroupInfo getLayerGroupByName(String name) {
-        return facade.getLayerGroupByName(name);
+        //handle prefixed name case
+        String prefix = null;
+        String resource = null;
+        
+        int colon = name.indexOf( ':' );
+        if ( colon != -1 ) {
+            prefix = name.substring( 0, colon );
+            resource = name.substring( colon + 1 );
+
+            LayerGroupInfo layerGroup = getLayerGroupByName(prefix, resource);
+            if (layerGroup != null) {
+                return layerGroup;
+            }
+        }
+
+        //first try explicitly a global layer group
+        LayerGroupInfo layerGroup = facade.getLayerGroupByName(null, name);
+        if (layerGroup == null) {
+            //fall back to "any"
+            layerGroup = facade.getLayerGroupByName(name);
+        }
+        return layerGroup;
     }
 
     public LayerGroupInfo getLayerGroupByName(String workspaceName, String name) {
@@ -843,12 +864,24 @@ public class CatalogImpl implements Catalog {
     public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace,
             String name) {
         WorkspaceInfo ws = workspace;
+
+        LayerGroupInfo layerGroup = null;
         if (ws == null) {
-            ws = getDefaultWorkspace();
+            //first try for a global layer group
+            layerGroup = getLayerGroupByName(name);
+        }
+        if (layerGroup != null) {
+            return layerGroup;
         }
 
-        LayerGroupInfo layerGroup = facade.getLayerGroupByName(ws, name);
+        if (ws == null) {
+            //next try default workspace
+            ws = getDefaultWorkspace();
+        }
+        
+        layerGroup = facade.getLayerGroupByName(ws, name);
         if (layerGroup == null && workspace == null) {
+            //finally look for one in any workspace
             layerGroup = facade.getLayerGroupByName(DefaultCatalogFacade.ANY_WORKSPACE, name);
         }
         return layerGroup;
@@ -1132,11 +1165,22 @@ public class CatalogImpl implements Catalog {
 
     public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
         WorkspaceInfo ws = workspace;
+        
+        StyleInfo style = null;
         if (ws == null) {
-            ws = getDefaultWorkspace();
+            //first try for a global style
+            style = getStyleByName(name);
+        }
+        if (style != null) {
+            return style;
         }
 
-        StyleInfo style = facade.getStyleByName(ws, name);
+        if (ws == null) {
+            //next try default workspace
+            ws = getDefaultWorkspace();
+        }
+        
+        style = facade.getStyleByName(ws, name);
         if (style == null && workspace == null) {
             style = facade.getStyleByName(DefaultCatalogFacade.ANY_WORKSPACE, name);
         }

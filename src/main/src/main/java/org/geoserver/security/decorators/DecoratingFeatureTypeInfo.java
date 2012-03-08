@@ -169,6 +169,10 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         return delegate.getPrefixedName();
     }
 
+    public String prefixedName() {
+        return delegate.prefixedName();
+    }
+
     public ProjectionPolicy getProjectionPolicy() {
         return delegate.getProjectionPolicy();
     }

@@ -49,6 +49,10 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getWorkspace();
     }
 
+    public String prefixedName() {
+        return delegate.prefixedName();
+    }
+
     public List<StyleInfo> getStyles() {
         return delegate.getStyles();
     }

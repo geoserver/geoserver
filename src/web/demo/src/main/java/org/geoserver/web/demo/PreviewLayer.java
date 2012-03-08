@@ -61,9 +61,10 @@ public class PreviewLayer {
     public String getWorkspace() {
         if (layerInfo != null) {
             return layerInfo.getResource().getStore().getWorkspace().getName();
-        } else {
-            return null;
+        } else if (groupInfo != null && groupInfo.getWorkspace() != null){
+            return groupInfo.getWorkspace().getName();
         }
+        return null;
     }
     
     public ResourceReference getIcon() {

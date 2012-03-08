@@ -80,6 +80,11 @@ public interface ResourceInfo extends CatalogInfo {
     void setNativeName( String nativeName );
     
     /**
+     * @deprecated use {@link #prefixedName()}
+     */
+    String getPrefixedName();
+
+    /**
      * Returns the prefixed name for the resource.
      * <p>
      * This method is a convenience for:
@@ -89,8 +94,8 @@ public interface ResourceInfo extends CatalogInfo {
      * </p>
      * @return
      */
-    String getPrefixedName();
-    
+    String prefixedName();
+
     /**
      * A set of aliases or alternative names that the resource is also known by. 
      */

@@ -1161,7 +1161,45 @@ public class CatalogImplTest extends TestCase {
         catalog.add( s2 );
         assertEquals( 2, catalog.getStyles().size() );
     }
-    
+
+    public void testAddStyleWithNameConflict() throws Exception {
+        addStyle();
+
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName(s.getName());
+        s2.setFilename(s.getFilename());
+
+        try {
+            catalog.add(s2);
+            fail("Shoudl have failed with existing global style with same name");
+        }
+        catch(IllegalArgumentException expected) {
+        }
+
+        //should pass after setting workspace
+        s2.setWorkspace(ws);
+        catalog.add(s2);
+
+        StyleInfo s3 = catalog.getFactory().createStyle();
+        s3.setName(s2.getName());
+        s3.setFilename(s2.getFilename());
+        
+        try {
+            catalog.add(s3);
+            fail();
+        }
+        catch(IllegalArgumentException expected) {
+        }
+
+        s3.setWorkspace(ws);
+        try {
+            catalog.add(s3);
+            fail();
+        }
+        catch(IllegalArgumentException expected) {
+        }
+    }
+
     public void testGetStyleById() {
         addStyle();
         
@@ -1441,6 +1479,25 @@ public class CatalogImplTest extends TestCase {
         RunnerBase.checkForRunnerExceptions(runners);
     }
 
+    public void testAddLayerGroupNameConflict() throws Exception {
+        addLayerGroup();
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        
+        lg2.setName("layerGroup");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        try {
+            catalog.add(lg2);
+            fail("should have failed because same name and no workspace set");
+        }
+        catch(IllegalArgumentException expected) {}
+
+        //setting a workspace shluld pass
+        lg2.setWorkspace(ws);
+        catalog.add(lg2);
+    }
+
     public void testAddLayerGroupWithWorkspaceWithResourceFromAnotherWorkspace() {
         WorkspaceInfo ws = catalog.getFactory().createWorkspace();
         ws.setName("other");
@@ -1452,7 +1509,7 @@ public class CatalogImplTest extends TestCase {
         lg2.getLayers().add(l);
         lg2.getStyles().add(s);
         try {
-            catalog.add(ws);
+            catalog.add(lg2);
             fail();
         }
         catch(IllegalArgumentException expected) {}
@@ -1533,12 +1590,14 @@ public class CatalogImplTest extends TestCase {
 
         //will randomly return one... we should probably return null with multiple matches
         assertNotNull(catalog.getLayerGroupByName("lg"));
-
+        
         assertEquals(lg1, catalog.getLayerGroupByName(ws.getName(), "lg"));
         assertEquals(lg1, catalog.getLayerGroupByName(ws, "lg"));
-
-        assertEquals(lg2, catalog.getLayerGroupByName(ws2.getName(), "lg"));
+        assertEquals(lg1, catalog.getLayerGroupByName(ws.getName()+":lg"));
+        
         assertEquals(lg2, catalog.getLayerGroupByName(ws2, "lg"));
+        assertEquals(lg2, catalog.getLayerGroupByName(ws2, "lg"));
+        assertEquals(lg2, catalog.getLayerGroupByName(ws2.getName()+":lg"));
     }
 
     public void testGetLayerGroups() {

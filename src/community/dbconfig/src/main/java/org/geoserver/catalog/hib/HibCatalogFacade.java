@@ -331,10 +331,20 @@ public class HibCatalogFacade extends AbstractHibFacade implements CatalogFacade
         return (StyleInfo) first(query);
     }
 
+    @Override
+    public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     public List<StyleInfo> getStyles() {
         return (List<StyleInfo>) list(StyleInfo.class);
     }
-    
+
+    @Override
+    public List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     //
     // layers
     //
@@ -437,8 +447,20 @@ public class HibCatalogFacade extends AbstractHibFacade implements CatalogFacade
         return (LayerGroupInfo) first(query);
     }
 
+    @Override
+    public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace,
+            String name) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
     public List<LayerGroupInfo> getLayerGroups() {
         return list(LayerGroupInfo.class);
+    }
+
+    @Override
+    public List<LayerGroupInfo> getLayerGroupsByWorkspace(
+            WorkspaceInfo workspace) {
+        throw new UnsupportedOperationException("not implemented");
     }
     
     //

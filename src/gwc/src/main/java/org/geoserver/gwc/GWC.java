@@ -102,6 +102,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -485,12 +486,22 @@ public class GWC implements DisposableBean, InitializingBean {
         }
     }
 
+    /**
+     * Reloads the configuration and notifies GWC of any externally removed layer.
+     */
     public void reload() {
+        final Set<String> currLayerNames = new HashSet<String>(getTileLayerNames());
         try {
             tld.reInit();
         } catch (RuntimeException e) {
             log.log(Level.WARNING, "Unable to reinit TileLayerDispatcher", e);
             throw e;
+        }
+        Set<String> newLayerNames = getTileLayerNames();
+        SetView<String> removedExternally = Sets.difference(currLayerNames, newLayerNames);
+        for (String removedLayerName : removedExternally) {
+            log.info("Notifying of TileLayer '" + removedLayerName + "' removed externally");
+            layerRemoved(removedLayerName);
         }
     }
 

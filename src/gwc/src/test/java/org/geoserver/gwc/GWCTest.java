@@ -13,6 +13,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -75,6 +77,8 @@ import org.geowebcache.service.Service;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -82,6 +86,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -663,6 +668,35 @@ public class GWCTest extends TestCase {
         } catch (RuntimeException e) {
             assertTrue(true);
         }
+    }
+
+    public void testReloadAndLayerRemovedExternally() throws Exception {
+
+        final String removedLayer = tileLayer.getName();
+        final String remainingLayer = tileLayerGroup.getName();
+
+        final Set<String> layerNames = Sets.newHashSet(removedLayer, remainingLayer);
+
+        when(tld.getLayerNames()).thenReturn(layerNames);
+        doAnswer(new Answer<Void>() {
+
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                layerNames.remove(removedLayer);
+                return null;
+            }
+        }).when(tld).reInit();
+
+        ArgumentCaptor<String> argCaptor = ArgumentCaptor.forClass(String.class);
+
+        mediator = spy(mediator);
+        doReturn(true).when(mediator).layerRemoved(argCaptor.capture());
+
+        mediator.reload();
+
+        verify(tld, times(1)).reInit();
+        assertEquals(1, argCaptor.getAllValues().size());
+        assertEquals(removedLayer, argCaptor.getValue());
     }
 
     public void testIsServiceEnabled() {

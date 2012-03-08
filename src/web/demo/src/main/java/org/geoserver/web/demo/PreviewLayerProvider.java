@@ -23,9 +23,19 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     public static final Property<PreviewLayer> TYPE = new BeanProperty<PreviewLayer>(
             "type", "type");
 
-    public static final Property<PreviewLayer> NAME = new BeanProperty<PreviewLayer>(
-            "name", "name");
-    
+    public static final AbstractProperty<PreviewLayer> NAME = new AbstractProperty<PreviewLayer>("name") {
+        @Override
+        public Object getPropertyValue(PreviewLayer item) {
+            if (item.layerInfo != null) {
+                return item.layerInfo.getName();
+            }
+            if (item.groupInfo != null) {
+                return item.groupInfo.prefixedName();
+            }
+            return null;
+        }
+    };
+
     public static final Property<PreviewLayer> TITLE = new BeanProperty<PreviewLayer>(
             "title", "title");
     

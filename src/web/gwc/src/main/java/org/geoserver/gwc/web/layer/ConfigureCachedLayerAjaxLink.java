@@ -5,6 +5,7 @@
 package org.geoserver.gwc.web.layer;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Page;
@@ -69,8 +70,9 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             LayerGroupInfo layerGroup = geoserverTileLayer.getLayerGroupInfo();
             WorkspaceInfo workspace = layerGroup.getWorkspace();
             String wsName = workspace == null ? null : workspace.getName();
-            Map<String, ?> params = ImmutableMap.of(LayerGroupEditPage.GROUP, layerGroup.getName(),
-                    LayerGroupEditPage.WORKSPACE, wsName);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put(LayerGroupEditPage.GROUP, layerGroup.getName());
+            params.put(LayerGroupEditPage.WORKSPACE, wsName);
             PageParameters parameters = new PageParameters(params);
             LayerGroupEditPage layerGroupEditPage = new LayerGroupEditPage(parameters);
             if (returnPage != null) {

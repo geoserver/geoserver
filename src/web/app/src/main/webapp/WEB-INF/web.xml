@@ -87,30 +87,6 @@
   </filter>
 
    <filter>
-    <filter-name>Reverse Proxy Filter</filter-name>
-    <filter-class>org.geoserver.filters.ReverseProxyFilter</filter-class>
-    <init-param>
-      <param-name>enabled</param-name>
-      <param-value>false</param-value>
-      <description>
-        Whether to enable the reverse proxy filter or not. Defaults to false. Set to true
-        in order for GeoServer to perform URL translation for the proxyfied base URL on
-        textual content whose MIME type matches one of the regular expressions set through
-        the mime-types init parameter.
-      </description>
-    </init-param>
-    <init-param>
-      <param-name>mime-types</param-name>
-      <param-value>text/html.*,text/css.*,text/javascript.*,application/x-javascript.*</param-value>
-      <description>
-        Comma separated list of response MIME types the filter shall process in order to translate
-        absolute urls using the configured proxyBaseUrl. Each token in the comma separated list
-        is interpreted as a java regular expression.
-      </description>
-    </init-param>
-   </filter>
-   
-   <filter>
      <filter-name>GZIP Compression Filter</filter-name>
      <filter-class>org.geoserver.filters.GZIPFilter</filter-class>
      <init-param>
@@ -188,11 +164,6 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-    <filter-mapping>
-      <filter-name>Reverse Proxy Filter</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-  
     <filter-mapping>
       <filter-name>Request Logging Filter</filter-name>
       <url-pattern>/*</url-pattern>

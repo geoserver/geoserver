@@ -163,19 +163,26 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             attributes.addAttribute("", "version", "version", "", "1.0.0");
 
             start("wcs:CoverageDescription", attributes);
-            for (Iterator it = request.getCoverage().iterator(); it.hasNext();) {
-                String coverageId = (String) it.next();
-
-                // check the coverage is known
-                LayerInfo layer = catalog.getLayerByName(coverageId);
-                if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
-                    throw new WcsException("Could not find the specified coverage: " + coverageId,
-                            WcsExceptionCode.InvalidParameterValue, "coverage");
+            
+            List<CoverageInfo> coverages;
+            if(request.getCoverage() == null || request.getCoverage().size() == 0) {
+                coverages = catalog.getCoverages();
+            } else {
+                coverages = new ArrayList<CoverageInfo>();
+                for(Iterator it = request.getCoverage().iterator(); it.hasNext();) {
+                    String coverageId = (String) it.next();
+                    // check the coverage is known
+                    LayerInfo layer = catalog.getLayerByName(coverageId);
+                    if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
+                        throw new WcsException("Could not find the specified coverage: " + coverageId,
+                                WcsExceptionCode.InvalidParameterValue, "coverage");
+                    }
+                    coverages.add(catalog.getCoverageByName(coverageId));
                 }
-
-                CoverageInfo ci = catalog.getCoverageByName(coverageId);
+            }
+            for (Iterator it = coverages.iterator(); it.hasNext();) {
                 try {
-                    handleCoverageOffering(ci);
+                    handleCoverageOffering((CoverageInfo) it.next());
                 } catch (Exception e) {
                     throw new RuntimeException(
                             "Unexpected error occurred during describe coverage xml encoding", e);

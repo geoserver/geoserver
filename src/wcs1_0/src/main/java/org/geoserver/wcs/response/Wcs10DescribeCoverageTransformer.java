@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import net.opengis.wcs10.DescribeCoverageType;
 
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -154,19 +155,25 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             attributes.addAttribute("", "version", "version", "", "1.0.0");
 
             start("wcs:CoverageDescription", attributes);
-            for (Iterator it = request.getCoverage().iterator(); it.hasNext();) {
-                String coverageId = (String) it.next();
-
-                // check the coverage is known
-                LayerInfo layer = catalog.getLayerByName(coverageId);
-                if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
-                    throw new WcsException("Could not find the specified coverage: " + coverageId,
-                            WcsExceptionCode.InvalidParameterValue, "coverage");
+            List<CoverageInfo> coverages;
+            if(request.getCoverage() == null || request.getCoverage().size() == 0) {
+                coverages = catalog.getCoverages();
+            } else {
+                coverages = new ArrayList<CoverageInfo>();
+                for(Iterator it = request.getCoverage().iterator(); it.hasNext();) {
+                    String coverageId = (String) it.next();
+                    // check the coverage is known
+                    LayerInfo layer = catalog.getLayerByName(coverageId);
+                    if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
+                        throw new WcsException("Could not find the specified coverage: " + coverageId,
+                                WcsExceptionCode.InvalidParameterValue, "coverage");
+                    }
+                    coverages.add(catalog.getCoverageByName(coverageId));
                 }
-
-                CoverageInfo ci = catalog.getCoverageByName(coverageId);
+            }
+            for (Iterator it = coverages.iterator(); it.hasNext();) {
                 try {
-                    handleCoverageOffering(ci);
+                    handleCoverageOffering((CoverageInfo) it.next());
                 } catch (Exception e) {
                     throw new RuntimeException(
                             "Unexpected error occurred during describe coverage xml encoding", e);
@@ -510,22 +517,23 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 // TIME DIMENSION
                 elevationMetadata = reader.getMetadataValue("ELEVATION_DOMAIN"); 
                 
-                start("wcs:AxisDescription");
-                element("wcs:name", "ELEVATION");
-                element("wcs:label", "ELEVATION");
-                start("wcs:values");
-                
-                final String [] values=elevationMetadata.split(",");
-                for(String s:values){
-                	element("wcs:singleValue", s);
+                if(elevationMetadata != null && !"".equals(elevationMetadata.trim())) {
+                    start("wcs:AxisDescription");
+                    element("wcs:name", "ELEVATION");
+                    element("wcs:label", "ELEVATION");
+                    start("wcs:values");
+                    
+                    final String [] values=elevationMetadata.split(",");
+                    for(String s:values){
+                    	element("wcs:singleValue", s);
+                    }
+                    element("wcs:default", values[0]);
+                   
+                   
+                    end("wcs:values");
+    
+                    end("wcs:AxisDescription");
                 }
-                element("wcs:default", values[0]);
-               
-               
-                end("wcs:values");
-
-                end("wcs:AxisDescription");
-                
             }
                         
             end("wcs:axisDescription");

@@ -29,18 +29,14 @@ public class DescribeCoverageTest extends WCSTestSupport {
     // return "/DEFAULT_LOGGING.properties";
     // }
 
-    // public void testCRS() throws NoSuchAuthorityCodeException, FactoryException {
-    // System.out.println(CRS.decode("EPSG:4326"));
-    // System.out.println(CRS.decode("urn:ogc:def:crs:EPSG:4326"));
-    // }
-
-    public void testDescribeNoIdentifiers() throws Exception {
-        Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&version=1.0.0");
+    public void testDescribeAll() throws Exception {
+        Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&version=1.0.0");      
         // print(dom);
-        assertEquals(1, dom.getElementsByTagName("ServiceExceptionReport").getLength());
-        Element element = (Element) dom.getElementsByTagName("ServiceException").item(0);
-        assertEquals("MissingParameterValue", element.getAttribute("code"));
-        assertEquals("coverage", element.getAttribute("locator"));
+        // the response is compliant
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        // check all coverages have been described
+        int count = getCatalog().getCoverages().size();
+        assertEquals(count, dom.getElementsByTagName("wcs:CoverageOffering").getLength());
     }
 
     public void testDescribeUnknownCoverageKvp() throws Exception {

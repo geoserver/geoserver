@@ -16,6 +16,7 @@ A styling layer used for the unit tests of sldstyler
             categories of population, drawn in different colors</Abstract>
     <FeatureTypeStyle>
       <Rule>
+        <Name>2-4M</Name>
         <Title>2M - 4M</Title>
         <!-- like a linesymbolizer but with a fill too -->
         <Filter xmlns:gml="http://www.opengis.net/gml">

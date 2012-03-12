@@ -7,6 +7,7 @@ package org.geoserver.wms.wms_1_1_1;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import junit.framework.Test;
@@ -100,6 +101,25 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertTrue(linePixel.getRed() < 10);
         assertTrue(linePixel.getGreen() < 10);
         assertTrue(linePixel.getBlue() < 10);
+    }
+    
+    /**
+     * Tests a dpi rescaled legend with specific rule name
+     */
+    public void testStatesLegendDpiRescaledSingleRule() throws Exception {
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+                        "&layer=sf:states&style=Population" +
+                        "&format=image/png&width=20&height=20&legend_options=dpi:180&rule=2-4M";
+        BufferedImage image = getAsImage(base, "image/png");
+        
+        // ImageIO.write(image, "PNG", new java.io.File("/tmp/rule.png"));
+        
+        // just one rule
+        assertEquals(40, image.getWidth());
+        assertEquals(40, image.getHeight());
+        
+        // the red one, big
+        assertPixel(image, 20, 20, Color.RED);
     }
     
     /**

@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.ColorMapLegendCreator.Builder;
 import org.geoserver.wms.map.ImageUtils;
@@ -100,8 +101,13 @@ public class RasterLayerLegendHelper {
         final double scaleDenominator = request.getScale();
 
         final Rule[] applicableRules;
-        if (request.getRule() != null) {
-            applicableRules = new Rule[] { request.getRule() };
+        String ruleName = request.getRule();
+        if (ruleName != null) {
+            Rule rule = LegendUtils.getRule(ftStyles, ruleName);
+            if (rule == null) {
+                throw new ServiceException("Specified style does not contains a rule named " + ruleName);
+            }
+            applicableRules = new Rule[] {rule};
         } else {
             applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
         }

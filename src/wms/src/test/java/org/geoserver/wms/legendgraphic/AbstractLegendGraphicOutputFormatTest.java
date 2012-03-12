@@ -100,7 +100,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(multipleRulesStyle);
-        req.setRule(rule);
+        req.setRule(rule.getName());
         req.setLegendOptions(new HashMap());
 
         final int HEIGHT_HINT = 30;

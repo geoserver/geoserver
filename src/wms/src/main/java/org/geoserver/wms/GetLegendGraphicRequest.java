@@ -97,7 +97,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     private String featureType;
 
     /** holds RULE parameter value, or <code>null</code> if not provided */
-    private Rule rule;
+    private String rule;
 
     /**
      * holds the standarized scale denominator passed as the SCALE parameter value, or
@@ -187,11 +187,11 @@ public class GetLegendGraphicRequest extends WMSRequest {
         this.layer = layer;
     }
 
-    public Rule getRule() {
+    public String getRule() {
         return rule;
     }
 
-    public void setRule(Rule rule) {
+    public void setRule(String rule) {
         this.rule = rule;
     }
 

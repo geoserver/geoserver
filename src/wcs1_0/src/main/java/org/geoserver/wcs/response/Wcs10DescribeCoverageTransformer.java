@@ -427,6 +427,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
             AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute("", "dimension", "dimension", "", String.valueOf(gridDimension));
+            attributes.addAttribute("", "srsName", "srsName", "", ci.getSRS());
 
             // RectifiedGrid
             start("gml:RectifiedGrid", attributes);

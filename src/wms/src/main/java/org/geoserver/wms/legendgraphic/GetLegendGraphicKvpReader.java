@@ -259,10 +259,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         req.setStyle(sldStyle);
 
         String rule = (String) rawKvp.get("RULE");
-        Rule sldRule = extractRule(sldStyle, rule);
-
-        if (sldRule != null) {
-            req.setRule(sldRule);
+        if (rule != null) {
+            req.setRule(rule);
         }
     }
 
@@ -389,35 +387,5 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         return styles;
     }
 
-    private Rule extractRule(Style sldStyle, String rule) throws ServiceException {
-        Rule sldRule = null;
-
-        if ((rule != null) && !"".equals(rule)) {
-            FeatureTypeStyle[] fts = sldStyle.getFeatureTypeStyles();
-
-            for (int i = 0; i < fts.length; i++) {
-                Rule[] rules = fts[i].getRules();
-
-                for (int r = 0; r < rules.length; r++) {
-                    if (rule.equalsIgnoreCase(rules[r].getName())) {
-                        sldRule = rules[r];
-
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine(new StringBuffer("found requested rule: ").append(rule)
-                                    .toString());
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            if (sldRule == null) {
-                throw new ServiceException("Style " + sldStyle.getName()
-                        + " does not contains a rule named " + rule);
-            }
-        }
-
-        return sldRule;
-    }
+    
 }

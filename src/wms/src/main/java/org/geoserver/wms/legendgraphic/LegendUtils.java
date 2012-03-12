@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -589,6 +590,35 @@ public class LegendUtils {
         }
         return false;
     }
+
+    /**
+     * Locates the specified rule by name
+     * @param fts
+     * @param rule
+     * @return
+     */
+    public static Rule getRule(FeatureTypeStyle[] fts, String rule) {
+        Rule sldRule = null;
+        for (int i = 0; i < fts.length; i++) {
+            Rule[] rules = fts[i].getRules();
+
+            for (int r = 0; r < rules.length; r++) {
+                if (rule.equalsIgnoreCase(rules[r].getName())) {
+                    sldRule = rules[r];
+
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine(new StringBuffer("found requested rule: ").append(rule)
+                                .toString());
+                    }
+
+                    break;
+                }
+            }
+        }
+        
+        return sldRule;
+    }
+
 }
 
 

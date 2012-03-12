@@ -5,9 +5,12 @@
 package org.geoserver.feature.retype;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.DataStore;
@@ -93,6 +96,22 @@ public class RetypingFeatureSource implements SimpleFeatureSource{
                 } else {
                     return super.transformFeatureType(original);
                 }
+            }
+            
+            @Override
+            public String[] getTypeNames() throws IOException {
+                // Populate local hashmaps with new values.
+                Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<String, FeatureTypeMap>();
+                Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<String, FeatureTypeMap>();
+                
+                forwardMapLocal.put(typeMap.getOriginalName(), typeMap);
+                backwardsMapLocal.put(typeMap.getName(), typeMap);
+                
+                // Replace the member variables.
+                forwardMap = forwardMapLocal;
+                backwardsMap = backwardsMapLocal;
+                
+                return new String[] {typeMap.getName()};
             }
         };
     }

@@ -48,9 +48,9 @@ public class RetypingDataStore implements DataStore {
     
     private DataStore wrapped;
 
-    private volatile Map<String, FeatureTypeMap> forwardMap = new ConcurrentHashMap<String, FeatureTypeMap>();
+    protected volatile Map<String, FeatureTypeMap> forwardMap = new ConcurrentHashMap<String, FeatureTypeMap>();
 
-    private volatile Map<String, FeatureTypeMap> backwardsMap = new ConcurrentHashMap<String, FeatureTypeMap>();
+    protected volatile Map<String, FeatureTypeMap> backwardsMap = new ConcurrentHashMap<String, FeatureTypeMap>();
 
     public RetypingDataStore(DataStore wrapped) throws IOException {
         this.wrapped = wrapped;

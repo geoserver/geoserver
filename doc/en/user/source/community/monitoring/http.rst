@@ -1,52 +1,97 @@
 .. _monitor_http_api:
 
-Monitor HTTP API
-================
+Monitoring HTTP API
+===================
 
-The monitor extension provides an API for retrieving request information via a
-simple set of HTTP calls.
+The Monitoring extension provides a simple HTTP-based API for querying request information.
+It allows retrieving individual request records or sets of request records, in either HTML or CSV format.
+Records can be filtered by time range and the result set sorted by any field.  
+Large result sets can be paged over multiple queries.
 
-The most simple of all calls would be to retrieve information about all requests::
+Examples
+--------
+The following examples show the syntax for common Monitoring queries.
 
+All requests as HTML 
+^^^^^^^^^^^^^^^^^^^^
+The simplest query is to retrieve an HTML document containing information
+about all requests::
+ 
   GET http://localhost:8080/geoserver/rest/monitor/requests.html
 
-This would return an HTML document containing information about 
-all requests. The general structure of a query for a set of requests is::
+All requests as CSV
+^^^^^^^^^^^^^^^^^^^
+Request information can be returned in CSV format, for easier post-processing::
 
-  GET http://<host>:<port>/geoserver/rest/monitor/requests.<format>
+  GET http://localhost:8080/geoserver/rest/monitor/requests.csv
 
-Where ``format`` is the representation of the returned result and is one of:
+Requests during a specified time period
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requests can be filtered by time range::
 
- * html - Representation as an HTML table.
- * csv - Representation as a Comma Separated Value table.
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20&to=2010-07-20
 
-A query for a single request has the structure::
+Request set paging
+^^^^^^^^^^^^^^^^^^
+Large result sets can be paged over multiple queries::
+  
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=100
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=200
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=300
+  
+Single Request
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+An individual request can be retrieved by specifying its ID::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests/12345.html
+  
+
+  
+API Reference
+-------------
+
+There are two kinds of query: one for single requests, and one for sets of requests. 
+
+Query a Single Request
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A query for a single request record has the structure::
 
   GET http://<host>:<port>/geoserver/rest/monitor/requests/<id>.<format>
 
-Where ``id`` is the numeric identifier of a single request and ``format`` 
-is as described above.
+where ``id`` is the numeric identifier of a single request,
+and ``format`` specifies the representation of the returned result as one of:
+
+* ``html`` - an HTML table.
+* ``csv`` - a Comma Separated Values table.
 
 .. note::
 
    An alternative to specifying the returned representation with the 
    ``format`` extension is to use the http ``Accept`` header and specify 
-   one of the MIME types:
-
-     * text/html
-     * application/csv
+   the MIME type as one of:
+   
+    * ``text/html``
+    * ``application/csv``
 
    See the `HTTP specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_
    for more information about the ``Accept`` header.
 
 
-API Reference
--------------
+Query a Set of Requests
+^^^^^^^^^^^^^^^^^^^^^^^
 
-There are numerous parameters available that can be used to filter what request
-information is returned and how it is structured. This section contains a 
-comprehensive list of all parameters. See the examples section for a set of 
-examples of applying these parameters.
+The structure of a query for a set of requests is::
+
+  GET http://<host>:<port>/geoserver/rest/monitor/requests.<format>[?parameter{&parameter}]
+
+where ``format`` is as described above, 
+and ``parameter`` is one or more of the parameters listed below.
+
+The request set query accepts various parameters 
+that control what requests are returned and how they are sorted. 
+The available parameters are: 
 
 count
 ^^^^^
@@ -55,11 +100,11 @@ Specifies how many records should be returned.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 60
+   :widths: 40 60
 
    * - Syntax
      - Example
-   * - count=<integer>
+   * - ``count=<integer>``
      - requests.html?count=100
 
 offset
@@ -69,11 +114,11 @@ Specifies where in the result set records should be returned from.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 60
+   :widths: 40 60
 
    * - Syntax
      - Example
-   * - offset=<integer>
+   * - ``offset=<integer>``
      - requests.html?count=100&offset=500
 
 live
@@ -83,11 +128,11 @@ Specifies that only live (currently executing) requests be returned.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 60
+   :widths: 40 60
 
    * - Syntax
      - Example
-   * - live=<yes|no|true|false>
+   * - ``live=<yes|no|true|false>``
      - requests.html?live=yes
   
 This parameter relies on a :ref:`monitor_mode` being used that maintains real time 
@@ -97,42 +142,48 @@ from
 ^^^^
 
 Specifies an inclusive lower bound on the timestamp for the start of a request.
+The timestamp can be specified to any desired precision.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 60
+   :widths: 40 60
 
    * - Syntax
      - Example
-   * - from=<timestamp>
+   * - ``from=<timestamp>``
      - requests.html?from=2010-07-23T16:16:44
+   * - 
+     - requests.html?from=2010-07-23
 
 to
 ^^
 
 Specifies an inclusive upper bound on the timestamp for the start of a request.
+The timestamp can be specified to any desired precision.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 60
+   :widths: 40 60
 
    * - Syntax
      - Example
-   * - to=<timestamp>
+   * - ``to=<timestamp>``
      - requests.html?to=2010-07-24T00:00:00
+   * - 
+     - requests.html?to=2010-07-24
 
 order
 ^^^^^
 
-Specifies which attribute of a request to sort by.
+Specifies which request attribute to sort by, and optionally specifies the sort direction.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 60
+   :widths: 40 60
 
    * - Syntax
      - Example
-   * - order=<attribute>[;<ASC|DESC>]
+   * - ``order=<attribute>[;<ASC|DESC>]``
      - requests.html?order=path
    * - 
      - requests.html?order=startTime:DESC
@@ -140,38 +191,5 @@ Specifies which attribute of a request to sort by.
      - requests.html?order=totalTime:ASC
 
 
-Examples
---------
 
-All requests as HTML 
-^^^^^^^^^^^^^^^^^^^^
-
-::  
- 
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html
-
-All requests as CSV
-^^^^^^^^^^^^^^^^^^^
-
-::
-
-  GET http://localhost:8080/geoserver/rest/monitor/requests.csv
-
-Requests over a time period
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-::
-  
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20&to2010-07-20
-
-Requests paged over multiple queries
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-::
-  
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=100
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=200
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=300
-  
 

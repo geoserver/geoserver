@@ -277,8 +277,6 @@ Code
               <CssParameter name="stroke-width">3</CssParameter>
             </Stroke>
           </LineSymbolizer> 
-        </Rule>         
-        <Rule>
           <LineSymbolizer>
             <Stroke>
               <GraphicStroke>
@@ -301,13 +299,13 @@ Code
 Details
 ~~~~~~~
 
-In this example, there are two rules, each containing a ``<LineSymbolizer>``.  (Each ``<LineSymbolizer>`` must exist in
-its own rule.)  The first rule, on **lines 2-8**, draws a standard line, with **line 5** drawing the lines as dark gray
+In this example there are two ``<LineSymbolizer>``\ s.  
+The first symbolizer, on **lines 3-8**, draws a standard line, with **line 5** drawing the lines as dark gray
 (``#333333``) and **line 6** setting the width of the lines to be 2 pixels.
 
-The hatching is invoked in the second rule, on **lines 10-27**. **Line 16** specifies that the rule draw a vertical line
-hatch (``shape://vertline``) perpendicular to the line geometry. **Lines 18-19** set the hatch color to dark gray
-(``#333333``) and width to 1 pixel. Finally, ``line 22`` specifies both the length of the hatch and the distance
+The hatching is invoked in the second symbolizer, on **lines 9-24**. **Line 14** specifies that the symbolizer draw a vertical line
+hatch (``shape://vertline``) perpendicular to the line geometry. **Lines 16-17** set the hatch color to dark gray
+(``#333333``) and width to 1 pixel. Finally, **line 20** specifies both the length of the hatch and the distance
 between each hatch to both be 12 pixels.
 
 Spaced graphic symbols

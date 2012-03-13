@@ -17,9 +17,7 @@
               <CssParameter name="stroke-width">3</CssParameter>
             </Stroke>
           </LineSymbolizer> 
-        </Rule>         
-        <Rule>
-          <LineSymbolizer>
+         <LineSymbolizer>
             <Stroke>
               <GraphicStroke>
                 <Graphic>

@@ -200,9 +200,9 @@ and also ensures proper rendering at intersections, so that the blue lines "conn
 
 In this example, **lines 1-11** comprise the first ``<FeatureTypeStyle>``, which is the outer line (or "stroke"). 
 **Line 5** specifies the color of the line to be dark gray (``#333333``), **line 6** specifies the width of this line
-to be 5 pixels, and in **line 7** a ``stroke-linecap`` parameter of ``round`` renders the corners of the line as rounded instead of flat.  
-(When working with lines
-that have borders, using the ``stroke-linecap`` parameter ensures that the border connects properly at the ends of the lines.)
+to be 5 pixels, and in **line 7** a ``stroke-linecap`` parameter of ``round`` 
+renders the ends of the line as rounded instead of flat.  
+(When working with bordered lines using a round line cap ensures that the border connects properly at the ends of the lines.)
 
 **Lines 12-22** comprise the second ``<FeatureTypeStyle>``, which is the the inner line (or "fill").  **Line 16**
 specifies the color of the line to be a medium blue (``#6699FF``), **line 17** specifies the width of this line to be 3

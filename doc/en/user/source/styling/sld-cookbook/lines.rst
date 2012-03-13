@@ -312,11 +312,9 @@ Spaced graphic symbols
 ----------------------
 
 This example uses a graphic stroke along with dash arrays to create a "dot and space" line type.  Without using the dash
-array the lines would be densely populated with subsequent dots, each one touching the previous one.
+array the lines would be densely populated with dots, each one touching the previous one.
 
 Adding the dash array specification allows to control the amount of space between one symbol and the next one.
-
-.. note:: This example is not likely to work with other systems supporting SLD. While the SLD is perfectly compliant we are not aware of other systems allowing to combine the usage of ``dasharray`` and graphics strokes (the SLD specification does not say what this combination is supposed to produce). 
 
 .. figure:: images/line_dashspace.png
    :align: center
@@ -360,8 +358,11 @@ Details
 ~~~~~~~
 This example, like others before, uses a ``GraphicStroke`` to place a graphic symbol along a line. The symbol, defined
 at **lines 7-16** is a 4 pixels gray circle with a dark gray outline. The spacing between symbols is controlled with
-the ``dasharray`` at **line 18**, setting 4 pixels pen down, just enough to draw the circle, and 6 pixels pen up, which
-results in the spacing.
+the ``stroke-dasharray`` at **line 18**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up, 
+to provide the spacing.
+
+.. note:: This example may not work in other systems using SLD, since they may not support combining the use of ``stroke-dasharray`` and ``GraphicStroke``. While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce. 
+
 
 
 .. _sld_cookbook_lines_defaultlabel:
@@ -369,22 +370,22 @@ results in the spacing.
 Alternating symbols with dash offsets
 -------------------------------------
 
-This example shows how to create a complex line style which alternates a symbol and a line segment. The example builds
-on the knowledge gathered in previous sections:
+This example shows how to create a complex line style which alternates a dashed line and a graphic symbol. 
+The code builds on features shown in the previous examples:
 
-  * `dasharray` allows to control pen down/pen up behavior and generate dashed lines
-  * `GraphicStroke` allows to place symbols along a line
-  * combining the two togheter it's possible to control symbol spacing
+  * ``stroke-dasharray`` controls pen-down/pen-up behavior to generate dashed lines
+  * ``GraphicStroke`` places symbols along a line
+  * combining the two allows control of symbol spacing
   
-This example adds the usage of `dashoffset`, which controls at which point of the ``dasharray`` sequence the renderer
-starts drawing the repeating pattern. For example, having a dash array of ``5 10`` and a dash offset of ``7`` the
-renderer would start the repeating pattern 7 pixels after its beginnig, so it would jump over the "5 pixels pen down"
-section and 2 more pixels in the pen up section, performing a residual of 8 pixels up, then 5 down, 10 up, and so on.
+This also shows the usage of a `dash offset`, which controls where rendering starts
+in the dash array.
+For example, with a dash array of ``5 10`` and a dash offset of ``7`` the
+renderer starts drawing the pattern 7 pixels from the beginning.  It skips the 5 pixels pen-down
+section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of pen-up, then 5 down, 10 up, and so on.
 
-This can be used to create two synchronized sequences of dash arrays, one drawing line segments, and the other symbols
-along a line, like in the following example.
+The example shows how to use these features to create two synchronized sequences of dash arrays, 
+one drawing line segments and the other symbols.
 
-.. note:: This example is not likely to work with other systems supporting SLD. While the SLD is perfectly compliant we are not aware of other systems allowing to combine the usage of ``dasharray`` and graphics strokes (the SLD specification does not say what this combination is supposed to produce). 
 
 .. figure:: images/line_dashdot.png
    :align: center
@@ -432,12 +433,17 @@ Code
 Details
 ~~~~~~~
 
-In this example two dash array based line symbolizers are used to generate an alternating sequence. The first one,
-defined at **lines 3-9** is a simple line dash array alternating 10 pixels of pen down with 10 pixels of pen up. The
-second one, defined at **lines 10-27** alternates a 5 pixels wide empty circle with 15 pixels of white space. In order
-to have the two symbolizers alternate the second one uses a dashoffset of 7.5, making the sequence start with 12.5
+In this example two ``LineSymbolizer``\ s use ``stroke-dasharray``  and different symbology
+to produce a sequence of alternating dashes and symbols. The first symbolizer
+(**lines 3-9**) is a simple line dash array alternating 10 pixels of pen-down with 10 pixels of pen-up. The
+second symbolizer (**lines 10-27**) alternates a 5 pixel empty circle with 15 pixels of white space. In order
+to have the two sequences positioned correctly the second one uses a ``stroke-dashoffset`` of 7.5.  
+This makes the sequence start with 12.5
 pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), then
 15 pixels of white space, and so on.
+
+.. note:: This example may not work in other systems using SLD, since they may not support combining the use of ``stroke-dasharray`` and ``GraphicStroke``. While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce. 
+
 
 Line with default label
 -----------------------
@@ -538,7 +544,7 @@ Code
 Details
 ~~~~~~~
 
-As the :ref:`sld_cookbook_lines_defaultlabel` example showed, the default label behavior isn't very optimal.  The label
+As the :ref:`sld_cookbook_lines_defaultlabel` example showed, the default label behavior isn't optimal.  The label
 is displayed at a tangent to the line itself, leading to uncertainty as to which label corresponds to which line.
 
 This example is similar to the :ref:`sld_cookbook_lines_defaultlabel` example with the exception of **lines 12-18**. 

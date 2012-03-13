@@ -144,7 +144,8 @@ black (``#000000``), while **line 6** specifies the width of the lines to be 3 p
 Line with border
 ----------------
 
-This example draws lines with a blue fill of 3 pixels and a gray stroke of 1 pixel.
+This example shows how to draw lines with borders (sometimes called "cased lines").
+In this case the lines are drawn with a 3 pixel blue center and a 1 pixel wide gray border.
 
 .. figure:: images/line_linewithborder.png
    :align: center
@@ -190,17 +191,18 @@ Lines in SLD have no notion of a "fill", only "stroke". Thus, unlike points or p
 certain width and again with a slightly smaller width.  This gives the illusion of fill and stroke by obscuring the
 larger lines everywhere except along the edges of the smaller lines.
 
-Since every line is drawn twice, the order of the rendering is *very* important.  In this style, all of the gray lines
-are drawn first via the first ``<FeatureTypeStyle>``, followed by all of the blue lines in a second
-``<FeatureTypeStyle>``.  GeoServer will render every ``<FeatureTypeStyle>`` in the order that they are presented in the
-SLD.  This not only ensures that the blue lines won't be obscured by the gray lines, but also ensures proper rendering
-at intersections, so that the blue lines "connect".
+Since every line is drawn twice, the order of the rendering is *very* important.  
+GeoServer renders ``<FeatureTypeStyle>``\ s in the order that they are presented in the SLD.
+In this style, the gray border lines
+are drawn first via the first ``<FeatureTypeStyle>``, followed by the blue center lines in a second
+``<FeatureTypeStyle>``.    This ensures that the blue lines are not obscured by the gray lines, 
+and also ensures proper rendering at intersections, so that the blue lines "connect".
 
 In this example, **lines 1-11** comprise the first ``<FeatureTypeStyle>``, which is the outer line (or "stroke"). 
 **Line 5** specifies the color of the line to be dark gray (``#333333``), **line 6** specifies the width of this line
-to be 5 pixels, and **line 7** renders the edges of the line to be rounded instead of flat.  (When working with lines
-that have borders, using the ``stroke-linecap`` parameter ensures that the ends of the lines will have a properly-drawn
-border.)
+to be 5 pixels, and in **line 7** a ``stroke-linecap`` parameter of ``round`` renders the corners of the line as rounded instead of flat.  
+(When working with lines
+that have borders, using the ``stroke-linecap`` parameter ensures that the border connects properly at the ends of the lines.)
 
 **Lines 12-22** comprise the second ``<FeatureTypeStyle>``, which is the the inner line (or "fill").  **Line 16**
 specifies the color of the line to be a medium blue (``#6699FF``), **line 17** specifies the width of this line to be 3

@@ -3,7 +3,11 @@
 Web Administration Interface Quickstart
 =======================================
 
-The *Web Administration Tool* is a web based used to configure all aspects of GeoServer, from adding data to tweaking service settings. The web admin tool is accessed via web browser at ``http://<host>:<port>/geoserver``. http://localhost:8080/geoserver/web in a default installation running on the local host. 
+The *Web Administration Tool* is a web-based application used to configure all aspects of GeoServer, 
+from adding data to changing service settings. 
+The web admin tool is accessed via a web browser at ``http://<host>:<port>/geoserver`` 
+( http://localhost:8080/geoserver/web for a default installation on the local host).
+When the app starts it displays the public Welcome page.
 
 .. figure:: web-admin.png
    :align: center
@@ -15,24 +19,28 @@ The *Web Administration Tool* is a web based used to configure all aspects of Ge
 Logging In
 ----------
 
-In order to change any server settings or configure data a user must first be authenticated. Navigate to the upper right hand corner to log into GeoServer. The default username and password is ``admin`` and ``geoserver``.  These can be changed only by editing the :file:`security/users.properties` file in the :ref:`data_directory`.  
+In order to change any server settings or configure data a user must first be authenticated. Navigate to the upper right hand corner to log into GeoServer. The default username and password is ``admin`` and ``geoserver``.  These can be changed by editing the :file:`security/users.properties` file in the :ref:`data_directory`.  
 
 .. figure:: login-page.png
    :align: center
 
    *Login*
+   
+Once logged in, the status screen changes to show all the available admin functions.
 
 Server
 ------
 
-The :guilabel: `Server` section of the web admin provides access to GeoServer environment information. It is a combination of diagnostic and configuration tools, and can be particularly useful for debugging.  The :guilabel:`Server Status` page offers a summary of server configuration parameters and run-time status  
+The :guilabel:`Server` section provides access to GeoServer environment information. It is a combination of diagnostic and configuration tools, and can be particularly useful for debugging.  
+
+The :guilabel:`Server Status` page shows a summary of server configuration parameters and run-time status.  
 
 .. figure:: ../../webadmin/images/server_status.png
    :align: center
    
    *Status Page*
 
-The :guilabel:`Contact Information` section sets the public contact information in the Capabilities document of the WMS server.
+The :guilabel:`Contact Information` page sets the public contact information in the Capabilities document of the WMS server.
 
 .. figure:: ../../webadmin/images/server_contact.png
    :align: center

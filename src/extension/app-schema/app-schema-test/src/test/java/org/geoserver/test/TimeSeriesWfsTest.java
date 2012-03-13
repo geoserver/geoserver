@@ -14,7 +14,8 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 
 /**
- * This is to test using isList to group multiple values as a concatenated single value.
+ * This is to test using isList to group multiple values as a concatenated single value with feature
+ * chaining.
  * 
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
@@ -243,7 +244,7 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test filtering list value.
      */
-    public void testFilter() {
+    public void testFilterPositionList() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //
                 + "version=\"1.1.0\" " //
@@ -277,9 +278,9 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
     }
 
     /**
-     * Test filtering the second list that is feature chained.
+     * Test filtering quantity list that is feature chained.
      */
-    public void testFilterWithFeatureChaining() {
+    public void testFilterQuantityList() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //
                 + "version=\"1.1.0\" " //

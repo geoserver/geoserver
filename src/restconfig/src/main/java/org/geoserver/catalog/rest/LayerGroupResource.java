@@ -38,6 +38,9 @@ public class LayerGroupResource extends AbstractCatalogResource {
 
     @Override
     public boolean allowPost() {
+        if (getAttribute("workspace") == null && !isAuthenticatedAsAdmin()) {
+            return false;
+        }
         return getAttribute( "layergroup") == null;
     }
     
@@ -67,6 +70,10 @@ public class LayerGroupResource extends AbstractCatalogResource {
 
     @Override
     public boolean allowPut() {
+        //global layer groups can only be edited by full admin
+        if (getAttribute("workspace") == null && !isAuthenticatedAsAdmin()) {
+            return false;
+        }
         return getAttribute( "layergroup") != null;
     }
     

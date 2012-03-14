@@ -4,6 +4,10 @@
  */
 package org.geoserver.security;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 /**
  * Access limits to a workspace (the write flag controls also direct access to data stores, though
  * normally only configuration code should be playing directy with stores)
@@ -17,10 +21,36 @@ public class WorkspaceAccessLimits extends AccessLimits {
 
     boolean writable;
 
+    boolean adminable;
+
     public WorkspaceAccessLimits(CatalogMode mode, boolean readable, boolean writable) {
+        this(mode, readable, writable, isAuthenticatedAsAdmin());
+    }
+
+    private static boolean isAuthenticatedAsAdmin() {
+        //TODO: change this to SecurityUtil.isAuthenticatedAsAdmin() once the security patch lands
+        if (SecurityContextHolder.getContext() == null) {
+            return false;
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
+
+        for (GrantedAuthority ga : auth.getAuthorities()) {
+            if ("ROLE_ADMINISTRATOR".equals(ga.getAuthority())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public WorkspaceAccessLimits(CatalogMode mode, boolean readable, boolean writable, boolean adminable) {
         super(mode);
         this.readable = readable;
         this.writable = writable;
+        this.adminable = adminable;
     }
 
     public boolean isReadable() {
@@ -29,6 +59,10 @@ public class WorkspaceAccessLimits extends AccessLimits {
 
     public boolean isWritable() {
         return writable;
+    }
+
+    public boolean isAdminable() {
+        return adminable;
     }
 
     @Override
@@ -61,6 +95,4 @@ public class WorkspaceAccessLimits extends AccessLimits {
             return false;
         return true;
     }
-    
-    
 }

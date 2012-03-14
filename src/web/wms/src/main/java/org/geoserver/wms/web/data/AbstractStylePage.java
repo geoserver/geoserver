@@ -51,6 +51,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
@@ -116,6 +117,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         DropDownChoice<WorkspaceInfo> wsChoice = 
             new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
         wsChoice.setNullValid(true);
+        if (!isAuthenticatedAsAdmin()) {
+            wsChoice.setNullValid(false);
+            wsChoice.setRequired(true);
+        }
+
         styleForm.add(wsChoice);
         styleForm.add( editor = new CodeMirrorEditor("SLD", new PropertyModel(this, "rawSLD")) );
         // force the id otherwise this blasted thing won't be usable from other forms
@@ -311,4 +317,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
      */
     protected abstract void onStyleFormSubmit();
 
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
 }

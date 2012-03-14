@@ -72,6 +72,9 @@ public class StyleResource extends AbstractCatalogResource {
 
     @Override
     public boolean allowPost() {
+        if (getAttribute("workspace") == null && !isAuthenticatedAsAdmin()) {
+            return false;
+        }
         return getAttribute("style") == null;
     }
     
@@ -185,6 +188,9 @@ public class StyleResource extends AbstractCatalogResource {
 
     @Override
     public boolean allowPut() {
+        if (getAttribute("workspace") == null && !isAuthenticatedAsAdmin()) {
+            return false;
+        }
         return getAttribute("style") != null;
     }
     

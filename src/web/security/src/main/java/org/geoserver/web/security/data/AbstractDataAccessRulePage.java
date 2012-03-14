@@ -33,7 +33,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 @SuppressWarnings("serial")
 public abstract class AbstractDataAccessRulePage extends GeoServerSecuredPage {
 
-    List<AccessMode> MODES = Arrays.asList(AccessMode.READ, AccessMode.WRITE);
+    List<AccessMode> MODES = Arrays.asList(AccessMode.READ, AccessMode.WRITE, AccessMode.ADMIN);
 
     DropDownChoice workspace;
 

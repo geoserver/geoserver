@@ -17,6 +17,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
@@ -189,6 +190,8 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         target.setReadTimeout(source.getReadTimeout());
     }
 
-    
-    
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
 }

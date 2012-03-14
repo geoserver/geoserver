@@ -197,7 +197,8 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
 
     protected WorkspaceAccessLimits intersection(WorkspaceAccessLimits a, WorkspaceAccessLimits b) {
         CatalogMode mode = intersection(a.getMode(), b.getMode());
-        return new WorkspaceAccessLimits(mode, a.isReadable() && b.isReadable(), a.isWritable() && b.isWritable());
+        return new WorkspaceAccessLimits(mode, a.isReadable() && b.isReadable(), 
+            a.isWritable() && b.isWritable(), a.isAdminable() && b.isAdminable());
     }
 
     public void setDelegate(ResourceAccessManager delegate) {

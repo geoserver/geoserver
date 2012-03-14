@@ -18,6 +18,9 @@ import org.geotools.util.logging.Logging;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
@@ -126,5 +129,26 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
             //encode as relative
             return pg.pageURI(link);
         }
+    }
+
+    /**
+     * Determines if the current user is authenticated as full administrator.
+     */
+    protected boolean isAuthenticatedAsAdmin() {
+        if (SecurityContextHolder.getContext() == null) {
+            return false;
+        }
+
+        //TODO: change to getSecurityMangager().isAuthenticatedAsAdmin() once security work lands
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return false;
+        }
+
+        for (GrantedAuthority authority : auth.getAuthorities()) {
+            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
+                return true;
+        }
+        return false;
     }
 }

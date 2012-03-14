@@ -40,7 +40,7 @@ public class TestAccessLimitsSerialization extends TestCase {
     }
 
     public void testSerializeWorkspaceAccessLimits() throws Exception {
-        WorkspaceAccessLimits limits = new WorkspaceAccessLimits(CatalogMode.HIDE, true, true);
+        WorkspaceAccessLimits limits = new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
 
         testObjectSerialization(limits);
     }

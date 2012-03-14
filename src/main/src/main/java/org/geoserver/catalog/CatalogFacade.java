@@ -19,7 +19,9 @@ public interface CatalogFacade {
     static WorkspaceInfo ANY_WORKSPACE = DefaultCatalogFacade.ANY_WORKSPACE;
     
     static NamespaceInfo ANY_NAMESPACE = DefaultCatalogFacade.ANY_NAMESPACE;
-    
+
+    static WorkspaceInfo NO_WORKSPACE = DefaultCatalogFacade.NO_WORKSPACE;
+
     /**
      * The containing catalog.
      */

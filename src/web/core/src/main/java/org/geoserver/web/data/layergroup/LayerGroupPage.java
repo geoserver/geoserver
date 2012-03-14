@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
@@ -49,7 +50,23 @@ public class LayerGroupPage extends GeoServerSecuredPage {
 
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                removal.setEnabled(table.getSelection().size() > 0);
+                if (!table.getSelection().isEmpty()) {
+                    boolean canRemove = true;
+                    if (!isAuthenticatedAsAdmin()) {
+                        //if any global layer groups are selected, don't allow delete
+                        for (LayerGroupInfo lg : table.getSelection()) {
+                            if (lg.getWorkspace() == null) {
+                                canRemove = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    removal.setEnabled(canRemove);
+                }
+                else {
+                    removal.setEnabled(false);
+                }
                 target.addComponent(removal);
             }  
         });
@@ -97,5 +114,10 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         else {
             return new WebMarkupContainer(id);
         }
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

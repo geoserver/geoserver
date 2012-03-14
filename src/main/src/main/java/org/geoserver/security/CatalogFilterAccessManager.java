@@ -64,7 +64,7 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
     @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         if (hideWorkspace(workspace)) {
-            return new WorkspaceAccessLimits(CatalogMode.HIDE, false, false);
+            return new WorkspaceAccessLimits(CatalogMode.HIDE, false, false, false);
         } else {
             return super.getAccessLimits(user, workspace);
         }

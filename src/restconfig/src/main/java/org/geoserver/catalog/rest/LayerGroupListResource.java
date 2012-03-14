@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -24,7 +25,10 @@ public class LayerGroupListResource extends AbstractCatalogListResource {
         String ws = getAttribute("workspace");
         LOGGER.fine( "GET all layer groups" + ws != null ? " in workspace " + ws : "");
 
-        return ws != null ? catalog.getLayerGroupsByWorkspace(ws) : catalog.getLayerGroups();
+        //JD:NO_WORKSPACE here is a pretty big hack... figure out how to expose global layer groups
+        // through the catalog api in a consistent way
+        return ws != null ? catalog.getLayerGroupsByWorkspace(ws) : 
+            catalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE);
     }
 
 }

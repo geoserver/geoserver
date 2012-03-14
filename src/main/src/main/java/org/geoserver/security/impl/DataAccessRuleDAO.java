@@ -183,6 +183,14 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
             }
         }
 
+        // check admin access only applied globally to workspace
+        if (mode == AccessMode.ADMIN && !ANY.equals(layerName)) {
+            //TODO: should this throw an exception instead of ignore rule?
+            LOGGER.warning("Invalid rule " + rule + ", admin (a) privileges may only be applied " +
+                "globally to a workspace, layer must be *, skipping rule"); 
+            return null;
+        }
+
         // build the rule
         return new DataAccessRule(workspace, layerName, mode, roles);
     }

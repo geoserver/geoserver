@@ -128,6 +128,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
         }
 
         private void callInternal() throws Exception {
+            doLogin();
             String threadId = Thread.currentThread().getId() + " ";
             for (int i = 0; i < loops && exception == null; i++) {
                 // add the type name

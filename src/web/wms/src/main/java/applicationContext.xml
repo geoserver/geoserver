@@ -49,5 +49,6 @@
      <property name="category" ref="dataCategory"/>
      <property name="icon" value="palette.png"/>
      <property name="order" value="30"/>
+     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
 </beans>

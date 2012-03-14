@@ -14,6 +14,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
@@ -114,5 +115,10 @@ public class StylePage extends GeoServerSecuredPage {
         else {
             return new WebMarkupContainer(id);
         }
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

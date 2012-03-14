@@ -39,6 +39,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.layer.LayerPage;
@@ -508,5 +509,10 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
      */
     public void setReturnPage(Class<? extends Page> returnPage) {
         this.returnPage = returnPage == null? LayerPage.class : returnPage;
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

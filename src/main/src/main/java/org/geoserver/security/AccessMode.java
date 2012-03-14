@@ -17,8 +17,12 @@ public enum AccessMode {
     /**
      * Write access, that is, see and modify
      */
-    WRITE("w");
-    
+    WRITE("w"),
+    /**
+     * Admin access, read+write and full configure
+     */
+    ADMIN("a");
+
     String alias;
     
     /**

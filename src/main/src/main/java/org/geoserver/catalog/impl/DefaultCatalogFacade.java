@@ -50,6 +50,8 @@ public class DefaultCatalogFacade implements CatalogFacade {
     
     public static NamespaceInfo ANY_NAMESPACE = any(NamespaceInfo.class);
     
+    public static WorkspaceInfo NO_WORKSPACE = any(WorkspaceInfo.class);
+
     @SuppressWarnings("unchecked")
     static <T extends CatalogInfo>  T any(Class<T> clazz) {
         
@@ -548,10 +550,18 @@ public class DefaultCatalogFacade implements CatalogFacade {
 
         for (Iterator s = layerGroups.iterator(); s.hasNext();) {
             LayerGroupInfo layerGroup = (LayerGroupInfo) s.next();
-            if (workspace.equals(layerGroup.getWorkspace())) {
+            boolean match = false;
+            if (workspace == NO_WORKSPACE) {
+                match = layerGroup.getWorkspace() == null;
+            }
+            else {
+                match = workspace.equals(layerGroup.getWorkspace());
+            }
+            if (match) {
                 matches.add(layerGroup);
             }
         }
+
 
         return ModificationProxy.createList(matches,LayerGroupInfo.class);
 
@@ -894,7 +904,14 @@ public class DefaultCatalogFacade implements CatalogFacade {
 
         for (Iterator s = styles.iterator(); s.hasNext();) {
             StyleInfo style = (StyleInfo) s.next();
-            if (workspace.equals(style.getWorkspace())) {
+            boolean match = false;
+            if (workspace == NO_WORKSPACE) {
+                match = style.getWorkspace() == null;
+            }
+            else {
+                match = workspace.equals(style.getWorkspace());
+            }
+            if (match) {
                 matches.add(style);
             }
         }

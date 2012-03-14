@@ -30,6 +30,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -287,5 +288,10 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
         target.getConnectionParameters().clear();
         target.getConnectionParameters().putAll(source.getConnectionParameters());
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 }

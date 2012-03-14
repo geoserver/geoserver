@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.WebAttributes;
@@ -55,5 +56,13 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
      */
     protected ComponentAuthorizer getPageAuthorizer() {
         return DEFAULT_AUTHORIZER;
+    }
+
+    /**
+     * Convenience method to determine if the current user is authenticated as full administartor.
+     */
+    protected boolean isAuthenticatedAsAdmin() {
+        return ComponentAuthorizer.ADMIN.isAccessAllowed(GeoServerSecuredPage.class, 
+            SecurityContextHolder.getContext().getAuthentication());
     }
 }

@@ -10,6 +10,12 @@ import java.util.logging.Level;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -37,6 +43,34 @@ public class StyleEditPage extends AbstractStylePage {
         }
         
         initUI(si);
+
+        if (!isAuthenticatedAsAdmin()) {
+            Form f = (Form)get("form");
+    
+            //global styles only editable by full admin
+            if (si.getWorkspace() == null) {
+                styleForm.setEnabled(false);
+                nameTextField.setEnabled(false);
+                uploadForm.setEnabled(false);
+
+                editor.add(new AttributeAppender("class", new Model("disabled"), " "));
+                get("validate").add(new AttributeAppender("style", new Model("display:none;"), " "));
+                add(new AbstractBehavior() {
+                    @Override
+                    public void renderHead(IHeaderResponse response) {
+                        response.renderOnLoadJavascript(
+                            "document.getElementById('mainFormSubmit').style.display = 'none';");
+                        response.renderOnLoadJavascript(
+                            "document.getElementById('uploadFormSubmit').style.display = 'none';");
+                    }
+                });
+
+                info(new StringResourceModel("globalStyleReadOnly", this, null).getString());
+            }
+
+            //always disable the workspace toggle
+            f.get("workspace").setEnabled(false);
+        }
     }
     
     public StyleEditPage(StyleInfo style) {

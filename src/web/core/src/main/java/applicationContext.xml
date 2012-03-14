@@ -43,6 +43,16 @@
     </property>
   </bean>
 
+  <!-- authorizers -->
+  <bean id="authenticatedAuthorizer" 
+     class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+     <property name="staticField" value="org.geoserver.web.ComponentAuthorizer.AUTHENTICATED"/>
+  </bean>
+  <bean id="workspaceAdminAuthorizer" 
+     class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+     <property name="staticField" value="org.geoserver.web.ComponentAuthorizer.WORKSPACE_ADMIN"/>
+  </bean>
+  
   <!-- Menu categories -->
   <bean id="aboutStatusCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.about" />
@@ -143,6 +153,7 @@
     <property name="category" ref="dataCategory" />
     <property name="icon" value="../../img/icons/silk/folder.png" />
     <property name="order" value="10" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
   <bean id="storeMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="stores" />
@@ -152,6 +163,7 @@
     <property name="category" ref="dataCategory" />
     <property name="icon" value="../../img/icons/silk/database.png" />
     <property name="order" value="15" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
   <bean id="layerMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layers" />
@@ -161,6 +173,7 @@
     <property name="category" ref="dataCategory" />
     <property name="icon" value="../../img/icons/silk/picture_empty.png" />
     <property name="order" value="20" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
   <bean id="layerGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="layerGroups" />
@@ -171,6 +184,7 @@
     <property name="category" ref="dataCategory" />
     <property name="icon" value="../../img/icons/silk/layers.png" />
     <property name="order" value="25" />
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
   </bean>
 
   <!-- Demo menu item -->
@@ -389,5 +403,7 @@
   </bean>
   
   <bean id="wicketEnvVariableInjector" class="org.geoserver.web.WicketEnvironmentVariableCallback"/>
+  
+  <bean id="adminRequestCallback" class="org.geoserver.web.AdminRequestWicketCallback"/>
  
 </beans>

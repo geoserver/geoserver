@@ -33,6 +33,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.importer.WMSLayerImporterPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -323,4 +324,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
         return provider.getStoreId();
     }
 
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
 }

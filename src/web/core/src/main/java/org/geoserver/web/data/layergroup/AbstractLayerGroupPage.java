@@ -33,6 +33,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.layer.LayerDetachableModel;
@@ -77,6 +78,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         layerGroupId = layerGroup.getId();
         
         Form form = new Form( "form", new CompoundPropertyModel( lgModel ) );
+
         add(form);
         TextField name = new TextField("name");
         name.setRequired(true);
@@ -87,6 +89,11 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         DropDownChoice<WorkspaceInfo> wsChoice = 
                 new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
         wsChoice.setNullValid(true);
+        if (!isAuthenticatedAsAdmin()) {
+            wsChoice.setNullValid(false);
+            wsChoice.setRequired(true);
+        }
+
         form.add(wsChoice);
 
         //bounding box
@@ -343,5 +350,9 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     public void setReturnPage(Class<? extends Page> returnPage) {
         this.returnPage = returnPage == null? LayerGroupPage.class : returnPage;
     }
-    
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
 }

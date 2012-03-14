@@ -67,7 +67,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     public String getId() {
         return delegate.getId();
     }
-    
+
+    public ResourceAccessManager getResourceAccessManager() {
+        return accessManager;
+    }
+
     static ResourceAccessManager lookupResourceAccessManager() throws Exception {
         ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
         if (manager == null) {
@@ -624,6 +628,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             CatalogInfo info, String resourceName) {
         boolean canRead = true;
         boolean canWrite = true;
+
         AccessLimits limits;
 
         if(info instanceof WorkspaceInfo) {
@@ -633,15 +638,32 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             limits = accessManager.getAccessLimits(user, (WorkspaceInfo) info);
             WorkspaceAccessLimits wl = (WorkspaceAccessLimits) limits;
             if(wl != null) {
-                canRead = wl.isReadable();
-                canWrite = wl.isWritable();
+                if (wl.isAdminable()) {
+                    canRead = canWrite = true;
+                }
+                else {
+                    canRead = wl.isReadable();
+                    canWrite = wl.isWritable();
+                }
+            }
+            if (AdminRequest.get() != null) {
+                //admin request
+                if (wl == null || !wl.isAdminable()) {
+                    canRead = canWrite = false;
+                }
             }
         } else if(info instanceof LayerInfo || info instanceof ResourceInfo) {
             DataAccessLimits dl;
+            WorkspaceAccessLimits wl;
+            
             if(info instanceof LayerInfo) {
                 dl = accessManager.getAccessLimits(user, (LayerInfo) info);
+                wl = accessManager.getAccessLimits(user, 
+                    ((LayerInfo)info).getResource().getStore().getWorkspace());
             } else {
                 dl = accessManager.getAccessLimits(user, (ResourceInfo) info);
+                wl = accessManager.getAccessLimits(user, 
+                    ((ResourceInfo)info).getStore().getWorkspace());
             }
             if(dl != null) {
                 canRead = dl.getReadFilter() != Filter.EXCLUDE;
@@ -652,15 +674,34 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 }
             }
             limits = dl;
-        } else if (info instanceof StyleInfo) {
-            limits = accessManager.getAccessLimits(user, (StyleInfo) info);
+
+            if (AdminRequest.get() != null) {
+                if (wl != null && !wl.isAdminable()) {
+                    canRead = false;
+                }
+            }
+        } else if (info instanceof StyleInfo || info instanceof LayerGroupInfo) {
+            WorkspaceInfo ws = null;
+            if (info instanceof StyleInfo) {
+                limits = accessManager.getAccessLimits(user, (StyleInfo) info);
+                ws = ((StyleInfo)info).getWorkspace();
+            }
+            else {
+                limits = accessManager.getAccessLimits(user, (LayerGroupInfo) info);
+                ws = ((LayerGroupInfo)info).getWorkspace();
+            }
+            
             if (limits != null) {
                 canRead = false;
             }
-        } else if (info instanceof LayerGroupInfo) { 
-            limits = accessManager.getAccessLimits(user, (LayerGroupInfo) info);
-            if (limits != null) {
-                canRead = false;
+
+            if (ws != null && AdminRequest.get() != null) {
+                WorkspaceAccessLimits wl = accessManager.getAccessLimits(user,  ws);
+                if (wl != null) {
+                    if (!wl.isAdminable()) {
+                        canRead = false;
+                    }
+                }
             }
         }else {
             throw new IllegalArgumentException("Can't build the wrapper policy for objects " +
@@ -692,6 +733,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 return WrapperPolicy.readOnlyChallenge(limits);
             }
         }
+
         return WrapperPolicy.readWrite(limits);
     }
 

@@ -24,6 +24,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -141,4 +142,8 @@ public class LayerPage extends GeoServerSecuredPage {
                 "name", (String) nameModel.getObject());
     }
 
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
 }

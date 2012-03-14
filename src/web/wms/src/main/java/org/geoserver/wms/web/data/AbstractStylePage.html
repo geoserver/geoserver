@@ -23,7 +23,7 @@
 
     <form wicket:id="uploadForm" id="uploadForm"><label
         for="filename"><wicket:message key="sldFile">SLD file</wicket:message></label>
-    <input type="file" wicket:id="filename"></input> <a href="#"
+    <input type="file" wicket:id="filename"></input> <a id="uploadFormSubmit" href="#"
         onclick="document.forms['uploadForm'].submit()"><wicket:message key="upload">Upload</wicket:message></a>
     </form>
     
@@ -32,7 +32,9 @@
     <div class="button-group selfclear">
        <a href="#" wicket:id="validate"><wicket:message key="validate">Validate</wicket:message></a>
        <!--a href="#" wicket:id="submit"><wicket:message key="submit">Submit</wicket:message></a-->
-       <a href="#" onclick="document.forms['mainForm'].submit();"><wicket:message key="submit">Submit</wicket:message></a>
+       <a href="#" id="mainFormSubmit" onclick="document.forms['mainForm'].submit();">
+         <wicket:message key="submit">Submit</wicket:message>
+       </a>
        <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
     </div>
 

@@ -37,8 +37,7 @@ public class WrapperPolicy implements Serializable {
     public static final WrapperPolicy readWrite(AccessLimits limits) {
         return new WrapperPolicy(AccessLevel.READ_WRITE, Response.HIDE, limits);
     }
-    
-    
+
     WrapperPolicy(AccessLevel level, Response response, AccessLimits limits) {
         this.level = level;
         this.response = response;

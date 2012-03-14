@@ -350,4 +350,8 @@
   <bean id="catalogLocker" class="org.geoserver.rest.RestConfigurationLockCallback">
     <constructor-arg index="0" ref="configurationLock"/>
   </bean>
+
+  <!-- admin request callback -->
+  <bean id="adminRequestRestCallback" class="org.geoserver.catalog.rest.AdminRequestCallback"/>
+  
 </beans>

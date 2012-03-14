@@ -83,12 +83,16 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         boolean readable = delegate.canAccess(user, workspace, AccessMode.READ);
         boolean writable = delegate.canAccess(user, workspace, AccessMode.WRITE);
+        boolean adminable = delegate.canAccess(user, workspace, AccessMode.ADMIN);
+        
         CatalogMode mode = delegate.getMode();
 
         if (readable && writable) {
-            return null;
-        } else {
-            return new WorkspaceAccessLimits(mode, readable, writable);
+            if (AdminRequest.get() == null) {
+                //not admin request, read+write means full acesss
+                return null;
+            }
         }
+        return new WorkspaceAccessLimits(mode, readable, writable, adminable);
     }
 }

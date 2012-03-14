@@ -25,6 +25,16 @@ public interface ComponentAuthorizer extends Serializable {
      * authorizer that grants access if the user has admin credentials
      */
     static ComponentAuthorizer ADMIN = new AdminComponentAuthorizer();
+
+    /**
+     * authorizer that grants access if the user has workspace admin credentials
+     */
+    static ComponentAuthorizer WORKSPACE_ADMIN = new WorkspaceAdminComponentAuthorizer();
+    
+    /**
+     * authorizer that grants access if the user has authenticated
+     */
+    static ComponentAuthorizer AUTHENTICATED = new AuthenticatedComponentAuthorizer(); 
     
     /**
      * Determines if access is allowed to the component given the specified credentials.

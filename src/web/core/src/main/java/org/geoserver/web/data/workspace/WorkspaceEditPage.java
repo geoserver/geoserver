@@ -50,6 +50,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -119,8 +120,14 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             }
         };
         add(form);
+
+        //check for full admin, we don't allow workspace admins to change all settings
+        boolean isFullAdmin = isAuthenticatedAsAdmin();
+        
         TextField name = new TextField("name", new PropertyModel(wsModel, "name"));
         name.setRequired(true);
+        name.setEnabled(isFullAdmin);
+
         name.add(new XMLNameValidator());
         form.add(name);
         TextField uri = new TextField("uri", new PropertyModel(nsModel, "uRI"), String.class);
@@ -129,7 +136,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         form.add(uri);
         CheckBox defaultChk = new CheckBox("default", new PropertyModel(this, "defaultWs"));
         form.add(defaultChk);
-        
+        defaultChk.setEnabled(isFullAdmin);
+
         //stores
 //        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws), false);
 //        form.add(storePanel);
@@ -219,6 +227,11 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             }
         }
         setResponsePage(WorkspacePage.class);
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
     /*

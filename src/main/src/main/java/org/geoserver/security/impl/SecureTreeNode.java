@@ -66,10 +66,16 @@ class SecureTreeNode {
      */
     SecureTreeNode() {
         // by default we allow access for everybody in all modes for the root
-        // node,
-        // since we have no parent to fall back onto
+        // node, since we have no parent to fall back onto
+        // -> except for admin access, default is administrator
         for (AccessMode mode : AccessMode.values()) {
-            authorizedRoles.put(mode, EVERYBODY);
+            switch(mode) {
+            case ADMIN:
+                authorizedRoles.put(mode, Collections.singleton(ROOT_ROLE));
+                break;
+            default:
+                authorizedRoles.put(mode, EVERYBODY);
+            }
         }
     }
 

@@ -57,6 +57,7 @@ public class GetFeatureInfoRestrictedTest extends WMSTestSupport {
         DataAccessManager mockManager = createMock(DataAccessManager.class);
         expect(mockManager.canAccess((Authentication) anyObject(), (WorkspaceInfo) anyObject(), eq(AccessMode.READ))).andReturn(true).anyTimes();
         expect(mockManager.canAccess((Authentication) anyObject(), (WorkspaceInfo) anyObject(), eq(AccessMode.WRITE))).andReturn(false).anyTimes();
+        expect(mockManager.canAccess((Authentication) anyObject(), (WorkspaceInfo) anyObject(), eq(AccessMode.ADMIN))).andReturn(false).anyTimes();
         expect(mockManager.canAccess((Authentication) anyObject(), (ResourceInfo) anyObject(), eq(AccessMode.READ))).andReturn(true).anyTimes();
         expect(mockManager.canAccess((Authentication) anyObject(), (ResourceInfo) anyObject(), eq(AccessMode.WRITE))).andReturn(false).anyTimes();
         expect(mockManager.canAccess((Authentication) anyObject(), (LayerInfo) anyObject(), eq(AccessMode.READ))).andReturn(true).anyTimes();

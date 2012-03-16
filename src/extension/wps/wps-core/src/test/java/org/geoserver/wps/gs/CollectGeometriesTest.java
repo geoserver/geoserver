@@ -36,8 +36,7 @@ public class CollectGeometriesTest extends WPSTestSupport {
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         
         Geometry actual = new WKTReader().read(response.getOutputStreamContent());
-        Geometry expected = new WKTReader().read("MULTIPOLYGON(((-1 0, 0 1, 1 0, 0 -1, -1 0)), " +
-        		" ((-2 6, 1 6, 1 3, -2 3, -2 6)), ((-1 5, 2 5, 2 2, -1 2, -1 5)))");
+        Geometry expected = new WKTReader().read("MULTIPOLYGON (((-2 6, 1 6, 1 5, 2 5, 2 2, -1 2, -1 3, -2 3, -2 6)), ((-1 0, 0 1, 1 0, 0 -1, -1 0)))");
         
         // equals does not work with geometry collections... go figure
         assertTrue(expected.equalsExact(actual));

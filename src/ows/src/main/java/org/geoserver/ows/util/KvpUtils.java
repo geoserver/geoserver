@@ -527,21 +527,40 @@ public class KvpUtils {
      *  @return list of tokens
      */
     public static List<String> escapedTokens(String s, char separator) {
+        return escapedTokens(s, separator, 0);
+    }
+
+    /**
+     * Tokenize a String using the specified separator character and the backslash as an escape 
+     * character (see OGC WFS 1.1.0 14.2.2).  Escape characters within the tokens are not resolved. 
+     * 
+     *  @param s the String to parse
+     *  @param separator the character that separates tokens
+     *  @param maxTokens ignoring escaped separators, the maximum number of tokens to return. A value of 0 has no maximum.
+     *  
+     *  @return list of tokens
+     */
+    public static List<String> escapedTokens(String s, char separator, int maxTokens) {
         if (s == null) {
             throw new IllegalArgumentException("The String to parse may not be null.");
         }
         if (separator == '\\') {
             throw new IllegalArgumentException("The separator may not be a backslash.");
         }
+        if (maxTokens <= 0) {
+            maxTokens = Integer.MAX_VALUE;
+        }
         List<String> ret = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
         boolean escaped = false;
+        int tokenCount = 1;
         
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (c == separator && !escaped) {
+            if (c == separator && !escaped && tokenCount < maxTokens) {
                 ret.add(sb.toString());
                 sb.setLength(0);
+                tokenCount++;
             } else {
                 if (escaped) {
                     escaped = false;

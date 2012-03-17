@@ -26,6 +26,7 @@ import net.opengis.wfs.WfsFactory;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.GridSampleDimension;
@@ -244,8 +245,6 @@ public class GetFeatureInfo {
                                 GeoTools.getDefaultHints());
                 
                 
-                // get the original grid geometry
-                final GridGeometry2D coverageGeometry = (GridGeometry2D) cinfo.getGrid();
                 // set the requested position in model space for this request
                 final Coordinate middle = pixelToWorld(x, y, bbox, width, height);
                 DirectPosition position = new DirectPosition2D(requestedCRS, middle.x, middle.y);
@@ -254,9 +253,12 @@ public class GetFeatureInfo {
                 // area,
                 // TODO this code need to be made much more robust
                 if (requestedCRS != null) {
-
-                    final CoordinateReferenceSystem targetCRS = coverageGeometry
-                            .getCoordinateReferenceSystem();
+                    final CoordinateReferenceSystem targetCRS;
+                    if(cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) {
+                        targetCRS = cinfo.getNativeCRS();
+                    } else {
+                        targetCRS = cinfo.getCRS();
+                    }
                     final TransformedDirectPosition arbitraryToInternal = new TransformedDirectPosition(
                             requestedCRS, targetCRS, new Hints(Hints.LENIENT_DATUM_SHIFT,
                                     Boolean.TRUE));

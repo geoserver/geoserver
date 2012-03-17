@@ -96,14 +96,29 @@ public class KvpUtilsTest extends TestCase {
         
         actual = KvpUtils.escapedTokens("a,b,c", ',');
         assertEquals(Arrays.asList("a", "b", "c"), actual);
-        
+
+        actual = KvpUtils.escapedTokens("a,b,c", ',', 2);
+        assertEquals(Arrays.asList("a", "b,c"), actual);
+
+        actual = KvpUtils.escapedTokens("a,b,c", ',', 1);
+        assertEquals(Arrays.asList("a,b,c"), actual);
+
+        actual = KvpUtils.escapedTokens("a,b,c", ',', 0);
+        assertEquals(Arrays.asList("a", "b", "c"), actual);
+
+        actual = KvpUtils.escapedTokens("a,b,c", ',', 1000);
+        assertEquals(Arrays.asList("a", "b", "c"), actual);
+
         // test escaped data
         actual = KvpUtils.escapedTokens("\\\\,\\\\", ',');
         assertEquals(Arrays.asList("\\\\", "\\\\"), actual);
         
         actual = KvpUtils.escapedTokens("a\\,b,c", ',');
         assertEquals(Arrays.asList("a\\,b", "c"), actual);
-        
+
+        actual = KvpUtils.escapedTokens("a\\,b,c,d", ',', 2);
+        assertEquals(Arrays.asList("a\\,b", "c,d"), actual);
+
         // test error conditions
         try {
             KvpUtils.escapedTokens(null, ',');

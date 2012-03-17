@@ -59,11 +59,7 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
         List<String> kvps = KvpUtils.escapedTokens(value, ';');
         
         for (String kvp : kvps) {
-            
-            List<String> kv = KvpUtils.escapedTokens(kvp, ':');
-            if (kv.size() > 2) {
-                throw new IllegalArgumentException("Invalid key-value pair length (" + kv.size() + " elements).");
-            }
+            List<String> kv = KvpUtils.escapedTokens(kvp, ':', 2);
             String key = kv.get(0);
             String raw = kv.size() == 1 ? "true" : KvpUtils.unescape(kv.get(1));
                

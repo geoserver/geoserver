@@ -13,7 +13,9 @@ import javax.xml.namespace.QName;
 import junit.framework.Test;
 
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -30,6 +32,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     public static String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
     public static QName TASMANIA_BM = new QName(WCS_URI, "BlueMarble", WCS_PREFIX);
     public static QName SQUARES = new QName(MockData.CITE_URI, "squares", MockData.CITE_PREFIX);
+    public static QName CUSTOM = new QName(MockData.CITE_URI, "custom", MockData.CITE_PREFIX);
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -86,6 +89,9 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // this also adds the raster style
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
                 getClass().getResource("../raster-filter-test.zip"), null, "raster");
+        
+        // add a raster with a a custom projection
+        dataDirectory.addCoverage(CUSTOM, GetFeatureInfoTest.class.getResource("custom.zip"), null, "raster");
     }
     
     /**
@@ -573,5 +579,26 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        assertTrue(idxAbbr < idxName);
    }
     
+   
+   public void testRasterKeepNative() throws Exception {
+       // force it to "keep native"
+       CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(CUSTOM));
+       ci.setProjectionPolicy(ProjectionPolicy.NONE);
+       getCatalog().save(ci);
+       
+       // make a first reprojected request on a pixel that's black (0)
+       String result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
+       		"&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS" +
+       		"&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom" +
+       		"&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.1.1&x=177&y=225");
+       assertTrue(result.contains("0.0"));
+       
+       // and now one with actual data, 2
+       result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
+               "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS" +
+               "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom" +
+               "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.1.1&x=135&y=223");
+       assertTrue(result.contains("2.0"));
+   }
     
 }

@@ -53,8 +53,6 @@ class SummaryProvider extends GeoServerDataProvider<Summary> {
 
     @Override
     public List<Summary> getItems() {
-        List<Summary> list = new ArrayList<Summary>();
-        Collections.copy(summaries, list);
-        return list;
+        return Collections.unmodifiableList(summaries);
     }
 }

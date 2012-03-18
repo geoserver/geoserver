@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -22,6 +24,9 @@ class Summary implements Serializable {
     final private String name;
     final private Object min;
     final private Object max;
+
+    static final private Logger LOGGER =
+        org.geotools.util.logging.Logging.getLogger(Summary.class);
 
     public Summary(String name, Object min, Object max) {
         this.name = name;
@@ -47,6 +52,9 @@ class Summary implements Serializable {
                 noncomparable.add(att);
             }
         }
+
+        LOGGER.log(Level.FINEST, "Comparable attributes: " + comparable);
+        LOGGER.log(Level.FINEST, "Non-comparable attributes: " + noncomparable);
 
         Map<AttributeDescriptor, Comparable<Object>> minima = new HashMap();
         Map<AttributeDescriptor, Comparable<Object>> maxima = new HashMap();

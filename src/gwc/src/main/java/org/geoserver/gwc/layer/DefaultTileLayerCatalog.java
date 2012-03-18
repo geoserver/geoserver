@@ -267,7 +267,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     }
 
     private GeoServerTileLayerInfoImpl depersist(final File file) throws IOException {
-
+        LOGGER.info("Depersisting GeoServerTileLayerInfo from " + file.getAbsolutePath());
         GeoServerTileLayerInfoImpl info;
         Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         try {
@@ -296,6 +296,16 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         } else {
             source.renameTo(dest);
         }
+    }
+
+    @Override
+    public String getLayerId(String layerName) {
+        return layersByName.get(layerName);
+    }
+
+    @Override
+    public String getLayerName(String layerId) {
+        return layersById.get(layerId);
     }
 
 }

@@ -143,6 +143,11 @@ public class CatalogConfigurationTest extends TestCase {
         when(tileLayerCatalog.getLayerByName(tileLayerName(group1))).thenReturn(groupInfo1);
         when(tileLayerCatalog.getLayerByName(tileLayerName(group2))).thenReturn(groupInfo2);
 
+        when(tileLayerCatalog.getLayerId(tileLayerName(layer1))).thenReturn(layer1.getId());
+        when(tileLayerCatalog.getLayerId(tileLayerName(layer2))).thenReturn(layer2.getId());
+        when(tileLayerCatalog.getLayerId(tileLayerName(group1))).thenReturn(group1.getId());
+        when(tileLayerCatalog.getLayerId(tileLayerName(group2))).thenReturn(group2.getId());
+
         config = new CatalogConfiguration(catalog, tileLayerCatalog, gridSetBroker);
 
         mockMediator = mock(GWC.class);

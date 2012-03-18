@@ -12,6 +12,10 @@ public interface TileLayerCatalog {
 
     public Set<String> getLayerNames();
 
+    public String getLayerId(final String layerName);
+
+    public String getLayerName(final String layerId);
+
     public GeoServerTileLayerInfo getLayerById(String id);
 
     public GeoServerTileLayerInfo getLayerByName(String layerName);

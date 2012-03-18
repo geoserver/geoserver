@@ -7,7 +7,6 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Maps.newConcurrentMap;
 
 import java.util.Collections;
@@ -279,24 +278,44 @@ public class CatalogConfiguration implements Configuration {
     public GeoServerTileLayer getTileLayer(final String layerName) {
         checkNotNull(layerName, "layer name is null");
 
-        GeoServerTileLayer layerByName;
+        final String layerId;
 
         lock.readLock().lock();
         try {
-            GeoServerTileLayerInfo tileLayerInfo = getTileLayerInfoByName(layerName);
-
-            if (null == tileLayerInfo) {
-                layerByName = null;
-            } else {
-                final String id = tileLayerInfo.getId();
-                checkState(id != null, "Got tile layer with null id: ", tileLayerInfo);
-                layerByName = getTileLayerById(id);
+            layerId = getLayerId(layerName);
+            if (layerId == null) {
+                return null;
             }
-
         } finally {
             lock.readLock().unlock();
         }
-        return layerByName;
+        return getTileLayerById(layerId);
+    }
+
+    private String getLayerId(final String layerName) {
+
+        String storedName = layerName;
+        // check pending modifs first in case name changed
+        if (!pendingModications.isEmpty()) {
+            for (GeoServerTileLayerInfo info : pendingModications.values()) {
+                String name = info.getName();
+                if (name.equals(layerName)) {
+                    storedName = info.getName();
+                    break;
+                }
+            }
+        }
+
+        final String layerId = tileLayerCatalog.getLayerId(storedName);
+        if (layerId == null || pendingDeletes.contains(layerId)) {
+            return null;
+        }
+        // name changed?
+        GeoServerTileLayerInfo modifiedState = pendingModications.get(layerId);
+        if (modifiedState != null && !layerName.equals(modifiedState.getName())) {
+            return null;
+        }
+        return layerId;
     }
 
     private GeoServerTileLayerInfo getTileLayerInfoByName(final String layerName) {

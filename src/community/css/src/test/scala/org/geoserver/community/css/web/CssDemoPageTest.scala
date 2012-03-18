@@ -7,7 +7,9 @@ import org.apache.wicket.ajax.markup.html.AjaxLink
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel
 import org.apache.wicket.markup.html.panel.EmptyPanel
 import org.apache.wicket.markup.html.panel.Panel
-import org.geoserver.web.GeoServerWicketTestSupport
+import org.{ geoserver => gs }
+import gs.web.GeoServerWicketTestSupport
+import junit.framework.Assert._
 
 class CssDemoPageTest extends GeoServerWicketTestSupport {
   import GeoServerWicketTestSupport.tester
@@ -45,6 +47,22 @@ class CssDemoPageTest extends GeoServerWicketTestSupport {
     tester.startPage(classOf[CssDemoPage])
     tester.clickLink("main-content:context:tabs-container:tabs:3:link")
     tester.assertComponent("main-content:context:panel", classOf[SLDPreviewPanel])
+  }
+
+  def testStyleChooser() {
+    login()
+    tester.startPage(classOf[CssDemoPage])
+    tester.clickLink("main-content:change.style")
+    tester.assertComponent("main-content:popup:content:style.table",
+      classOf[gs.web.wicket.GeoServerTablePanel[_]])
+  }
+
+  def testLayerChooser() {
+    login()
+    tester.startPage(classOf[CssDemoPage])
+    tester.clickLink("main-content:change.layer")
+    tester.assertComponent("main-content:popup:content:layer.table",
+       classOf[gs.web.wicket.GeoServerTablePanel[_]])
   }
   
   def testDocsPanel() {

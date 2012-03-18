@@ -76,7 +76,7 @@ public class LayerChooser extends Panel {
                             {
                                 add(new AjaxLink("link") {
                                     {
-                                        add(new Label("Layer.name", new Model(text)));
+                                        add(new Label("layer.name", new Model(text)));
                                     }
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
@@ -93,5 +93,6 @@ public class LayerChooser extends Panel {
                     }
                 }
             };
+        add(table);
     }
 }

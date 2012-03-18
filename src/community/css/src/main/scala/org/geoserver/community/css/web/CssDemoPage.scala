@@ -56,25 +56,19 @@ class CssSubmitButton(
   styleEditor: Form[_],
   page: CssDemoPage,
   cssSource: String,
-  styleBody: String
+  styleBody: PropertyModel[String]
 ) extends AjaxButton("submit", styleEditor) {
   override def onSubmit(target: AjaxRequestTarget, form: Form[_]) = {
     try {
       val file = page.findStyleFile(cssSource)
 
-      try {
-        val sld = page.cssText2sldText(styleBody)
-        val writer = new FileWriter(file)
-        writer.write(styleBody)
-        writer.close()
-        page.catalog.getResourcePool.writeStyle(
-          page.getStyleInfo, new ByteArrayInputStream(sld.getBytes())
-        )
-      } catch {
-        case ex => 
-        // TODO: use custom exception here instead of catch-all
-        // println(ex.getMessage())
-      }
+      val sld = page.cssText2sldText(styleBody.getObject())
+      val writer = new FileWriter(file)
+      writer.write(styleBody.getObject())
+      writer.close()
+      page.catalog.getResourcePool.writeStyle(
+        page.getStyleInfo, new ByteArrayInputStream(sld.getBytes())
+      )
     } catch {
       case e => throw new WicketRuntimeException(e);
     }

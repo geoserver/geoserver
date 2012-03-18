@@ -1,7 +1,10 @@
 package org.geoserver.community.css.web;
 
 import java.io.File;
+import java.io.IOException;
+import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -23,7 +26,11 @@ public class StylePanel extends Panel {
         super(id, model);
         File cssFile = page.findStyleFile(cssSource);
         if (cssFile != null && cssFile.exists()) {
-            styleBody = ""; // readWholeFile(cssFile);
+            try {
+                styleBody = FileUtils.readFileToString(cssFile);
+            } catch (IOException ioe) {
+                throw new WicketRuntimeException("Error loading CSS: ", ioe);
+            }
         } else {
             styleBody =
                 "No CSS file was found for this style. Please make sure " +
@@ -33,12 +40,13 @@ public class StylePanel extends Panel {
 
         Form styleEditor = new Form("style-editor");
         styleEditor.add(new Label("label", "The stylesheet for this map")); // TODO: i18n
+        PropertyModel<String> styleBodyModel = new PropertyModel(this, "styleBody");
         UpdatingTextArea textArea =
-            new UpdatingTextArea("editor", new PropertyModel(this, "styleBody"), feedback);
+            new UpdatingTextArea("editor", styleBodyModel, feedback);
         textArea.add(new CssValidator());
         styleEditor.add(textArea);
         styleEditor.add(new CssSubmitButton(
-            "submit", styleEditor, page, cssSource, styleBody));
+            "submit", styleEditor, page, cssSource, styleBodyModel));
         AjaxFormValidatingBehavior.addToAllFormComponents(styleEditor, "onkeyup", Duration.ONE_SECOND);
         add(styleEditor);
     }

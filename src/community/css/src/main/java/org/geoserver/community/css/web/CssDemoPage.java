@@ -139,7 +139,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
             tx.transform(style, sldChars);
             return sldChars.toString();
         } catch (Exception e) {
-            throw new WicketRuntimeException(e);
+            throw new WicketRuntimeException("Error while parsing stylesheet [" + css + "] : " + e);
         }
     }
 

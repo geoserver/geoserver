@@ -1,12 +1,12 @@
 package org.geoserver.community.css.web;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -134,9 +134,10 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
             SLDTransformer tx = new org.geotools.styling.SLDTransformer();
             tx.setIndentation(2);
-            ByteArrayOutputStream sldBytes = new java.io.ByteArrayOutputStream();
-            tx.transform(style, sldBytes);
-            return sldBytes.toString();
+            StringWriter sldChars = new java.io.StringWriter();
+            System.out.println(sldChars.toString());
+            tx.transform(style, sldChars);
+            return sldChars.toString();
         } catch (Exception e) {
             throw new WicketRuntimeException(e);
         }
@@ -226,18 +227,23 @@ public class CssDemoPage extends GeoServerSecuredPage {
             public String getObject() {
                 File file = findStyleFile(style.getFilename());
                 if (file != null && file.isFile()) {
+                    BufferedReader reader = null;
                     try {
-                        BufferedReader reader = new BufferedReader(new FileReader(file));
+                        reader = new BufferedReader(new FileReader(file));
                         StringBuilder builder = new StringBuilder();
-                        String line = null;
-                        do {
-                            line = reader.readLine();
-                            builder.append(line);
-                        } while (line != null);
-                        reader.close();
+                        char[] line = new char[4096];
+                        int len = 0;
+                        while ((len = reader.read(line, 0, 4096)) >= 0)
+                            builder.append(line, 0, len);
                         return builder.toString();
                     } catch (IOException e) {
                         throw new WicketRuntimeException(e);
+                    } finally {
+                        try {
+                            if (reader != null) reader.close();
+                        } catch (IOException e) {
+                            throw new WicketRuntimeException(e);
+                        }
                     }
                 } else {
                     return "No SLD file found for this style. One will be generated automatically if you save the CSS.";

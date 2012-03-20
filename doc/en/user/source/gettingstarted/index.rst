@@ -3,7 +3,7 @@
 Getting Started
 ===============
 
-This section of the user guide contains an quick overview of GeoServer to get new users performing common tasks quickly and easily.
+This section contains short tutorials for common tasks in GeoServer, to get new users using the system quickly and easily.
 
 .. toctree::
    :maxdepth: 2

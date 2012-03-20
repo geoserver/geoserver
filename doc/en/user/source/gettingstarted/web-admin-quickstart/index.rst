@@ -4,9 +4,10 @@ Web Administration Interface Quickstart
 =======================================
 
 The *Web Administration Tool* is a web-based application used to configure all aspects of GeoServer, 
-from adding data to changing service settings. 
+from adding and publishing data to changing service settings. 
+
 The web admin tool is accessed via a web browser at ``http://<host>:<port>/geoserver`` 
-( http://localhost:8080/geoserver/web for a default installation on the local host).
+(for a default installation on the local host the link is http://localhost:8080/geoserver/web ).
 When the app starts it displays the public Welcome page.
 
 .. figure:: web-admin.png
@@ -26,7 +27,8 @@ In order to change any server settings or configure data a user must first be au
 
    *Login*
    
-Once logged in, the status screen changes to show all the available admin functions.
+Once logged in, the Welcome screen changes to show the available admin functions. 
+These are available from links under the sections on the left-hand menu.
 
 Server
 ------
@@ -137,17 +139,17 @@ The :guilabel:`Demos` page contains links to example WMS, WCS and WFS requests f
    
    *Demos page*
 
-Layers Preview
+Layer Preview
 --------------
 
-The :guilabel:`Layers Preview` page provides layer views in various output formats, including the common OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.  
+The :guilabel:`Layer Preview` page provides layer previews in various output formats, including the common OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.  
 
 .. figure:: ../../webadmin/images/preview_list.png
    :align: center
    
-   *Layer's Preview page*
+   *Layer Preview page*
 
-Each layer row consists of a :guilabel:`type`, :guilabel:`name`, :guilabel:`title`, and available formats for viewing.  :guilabel:`Name` refers to the Workspace and Layer Name of a layer, while :guilabel:`Title` refers to the brief description configured in the :ref:`edit_layer_data` panel. :guilabel:`Common Formats` include OpenLayers and KML output, while the :guilabel:`All Formats` include additional output formats for further use or data sharing.
+Each layer row consists of a :guilabel:`Type`, :guilabel:`Name`, :guilabel:`Title`, and available formats for viewing.  The :guilabel:`Type` column shows an icon indicating the layer datatype.  :guilabel:`Name` displays the Workspace and Layer Name of a layer, while :guilabel:`Title` displays the brief description configured in the :ref:`edit_layer_data` panel. :guilabel:`Common Formats` include OpenLayers, KML, and GML where applicable, while the :guilabel:`All Formats` include additional output formats for further use or data sharing.
 
 .. figure:: ../../webadmin/images/preview_row.png
    :align: center

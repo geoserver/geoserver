@@ -12,6 +12,7 @@ Welcome to the GeoServer Developer Manual.  The manual is for those who want to 
    quickstart/index
    maven-guide/index
    eclipse-guide/index
+   findbugs-guide/index
    programming-guide/index
    release-guide/index
    release-testing-checklist/index

@@ -753,18 +753,27 @@ public class Dispatcher extends AbstractController {
         throws Throwable {
         Service serviceDescriptor = opDescriptor.getService();
         Object serviceBean = serviceDescriptor.getService();
-        Method operation = opDescriptor.getMethod();
         Object[] parameters = opDescriptor.getParameters();
 
         //step 5: execute
         Object result = null;
-
+        
         try {
-            result = operation.invoke(serviceBean, parameters);
-         } catch (InvocationTargetException e) {
-            if (e.getTargetException() != null) {
-                throw e.getTargetException();
+            if(serviceBean instanceof DirectInvocationService){
+                // invokeDirect expects the operation to be called as declared in the operation
+                // descriptor, although it used to match a method name, lets use the declared
+                // operation name for contract compliance.
+                String operationName = opDescriptor.getId();
+                result = ((DirectInvocationService)serviceBean).invokeDirect(operationName, parameters);
+            }else{
+                Method operation = opDescriptor.getMethod();
+                result = operation.invoke(serviceBean, parameters);
             }
+         } catch (Exception e) {
+            if (e.getCause() != null) {
+                throw e.getCause();
+            }
+            throw e;
         }
 
         return fireOperationExecutedCallback(req, opDescriptor, result);

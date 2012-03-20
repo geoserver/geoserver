@@ -10,15 +10,21 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
+import org.geoserver.platform.Operation;
+import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
+import org.geotools.util.Version;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -354,4 +360,51 @@ public class DispatcherTest extends TestCase {
         dispatcher.handleRequest(request, response);
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatusCode());
     }
+    
+    /**
+     * Assert that if the service bean implements the optional {@link DirectInvocationService}
+     * operation, then the dispatcher executes the operation through its
+     * {@link DirectInvocationService#invokeDirect} method instead of through {@link Method#invoke
+     * reflection}.
+     */
+    public void testDirectInvocationService() throws Throwable {
+
+        URL url = getClass().getResource("applicationContext.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+                url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        final AtomicBoolean invokeDirectCalled = new AtomicBoolean();
+        DirectInvocationService serviceBean = new DirectInvocationService() {
+
+            @Override
+            public Object invokeDirect(String operationName, Object[] parameters)
+                    throws IllegalArgumentException, Exception {
+                invokeDirectCalled.set(true);
+                if ("concat".equals(operationName)) {
+                    String param1 = (String) parameters[0];
+                    String param2 = (String) parameters[1];
+                    return concat(param1, param2);
+                }
+                throw new IllegalArgumentException("Unknown operation name");
+            }
+
+            public String concat(String param1, String param2) {
+                return param1 + param2;
+            }
+        };
+
+        Service service = new Service("directCallService", serviceBean, new Version("1.0.0"),
+                Collections.singletonList("concat"));
+        Method method = serviceBean.getClass().getMethod("concat", String.class, String.class);
+        Object[] parameters = {"p1", "p2"};
+        Operation opDescriptor = new Operation("concat", service, method, parameters);
+
+        Object result = dispatcher.execute(new Request(), opDescriptor);
+        assertEquals("p1p2", result);
+        assertTrue(invokeDirectCalled.get());
+    }
+
 }

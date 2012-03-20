@@ -62,7 +62,7 @@ Create a Data Store
 
     #. Navigate to :menuselection:`Data-->Stores`.
 
-    #. In order to add the nyc_roads Shapefile, we need to create a new Store.  Click on the :guilabel:`Add new store` button.  You will be redirected to a list of the data sources supported by GeoServer.  
+    #. In order to add the nyc_roads Shapefile, you need to create a new Store.  Click on the :guilabel:`Add new store` button.  You will be redirected to a list of the data sources supported by GeoServer.  
 
 	.. figure:: stores_nycroads.png
 	   :align: center

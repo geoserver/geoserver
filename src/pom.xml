@@ -1507,6 +1507,22 @@
       <module>release</module>
     </modules>
   </profile>
+  
+  <profile>
+    <id>findbugs</id>
+    <build> 
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>2.4.0</version>
+          <configuration>
+           <excludeFilterFile>file:${findbugs.excludeFilterFile}</excludeFilterFile>
+          </configuration>
+        </plugin>
+      </plugins>
+    </build> 
+   </profile>
    <profile>
      <id>remoteOwsTests</id>
      <properties>

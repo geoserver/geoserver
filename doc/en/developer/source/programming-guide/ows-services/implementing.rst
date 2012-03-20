@@ -236,14 +236,15 @@ As an alternative to trying the plugin:
 #. Install the web module
 
 #. Copy :file:`<hello module>/target/hello-1.0.jar` to :file:`<web module>/target/geoserver/WEB-INF/lib`:
-  .. code-block:: sh
 
-    [/dev/geoserver/web]% cp ~/hello/target/hello-1.0.jar target/geoserver/WEB-INF/lib
+   .. code-block:: sh
 
-#. Run the exploded war with Jetty::
+     [/dev/geoserver/web]% cp ~/hello/target/hello-1.0.jar target/geoserver/WEB-INF/lib
 
-  .. code-block:: sh
+#. Run the exploded war with Jetty:
 
-    [/dev/geoserver/web]% mvn jetty6:run-exploded
+   .. code-block:: sh
+
+     [/dev/geoserver/web]% mvn jetty6:run-exploded
 
 #. Visit http://localhost:8080/geoserver/ows?request=sayHello&service=hello&version=1.0.0

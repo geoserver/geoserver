@@ -93,7 +93,9 @@ Create a release tag
 
      svn co https://svn.codehaus.org/geoserver/tags/[VERSION] 
 
-   .. warning:: :command:`svn switch` may also be used to switch to the release tag but caution must be taken to switch back to the branch after the release has been performed.
+   .. warning:: 
+      
+      :command:`svn switch` may also be used to switch to the release tag but caution must be taken to switch back to the branch after the release has been performed.
 
 Update version numbers in tag
 -----------------------------

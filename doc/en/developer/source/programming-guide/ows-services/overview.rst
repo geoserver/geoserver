@@ -1,4 +1,4 @@
-.. _ows_services:
+.. _ows_services_overview:
 
 OWS Services Overview
 =====================

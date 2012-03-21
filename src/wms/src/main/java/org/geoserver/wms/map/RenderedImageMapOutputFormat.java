@@ -263,9 +263,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      */
     public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
             throws ServiceException {
-        
-        System.setProperty("tolerance", "0.333");
-
         final MapDecorationLayout layout = findDecorationLayout(mapContent, tiled);
 
         Rectangle paintArea = new Rectangle(0, 0, mapContent.getMapWidth(),

@@ -22,7 +22,7 @@ Maven
 GeoServer uses a tool known as `Maven <http://maven.apache.org/>`_ to build. 
 The current recommended version of Maven is 2.2.1 and is available from 
 `Apache <http://maven.apache.org/download.html>`_. While 2.2.1 is recommended
-any version greather than 2.0.8 should also work.
+any version greater than 2.0.8 should also work.
 
 Maven tracks global settings in your home directory .m2/settings.xml. This file is used to control
 global options such as proxy settings or listing repository mirrors to download from.

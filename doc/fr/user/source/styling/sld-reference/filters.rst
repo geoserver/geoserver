@@ -30,8 +30,8 @@ The above filter selects those features which have a {{NAME}} attribute which ha
    * PropertyIsNotEqualTo
    * PropertyIsLessThan
    * PropertyIsLessThanOrEqualTo
-   * PropertyIsGreatherThan
-   * PropertyIsGreatherThanOrEqualTo
+   * PropertyIsGreaterThan
+   * PropertyIsGreaterThanOrEqualTo
    * PropertyIsBetween
 
 Spatial filters

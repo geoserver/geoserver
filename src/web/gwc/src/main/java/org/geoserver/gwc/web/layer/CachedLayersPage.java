@@ -46,6 +46,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
+import org.geotools.image.io.ImageIOExt;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.mime.MimeType;
@@ -126,6 +127,13 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         dialog.setInitialWidth(360);
         dialog.setInitialHeight(180);
         setHeaderPanel(headerPanel());
+
+        Long imageIOFileCachingThreshold = ImageIOExt.getFilesystemThreshold();
+        if (null == imageIOFileCachingThreshold || 0L >= imageIOFileCachingThreshold.longValue()) {
+            String warningMsg = new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning")
+                    .getObject();
+            super.warn(warningMsg);
+        }
     }
 
     private Component quotaLink(String id, IModel<Quota> quotaModel) {

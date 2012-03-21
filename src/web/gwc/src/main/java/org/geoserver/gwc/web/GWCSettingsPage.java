@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.MapModel;
 import org.geoserver.gwc.GWC;
@@ -30,6 +31,7 @@ import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ImageAjaxLink;
+import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.storage.StorageUnit;
@@ -140,6 +142,16 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
         });
 
+        checkWarnings();
+    }
+
+    private void checkWarnings() {
+        Long imageIOFileCachingThreshold = ImageIOExt.getFilesystemThreshold();
+        if (null == imageIOFileCachingThreshold || 0L >= imageIOFileCachingThreshold.longValue()) {
+            String warningMsg = new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning")
+                    .getObject();
+            super.warn(warningMsg);
+        }
     }
 
     private GWC getGWC() {

@@ -85,6 +85,17 @@ A request timeout is specified with the following syntax::
 
 where ``<seconds>`` is the number of seconds a request can stay queued waiting for execution. If the request does not enter execution before the timeout expires it will be rejected.
 
+Throttling tile requests (WMS-C, TMS, WMTS)
+-------------------------------------------
+GeoWebCache contributes three cached tiles services to GeoServer: WMS-C, TMS, and WMTS. It is also possible to use the
+Control flow module to throttle them, by adding the following rule to the configuration file::
+
+   ows.gwc=<count>
+
+Where ``<count>`` is the maximum number of concurrent tile requests that will be delivered by GeoWebCache at any given time.
+
+Note also that tile request are sensitive to the other rules (user based, ip based, timeout, etc).
+
 A complete example
 ------------------
 
@@ -102,6 +113,10 @@ Assuming the server we want to protect has 4 cores a sample configuration could 
   # don't allow a single user to perform more than 6 requests in parallel
   # (6 being the Firefox default concurrency level at the time of writing)
   user=6
+  # don't allow the execution of more than 16 tile requests in parallel
+  # (assuming a server with 4 cores, GWC empirical tests show that throughput
+  # peaks up at 4 x number of cores. Adjust as appropriate to your system)
+  ows.gwc=16
 
 
 

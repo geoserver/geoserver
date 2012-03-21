@@ -8,6 +8,11 @@ import org.geowebcache.config.XMLConfigurationProvider;
 
 import com.thoughtworks.xstream.XStream;
 
+/**
+ * GWC xml configuration {@link XMLConfigurationProvider contributor} so that GWC knows how to
+ * (x)stream instanceos of {@link GeoServerTileLayerInfo}.
+ * 
+ */
 public class GWCGeoServerConfigurationProvider implements XMLConfigurationProvider {
 
     @Override

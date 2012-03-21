@@ -1,21 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
   <bean id="GWCGeoServerConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerConfigurationProvider">
     <description>
-     XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC
+      XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC
     </description>
   </bean>
   <bean id="GeoSeverTileLayerCatalog" class="org.geoserver.gwc.layer.DefaultTileLayerCatalog">
-    <constructor-arg ref="resourceLoader"/>
-    <constructor-arg ref="gwcXmlConfig"/>
+    <constructor-arg ref="resourceLoader" />
+    <constructor-arg ref="gwcXmlConfig" />
+  </bean>
+
+  <bean id="gwcGeoServervConfigPersister" class="org.geoserver.gwc.config.GWCConfigPersister">
+    <constructor-arg ref="xstreamPersisterFactory" />
+    <constructor-arg ref="resourceLoader">
+      <description>
+        GeoServer's resource loader to locate the root configuration
+        directory where to store gwc-gs.xml
+      </description>
+    </constructor-arg>
+  </bean>
+
+  <bean id="gwcInitializer" class="org.geoserver.gwc.config.GWCInitializer">
+    <constructor-arg ref="gwcGeoServervConfigPersister" />
+    <constructor-arg ref="rawCatalog" />
   </bean>
 
   <bean id="gwcCatalogConfiguration" class="org.geoserver.gwc.layer.CatalogConfiguration">
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="GeoSeverTileLayerCatalog" />
     <constructor-arg ref="gwcGridSetBroker" />
+  </bean>
+
+  <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions">
+    <constructor-arg ref="gwcGeoServervConfigPersister" />
+    <constructor-arg ref="gwcStorageBroker" />
+    <constructor-arg ref="gwcTLDispatcher" />
+    <constructor-arg ref="gwcGridSetBroker" />
+    <constructor-arg ref="gwcTileBreeder" />
+    <constructor-arg ref="DiskQuotaStore" />
+    <constructor-arg ref="DiskQuotaMonitor" />
+    <constructor-arg ref="dispatcher" />
+    <constructor-arg ref="catalog" />
+  </bean>
+
+  <bean id="gwcWMSExtendedCapabilitiesProvider" class="org.geoserver.gwc.wms.CachingExtendedCapabilitiesProvider">
+    <description>
+      When "direct WMS integration" is enabled, contributes the WMS-C internal DTD declarations and TileSet definitions to the WMS
+      capabilities document generator
+    </description>
+    <constructor-arg ref="gwcFacade" />
+  </bean>
+
+  <bean id="gwcTransactionListener" class="org.geoserver.gwc.GWCTransactionListener">
+    <description>
+      Listens to WFS transactions and truncates GWC layer caches based on each transaction's affected bounds
+    </description>
+    <constructor-arg ref="gwcFacade" />
+  </bean>
+
+  <bean id="gwcServiceDispatcherMapping" class="org.geoserver.ows.OWSHandlerMapping">
+    <description>
+      Redirects requests to gwc services to the GeoServer Dispatcher
+    </description>
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="mappings">
+      <props>
+        <prop key="/gwc/service/**">dispatcher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="GwcServiceDispatcherCallback" class="org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback">
+    <description>
+      Catches up GeoServer Dispatcher request processing callbacks and
+      adapts them to be resolved to the GWC proxy service
+    </description>
+  </bean>
+
+  <bean id="GWCDispatcherProxyService" class="org.geoserver.gwc.dispatch.GwcServiceProxy">
+    <description>
+    </description>
+  </bean>
+
+  <bean id="GwcResponseProxy" class="org.geoserver.gwc.dispatch.GwcResponseProxy">
+    <description>
+    </description>
+  </bean>
+
+  <bean id="gwcServiceProxyDescriptor" class="org.geoserver.platform.Service">
+    <description>
+      GeoServer Dispatcher framework service descriptor that englobes all gwc provided (and proxied) service requests
+      as a reques to the
+      "fake" "gwc" service
+    </description>
+    <constructor-arg index="0" value="gwc" />
+    <constructor-arg index="1" ref="GWCDispatcherProxyService" />
+    <constructor-arg index="2" value="1.0.0" />
+    <constructor-arg index="3">
+      <list>
+        <value>dispatch</value>
+      </list>
+    </constructor-arg>
   </bean>
 
 </beans>

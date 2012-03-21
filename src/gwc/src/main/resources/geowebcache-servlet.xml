@@ -25,7 +25,7 @@
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">
       <props> 
-        <prop key="/gwc/service/**">geowebcacheDispatcher</prop>
+        <!-- prop key="/gwc/service/**">geowebcacheDispatcher</prop-->
         <prop key="/gwc/demo/**">geowebcacheDispatcher</prop>
 	    <prop key="/gwc/proxy/**">gwcProxyDispatcher</prop>
 	    <prop key="/gwc/**">geowebcacheDispatcher</prop>

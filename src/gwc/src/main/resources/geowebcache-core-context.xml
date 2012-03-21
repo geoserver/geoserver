@@ -36,7 +36,7 @@
     </constructor-arg>
     <constructor-arg>
       <description>Max number of connections in the pool</description>
-      <value>15</value>
+      <value>150</value>
     </constructor-arg>
   </bean>
   

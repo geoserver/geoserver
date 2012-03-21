@@ -8,6 +8,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -250,6 +252,19 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         assertNull( catalog.getLayerByName("sf:states"));
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
+    }
+    
+    public void testResourceLink() throws Exception {
+        addLayer();
+         
+        Document doc = getAsDOM( "/rest/layers/states.xml");
+        
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String resourceUrl = xpath.evaluate("//atom:link/@href", doc);
+        resourceUrl = resourceUrl.substring(resourceUrl.indexOf("/rest"));
+        
+        doc = getAsDOM(resourceUrl);
+        assertXpathEvaluatesTo("states", "/wmsLayer/name", doc);
     }
 
 }

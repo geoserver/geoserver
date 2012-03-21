@@ -25,11 +25,13 @@ Request information can be returned in CSV format, for easier post-processing::
 
   GET http://localhost:8080/geoserver/rest/monitor/requests.csv
 
-Requests during a specified time period
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Requests can be filtered by time range::
+Requests during a time period
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requests can be filtered by date and time range::
 
   GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20&to=2010-07-20
+  
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20T2:00:00&to=2010-06-20T16:00:00
 
 Request set paging
 ^^^^^^^^^^^^^^^^^^
@@ -40,7 +42,7 @@ Large result sets can be paged over multiple queries::
   GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=200
   GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=300
   
-Single Request
+Single request
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 An individual request can be retrieved by specifying its ID::
 
@@ -53,8 +55,8 @@ API Reference
 
 There are two kinds of query: one for single requests, and one for sets of requests. 
 
-Query a Single Request
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Single Request Query
+^^^^^^^^^^^^^^^^^^^^
 
 A query for a single request record has the structure::
 
@@ -79,8 +81,8 @@ and ``format`` specifies the representation of the returned result as one of:
    for more information about the ``Accept`` header.
 
 
-Query a Set of Requests
-^^^^^^^^^^^^^^^^^^^^^^^
+Request Set Query
+^^^^^^^^^^^^^^^^^
 
 The structure of a query for a set of requests is::
 
@@ -93,8 +95,8 @@ The request set query accepts various parameters
 that control what requests are returned and how they are sorted. 
 The available parameters are: 
 
-count
-^^^^^
+count Parameter
+^^^^^^^^^^^^^^^
 
 Specifies how many records should be returned.
 
@@ -107,8 +109,8 @@ Specifies how many records should be returned.
    * - ``count=<integer>``
      - requests.html?count=100
 
-offset
-^^^^^^
+offset Parameter
+^^^^^^^^^^^^^^^^
 
 Specifies where in the result set records should be returned from.
 
@@ -121,8 +123,8 @@ Specifies where in the result set records should be returned from.
    * - ``offset=<integer>``
      - requests.html?count=100&offset=500
 
-live
-^^^^
+live Parameter
+^^^^^^^^^^^^^^
 
 Specifies that only live (currently executing) requests be returned.
 
@@ -138,8 +140,8 @@ Specifies that only live (currently executing) requests be returned.
 This parameter relies on a :ref:`monitor_mode` being used that maintains real time 
 request information (either **live** or **mixed**).
 
-from
-^^^^
+from Parameter
+^^^^^^^^^^^^^^
 
 Specifies an inclusive lower bound on the timestamp for the start of a request.
 The timestamp can be specified to any desired precision.
@@ -155,8 +157,8 @@ The timestamp can be specified to any desired precision.
    * - 
      - requests.html?from=2010-07-23
 
-to
-^^
+to Parameter
+^^^^^^^^^^^^^
 
 Specifies an inclusive upper bound on the timestamp for the start of a request.
 The timestamp can be specified to any desired precision.
@@ -172,8 +174,8 @@ The timestamp can be specified to any desired precision.
    * - 
      - requests.html?to=2010-07-24
 
-order
-^^^^^
+order Parameter
+^^^^^^^^^^^^^^^
 
 Specifies which request attribute to sort by, and optionally specifies the sort direction.
 

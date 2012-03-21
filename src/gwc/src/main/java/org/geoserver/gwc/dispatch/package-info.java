@@ -1,7 +1,5 @@
-package org.geoserver.gwc.dispatch;
-
 /**
- * Classes to integrate GWC service requests with the GeoServer {@link org.geoserver.ows.Dispatcher} framework
+ * Classes to integrate GWC service requests with the GeoServer {@link org.geoserver.ows.Dispatcher} framework.
  * <p>
  * How the GWC service request processing is modified to engage into the {@link org.geoserver.ows.Dispatcher}
  * life cycle: 
@@ -26,4 +24,4 @@ package org.geoserver.gwc.dispatch;
  * by the configured {@link org.geoserver.ows.Response} object of type {@link org.geoserver.gwc.dispatch.GwcResponseProxy}. 
  * </ul> 
  */
-
+package org.geoserver.gwc.dispatch;

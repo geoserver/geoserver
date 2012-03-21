@@ -12,6 +12,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
 import org.restlet.Context;
@@ -115,6 +116,10 @@ public class LayerResource extends AbstractCatalogResource {
                     else if ( r instanceof CoverageInfo ) {
                         link.append( "coveragestores/").append( encode(r.getStore().getName()) )
                             .append( "/coverages/");
+                    }
+                    else if ( r instanceof WMSLayerInfo ) {
+                        link.append( "wmsstores/").append( encode(r.getStore().getName()) )
+                            .append( "/wmslayers/");
                     }
                     else {
                         return;

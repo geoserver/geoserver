@@ -1199,8 +1199,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         handleBBox(tbbox, crs);
                     } 
                     catch(Exception e) {
-                        LOGGER.warning(String.format("Unable to transform bounding box for layer" +
-                            " '%s' to %s", layer.getName(), crs));
+                        LOGGER.warning(String.format("Unable to transform bounding box for '%s' layer" +
+                                " to %s", layer != null ? layer.getName() : "root", srs));
                         if (LOGGER.isLoggable(Level.FINE)) {
                             LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
                         }

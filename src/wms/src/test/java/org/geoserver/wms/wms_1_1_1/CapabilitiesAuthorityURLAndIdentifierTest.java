@@ -69,12 +69,13 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
 
     public void testLayer() throws Exception {
 
-        String layerName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        LayerInfo layer = getCatalog().getLayerByName(layerName);
+        String layerId = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
         addAuthUrl("layerAuth1", "http://geoserver/wms/auth1", layer.getAuthorityURLs());
         addIdentifier("layerAuth1", "layerId1", layer.getIdentifiers());
         getCatalog().save(layer);
 
+        String layerName = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
         Document doc = getAsDOM(
                 "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
                 true);
@@ -86,7 +87,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
 
         assertXpathExists(
                 "//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']", doc);
-        assertXpathEvaluatesTo("layerId1", "//Layer[Name='" + layerName
+        assertXpathEvaluatesTo("layerId1", "//Layer[Name='" + layerName 
                 + "']/Identifier[@authority = 'layerAuth1']", doc);
     }
 

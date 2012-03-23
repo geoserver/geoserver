@@ -103,6 +103,10 @@ public class LayerInfoImpl implements LayerInfo {
         resource.setName(name);
     }
 
+    public String prefixedName() {
+        return this.getResource().getStore().getWorkspace().getName() + ":" + getName();
+    }
+
     public Type getType() {
         return type;
     }
@@ -343,4 +347,5 @@ public class LayerInfoImpl implements LayerInfo {
     public void setIdentifiers(List<LayerIdentifierInfo> identifiers){
         this.identifiers = identifiers;
     }
+
 }

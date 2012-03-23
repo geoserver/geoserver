@@ -5,17 +5,19 @@
 package org.geoserver.catalog.impl;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.LocalWorkspaceCatalogFilter;
+import org.geotools.feature.NameImpl;
+import org.opengis.feature.type.Name;
 
 /**
  * Catalog decorator handling cases when a {@link LocalWorkspace} is set.
@@ -41,6 +43,83 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             }
         }
         return super.getStyleByName(name);
+    }
+
+
+    @Override
+    public LayerInfo getLayer(String id) {
+        return wrap(super.getLayer(id));
+    }
+
+    @Override
+    public LayerInfo getLayerByName(String name) {
+        if (LocalWorkspace.get() != null) {
+            String wsName = LocalWorkspace.get().getName();
+
+            //prefix the unqualified name
+            if (name.contains(":")) {
+                //name already prefixed, ensure it is prefixed with the correct one
+                if (name.startsWith(wsName+":")) {
+                    //good to go, just pass call through
+                    return wrap(super.getLayerByName(name));
+                }
+                else {
+                    //JD: perhaps strip of existing prefix?
+                }
+            }
+
+            //prefix it explicitly
+            NamespaceInfo ns = super.getNamespaceByPrefix(LocalWorkspace.get().getName());
+            LayerInfo layer = super.getLayerByName(new NameImpl(ns.getURI(), name));
+            return wrap(layer);
+        }
+        return super.getLayerByName(name);
+    }
+
+    @Override
+    public LayerInfo getLayerByName(Name name) {
+        return getLayerByName(name.getLocalPart());
+    }
+
+    @Override
+    public List<LayerInfo> getLayers() {
+        if (LocalWorkspace.get() != null) {
+            return NameDequalifyingProxy.createList(super.getLayers(), LayerInfo.class);
+        }
+        return super.getLayers();
+    }
+
+    @Override
+    public void add(LayerInfo layer) {
+        super.add(unwrap(layer));
+    }
+
+    @Override
+    public void save(LayerInfo layer) {
+        super.save(unwrap(layer));
+    }
+
+    @Override
+    public void remove(LayerInfo layer) {
+        super.remove(unwrap(layer));
+    }
+
+    @Override
+    public LayerInfo detach(LayerInfo layer) {
+        return super.detach(unwrap(layer));
+    }
+
+    @Override
+    public List<RuntimeException> validate(LayerInfo layer, boolean isNew) {
+        return super.validate(unwrap(layer), isNew);
+    }
+
+    LayerInfo wrap(LayerInfo layer) {
+        return wrap(layer, LayerInfo.class);
+    }
+
+    LayerInfo unwrap(LayerInfo layer) {
+        return NameDequalifyingProxy.unwrap(layer);
     }
 
     @Override
@@ -121,18 +200,23 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         return super.validate(unwrap(layerGroup), isNew);
     }
 
+    
     LayerGroupInfo wrap(LayerGroupInfo layerGroup) {
-        if (layerGroup == null) {
+        return wrap(layerGroup, LayerGroupInfo.class);
+    }
+
+    <T> T wrap(T obj, Class<T> clazz) {
+        if (obj == null) {
             return null;
         }
         if (LocalWorkspace.get() != null) {
-            return NameDequalifyingProxy.create(layerGroup, LayerGroupInfo.class);
+            return NameDequalifyingProxy.create(obj, clazz);
         }
-        return layerGroup;
+        return obj;
     }
-
-    LayerGroupInfo unwrap(LayerGroupInfo layerGroup) {
-        return NameDequalifyingProxy.unwrap(layerGroup);
+    
+    <T> T unwrap(T obj) {
+        return NameDequalifyingProxy.unwrap(obj);
     }
 
     List<LayerGroupInfo> wrap(List<LayerGroupInfo> layerGroups) {
@@ -157,9 +241,9 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
-            
             if ("prefixedName".equals(method.getName()) || 
-                "getPrefixedName".equals(method.getName())) {
+                "getPrefixedName".equals(method.getName()) || 
+                "getName".equals(method.getName())) {
                 String val = (String) method.invoke(object, args);
                 if (val == null || val.indexOf(':') == -1) {
                     return val;

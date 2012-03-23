@@ -59,7 +59,19 @@ public interface LayerInfo extends CatalogInfo {
      * Sets the name of the layer.
      */
     void setName( String name );
-    
+
+    /**
+     * The derived prefixed name of the layer.
+     * <p>
+     * If a workspace is set for the layer this method returns:
+     * <pre>
+     *   getWorkspace().getName() + ":" + getName();
+     * </pre>
+     * Otherwise it simply returns: <pre>getName()</pre>
+     * </p>
+     */
+    String prefixedName();
+
     /**
      * The type of the layer.
      */

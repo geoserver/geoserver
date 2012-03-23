@@ -12,6 +12,7 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 
 /**
@@ -44,6 +45,10 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
 
     public String getName() {
         return delegate.getName();
+    }
+
+    public String prefixedName() {
+        return delegate.prefixedName();
     }
 
     public String getPath() {

@@ -29,9 +29,9 @@ public class CapabilitiesBBOXForEachCRSTest extends WMSTestSupport {
     public void testBBOXForEachCRS() throws Exception {
         Document doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
-        String layer = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        assertXpathExists("//wms:Layer[wms:Name='"+layer+"']/wms:BoundingBox[@CRS = 'EPSG:4326']", doc);
-        assertXpathNotExists("//wms:Layer[wms:Name='"+layer+"']/wms:BoundingBox[@CRS = 'EPSG:3005']", doc);
+        String layer = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
+        assertXpathExists("//wms:Layer[wms:Name='"+ layer+"']/wms:BoundingBox[@CRS = 'EPSG:4326']", doc);
+        assertXpathNotExists("//wms:Layer[wms:Name='"+ layer+"']/wms:BoundingBox[@CRS = 'EPSG:3005']", doc);
         
         addSRSAndSetFlag();
         doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.3.0", true);

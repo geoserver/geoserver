@@ -29,7 +29,7 @@ public class CapabilitiesBBOXForEachCRSTest extends WMSTestSupport {
     public void testBBOXForEachCRS() throws Exception {
         Document doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0", true);
 
-        String layer = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+        String layer = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
         assertXpathExists("//Layer[Name='"+layer+"']/BoundingBox[@SRS = 'EPSG:4326']", doc);
         assertXpathNotExists("//Layer[Name='"+layer+"']/BoundingBox[@SRS = 'EPSG:3005']", doc);
         

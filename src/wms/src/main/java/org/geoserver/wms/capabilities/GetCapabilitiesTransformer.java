@@ -797,7 +797,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
             
             start("Layer", qatts);
-            element("Name", layer.getResource().getNamespace().getPrefix() + ":" + layer.getName());
+            element("Name", layer.prefixedName());
             // REVISIT: this is bad, layer should have title and anbstract by itself
             element("Title", layer.getResource().getTitle());
             element("Abstract", layer.getResource().getAbstract());

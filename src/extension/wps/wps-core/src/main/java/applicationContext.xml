@@ -22,9 +22,24 @@
     </bean>
 
     <!-- WPS Service -->
-    <bean id="wpsService" class="org.geoserver.wps.DefaultWebProcessingService">
+    <bean id="wpsServiceTarget" class="org.geoserver.wps.DefaultWebProcessingService">
         <constructor-arg ref="geoServer" />
         <constructor-arg ref="executionManager" />
+    </bean>
+    
+    <bean id="wpsLogger" class="org.geoserver.ows.util.EMFLogger">
+      <constructor-arg type="java.lang.String" value="org.geoserver.wps"/>
+    </bean>
+    <bean id="wpsService" class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+        <value>org.geoserver.wps.WebProcessingService</value>
+      </property>
+      <property name="interceptorNames">
+        <list>
+          <value>wpsLogger</value>
+          <value>wpsServiceTarget</value>
+        </list>
+      </property>
     </bean>
 
     <!-- Service Descriptor(s) -->

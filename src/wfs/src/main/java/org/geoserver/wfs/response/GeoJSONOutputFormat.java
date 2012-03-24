@@ -231,7 +231,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
             }
 
             // Bounding box for featurecollection
-            if (hasGeom) {
+            if (hasGeom && featureBounding) {
                 ReferencedEnvelope e = null;
                 for (int i = 0; i < resultsList.size(); i++) {
                     FeatureCollection collection = (FeatureCollection) resultsList

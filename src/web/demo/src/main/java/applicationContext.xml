@@ -41,4 +41,11 @@
     <property name="descriptionKey" value="SRSListPage.shortDescription"/>
     <property name="componentClass" value="org.geoserver.web.demo.SRSListPage"/>
   </bean>
+  
+  <bean id="reprojectionConsole" class="org.geoserver.web.DemoLinkInfo">
+    <property name="id" value="reprojectionConsole"/>
+    <property name="titleKey" value="ReprojectPage.title"/>
+    <property name="descriptionKey" value="ReprojectPage.description"/>
+    <property name="componentClass" value="org.geoserver.web.demo.ReprojectPage"/>
+  </bean>
 </beans>

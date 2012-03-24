@@ -88,7 +88,11 @@
                 <ogc:Literal>1.0</ogc:Literal>
               </sld:CssParameter>
             </sld:Fill>
-            <sld:VendorOption name="spaceAround">2</sld:VendorOption>
+            <sld:Priority>2000</sld:Priority>
+            <sld:VendorOption name="spaceAround">5</sld:VendorOption>
+            <sld:VendorOption name="autoWrap">80</sld:VendorOption>
+            <sld:VendorOption name="maxDisplacement">10</sld:VendorOption>
+            <sld:VendorOption name="goodnessOfFit">0.3</sld:VendorOption>
           </sld:TextSymbolizer>
         </sld:Rule>
       </sld:FeatureTypeStyle>

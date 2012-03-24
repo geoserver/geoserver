@@ -134,6 +134,8 @@ public class CRSPanel extends FormComponentPanel {
                     wktLink.setEnabled(false);
                 }
                 target.addComponent(wktLink);
+                
+                onSRSUpdated(toSRS(crs), target);
             }
         });
         
@@ -198,6 +200,16 @@ public class CRSPanel extends FormComponentPanel {
         setConvertedInput( crs );
     }
     
+    
+    /**
+     * Subclasses can override to perform custom behaviors when the SRS is updated, which happens
+     * either when the text field is left or when the find dialog returns
+     * @param target 
+     */
+    protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
+        // do nothing by default
+    }
+    
     /**
      * Sets the panel to be read only.
      */
@@ -229,8 +241,12 @@ public class CRSPanel extends FormComponentPanel {
      */
     String toSRS( CoordinateReferenceSystem crs ) {
         try {
-            Integer epsgCode = CRS.lookupEpsgCode(crs, false);
-            return epsgCode != null ? "EPSG:" + epsgCode : "UNKNOWN";
+            if(crs != null) {
+                Integer epsgCode = CRS.lookupEpsgCode(crs, false);
+                return epsgCode != null ? "EPSG:" + epsgCode : "UNKNOWN";
+            } else {
+                return "UNKNOWN";
+            }
         } 
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Could not succesffully lookup an EPSG code", e);
@@ -270,6 +286,8 @@ public class CRSPanel extends FormComponentPanel {
                 wktLabel.setDefaultModelObject( crs.getName().toString() );
                 wktLink.setEnabled(true);
                 target.addComponent( wktLink );
+                
+                onSRSUpdated(srs, target);
             }
         };
         srsList.setCompactMode(true);

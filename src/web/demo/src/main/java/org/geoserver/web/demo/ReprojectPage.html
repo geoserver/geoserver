@@ -1,0 +1,32 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+    <li>
+      <label for="sourceCRS"><wicket:message key="sourceCRS">sourceCRS</wicket:message></label>
+      <span id="sourceCRS" wicket:id="sourceCRS"></span>
+    </li>
+    <li>
+      <label for="targetCRS"><wicket:message key="targetCRS">targetCRS</wicket:message></label>
+      <span id="targetCRS" wicket:id="targetCRS"></span>
+    </li>
+    <li>
+    	<a wicket:id="wkt" href="#">Show transformation details</a>
+    </li>
+    <li>
+      <label for="sourceGeom"><wicket:message key="sourceGeom">sourceGeom</wicket:message></label>
+      <textarea id="sourceGeom" style="height: 2em; width: 55em" wicket:id="sourceGeom"></textarea><br/>
+      <a href="#" wicket:id="forward"><wicket:message key="forward">forward</wicket:message></a>
+    </li>
+    <li>
+      <label for="targetGeom"><wicket:message key="targetGeom">targetGeom</wicket:message></label>
+      <textarea id="targetGeom" style="height: 2em; width: 55em" wicket:id="targetGeom"></textarea><br/>
+      <a href="#" wicket:id="backward"><wicket:message key="backward">backward</wicket:message></a>
+    </li>
+  </ul>
+</form>
+  <div wicket:id="popup"></div>
+</wicket:extend>
+</body>
+</html>

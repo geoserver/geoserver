@@ -81,15 +81,15 @@
                     <ogc:Literal>0.0</ogc:Literal>
                   </sld:AnchorPointX>
                   <sld:AnchorPointY>
-                    <ogc:Literal>0.0</ogc:Literal>
+                    <ogc:Literal>0.5</ogc:Literal>
                   </sld:AnchorPointY>
                 </sld:AnchorPoint>
                 <sld:Displacement>
                   <sld:DisplacementX>
-                    <ogc:Literal>0</ogc:Literal>
+                    <ogc:Literal>7</ogc:Literal>
                   </sld:DisplacementX>
                   <sld:DisplacementY>
-                    <ogc:Literal>0</ogc:Literal>
+                    <ogc:Literal>-2</ogc:Literal>
                   </sld:DisplacementY>
                 </sld:Displacement>
                 <sld:Rotation>
@@ -105,7 +105,9 @@
                 <ogc:Literal>1.0</ogc:Literal>
               </sld:CssParameter>
             </sld:Fill>
-            <sld:VendorOption name="spaceAround">2</sld:VendorOption>
+            <sld:VendorOption name="spaceAround">5</sld:VendorOption>
+            <sld:VendorOption name="autoWrap">100</sld:VendorOption>
+            <sld:VendorOption name="maxDisplacement">10</sld:VendorOption>
           </sld:TextSymbolizer>
         </sld:Rule>
       </sld:FeatureTypeStyle>

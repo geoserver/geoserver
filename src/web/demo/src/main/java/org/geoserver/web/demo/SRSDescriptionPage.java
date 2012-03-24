@@ -11,12 +11,12 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
+import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geotools.referencing.CRS;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
@@ -173,6 +173,10 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
         Image aovMap = new Image("aovMap", new DynamicCrsMapResource(mapCrs));
         add(aovMap);
+        
+        // link with the reprojection console
+        add(new SimpleBookmarkableLink("reprojectFrom", ReprojectPage.class, new ParamResourceModel("reprojectFrom", this, code), "fromSRS", code));
+        add(new SimpleBookmarkableLink("reprojectTo", ReprojectPage.class, new ParamResourceModel("reprojectTo", this, code), "toSRS", code));
     }
 
     private double getMaxResolution(final double w, final double h) {

@@ -223,6 +223,8 @@ class CRSAreaOfValidityMapBuilder {
         renderingHints.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, Boolean.TRUE);
         renderer.setRendererHints(renderingHints);
         renderer.paint(graphics, paintArea, areaOfInterest);
+        
+        mapContent.dispose();
     }
 
     private SimpleFeature createCrsBoundsFeature(Geometry geom, CoordinateReferenceSystem crs) {

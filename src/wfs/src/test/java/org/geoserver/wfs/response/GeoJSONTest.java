@@ -5,9 +5,12 @@ import java.io.File;
 import junit.framework.Test;
 import junit.textui.TestRunner;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -20,7 +23,8 @@ public class GeoJSONTest extends WFSTestSupport {
     public static Test suite() {
         return new OneTimeTestSetup(new GeoJSONTest());
     }
-    
+
+       
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
@@ -30,6 +34,43 @@ public class GeoJSONTest extends WFSTestSupport {
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
     }
 	
+    
+    
+    public void testFeatureBoundingDisabledCollection() throws Exception {
+    	/* In GML we have the option not to compute the bounds in the response, 
+    	 * and by default we don't, but GeoServer can be configured to return 
+    	 * the bounds, in that case it will issue a bounds query against the store, 
+    	 * which might take a long time (that depends a lot on what the store can do, 
+    	 * some can compute it quickly, no idea what SDE).
+    	 * For GeoJSON it seems that the "feature bounding" flag is respected 
+    	 * for the single feature bounds, but not for the collection.
+    	 * Looking at the spec ( http://geojson.org/geojson-spec.html ) it seems to 
+    	 * me the collection bbox is not required:
+    	 * "To include information on the coordinate range for geometries, features, 
+    	 * or feature collections, a GeoJSON object may have a member named "bbox""
+    	 * disable Feature bounding */
+        
+    	GeoServer gs = getGeoServer();
+        
+        WFSInfo wfs = getWFS();
+        boolean before = wfs.isFeatureBounding();
+        wfs.setFeatureBounding(false);
+        try {
+            gs.save( wfs );
+             
+        	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:AggregateGeoFeature&maxfeatures=3&outputformat=json");
+        	JSONObject rootObject = JSONObject.fromObject( out );
+         	
+        	JSONObject bbox = rootObject.getJSONObject("bbox");
+        	assertEquals(JSONNull.getInstance(), bbox);
+        } finally {
+        	wfs.setFeatureBounding(before);
+            gs.save( wfs );
+        }
+    	
+    }
+    
+    
     public void testGet() throws Exception {	
     	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat=json");
     	

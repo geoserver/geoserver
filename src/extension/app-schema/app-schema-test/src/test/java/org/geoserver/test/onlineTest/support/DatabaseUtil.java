@@ -272,7 +272,7 @@ public class DatabaseUtil {
         INSERT("Insert", ");"), CREATE_OR_REPLACE_PROCEDURE("CREATE OR REPLACE PROCEDURE", "/"), CALL(
                 "CALL", ";"), DELETE("DELETE", ";"), CREATE_TABLE("CREATE TABLE", ";"), CREATE_OR_REPLACE_FORCE_VIEW(
                 "CREATE OR REPLACE FORCE VIEW", ";"), REM("REM", ";"), CREATE_INDEX("CREATE INDEX",
-                ";"), DECLARE("declare", "/"), COMMIT("COMMIT", ";");
+                ";"), DECLARE("declare", "/"), COMMIT("COMMIT", ";"), ALTER("ALTER TABLE",");");
 
         private String prefix;
 

@@ -45,7 +45,7 @@ public abstract class AbstractResource extends Resource {
     /**
      * list of formats used to read and write representations of the resource.
      */
-    protected Map<MediaType,DataFormat> formats;
+    protected volatile Map<MediaType,DataFormat> formats;
     
     /**
      * Constructs a new resource from context, request, and response.

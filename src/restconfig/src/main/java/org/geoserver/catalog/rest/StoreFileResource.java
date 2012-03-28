@@ -139,7 +139,12 @@ public abstract class StoreFileResource extends Resource {
             //rename to .zip if need be
             if ( !uploadedFile.getName().endsWith( ".zip") ) {
                 File newUploadedFile = new File( uploadedFile.getParentFile(), FilenameUtils.getBaseName(uploadedFile.getAbsolutePath()) + ".zip" );
-                uploadedFile.renameTo( newUploadedFile );
+                String oldFileName = uploadedFile.getName();
+                if (!uploadedFile.renameTo( newUploadedFile )) {
+                    String errorMessage = "Error renaming zip file from " + oldFileName
+                            + " -> " + newUploadedFile.getName();
+                    throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL);
+                }
                 uploadedFile = newUploadedFile;
             }
             //unzip the file 
@@ -174,14 +179,10 @@ public abstract class StoreFileResource extends Resource {
      * @return
      */
     protected File findPrimaryFile(File directory, String format) {
-        File[] files = directory.listFiles();
-        
-        Iterator f = FileUtils.listFiles(directory, new String[]{ format }, false ).iterator(); f.hasNext();
-        if ( f.hasNext() ) {
-            //assume the first
-            return (File) f.next();
+        for (File f : FileUtils.listFiles(directory, new String[] { format }, false)) {
+            // assume the first
+            return f;
         }
-        
         return null;
     }
 

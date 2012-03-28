@@ -33,9 +33,9 @@ import com.noelios.restlet.ext.servlet.ServletConverter;
  */
 public class RESTDispatcher extends AbstractController {
     /** HTTP method "PUT" */
-    public static String METHOD_PUT = "PUT";
+    public static final String METHOD_PUT = "PUT";
     /** HTTP method "DELETE" */
-    public static String METHOD_DELETE = "DELETE";
+    public static final String METHOD_DELETE = "DELETE";
     
     /**
      * logger

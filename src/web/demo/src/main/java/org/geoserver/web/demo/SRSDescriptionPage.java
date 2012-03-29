@@ -67,7 +67,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
         InternationalString scope = null;
         InternationalString remarks = null;
-        String aovCoords = "";
+        StringBuilder aovCoords = new StringBuilder();
         String areaOfValidity = "";
         this.jsBbox = "null";
         this.jsSrs = code;
@@ -98,7 +98,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 Collection<? extends GeographicExtent> geographicElements = domainOfValidity
                         .getGeographicElements();
                 for (GeographicExtent ex : geographicElements) {
-                    aovCoords += " " + ex;
+                    aovCoords.append(" ").append(ex);
                 }
                 // Envelope envelope = CRS.getEnvelope(crs);
                 // jsBbox = "[" + envelope.getMinimum(0) + "," + envelope.getMinimum(1) + ","
@@ -168,7 +168,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         add(new Label("crsScope", scope == null ? "-" : scope.toString(locale)));
         add(new Label("crsRemarks", remarks == null ? "-" : remarks.toString(locale)));
         add(new Label("wkt", wkt));
-        add(new Label("aovCoords", aovCoords));
+        add(new Label("aovCoords", aovCoords.toString()));
         add(new Label("aovDescription", areaOfValidity));
 
         Image aovMap = new Image("aovMap", new DynamicCrsMapResource(mapCrs));

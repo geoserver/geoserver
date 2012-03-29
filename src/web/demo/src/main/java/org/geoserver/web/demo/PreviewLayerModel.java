@@ -13,7 +13,6 @@ import org.geoserver.web.GeoServerApplication;
  */
 @SuppressWarnings("serial")
 class PreviewLayerModel extends LoadableDetachableModel {
-    PreviewLayer layer;
     String id;
     boolean group;
     

@@ -30,7 +30,6 @@ Requests during a time period
 Requests can be filtered by date and time range::
 
   GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20&to=2010-07-20
-  
   GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20T2:00:00&to=2010-06-20T16:00:00
 
 Request set paging

@@ -11,7 +11,7 @@ To check out the development / trunk version::
 
 To check out the stable / branch version::
 
-  svn co http://svn.codehaus.org/geoserver/branches/1.7.x geoserver 
+  svn co http://svn.codehaus.org/geoserver/branches/2.1.x geoserver 
 
 .. warning::
 

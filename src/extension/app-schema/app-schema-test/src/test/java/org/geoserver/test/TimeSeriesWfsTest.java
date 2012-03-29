@@ -83,20 +83,13 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                         + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
                 doc);
 
-        String[] expectedList = StringUtils
-                .delimitedListToStringArray(
-                        "1948-01 1948-02 1948-03 1948-04 1948-05 1948-06 1948-07 1948-08 1948-09 1948-10 1948-11 1948-12 1949-01 1949-02 1949-03 1949-04",
-                        " ");
-        String[] encodedList = StringUtils
-                .delimitedListToStringArray(
-                        evaluate(
-                                "//csml:PointSeriesFeature[@gml:id='"
-                                        + id
-                                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
-                                doc), " ");
-        // order might be different in oracle
-        assertEquals(expectedList.length, encodedList.length);
-        assertTrue(Arrays.asList(expectedList).containsAll(Arrays.asList(encodedList)));
+        assertXpathEvaluatesTo(
+                "1948-01-01 1948-02-01 1948-03-01 1948-04-01 1948-05-01 1948-06-01 1948-07-01 1948-08-01 1948-09-01 1948-10-01"
+                + " 1948-11-01 1948-12-01 1949-01-01 1949-02-01 1949-03-01 1949-04-01",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + id
+                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
+                doc);
 
         // quantityList
         assertXpathCount(1, "//csml:PointSeriesFeature[@gml:id='" + id
@@ -118,20 +111,12 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                         + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
                 doc);
 
-        expectedList = StringUtils
-                .delimitedListToStringArray(
-                        "missing missing 8.9 7.9 14.2 15.4 18.1 19.1 21.7 20.8 19.6 14.9 10.8 8.8 8.5 10.4",
-                        " ");
-        encodedList = StringUtils
-                .delimitedListToStringArray(
-                        evaluate(
-                                "//csml:PointSeriesFeature[@gml:id='"
-                                        + id
-                                        + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
-                                doc), " ");
-        // order might be different in oracle
-        assertEquals(expectedList.length, encodedList.length);
-        assertTrue(Arrays.asList(expectedList).containsAll(Arrays.asList(encodedList)));
+        assertXpathEvaluatesTo(
+                "7.9 8.5 8.8 8.9 10.4 10.8 14.2 14.9 15.4 18.1 19.1 19.6 20.8 21.7 missing missing",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + id
+                        + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
+                doc);
 
         assertXpathEvaluatesTo(
                 "degC",
@@ -186,20 +171,13 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                         + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
                 doc);
 
-        String[] expectedList = StringUtils
-                .delimitedListToStringArray(
-                        "1949-05 1949-06 1949-07 1949-08 1949-09 1949-10 1949-11 1949-12 1950-01 1950-02 1950-03 1950-04 1950-05 1950-06 1950-07 1950-08 1950-09 1950-10 1950-11 1950-12",
-                        " ");
-        String[] encodedList = StringUtils
-                .delimitedListToStringArray(
-                        evaluate(
-                                "//csml:PointSeriesFeature[@gml:id='"
-                                        + id
-                                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
-                                doc), " ");
-        // order might be different in oracle
-        assertEquals(expectedList.length, encodedList.length);
-        assertTrue(Arrays.asList(expectedList).containsAll(Arrays.asList(encodedList)));
+        assertXpathEvaluatesTo(
+                "1949-05-01 1949-06-01 1949-07-01 1949-08-01 1949-09-01 1949-10-01 1949-11-01 1949-12-01 1950-01-01 1950-02-01"
+                + " 1950-03-01 1950-04-01 1950-05-01 1950-06-01 1950-07-01 1950-08-01 1950-09-01 1950-10-01 1950-11-01 1950-12-01",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + id
+                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
+                doc);
         // quantityList
         assertXpathCount(1, "//csml:PointSeriesFeature[@gml:id='" + id
                 + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet", doc);
@@ -219,21 +197,13 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                         + id
                         + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
                 doc);
-
-        expectedList = StringUtils
-                .delimitedListToStringArray(
-                        "16.2 17.1 22.0 25.1 23.9 22.8 17.0 10.2 9.2 7.1 12.3 12.9 17.2 23.6 21.6 21.9 17.6 14.0 9.3 3.8",
-                        " ");
-        encodedList = StringUtils
-                .delimitedListToStringArray(
-                        evaluate(
-                                "//csml:PointSeriesFeature[@gml:id='"
-                                        + id
-                                        + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
-                                doc), " ");
-        // order might be different in oracle
-        assertEquals(expectedList.length, encodedList.length);
-        assertTrue(Arrays.asList(expectedList).containsAll(Arrays.asList(encodedList)));
+        
+        assertXpathEvaluatesTo(
+                "3.8 7.1 9.2 9.3 10.2 12.3 12.9 14.0 16.2 17.0 17.1 17.2 17.6 21.6 21.9 22.0 22.8 23.6 23.9 25.1",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + id
+                        + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
+                doc);
 
         // parameter xlink:href
         assertXpathEvaluatesTo(
@@ -310,4 +280,5 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathCount(1, "//csml:PointSeriesFeature", doc);
         checkPointFeatureTwo(doc, "ID2");
     }
+    
 }

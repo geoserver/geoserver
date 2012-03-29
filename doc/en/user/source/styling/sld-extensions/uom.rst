@@ -1,13 +1,27 @@
 .. _unit_of_measure:
 
-Specifying symbolizers sizes in ground units
+Specifying symbolizer sizes in ground units
 =============================================
 
-The SLD 1.0 specification allows the specification of sizes in just one unit: pixels.
+The SLD 1.0 specification specifies symbolizer sizes in a single unit of measure: pixels.  This means that the size of symbolizers is the same at all zoom levels (which is commonly the desired behaviour).
 
-The Symbology Encoding 1.1 specification instead allows to use also meters and feet, as ground units, so that the size of the symbolizers changes on the screen as one zooms in and out.
+The Symbology Encoding 1.1 specification provides a ``uom`` attribute on ``Symbolizer`` elements.  This allows specifying sizes in ground units of metres or feet, as well as the default screen pixels. When ground units are used, the screen size of symbolizers increases as the map is zoomed in.  GeoServer supports the SE 1.1 ``uom`` attribute in its extended SLD 1.0 support.  
 
-GeoServer supports the ``uom`` attribute just as specified in SE 1.1 in its extended SLD 1.0 support:
+.. note:: This extended feature is officially supported in GeoServer 2.1.0.  It is available in GeoServer 2.0.3 if the ``-DenableDpiUomRescaling=true`` system variable is specified for the JVM.
+
+The value of the ``uom`` attribute is a URI indicating the desired unit.  The units of measure supported are those given in the SE 1.1 specification::
+
+   http://www.opengeospatial.org/se/units/metre
+   http://www.opengeospatial.org/se/units/foot
+   http://www.opengeospatial.org/se/units/pixel
+
+.. note:: The ``px`` modifier for values is not currently supported 
+
+
+Example
+-------
+
+The following SLD shows the ``uom`` attribute used to specify the width of a ``LineSymbolizer`` in metres: 
 
 .. code-block:: xml
 
@@ -19,7 +33,7 @@ GeoServer supports the ``uom`` attribute just as specified in SE 1.1 in its exte
 	    <UserStyle>
 	      <Title>tm blue line</Title>
 	      <Abstract>Default line style, 5m wide blue</Abstract>
-	
+	      
 	      <FeatureTypeStyle>
 	        <Rule>
 	          <Title>Blue Line, 5m large</Title>
@@ -36,16 +50,9 @@ GeoServer supports the ``uom`` attribute just as specified in SE 1.1 in its exte
 	  </NamedLayer>
 	</StyledLayerDescriptor>
 
-Applying the style to ``tiger:tiger_roads`` and zooming in we get:
+Applying the style to the ``tiger:tiger_roads`` dataset shows how the line widths increase as the map is zoomed in:
 
 .. figure:: images/roads_uom1.png
 .. figure:: images/roads_uom2.png
 .. figure:: images/roads_uom3.png
    
-The unit of measure supported are the same specified in the SE 1.1 specification::
-
-   http://www.opengeospatial.org/se/units/metre
-   http://www.opengeospatial.org/se/units/foot
-   http://www.opengeospatial.org/se/units/pixel
-
-This extended feature is officially supported starting with GeoServer 2.1.0, but it's already available in GeoServer 2.0.3 if the administrator starts the java virtual with the ``-DenableDpiUomRescaling=true`` system variable specification.

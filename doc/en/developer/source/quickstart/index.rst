@@ -26,9 +26,9 @@ Either::
 
    svn co https://svn.codehaus.org/geoserver/trunk geoserver-trunk
 
-Or (stable ``1.7.x`` branch)::
+Or (stable ``2.1.x`` branch)::
 
-   svn co https://svn.codehaus.org/geoserver/branches/1.7.x geoserver-1.7.x
+   svn co https://svn.codehaus.org/geoserver/branches/2.1.x geoserver-2.1.x
 
 In this example we will pretend that you checked the source out into a directory
 called ``geoserver``, but a more descriptive name is recommended.

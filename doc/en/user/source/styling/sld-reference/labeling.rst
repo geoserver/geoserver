@@ -449,7 +449,7 @@ The following setting disables label flipping, making the label always follow th
 
 .. code-block:: xml
 
-  <VendorOption name="forceLeftToRigth">false</VendorOption>
+  <VendorOption name="forceLeftToRight">false</VendorOption>
 
 .. _labeling_conflict_resolution:
 

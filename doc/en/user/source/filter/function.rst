@@ -3,23 +3,26 @@
 Filter functions
 ================
 
-The OGC Filter encoding specification contains a generic concept, the *filter function*.
+The OGC Filter encoding specification provides a generic concept of a *filter function*.  
+A filter function is a function, with arguments, that can be called in a filter expression to perform specific calculations.  This can be useful when building WFS filters or SLD style sheets. 
 
-A *filter function* is a function, with arguments, that can be called inside of a filter or, more generically, an expression, to perform specific calculations: as such it can be useful when building WFS filters or SLD style sheets. 
-A filter function can be anything a trigonometric function, a string formatting one, a geometry buffer.
+There are many different kinds of filter functions available in GeoServer,  
+covering a wide range of functionality including mathematical functions, string formatting, and geometric operations such as ``buffer``.
+A complete list is provided in the :ref:`filter_function_reference`.
 
-The filter specification does not mandate specific functions, so while the syntax to call a function is uniform, any server is free to provide whatever function it wants, so the actual invocation will work only against specific software.
 
-Here are a couple of examples on function usage, the first is about WFS filtering, the second a way to use functions in SLD to get richer rendering.
+.. note:: The Filter encoding specification provides a standard syntax for filter functions, but does not mandate specific functions.  Servers are free to provide whatever functions they want, so function expressions may work only in specific software.
+
+The following examples show how filter functions are used. The first concerns improving WFS filtering, and the second shows how to use functions in SLD to get richer rendering.
 
 WFS filtering example
 ---------------------
 
 Let's assume we have a WFS feature type whose geometry field, ``geom``, can contain any kind of geometry. 
 
-For a certain application we need to extract only the features whose geometry is a simple point or a multi point.
-This cannot be achieved with a fully portable filter, but it can be done using a GeoServer specific filter function named ``geometryType``.
-Here is how:
+For a certain application we need to extract only the features whose geometry is a simple point or a multipoint.
+This can be done using a GeoServer-specific filter function named ``geometryType``.
+Here is the WFS request including the filter function:
 
 .. code-block:: xml 
 
@@ -46,8 +49,9 @@ Here is how:
 SLD formatting example
 ----------------------
 
-We want to include elevation labels in a contour map. The label is stored as a floating point, and the resulting labelling will be something may be something like "150.0" or "149.999999". We want to avoid that and get ``150`` instead. 
-To achieve this result we can use the ``numberFormat`` filter function:
+We want to display elevation labels in a contour map. The elevations are stored as floating point values, so the raw numeric values may display with unwanted decimal places (such as "150.0" or "149.999999"). 
+We want to ensure the numbers are rounded appropriately (i.e. to display "150"). 
+To achieve this the ``numberFormat`` filter function can be used in the SLD label content expression:
 
 .. code-block:: xml
 
@@ -66,8 +70,8 @@ To achieve this result we can use the ``numberFormat`` filter function:
 Performance implications
 ------------------------
 
-Using filter functions in SLD symbolizer expressions does not have significant overhead, unless the function is performing some very heavy computation.
+Using filter functions in SLD symbolizer expressions does not have significant overhead, unless the function is performing very heavy computation.
 
-However, using them in WFS or SLD filtering can take a very visible toll: this is usually because filter functions are not recognized by the native encoders, and thus the functions are not used inside the primary filters, and are performed in memory instead.
+However, using functions in WFS filtering or SLD rule expressions may cause performance issues in certain cases. This is usually because specific filter functions are not recognized by a native data store filter encoder, and thus GeoServer must perform the functions in memory instead.
 
-For example, given a filter like ``BBOX(geom,-10,30,20,45) and geometryType(geom) = 'Point'`` most data stores will split the filter into two separate parts, one, the bounding box filter, is actually used as a primary filter (e.g., encoded in SQL) whilst the geometry function part will be executed in memory on top of the results coming from the primary filter.
+For example, given a filter like ``BBOX(geom,-10,30,20,45) and geometryType(geom) = 'Point'`` most data stores will split the filter into two separate parts. The bounding box filter will be encoded as a primary filter and thus executed in SQL, while the geometry function will be executed in memory on the results coming from the primary filter.

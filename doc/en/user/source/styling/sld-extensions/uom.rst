@@ -15,7 +15,7 @@ The value of the ``uom`` attribute is a URI indicating the desired unit.  The un
    http://www.opengeospatial.org/se/units/foot
    http://www.opengeospatial.org/se/units/pixel
 
-.. note:: The ``px`` modifier for values is not currently supported 
+.. note:: The ``px`` modifier for values is not currently supported. 
 
 
 Example

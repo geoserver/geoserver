@@ -8,6 +8,52 @@ This page provides some useful examples for configuring the WMS service to work 
 
 Note that the rendering performance of WMS can be significantly slower when using app-schema data stores. We strongly recommend employing :ref:`app-schema.joining` when using WMS with feature chaining, which can make response time for large data requests several orders of magnitude faster.
 
+Configuration
+-------------
+
+For WMS to be applicable to complex feature data, it is necessary that the complex feature types are recognised by GeoServer as layers. This must be configured by adding an extra configuration file named 'layer.xml' in the data directory of each feature type that we want to use as a WMS layer.
+
+This will expand the structure of the ``workspaces`` folder in the GeoServer data directory as follows (``workspaces``) (see  :ref:`app-schema.configuration`): ::
+
+    workspaces
+        - gsml
+            - SomeDataStore
+                - SomeFeatureType
+                    - featuretype.xml
+		    - layer.xml
+                - datastore.xml
+                - SomeFeatureType-mapping-file.xml
+
+
+The file layer.xml must have the following contents: ::
+
+      <layer>
+	<id>[mylayerid]</id>
+	<name>[mylayername]</name>
+	<path>/</path>
+	<type>VECTOR</type>
+	<defaultStyle>
+	      <name>[mydefaultstyle]</name>
+	</defaultStyle>
+	<resource class="featureType">
+	      <id>[myfeaturetypeid]</id>
+	</resource>
+	<enabled>true</enabled>
+	<attribution>
+	      <logoWidth>0</logoWidth>
+	      <logoHeight>0</logoHeight>
+	</attribution>
+      </layer> 
+
+Replace the fields in between brackets with the following values:
+
+* **[mylayerid]** must be a custom id for the layer.
+* **[mylayername]** must be a custom name for the layer.
+* **[mydefaultstyle]** the default style used for this layer (when a style is not specified in the wms request). The style must exist in the GeoServer configuration.
+* **[myfeaturetypeid]** is the id of the feature type. This *must* the same as the id specified in the file featuretype.xml of the same directory.
+
+
+
 GetMap
 -------
 

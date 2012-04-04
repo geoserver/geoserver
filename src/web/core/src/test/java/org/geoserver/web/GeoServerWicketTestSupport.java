@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.util.tester.FormTester;
@@ -35,6 +36,12 @@ public abstract class GeoServerWicketTestSupport extends GeoServerTestSupport {
         tester = new WicketTester(app);
         app.init();
         
+    }
+
+    @Override
+    protected void oneTimeTearDown() throws Exception {
+        super.oneTimeTearDown();
+        tester.destroy();
     }
 
     public GeoServerApplication getGeoServerApplication(){

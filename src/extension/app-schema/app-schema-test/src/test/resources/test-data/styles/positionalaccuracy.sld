@@ -8,6 +8,7 @@
 			<sld:Abstract></sld:Abstract>
 			<sld:IsDefault>1</sld:IsDefault>
 			<sld:FeatureTypeStyle>
+			
 				<sld:Rule>
 					<sld:Name>m</sld:Name>
 					<sld:Title>m rule</sld:Title>
@@ -17,12 +18,16 @@
 							<ogc:Literal>http://urn.opengis.net</ogc:Literal>
 						</ogc:PropertyIsEqualTo>
 					</ogc:Filter>
+										
 					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>gsml:shape</ogc:PropertyName>
+						</sld:Geometry>
 						<sld:Fill>
 							<sld:CssParameter name="fill">#0000FF</sld:CssParameter>
 						</sld:Fill>
 					</sld:PolygonSymbolizer>
-				</sld:Rule>						
+				</sld:Rule>			-	
 			</sld:FeatureTypeStyle>
 		</sld:UserStyle>
 	</sld:NamedLayer>

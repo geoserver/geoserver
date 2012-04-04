@@ -41,6 +41,15 @@ public class DataAccessRuleDAOTest extends TestCase {
         dao = new MemoryDataAccessRuleDAO(catalog, props);
     }
     
+    public void testRulesForRole() {
+        
+        assertEquals(0,dao.getRulesAssociatedWithRole("CHALLENGE").size());
+        assertEquals(0,dao.getRulesAssociatedWithRole("NOTEXISTEND").size());
+        assertEquals(1,dao.getRulesAssociatedWithRole("ROLE_TSW").size());
+        assertEquals(1,dao.getRulesAssociatedWithRole("ROLE_TW").size());
+    }
+    
+    
     public void testParse() {
         assertEquals(3, dao.getRules().size());
         

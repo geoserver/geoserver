@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roleregistry version = "1.0" xmlns="http://www.geoserver.org/security/roles" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geoserver.org/security roles.xsd ">
+  <rolelist>
+    <role id="ROLE_ADMINISTRATOR" />
+    <role id="ROLE_AUTHENTICATED" >
+      		<property name="employee"/>
+  		    <property name="bbox">lookupAtRuntime</property>  		
+    </role>
+    <role id="ROLE_WFS" parentID="ROLE_AUTHENTICATED"/>
+    <role id="ROLE_WMS" parentID="ROLE_AUTHENTICATED"/>
+  </rolelist>
+  
+  <userlist>
+    <userroles username="admin">
+    	<roleref roleID="ROLE_ADMINISTRATOR"/>
+    </userroles>
+    <userroles username="user1">
+  		<roleref roleID="ROLE_WFS"/>
+   		<roleref roleID="ROLE_WMS"/>
+    </userroles>
+  </userlist>
+  
+  <grouplist>
+    <grouproles groupname="g_wfs">
+    		<roleref roleID="ROLE_WFS"/>    
+    </grouproles>
+    <grouproles groupname="g_wms">
+    		<roleref roleID="ROLE_WMS"/>    
+    </grouproles>
+    <grouproles groupname="g_all">
+    		<roleref roleID="ROLE_WMS"/>
+    		<roleref roleID="ROLE_WFS"/>    
+    </grouproles>            
+  </grouplist>
+</roleregistry>

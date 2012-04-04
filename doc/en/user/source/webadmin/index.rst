@@ -9,8 +9,9 @@ The Web Administration Interface is a web-based tool for configuring all aspects
    :maxdepth: 2
 
    basics.rst
-   server/index.rst
-   services/index.rst
-   data/index.rst
-   demos/index.rst
-   layerpreview/index.rst
+   layerpreview/index
+   server/index
+   data/index
+   services/index
+   security/index
+   demos/index

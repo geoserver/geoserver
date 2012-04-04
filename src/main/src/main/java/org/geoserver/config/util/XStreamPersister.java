@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -87,6 +87,8 @@ import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -117,8 +119,6 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.converters.collections.MapConverter;
-import com.thoughtworks.xstream.converters.javabean.BeanProvider;
-import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 import com.thoughtworks.xstream.converters.reflection.FieldDictionary;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
@@ -429,7 +429,11 @@ public class XStreamPersister {
     public void setGeoServer(GeoServer geoserver) {
         this.geoserver = geoserver;
     } 
-    
+
+    public GeoServerSecurityManager getSecurityManager() {
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class);
+    }
+
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
@@ -634,6 +638,8 @@ public class XStreamPersister {
      */
     protected class BreifMapConverter extends MapConverter {
         
+        static final String ENCRYPTED_FIELDS_KEY = "org.geoserver.config.encryptedFields";
+
         public BreifMapConverter() {
             super(getXStream().getMapper());
         }
@@ -646,7 +652,13 @@ public class XStreamPersister {
         @Override
         public void marshal(Object source, HierarchicalStreamWriter writer,
                 MarshallingContext context) {
-        
+
+            Set<String> encryptionFields = (Set<String>)context.get(ENCRYPTED_FIELDS_KEY);
+            if (encryptionFields==null) {
+                encryptionFields=Collections.emptySet();
+            }
+
+            GeoServerSecurityManager secMgr = getSecurityManager();
             Map map = (Map) source;
             for (Iterator iterator = map.entrySet().iterator(); iterator.hasNext();) {
                 Map.Entry entry = (Map.Entry) iterator.next();
@@ -665,6 +677,9 @@ public class XStreamPersister {
                         if(str == null) {
                             str = value.toString();
                         }
+                        if (encryptionFields.contains(entry.getKey()) && secMgr != null) {
+                            str = secMgr.getConfigPasswordEncryptionHelper().encode(str);
+                        }
                         writer.setValue(str);
                     } else {
                         writer.startNode(complexTypeId);
@@ -680,7 +695,7 @@ public class XStreamPersister {
         @Override
         protected void populateMap(HierarchicalStreamReader reader,
                 UnmarshallingContext context, Map map) {
-            
+
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
                 
@@ -737,7 +752,7 @@ public class XStreamPersister {
                         reader.moveUp();    
                     }
                 }
-
+               
                 map.put(key, value);
 
                 reader.moveUp();
@@ -1285,6 +1300,20 @@ public class XStreamPersister {
         }
 
         @Override
+        protected void doMarshal(Object source, HierarchicalStreamWriter writer,
+                MarshallingContext context) {
+            GeoServerSecurityManager secMgr = getSecurityManager();
+            if (secMgr != null && secMgr.isInitialized()) {
+                //set the hint for the map converter as to which fields to encode in the connection
+                // parameter of this store
+                context.put(BreifMapConverter.ENCRYPTED_FIELDS_KEY, 
+                    secMgr.getConfigPasswordEncryptionHelper().getEncryptedFields((StoreInfo)source));
+            }
+
+            super.doMarshal(source, writer, context);
+        }
+        
+        @Override
         protected void postDoMarshal(Object result,
                 HierarchicalStreamWriter writer, MarshallingContext context) {
             
@@ -1336,6 +1365,13 @@ public class XStreamPersister {
                             : WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT);
                 }
             }
+
+            //process any parameters that require decryption 
+            GeoServerSecurityManager secMgr = getSecurityManager();
+            if (secMgr != null) {
+                secMgr.getConfigPasswordEncryptionHelper().decode(store);
+            }
+
             LOGGER.info( "Loaded store '" +  store.getName() +  "', " + (store.isEnabled() ? "enabled" : "disabled") );
             return store;
         }

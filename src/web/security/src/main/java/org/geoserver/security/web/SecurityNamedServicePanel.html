@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <ul>
+    <li>
+      <fieldset class="noTitle">
+        <ul>
+          <li>
+            <span wicket:id="message"></span>
+          </li>
+          <li>
+            <label for="name"><wicket:message key="name"></wicket:message></label>
+            <input type="text" wicket:id="name" class="text"/>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset class="noTitle">
+        <wicket:child></wicket:child>
+      </fieldset>
+    </li>
+  </ul>
+  <div wicket:id="dialog"></div>
+</wicket:panel>
+</body>
+</html>

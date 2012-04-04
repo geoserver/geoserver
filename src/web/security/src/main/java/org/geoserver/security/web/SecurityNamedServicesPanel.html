@@ -1,0 +1,24 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <div wicket:id="feedback">
+  </div>
+  <ul>
+    <li>
+     <ul>
+        <li>
+          <a class="add-link" wicket:id="add"><wicket:message key="addNew"></wicket:message></a>
+        </li>
+        <li>
+          <a class="remove-link" wicket:id="remove"><wicket:message key="removeSelected"></wicket:message></a>
+        </li>
+     </ul>
+    </li>
+    <li>
+     <div wicket:id="table"></div>
+    </li>
+  </ul>
+  <div wicket:id="dialog"></div>
+</wicket:panel>
+</body>
+</html>

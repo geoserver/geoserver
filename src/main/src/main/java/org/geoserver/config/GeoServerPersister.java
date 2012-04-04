@@ -45,6 +45,9 @@ import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.util.logging.Logging;
 
+import static org.geoserver.data.util.IOUtils.rename;
+import static org.geoserver.data.util.IOUtils.xStreamPersist;
+
 public class GeoServerPersister implements CatalogListener, ConfigurationListener {
 
     /**
@@ -781,38 +784,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
 
     //helpers
-    void backupDirectory(File dir) throws IOException {
-        File bak = new File( dir.getCanonicalPath() + ".bak");
-        if ( bak.exists() ) {
-            FileUtils.deleteDirectory( bak );
-        }
-        dir.renameTo( bak );
-    }
-    
-    void rename(File f, String newName) throws IOException {
-        rename( f, new File( f.getParentFile(), newName ) );
-    }
-    
-    void rename( File source, File dest ) throws IOException {
-        // same path? Do nothing
-        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()))
-            return;
-
-        // different path
-        boolean win = System.getProperty("os.name").startsWith("Windows");
-        if ( win && dest.exists() ) {
-            //windows does not do atomic renames, and can not rename a file if the dest file
-            // exists
-            if (!dest.delete()) {
-                throw new IOException("Could not delete: " + dest.getCanonicalPath());
-            }
-            source.renameTo(dest);
-        }
-        else {
-            source.renameTo(dest);
-        }
-    }
-    
     void persist( Object o, File dir, String filename ) throws IOException {
         persist( o, new File( dir, filename ) );
     }
@@ -820,24 +791,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     void persist( Object o, File f ) throws IOException {
         try {
             synchronized ( xp ) {
-                //first save to a temp file
-                File temp = new File(f.getParentFile(),f.getName()+".tmp");
-                if ( temp.exists() ) {
-                    temp.delete();
-                }
-                
-                BufferedOutputStream out = null;
-                try{
-                    out=new BufferedOutputStream( new FileOutputStream( temp ) );
-                    xp.save( o, out );
-                    out.flush();
-                } finally {
-                    if (out != null)
-                        org.apache.commons.io.IOUtils.closeQuietly(out);
-                }
-                
-                //no errors, overwrite the original file
-                rename(temp,f);
+                xStreamPersist(f, o, xp);
             }
             LOGGER.fine("Persisted " + o.getClass().getName() + " to " + f.getAbsolutePath() );
         }

@@ -1,0 +1,48 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="ldapSecurityProvider" class="org.geoserver.security.ldap.LDAPSecurityProvider">
+    <constructor-arg ref="geoServerSecurityManager"/>
+  </bean>
+  
+  <!--bean id="ldapContext" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+    <constructor-arg value="ldap://192.168.0.108:389/dc=skunkworks,dc=org"/>
+  </bean-->
+  
+  <!--bean id="ldapAuthorityPopulator" class="org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator">
+    <constructor-arg ref="ldapContext"/>
+    <constructor-arg value="ou=groups"/>
+    <property name="groupSearchFilter" value="member={0}"/>
+  </bean-->
+  <!--bean id="ldapAuthorityPopulator" class="org.springframework.security.ldap.authentication.UserDetailsServiceLdapAuthoritiesPopulator">
+    <constructor-arg ref="userDetailsService"/>
+  </bean-->
+      
+  <!--bean id="ldapAuthProvider" class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
+    <constructor-arg>
+      <bean class="org.springframework.security.ldap.authentication.BindAuthenticator">
+        <constructor-arg ref="ldapContext"/>
+        <property name="userDnPatterns">
+          <list>
+            <value>uid={0},ou=people</value>
+          </list>
+        </property>
+        
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="ldapAuthorityPopulator"/>
+</bean-->
+  
+  <!--bean id="ldapAuthProviderContrib" class="org.geoserver.security.AuthenticationProviderContributor">
+    <constructor-arg ref="ldapAuthProvider"/>
+  </bean-->
+  
+  <!-- ui auth provider panel info-->
+  <bean id="ldapAuthPanelInfo" class="org.geoserver.web.security.ldap.LDAPAuthProviderPanelInfo">
+        <property name="id" value="security.ldapAuthProvider" />
+        <property name="shortTitleKey" value="LDAPAuthProviderPanel.short"/>
+        <property name="titleKey" value="LDAPAuthProviderPanel.title"/>
+        <property name="descriptionKey" value="LDAPAuthProviderPanel.description"/>
+    </bean>
+  
+</beans>

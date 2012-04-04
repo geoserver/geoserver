@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>DML statements for role database</comment>
+
+  <entry key="roles.count">
+	select count(*)  from roles
+  </entry>
+  <entry key="roles.all">
+	select name,parent from roles
+  </entry>
+  <entry key="roles.keyed">
+	select parent from roles where name = ?
+  </entry>
+  <entry key="roles.insert">
+	insert into roles (name) values (?)
+  </entry>
+  <!-- nothing to update at the moment, use dummy statement -->
+  <entry key="roles.update">
+	update roles set name=name where name = ?
+  </entry>  
+  <entry key="roles.parentUpdate">
+	update roles set parent = ? where name = ?
+  </entry>
+    <entry key="roles.deleteParent">
+	update roles set parent = null where parent = ?
+  </entry>
+  <entry key="roles.delete">
+	delete from roles where name = ?
+  </entry>
+  <entry key="roles.deleteAll">
+	delete from roles 
+  </entry>
+  
+
+  <entry key="roleprops.all">
+	select rolename,propname,propvalue from  role_props
+  </entry>
+  <entry key="roleprops.selectForRole">
+	select propname,propvalue from  role_props where rolename = ?
+  </entry>
+  <entry key="roleprops.selectForUser">
+	select p.rolename,p.propname,p.propvalue from  role_props p,user_roles u where u.rolename = p.rolename and u.username = ?
+  </entry>
+  <entry key="roleprops.selectForGroup">
+	select p.rolename,p.propname,p.propvalue from  role_props p,group_roles g where g.rolename = p.rolename and g.groupname = ?
+  </entry>    
+  <entry key="roleprops.deleteForRole">
+	delete from role_props where rolename=?
+  </entry>
+  <entry key="roleprops.insert">
+	insert into role_props(rolename,propname,propvalue) values (?,?,?)
+  </entry>
+  <entry key="roleprops.deleteAll">
+	delete from role_props 
+  </entry>
+
+
+  <entry key="userroles.rolesForUser">
+	select u.rolename,r.parent from user_roles u ,roles r where r.name=u.rolename and u.username = ?
+  </entry>
+  <entry key="userroles.usersForRole">
+	select username from user_roles where rolename = ?
+  </entry>
+  <entry key="userroles.insert">
+	insert into user_roles(rolename,username) values (?,?)
+  </entry>
+  <entry key="userroles.delete">
+	delete from user_roles where rolename=? and username = ?
+  </entry>
+  <entry key="userroles.deleteRole">
+	delete from user_roles where rolename=? 
+  </entry>
+  <entry key="userroles.deleteUser">
+	delete from user_roles where username = ?
+  </entry>
+  <entry key="userroles.deleteAll">
+	delete from user_roles  
+  </entry>
+
+
+
+  <entry key="grouproles.rolesForGroup">
+	select g.rolename,r.parent from group_roles g,roles r  where g.rolename = r.name and g.groupname = ?
+  </entry>
+  <entry key="grouproles.groupsForRole">
+	select groupname from group_roles where rolename = ?
+  </entry>
+  <entry key="grouproles.insert">
+	insert into group_roles(rolename,groupname) values (?,?)
+  </entry>
+  <entry key="grouproles.delete">
+	delete from group_roles where rolename=? and groupname = ?
+  </entry>
+  <entry key="grouproles.deleteRole">
+	delete from group_roles where rolename=? 
+  </entry>
+  <entry key="grouproles.deleteGroup">
+	delete from group_roles where groupname = ?
+  </entry>
+    <entry key="grouproles.deleteAll">
+	delete from group_roles  
+  </entry>
+  
+	  
+</properties>

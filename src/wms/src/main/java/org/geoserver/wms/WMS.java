@@ -458,33 +458,23 @@ public class WMS implements ApplicationContextAware {
     }
 
     public int getMaxAllowedFrames() {
-    	WMSInfo serviceInfo = getServiceInfo();
-    	return getMetadataValue(serviceInfo.getMetadata(), MAX_ALLOWED_FRAMES,
-    			MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
+    	return getMetadataValue(MAX_ALLOWED_FRAMES, MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
     }
     
     public Long getMaxAnimatorRenderingTime() {
-        WMSInfo serviceInfo = getServiceInfo();
-        return getMetadataValue(serviceInfo.getMetadata(), MAX_RENDERING_TIME,
-                        null, Long.class);
+        return getMetadataValue(MAX_RENDERING_TIME, null, Long.class);
     }
     
     public Long getMaxRenderingSize() {
-        WMSInfo serviceInfo = getServiceInfo();
-        return getMetadataValue(serviceInfo.getMetadata(), MAX_RENDERING_SIZE,
-                        null, Long.class);
+        return getMetadataValue( MAX_RENDERING_SIZE, null, Long.class);
     }
 
     public Integer getFramesDelay() {
-        WMSInfo serviceInfo = getServiceInfo();
-        return getMetadataValue(serviceInfo.getMetadata(), FRAMES_DELAY,
-                FRAMES_DELAY_DEFAULT, Integer.class);
+        return getMetadataValue(FRAMES_DELAY, FRAMES_DELAY_DEFAULT, Integer.class);
     }
     
     public Boolean getLoopContinuously() {
-        WMSInfo serviceInfo = getServiceInfo();
-        return getMetadataValue(serviceInfo.getMetadata(), LOOP_CONTINUOUSLY,
-                LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
+       return getMetadataValue(LOOP_CONTINUOUSLY, LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
     }
 
     int getMetadataPercentage(MetadataMap metadata, String key, int defaultValue) {
@@ -501,7 +491,13 @@ public class WMS implements ApplicationContextAware {
         return value;
     }
 
-    <T> T getMetadataValue(MetadataMap metadata, String key, T defaultValue, Class<T> clazz) {
+    <T> T getMetadataValue(String key, T defaultValue, Class<T> clazz) {
+        if (getServiceInfo() == null) {
+            return defaultValue;
+        }
+
+        MetadataMap metadata = getServiceInfo().getMetadata();
+
     	T parsedValue =  Converters.convert(metadata.get(key), clazz);
     	if (parsedValue == null)
             return defaultValue;

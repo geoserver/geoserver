@@ -282,7 +282,7 @@ public class ResourcePool {
             factory = DataStoreUtils.aquireFactory( info.getType() );    
         }
     
-        if ( factory == null ) {
+        if ( factory == null && info.getConnectionParameters() != null ) {
             factory = DataStoreUtils.aquireFactory( getParams( info.getConnectionParameters() , GeoserverDataDirectory.getGeoserverDataDirectory().getCanonicalPath()));    
         }
    

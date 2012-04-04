@@ -23,8 +23,14 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
 import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.protocol.http.request.CryptedUrlWebRequestCodingStrategy;
+import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
+import org.apache.wicket.request.IRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCycleProcessor;
 import org.apache.wicket.request.RequestParameters;
+import org.apache.wicket.request.target.coding.WebRequestEncoder;
+import org.apache.wicket.resource.loader.ClassStringResourceLoader;
+import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.apache.wicket.util.convert.ConverterLocator;
@@ -32,6 +38,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.util.DataDirectoryConverterLocator;
 import org.geoserver.web.util.GeoToolsConverterAdapter;
@@ -88,6 +95,14 @@ public class GeoServerApplication extends SpringWebApplication {
     public Catalog getCatalog() {
         return getGeoServer().getCatalog();
     }
+
+    /**
+     * Returns the security manager.
+     */
+    public GeoServerSecurityManager getSecurityManager() {
+        return getBeanOfType(GeoServerSecurityManager.class);
+    }
+
 
     /**
      * Returns the geoserver resource loader.
@@ -175,6 +190,7 @@ public class GeoServerApplication extends SpringWebApplication {
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
+        getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
     }
 
     @Override
@@ -229,15 +245,24 @@ public class GeoServerApplication extends SpringWebApplication {
         return locator;
     }
 
+    
     static class RequestCycleProcessor extends WebRequestCycleProcessor {
-        public IRequestTarget resolve(RequestCycle requestCycle, RequestParameters requestParameters) {
-            IRequestTarget target = super.resolve(requestCycle, requestParameters);
+        
+        public IRequestTarget resolve(RequestCycle requestCycle,
+                RequestParameters requestParameters) {
+            IRequestTarget target = super.resolve(requestCycle,
+                    requestParameters);
             if (target != null) {
                 return target;
             }
 
             return resolveHomePageTarget(requestCycle, requestParameters);
         }
+        @Override
+        protected IRequestCodingStrategy newRequestCodingStrategy() {            
+              return new GeoServerRequestEncodingStrategy();
+        }
+
     }
 
     static class RequestCycle extends WebRequestCycle {
@@ -295,4 +320,6 @@ public class GeoServerApplication extends SpringWebApplication {
 
         return locator;
     }
+    
+    
 }

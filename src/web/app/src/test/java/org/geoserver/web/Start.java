@@ -14,6 +14,10 @@ import java.util.logging.Logger;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
+import org.mortbay.jetty.security.Constraint;
+import org.mortbay.jetty.security.ConstraintMapping;
+import org.mortbay.jetty.security.HashUserRealm;
+import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
 
@@ -51,9 +55,24 @@ public class Start {
             
             jettyServer.setConnectors(new Connector[] { conn });
 
+            /*Constraint constraint = new Constraint();
+            constraint.setName(Constraint.__BASIC_AUTH);;
+            constraint.setRoles(new String[]{"user","admin","moderator"});
+            constraint.setAuthenticate(true);
+             
+            ConstraintMapping cm = new ConstraintMapping();
+            cm.setConstraint(constraint);
+            cm.setPathSpec("/*");
+            
+            SecurityHandler sh = new SecurityHandler();
+            sh.setUserRealm(new HashUserRealm("MyRealm","/Users/jdeolive/realm.properties"));
+            sh.setConstraintMappings(new ConstraintMapping[]{cm});
+            
+            WebAppContext wah = new WebAppContext(sh, null, null, null);*/
             WebAppContext wah = new WebAppContext();
             wah.setContextPath("/geoserver");
             wah.setWar("src/main/webapp");
+            
             jettyServer.setHandler(wah);
             wah.setTempDirectory(new File("target/work"));
             //this allows to send large SLD's from the styles form

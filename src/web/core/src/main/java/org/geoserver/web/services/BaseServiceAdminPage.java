@@ -14,8 +14,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -30,23 +28,18 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.UrlValidator;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
-import org.geoserver.web.data.workspace.WorkspaceDetachableModel;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.web.wicket.LiveCollectionModel;
 
@@ -96,6 +89,9 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     void init(final IModel<T> infoModel) {
         T service = infoModel.getObject();
 
+        dialog = new GeoServerDialog("dialog");
+        add(dialog);
+
         Form form = new Form( "form", new CompoundPropertyModel(infoModel));
         add(form);
 
@@ -108,16 +104,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             form.add(new LocalWorkspacePanel("workspace", service));
         }
 
-        form.add(new AjaxLink("workspaceHelp") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                dialog.showInfo(target, 
-                    new StringResourceModel("workspaceHelp.title",BaseServiceAdminPage.this, null), 
-                    new StringResourceModel("workspaceHelp.message.1",BaseServiceAdminPage.this, null),
-                    new StringResourceModel("workspaceHelp.message.2",BaseServiceAdminPage.this, null),
-                    new StringResourceModel("workspaceHelp.message.3",BaseServiceAdminPage.this, null));
-            }
-        });
+        form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
         form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this, null, new Object[]{
             getServiceName()
@@ -171,9 +158,6 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
         form.add( cancel );
         //cancel.setDefaultFormProcessing( false );
-
-        dialog = new GeoServerDialog("dialog");
-        add(dialog);
     }
 
     /**

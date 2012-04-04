@@ -188,12 +188,37 @@ public class GeoServerDataDirectory {
     public File findOrCreateSecurityRoot() throws IOException {
         return securityRoot(true);
     }
-    
+
     File securityRoot(boolean create) throws IOException {
         return create ? resourceLoader.findOrCreateDirectory( "security" ) 
                 : resourceLoader.find( "security");
     }
-    
+
+    /**
+     * Returns a directory under the {@link #securityRoot()} directory, if the directory does not 
+     * exist null will be returned.
+     */
+    public File findSecurityDir(String... location) throws IOException {
+        return securityDir( false, location );
+    }
+
+    /**
+     * Returns a directory under the {@link #securityRoot()} directory, if the directory does not 
+     * exist it will be created.
+     */
+    public File findOrCreateSecurityDir(String... location) throws IOException {
+        return securityDir(true, location);
+    }
+
+    File securityDir(boolean create, String... location) throws IOException {
+// TODO, mcr ???        
+//        return create ? resourceLoader.findOrCreateDirectory(securityRoot(create), location) 
+//            : resourceLoader.find( securityRoot(create), location );
+      return create ? resourceLoader.findOrCreateDirectory(new File("security"), location) 
+              : resourceLoader.find( securityRoot(create), location );
+        
+    }
+
     /**
      * Copies a file into a security configuration directory.
      * <p>

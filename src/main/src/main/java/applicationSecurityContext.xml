@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
 
-
-  <!-- ========================================================================================= -->
-  <!-- The following is the Spring Security configuration for form based authentication, with    -->
-  <!-- login/logout handling, as well as remember-me cookie handling, and session integration so -->
-  <!-- that user does not have to login for each page.                                           -->
-  <!-- This also makes sure that when you request a secured resource you go first to the         -->
-  <!-- login page, but get redirected to the originally requested page once login is successful  -->
-  <!-- ========================================================================================= -->
-
-  <!-- 
-    This filter delegates a different chain of sub-filters for administration
-    console pages and OWS services. Basically, we set up a chain involving basic/anonymous
-    authentication for OWS services, and a form based authentication for  the web console, 
-    so that accessing the console by means of simple calls is still easy.
-    
-    An attempt at form+basic has been done, that would have eased writing code accessing
-    directly the console, but it does not play well with logout: once the browser learns
-    about basic auth credentials it'll keep on using them, the only way to make it stop
-    is to declare a different user in the location bar, such as in: http://user@host:port/...
-    
-    For filters introduction, their meaning, the
-    different setup between form and basic authentication accesses,
-    and importance of the order please see the Spring Security reference guide. 
-    
-  -->
-<!--  <beans>-->
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:sec="http://www.springframework.org/schema/security"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -35,33 +9,8 @@
           http://www.springframework.org/schema/security
           http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
 
-  <bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
-    <sec:filter-chain-map path-type="ant" >
-       <sec:filter-chain pattern="/web/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />      
-       <sec:filter-chain pattern="/j_spring_security_check/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />
-       <sec:filter-chain pattern="/j_spring_security_logout/**" filters="httpSessionContextIntegrationFilterWithASCTrue,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />       
-       <sec:filter-chain pattern="/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
-       <sec:filter-chain pattern="/gwc/rest/web/**" filters="anonymousProcessingFilter,consoleExceptionTranslationFilter,filterInvocationInterceptor" />
-       <sec:filter-chain pattern="/gwc/rest/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilterWithoutRememberMeService,owsExceptionTranslationFilter,restFilterInvocationInterceptor" />
-       <sec:filter-chain pattern="/**" filters="httpSessionContextIntegrationFilterWithASCFalse,basicProcessingFilter,anonymousProcessingFilter,owsExceptionTranslationFilter,filterInvocationInterceptor" />
-   </sec:filter-chain-map>
-  </bean>
-  
-  <bean id="restFilterInvocationInterceptor"
-      class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
-      <property name="authenticationManager" ref="authenticationManager" />
-      <property name="accessDecisionManager">        
-        <bean class="org.springframework.security.access.vote.AffirmativeBased">
-          <property name="allowIfAllAbstainDecisions" value="false" />
-          <property name="decisionVoters">
-            <list>
-              <bean class="org.springframework.security.access.vote.RoleVoter" />
-              <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
-            </list>
-          </property>
-        </bean>
-      </property>
-      <property name="securityMetadataSource" ref="restFilterDefinitionMap"/>
+  <bean id="filterChainProxy" class="org.geoserver.security.GeoServerSecurityFilterChainProxy">
+    <constructor-arg ref="authenticationManager"/>
   </bean>
 
   <!--
@@ -73,273 +22,95 @@
       <constructor-arg ref="restRulesDao"/>
   </bean>
 
-  <!-- 
-    The actual authorization checks at the filter level. 
-    The voters make sure the user is both authenticated (the 
-    anonymous filter ensures there is at least an anonymous one)
-    and have the roles required.
-    The securityMetadataSource provides a set of path along with the
-    roles that the user must have in order to access the secured resource
-  -->
-  <bean id="filterInvocationInterceptor"
-    class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">    
-    <property name="authenticationManager" ref="authenticationManager" />
-    <property name="accessDecisionManager">
-      <bean class="org.springframework.security.access.vote.AffirmativeBased">
-        <property name="allowIfAllAbstainDecisions" value="false" />
-        <property name="decisionVoters">
-          <list>
-            <bean class="org.springframework.security.access.vote.RoleVoter" />
-            <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
-          </list>
-        </property>
-      </bean>
-    </property>
-    <property name="securityMetadataSource">
-        <sec:filter-security-metadata-source lowercase-comparisons="true" path-type="ant">
-           <sec:intercept-url pattern="/config/**" access="ROLE_ADMINISTRATOR"/>
-           <sec:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-        </sec:filter-security-metadata-source>
-    </property>
-  </bean>
-
-  <!--   
-    This filter integrates the authentication information in the http sessions, so it's
-    meant to be used only for the administration console, but not for the services.
-    Gathers authentication infos from the session, so that you don't have to re-authenticate
-    at each request, and adds it to the session after authentication.
-    This specific instance is configured with remember-me functionality, so that authentication
-    information can be gathered from a cookie set on the browser, too.
-    This version will create the user session if missing, it's meant for web console operation.
-  -->
-  <bean id="httpSessionContextIntegrationFilterWithASCTrue"
-    class="org.springframework.security.web.context.SecurityContextPersistenceFilter">    
-    <property name='securityContextRepository'>
-       <bean class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
-         <property name='allowSessionCreation' value='true' />
-       </bean>
-    </property>
-  </bean>
-
-  <!-- 
-    Same as the one above, but this one uses a session if it's already there, otherwise
-    it won't create it. This is meant to keep the overhead on service call low, but allow
-    users that have already authenticated using a form based access to keep using that
-    authentication when accessing services.
-  -->
-  <bean id="httpSessionContextIntegrationFilterWithASCFalse"
-    class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
-    <property name='securityContextRepository'>
-       <bean class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
-         <property name='allowSessionCreation' value='false' />
-       </bean>
-    </property>
-  </bean>
-
-  <!--
-    This filters processes logouts, removing both session informations, and the remember-me
-    cookie from the browser
-  -->
-  <bean id="logoutFilter"
-    class="org.springframework.security.web.authentication.logout.LogoutFilter">
-    <constructor-arg value="/web/" />
-    <!-- URL redirected to after logout -->
-    <constructor-arg>
-      <list>
-        <ref bean="rememberMeServices" />
-        <bean
-          class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
-      </list>
-    </constructor-arg>
-  </bean>
-
-  <!-- 
-    This filter does the actual main authentication workflow and handles form based authentication too.
-    It asks the authentication manager wheter access is granted to the resource the user is trying to access,
-    redirects to a failure page if it fails, and to another filter if the authentication informations are 
-    just being provided. This is useful only for form based authentication, the OWS services do use another
-    authentication processing filter.
-  -->
-  
-  <bean id="successHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler" >
-  <!-- <bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" > -->
-	<property name="defaultTargetUrl" value="/" /> <!-- which is the default value -->
-  </bean>
-  <bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" >
-	<property name="defaultFailureUrl" value="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true" />
-  </bean>
-  
-  
-  <bean id="authenticationProcessingFilter"
-    class="org.geoserver.security.GeoserverAuthenticationProcessingFilter">
-    <property name="authenticationManager" ref="authenticationManager" />
-	<property name="authenticationFailureHandler" ref="failureHandler" />
-	<property name="authenticationSuccessHandler" ref="successHandler" />    
-    <property name="filterProcessesUrl" value="/j_spring_security_check" />
-    <property name="rememberMeServices" ref="rememberMeServices" />
-    <property name="allowSessionCreation" value="false" />
-  </bean>
-
-  <!--  
-    Double check, this may not be necessary
-  -->
-  <bean id="securityContextHolderAwareRequestFilter"
-    class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter" />
-
-  <!-- 
-    If authentication is missing from the SecurityContext, tries to put authentication
-    information into the context using remember-me cookies. Will try to authenticate
-    the contents of the cookie against the authentication manager
-  -->
-  <bean id="rememberMeProcessingFilter"
-    class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
-    <property name="authenticationManager" ref="authenticationManager" />
-    <property name="rememberMeServices" ref="rememberMeServices" />
-  </bean>
-
-  <!-- 
-    Puts default authentication informations in the security context, making sure
-    we always get an anonymous user and anonymous role if all other authentication
-    attempts failed
-  -->
-  <bean id="anonymousProcessingFilter"
-    class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
-    <property name="key" value="geoserver" />
-    <property name="userAttribute" value="anonymousUser,ROLE_ANONYMOUS" />
-  </bean>
-
-  <!-- 
-    Handles the basic authentication headers. This integrates with the remember-me services, so that
-    you'll have to provide username/password just once during interactive tests.
-  -->
-  <bean id="basicProcessingFilter"
-    class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
-    <property name="authenticationManager">
-      <ref local="authenticationManager" />
-    </property>
-    <property name="authenticationEntryPoint">
-      <ref local="basicProcessingFilterEntryPoint" />
-    </property>
-    <property name="rememberMeServices">
-      <ref local="rememberMeServices" />
-    </property>
-  </bean>
-
- <!-- 
-    Handles the basic authentication headers without integration with the remember-me services.
-    Used for /gwc/rest/** entry points as somehow the presence of the remember-me service makes the
-    POST'ed form to reach the gwc restlets empty.
-  -->
-  <bean id="basicProcessingFilterWithoutRememberMeService"
-    class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
-    <property name="authenticationManager">
-      <ref local="authenticationManager" />
-    </property>
-    <property name="authenticationEntryPoint">
-      <ref local="basicProcessingFilterEntryPoint" />
-    </property>
-  </bean>
-
-  <!-- 
-    This entry point gets called when basic authentication is needed 
-    (or a previous attempt fail) to commence authentication 
-    with the basic processing filter 
-  -->
-  <bean id="basicProcessingFilterEntryPoint"
-    class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
-    <property name="realmName">
-      <value>GeoServer Realm</value>
-    </property>
-  </bean>
-
-  <!-- 
-    During the request execution security exceptions may be thrown, either during the
-    authentication or authorization phase. This filter redirects authentication failures
-    to the login form, whilst returns the user to an access denied page if the authorization
-    levels are not enough
-  -->
-  <bean id="consoleExceptionTranslationFilter"
-    class="org.springframework.security.web.access.ExceptionTranslationFilter">
-    <property name="authenticationEntryPoint">
-      <bean
-        class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-        <property name="loginFormUrl" value="/admin/login.do" />
-        <property name="forceHttps" value="false" />
-      </bean>
-    </property>
-    <property name="accessDeniedHandler">
-      <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-        <property name="errorPage" value="/accessDenied.jsp" />
-      </bean>
-    </property>
-  </bean>
-
-  <!-- 
-    During the request execution security exceptions may be thrown, either during the
-    authentication or authorization phase. This filter redirects authentication failures
-    to the login form, whilst returns the user to an access denied page if the authorization
-    levels are not enough
-  -->
-  <bean id="owsExceptionTranslationFilter"
-    class="org.springframework.security.web.access.ExceptionTranslationFilter">
-    <property name="authenticationEntryPoint">
-      <ref bean="basicProcessingFilterEntryPoint" />
-    </property>
-    <!-- disappeared in spring 3.x 
-    <property name="createSessionAllowed" value="false" />  -->
-    <property name="accessDeniedHandler">
-      <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-        <property name="errorPage" value="/accessDenied.jsp" />
-      </bean>
-    </property>
-  </bean>
+  <bean id="geoserverMetadataSource" class="org.geoserver.security.filter.GeoServerSecurityMetadataSource" />
 
   <!--
     The actual remember-me cookie handler
   -->
   <bean id="rememberMeServices"
-    class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
-    <property name="userDetailsService" ref="userDetailsService" />
-    <property name="key" value="geoserver" />
+    class="org.geoserver.security.rememberme.RememberMeServicesFactoryBean">
+    <constructor-arg ref="geoServerSecurityManager"/>
   </bean>
 
+  <!-- global security manager -->
   <!-- 
     The bean managing authentication, basically forwards authentication requests against
     a number of child providers
   -->
-  <bean id="authenticationManager"
-    class="org.springframework.security.authentication.ProviderManager">
-    <property name="providers">
-      <list>
-        <ref local="daoAuthenticationProvider" />
-        <bean
-          class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
-          <property name="key" value="geoserver" />
-        </bean>
-        <bean
-          class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
-          <property name="key" value="geoserver" />
-        </bean>
-      </list>
-    </property>
+  <bean id="authenticationManager" class="org.geoserver.security.GeoServerSecurityManager"
+     depends-on="extensions">
+    <constructor-arg ref="dataDirectory"/>
+    <property name="eraseCredentialsAfterAuthentication" value="false"/>  	  
   </bean>
+  <alias name="authenticationManager" alias="geoServerSecurityManager"/>
 
-  <!-- 
-    This one adds passoword checks, eventual password encryption and other services on 
-    on top of a user details service that is asked to provide user informations
-    given just the user name
-  -->
-  <bean id="daoAuthenticationProvider"
-    class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-    <property name="userDetailsService" ref="userDetailsService" />
+ 
+  <!-- password encoders -->
+  <bean id="nullPasswordEncoder"        
+    class="org.geoserver.security.password.GeoServerNullPasswordEncoder">
   </bean>
+  <bean id="emptyPasswordEncoder"
+    class="org.geoserver.security.password.GeoServerEmptyPasswordEncoder">
+  </bean>
+  <bean id="plainTextPasswordEncoder"        
+    class="org.geoserver.security.password.GeoServerPlainTextPasswordEncoder">
+    <property name="prefix" value="plain" />
+  </bean>
+  <bean id="pbePasswordEncoder"    
+    class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt1" />
+    <property name="algorithm" value="PBEWITHMD5ANDDES" />
+  </bean>
+  <bean id="strongPbePasswordEncoder"    
+    class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt2" />
+    <property name="providerName" value="BC" />
+    <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC" />
+    <property name="availableWithoutStrongCryptogaphy" value="false" />
+  </bean>  
+  <bean id="digestPasswordEncoder"    
+    class="org.geoserver.security.password.GeoServerDigestPasswordEncoder" scope="prototype">
+    <property name="prefix" value="digest1" />    
+  </bean>
+  
+    
+  <!--
+  Extensions can inject another class implementing org.geoserver.security.KeyStoreProvider   
+  <bean id="keyStoreProvider" class="org.geoserver.security.KeyStoreProviderImpl" />
+   -->
+   
+  <bean id="roleConverter" class="org.geoserver.security.impl.GeoServerRoleConverterImpl" >  
+  	<property name="roleDelimiterString" value=";" />
+  	<property name="roleParameterDelimiterString" value=","/>
+  	<property name="roleParameterStartString" value="("/>
+  	<property name="roleParameterEndString" value= ")"/>
+  	<property name="roleParameterAssignmentString" value="="/>  
+  </bean>
+  
+   
 
-  <!-- 
-    Ah, finally the one that hits the disk and, backed by a property file, returns known
-    users, their passwords and roles
-  -->
-  <bean id="userDetailsService" class="org.geoserver.security.impl.GeoserverUserDao" depends-on="extensions">
-  </bean>
+  <bean id="xmlSecurityProvider" class="org.geoserver.security.xml.XMLSecurityProvider"/>
+  <bean id="basicAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerBasicAuthenticationProvider"/>
+  <bean id="digestAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerDigestAuthenticationProvider"/>
+  <bean id="roleFilterProvider" class="org.geoserver.security.filter.GeoServerRoleProvider"/>
+  <bean id="j2eeAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerJ2eeAuthenticationProvider"/>
+  <bean id="requestHeaderFilterProvider" class="org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationProvider"/>
+  <bean id="exceptionTranslationFilterProvider" class="org.geoserver.security.filter.GeoServerExceptionTranslationProvider"/>
+  <bean id="usernamePasswordFilterProvider" class="org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationProvider"/>
+  <bean id="x509FilterProvider" class="org.geoserver.security.filter.GeoServerX509CertificateAuthenticationProvider"/>
+  <bean id="contextPersistenceProvider" class="org.geoserver.security.filter.GeoServerSecurityContextPersistenceProvider"/>  
+  <bean id="rememberMeFilterProvider" class="org.geoserver.security.filter.GeoServerRememberMeAuthenticationProvider"/>
+  <bean id="anonymousFilterProvider" class="org.geoserver.security.filter.GeoServerAnonymousAuthenticationProvider"/>
+  <bean id="logoutFilterProvider" class="org.geoserver.security.filter.GeoServerLogoutProvider"/>  
+  <bean id="securityInterceptorFilterProvider" class="org.geoserver.security.filter.GeoServerSecurityInterceptorProvider"/>  
+  <bean id="casFilterProvider" class="org.geoserver.security.cas.GeoServerCasAuthenticationProvider"/>
+  <bean id="casProxiedFilterProvider" class="org.geoserver.security.cas.GeoServerCasProxiedAuthenticationProvider"/>
+  
+  <!--  needed for CAS proxy granting tickets -->  	
+  <!--  <bean id="pgtStorage" class="org.jasig.cas.client.proxy.MyProxyGrantingTicketStorageImpl"/> -->
+    	    	
+  <bean id="urlMasterPasswordProvider" 
+    class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
   
   <!-- The dao used to deal with layer level security -->
   <bean id="accessRulesDao" class="org.geoserver.security.impl.DataAccessRuleDAO">

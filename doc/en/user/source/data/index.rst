@@ -59,5 +59,6 @@ Other data sources require the use of GeoServer extensions, extra downloads that
    primarykey/
    sqlsession
    app-schema/index
+   jndi
 
    

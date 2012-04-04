@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	
+    <!-- user group service panel infos -->
+    <bean id="memoryUserGroupServicePanelInfo" class="org.geoserver.security.web.usergroup.MemoryUserGroupServicePanelInfo">
+        <property name="id" value="security.memoryUserGroupService" />
+        <property name="shortTitleKey" value="MemoryUserGroupServicePanel.short"/>
+        <property name="titleKey" value="MemoryUserGroupServicePanel.title"/>
+        <property name="descriptionKey" value="MemoryUserGroupServicePanel.description"/>
+    </bean>
+    <bean id="readOnlyUserGroupServicePanelInfo" class="org.geoserver.security.web.usergroup.ReadOnlyUserGroupServicePanelInfo">
+        <property name="id" value="security.readOnlyUserGroupService" />
+        <property name="shortTitleKey" value="ReadOnlyUserGroupServicePanel.short"/>
+        <property name="titleKey" value="ReadOnlyUserGroupServicePanel.title"/>
+        <property name="descriptionKey" value="ReadOnlyUserGroupServicePanel.description"/>
+    </bean>
+
+    <!-- role service panel info -->
+    <bean id="memoryRoleServicePanelInfo" class="org.geoserver.security.web.role.MemoryRoleServicePanelInfo">
+        <property name="id" value="security.memoryRoleService" />
+        <property name="shortTitleKey" value="MemoryRoleServicePanel.short"/>
+        <property name="titleKey" value="MemoryRoleServicePanel.title"/>
+        <property name="descriptionKey" value="MemoryRoleServicePanel.description"/>
+    </bean>
+    <bean id="readOnlyRoleServicePanelInfo" class="org.geoserver.security.web.role.ReadOnlyRoleServicePanelInfo">
+        <property name="id" value="security.readOnlyRoleService" />
+        <property name="shortTitleKey" value="ReadOnlyRoleServicePanel.short"/>
+        <property name="titleKey" value="ReadOnlyRoleServicePanel.title"/>
+        <property name="descriptionKey" value="ReadOnlyRoleServicePanel.description"/>
+    </bean>
+
+</beans> 

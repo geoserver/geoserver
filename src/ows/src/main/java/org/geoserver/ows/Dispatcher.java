@@ -51,7 +51,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.util.SecurityUtils;
 import org.geotools.util.Version;
 import org.geotools.xml.EMFUtils;
 import org.geotools.xml.transform.TransformerBase;
@@ -1610,7 +1609,8 @@ public class Dispatcher extends AbstractController {
     }
 
     protected boolean  isSecurityException(Throwable t) {
-        return SecurityUtils.isSecurityException(t);        
+        return t != null && 
+            t.getClass().getPackage().getName().startsWith("org.springframework.security");
     }
 
     public int getXMLPostRequestLogBufferSize() {

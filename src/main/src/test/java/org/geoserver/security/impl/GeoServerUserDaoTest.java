@@ -2,6 +2,7 @@ package org.geoserver.security.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -19,7 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class GeoServerUserDaoTest extends TestCase {
 
-    static class TestableUserDao extends GeoserverUserDao {
+    static class TestableUserDao extends GeoServerUserDao {
         
         public TestableUserDao(Properties p) throws IOException {
             userMap = loadUsersFromProperties(p);
@@ -71,7 +72,7 @@ public class GeoServerUserDaoTest extends TestCase {
     
     public void testSetUser() throws Exception {
         dao.setUser(new User("wfs", "pwd", true, true, true, true, 
-                new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL"), new GrantedAuthorityImpl("ROLE_WMS_ALL")}));
+                Arrays.asList(new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL"), new GrantedAuthorityImpl("ROLE_WMS_ALL")})));
         UserDetails user = dao.loadUserByUsername("wfs");
         assertEquals("wfs", user.getUsername());
         assertEquals("pwd", user.getPassword());
@@ -88,7 +89,7 @@ public class GeoServerUserDaoTest extends TestCase {
     public void testSetMissingUser() throws Exception {
         try {
             dao.setUser(new User("notther", "pwd", true, true, true, true, 
-                    new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL")}));
+                    Arrays.asList(new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL")})));
             fail("The user is not there, setUser should fail");
         } catch(IllegalArgumentException e) {
             // cool
@@ -97,14 +98,14 @@ public class GeoServerUserDaoTest extends TestCase {
     
     public void testAddUser() throws Exception {
         dao.putUser(new User("newuser", "pwd", true, true, true, true, 
-                new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL")}));
+                Arrays.asList(new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL")})));
         assertNotNull(dao.loadUserByUsername("newuser"));
     }
     
     public void addExistingUser() throws Exception {
         try {
             dao.putUser(new User("admin", "pwd", true, true, true, true, 
-                    new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL")}));
+                    Arrays.asList(new GrantedAuthority[] {new GrantedAuthorityImpl("ROLE_WFS_ALL")})));
             fail("The user is already there, addUser should fail");
         } catch(IllegalArgumentException e) {
             // cool

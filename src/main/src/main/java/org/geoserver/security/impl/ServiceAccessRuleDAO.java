@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.geoserver.catalog.Catalog;
@@ -154,5 +155,20 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
         // regexp: ignore extra spaces, split on dot
         return path.split("\\s*\\.\\s*");
     }
+    
+    /**
+     * Returns a sorted set of rules associated to the role
+     * 
+     * @param role
+     * @return
+     */
+    public SortedSet<ServiceAccessRule> getRulesAssociatedWithRole(String role) {
+        SortedSet<ServiceAccessRule> result = new TreeSet<ServiceAccessRule>();
+        for (ServiceAccessRule rule: getRules())
+            if (rule.getRoles().contains(role))
+                result.add(rule);
+        return result;
+    }               
+
 
 }

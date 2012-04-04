@@ -1,0 +1,244 @@
+<!-- ========================================================================================= -->
+  <!-- The following is the Spring Security configuration for form based authentication, with    -->
+  <!-- login/logout handling, as well as remember-me cookie handling, and session integration so -->
+  <!-- that user does not have to login for each page.                                           -->
+  <!-- This also makes sure that when you request a secured resource you go first to the         -->
+  <!-- login page, but get redirected to the originally requested page once login is successful  -->
+  <!-- ========================================================================================= -->
+
+  <!-- 
+    This filter delegates a different chain of sub-filters for administration
+    console pages and OWS services. Basically, we set up a chain involving basic/anonymous
+    authentication for OWS services, and a form based authentication for  the web console, 
+    so that accessing the console by means of simple calls is still easy.
+    
+    An attempt at form+basic has been done, that would have eased writing code accessing
+    directly the console, but it does not play well with logout: once the browser learns
+    about basic auth credentials it'll keep on using them, the only way to make it stop
+    is to declare a different user in the location bar, such as in: http://user@host:port/...
+    
+    For filters introduction, their meaning, the
+    different setup between form and basic authentication accesses,
+    and importance of the order please see the Spring Security reference guide. 
+    
+  -->
+  
+  <!-- 
+  <bean id="filterSecurityRestInterceptor"
+      class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+      <property name="authenticationManager" ref="authenticationManager" />
+      <property name="accessDecisionManager">        
+        <bean class="org.springframework.security.access.vote.AffirmativeBased">
+          <property name="allowIfAllAbstainDecisions" value="false" />
+          <property name="decisionVoters">
+            <list>
+              <bean class="org.springframework.security.access.vote.RoleVoter" />
+              <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+            </list>
+          </property>
+        </bean>
+      </property>
+      <property name="securityMetadataSource" ref="restFilterDefinitionMap"/>
+  </bean>
+ -->
+ 
+ <!-- 
+    The actual authorization checks at the filter level. 
+    The voters make sure the user is both authenticated (the 
+    anonymous filter ensures there is at least an anonymous one)
+    and have the roles required.
+    The securityMetadataSource provides a set of path along with the
+    roles that the user must have in order to access the secured resource
+  <bean id="filterSecurityInterceptor"
+    class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">    
+    <property name="authenticationManager" ref="authenticationManager" />
+    <property name="accessDecisionManager">
+      <bean class="org.springframework.security.access.vote.AffirmativeBased">
+        <property name="allowIfAllAbstainDecisions" value="false" />
+        <property name="decisionVoters">
+          <list>
+            <bean class="org.springframework.security.access.vote.RoleVoter" />
+            <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="securityMetadataSource">
+        <sec:filter-security-metadata-source lowercase-comparisons="true" path-type="ant">
+           <sec:intercept-url pattern="/config/**" access="ROLE_ADMINISTRATOR"/>
+           <sec:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        </sec:filter-security-metadata-source>
+    </property>
+  </bean>
+  -->
+  
+  <!--   
+    This filter integrates the authentication information in the http sessions, so it's
+    meant to be used only for the administration console, but not for the services.
+    Gathers authentication infos from the session, so that you don't have to re-authenticate
+    at each request, and adds it to the session after authentication.
+    This specific instance is configured with remember-me functionality, so that authentication
+    information can be gathered from a cookie set on the browser, too.
+    This version will create the user session if missing, it's meant for web console operation.
+  <bean id="securityContextAscFilter"
+    class="org.springframework.security.web.context.SecurityContextPersistenceFilter">    
+    <property name='securityContextRepository'>
+       <bean class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+         <property name='allowSessionCreation' value='true' />
+       </bean>
+    </property>
+  </bean>
+  -->
+
+  <!-- 
+    Same as the one above, but this one uses a session if it's already there, otherwise
+    it won't create it. This is meant to keep the overhead on service call low, but allow
+    users that have already authenticated using a form based access to keep using that
+    authentication when accessing services.
+  <bean id="securityContextNoAscFilter"
+    class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+    <property name='securityContextRepository'>
+       <bean class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+         <property name='allowSessionCreation' value='false' />
+       </bean>
+    </property>
+  </bean>
+  -->
+
+  <!--
+    This filters processes logouts, removing both session informations, and the remember-me
+    cookie from the browser
+  <bean id="logoutFilter"
+    class="org.springframework.security.web.authentication.logout.LogoutFilter">
+    <constructor-arg value="/web/" />
+    <constructor-arg>
+      <list>
+        <ref bean="rememberMeServices" />
+        <bean
+          class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+      </list>
+    </constructor-arg>
+  </bean>
+    -->
+  
+
+  <!-- 
+    This filter does the actual main authentication workflow and handles form based authentication too.
+    It asks the authentication manager wheter access is granted to the resource the user is trying to access,
+    redirects to a failure page if it fails, and to another filter if the authentication informations are 
+    just being provided. This is useful only for form based authentication, the OWS services do use another
+    authentication processing filter.
+  
+  <bean id="successHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler" >
+  
+    <property name="defaultTargetUrl" value="/" /> 
+  </bean>
+  <bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" >
+    <property name="defaultFailureUrl" value="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true" />
+  </bean>
+  
+  
+  <bean id="formLoginFilter"
+    class="org.geoserver.security.GeoServerAuthenticationProcessingFilter">
+    <property name="authenticationManager" ref="authenticationManager" />
+    <property name="authenticationFailureHandler" ref="failureHandler" />
+    <property name="authenticationSuccessHandler" ref="successHandler" />    
+    <property name="filterProcessesUrl" value="/j_spring_security_check" />
+    <property name="rememberMeServices" ref="rememberMeServices" />
+    <property name="allowSessionCreation" value="false" />
+  </bean>
+-->
+  <!--  
+    Double check, this may not be necessary
+  <bean id="servletApiSupportFilter"
+    class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter" />
+  -->
+
+  <!-- 
+    If authentication is missing from the SecurityContext, tries to put authentication
+    information into the context using remember-me cookies. Will try to authenticate
+    the contents of the cookie against the authentication manager
+  <bean id="rememberMeFilter"
+    class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
+    <property name="authenticationManager" ref="authenticationManager" />
+    <property name="rememberMeServices" ref="rememberMeServices" />
+  </bean>
+  -->
+
+  <!-- 
+    Puts default authentication informations in the security context, making sure
+    we always get an anonymous user and anonymous role if all other authentication
+    attempts failed
+    
+  <bean id="anonymousFilter"
+    class="org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter">
+    <property name="key" value="geoserver" />
+    <property name="userAttribute" value="anonymousUser,dummy" />
+  </bean>
+  -->
+  
+  <!-- 
+    Entry points for basic, digest, form based login. 
+    A http 403, access denied entry point is needed for proxy authentication 
+
+  <bean id="basicProcessingFilterEntryPoint"
+    class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+    <property name="realmName">
+      <value>GeoServer Realm</value>
+    </property>
+  </bean>
+   <bean id="digestProcessingFilterEntryPoint"
+    class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
+    <property name="realmName">
+      <value>GeoServer Realm</value>
+    </property>
+    <property name="key" value="geoserver"/>
+    <property name="nonceValiditySeconds" value="300"/>
+  </bean>
+     <bean id="accessDeniedEntryPoint"
+    class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint">
+  </bean>
+  <bean id="loginFormFilterEntryPoint"
+    class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    <property name="loginFormUrl" value="/admin/login.do" />
+    <property name="forceHttps" value="false" />
+   </bean>
+  -->  
+  
+
+  <!-- 
+    During the request execution security exceptions may be thrown, either during the
+    authentication or authorization phase. This filter redirects authentication failures
+    to the login form, whilst returns the user to an access denied page if the authorization
+    levels are not enough
+  <bean id="exceptionTranslationFilter"
+    class="org.springframework.security.web.access.ExceptionTranslationFilter">
+    <property name="authenticationEntryPoint">
+        <ref bean="loginFormFilterEntryPoint"/>
+    </property>
+    <property name="accessDeniedHandler">
+      <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/accessDenied.jsp" />
+      </bean>
+    </property>
+  </bean>
+  -->
+
+  <!-- 
+    During the request execution security exceptions may be thrown, either during the
+    authentication or authorization phase. This filter redirects authentication failures
+    to the login form, whilst returns the user to an access denied page if the authorization
+    levels are not enough
+  <bean id="exceptionTranslationOwsFilter"
+    class="org.springframework.security.web.access.ExceptionTranslationFilter">
+    <property name="authenticationEntryPoint">
+      <ref bean="basicProcessingFilterEntryPoint" />
+    </property>
+    <property name="accessDeniedHandler">
+      <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/accessDenied.jsp" />
+      </bean>
+    </property>
+  </bean>
+  -->
+  

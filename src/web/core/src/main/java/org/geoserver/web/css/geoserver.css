@@ -12,7 +12,14 @@ body.help {
 padding: 2em;
 }
 body.help ul {
-padding-top: 1em;
+/*padding-top: 1em;*/
+}
+body.help ol, ul ul {
+color:black;
+}
+
+body.help ol li {
+display:list-item;
 }
 body.help p {
 color: black;
@@ -81,7 +88,9 @@ input[readonly] {
 	border: 1px solid Lightgrey;
 }
 
-
+.palette th, .palette td {
+  padding: 0;
+}
 
 /*-----------------------
 Utility Classes
@@ -146,6 +155,18 @@ margin-right: 0;
 list-style-type: none;
 }
 
+ul.horizontal li {
+display: inline;
+padding-right:1em;
+}
+
+ul.horizontal li label {
+display:inline;
+margin-left:0.2em;
+}
+.displayNone {
+display:none;
+}
 /*-----------------------
 Feedback Message Styles
 -----------------------*/
@@ -304,12 +325,33 @@ padding: 0;
 margin: 0.3em 0;
 }
 
+form a.expanded {
+background-image: url(../img/icons/silk/bullet_arrow_down.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+padding-left: 16px;
+height: 18px;
+font-weight: bold;
+}
+
+form a.collapsed {
+background-image: url(../img/icons/silk/bullet_arrow_right.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+padding-left: 16px;
+height: 18px;
+font-weight: bold;
+}
 fieldset { /* override blueprint's settings */
 padding: 0;
 margin: 0 0 2em;
 border: 1px solid #c6e09b;
 border-width: 1px 0 0;
 position: relative;
+}
+
+fieldset.noTitle {
+border: 0;
 }
 
 legend {
@@ -1072,6 +1114,11 @@ padding: 2px 0px 2px 20px;
 
 .help-link {
 background: transparent url(../img/icons/silk/help.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+.edit-link {
+background: transparent url(../img/icons/silk/pencil.png) scroll no-repeat left center;
 padding: 2px 0px 2px 20px;
 }
 

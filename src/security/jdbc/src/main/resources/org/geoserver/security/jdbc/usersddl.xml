@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>DDL statements for user database</comment>
+  <entry key="check.table">user_props</entry>
+  <entry key="users.create">
+	create table users(name varchar(128) not null,password varchar(254), enabled char(1) not null, primary key(name))
+  </entry>
+  <entry key="userprops.create">
+	create table user_props(username varchar(128) not null,propname varchar(64) not null, propvalue varchar(2048),primary key (username,propname))
+  </entry>
+
+  <entry key="groups.create">
+	create table groups(name varchar(128) not null, enabled char(1) not null, primary key(name))
+  </entry>
+  <entry key="groupmembers.create">
+	create table group_members(groupname varchar(128) not null, username varchar(128) not null, primary key(groupname,username))
+  </entry>
+  <entry key="groupmembers.indexcreate">
+	create index group_members_idx on group_members(username,groupname)
+  </entry>
+
+  <entry key="users.drop">drop table users</entry>
+  <entry key="userprops.drop">drop table user_props</entry>
+  <entry key="groups.drop">drop table groups</entry>
+  <entry key="groupmembers.drop">drop table group_members</entry>
+	  
+</properties>

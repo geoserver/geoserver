@@ -115,15 +115,18 @@ public abstract class AbstractURLPublisher extends AbstractController {
             response.setCharacterEncoding(encInfo.getEncoding() != null ? encInfo.getEncoding()
                     : "UTF-8");
 
-            // send out the first four bytes read
-            output = response.getOutputStream();
-            output.write(b4, 0, count);
-
-            // copy the content to the output
-            byte[] buffer = new byte[8192];
-            int n = -1;
-            while ((n = input.read(buffer)) != -1) {
-                output.write(buffer, 0, n);
+            //count < 1 -> empty file
+            if (count > 0) {
+                // send out the first four bytes read
+                output = response.getOutputStream();
+                output.write(b4, 0, count);
+    
+                // copy the content to the output
+                byte[] buffer = new byte[8192];
+                int n = -1;
+                while ((n = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, n);
+                }
             }
         } finally {
             if (input != null)

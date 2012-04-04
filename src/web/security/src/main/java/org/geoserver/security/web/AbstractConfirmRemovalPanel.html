@@ -1,0 +1,69 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+  <style type="text/css">
+    div.removalDialog h3 {
+       margin-left: auto;
+       max-width: 90%;
+    }
+    div.removalDialog {
+       padding: 2em;
+    }
+    div.removalDialog span {
+       color: #000;
+    }
+    div.removalDialog ul ul {
+       padding-left: 0.75em;
+    }
+  </style>
+</wicket:head>
+<body>
+<wicket:panel>
+   
+<div wicket:id="rootObjects">
+</div>
+  <div class="removalDialog">
+    <h3><wicket:message key="AbstractConfirmRemovelPanel.aboutRemove">About to remove</wicket:message></h3>
+    <ul>
+      <li>
+       <div wicket:id="removedObjects">
+        <span>
+          <wicket:message key="AbstractConfirmRemovelPanel.removedObjects">
+            The following objects will be removed
+          </wicket:message>:
+        </span>
+        <ul>
+          <li wicket:id="rulesRemoved">
+            <strong><wicket:message key="rules" /></strong>:
+            <ul>
+              <li wicket:id="rules">
+                <span wicket:id="name"></span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+       </div>
+      </li>
+      <li>
+       <div wicket:id ="problematicObjects">
+        <span>
+          <wicket:message key="AbstractConfirmRemovelPanel.problems">
+            The following objects can not be removed
+          </wicket:message>:
+        </span>
+        <ul>
+           <li wicket:id="rulesNotRemoved">
+             <strong><wicket:message key="rules" /></strong>:
+             <ul>
+               <li wicket:id="problems">
+                 <span wicket:id="name"></span>
+               </li>
+             </ul> 
+           </li>
+        </ul>
+       </div>
+      </li>
+    </ul>
+  </div>
+</wicket:panel>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>    
+    <artifactId>security</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+  <groupId>org.geoserver.security</groupId>
+  <artifactId>sec-jdbc</artifactId>
+  <packaging>jar</packaging>
+  <version>2.2-SNAPSHOT</version>
+  <name>GeoServer JDBC Security Module</name>
+  
+  <dependencies>
+    <dependency>	
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+      <version>8.4-701.jdbc3</version>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <scope>test</scope>
+      <version>5.1.17</version>
+    </dependency>
+  </dependencies>
+  <profiles>
+    <profile>
+      <!-- placing this in a profile since it interfers with running from the
+           development environemtn with the startup of the jdbc datastores -->
+      <id>jndi</id>
+      <dependencies>
+        <dependency>
+          <groupId>simple-jndi</groupId>
+          <artifactId>simple-jndi</artifactId>
+          <version>0.11.4.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+</project>

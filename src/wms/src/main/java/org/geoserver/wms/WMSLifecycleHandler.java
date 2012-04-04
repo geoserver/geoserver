@@ -73,7 +73,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
      */
     private void resetAnimatorExecutorService() {
         shutdownAnimatorExecutorService();
-        
+
         Long framesTimeout = this.wmsConfig.getMaxAnimatorRenderingTime() != null ? 
                 this.wmsConfig.getMaxAnimatorRenderingTime() : Long.MAX_VALUE;
         ExecutorService animatorExecutorService = 

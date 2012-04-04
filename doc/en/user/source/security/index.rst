@@ -3,14 +3,18 @@
 Security
 ========
 
-This section details the security subsystem in GeoServer.  The system is based on `Spring Security <http://static.springsource.org/spring-security/site/>`_.
+This section details the security subsystem in GeoServer, which is based on `Spring Security <http://static.springsource.org/spring-security/site/>`_. For web-based configuration, please see the section on :ref:`webadmin_security` in the :ref:`web_admin`.
+
+As of GeoServer 2.2.0, the security subsystem has been completely re-engineered, allowing for much more secure and flexible operations. 
 
 .. toctree::
    :maxdepth: 2
 
-   sec_access
-   sec_roles
-   sec_service
-   sec_layer
-   sec_rest
-   sec_disable
+   usergrouprole/index
+   auth/index
+   passwd
+   root
+   service
+   layer
+   disable
+   tutorials/index

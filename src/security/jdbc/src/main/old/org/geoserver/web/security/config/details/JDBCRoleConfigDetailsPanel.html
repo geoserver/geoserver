@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+	<fieldset>
+		<div wicket:id="jdbcConnectFormComponent"></div>
+	</fieldset>
+	<fieldset>
+	<ul>
+		<li>		
+ 			<label for="config.creatingTables"><wicket:message key="creatingTables"></wicket:message></label>
+ 			<input type="checkbox" wicket:id="config.creatingTables" /> 		 		 
+		</li>		
+		<li>			
+			<label for="config.propertyFileNameDDL"><wicket:message key="propertyFileNameDDL"></wicket:message></label>  
+			<input wicket:id="config.propertyFileNameDDL" type="text" />	
+		</li>
+		<li>
+			<label for="config.propertyFileNameDML"><wicket:message key="propertyFileNameDML"></wicket:message></label>  
+			<input wicket:id="config.propertyFileNameDML" type="text" />	
+		</li>		
+	</ul>
+	</fieldset>	
+</wicket:extend>
+</body>
+</html>

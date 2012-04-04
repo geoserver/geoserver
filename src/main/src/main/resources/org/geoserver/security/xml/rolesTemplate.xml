@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roleRegistry version = "1.0" xmlns="http://www.geoserver.org/security/roles" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geoserver.org/security/roles roles.xsd ">
+  <roleList>
+  </roleList>  
+  <userList>
+  </userList>  
+  <groupList>
+  </groupList>
+</roleRegistry>

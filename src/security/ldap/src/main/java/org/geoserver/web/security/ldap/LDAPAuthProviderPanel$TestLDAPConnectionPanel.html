@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <ul>
+      <li>
+        <label for="username"><wicket:message key="username"></wicket:message></label>
+        <input id="username" wicket:id="username" type="text"></input>
+      </li>
+      <li>
+        <label for="password"><wicket:message key="password"></wicket:message></label>
+        <input id="password" wicket:id="password" type="password"></input>
+      </li>
+      <li>
+        <div class="button-group">
+          <a href="#" wicket:id="test"><span><wicket:message key="testConnection"></wicket:message></span></a>
+        </div>
+      </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

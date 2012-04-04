@@ -7,7 +7,6 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureLock;
 import org.geotools.data.FeatureLocking;
 import org.geotools.data.Query;
@@ -15,7 +14,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
-import static org.geoserver.security.decorators.SecurityUtils.*;
+import static org.geoserver.security.SecurityUtils.*;
 
 /**
  * See {@link SecuredFeatureStore} for an explanation of why this class exists

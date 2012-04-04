@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+      <li>
+        <fieldset>
+          <legend>
+            <span wicket:id="description"></span>
+          </legend>
+          <ul>
+           <li>
+            <label for="name"><wicket:message key="name"></wicket:message></label>
+            <input type="text" wicket:id="name" id="name" class="field text"/>
+           </li>
+           <li>
+            <label for="parent"><wicket:message key="parent"></wicket:message></label>
+            <select  wicket:id="parent" id="parent" style="min-width:200px;"/>
+           </li>
+         </ul>
+       </fieldset>
+      </li>
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="properties"></wicket:message></span>
+          </legend>
+         <div wicket:id="properties"/>
+        </fieldset>
+    </li>
+  </ul>
+  <div class="button-group selfclear">
+    <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a> 
+    <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+  </div>
+</form>
+</wicket:extend>
+</body>
+</html>

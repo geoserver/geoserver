@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+</wicket:head>
+<body>
+<wicket:extend>
+  <h1><wicket:message key="new"><span wicket:id="title1"></span></wicket:message></h1>
+  <p><wicket:message key="create"><span wicket:id="title2"></span></wicket:message></p>
+  <form>
+  <div wicket:id="servicesContainer">
+  <ul>
+    <li wicket:id="services" style="padding: 0;">
+      <a wicket:id="link"><span wicket:id="title"></span></a> - <span wicket:id="description"></span>
+    </li>
+  </ul>
+  </div>
+  </form>
+  <form id="form" wicket:id="form">
+    <ul>
+     <li>
+      <div wicket:id="panel">
+        <div wicket:id="content"></div>
+      </div>
+     </li>
+    </ul>
+    <div class="button-group clearBoth">
+      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a> 
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </div>
+  </form>
+</wicket:extend>
+</body>
+</html>

@@ -182,13 +182,15 @@
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-core</artifactId>
-  </dependency>  
+  </dependency> 
+<!-- 
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-core</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>  
+-->
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-web</artifactId>
@@ -197,5 +199,45 @@
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-config</artifactId>
    </dependency>
+   <dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-cas</artifactId>
+   </dependency>
+   <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt</artifactId>
+   </dependency>
+   <dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk14</artifactId>    
+  </dependency>
  </dependencies> 
+
+ <build>
+  <plugins>
+   <plugin>
+    <artifactId>maven-jar-plugin</artifactId>
+    <configuration>
+      <archive>
+        <manifestSections>
+          <manifestSection>
+            <name>org/geoserver/security</name>
+            <manifestEntries>
+              <Sealed>true</Sealed>
+            </manifestEntries>
+          </manifestSection>
+         </manifestSections>
+      </archive>
+    </configuration>
+    <executions>
+      <execution>
+        <phase>package</phase>
+        <goals>
+           <goal>test-jar</goal>
+        </goals>
+      </execution>
+    </executions>
+   </plugin>
+  </plugins>
+ </build>
 </project>

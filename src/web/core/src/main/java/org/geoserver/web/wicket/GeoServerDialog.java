@@ -6,7 +6,6 @@ package org.geoserver.web.wicket;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -23,7 +22,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.StringResourceModel;
 
 /**
  * An abstract OK/cancel dialog, subclasses will have to provide the actual contents and behavior
@@ -33,7 +31,6 @@ import org.apache.wicket.model.StringResourceModel;
 public class GeoServerDialog extends Panel {
 
     ModalWindow window;
-
     DialogDelegate delegate;
 
     public GeoServerDialog(String id) {
@@ -160,20 +157,27 @@ public class GeoServerDialog extends Panel {
         window.close(target);
         delegate = null;
     }
-    
+
+    /**
+     * Submits the dialog.
+     */
+    public void submit(AjaxRequestTarget target) {
+        if (delegate.onSubmit(target, window.getPage().get("userPanel"))) {
+            close(target);
+        }
+    }
+
     /**
      * Submit link that will forward to the {@link DialogDelegate}
      * 
      * @return
      */
-    AjaxSubmitLink sumbitLink(Component contents) {
+    AjaxSubmitLink sumbitLink() {
         AjaxSubmitLink link = new AjaxSubmitLink("submit") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
-                if (delegate.onSubmit(target, (Component) this.getDefaultModelObject())) {
-                    close(target);
-                }
+                submit(target);
             }
             
             @Override
@@ -182,7 +186,7 @@ public class GeoServerDialog extends Panel {
             }
 
         };
-        link.setDefaultModel(new Model(contents));
+        //link.setDefaultModel(new Model(contents));
         return link;
     }
 
@@ -218,7 +222,7 @@ public class GeoServerDialog extends Panel {
             Form form = new Form("form");
             add(form);
             form.add(contents);
-            AjaxSubmitLink submit = sumbitLink(contents);
+            AjaxSubmitLink submit = sumbitLink();
             form.add(submit);
             form.add(cancelLink());
             form.setDefaultButton(submit);
@@ -232,7 +236,7 @@ public class GeoServerDialog extends Panel {
             add(new ListView<IModel>("messages", Arrays.asList(messages)) {
                 @Override
                 protected void populateItem(ListItem<IModel> item) {
-                    item.add(new Label("message", item.getModelObject()));
+                    item.add(new Label("message", item.getModelObject()).setEscapeModelStrings(false));
                 }
             });
         }

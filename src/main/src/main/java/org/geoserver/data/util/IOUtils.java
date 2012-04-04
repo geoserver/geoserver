@@ -23,6 +23,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
+import org.geoserver.config.util.XStreamPersister;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -379,6 +381,87 @@ public class IOUtils {
             IOException ioe = new IOException("Not valid archive file type.");
             ioe.initCause(e);
             throw ioe;
+        }
+    }
+
+    /**
+     * Performs serialization with an {@link XStreamPersister} in a safe manner in which a temp
+     * file is used for the serialization so that the true destination file is not partially 
+     * written in the case of an error. 
+     * 
+     * @param f The file to write to, only modified if the temp file serialization was error free.
+     * @param obj The object to serialize.
+     * @param xp The persister.
+     * 
+     * @throws Exception
+     */
+    public static void xStreamPersist(File f, Object obj, XStreamPersister xp) throws IOException {
+        //first save to a temp file
+        File temp = new File(f.getParentFile(),f.getName()+".tmp");
+        if ( temp.exists() ) {
+            temp.delete();
+        }
+        
+        BufferedOutputStream out = null;
+        try{
+            out=new BufferedOutputStream( new FileOutputStream( temp ) );
+            xp.save( obj, out );
+            out.flush();
+        } finally {
+            if (out != null)
+                org.apache.commons.io.IOUtils.closeQuietly(out);
+        }
+        
+        //no errors, overwrite the original file
+        rename(temp,f);
+    }
+
+    /**
+     * Backs up a directory <tt>dir</tt> by creating a .bak next to it.
+     *  
+     * @param dir The directory to back up.
+     */
+    public static void backupDirectory(File dir) throws IOException {
+        File bak = new File( dir.getCanonicalPath() + ".bak");
+        if ( bak.exists() ) {
+            FileUtils.deleteDirectory( bak );
+        }
+        dir.renameTo( bak );
+    }
+
+    /**
+     * Renames a file.
+     *  
+     * @param f The file to rename.
+     * @param newName The new name of the file.
+     */
+    public static void rename(File f, String newName) throws IOException {
+        rename( f, new File( f.getParentFile(), newName ) );
+    }
+    
+    /**
+     * Renames a file.
+     *  
+     * @param source The file to rename.
+     * @param dest The file to rename to. 
+     */
+    public static void rename( File source, File dest ) throws IOException {
+        // same path? Do nothing
+        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()))
+            return;
+
+        // different path
+        boolean win = System.getProperty("os.name").startsWith("Windows");
+        if ( win && dest.exists() ) {
+            //windows does not do atomic renames, and can not rename a file if the dest file
+            // exists
+            if (!dest.delete()) {
+                throw new IOException("Could not delete: " + dest.getCanonicalPath());
+            }
+            source.renameTo(dest);
+        }
+        else {
+            source.renameTo(dest);
         }
     }
 }

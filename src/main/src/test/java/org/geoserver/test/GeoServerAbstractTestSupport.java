@@ -65,8 +65,10 @@ import org.geoserver.data.test.TestData;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -169,6 +171,9 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             CRS.reset("all");
         }
         
+        // reset security services
+        //GeoserverServiceFactory.Singleton.reset();
+        
         // set up test data 
         testData = buildTestData();
         testData.setUp();
@@ -206,6 +211,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                     servletContext);
             applicationContext.setUseLegacyGeoServerLoader(useLegacyDataDirectory());
             applicationContext.refresh();
+            applicationContext.publishEvent(new ContextLoadedEvent(applicationContext));
 
             // set the parameter after a refresh because it appears a refresh
             // wipes
@@ -331,7 +337,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected GeoServer getGeoServer() {
         return (GeoServer) applicationContext.getBean("geoServer");
     }
-    
+
+    /**
+     * Accesssor for global security manager instance from the test application context.
+     */
+    protected GeoServerSecurityManager getSecurityManager() {
+        return (GeoServerSecurityManager) applicationContext.getBean("geoServerSecurityManager");
+    }
+
     /**
      * Flush XSD if exists.
      */

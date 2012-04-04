@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geoserver.security.Response;
 import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;

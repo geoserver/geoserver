@@ -1,0 +1,7 @@
+Dummy file 
+
+The patch utility skips empty dirs --> tests will fail
+
+After applying the patch, this file can be removed
+
+

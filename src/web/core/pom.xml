@@ -127,6 +127,10 @@
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-web</artifactId>
    </dependency>
+   <dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk14</artifactId>    
+  </dependency>
   </dependencies>
 
   <build>

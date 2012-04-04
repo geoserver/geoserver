@@ -4,7 +4,7 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.geoserver.security.decorators.SecurityUtils.*;
+import static org.geoserver.security.SecurityUtils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

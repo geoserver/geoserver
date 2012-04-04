@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.geoserver.catalog.Catalog;
@@ -248,5 +249,18 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Returns a sorted set of rules associated to the role
+	 * 
+	 * @param role
+	 * @return
+	 */
+	public SortedSet<DataAccessRule> getRulesAssociatedWithRole(String role) {
+	    SortedSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
+	    for (DataAccessRule rule: getRules())
+	        if (rule.getRoles().contains(role))
+	            result.add(rule);
+	    return result;
+	}		
 }

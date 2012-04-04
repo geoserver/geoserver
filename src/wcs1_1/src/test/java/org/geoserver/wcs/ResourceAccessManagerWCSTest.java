@@ -18,7 +18,8 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.TestResourceAccessManager;
-import org.geoserver.util.SecurityUtils;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.SecurityUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
@@ -27,7 +28,6 @@ import org.opengis.filter.Filter;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.vfny.geoserver.wcs.WcsException;
@@ -225,9 +225,9 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
     @Override
     protected void authenticate(String username, String password) {
         // override as this is not a test going through the servlet filters
-        GrantedAuthority ga = new GrantedAuthorityImpl("MOCKROLE");
+        GrantedAuthority ga = new GeoServerRole("MOCKROLE");
         UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-                username, null, new GrantedAuthority[] { ga });
+                username, null, Arrays.asList(new GrantedAuthority[] { ga }));
         SecurityContextHolder.getContext().setAuthentication(user);
     }
 }

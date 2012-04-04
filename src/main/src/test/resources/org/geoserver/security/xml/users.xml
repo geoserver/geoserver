@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userregistry version="1.0" xmlns="http://www.geoserver.org/security/users" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geoserver.org/security /home/christian/gs-trunk/src/main/src/main/resources/org/geoserver/security/xml/users.xsd ">
+
+  <users>
+  	<user name="admin" password="geoserver"/>
+  	<user name="user1" password="11111"/>
+  	<user name="user2" password="22222">
+  		<property name="mail">user2@gmx.com</property>
+  		<property name="tel">12-34-38</property>  		
+  	</user>
+    <user name="disableduser" password="" enabled="false"/>
+  </users>
+  
+  <groups>
+    <group name="group1">
+      <member username="user1"/>
+      <member username="user2"/>
+    </group>
+    <group name="admins">
+      <member username="admin"/>
+    </group>
+    <group name="disabledgroup" enabled="false">
+      <member username="disableduser"/>
+    </group>
+    
+  </groups>
+  
+</userregistry>

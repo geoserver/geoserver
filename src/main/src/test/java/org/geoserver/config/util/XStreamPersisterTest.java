@@ -2,18 +2,18 @@ package org.geoserver.config.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import junit.framework.TestCase;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
@@ -34,23 +34,25 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.referencing.CRS;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.LineString;
 
-public class XStreamPersisterTest extends TestCase {
+public class XStreamPersisterTest extends GeoServerTestSupport {
 
     GeoServerFactory factory;
     CatalogFactory cfactory;
     XStreamPersister persister;
     
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
         
         factory = new GeoServerImpl().getFactory();
         persister = new XStreamPersisterFactory().createXMLPersister();
@@ -632,12 +634,12 @@ public class XStreamPersisterTest extends TestCase {
         return in( out );
     }
     
-    Document dom( InputStream in ) throws Exception {
+    protected Document dom( InputStream in ) throws ParserConfigurationException, SAXException, IOException  {
         return 
             DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( in );
     }
     
-    void print( InputStream in ) throws Exception {
+    protected void print( InputStream in ) throws Exception {
         Transformer tx = TransformerFactory.newInstance().newTransformer();
         tx.setOutputProperty( OutputKeys.INDENT, "yes" );
         

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>DML statements for user database</comment>
+
+  <entry key="users.count">
+	select count(*) from users 
+  </entry>
+
+  <entry key="users.all">
+	select name,password,enabled from users 
+  </entry>
+  <entry key="users.keyed">
+	select password,enabled from users where name = ?
+  </entry>
+  <entry key="users.insert">
+	insert into  users(name ,password,enabled) values (?,?,?)
+  </entry>
+  <entry key="users.update">
+	update users set password = ?, enabled = ? where name = ?
+  </entry>
+  <entry key="users.delete">
+	delete from  users where name = ?
+  </entry>
+  
+  <entry key="users.deleteAll">
+	delete from  users 
+  </entry>
+  
+
+  <entry key="userprops.all">
+	select username,propname,propvalue from  user_props 
+  </entry>
+  <entry key="userprops.selectForUser">
+	select propname,propvalue from  user_props where username = ?
+  </entry>
+  <entry key="userprops.userPropsForGroup">
+		select p.username,p.propname,propvalue from  user_props p, group_members m where m.groupname= ? and m.username = p.username
+  </entry>  
+  <entry key="userprops.deleteForUser">
+	delete from user_props where username=?
+  </entry>
+  <entry key="userprops.insert">
+	insert into user_props(username,propname,propvalue) values (?,?,?)
+  </entry>
+  <entry key="userprops.deleteAll">
+	delete from user_props 
+  </entry>
+  
+  <entry key="groups.count">
+	select count(*) from groups
+  </entry>
+  <entry key="groups.all">
+	select name,enabled from groups
+  </entry>
+  <entry key="groups.keyed">
+	select enabled from groups where name = ?
+  </entry>
+  <entry key="groups.insert">
+	insert into  groups(name ,enabled) values (?,?)
+  </entry>
+  <entry key="groups.update">
+	update groups set  enabled = ? where name = ?
+  </entry>
+  <entry key="groups.delete">
+	delete from  groups where name = ?
+  </entry>
+  <entry key="groups.deleteAll">
+	delete from  groups 
+  </entry>
+  
+  
+
+  <entry key="groupmembers.groupsForUser">
+	select m.groupname,g.enabled from group_members m, groups g where m.username = ? and m.groupname=g.name
+  </entry>
+  <entry key="groupmembers.usersForGroup">
+	select m.username,u.password,u.enabled from group_members m, users u where m.groupname = ? and m.username = u.name
+  </entry>
+  <entry key="groupmembers.insert">
+	insert into group_members(groupname,username) values (?,?)
+  </entry>
+  <entry key="groupmembers.delete">
+	delete from group_members where groupname=? and username = ?
+  </entry>
+  <entry key="groupmembers.deleteGroup">
+	delete from group_members where groupname=? 
+  </entry>
+  <entry key="groupmembers.deleteUser">
+	delete from group_members where username = ?
+  </entry>
+  <entry key="groupmembers.deleteAll">
+	delete from group_members 
+  </entry>
+	  
+</properties>

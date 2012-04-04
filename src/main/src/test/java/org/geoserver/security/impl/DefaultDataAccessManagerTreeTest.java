@@ -5,13 +5,13 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -45,13 +45,13 @@ public class DefaultDataAccessManagerTreeTest extends TestCase {
                 createNiceMock(WorkspaceInfo.class)).anyTimes();
         replay(catalog);
 
-        rwUser = new TestingAuthenticationToken("rw", "supersecret", new GrantedAuthority[] {
-                new GrantedAuthorityImpl("READER"), new GrantedAuthorityImpl("WRITER") });
+        rwUser = new TestingAuthenticationToken("rw", "supersecret", Arrays.asList(new GrantedAuthority[] {
+                new GeoServerRole("READER"), new GeoServerRole("WRITER") }));
         roUser = new TestingAuthenticationToken("ro", "supersecret",
-                new GrantedAuthority[] { new GrantedAuthorityImpl("READER") });
+                Arrays.asList(new GrantedAuthority[] { new GeoServerRole("READER") }));
         anonymous = new TestingAuthenticationToken("anonymous", null);
-        milUser = new TestingAuthenticationToken("military", "supersecret", new GrantedAuthority[] {
-                new GrantedAuthorityImpl("MILITARY") });
+        milUser = new TestingAuthenticationToken("military", "supersecret", Arrays.asList(new GrantedAuthority[] {
+                new GeoServerRole("MILITARY") }));
 
     }
 

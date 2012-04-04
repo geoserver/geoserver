@@ -347,7 +347,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         }
         
         //create it
-        return createDirectory( location );
+        return createDirectory( parent, location );
     }
     
     /**

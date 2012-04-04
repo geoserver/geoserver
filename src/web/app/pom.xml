@@ -99,6 +99,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>sec-jdbc</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>sec-ldap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
     </dependency>
@@ -366,16 +376,6 @@
       <dependency>
        <groupId>org.geoserver.extension</groupId>
        <artifactId>h2</artifactId>
-       <version>${project.version}</version>
-      </dependency>
-     </dependencies>
-    </profile>
-    <profile>
-     <id>security</id>
-     <dependencies>
-      <dependency>
-       <groupId>org.geoserver.extension</groupId>
-       <artifactId>web-security</artifactId>
        <version>${project.version}</version>
       </dependency>
      </dependencies>

@@ -31,6 +31,7 @@ import org.apache.wicket.model.Model;
 public class GeoServerDialog extends Panel {
 
     ModalWindow window;
+    Component userPanel;
     DialogDelegate delegate;
 
     public GeoServerDialog(String id) {
@@ -107,7 +108,8 @@ public class GeoServerDialog extends Panel {
         window.setPageCreator(new ModalWindow.PageCreator() {
 
             public Page createPage() {
-                return new ContentsPage(delegate.getContents("userPanel"));
+                userPanel = delegate.getContents("userPanel");
+                return new ContentsPage(userPanel);
             }
         });
         // make sure close == cancel behavior wise
@@ -156,13 +158,18 @@ public class GeoServerDialog extends Panel {
     public void close(AjaxRequestTarget target) {
         window.close(target);
         delegate = null;
+        userPanel = null;
     }
 
     /**
      * Submits the dialog.
      */
     public void submit(AjaxRequestTarget target) {
-        if (delegate.onSubmit(target, window.getPage().get("userPanel"))) {
+        submit(target, userPanel);
+    }
+
+    void submit(AjaxRequestTarget target, Component contents) {
+        if (delegate.onSubmit(target, contents)) {
             close(target);
         }
     }
@@ -172,12 +179,12 @@ public class GeoServerDialog extends Panel {
      * 
      * @return
      */
-    AjaxSubmitLink sumbitLink() {
+    AjaxSubmitLink sumbitLink(Component contents) {
         AjaxSubmitLink link = new AjaxSubmitLink("submit") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
-                submit(target);
+                submit(target, (Component) this.getDefaultModelObject());
             }
             
             @Override
@@ -186,7 +193,7 @@ public class GeoServerDialog extends Panel {
             }
 
         };
-        //link.setDefaultModel(new Model(contents));
+        link.setDefaultModel(new Model(contents));
         return link;
     }
 
@@ -222,7 +229,7 @@ public class GeoServerDialog extends Panel {
             Form form = new Form("form");
             add(form);
             form.add(contents);
-            AjaxSubmitLink submit = sumbitLink();
+            AjaxSubmitLink submit = sumbitLink(contents);
             form.add(submit);
             form.add(cancelLink());
             form.setDefaultButton(submit);

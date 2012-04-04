@@ -4,12 +4,15 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
+import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 
 public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
@@ -64,5 +67,36 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         tester.assertLabel("form:panel:breadcrumbs:path:0:pathItemLink:pathItem", getTestData().getDataDirectoryRoot().getName() + "/");
     }
     
-    
+    public void testInDialog() throws Exception {
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            
+            public Component buildComponent(String id) {
+                return new GeoServerDialog(id);
+            }
+        }));
+        
+        tester.assertRenderedPage(FormTestPage.class);
+
+        tester.debugComponentTrees();
+        
+        GeoServerDialog dialog = (GeoServerDialog) tester.getComponentFromLastRenderedPage("form:panel");
+        assertNotNull(dialog);
+
+        dialog.showOkCancel(new AjaxRequestTarget(tester.getLastRenderedPage()), 
+            new DialogDelegate() {
+                @Override
+                protected Component getContents(String id) {
+                    return new GeoServerFileChooser(id, new Model(root));
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    assertNotNull(contents);
+                    assertTrue(contents instanceof GeoServerFileChooser);
+                    return true;
+                }
+        });
+        
+        dialog.submit(new AjaxRequestTarget(tester.getLastRenderedPage()));
+    }
 }

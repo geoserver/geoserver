@@ -1,10 +1,12 @@
 package org.geoserver.security;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.impl.GeoserverUserDao;
+import org.geoserver.security.impl.GeoServerUserDao;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class AuthenticationKeyManager implements ApplicationContextAware {
 
@@ -22,10 +25,10 @@ public class AuthenticationKeyManager implements ApplicationContextAware {
 
     AuthenticationKeyMapper mapper;
 
-    UserDetailsService userDetailsService;
+    GeoServerSecurityManager secMgr;
 
-    public AuthenticationKeyManager(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public AuthenticationKeyManager(GeoServerSecurityManager secMgr) {
+        this.secMgr = secMgr;
     }
 
     public void authenticate(String key) {
@@ -37,7 +40,20 @@ public class AuthenticationKeyManager implements ApplicationContextAware {
 
         // and then to a user, if that succeedes we build a Authentication, otherwise
         // we return an error
-        UserDetails ud = userDetailsService.loadUserByUsername(name);
+        //TODO: should have the filter take a reference to a user group service
+        UserDetails ud = null;
+        try {
+            for (GeoServerUserGroupService ugs : secMgr.loadUserGroupServices()) {
+                ud = ugs.loadUserByUsername(name);
+                if (ud != null) {
+                    break;
+                }
+            }
+        } 
+        catch(Exception e) {
+            LOGGER.log(Level.SEVERE, "Unable to load user information", e);
+        }
+
         if (ud == null) {
             LOGGER.severe("Authentication failed, key " + key + " mapped to user " + name
                     + " which is not recognized by GeoServer");
@@ -58,9 +74,8 @@ public class AuthenticationKeyManager implements ApplicationContextAware {
             this.mapper = mappers.get(0);
         } else {
             PropertyAuthenticationKeyMapper pam = new PropertyAuthenticationKeyMapper();
-            if (userDetailsService instanceof GeoserverUserDao) {
-                pam.setUserDetailsService((GeoserverUserDao) userDetailsService);
-            }
+            pam.setSecurityManager(secMgr);
+
             this.mapper = pam;
         }
     }

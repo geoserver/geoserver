@@ -5,7 +5,7 @@
 
   <!-- The class performing the actual authentication given a key -->
   <bean id="authKeyManager" class="org.geoserver.security.AuthenticationKeyManager">
-    <constructor-arg index="0" ref="userDetailsService" />
+    <constructor-arg index="0" ref="geoServerSecurityManager" />
   </bean>
 
   <!-- The servlet filter that performs the authentication -->

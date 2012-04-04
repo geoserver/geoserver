@@ -12,11 +12,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.security.impl.GeoserverUserDao;
+import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.GeoServerUserDao;
 import org.geotools.util.logging.Logging;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.core.userdetails.User;
@@ -49,7 +51,7 @@ public class PropertyAuthenticationKeyMapper implements AuthenticationKeyMapper 
 
     Map<String, String> userMap;
 
-    GeoserverUserDao userDetailsService;
+    GeoServerSecurityManager secMgr;
 
     /**
      * Either loads the default property file on the first access, or reloads it if it has been
@@ -95,17 +97,20 @@ public class PropertyAuthenticationKeyMapper implements AuthenticationKeyMapper 
             writer.newLine();
 
             // if we have a list of users available build a sample key for each
-            if (userDetailsService != null) {
+            if (secMgr != null) {
                 writer.write("# Here is an example content based on your users, uncomment to activate");
                 writer.newLine();
                 writer.write("#" + UUID.randomUUID().toString() + "=admin");
                 writer.newLine();
-                List<User> users = userDetailsService.getUsers();
-                if (users.size() > 0) {
-                    for (User user : users) {
-                        if(!"admin".equals(user.getUsername())) {
-                            writer.write("#" + UUID.randomUUID().toString() + "=" + user.getUsername());
-                            writer.newLine();
+
+                for (GeoServerUserGroupService ugService : secMgr.loadUserGroupServices()) {
+                    Set<GeoServerUser> users = ugService.getUsers();
+                    if (users.size() > 0) {
+                        for (GeoServerUser user : users) {
+                            if(!"admin".equals(user.getUsername())) {
+                                writer.write("#" + UUID.randomUUID().toString() + "=" + user.getUsername());
+                                writer.newLine();
+                            }
                         }
                     }
                 }
@@ -142,11 +147,10 @@ public class PropertyAuthenticationKeyMapper implements AuthenticationKeyMapper 
 
     /**
      * Optional property, if available it will be used to build a sample authkey.properties file
-     * 
-     * @param userDetailsService
+     *
      */
-    public void setUserDetailsService(GeoserverUserDao userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public void setSecurityManager(GeoServerSecurityManager secMgr) {
+        this.secMgr = secMgr;
         try {
             File file = getPropertyFile();
             if (file != null && !file.exists()) {

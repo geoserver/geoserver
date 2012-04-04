@@ -6,6 +6,7 @@ package org.geoserver.ftp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.ftpserver.ftplet.DefaultFtplet;
 import org.apache.ftpserver.ftplet.FileSystemView;
@@ -18,6 +19,8 @@ import org.apache.ftpserver.ftplet.FtpletResult;
 import org.apache.ftpserver.ftplet.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 /**
  * Adapts an {@link FTPCallback}s as an {@link Ftplet}
@@ -42,9 +45,10 @@ class FtpLetCallBackAdapter extends DefaultFtplet {
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
+        
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(username,
-                password, isEnabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
-                authorities);
+            password, isEnabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
+            Arrays.asList(authorities));
 
         return userDetails;
     }

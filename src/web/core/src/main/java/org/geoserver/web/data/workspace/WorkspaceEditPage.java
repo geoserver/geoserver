@@ -60,6 +60,7 @@ import org.geoserver.web.data.namespace.NamespaceDetachableModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
@@ -142,36 +143,20 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 //        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws), false);
 //        form.add(storePanel);
         
+        add(dialog = new GeoServerDialog("dialog"));
+
         //local settings
         form.add(settingsPanel = new SettingsPanel("settings", wsModel));
-        form.add(new AjaxLink("settingsHelp") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                dialog.showInfo(target, 
-                    new StringResourceModel("settingsHelp.title",WorkspaceEditPage.this, null), 
-                    new StringResourceModel("settingsHelp.message.1",WorkspaceEditPage.this, null),
-                    new StringResourceModel("settingsHelp.message.2",WorkspaceEditPage.this, null));
-            }
-        });
+        form.add(new HelpLink("settingsHelp").setDialog(dialog));
 
         //local services
         form.add(servicesPanel = new ServicesPanel("services", wsModel));
-        form.add(new AjaxLink("servicesHelp") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                dialog.showInfo(target, 
-                    new StringResourceModel("servicesHelp.title",WorkspaceEditPage.this, null), 
-                    new StringResourceModel("servicesHelp.message.1",WorkspaceEditPage.this, null),
-                    new StringResourceModel("servicesHelp.message.2",WorkspaceEditPage.this, null));
-            }
-        });
+        form.add(new HelpLink("servicesHelp").setDialog(dialog));
 
         SubmitLink submit = new SubmitLink("save");
         form.add(submit);
         form.setDefaultButton(submit);
         form.add(new BookmarkablePageLink("cancel", WorkspacePage.class));
-
-        add(dialog = new GeoServerDialog("dialog"));
     }
 
     private void saveWorkspace() {

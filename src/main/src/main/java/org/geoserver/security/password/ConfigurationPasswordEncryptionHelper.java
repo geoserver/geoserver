@@ -82,6 +82,11 @@ public class ConfigurationPasswordEncryptionHelper {
             return Collections.emptySet();
         }
 
+        //if factory returns no info no need to continue
+        if (factory.getParametersInfo() == null) {
+            return Collections.emptySet();
+        }
+
         Set<String> toEncrypt = CACHE.get(factory.getClass());
         if (toEncrypt!=null) {
             return toEncrypt;

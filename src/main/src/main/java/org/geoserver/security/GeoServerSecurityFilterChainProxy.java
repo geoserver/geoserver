@@ -19,6 +19,7 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.web.FilterChainProxy;
@@ -27,7 +28,7 @@ import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 
 public class GeoServerSecurityFilterChainProxy extends FilterChainProxy 
-    implements SecurityManagerListener, ApplicationContextAware  {
+    implements SecurityManagerListener, ApplicationContextAware {
     
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
@@ -175,5 +176,13 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 //            filter = (Filter) GeoServerExtensions.bean(filterName, appContext);
 //        }
         return filter;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        //do some cleanup
+        securityManager.removeListener(this);
     }
 }

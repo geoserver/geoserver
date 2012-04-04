@@ -309,6 +309,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
         userGroupServiceHelper.destroy();
         roleServiceHelper.destroy();
+        
+        rememberMeService = null;
+        keyStoreProvider = null;
+
+        listeners.clear();
+
+        appContext = null;
     }
 
     /**

@@ -43,7 +43,7 @@
     <profile>
       <!-- placing this in a profile since it interfers with running from the
            development environemtn with the startup of the jdbc datastores -->
-      <id>jndi</id>
+      <id>secJdbcJndiTest</id>
       <dependencies>
         <dependency>
           <groupId>simple-jndi</groupId>
@@ -52,6 +52,13 @@
           <scope>test</scope>
         </dependency>
       </dependencies>
+      <properties>
+        <test.exclude.pattern>none</test.exclude.pattern>
+      </properties>
     </profile>
   </profiles>
+
+  <properties>
+    <test.exclude.pattern>**/*JNDI*Test*</test.exclude.pattern>    
+  </properties>
 </project>

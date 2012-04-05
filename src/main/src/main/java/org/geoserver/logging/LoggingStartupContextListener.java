@@ -70,7 +70,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
                     BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
                     try {
                         LoggingInfo loginfo = xp.load(in,LoggingInfo.class);
-                        final String location = LoggingUtils.getLogFileLocation(loginfo.getLocation());
+                        final String location = LoggingUtils.getLogFileLocation(loginfo.getLocation(), event.getServletContext());
                         LoggingUtils.initLogging(loader, loginfo.getLevel(), !loginfo.isStdOutLogging(),
                             location);
                     }
@@ -84,7 +84,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
                     if ( f != null ) {
                         LegacyLoggingImporter loggingImporter = new LegacyLoggingImporter();
                         loggingImporter.imprt(baseDir);
-                        final String location = LoggingUtils.getLogFileLocation(loggingImporter.getLogFile());
+                        final String location = LoggingUtils.getLogFileLocation(loggingImporter.getLogFile(), null);
                         LoggingUtils.initLogging(loader, loggingImporter.getConfigFileName(), loggingImporter
                                 .getSuppressStdOutLogging(), location);
                     }

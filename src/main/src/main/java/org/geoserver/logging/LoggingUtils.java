@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -177,15 +179,30 @@ public class LoggingUtils {
         
         
     }
-    
+
     /**
      * Finds the log location in the "context" (system variable, env variable, servlet context)
-     * or uses the provided base location otherwise 
-     * @param loginfo
-     * @return
+     * or uses the provided base location otherwise
      */
     public static String getLogFileLocation(String baseLocation) {
-        String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
+        return getLogFileLocation(baseLocation, null);
+    }
+
+    /**
+     * Finds the log location in the "context" (system variable, env variable, servlet context)
+     * or uses the provided base location otherwise.
+     * <p>
+     * This method accepts a servlet context directly for cases where the logging location must 
+     * be known but the spring application context may not be initialized yet.
+     * </p> 
+     */
+    public static String getLogFileLocation(String baseLocation, ServletContext context) {
+        //accept a servlet context directly in the case of startup where the application context
+        // is not yet available, in other cases (like a logging change) we can fall back on the 
+        // app context and dervive the servlet context from that
+        String location = context != null ?
+            GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION, context) :
+            GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
         if(location == null) {
             return baseLocation;
         } else {

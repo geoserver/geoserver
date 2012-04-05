@@ -41,7 +41,9 @@ public class DefaultControlFlowConfigurationTest extends TestCase {
         assertTrue(controllers.get(1) instanceof BasicOWSController);
         assertTrue(controllers.get(2) instanceof IpFlowController);
         assertTrue(controllers.get(3) instanceof SingleIpFlowController);
+        assertEquals("192.168.1.8", ((SingleIpFlowController)controllers.get(3)).getIp());
         assertTrue(controllers.get(4) instanceof SingleIpFlowController);
+        assertEquals("192.168.1.10", ((SingleIpFlowController)controllers.get(4)).getIp());
         assertTrue(controllers.get(5) instanceof GlobalFlowController);
 
         UserFlowController uc = (UserFlowController) controllers.get(0);

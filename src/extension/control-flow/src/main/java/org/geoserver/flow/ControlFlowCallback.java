@@ -58,8 +58,15 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
 
     public Operation operationDispatched(Request request, Operation operation) {
         // check if we need to rebuild the flow controller list
-        if (configurator.isStale())
-            reloadConfiguration();
+        if (configurator.isStale()){
+            // be careful, as the configuration can be read on demand, it'd not be uncommon that
+            // multiple requests come at once when the config file changed
+            synchronized (configurator) {
+                if (configurator.isStale()){
+                    reloadConfiguration();
+                }
+            }
+        }
         
         // tell the recursion sentinel we're starting a request
         SENTINEL.start();

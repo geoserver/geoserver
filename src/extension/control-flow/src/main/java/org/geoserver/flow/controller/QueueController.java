@@ -10,8 +10,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
 

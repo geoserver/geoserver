@@ -32,6 +32,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaWfsTestSupport {
     protected NamespaceTestData buildTestData() {
         WmsSupportMockData mockData = new WmsSupportMockData();
         mockData.addStyle("Default", "styles/Default.sld");
+        mockData.addStyle("positionalaccuracy21", "styles/positionalaccuracy21.sld");
         return mockData;
     }
 
@@ -54,11 +55,23 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaWfsTestSupport {
     
     public void testGetFeatureInfoGML() throws Exception
     {
-        Document doc = getAsDOM("wms?request=GetFeatureInfo&SRS=EPSG:4326&BBOX=-1.3,52,0,52.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1");
+    	String request = "wms?request=GetFeatureInfo&SRS=EPSG:4326&BBOX=-1.3,52,0,52.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1";
+        Document doc = getAsDOM(request);
         LOGGER.info ( "WMS =GetFeatureInfo GML response:\n" + prettyString(doc));
         assertXpathCount(1, "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf2", "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/@gml:id", doc);
         assertXpathEvaluatesTo("gu.25678", "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
+        validateGet(request);
+    }
+    
+    public void testGetFeatureInfoGML21() throws Exception
+    {
+    	String request = "wms?request=GetFeatureInfo&styles=positionalaccuracy21&SRS=EPSG:4326&BBOX=-1.3,53,0,53.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1";
+        Document doc = getAsDOM(request);
+        LOGGER.info ( "WMS =GetFeatureInfo GML response:\n" + prettyString(doc));
+        assertXpathCount(1, "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("mf4", "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/@gml:id", doc);
+        validateGet(request);
     }
     
     public void testGetFeatureInfoHTML() throws Exception

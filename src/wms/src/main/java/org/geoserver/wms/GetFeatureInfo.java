@@ -383,7 +383,7 @@ public class GetFeatureInfo {
         return pixel;
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private FeatureCollection identifyVectorLayer(Filter[] filters,
             final int x, final int y, final int buffer, final Map<String, String> viewParams,
             final CoordinateReferenceSystem requestedCRS, final int width, final int height,
@@ -463,8 +463,8 @@ public class GetFeatureInfo {
         // memory
         Filter postFilter = Filter.INCLUDE;
         Filter rulesFilters = buildRulesFilter(ff, rules);
-        if (!(rulesFilters instanceof Or)
-                || (rulesFilters instanceof Or && ((Or) rulesFilters).getChildren().size() <= 20)) {
+        if (!(featureSource.getSchema() instanceof SimpleFeatureType) || !(rulesFilters instanceof Or)
+                || (rulesFilters instanceof Or && ((Or) rulesFilters).getChildren().size() <= 20)) { 
             getFInfoFilter = ff.and(getFInfoFilter, rulesFilters);
         } else {
             postFilter = rulesFilters;
@@ -494,7 +494,7 @@ public class GetFeatureInfo {
         // if we could not include the rules filter into the query, post process in
         // memory
         if (!Filter.INCLUDE.equals(postFilter)) {
-            match = DataUtilities.simple(new FilteringFeatureCollection(match, postFilter));
+        	match = new FilteringFeatureCollection(match, postFilter);
         }
 
         // this was crashing Gml2FeatureResponseDelegate due to not setting

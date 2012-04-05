@@ -95,7 +95,8 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
                 if (keys.length == 1) {
                     controller = new IpFlowController(queueSize);
                 } else if (keys.length > 1) {
-                    controller = new SingleIpFlowController(queueSize, tokenizer.nextToken());
+                    String ip = key.substring("ip.".length());
+                    controller = new SingleIpFlowController(queueSize, ip);
                 }
             }
             if (controller == null) {

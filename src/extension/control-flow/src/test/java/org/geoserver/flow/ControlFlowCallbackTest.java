@@ -59,6 +59,7 @@ public class ControlFlowCallbackTest extends TestCase {
         boolean stale = true;
 
         public Collection<FlowController> buildFlowControllers() throws Exception {
+            stale = false;
             return controllers;
         }
 
@@ -67,11 +68,7 @@ public class ControlFlowCallbackTest extends TestCase {
         }
 
         public boolean isStale() {
-            if(stale) {
-                stale = false;
-                return true;
-            }
-            return false;
+            return stale;
         }
 
     }

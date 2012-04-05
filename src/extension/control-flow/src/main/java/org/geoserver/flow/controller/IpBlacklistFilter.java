@@ -6,10 +6,10 @@ package org.geoserver.flow.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,17 +37,18 @@ public class IpBlacklistFilter implements GeoServerFilter {
 
     static final Logger LOGGER = Logging.getLogger(IpBlacklistFilter.class);
 
-    private List<String> ipAddresses = new ArrayList<String>();
+    private Set<String> blackListedAddresses;
 
-    private boolean isBlocked;
-
+    private final PropertyFileWatcher configFile;
+    
     /**
      * Constructor used for testing purposes
      * 
      * @param props
      */
     public IpBlacklistFilter(Properties props) {
-        configureIpBlackList(props);
+        blackListedAddresses = loadConfiguration(props);
+        configFile = null;
     }
 
     /**
@@ -55,12 +56,13 @@ public class IpBlacklistFilter implements GeoServerFilter {
      */
     public IpBlacklistFilter() {
         try {
-            PropertyFileWatcher configFile = new PropertyFileWatcher(new File(
-                    GeoserverDataDirectory.getGeoserverDataDirectory(), "controlflow.properties"));
-            Properties props = configFile.getProperties();
-            configureIpBlackList(props);
+            File file = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
+                    "controlflow.properties");
+            configFile = new PropertyFileWatcher(file);
+            blackListedAddresses = reloadConfiguration();
         } catch (Exception e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -70,38 +72,56 @@ public class IpBlacklistFilter implements GeoServerFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        isBlocked = false;
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String incomingIp = httpRequest.getRemoteAddr();
-        if (response instanceof HttpServletResponse) {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            for (String ipAddress : ipAddresses) {
-                if (ipAddress.equals(incomingIp)) {
+        
+        if (isBlackListed(httpRequest)) {
+            if (response instanceof HttpServletResponse) {
+                HttpServletResponse httpResponse = (HttpServletResponse) response;
                     httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
                             "This IP has been blocked. Please contact the server administrator");
-                    isBlocked = true;
-                    break;
-                }
-            }
-            if (!isBlocked) {
-                chain.doFilter(request, response);
+                    return;
             }
         }
 
+        chain.doFilter(request, response);
     }
 
-    private void configureIpBlackList(Properties p) {
-        for (Object okey : p.keySet()) {
-            String key = ((String) okey).trim();
-            String value = (String) p.get(okey);
-            if ("ip.blacklist".equalsIgnoreCase(key)) {
-                StringTokenizer tokenizer = new StringTokenizer(value, ",");
-                while (tokenizer.hasMoreTokens()) {
-                    String ip = tokenizer.nextToken();
-                    ipAddresses.add(ip);
+    private boolean isBlackListed(HttpServletRequest httpRequest) throws IOException {
+        if(configFile != null && configFile.isStale()){
+            synchronized(configFile){
+                if(configFile.isStale()){
+                    this.blackListedAddresses = reloadConfiguration();
                 }
             }
         }
+        if(blackListedAddresses.isEmpty()){
+            return false;
+        }
+        String incomingIp = IpFlowController.getRemoteAddr(httpRequest);
+        boolean blocked = blackListedAddresses.contains(incomingIp);
+        return blocked;
+    }
+
+    private Set<String> reloadConfiguration() throws IOException {
+        Properties props = configFile.getProperties();
+        if(props == null){
+            //file doesn't exist
+            return Collections.emptySet();
+        }
+        return loadConfiguration(props);
+    }
+
+    private Set<String> loadConfiguration(Properties props) {
+        String rawList = props.getProperty("ip.blacklist");
+        if(null == rawList){
+            return Collections.emptySet();
+        }
+        Set<String> ipAddresses = new HashSet<String>();
+        for(String ip : rawList.split(",")){
+            ipAddresses.add(ip.trim());
+        }
+        return ipAddresses;
     }
 
     @Override

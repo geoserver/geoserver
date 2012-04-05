@@ -5,8 +5,6 @@
 
 package org.geoserver.flow.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,40 +34,37 @@ public class IpFlowController extends QueueController {
         this.queueSize = queueSize;
     }
 
-    protected List<String> ipAddresses = new ArrayList<String>();
-
     @Override
     public boolean requestIncoming(Request request, long timeout) {
         boolean retval = true;
         // check if this client already made other connections
-        String incomingIp = "";
-        String ip = getRemoteAddr(request.getHttpRequest());
-        if (ipAddresses.size() > 0) {
-            for (String ipAddress : ipAddresses) {
-                if (ipAddress.equals(ip)) {
-                    incomingIp = ipAddress;
-                    break;
-                }
+        final String incomingIp;
+        {
+            String ip = getRemoteAddr(request.getHttpRequest());
+            if (null == ip || "".equals(ip)) {
+                // may this happen? hope not, but if someone is trying to trick us lets not let him
+                // and pool it on the "empty IP" queue
+                incomingIp = "";
+            } else {
+                incomingIp = ip;
             }
         }
 
-        if (incomingIp.equals("")) {
-            incomingIp = ip;
-        }
-
         // see if we have that queue already
-        TimedBlockingQueue queue = null;
-        if (incomingIp != null && !incomingIp.equals("")) {
-            queue = queues.get(incomingIp);
-        }
+        TimedBlockingQueue queue = queues.get(incomingIp);
 
         // generate a unique queue id for this client if none was found
         if (queue == null) {
-            queue = new TimedBlockingQueue(queueSize, true);
-            queues.put(incomingIp, queue);
+            //beware of multiple concurrent requests...
+            synchronized (queues) {
+                queue = queues.get(incomingIp);
+                if (queue == null) {
+                    queue = new TimedBlockingQueue(queueSize, true);
+                    queues.put(incomingIp, queue);
+                }
+            }
         }
         QUEUE_ID.set(incomingIp);
-        ipAddresses.add(incomingIp);
 
         // queue token handling
         try {
@@ -91,9 +86,12 @@ public class IpFlowController extends QueueController {
         return retval;
     }
 
-    protected String getRemoteAddr(HttpServletRequest req) {
+    static String getRemoteAddr(HttpServletRequest req) {
         String forwardedFor = req.getHeader("X-Forwarded-For");
         if (forwardedFor != null) {
+            if(-1 == forwardedFor.indexOf(',')){
+                return forwardedFor;
+            }
             String[] ips = forwardedFor.split(", ");
             return ips[0];
         } else {

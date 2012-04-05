@@ -9,7 +9,7 @@
 			<sld:IsDefault>1</sld:IsDefault>
 			<sld:FeatureTypeStyle>
 				<sld:Rule>
-					<sld:Name>x</sld:Name>
+					<sld:Name>xrule</sld:Name>
 					<sld:Title>x rule</sld:Title>
 					<ogc:Filter>
 						<ogc:PropertyIsEqualTo>

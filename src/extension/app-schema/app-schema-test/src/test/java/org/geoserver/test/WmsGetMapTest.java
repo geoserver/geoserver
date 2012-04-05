@@ -65,46 +65,5 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         is.close();
         out.close();*/
     }  
-    
-    /**
-     * Asserts that the image is not blank, in the sense that there must be pixels different from
-     * the passed background color.
-     * 
-     * @param testName
-     *            the name of the test to throw meaningfull messages if something goes wrong
-     * @param image
-     *            the imgage to check it is not "blank"
-     * @param bgColor
-     *            the background color for which differing pixels are looked for
-     */
-    protected void assertNotBlank(String testName, BufferedImage image, Color bgColor) {
-        int pixelsDiffer = countNonBlankPixels(testName, image, bgColor);
-        assertTrue(testName + " image is comlpetely blank", 0 < pixelsDiffer);
-    }
-    
-    
-    /**
-     * Counts the number of non black pixels
-     * 
-     * @param testName
-     * @param image
-     * @param bgColor
-     * @return
-     */
-    protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
-        int pixelsDiffer = 0;
-
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                if (image.getRGB(x, y) != bgColor.getRGB()) {
-                    ++pixelsDiffer;
-                }
-            }
-        }
-
-        LOGGER.fine(testName + ": pixel count=" + (image.getWidth() * image.getHeight())
-                + " non bg pixels: " + pixelsDiffer);
-        return pixelsDiffer;
-    }
 
 }

@@ -183,15 +183,12 @@ public class BufferedImageLegendGraphicBuilder {
             return image;
         }
 
-        final SimpleFeature sampleFeature;
+       // final SimpleFeature sampleFeature;
+        final Feature sampleFeature;
         if (layer == null) {
             sampleFeature = createSampleFeature();
         } else {
-            final Feature temp = createSampleFeature(layer);
-            if (!(temp instanceof SimpleFeature)) {
-                throw new UnsupportedOperationException("not a SimpleFeature");
-            }
-            sampleFeature = (SimpleFeature) temp;
+        	sampleFeature = createSampleFeature(layer);
         }
         final FeatureTypeStyle[] ftStyles = gt2Style.featureTypeStyles().toArray(
                 new FeatureTypeStyle[0]);
@@ -531,19 +528,18 @@ public class BufferedImageLegendGraphicBuilder {
      * @throws ServiceException
      */
     private Feature createSampleFeature(FeatureType schema) throws ServiceException {
-        SimpleFeature sampleFeature;
+        Feature sampleFeature;
         try {
             if (schema instanceof SimpleFeatureType) {
-                sampleFeature = SimpleFeatureBuilder.template((SimpleFeatureType) schema, null);
-            } else {
-                // TODO: implement support for GSIP 31 (DataAccess API)
-                throw new UnsupportedOperationException(
-                        "Sample non-simple feature not yet supported.");
+                sampleFeature = SimpleFeatureBuilder.template((SimpleFeatureType) schema, null);            
+            } else {            	
+            	sampleFeature = DataUtilities.templateFeature(schema);
             }
         } catch (IllegalAttributeException e) {
             throw new ServiceException(e);
         }
         return sampleFeature;
     }
+    
 
 }

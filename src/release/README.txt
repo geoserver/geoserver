@@ -1,3 +1,22 @@
+GeoServer 2.2-beta1 (April 5, 2012)
+-----------------------------------
+
+The first beta release of GeoServer 2.2. A number of notable features have made 
+it into the 2.2 stream. These include:
+
+ * wfs 2.0
+ * wms time and elevation support 
+ * security subsystem overhaul
+ * virtual services improvements
+ * rendering transformations
+ * NTv2 and NADCon support
+
+And much more. The entire change log is available here:
+
+  http://jira.codehaus.org/browse/GEOS/fixforversion/18401
+
+This release is based on GeoTools 8-SNAPSHOT, revision 38659
+
 GeoServer 2.1-RC1 (January 16, 2011)
 ------------------------------------
 

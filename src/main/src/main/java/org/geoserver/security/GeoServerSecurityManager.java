@@ -237,6 +237,22 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     
     public GeoServerSecurityManager(GeoServerDataDirectory dataDir) throws Exception {
         this.dataDir = dataDir;
+
+        /*
+         * JD we have to ensure that the master password is initialized first thing, before the 
+         * catalog since we need to decrypt configuration the passwords, the rest of the security 
+         * initializes occurs at the end of startup  
+         */
+        File masterpw = new File(getSecurityRoot(), MASTER_PASSWD_CONFIG_FILENAME);
+        if (masterpw.exists()) {
+            init(loadMasterPasswordConfig());
+        }
+        else {
+            //if it doesn't exist this must be a migration startup... and this case should be
+            // handled during migration where all the datastore passwords are processed 
+            // explicitly
+        }
+        
         configPasswordEncryptionHelper = new ConfigurationPasswordEncryptionHelper(this);
     }
 

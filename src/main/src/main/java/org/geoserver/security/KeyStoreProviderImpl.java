@@ -165,6 +165,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
      */
     @Override
     public boolean containsAlias(String alias) throws IOException{
+        assertActivatedKeyStore();
         try {
             return ks.containsAlias(alias);
         } catch (KeyStoreException e) {

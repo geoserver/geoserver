@@ -24,5 +24,5 @@ information see http://geoserver.org/display/GEOSDOC/Image+Pyramid
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 2.8.x.  
+This jar should work with any version of GeoServer based on GeoTools 8.x.  
 Currently this is anything in 2.2.x.  

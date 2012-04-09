@@ -11,7 +11,7 @@ Any other issues can be discussed on the mailing list (http://lists.sourceforge.
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 2.8.x.  
+This jar should work with any version of GeoServer based on GeoTools 8.x.  
 Currently this is anything in 2.2.x.
 
 INSTALLATION

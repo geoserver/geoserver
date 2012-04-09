@@ -4,7 +4,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.2-SNAPSHOT</version>
+  <version>2.2-beta1</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>monitoring</artifactId>
@@ -14,17 +14,17 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>main</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>rest</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
    <artifactId>web-core</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
   </dependency>
   <dependency>
    <groupId>javax.persistence</groupId>
@@ -79,32 +79,32 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>main</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
    <scope>test</scope>
    <classifier>tests</classifier>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>wfs</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>wms</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>wcs1_0</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>wcs1_1</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta1</version>
    <scope>test</scope>
   </dependency>
   <dependency>

@@ -1,29 +1,46 @@
-GeoServer, open geospatial information server
-Copyright (C) 2001 - 2011 The Open Planning Project dba OpenPlans
-http://openplans.org
+GeoServer is distributed under the GNU General Public License Version 2.0 license:
 
+    GeoServer, open geospatial information server
+    Copyright (C) 2001 - 2012 The Open Planning Project dba OpenPlans
+    http://openplans.org
+    
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
+    (at your option) any later version (collectively, "GPL").
+    
+    As an exception to the terms of the GPL, you may copy, modify,
+    propagate, and distribute a work formed by combining GeoServer with the
+    Eclipse Libraries, or a work derivative of such a combination, even if
+    such copying, modification, propagation, or distribution would otherwise
+    violate the terms of the GPL. Nothing in this exception exempts you from
+    complying with the GPL in all respects for all of the code used other
+    than the Eclipse Libraries. You may include this exception and its grant
+    of permissions when you distribute GeoServer.  Inclusion of this notice
+    with such a distribution constitutes a grant of such permissions.  If
+    you do not wish to grant these permissions, remove this paragraph from
+    your distribution. "GeoServer" means the GeoServer software licensed
+    under version 2 or any later version of the GPL, or a work based on such
+    software and licensed under the GPL. "Eclipse Libraries" means Eclipse
+    Modeling Framework Project and XML Schema Definition software
+    distributed by the Eclipse Foundation and licensed under the Eclipse
+    Public License Version 1.0 ("EPL"), or a work based on such software and
+    licensed under the EPL.
+    
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
+    
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
+    Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
 
 For latest contact information of The Open Planning Project see the 
 website at http://topp.openplans.org.  Current email is info@openplans.org
 and address is 349 W. 12th Street, New York, NY 10014.
 
 The full GPL license is available in this directory at GPL.txt
-
 
 *************************************************************************
 Additional Libraries and Code used
@@ -254,10 +271,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -------
 
-
-Finally, GeoServer uses a number of libraries licensed under the Apache License, 
-Version 2.0.  These include struts - http://struts.apache.org, which in turn 
-uses a number of jakarta commons libraries - http://jakarta.apache.org/commons/
+GeoServer uses a number of libraries licensed under the Apache License, 
+Version 2.0.  These include Spring - http://www.springsource.org/, a number of Apache commons libraries - http://jakarta.apache.org/commons/
 whose jars we distribute and include in our source tree under lib/.  Also 
 included as libraries are log4 http://logging.apache.org/log4j/docs/index.htmlj, 
 batik http://xmlgraphics.apache.org/batik/, xerces http://xerces.apache.org/xerces-j/
@@ -266,8 +281,7 @@ whether GPL and Apache 2.0 are compatible see
 http://www.apache.org/licenses/GPL-compatibility.html for more information.  We
 hope that something will work out, as GeoServer would not be possible without
 apache libraries.  Notice for apache license is included below:
-
-
+-------
 Apache License
 Version 2.0, January 2004
 http://www.apache.org/licenses/
@@ -323,3 +337,14 @@ You may add Your own copyright statement to Your modifications and may provide a
 9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
 
 END OF TERMS AND CONDITIONS
+-------
+
+GeoServer is build using a number of eclipse libraries including emf and xsd made available under the Eclipse Public License.
+
+The notice for EPL license is included below:
+
+ Copyright (c) 2002-2006 IBM Corporation and others.
+ All rights reserved.   This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html

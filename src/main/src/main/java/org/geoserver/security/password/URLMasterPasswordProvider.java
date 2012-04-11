@@ -4,10 +4,11 @@
  */
 package org.geoserver.security.password;
 
-import static org.geoserver.security.password.URLMasterPasswordProviderException.*;
+import static org.geoserver.security.SecurityUtils.scramble;
 import static org.geoserver.security.SecurityUtils.toBytes;
 import static org.geoserver.security.SecurityUtils.toChars;
-import static org.geoserver.security.SecurityUtils.scramble;
+import static org.geoserver.security.password.URLMasterPasswordProviderException.URL_LOCATION_NOT_READABLE;
+import static org.geoserver.security.password.URLMasterPasswordProviderException.URL_REQUIRED;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +29,7 @@ import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidator;
+import org.geotools.data.DataUtilities;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
 /**
@@ -141,7 +143,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     static OutputStream output(URL url, File configDir) throws IOException {
         //check for file url
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            File f = new File(url.getFile());
+            File f = DataUtilities.urlToFile(url);
             if (!f.isAbsolute()) {
                 //make relative to config dir
                 f = new File(configDir, f.getPath());
@@ -158,7 +160,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     static InputStream input(URL url, File configDir) throws IOException {
         //check for a file url
         if ("file".equalsIgnoreCase(url.getProtocol())) {
-            File f = new File(url.getFile());
+            File f = DataUtilities.urlToFile(url);
             //check if the file is relative
             if (!f.isAbsolute()) {
                 //make it relative to the config directory for this password provider

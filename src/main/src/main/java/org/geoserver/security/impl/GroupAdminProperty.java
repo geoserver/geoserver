@@ -34,11 +34,11 @@ public class GroupAdminProperty extends UserProperty<String[]> {
 
     public static String[] get(Properties props) {
         String val = (String) props.get(INSTANCE.getKey());
-        return val != null ? INSTANCE.fromString(val) : null;
+        return val != null && !"".equals(val) ? INSTANCE.fromString(val) : null;
     }
 
     public static void set(Properties props, String[] value) {
-        props.put(INSTANCE.getKey(), value != null ? INSTANCE.toString(value) : null);
+        props.put(INSTANCE.getKey(), value != null ? INSTANCE.toString(value) : "");
     }
 
     public static void del(Properties props) {

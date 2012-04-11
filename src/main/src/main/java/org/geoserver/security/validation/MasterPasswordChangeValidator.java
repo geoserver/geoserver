@@ -66,12 +66,12 @@ public class MasterPasswordChangeValidator extends AbstractSecurityValidator{
             throw createSecurityException(MasterPasswordChangeException.PASSWORD_AND_CONFIRMATION_NOT_EQUAL);
         }
     }
-    
+
     protected void checkNewEqualsCurrent(char[] newPassword, char[] currentPassword) 
             throws MasterPasswordChangeException{
-        if (newPassword.equals(currentPassword) ) {            
-                throw createSecurityException(MasterPasswordChangeException.NEW_EQUALS_CURRENT);
-            }            
+        if (Arrays.equals(newPassword, currentPassword)) {
+            throw createSecurityException(MasterPasswordChangeException.NEW_EQUALS_CURRENT);
+        }
     }
 
     /**

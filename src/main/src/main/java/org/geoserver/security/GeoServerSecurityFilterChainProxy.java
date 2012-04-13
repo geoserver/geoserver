@@ -15,6 +15,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.security.cas.GeoServerCasConstants;
+import org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geotools.util.logging.Logging;
@@ -120,6 +122,9 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
         GeoServerSecurityFilterChain filterChain = config.getFilterChain();
         
         Map<RequestMatcher,List<Filter>> filterChainMap = new LinkedHashMap<RequestMatcher,List<Filter>>();
+        // similar to the list of authentication providers
+        // adding required providers like GeoServerRootAuthenticationProvider
+        addConstantFilterChains(filterChainMap); 
                 
         for (String pattern : filterChain.getAntPatterns()) {
             List<Filter> filters = new ArrayList<Filter>();
@@ -184,5 +189,19 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 
         //do some cleanup
         securityManager.removeListener(this);
+    }
+    
+    /**
+     * Add constant filter chains
+     * 
+     * @param filterChainMap
+     */
+    protected void addConstantFilterChains(Map<RequestMatcher,List<Filter>> filterChainMap) {
+        // TODO, Justin
+        // Not sure if this is correct, if it is, you can add the constant chain
+        // for the root user login 
+        List<Filter> filters = new ArrayList<Filter>();
+        filters.add(ProxyGrantingTicketCallbackFilter.get());
+        filterChainMap.put(new AntPathRequestMatcher(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN),filters);
     }
 }

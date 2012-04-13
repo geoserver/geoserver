@@ -7,12 +7,9 @@
 package org.geoserver.security.validation;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.cas.CasAuthenticationFilterConfig;
 import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
@@ -20,6 +17,7 @@ import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.GeoServerRoleFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
@@ -29,7 +27,6 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.util.StringUtils;
 
 /**
  * Validator for filter configuration objects
@@ -90,8 +87,6 @@ public class FilterConfigValidator extends SecurityConfigValidator {
             validateFilterConfig((J2eeAuthenticationFilterConfig)config);
         if (config instanceof ExceptionTranslationFilterConfig)
             validateFilterConfig((ExceptionTranslationFilterConfig)config);
-        if (config instanceof CasAuthenticationFilterConfig)
-            validateFilterConfig((CasAuthenticationFilterConfig)config);
         if (config instanceof SecurityContextPersistenceFilterConfig)
             validateFilterConfig((SecurityContextPersistenceFilterConfig)config);
         if (config instanceof RememberMeAuthenticationFilterConfig)
@@ -206,7 +201,12 @@ public class FilterConfigValidator extends SecurityConfigValidator {
     public void validateFilterConfig(RequestHeaderAuthenticationFilterConfig config) throws FilterConfigException {
         
         if (isNotEmpty(config.getPrincipalHeaderAttribute())==false)
-            throw createFilterException(FilterConfigException.PRINCIPAL_HEADER_ATTRIBUTE_NEEDED);
+            throw createFilterException(FilterConfigException.PRINCIPAL_HEADER_ATTRIBUTE_NEEDED);        
+        validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config); 
+    }
+    
+    public void validateFilterConfig(PreAuthenticatedUserNameFilterConfig config) throws FilterConfigException {
+        
         
         if (config.getRoleSource()==null)
             throw createFilterException(FilterConfigException.ROLE_SOURCE_NEEDED);
@@ -235,6 +235,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
 
     }
+
     
     public void validateFilterConfig(J2eeAuthenticationFilterConfig config) throws FilterConfigException {        
         checkExistingRoleService(config.getRoleServiceName());
@@ -271,44 +272,6 @@ public class FilterConfigValidator extends SecurityConfigValidator {
                 throw new RuntimeException(ex);
             }
         }
-    }
-
-    public void validateFilterConfig(CasAuthenticationFilterConfig config) throws FilterConfigException {
-        
-        if (StringUtils.hasLength(config.getService())==false)
-                throw  createFilterException(FilterConfigException.CAS_SERVICE_URL_REQUIRED);
-        
-        try {
-            new URL(config.getService());
-        } catch (MalformedURLException ex) {
-            throw  createFilterException(FilterConfigException.CAS_SERVICE_URL_MALFORMED);
-        }
-
-        if (config.getService().endsWith(CasAuthenticationFilterConfig.CAS_CHAIN_PATTERN)==false) {
-            throw  createFilterException(FilterConfigException.CAS_SERVICE_URL_SUFFIX,
-                    CasAuthenticationFilterConfig.CAS_CHAIN_PATTERN);
-        }
-        
-        if (StringUtils.hasLength(config.getLoginUrl())==false)
-            throw  createFilterException(FilterConfigException.CAS_SERVER_URL_REQUIRED);
-    
-        try {
-            new URL(config.getLoginUrl());
-        } catch (MalformedURLException ex) {
-            throw  createFilterException(FilterConfigException.CAS_SERVER_URL_MALFORMED);
-        }
-
-        if (StringUtils.hasLength(config.getTicketValidatorUrl())==false)
-            throw  createFilterException(FilterConfigException.CAS_TICKETVALIDATOR_URL_REQUIRED);
-    
-        try {
-            new URL(config.getTicketValidatorUrl());
-        } catch (MalformedURLException ex) {
-            throw  createFilterException(FilterConfigException.CAS_TICKETVALIDATOR_URL_MALFORMED);
-        }
-        
-        checkExistingUGService(config.getUserGroupServiceName());
-        
     }
 
 

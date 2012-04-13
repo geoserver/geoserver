@@ -79,7 +79,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         return list.toArray(new String[list.size()]);
     };
 
-    TestingAuthenticationCache getCache() {
+    protected TestingAuthenticationCache getCache() {
         return (TestingAuthenticationCache) getSecurityManager().getAuthenticationCache();
     }
 

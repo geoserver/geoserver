@@ -20,40 +20,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * A helper class for authentication against a Cas server
+ * An  abstract helper class for authentication against a Cas server
  * 
- * supported authentication mechanisms
- * 
- *  - Cas Form login
  * 
  * @author christian
  *
  */
 public abstract class CasAuthenticationHelper {
 
-    protected URL casUrlPrefix,proxyReceptor;
+    protected URL casUrlPrefix;
+    /**
+     * true for an SSL (TLS) connection
+     */
     protected boolean secure;
-    protected String serviceTicket;
+    
 
 
     protected HttpCookie ticketGrantingCookie,warningCookie; 
     
 
+    /**
+     * casUrlPrefix is the CAS Server URL including
+     * context root
+     * 
+     * @param casUrlPrefix
+     */
     public CasAuthenticationHelper (URL casUrlPrefix) {
-        this(casUrlPrefix,null);
-    }
-    
-    public CasAuthenticationHelper (URL casUrlPrefix,URL proxyReceptor) {
         secure="HTTPS".equalsIgnoreCase(casUrlPrefix.getProtocol());
         this.casUrlPrefix=casUrlPrefix;
-        if (proxyReceptor != null && "HTTPS".equalsIgnoreCase(proxyReceptor.getProtocol())==false)
-            throw new RuntimeException("proxy receptor url must be HTTPS");        
-        this.proxyReceptor=proxyReceptor;
-    }
+    }    
     
+    /**
+     * create URL from a CAS protocol URI 
+     * 
+     * @param casUri
+     * @return
+     */
     protected URL createURLFromCasURI(String casUri) {
         URL retValue=null;
         try {
@@ -132,41 +135,45 @@ public abstract class CasAuthenticationHelper {
         out.close();
     }
 
-    protected String extractFormParameter(String formLoginHtml, String searchString) {        
-        int index = formLoginHtml.indexOf(searchString);
-        index+=searchString.length();
-        index = formLoginHtml.indexOf("\"", index);
-        int index2 = formLoginHtml.indexOf("\"", index+1);
-        return  formLoginHtml.substring(index+1,index2);        
-    }
     
 
     public HttpCookie getTicketGrantingCookie() {
         return ticketGrantingCookie;
     }
+    
 
     public HttpCookie getWarningCookie() {
         return warningCookie;
     }
     
+    /**
+     * Single logout from Cas server
+     * 
+     * @return
+     * @throws IOException
+     */
     public boolean ssoLogout() throws IOException {
         if (!secure) return true;
         if (ticketGrantingCookie==null) return true;
         
-        URL logoutUrl = createURLFromCasURI("/logout");
+        URL logoutUrl = createURLFromCasURI(GeoServerCasConstants.LOGOUT_URI);
         HttpURLConnection conn = (HttpURLConnection) logoutUrl.openConnection();
         addCasCookies(conn);
-        boolean result = HttpServletResponse.SC_OK==conn.getResponseCode();
-        if (result)
-            warningCookie=ticketGrantingCookie=null;
-        return result;
+        conn.getInputStream().close();
+        extractCASCookies(getCookies(conn),conn);
+        return getTicketGrantingCookie()!=null && getTicketGrantingCookie().getValue().isEmpty();
     }
 
+    /**
+     * add Cas cookies to request
+     * 
+     * @param conn
+     */
     protected void addCasCookies(HttpURLConnection conn) {
         String cookieString="";
-        if (warningCookie!=null)
+        if (checkCookieForSend(warningCookie))
             cookieString=warningCookie.toString();
-        if (ticketGrantingCookie!=null && isSecure()) {
+        if (checkCookieForSend(ticketGrantingCookie)) {
             if  (cookieString.length()> 0)
                  cookieString+=",";
             cookieString+=ticketGrantingCookie.toString();     
@@ -178,15 +185,73 @@ public abstract class CasAuthenticationHelper {
     public boolean isSecure() {
         return secure;
     }
-
-    public  boolean ssoLogin() throws IOException {
-        return ssoLogin(null);
-    }
     
-    public abstract boolean ssoLogin(URL serviceURL) throws IOException;
-
-    public String getServiceTicket() {
-        return serviceTicket;
+    protected boolean checkCookieForSend(HttpCookie cookie) {
+        if (cookie==null) return false;
+        if (cookie.hasExpired()) return false;
+        if (isSecure()==false && cookie.getSecure()) { 
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * The concrete login, after sucessful login,
+     * the cookies should be set using {@link #extractCASCookies(List, HttpURLConnection)}
+     * 
+     * @return
+     * @throws IOException
+     */
+    public  abstract boolean ssoLogin() throws IOException;
+    
+
+    /**
+     * Get a service ticket for the service
+     * 
+     * Precondition: 
+     * successful log in wiht {@link #ssoLogin()}
+     * {@link #isSecure()} == true
+     * 
+     * @param service
+     * @return
+     * @throws IOException
+     */
+    public String getServiceTicket(URL service) throws IOException{
+
+        if (getTicketGrantingCookie()==null || getTicketGrantingCookie().getValue().isEmpty()) {
+            throw new IOException("na valid TGC ");
+        }
+            
+        URL loginUrl = createURLFromCasURI(GeoServerCasConstants.LOGIN_URI+"?service="+service.toExternalForm());
+        HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
+        conn.setInstanceFollowRedirects(false);        
+        addCasCookies(conn);
+        conn.getInputStream().close();
+        List<String> values = getResponseHeaderValues(conn, "Location");
+        if (values.isEmpty()) {
+            throw new IOException("No redirect received for " + loginUrl);
+        }
+        String redirectURL=values.get(0);
+        String ticket = null;
+        URL rURL = new URL(redirectURL);
+        for (String kvp : rURL.getQuery().split("&")) {
+            String[] tmp = kvp.split("=");
+            if ("ticket".equalsIgnoreCase((tmp[0]).trim())) {
+                ticket=tmp[1].trim();
+                break;
+            }
+        }
+        return ticket;
+    }
+
+    /**
+     * extract Cas cookies from  all received cookies
+     * 
+     * @param cookies
+     * @param conn
+     */
+    public void extractCASCookies(List<HttpCookie> cookies,HttpURLConnection conn) {
+        warningCookie=getCookieNamed(cookies, "CASPRIVACY");
+        ticketGrantingCookie=getCookieNamed(cookies, "CASTGC");
+    }
 }

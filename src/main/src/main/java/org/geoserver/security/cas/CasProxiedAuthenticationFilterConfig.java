@@ -50,10 +50,10 @@ public class CasProxiedAuthenticationFilterConfig extends PreAuthenticatedUserNa
      * The geoserver url for the proxy callback 
      * 
      * example:
-     * http://localhost:8080/geoserver/j_spring_cas_security_proxyreceptor
+     * http://localhost:8080/geoserver
      */
     
-    private String proxyCallbackUrl;
+    private String proxyCallbackUrlPrefix;
     
     public String getService() {
         return service;
@@ -85,14 +85,19 @@ public class CasProxiedAuthenticationFilterConfig extends PreAuthenticatedUserNa
     }
 
 
-    public String getProxyCallbackUrl() {
-        return proxyCallbackUrl;
+    public String getProxyCallbackUrlPrefix() {
+        return proxyCallbackUrlPrefix;
     }
 
 
-    public void setProxyCallbackUrl(String proxyCallbackUrl) {
-        this.proxyCallbackUrl = proxyCallbackUrl;
+
+    public void setProxyCallbackUrlPrefix(String proxyCallbackUrlPrefix) {
+        this.proxyCallbackUrlPrefix = proxyCallbackUrlPrefix;
     }
 
-    
+    @Override
+    public boolean providesAuthenticationEntryPoint() {
+        return false;
+    }
+
 }

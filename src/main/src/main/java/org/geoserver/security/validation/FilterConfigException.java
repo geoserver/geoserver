@@ -48,12 +48,5 @@ public class FilterConfigException extends SecurityConfigException {
     public static final String UNKNOWN_SECURITY_METADATA_SOURCE="UNKNOWN_SECURITY_METADATA_SOURCE";
     public static final String NO_AUTH_ENTRY_POINT="NO_AUTH_ENTRY_POINT";
     
-    public static final String CAS_SERVICE_URL_REQUIRED ="CAS_SERVICE_URL_REQUIRED";
-    public static final String CAS_SERVER_URL_REQUIRED ="CAS_SERVER_URL_REQUIRED";
-    public static final String CAS_TICKETVALIDATOR_URL_REQUIRED ="CAS_TICKETVALIDATOR_URL_REQUIRED";
-    public static final String CAS_SERVICE_URL_MALFORMED ="CAS_SERVICE_URL_MALFORMED";
-    public static final String CAS_SERVER_URL_MALFORMED ="CAS_SERVER_URL_MALFORMED";
-    public static final String CAS_TICKETVALIDATOR_URL_MALFORMED ="CAS_TICKETVALIDATOR_URL_MALFORMED";
-    public static final String CAS_SERVICE_URL_SUFFIX ="CAS_SERVICE_URL_SUFFIX";
 
 }

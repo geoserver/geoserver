@@ -30,17 +30,13 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper{
     String username,password;
 
     public CasFormAuthenticationHelper (URL casUrlPrefix,String username, String password) {
-        this(casUrlPrefix,null,username,password);
-    }
-    
-    public CasFormAuthenticationHelper (URL casUrlPrefix,URL proxyReceptor,String username, String password) {
-        super(casUrlPrefix,proxyReceptor);
+        super(casUrlPrefix);
         this.username=username;
-        this.password=password;        
+        this.password=password;
     }
     
-    
-    public boolean ssoLogin(URL serviceURL) throws IOException{
+        
+    public boolean ssoLogin() throws IOException{
         URL loginUrl = createURLFromCasURI("/login");
         HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
         String responseString = readResponse(conn);
@@ -62,8 +58,6 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper{
         paramMap.put("_eventId","submit");
         paramMap.put("submit","LOGIN");
         paramMap.put("execution",execution);
-        if (serviceURL!=null)
-            paramMap.put("service",serviceURL.toString());
                 
         conn = (HttpURLConnection) loginUrl.openConnection();
         
@@ -76,14 +70,18 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper{
 
         cookies = getCookies(conn);
         readResponse(conn);
-        if (serviceURL!=null) {
-            String ticket = getResponseHeaderValues(conn,"Location").get(0);
-        }
         
-        warningCookie=getCookieNamed(cookies, "CASPRIVACY");
-        ticketGrantingCookie=getCookieNamed(cookies, "CASTGC");
+        extractCASCookies(cookies,conn);
         
-        return warningCookie!=null; 
+        return ticketGrantingCookie!=null && ticketGrantingCookie.getValue().startsWith("TGT-"); 
+    }
+
+    protected String extractFormParameter(String formLoginHtml, String searchString) {        
+        int index = formLoginHtml.indexOf(searchString);
+        index+=searchString.length();
+        index = formLoginHtml.indexOf("\"", index);
+        int index2 = formLoginHtml.indexOf("\"", index+1);
+        return  formLoginHtml.substring(index+1,index2);        
     }
 
 }

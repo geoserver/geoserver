@@ -39,18 +39,12 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
     
     
     private LoginUrlAuthenticationEntryPoint aep;
-    protected MessageDigest digest;
 
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
         
-        try {            
-            digest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No MD5 algorithm available!");
-        } 
 
         
         UsernamePasswordAuthenticationFilterConfig upConfig = (UsernamePasswordAuthenticationFilterConfig) config;
@@ -92,13 +86,6 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
 
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);
-//        SecurityContextHolderAwareRequestFilter contextAwareFilter = new SecurityContextHolderAwareRequestFilter();
-//        try {
-//            contextAwareFilter.afterPropertiesSet();
-//        } catch (ServletException e) {
-//            throw new IOException(e);
-//        }
-//        getNestedFilters().add(contextAwareFilter);
     }
     
     @Override
@@ -113,32 +100,5 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         super.doFilter(req, res, chain);
     }            
 
-    /** 
-     * returns username:md5(password:filtername)
-     */
-//    @Override
-//    public String getCacheKey(HttpServletRequest request) {
-//        String uname = request.getParameter(usernameParameter);
-//        String passwd = request.getParameter(passwordParameter);
-//        if (!StringUtils.hasLength(uname)) return null;
-//        if (!StringUtils.hasLength(passwd)) return null;
-//        
-//        if (GeoServerUser.ROOT_USERNAME.equals(uname)) 
-//            return null;
-//
-//        StringBuffer buff = new StringBuffer(passwd);
-//        buff.append(":");
-//        buff.append(getName());
-//        String digestString = null;
-//        try {
-//            digestString = new String(Hex.encode(digest.digest(buff.toString().getBytes("utf-8"))));
-//        } catch (UnsupportedEncodingException e) {
-//            throw new RuntimeException(e);
-//        }        
-//        buff = new StringBuffer(uname);
-//        buff.append(":");
-//        buff.append(digestString);
-//        return buff.toString();        
-//    }
 
 }

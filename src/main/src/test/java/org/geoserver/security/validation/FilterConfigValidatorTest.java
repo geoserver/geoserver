@@ -4,12 +4,11 @@ import java.util.logging.Logger;
 
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityTestSupport;
-import org.geoserver.security.cas.CasAuthenticationFilterConfig;
-import org.geoserver.security.cas.GeoServerCasAuthenticationFilter;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.GeoServerRoleFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
@@ -344,27 +343,9 @@ public class FilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         getSecurityManager().saveFilter(config);
     }
 
-    public void testRequestHeaderFilterConfigValidation() throws Exception{
-        RequestHeaderAuthenticationFilterConfig config = new RequestHeaderAuthenticationFilterConfig();
-        config.setClassName(GeoServerRequestHeaderAuthenticationFilter.class.getName());
-        config.setName("testRequestHeader");
-
-        boolean failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.PRINCIPAL_HEADER_ATTRIBUTE_NEEDED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
-        }
-        assertTrue(failed);
-
-        config.setPrincipalHeaderAttribute("user");
-
+    public void check(PreAuthenticatedUserNameFilterConfig config) throws Exception {
         
-        failed = false;                                        
+        boolean failed = false;                                        
         try {
             getSecurityManager().saveFilter(config);
         } catch (FilterConfigException ex){
@@ -404,7 +385,6 @@ public class FilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         assertTrue(failed);
         
         config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
-        getSecurityManager().saveFilter(config);
         
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.RoleService);                
         config.setRoleServiceName("blabla");
@@ -421,7 +401,6 @@ public class FilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         assertTrue(failed);
         
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        getSecurityManager().saveFilter(config);
         
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.Header);
         failed = false;                                        
@@ -452,127 +431,30 @@ public class FilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         
         config.setRoleConverterName(null);
         getSecurityManager().saveFilter(config);
-
+        
     }
-
-    public void testCasFilterConfigValidation() throws Exception{
-        CasAuthenticationFilterConfig config = new CasAuthenticationFilterConfig();
-        config.setClassName(GeoServerCasAuthenticationFilter.class.getName());
-        config.setName("testCAS");
+    
+    public void testRequestHeaderFilterConfigValidation() throws Exception{
+        RequestHeaderAuthenticationFilterConfig config = new RequestHeaderAuthenticationFilterConfig();
+        config.setClassName(GeoServerRequestHeaderAuthenticationFilter.class.getName());
+        config.setName("testRequestHeader");
 
         boolean failed = false;                                        
         try {
             getSecurityManager().saveFilter(config);
         } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_SERVICE_URL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        config.setService("blabla");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_SERVICE_URL_MALFORMED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        config.setService("http://localhost/geoserver");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_SERVICE_URL_SUFFIX,ex.getId());
-            assertEquals(1,ex.getArgs().length);
-            assertEquals(CasAuthenticationFilterConfig.CAS_CHAIN_PATTERN,ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-
-        config.setService("http://localhost/geoserver"+CasAuthenticationFilterConfig.CAS_CHAIN_PATTERN);
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_SERVER_URL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        failed = false;
-        config.setLoginUrl("blabla");
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_SERVER_URL_MALFORMED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-
-        failed = false;
-        config.setLoginUrl("http://localhost/cas/login");
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_TICKETVALIDATOR_URL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-
-        failed = false;
-        config.setTicketValidatorUrl("blabla");
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.CAS_TICKETVALIDATOR_URL_MALFORMED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-
-        config.setTicketValidatorUrl("http://localhost/cas");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED,ex.getId());
+            assertEquals(FilterConfigException.PRINCIPAL_HEADER_ATTRIBUTE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
             LOGGER.info(ex.getMessage());
             
             failed=true;
         }
         assertTrue(failed);
-        
-        config.setUserGroupServiceName("blabla");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE,ex.getId());
-            assertEquals(1,ex.getArgs().length);
-            assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
 
-        config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);                        
-        getSecurityManager().saveFilter(config);
+        config.setPrincipalHeaderAttribute("user");
+        check((PreAuthenticatedUserNameFilterConfig) config);
         
+
     }
 
 

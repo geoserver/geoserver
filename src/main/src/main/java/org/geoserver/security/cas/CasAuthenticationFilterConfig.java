@@ -10,7 +10,7 @@ import org.geoserver.security.config.SecurityFilterConfig;
 
 /**
  * Configuration for cas authentication, acting
- * as replacement for a form login and a handling
+ * as replacement for a form login and  handling
  * the proxy receptor url
  * 
  * 
@@ -19,7 +19,6 @@ import org.geoserver.security.config.SecurityFilterConfig;
  */
 public class CasAuthenticationFilterConfig extends SecurityFilterConfig implements CasAuthenticationProperties {
 
-    public final static String CAS_CHAIN_PATTERN = "/j_spring_cas_security_check";
     private static final long serialVersionUID = 1L;
     
     private String userGroupServiceName;
@@ -39,25 +38,6 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
     private boolean sendRenew;
     
     /**
-     * Login url of the central cas server
-     * 
-     * example:
-     * https://localhost:9443/cas/login"
-     */
-    @Deprecated
-    private String loginUrl;
-    
-    
-    /**
-     * Url where to validate the ticket
-     * 
-     * example
-     * "https://localhost:9443/cas" 
-     */
-    @Deprecated
-    private String ticketValidatorUrl;
-    
-    /**
      * The CAS server URL including context root
      * 
      * example
@@ -70,10 +50,36 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
      * The geoserver url for the proxy callback 
      * 
      * example:
-     * http://localhost:8080/geoserver/j_spring_cas_security_proxyreceptor
+     * https://myhost:8443/geoserver
      */
     
-    private String proxyCallbackUrl;
+    private String proxyCallbackUrlPrefix;
+
+
+    /**
+     * Optional:
+     * 
+     * After a successful CAS logout triggered by geoserver,
+     * a cas response page is rendered.
+     * 
+     * This url should be rendered as a link in the CAS response
+     * page.
+     * 
+     * example:
+     * https://myhost:8443/geoserver
+     */
+    private String urlInCasLogoutPage;
+
+    
+    
+    public String getUrlInCasLogoutPage() {
+        return urlInCasLogoutPage;
+    }
+
+    public void setUrlInCasLogoutPage(String urlInCasLogoutPage) {
+        this.urlInCasLogoutPage = urlInCasLogoutPage;
+    }
+
 
 
 
@@ -124,31 +130,6 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
     }
 
 
-    @Deprecated
-    public String getLoginUrl() {
-        return loginUrl;
-    }
-
-
-    @Deprecated
-    public void setLoginUrl(String loginUrl) {
-        this.loginUrl = loginUrl;
-    }
-
-
-    @Deprecated
-    public String getTicketValidatorUrl() {
-        return ticketValidatorUrl;
-    }
-
-
-    @Deprecated
-    public void setTicketValidatorUrl(String ticketValidatorUrl) {
-        this.ticketValidatorUrl = ticketValidatorUrl;
-    }
-
-
-
     public String getUserGroupServiceName() {
         return userGroupServiceName;
     }
@@ -165,19 +146,14 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
     }
 
 
-
-    /* (non-Javadoc)
-     * @see org.geoserver.security.cas.CasAuthenticationProperties#getProxyCallbackUrl()
-     */
-    @Override
-    public String getProxyCallbackUrl() {
-        return proxyCallbackUrl;
+    public String getProxyCallbackUrlPrefix() {
+        return proxyCallbackUrlPrefix;
     }
 
 
 
-    public void setProxyCallbackUrl(String proxyCallbackUrl) {
-        this.proxyCallbackUrl = proxyCallbackUrl;
+    public void setProxyCallbackUrlPrefix(String proxyCallbackUrlPrefix) {
+        this.proxyCallbackUrlPrefix = proxyCallbackUrlPrefix;
     }
  
     

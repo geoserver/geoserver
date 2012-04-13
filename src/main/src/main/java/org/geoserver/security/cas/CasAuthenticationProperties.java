@@ -6,6 +6,7 @@
 
 package org.geoserver.security.cas;
 
+
 /**
  * Common interface for cas authentication configurations
  * 
@@ -14,14 +15,16 @@ package org.geoserver.security.cas;
  */
 public interface CasAuthenticationProperties {
 
-    public final static String CAS_PROXY_RECEPTOR_PATTERN = "/j_spring_cas_security_proxyreceptor";
-
     public abstract String getCasServerUrlPrefix();
+    public abstract void setCasServerUrlPrefix(String url);
 
     public abstract String getService();
+    public abstract void setService(String url);
 
     public abstract boolean isSendRenew();
+    public abstract void setSendRenew(boolean renew);
 
-    public abstract String getProxyCallbackUrl();
+    public abstract String getProxyCallbackUrlPrefix();
+    public abstract void setProxyCallbackUrlPrefix(String url);
 
 }

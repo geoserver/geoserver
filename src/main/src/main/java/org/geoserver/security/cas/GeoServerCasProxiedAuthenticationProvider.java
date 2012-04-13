@@ -6,9 +6,11 @@
 package org.geoserver.security.cas;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geoserver.security.validation.SecurityConfigValidator;
 
 /**
  * Security provider for CAS
@@ -32,5 +34,12 @@ public class GeoServerCasProxiedAuthenticationProvider extends AbstractFilterPro
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerCasProxiedAuthenticationFilter();
     }
+    
+    @Override
+    public SecurityConfigValidator createConfigurationValidator(
+            GeoServerSecurityManager securityManager) {
+        return new CasFilterConfigValidator(securityManager);
+    }
+
 
 }

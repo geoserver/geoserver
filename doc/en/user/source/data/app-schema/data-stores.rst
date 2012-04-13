@@ -37,18 +37,19 @@ Database options
 
 Databases such as PostGIS, Oracle, and ArcSDE share some common or similar configuration options.
 
-============    ====================================================    ============================================================================
-``name``        Meaning                                                 ``value`` examples
-============    ====================================================    ============================================================================
-``dbtype``      Database type                                           ``postgisng``, ``Oracle``, ``arcsde``
-``host``        Host name or IP address of database server              ``database.example.org``, ``192.168.3.12``
-``port``        TCP port on database server                             Default if omitted: ``1521`` (Oracle), ``5432`` (PostGIS), ``5151`` (ArcSDE)
-``database``    PostGIS/Oracle database
-``instance``    ArcSDE instance 
-``schema``      The database schema 
-``user``        The user name used to login to the database server
-``passwd``      The password used to login to the database server
-============    ====================================================    ============================================================================
+========================    ====================================================    ============================================================================
+``name``                    Meaning                                                 ``value`` examples
+========================    ====================================================    ============================================================================
+``dbtype``                  Database type                                           ``postgisng``, ``Oracle``, ``arcsde``
+``host``                    Host name or IP address of database server              ``database.example.org``, ``192.168.3.12``
+``port``                    TCP port on database server                             Default if omitted: ``1521`` (Oracle), ``5432`` (PostGIS), ``5151`` (ArcSDE)
+``database``                PostGIS/Oracle database
+``instance``                ArcSDE instance
+``schema``                  The database schema
+``user``                    The user name used to login to the database server
+``passwd``                  The password used to login to the database server
+``Expose primary keys``     Columns with primary keys available for mapping         Default is ``false``, set to ``true`` to use primary key columns in mapping
+========================    ====================================================    ============================================================================
 
 PostGIS
 -------
@@ -301,4 +302,17 @@ Here is an example of a Tomcat 6 context in ``/etc/tomcat6/server.xml`` that inc
 Firewall timeouts can silently sever idle connections to the database and cause GeoServer to hang. If there is a firewall between GeoServer and the database, a connection pool configured to shut down idle connections before the firewall can drop them will prevent GeoServer from hanging. This JNDI connection pool is configured to shut down idle connections after 5 to 10 minutes. 
 
 See also :ref:`tomcat_jndi`.
+
+
+Expose primary keys
+-------------------
+
+By default, GeoServer conceals the existence of database columns with a primary key. To make such columns available for using in app-schema mapping files, set the data store parameter ``Expose primary keys`` to ``true``::
+
+    <Parameter>
+        <name>Expose primary keys</name>
+       <value>true</value>
+    </Parameter>
+
+This is known to work with PostGIS, Oracle, and JNDI data stores.
 

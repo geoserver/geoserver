@@ -307,7 +307,7 @@ See also :ref:`tomcat_jndi`.
 Expose primary keys
 -------------------
 
-By default, GeoServer conceals the existence of database columns with a primary key. To make such columns available for using in app-schema mapping files, set the data store parameter ``Expose primary keys`` to ``true``::
+By default, GeoServer conceals the existence of database columns with a primary key. To make such columns available for use in app-schema mapping files, set the data store parameter ``Expose primary keys`` to ``true``::
 
     <Parameter>
         <name>Expose primary keys</name>

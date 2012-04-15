@@ -77,18 +77,29 @@ The Capabilities document that is returned is a long and complex chunk of XML, b
 GetMap
 -------------------
 
-The purpose of the GetMap request is to get the actual image.  A client should have all the information it needs to make such a request after it understands the Capabilities document.  Detailing all the potential parameters for a GetMap request is currently outside the scope of this document.  But the basics are letting clients specify a bounding box, a width and a height, a spatial reference system, a format, and a style.  
+The **GetMap** operation gets the actual map image (or other output artifact).  
+A client has all the information it needs to make this request after it parses the Capabilities document.  
+The core parameters allow clients to specify a bounding box, a width and a height, a spatial reference system, a format, and a style.  
+Detailing all the supported parameters for a GetMap request is currently beyond the scope of this document.  
+A good way to get to know the GetMap parameters is to experiment with the :ref:`tutorials_wmsreflector`.  
 
-A great way to get to know the GetMap parameters is to experiment with the :ref:`tutorials_wmsreflector`.  The options for the **format** parameter in GeoServer can be found in the :ref:`wms_output_formats` section.  And there are a number of vendor specific parameters that GeoServer makes availabe, see :ref:`wms_output_formats`
+The output format options GeoServer supports for the  **format** parameter are documented in the :ref:`wms_output_formats` section.  
+
+GeoServer provides a number of useful vendor-specific parameters, which are documented in the :ref:`wms_vendor_parameters` section.
 
 .. _wms_getfeatureinfo:
 
 GetFeatureInfo
 --------------
 
-The **GetFeatureInfo** operation requests the actual spatial data.  It is very similar to the WFS **GetFeature** operation, and indeed since GeoServer always provides a WFS we recommend using it whenever possible.  It provides more flexibility in both input and output.  The one advantage that GetFeatureInfo has is that it issues its request as an x,y pixel value from a returned WMS image.  So it is easier to use by a naive client that doesn't understand all the geographic referencing needed.
+The **GetFeatureInfo** operation requests the spatial and attribute data for a feature.  
+It is similar to the WFS **GetFeature** operation, but that operation provides more flexibility in both input and output.
+Since GeoServer provides a WFS we recommend using it instead of ``GetFeatureInfo`` whenever possible.  
+ 
+The one advantage of ``GetFeatureInfo`` is that the request uses an (x,y) pixel value from a returned WMS image.  
+This is easier to use for a naive client that is not able to perform the geographic referencing otherwise needed.
 
-Geoserver supports the following output formats for GetFeatureInfo:
+Geoserver supports the following output formats for ``GetFeatureInfo``:
 
 .. list-table::
    :widths: 15 35 50
@@ -98,25 +109,28 @@ Geoserver supports the following output formats for GetFeatureInfo:
      - **Notes**
    * - TEXT
      - ``info_format=text/plain``
-     - Simple text output. Default.
+     - Simple text output. (The default format)
    * - GML 2
      - ``info_format=application/vnd.ogc.wms`` 
-     - Only works on Simple Features (see :ref:`app-schema.complex-features`)
+     - Works only for Simple Features (see :ref:`app-schema.complex-features`)
    * - GML 3
      - ``info_format=application/vnd.ogc.wms/3.1.1``
-     - Works on both Simple as well as Complex Features (see :ref:`app-schema.complex-features`)
+     - Works for both Simple and Complex Features (see :ref:`app-schema.complex-features`)
    * - HTML
      - ``info_format=text/html``
-     - Uses html templates that are defined on the server side.  See the tutorial on :ref:`tutorials_getfeatureinfo` for information on how to template the html output. 
+     - Uses HTML templates that are defined on the server.  See :ref:`tutorials_getfeatureinfo` for information on how to template HTML output. 
 
-Server-side styled HTML is most commonly used, but for optimal control and better customisation we suggest the client uses GML3 and styles the raw data in the way that it wants.
+Server-styled HTML is the most commonly-used format. 
+However, for maximum control and customisation we suggest the client use GML3 and style the raw data itself.
 
 .. _wms_describelayer:
 
 DescribeLayer
 -------------
 
-The **DescribeLayer** is used primarily by clients that understand SLD based WMS.  In order to make an SLD one needs to know the structure of the data.  WMS and WFS both have good operations to do this, thankfully the **DescribeLayer** operation just routes the client to the appropriate service.
+The **DescribeLayer** operation is used primarily by clients that understand SLD-based WMS.  
+In order to make an SLD one needs to know the structure of the data.  
+WMS and WFS both have operations to do this, so the **DescribeLayer** operation just routes the client to the appropriate service.
 
 
 .. _wms_getlegendgraphic:
@@ -124,4 +138,6 @@ The **DescribeLayer** is used primarily by clients that understand SLD based WMS
 GetLegendGraphic
 ----------------
 
-**GetLegendGraphic** is an operation that provides a general mechanism for acquiring legend symbols, beyond the LegendURL reference of WMS Capabilities.  It will generate a legend automatically, based on the style defined on the server, or even based on a user supplied SLD.  For more information on this operation and the various options that GeoServer supports see :ref:`get_legend_graphic`.
+The **GetLegendGraphic** operation provides a mechanism for generating legend symbols, beyond the LegendURL reference of WMS Capabilities.  
+It generates a legend based on the style defined on the server, or alternatively based on a user-supplied SLD.  
+For more information on this operation and the various options that GeoServer supports see :ref:`get_legend_graphic`.

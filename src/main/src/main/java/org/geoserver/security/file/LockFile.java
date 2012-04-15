@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.IOUtils;
 
 import org.geoserver.security.impl.Util;
 import org.springframework.security.core.Authentication;
@@ -93,8 +94,15 @@ public class LockFile  {
                         
         if (lockFile.exists()) {             
             LOGGER.warning("Cannot obtain  lock: " + lockFile.getCanonicalPath());
+            FileInputStream in = new FileInputStream(lockFile);
             Properties props = new Properties();
-            props.load(new FileInputStream(lockFile));            
+
+            try {
+                props.load(in);
+            } finally {
+                IOUtils.closeQuietly(in);
+            }
+
             throw new IOException(Util.convertPropsToString(props,"Already locked" ));
         } else { // success             
             writeLockFileContent(lockFile);
@@ -115,32 +123,36 @@ public class LockFile  {
     protected void writeLockFileContent(File lockFile) throws IOException {
         
         FileOutputStream out = new FileOutputStream(lockFile); 
-        
         Properties props = new Properties();
-        props.store(out, "Locking info");
-                               
-        String hostname="UNKNOWN";
-        String ip ="UNKNOWN"; 
-            
-        // find some network info
+
         try {
-            hostname = InetAddress.getLocalHost().getHostName();
-            InetAddress addrs[] = InetAddress.getAllByName(hostname);
-            for (InetAddress addr: addrs) {        
-                if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) 
-                    ip = addr.getHostAddress();
+            props.store(out, "Locking info");
+
+            String hostname="UNKNOWN";
+            String ip ="UNKNOWN"; 
+
+            // find some network info
+            try {
+                hostname = InetAddress.getLocalHost().getHostName();
+                InetAddress addrs[] = InetAddress.getAllByName(hostname);
+                for (InetAddress addr: addrs) {
+                    if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress())
+                        ip = addr.getHostAddress();
+                }
+            } catch (UnknownHostException ex) {
             }
-        } catch (UnknownHostException ex) {            
+
+            props.put("hostname", hostname);
+            props.put("ip", ip);
+            props.put("location", lockFile.getCanonicalPath());
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            props.put("principal", auth==null ? "UNKNOWN" :auth.getName());
+
+            props.store(out, "Locking info");
+        } finally {
+            IOUtils.closeQuietly(out);
         }
-                       
-        props.put("hostname", hostname);
-        props.put("ip", ip);
-        props.put("location", lockFile.getCanonicalPath());
-        
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        props.put("principal", auth==null ? "UNKNOWN" :auth.getName());
-                                                
-        props.store(out, "Locking info");
     }
         
     /**

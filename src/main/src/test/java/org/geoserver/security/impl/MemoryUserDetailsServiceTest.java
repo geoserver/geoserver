@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathFactory;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -320,7 +321,11 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         String encrypted = xpath.evaluate("//entry[@key='passwd']", dom.getDocumentElement());
         assertTrue("secret".equals(encrypted));
         XStreamPersister xs = new XStreamPersisterFactory().createXMLPersister();
-        DataStoreInfo load = xs.load(new FileInputStream(store), DataStoreInfo.class);
+
+        FileInputStream fin = new FileInputStream(store);
+        DataStoreInfo load = xs.load(fin, DataStoreInfo.class);
+        fin.close();
+
         assertEquals("secret",load.getConnectionParameters().get("passwd"));
         
         // now encrypt
@@ -346,8 +351,12 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         // assertFalse("secret".equals(encrypted));
         
         xs = new XStreamPersisterFactory().createXMLPersister();
-        load = xs.load(new FileInputStream(store), DataStoreInfo.class);
+
+        fin = new FileInputStream(store); 
+
+        load = xs.load(fin, DataStoreInfo.class);
         assertEquals("secret",load.getConnectionParameters().get("passwd"));
+        fin.close();
     }
 
 }

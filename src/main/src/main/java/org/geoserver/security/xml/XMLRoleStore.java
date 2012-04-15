@@ -23,9 +23,11 @@ import static org.geoserver.security.xml.XMLConstants.E_USERROLES_RR;
 import static org.geoserver.security.xml.XMLConstants.NS_RR;
 import static org.geoserver.security.xml.XMLConstants.VERSION_RR_1_0;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.SortedSet;
 import java.util.logging.Logger;
 
@@ -33,6 +35,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.geoserver.security.GeoServerRoleService;
@@ -144,15 +147,20 @@ public class XMLRoleStore extends AbstractRoleStore {
 //            if (isValidatingXMLSchema()) {
 //                XMLValidator.Singleton.validateRoleRegistry(doc);
 //            }
-            
-            OutputFormat of = 
-                    new OutputFormat("XML","UTF-8",true);
-             XMLSerializer serializer = 
-                                    new XMLSerializer();
+
+             OutputFormat of = new OutputFormat("XML","UTF-8",true);
+             XMLSerializer serializer = new XMLSerializer();
              serializer.setOutputFormat(of);
-             serializer.setOutputByteStream(new              
-                    FileOutputStream(roleFile));
-             serializer.serialize(doc);
+
+             OutputStream out = new BufferedOutputStream(new FileOutputStream(roleFile));
+             try {
+                 serializer.setOutputByteStream(out);
+                 serializer.serialize(doc);
+                 out.flush();
+             }
+             finally {
+            IOUtils.closeQuietly(out);
+             }
             
             /* standard java, but there is no possibility to set 
              * the number of chars to indent, each line is starting at 

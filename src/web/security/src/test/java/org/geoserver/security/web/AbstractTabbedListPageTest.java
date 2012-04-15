@@ -13,8 +13,6 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
-import com.sun.java.swing.plaf.gtk.resources.gtk_zh_TW;
-
 public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWicketTestSupport {
     
      public static final String FIRST_COLUM_PATH="itemProperties:0:component:link";

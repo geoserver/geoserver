@@ -3,12 +3,12 @@
 WMS vendor parameters
 =====================
 
-WFS vendor parameters are options that are not defined in the official WMS specification, but are allowed by it.  GeoServer supports a range of custom WMS parameters.
+WMS vendor parameters are custom request parameters that are not defined in the WMS specification, but are allowed by it.  GeoServer supports a variety of WMS vendor-specific parameters.
 
 angle
 -----
 
-Starting with GeoServer 2.0.2 ``angle=x`` rotates the map around its center by `x` degrees clockwise. The rotation is supported in all raster formats, PDF and SVG based on the Batik producer (the default one).
+``angle=x`` rotates the output map around its center by `x` degrees clockwise. The rotation is supported in all raster formats, PDF, and SVG based on the Batik producer (which is the default).
 
 buffer
 ------
@@ -36,9 +36,11 @@ In case the automatic evaluation fails, the following defaults apply:
 cql_filter
 ----------
 
-The ``cql_filter`` parameter is similar to the ``filter`` parameter, expect that the filter is encoded using CQL (Common Query Language).  This makes the request much more human readable.  However, CQL isn't as flexible as OGC filters, and can't encode as many types of filters as the OGC specification does. In particular, filters by feature ID are not supported.  If more than one layer is specified in the ``layers`` parameter, then more than one filter can be specified here, each corresponding to a layer.
+The ``cql_filter`` parameter is similar to the standard ``filter`` parameter, but the filter is encoded using CQL (Common Query Language).  This makes the request more readable.  However, CQL isn't as flexible as OGC filters, and can't encode as many types of filters as the OGC specification does. In particular, filters by feature ID are not supported.  
 
-An example of the same filter as above using CQL::
+If more than one layer is specified in the ``layers`` parameter, then more than one filter can be specified, each corresponding to a layer.
+
+An example of a CQL filter is::
 
    cql_filter=INTERSECT(the_geom,%20POINT%20(-74.817265%2040.5296504))
 
@@ -47,12 +49,12 @@ env
 
 The ``env`` parameter defines the set of substitution values that can be used in SLD variable substitution. The syntax is::
 
-  param1:value1;param2:value2;...
+  env=param1:value1;param2:value2;...
 
 featureid
 ---------
 
-The ``featureid`` parameter filters by feature ID, a unique value given to all features.  Multiple features can be selected by separating the featureids by comma, as seen in this example::
+The ``featureid`` parameter filters by feature ID, a unique value given to all features.  Multiple features can be selected by separating the featureids by comma, as in this example::
 
    featureid=states.1,states.45  
 

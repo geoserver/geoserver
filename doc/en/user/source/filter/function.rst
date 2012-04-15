@@ -3,11 +3,12 @@
 Filter functions
 ================
 
-The OGC Filter encoding specification provides a generic concept of a *filter function*.  
-A filter function is a function, with arguments, that can be called in a filter expression to perform specific calculations.  This can be useful when building WFS filters or SLD style sheets. 
+The OGC Filter Encoding specification provides a generic concept of a *filter function*.  
+A filter function is a named function with any number of arguments, which can be used in a filter expression to perform specific calculations.  
+This provides much richer expressiveness for defining filters. 
 
-There are many different kinds of filter functions available in GeoServer,  
-covering a wide range of functionality including mathematical functions, string formatting, and geometric operations such as ``buffer``.
+GeoServer provides many different kinds of filter functions,  
+covering a wide range of functionality including mathematical functions, string formatting, and geometric operations.
 A complete list is provided in the :ref:`filter_function_reference`.
 
 

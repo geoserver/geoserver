@@ -6,7 +6,7 @@ Supported filter languages
 Data filtering in GeoServer is based on the concepts found in the `OGC Filter Encoding Specification <http://www.opengeospatial.org/standards/filter>`_.
 
 GeoServer accepts filters encoded in two distinct languages: *Filter Encoding* and *Common Query Language*.  
-Each of these has different variations, described in the following specifications:
+Each of these has variations, described in the following specifications:
 
 **Filter Encoding**
   

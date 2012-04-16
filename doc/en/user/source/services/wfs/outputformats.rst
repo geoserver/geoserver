@@ -3,13 +3,11 @@
 WFS output formats
 ==================
 
-WFS returns features and feature information in a number of possible formats.  This page shows a list of the output formats.  In all cases the syntax for setting an output format is::
+WFS returns features and feature information in a number of possible formats.  This page shows a list of the output formats.  The syntax for setting an output format is::
 
-   outputFormat=<outputformat>
+   outputFormat=<format>
 
-where ``<outputformat>`` is any of the options below.
-
-.. note:: Some additional output formats are available with the use of an extension, such as Excel.  This list applies just to the basic GeoServer installation.  The full list of output formats supported by your GeoServer instance can be found by requesting your WFS :ref:`wfs_getcap`.
+where ``<format>`` is any of the following options:
 
 .. list-table::
    :widths: 30 30 40
@@ -33,6 +31,9 @@ where ``<outputformat>`` is any of the options below.
      - ``outputFormat=csv``
      - 
 
+.. note:: This list applies to the basic GeoServer installation.  Some additional output formats (such as Excel XLS) are available with the use of an extension.  The full list of output formats supported by a GeoServer instance can be found by requesting the WFS :ref:`wfs_getcap`.
+     
+     
 Zipped shapefile customisation
 ------------------------------
 
@@ -55,15 +56,11 @@ The properties available in the template are:
 Format options as parameter in WFS requests
 -------------------------------------------
 
-The ``format_options`` vendor specific parameter is a container for parameters that are format specific. The options in it are expressed as:
+GeoServer provides the ``format_options`` vendor-specific parameter to specify parameters that are format-specific. The syntax is::
 
-	param1:value1;param2:value2;...
+    format-options=param1:value1;param2:value2;...
 	
-The currently recognized format options are:
+The currently supported format options are:
 
-``filename``: Applies only to the SHAPE-ZIP output format. If a file name is indicated, it is used as the output file name. For example:: 
-
-  format_options=FILENAME:roads.zip
-	
-Otherwise a file name is inferred from the requested feature type(s) name.
+  * ``filename``: Applies only to the SHAPE-ZIP output format. If a file name is provided, it is used as the output file name. For example:  ``format_options=filename:roads.zip``.  If not specified explicitly, a file name is inferred from the requested feature type(s) name.
 

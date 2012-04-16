@@ -3,13 +3,13 @@
 WMS output formats
 ==================
 
-WMS returns images in a number of possible formats.  This page shows a list of the output formats.  In all cases the syntax for setting an output format is::
+WMS returns images in a number of possible formats.  This page shows a list of the output formats.  The syntax for setting an output format is::
 
    format=<format>
 
 where ``<format>`` is any of the options below.
 
-.. note:: The list of output formats supported by your GeoServer instance can be found by a WMS :ref:`wms_getcap` request.
+.. note:: The list of output formats supported by a GeoServer instance can be found by a WMS :ref:`wms_getcap` request.
 
 .. list-table::
    :widths: 30 30 40

@@ -70,10 +70,9 @@ filter
 
 The WMS specification allows only limited filtering of data.  
 GeoServer expands the WMS filter capability to match those allowed by WFS.
-
-The ``filter`` parameter encodes a list of OGC filters (encoded in in XML).  
+The ``filter`` parameter specifies a list of OGC filters (encoded in in XML).  
 The list is enclosed in () parenthesis.  
-When used in a GET request, the XML element brackets need to be URL-encoded.  
+When used in a GET request, the XML tag brackets must be URL-encoded.  
 
 If more than one layer is specified in the ``layers`` parameter, then more than one filter can be specified, each corresponding to a layer.
 

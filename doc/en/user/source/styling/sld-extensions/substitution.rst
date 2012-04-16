@@ -1,4 +1,4 @@
-.. _sld_parameter_substitution:
+.. _sld_variable_substitution:
 
 Variable substitution in SLD
 =============================

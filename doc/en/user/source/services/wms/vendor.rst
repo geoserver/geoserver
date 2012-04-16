@@ -56,7 +56,7 @@ The ``env`` parameter defines the set of substitution values that can be used in
 
   env=param1:value1;param2:value2;...
   
-See :ref:`sld_parameter_substitution` for more information.
+See :ref:`sld_variable_substitution` for more information.
 
 featureid
 ---------

@@ -7,9 +7,9 @@ Web Map Service
    :maxdepth: 2
 
    basics
+   reference
    outputformats
-   configuration
    vendor
+   configuration
    global
    get_legend_graphic/legendgraphic
-   reference

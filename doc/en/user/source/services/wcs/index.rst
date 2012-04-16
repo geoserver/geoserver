@@ -7,7 +7,7 @@ Web Coverage Service
    :maxdepth: 2
 
    basics
-   configuration
+   reference
    outputformats
    vendor
-   reference
+   configuration

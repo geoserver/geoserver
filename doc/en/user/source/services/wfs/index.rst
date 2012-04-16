@@ -7,7 +7,7 @@ Web Feature Service
    :maxdepth: 2
 
    basics
+   reference
    outputformats
    vendor
-   reference
    schemamapping

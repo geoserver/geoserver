@@ -25,4 +25,3 @@ officially part of the GeoServer releases. They are however built along with the
    printing/index
    python/index
    spatialite/index
-   teradata/index

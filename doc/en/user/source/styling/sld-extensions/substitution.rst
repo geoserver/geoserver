@@ -32,7 +32,39 @@ A default value can be provided, which will be used if the variable was not spec
 The ``env`` function can be used anywhere an OGC expression is allowed. 
 For example, it can be used in ``CSSParameter`` elements, in size and offset elements, and in rule filter expressions. 
 The GeoServer SLD parser also accepts it in some places where full expressions are not allowed, such as in the ``Mark/WellKnownName`` element.
+
+
+Predefined Variables
+--------------------
+
+GeoServer has predefined variables which provide information about specific properties of the request output.  
+These are useful when SLD parameters need to depend on output dimensions.
+The predefined variables are:
+
+.. list-table::
+   :widths: 20 25 55
    
+   
+   * - **Name**
+     - **Type**
+     - **Description**
+   * - ``wms_bbox``
+     - ``ReferencedEnvelope``
+     - returns the georeferenced extent of the request output
+   * - ``wms_crs``
+     - ``CoordinateReferenceSystem``
+     - returns the definition of the output coordinate reference system
+   * - ``wms_srs``
+     - ``String``
+     - returns the code for the output coordinate reference system
+   * - ``wms_width``
+     - ``Integer``
+     - returns the width (in pixels) of the output image
+   * - ``wms_height``
+     - ``Integer``
+     - returns the height (in pixels) of the output image
+
+
 Example
 -------     
  

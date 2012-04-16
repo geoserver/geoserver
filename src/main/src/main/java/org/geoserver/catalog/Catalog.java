@@ -1327,7 +1327,7 @@ public interface Catalog extends CatalogInfo {
      * Returns the style matching a particular name in the specified workspace, or <code>null</code> 
      * if no such style could be found.
      * 
-     * @param workspaceName The name of the workspace containing the style.
+     * @param workspaceName The name of the workspace containing the style, {@code null} stands for a global style.
      * @param name The name of the style to return.
      */
     StyleInfo getStyleByName(String workspaceName, String name);
@@ -1336,17 +1336,20 @@ public interface Catalog extends CatalogInfo {
      * Returns the style matching a particular name in the specified workspace, or <code>null</code> 
      * if no such style could be found.
      * 
-     * @param workspace The workspace containing the style.
+     * @param workspace The workspace containing the style, {@code null} stands for a global style.
      * @param name The name of the style to return.
      */
     StyleInfo getStyleByName(WorkspaceInfo workspace, String name);
     
     /**
-     * Returns the style matching a particular name, or <code>null</code> if
-     * no such style could be found.
+     * Returns the global style matching a particular name, or <code>null</code> if no such style
+     * could be found.
+     * <p>
+     * Note this is a convenient method for {@link #getStyleByName(WorkspaceInfo, String)} with a
+     * {@code null} workspace argument.
+     * </p>
      * 
-     * @param name
-     *                The name of the style to return.
+     * @param name The name of the style to return.
      */
     StyleInfo getStyleByName(String name);
 

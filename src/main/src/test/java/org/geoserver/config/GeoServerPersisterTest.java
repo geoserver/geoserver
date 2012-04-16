@@ -557,6 +557,8 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( f.exists() );
 
         s = catalog.getStyleByName("foostyle");
+        assertNull(s);
+        s = catalog.getStyleByName(catalog.getDefaultWorkspace(), "foostyle");
         catalog.remove(s);
         assertFalse( f.exists() );
     }

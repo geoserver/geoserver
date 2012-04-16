@@ -709,10 +709,11 @@ public interface CatalogFacade {
     StyleInfo getStyleByName(String name);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code> 
+     * Returns the style matching a particular name in the specified workspace, or <code>null</code>
      * if no such style could be found.
      * 
-     * @param workspace The workspace containing the style.
+     * @param workspace The workspace containing the style; non {@code null}, use
+     *        {@value #ANY_WORKSPACE} or {@link #NO_WORKSPACE} as appropriate.
      * @param name The name of the style to return.
      */
     StyleInfo getStyleByName(WorkspaceInfo workspace, String name);

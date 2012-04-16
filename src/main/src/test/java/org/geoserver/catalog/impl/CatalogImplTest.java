@@ -166,7 +166,6 @@ public class CatalogImplTest extends TestCase {
 
     protected void addLayerGroup() {
         addLayer();
-        addStyle();
         catalog.add(lg);
     }
 
@@ -1163,6 +1162,7 @@ public class CatalogImplTest extends TestCase {
     }
 
     public void testAddStyleWithNameConflict() throws Exception {
+        addWorkspace();
         addStyle();
 
         StyleInfo s2 = catalog.getFactory().createStyle();
@@ -1228,10 +1228,11 @@ public class CatalogImplTest extends TestCase {
         s2.setWorkspace(ws);
         catalog.add(s2);
 
-        assertNotNull(catalog.getStyleByName("styleNameWithWorkspace"));
+        assertNull("style is not global, should't have been found",     
+                catalog.getStyleByName("styleNameWithWorkspace"));
         assertNotNull(catalog.getStyleByName(ws.getName(), "styleNameWithWorkspace"));
         assertNotNull(catalog.getStyleByName(ws, "styleNameWithWorkspace"));
-        assertNotNull(catalog.getStyleByName((WorkspaceInfo)null, "styleNameWithWorkspace"));
+        assertNull(catalog.getStyleByName((WorkspaceInfo)null, "styleNameWithWorkspace"));
 
         assertNull(catalog.getStyleByName(ws.getName(), "styleName"));
         assertNull(catalog.getStyleByName(ws, "styleName"));
@@ -1258,8 +1259,8 @@ public class CatalogImplTest extends TestCase {
         s2.setWorkspace(ws2);
         catalog.add(s2);
 
-        //will randomly return one... we should probably return null with multiple matches
-        assertNotNull(catalog.getStyleByName("foo"));
+        //none is global, so none should be returned
+        assertNull(catalog.getStyleByName("foo"));
 
         assertEquals(s1, catalog.getStyleByName(ws.getName(), "foo"));
         assertEquals(s1, catalog.getStyleByName(ws, "foo"));
@@ -1535,8 +1536,7 @@ public class CatalogImplTest extends TestCase {
 
     public void testGetLayerGroupByNameWithWorkspace() {
         addLayer();
-        addStyle();
-
+        
         CatalogFactory factory = catalog.getFactory();
         LayerGroupInfo lg1 = factory.createLayerGroup();
         lg1.setName("lg");

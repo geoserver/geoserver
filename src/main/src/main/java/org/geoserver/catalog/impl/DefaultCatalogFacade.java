@@ -851,8 +851,8 @@ public class DefaultCatalogFacade implements CatalogFacade {
     public StyleInfo getStyleByName(String name) {
         for (Iterator s = styles.iterator(); s.hasNext();) {
             StyleInfo style = (StyleInfo) s.next();
-            if (name.equals(style.getName())) {
-                return ModificationProxy.create(style,StyleInfo.class);
+            if (null == style.getWorkspace() && name.equals(style.getName())) {
+                return ModificationProxy.create(style, StyleInfo.class);
             }
         }
 
@@ -861,6 +861,12 @@ public class DefaultCatalogFacade implements CatalogFacade {
 
     @Override
     public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
+        if (null == workspace) {
+            throw new NullPointerException("workspace");
+        }
+        if (null == name) {
+            throw new NullPointerException("name");
+        }
         if (workspace == ANY_WORKSPACE) {
             //do an exhaustive search through all workspaces
             ArrayList<StyleInfo> matches = new ArrayList();
@@ -880,7 +886,7 @@ public class DefaultCatalogFacade implements CatalogFacade {
                 StyleInfo style = (StyleInfo) i.next();
                 if (name.equals(style.getName())) {
                     if (style.getWorkspace() != null && style.getWorkspace().equals(workspace) || 
-                        style.getWorkspace() == null && workspace == null) {
+                        style.getWorkspace() == null && workspace == NO_WORKSPACE) {
                         return ModificationProxy.create( style, StyleInfo.class );
                     }
                 }

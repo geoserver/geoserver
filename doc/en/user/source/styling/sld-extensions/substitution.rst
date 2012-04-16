@@ -1,15 +1,17 @@
 .. _sld_parameter_substitution:
 
-Parameter substitution in SLD
+Variable substitution in SLD
 =============================
 
-Parameter substitution in SLD is a GeoServer specific functionality (starting from version 2.0.2) allowing to pass down parameter values from the WMS request into an SLD style, allowing to dynamically change colors, fonts, sizes and filter thresholds dynamically.
+Variable substitution in SLD is a GeoServer extension (starting in version 2.0.2) that allows passing values from WMS requests into SLD styles.
+This allows dynamically setting values such as colors, fonts, sizes and filter thresholds.
 
-The parameters are specified on ``GetMap`` requests using the ``env`` parameter::
+Variables are specified in WMS ``GetMap`` requests by using the ``env`` request parameter followed by a list of ``name:value`` pairs separated by semicolons::
 
-  ...&env=paramName:value;otherParam=otherValue&... 
+  ...&env=name1:value1;name2=value2&... 
 
-and can be accessed from the SLD using the ``env`` function. In the simplest form the ``env`` function will retrieve the value of a specific parameter:
+In an SLD the variable values are accessed using the ``env`` function. 
+The function retrieves the value specified for a substitution variable in the current request:
    
 .. code-block:: xml 
    
@@ -17,7 +19,7 @@ and can be accessed from the SLD using the ``env`` function. In the simplest for
       <ogc:Literal>size</ogc:Literal>
    </ogc:Function>       
    
-Alternatively a default value can be provided, to be used if the parameter value was not provided along with the ``GetMap`` request:
+A default value can be provided, which will be used if the variable was not specified in the request:
 
 .. code-block:: xml 
    
@@ -27,12 +29,14 @@ Alternatively a default value can be provided, to be used if the parameter value
    </ogc:Function>  
    
    
-The function can be called in any place where an OGC expression is used, so for example ``CSSParameter``, sizes and offsets, and filter themselves. The SLD parser accepts it even in some places where an expression is not formally accepted, as the mark well known names.
+The ``env`` function can be used anywhere an OGC expression is allowed. 
+For example, it can be used in ``CSSParameter`` elements, in size and offset elements, and in rule filter expressions. 
+The GeoServer SLD parser also accepts it in some places where full expressions are not allowed, such as in the ``Mark/WellKnownName`` element.
    
-A working example
------------------     
+Example
+-------     
  
-The following symbolizer has been parametrized in three places, every time with fall backs (full SLD is also available):
+The following SLD symbolizer has been parameterized in three places, with default values provided in each case:
 
 .. code-block:: xml
 
@@ -64,18 +68,18 @@ The following symbolizer has been parametrized in three places, every time with 
           
 :download:`Download the full SLD style <artifacts/parpoint.sld>`
 
-The SLD renders the sample ``sf:bugsites`` as follows when no parameter is provided in the request:
+When no variables are provided in the WMS request, the SLD uses the default values and renders the sample ``sf:bugsites`` dataset as shown:
 
 .. figure:: images/default.png
 
    *Default rendering* 
 
-If the request is changed to include the following parameter::
+If the request is changed to specify the following variable values::
   
-   env=color:00FF00;name:triangle;size:12
+   &env=color:00FF00;name:triangle;size:12
    
-the result will be instead:
+the result is instead:
 
 .. figure:: images/triangles.png
 
-   *Rendering with parameters* 
+   *Rendering with varialbes supplied* 

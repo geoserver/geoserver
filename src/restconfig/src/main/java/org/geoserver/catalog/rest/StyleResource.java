@@ -197,10 +197,11 @@ public class StyleResource extends AbstractCatalogResource {
     @Override
     protected void handleObjectPut(Object object) throws Exception {
         String style = getAttribute("style");
-        
+        String workspace = getAttribute("workspace");
+
         if ( object instanceof StyleInfo ) {
             StyleInfo s = (StyleInfo) object;
-            StyleInfo original = catalog.getStyleByName( style );
+            StyleInfo original = catalog.getStyleByName( workspace, style );
      
             //ensure no workspace change
             if (s.getWorkspace() != null) {
@@ -218,7 +219,7 @@ public class StyleResource extends AbstractCatalogResource {
              * Force the .sld file to be overriden and it's Style object cleared from the
              * ResourcePool cache
              */
-            StyleInfo s = catalog.getStyleByName( style );
+            StyleInfo s = catalog.getStyleByName( workspace, style );
             catalog.getResourcePool().writeStyle( s, (Style) object, true );
             /*
              * make sure to save the StyleInfo so that the Catalog issues the notification events

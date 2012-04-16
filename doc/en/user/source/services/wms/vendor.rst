@@ -91,7 +91,7 @@ The supported format options are:
 
 * ``antialiasing`` (values = ``on``, ``off``, ``text``): controls the use of antialiased rendering in raster output. 
 * ``dpi``: sets the rendering dpi in raster outputs. The OGC standard dpi is 90, but if you need to create high resolution images (e.g for printing) it is advisable to request a larger image and set a higher dpi. For example, to print  a 100x100 image at 300dpi it is advisable to ask for a 333x333 image with the dpi value set to 300. In general the image size should be increased by a factor equal to ``targetDpi/90`` and the target dpi set in the format options.
-* ``layout``: chooses a named layout for decorations, a tool for visually annotating GeoServer's WMS output.  Layouts are used to add decorators such as compasses and legends to the maps produced by GeoServer.  :ref:`wms_decorations` are discussed further in the :ref:`advanced_config` section.
+* ``layout``: chooses a named layout for decorations, which are visual annotations on the WMS output.  Layouts are used to add decorators such as compasses and legends.  :ref:`wms_decorations` are discussed further in the :ref:`advanced_config` section.
 
 kmattr
 ------

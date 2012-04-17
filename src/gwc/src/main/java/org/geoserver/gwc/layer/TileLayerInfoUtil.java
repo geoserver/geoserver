@@ -111,7 +111,9 @@ public class TileLayerInfoUtil {
                         .getDefaultStyle().getName();
                 Set<String> cachedStyles = new HashSet<String>();
                 for (StyleInfo s : layer.getStyles()) {
-                    cachedStyles.add(s.getName());
+                    if (s != null) {
+                        cachedStyles.add(s.getName());
+                    }
                 }
                 setCachedStyles(layerInfo, defaultStyle, cachedStyles);
             }

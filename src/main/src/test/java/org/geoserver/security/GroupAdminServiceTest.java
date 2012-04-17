@@ -37,7 +37,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
         getSecurityManager().setActiveRoleService(roleService);
 
         //add the users
-        ugStore = ugService.createStore();
+        ugStore = createStore(ugService);
 
         bob = ugStore.createUserObject("bob", "foobar", true);
         GroupAdminProperty.set(bob.getProperties(), new String[]{"users"});
@@ -55,7 +55,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
         ugStore.store();
 
         //grant bob group admin privilege
-        roleStore = roleService.createStore();
+        roleStore = createStore(roleService);
         roleStore.addRole(GeoServerRole.ADMIN_ROLE);
         roleStore.addRole(GeoServerRole.GROUP_ADMIN_ROLE);
         

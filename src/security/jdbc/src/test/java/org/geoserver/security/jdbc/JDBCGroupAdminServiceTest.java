@@ -1,9 +1,14 @@
 package org.geoserver.security.jdbc;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import org.geoserver.data.test.LiveData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.GroupAdminServiceTest;
 
 public class JDBCGroupAdminServiceTest extends GroupAdminServiceTest {
@@ -47,4 +52,34 @@ public class JDBCGroupAdminServiceTest extends GroupAdminServiceTest {
 
         return service;
     }
+    
+    @Override
+    public GeoServerRoleStore createStore(GeoServerRoleService service) throws IOException {
+        JDBCRoleStore store = 
+            (JDBCRoleStore) super.createStore(service);
+        try {
+            JDBCTestSupport.dropExistingTables(store,store.getConnection());
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+        store.createTables();
+        store.store();
+        
+        return store;        
+    }
+
+    @Override
+    public GeoServerUserGroupStore createStore(GeoServerUserGroupService service) throws IOException {
+        JDBCUserGroupStore store = 
+            (JDBCUserGroupStore) super.createStore(service);
+        try {
+            JDBCTestSupport.dropExistingTables(store,store.getConnection());
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+        store.createTables();
+        store.store();
+        return store;        
+    }
+
 }

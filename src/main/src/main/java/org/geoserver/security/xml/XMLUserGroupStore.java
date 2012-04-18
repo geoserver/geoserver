@@ -277,5 +277,12 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
         super.clear();
     }
 
+    @Override
+    public GeoServerUser createUserObject(String username,String password, boolean isEnabled) throws IOException{
+        XMLGeoserverUser user = new XMLGeoserverUser(username);
+        user.setEnabled(isEnabled);
+        user.setPassword(password);
+        return user;
+     }
 
 }

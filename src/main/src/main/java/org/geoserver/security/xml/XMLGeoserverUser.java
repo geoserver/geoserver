@@ -4,8 +4,9 @@
  */
 
 
-package org.geoserver.security.impl;
+package org.geoserver.security.xml;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.impl.GeoServerUser;
 
 /**
  * Needed to test if subclassing works
@@ -13,21 +14,21 @@ import org.geoserver.security.GeoServerUserGroupService;
  * @author christian
  *
  */
-public class MemoryGeoserverUser extends GeoServerUser {
+public class XMLGeoserverUser extends GeoServerUser {
 
     private static final long serialVersionUID = 1L;
 
-    public MemoryGeoserverUser(String username, GeoServerUserGroupService service) {
+    public XMLGeoserverUser(String username) {
         super(username);
     }
 
-    public MemoryGeoserverUser(MemoryGeoserverUser other) {
+    public XMLGeoserverUser(XMLGeoserverUser other) {
         super(other);
     }
 
     @Override
     public GeoServerUser copy() {
-        return new MemoryGeoserverUser(this);
+        return new XMLGeoserverUser(this);
     }
     
     @Override

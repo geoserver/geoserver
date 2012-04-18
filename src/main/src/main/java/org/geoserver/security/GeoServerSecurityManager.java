@@ -237,6 +237,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     
     public GeoServerSecurityManager(GeoServerDataDirectory dataDir) throws Exception {
         this.dataDir = dataDir;
+        setEraseCredentialsAfterAuthentication(true);
 
         /*
          * JD we have to ensure that the master password is initialized first thing, before the 

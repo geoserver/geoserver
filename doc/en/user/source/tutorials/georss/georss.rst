@@ -17,7 +17,7 @@ Ajax Map Mashups
 ----------------
 .. note::
 
-  Internet visible geoServer required for Ajax Mashups. Your GeoServer instance must be visible from the internet, IE; localhost will not work.
+  For Ajax map mashups to work, the GeoServer instance must be visible to the Internet (i.e. using the address ``localhost`` will not work).
 
 Google Maps
 -----------

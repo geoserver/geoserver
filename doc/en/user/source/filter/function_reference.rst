@@ -110,7 +110,7 @@ Most of the geometric function listed below refer to geometry relationship, to g
    * - **Name**
      - **Arguments**
      - **Description**
-   * - Area
+   * - area
      - ``geometry``:Geometry
      - The area of the specified geometry. Works in a Cartesian plane, the result will be in the same unit of measure as the geometry coordinates (which also means the results won't make any sense for geographic data)
    * - boundary

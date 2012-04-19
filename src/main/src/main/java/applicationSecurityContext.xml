@@ -109,10 +109,13 @@
   <!--  needed for CAS proxy granting tickets -->  	
   <bean id="pgtStorage" class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>   
   <bean id="pgtCallback" class="org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter" />
+  
+    <!--  CAS single sign out session listener -->
+  <bean id="casSingleSignOutHttpSessionListener" class="org.geoserver.security.cas.SingleSignOutHttpSessionListener" />
 
-  <bean id="urlParamEncryptionHttpListener" class="org.geoserver.security.password.URLParamEncryptionHttpSessionListener">
-    <constructor-arg ref="geoServerSecurityManager"/>
-  </bean>
+    <!--  CAS single sign out handler -->
+  <bean id="casSingleSignOutHandler" class="org.jasig.cas.client.session.SingleSignOutHandler" />
+    
       	    	
   <bean id="urlMasterPasswordProvider" 
     class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>

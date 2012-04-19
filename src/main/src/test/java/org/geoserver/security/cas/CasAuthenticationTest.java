@@ -48,8 +48,9 @@ import com.sun.net.httpserver.HttpsServer;
  * Content
  * # Fixture for cas
  * # 
- * serverurl=http://ux-server02mc-home.local:8080/cas
- * service=http://ux-desktop03.mc-home.local:8080/geoserver/j_spring_cas_security_check
+ * casserverurlprefix=https://ux-server02.mc-home.local:8443/cas
+ * service=https://ux-desktop03.mc-home.local:4711/geoserver/j_spring_cas_security_check
+ * proxycallbackurlprefix=https://ux-desktop03.mc-home.local:4711/geoserver/
  * 
  *  Client ssl configuration:
  * Create a keystore keystore.jks in  home_dir/.geoserver with key store key password "changeit"
@@ -60,7 +61,7 @@ import com.sun.net.httpserver.HttpsServer;
  * Only the cn must be set to the full server name "ux-desktop03.mc-home.local"
  * 
  * Export the certificate
- * keytool -export -alias mc-home.local -keystore cas.jks -file ux-desktop03.crt
+ * keytool -export -alias mc-home.local -keystore keystore.jks -file ux-desktop03.crt
  * 
  * For the cas server 
  * copy ux-desktop03.crt to the server
@@ -287,7 +288,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(username, ((UserDetails) auth.getPrincipal()).getUsername());
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
-        assertNotNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
 
@@ -316,7 +317,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         checkForAuthenticatedRole(ctx.getAuthentication());
         assertEquals(username, ((UserDetails) auth.getPrincipal()).getUsername());
         assertEquals(1,auth.getAuthorities().size());
-        assertNotNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         
@@ -346,7 +347,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(GeoServerUser.ROOT_USERNAME, ((UserDetails) auth.getPrincipal()).getUsername());
         assertTrue(auth.getAuthorities().size()==1);
         assertTrue(auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
-        assertNotNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
 
@@ -375,7 +376,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-        assertNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         updateUser("ug1", username, true);
         helper.ssoLogout();
         
@@ -414,7 +415,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-        assertNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         helper.ssoLogout();
         
         // test success with proxy granting ticket
@@ -452,7 +453,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(derivedRole)));
         String proxyTicket=casAuth.getAssertion().getPrincipal().getProxyTicketFor("http://localhost/blabla");
         assertNotNull(proxyTicket);
-        assertNotNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         
@@ -530,7 +531,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         request.setupAddParameter("logoutRequest",getBodyForLogoutRequest(ticket));
         getProxy().doFilter(request, response, chain);
 //        helper.ssoLogout();
-        assertNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(ticket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(ticket));
         assertFalse(session.isValid());
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
 
@@ -639,7 +640,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(rootRole)));
             assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(derivedRole)));            
         }
-        assertNull(GeoServerCasAuthenticationFilter.Handler.getSessionMappingStorage().removeSessionByMappingId(proxyTicket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage().removeSessionByMappingId(proxyTicket));
         helper.ssoLogout();
         
      

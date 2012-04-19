@@ -23,8 +23,9 @@ import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.util.crypt.AbstractCrypt;
 import org.apache.wicket.util.crypt.ICrypt;
 import org.apache.wicket.util.crypt.ICryptFactory;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.password.URLParamEncryptionHttpSessionListener;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.util.logging.Logging;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
@@ -37,7 +38,8 @@ import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 public class GeoserverWicketEncrypterFactory implements ICryptFactory {
     
     static ICryptFactory Factory;
-    static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");    
+    static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
+    static final String ICRYPT_ATTR_NAME="__ICRYPT"; 
     
     ICrypt NoCrypt = new ICrypt() {
 
@@ -97,23 +99,35 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
         RequestCycle cycle = RequestCycle.get();
         ServletWebRequest req = (ServletWebRequest)cycle.getRequest();
         HttpSession s = (HttpSession) req.getHttpServletRequest().getSession(false);
-        StandardPBEByteEncryptor enc = null;
         if (s!=null) {
-            enc = (StandardPBEByteEncryptor) 
-                    s.getAttribute(URLParamEncryptionHttpSessionListener.SESSION_PARAM_NAME);
-            if (enc==null) {
-                URLParamEncryptionHttpSessionListener.addEncrypterToSession(
-                        GeoServerApplication.get().getSecurityManager(), s);
-                LOGGER.warning("Url parameter encrypter set on the fly");
-            }
-        }
-        
-        if (enc==null) {
-            LOGGER.warning("No Url parameter encrypter available");
+            return getEncrypterFromSession(s); 
+        } else {
+            LOGGER.warning("No session availabe to get url parameter encrypter");
             return NoCrypt;
-        } else {        
-            return new CryptImpl(enc);
         }        
     }
   
+    protected ICrypt getEncrypterFromSession(HttpSession s) {
+        ICrypt result = (ICrypt) s.getAttribute(ICRYPT_ATTR_NAME);
+        if (result !=null) return result;
+
+        GeoServerSecurityManager manager = GeoServerApplication.get().getSecurityManager();
+        char[] key = manager.getRandomPassworddProvider().getRandomPasswordWithDefaultLength();
+        
+        StandardPBEByteEncryptor enc = new StandardPBEByteEncryptor();
+        enc.setPasswordCharArray(key);
+        // since the password is copied, we can scramble it
+        manager.disposePassword(key);
+        
+        if (manager.isStrongEncryptionAvailable()) {
+            enc.setProvider(new BouncyCastleProvider());
+            enc.setAlgorithm("PBEWITHSHA256AND128BITAES-CBC-BC");
+        }
+        else // US export restrictions
+            enc.setAlgorithm("PBEWITHMD5ANDDES");
+        
+        result= new CryptImpl(enc);
+        s.setAttribute(ICRYPT_ATTR_NAME, result);
+        return result;
+    }
  }

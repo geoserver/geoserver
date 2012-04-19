@@ -18,17 +18,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 
-import org.geoserver.platform.GeoServerHttpSessionListenerProxy;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
-import org.jasig.cas.client.session.SessionMappingStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
@@ -75,23 +72,6 @@ import org.springframework.util.StringUtils;
  */
 public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
     
-    protected static HttpSessionListener SingleSignOutHttpSessionListener = new  HttpSessionListener() {
-
-        private SessionMappingStorage sessionMappingStorage;
-        
-        public void sessionCreated(final HttpSessionEvent event) {
-            // nothing to do at the moment
-        }
-    
-        public void sessionDestroyed(final HttpSessionEvent event) {
-            if (sessionMappingStorage == null) {
-                sessionMappingStorage = Handler.getSessionMappingStorage();
-            }
-            final HttpSession session = event.getSession();
-            sessionMappingStorage.removeBySessionById(session.getId());
-        }
-    
-    };
 
 
     public static final String LOGOUT_PARAM="logout";
@@ -103,19 +83,18 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
     protected String urlInCasLogoutPage;
     protected String casLogoutURL;
     
-    protected static final SingleSignOutHandler Handler = new SingleSignOutHandler();
         
     private CasAuthenticationEntryPoint aep;
+    
+    
+    protected static SingleSignOutHandler getHandler() {
+        return GeoServerExtensions.bean(SingleSignOutHandler.class);
+    }
     
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-        GeoServerHttpSessionListenerProxy proxy =GeoServerHttpSessionListenerProxy.getInstance();
-        if (proxy!=null) {
-            if (proxy.contains(SingleSignOutHttpSessionListener)==false)
-                proxy.add(SingleSignOutHttpSessionListener);
-        }
         
         CasAuthenticationFilterConfig authConfig = 
                 (CasAuthenticationFilterConfig) config;
@@ -192,9 +171,10 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
             }
         }
         
+        SingleSignOutHandler handler = getHandler();
         // check for sign out request from cas server
-        if (Handler.isLogoutRequest(httpReq)) {
-            Handler.destroySession(httpReq);
+        if (handler.isLogoutRequest(httpReq)) {
+            handler.destroySession(httpReq);
             RememberMeServices rms = securityManager.getRememberMeService();
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth!=null)
@@ -208,7 +188,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
                 aep.commence(httpReq, httpRes, null);
             }                
             else {
-                Handler.recordSession(httpReq);
+                handler.recordSession(httpReq);
                 successHandler.onAuthenticationSuccess(httpReq, httpRes,
                         SecurityContextHolder.getContext().getAuthentication());
             }

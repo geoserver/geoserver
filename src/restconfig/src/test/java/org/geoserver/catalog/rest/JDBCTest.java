@@ -4,7 +4,9 @@
  */
 package org.geoserver.catalog.rest;
 
+import java.io.File;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.geoserver.catalog.DataStoreInfo;
@@ -26,26 +28,25 @@ import com.vividsolutions.jts.geom.Point;
 
 public class JDBCTest extends CatalogRESTTestSupport {
 
+    protected String databasePath() {
+        File path = new File(getTestData().getDataDirectoryRoot(), "target/acme");
+        return path.getAbsolutePath();
+    }
+    
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
         
         HashMap params = new HashMap();
         params.put( JDBCDataStoreFactory.NAMESPACE.key, MockData.DEFAULT_URI);
-        params.put( JDBCDataStoreFactory.DATABASE.key, "target/acme");
+        params.put( JDBCDataStoreFactory.DATABASE.key, databasePath());
         params.put( JDBCDataStoreFactory.DBTYPE.key, "h2");
         
         H2DataStoreFactory fac =  new H2DataStoreFactory();
-        fac.setBaseDirectory( getTestData().getDataDirectoryRoot() );
         
         JDBCDataStore ds = fac.createDataStore(params);
-        try {
-            if ( ds.getSchema("widgets") != null ) {
-                return;
-            }
-        }
-        catch( Exception e ) {
-            
+        if (Arrays.asList(ds.getTypeNames()).indexOf("widgets") >= 0) {
+            return;
         }
         
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -81,14 +82,13 @@ public class JDBCTest extends CatalogRESTTestSupport {
               "<name>acme</name>" + 
               "<connectionParameters>" +
                 "<namespace>" + MockData.DEFAULT_URI + "</namespace>" + 
-                "<database>target/acme</database>" + 
+                "<database>" + databasePath() + "</database>" + 
                 "<dbtype>h2</dbtype>" + 
               "</connectionParameters>" + 
             "</dataStore>";
-        
         MockHttpServletResponse resp = 
             postAsServletResponse("/rest/workspaces/gs/datastores", xml );
-        assertEquals( 201, resp.getStatusCode() );
+        assertEquals(resp.getOutputStreamContent(), 201, resp.getStatusCode() );
         
         assertNotNull( catalog.getDataStoreByName( "gs", "acme") );
     }

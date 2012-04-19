@@ -70,7 +70,7 @@ Comparison and control Functions
    * - lessThan
      - ``x``:Object, ``y``:Object
      - Returns true if ``x`` < ``y``. Parameters can be either numbers or strings (in the second case lexicographic ordering is used
-   * - lessThanEqual
+   * - lessEqualThan
      - ``x``:Object, ``y``:Object
      - Returns true if ``x`` <= ``y``. Parameters can be either numbers or strings (in the second case lexicographic ordering is used
    * - not

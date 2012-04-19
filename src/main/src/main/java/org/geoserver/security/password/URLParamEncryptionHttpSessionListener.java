@@ -28,7 +28,7 @@ public class URLParamEncryptionHttpSessionListener implements HttpSessionListene
     private GeoServerSecurityManager manager;
     
     public final static String SESSION_PARAM_NAME = "_URL_PARAM_ENCODER"; 
-    
+    static String SESSION_PARAM_KEYNAME = "_URL_PARAM_ENCODER_KEY";
     /**
      * Needed if {@link GeoServerSecurityManager#isEncryptingUrlParams()} was false
      * on session creation but is true now. 
@@ -53,6 +53,7 @@ public class URLParamEncryptionHttpSessionListener implements HttpSessionListene
 
         
         session.setAttribute(SESSION_PARAM_NAME, enc);
+        session.setAttribute(SESSION_PARAM_KEYNAME, key);
         return enc;
     }
     
@@ -77,19 +78,13 @@ public class URLParamEncryptionHttpSessionListener implements HttpSessionListene
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         // scramble password
-        StandardPBEByteEncryptor enc = (StandardPBEByteEncryptor)
-                se.getSession().getAttribute(SESSION_PARAM_NAME);
+        char[] key = (char[])
+                se.getSession().getAttribute(SESSION_PARAM_KEYNAME);        
+        if (key!=null) 
+            manager.getRandomPassworddProvider().getRandomPassword(key);
         
-        if (enc!=null) {
-            char[] key = manager.getRandomPassworddProvider().getRandomPasswordWithDefaultLength();
-            enc.setPasswordCharArray(key);
-        }
+        se.getSession().removeAttribute(SESSION_PARAM_KEYNAME);
+        se.getSession().removeAttribute(SESSION_PARAM_NAME);
     }
-
-    
-    
-    
-    
-
     
 }

@@ -55,7 +55,7 @@ Comparison and control Functions
    * - greaterThan
      - ``x``:Object, ``y``:Object
      - Returns true if ``x`` > ``y``. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)
-   * - if_the_else
+   * - if_then_else
      - ``condition``:Boolean, ``x``:Object, ``y``: Object
      - Returns ``x`` if the condition is true, ``y`` otherwise
    * - in10, in9, in8, in7, in6, in5, in4, in3, in2

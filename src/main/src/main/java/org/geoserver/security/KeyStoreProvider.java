@@ -64,23 +64,6 @@ public interface KeyStoreProvider {
      */
     boolean hasConfigPasswordKey() throws IOException;
 
-    /**
-     * Gets the key for encrypting url parameters
-     * may be <code>null</code>
-     * 
-     * @return
-     * @throws IOException
-     */
-    byte[] getUrlParamKey() throws IOException;
-
-    /**
-     * Checks if a such a key is available
-     * without presenting the key itself
-     * 
-     * @return
-     * @throws IOException
-     */
-    boolean hasUrlParamKey() throws IOException;
 
     /**
      * Test it the key store contains a alias

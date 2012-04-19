@@ -153,70 +153,13 @@ public class FilterConfigValidatorTest extends GeoServerSecurityTestSupport {
     
     
     public void testX509FilterConfigValidation() throws Exception{
+        
+        
+        
         X509CertificateAuthenticationFilterConfig config = new X509CertificateAuthenticationFilterConfig();
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName("testX509");
-
-        boolean failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.ROLE_SOURCE_NEEDED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
-        }
-        assertTrue(failed);
-
-        
-        config.setRoleSource(X509CertificateAuthenticationFilterConfig.RoleSource.UserGroupService);
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        config.setUserGroupServiceName("blabla");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE,ex.getId());
-            assertEquals(1,ex.getArgs().length);
-            assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
-        getSecurityManager().saveFilter(config);
-        
-        config.setRoleSource(X509CertificateAuthenticationFilterConfig.RoleSource.RoleService);        
-        
-        config.setRoleServiceName("blabla");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(config);
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE,ex.getId());
-            assertEquals(1,ex.getArgs().length);
-            assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        getSecurityManager().saveFilter(config);
-
+        check((PreAuthenticatedUserNameFilterConfig) config);
     }
 
 

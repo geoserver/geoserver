@@ -141,25 +141,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         return containsAlias(CONFIGPASSWORDKEY);
     }
     
-    /* (non-Javadoc)
-     * @see org.geoserver.security.password.KeystoreProvider#getUrlParamKey()
-     */
-    @Override
-    public byte[] getUrlParamKey() throws IOException{
-        SecretKey key = getSecretKey(URLPARAMKEY);
-        if (key==null) return null;
-        return key.getEncoded();
-
-    }
-    
-    /* (non-Javadoc)
-     * @see org.geoserver.security.password.KeystoreProvider#hasUrlParamKey()
-     */
-    @Override
-    public boolean hasUrlParamKey() throws IOException {
-        return containsAlias(URLPARAMKEY);
-    }
-    
+        
     /* (non-Javadoc)
      * @see org.geoserver.security.password.KeystoreProvider#containsAlias(java.lang.String)
      */
@@ -375,7 +357,6 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
      * Creates initial key entries
      * auto generated keys
      * {@link #CONFIGPASSWORDKEY}
-     * {@link #URLPARAMKEY}
      * 
      * @throws IOException
      */
@@ -383,8 +364,6 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         //TODO:scramble
         RandomPasswordProvider randPasswdProvider = 
                 getSecurityManager().getRandomPassworddProvider(); 
-        char[] urlKey = randPasswdProvider.getRandomPasswordWithDefaultLength();
-        setSecretKey( URLPARAMKEY, urlKey);
         
         char[] configKey = randPasswdProvider.getRandomPasswordWithDefaultLength();
         setSecretKey( CONFIGPASSWORDKEY, configKey);

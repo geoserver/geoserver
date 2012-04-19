@@ -31,7 +31,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
-import com.mockrunner.mock.jms.MockSession;
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -53,12 +52,12 @@ import com.sun.net.httpserver.HttpsServer;
  * service=http://ux-desktop03.mc-home.local:8080/geoserver/j_spring_cas_security_check
  * 
  *  Client ssl configuration:
- * Create a keystore cas.jks  home_dir/.geoserver with key store key password "cascas"
+ * Create a keystore keystore.jks in  home_dir/.geoserver with key store key password "changeit"
  * 
  * Create self signing certificate
  * keytool -genkey -alias mc-home.local -keystore rsa-keystore -keyalg RSA -sigalg MD5withRSA
  *         
- * The only the cn must be set to the full server name "ux-desktop03.mc-home.local"
+ * Only the cn must be set to the full server name "ux-desktop03.mc-home.local"
  * 
  * Export the certificate
  * keytool -export -alias mc-home.local -keystore cas.jks -file ux-desktop03.crt
@@ -132,7 +131,6 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
     public class SingleSignOutHandler  implements HttpHandler {
         @Override
         public void handle(HttpExchange ex) throws IOException {
-            URI uri = ex.getRequestURI();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(ex.getRequestBody()));
             String line = "";

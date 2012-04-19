@@ -12,22 +12,19 @@
 
 package org.geoserver.web;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
+import javax.servlet.http.HttpSession;
 
+import org.apache.wicket.RequestCycle;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.util.crypt.AbstractCrypt;
 import org.apache.wicket.util.crypt.ICrypt;
 import org.apache.wicket.util.crypt.ICryptFactory;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.KeyStoreProvider;
-import org.geoserver.security.KeyStoreProviderImpl;
-import org.geoserver.security.SecurityUtils;
-import org.geoserver.security.password.AbstractGeoserverPasswordEncoder;
+import org.geoserver.security.password.URLParamEncryptionHttpSessionListener;
 import org.geotools.util.logging.Logging;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
@@ -41,9 +38,8 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
     
     static ICryptFactory Factory;
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");    
-    protected ICrypt encryptor;
     
-    class NoCrypt implements ICrypt {
+    ICrypt NoCrypt = new ICrypt() {
 
         @Override
         public String decryptUrlSafe(String text) {
@@ -61,19 +57,13 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
         
     };
     
+    
+    
     class CryptImpl extends AbstractCrypt {
         protected StandardPBEByteEncryptor enc;
         
-        CryptImpl (byte[] password) {            
-            enc = new StandardPBEByteEncryptor();
-            enc.setPasswordCharArray(SecurityUtils.toChars(password));
-            
-            if (GeoServerApplication.get().getSecurityManager().isStrongEncryptionAvailable()) {
-                enc.setProvider(new BouncyCastleProvider());
-                enc.setAlgorithm("PBEWITHSHA256AND128BITAES-CBC-BC");
-            }
-            else // US export restrictions
-                enc.setAlgorithm("PBEWITHMD5ANDDES");
+        CryptImpl (StandardPBEByteEncryptor enc) {            
+            this.enc = enc;
         }
         @Override
         protected byte[] crypt(byte[] input, int mode) throws GeneralSecurityException {
@@ -99,39 +89,31 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
         return Factory;
     }
     
-    /**
-     * Sets up the encryptor using  {@link KeyStoreProviderImpl#URLPARAMKEY} as
-     * alias for  the key store
-     * 
-     * if no key is found, a message is written to the  log file and
-     * and encryption is disabled  
-     */
-    protected GeoserverWicketEncrypterFactory()  {
-        GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager(); 
-        KeyStoreProvider ksp = secMgr.getKeyStoreProvider();
-        byte[] password = null;
-        try {
-           password = ksp.getUrlParamKey();
-           if (password != null) {
-               try {
-                   encryptor= new CryptImpl(password);
-                   return;
-               }
-               finally {
-                   secMgr.disposePassword(password);
-               }
-           }
-        } catch (IOException e) {
-        }
-        LOGGER.severe("No key with alias: " +  KeyStoreProviderImpl.URLPARAMKEY +
-            " found in: "+ksp.getFile().getAbsolutePath() + ". Falling back to no encryption for " +
-           "    url parameters");
-        encryptor=new NoCrypt();
+    protected GeoserverWicketEncrypterFactory()  {        
    }
 
     @Override
     public ICrypt newCrypt() {
-        return encryptor;
+        RequestCycle cycle = RequestCycle.get();
+        ServletWebRequest req = (ServletWebRequest)cycle.getRequest();
+        HttpSession s = (HttpSession) req.getHttpServletRequest().getSession(false);
+        StandardPBEByteEncryptor enc = null;
+        if (s!=null) {
+            enc = (StandardPBEByteEncryptor) 
+                    s.getAttribute(URLParamEncryptionHttpSessionListener.SESSION_PARAM_NAME);
+            if (enc==null) {
+                URLParamEncryptionHttpSessionListener.addEncrypterToSession(
+                        GeoServerApplication.get().getSecurityManager(), s);
+                LOGGER.warning("Url parameter encrypter set on the fly");
+            }
+        }
+        
+        if (enc==null) {
+            LOGGER.warning("No Url parameter encrypter available");
+            return NoCrypt;
+        } else {        
+            return new CryptImpl(enc);
+        }        
     }
   
  }

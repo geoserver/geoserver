@@ -177,16 +177,8 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
     }
 
-    public void validateFilterConfig(X509CertificateAuthenticationFilterConfig config) throws FilterConfigException {
-        if (config.getRoleSource()==null)
-            throw createFilterException(FilterConfigException.ROLE_SOURCE_NEEDED);
-        if (config.getRoleSource().
-                equals(X509CertificateAuthenticationFilterConfig.RoleSource.RoleService))
-                checkExistingRoleService(config.getRoleServiceName());
-        if (config.getRoleSource().
-                equals(X509CertificateAuthenticationFilterConfig.RoleSource.UserGroupService))
-                checkExistingUGService(config.getUserGroupServiceName());
-
+    public void validateFilterConfig(X509CertificateAuthenticationFilterConfig config) throws FilterConfigException {        
+        validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config); 
     }
 
     public void validateFilterConfig(UsernamePasswordAuthenticationFilterConfig config) throws FilterConfigException {

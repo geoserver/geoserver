@@ -21,7 +21,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.geoserver.platform.GeoServerHttpSessionListenerProxy;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
@@ -71,7 +73,7 @@ import org.springframework.util.StringUtils;
  * @author mcr
  *
  */
-public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter  {
+public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
     
     protected static HttpSessionListener SingleSignOutHttpSessionListener = new  HttpSessionListener() {
 
@@ -109,7 +111,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter  {
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-                
+        GeoServerHttpSessionListenerProxy proxy =GeoServerHttpSessionListenerProxy.getInstance();
+        if (proxy!=null) {
+            if (proxy.contains(SingleSignOutHttpSessionListener)==false)
+                proxy.add(SingleSignOutHttpSessionListener);
+        }
+        
         CasAuthenticationFilterConfig authConfig = 
                 (CasAuthenticationFilterConfig) config;
         
@@ -151,11 +158,6 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter  {
 
         successHandler = new SimpleUrlAuthenticationSuccessHandler();
         successHandler.setDefaultTargetUrl(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS);
-
-        
-        
-        // TODO register sessionListener
-        
         
     }
     
@@ -272,8 +274,6 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter  {
 
     @Override
     public void destroy() {
-        // TODO
-        // deregister session listener
     }
 
 

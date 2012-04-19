@@ -11,10 +11,20 @@
 </style>
 </wicket:head>
 <wicket:extend>
-   <li>
-        <label><wicket:message key="principalHeaderAttribute"></wicket:message></label>
-        <input wicket:id="principalHeaderAttribute" class="field text"></input>
+    <li>
+       <wicket:child></wicket:child>
     </li>
+    <label for="roleSource"><wicket:message key="roleSource"></wicket:message></label>
+    <ul id="roleSource" class="horizontal">
+      <li>
+        <select wicket:id="roleSource"></select>
+      </li>
+      <li>
+        <div wicket:id="container">
+          <div wicket:id="panel"/>
+        </div>
+      </li>
+    </ul>
 </wicket:extend>
 </body>
 </html>

@@ -1289,6 +1289,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         return new SecurityManagerConfig(this.securityConfig);
     }
 
+    public boolean isEncryptingUrlParams() {
+        if (this.securityConfig==null) return false;
+        return this.securityConfig.isEncryptingUrlParams();
+    }
     /*
      * saves the global security config
      * TODO: use read/write lock rather than full synchronied

@@ -39,7 +39,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
     @Override
     public void mount(IRequestTargetUrlCodingStrategy urlCodingStrategy) {
         
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
            cryptedStrategy.mount(urlCodingStrategy);
         else
            strategy.mount(urlCodingStrategy);    
@@ -48,7 +48,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
     @Override
     public void addIgnoreMountPath(String path) {
         
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             cryptedStrategy.addIgnoreMountPath(path);
          else
             strategy.addIgnoreMountPath(path);    
@@ -57,7 +57,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public CharSequence pathForTarget(IRequestTarget requestTarget) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             return cryptedStrategy.pathForTarget(requestTarget);
          else
             return strategy.pathForTarget(requestTarget);    
@@ -65,7 +65,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public IRequestTarget targetForRequest(RequestParameters requestParameters) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             return cryptedStrategy.targetForRequest(requestParameters);
          else
             return strategy.targetForRequest(requestParameters);    
@@ -74,7 +74,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public void unmount(String path) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             cryptedStrategy.unmount(path);
          else
             strategy.unmount(path);    
@@ -82,7 +82,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public IRequestTargetUrlCodingStrategy urlCodingStrategyForPath(String path) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             return cryptedStrategy.urlCodingStrategyForPath(path);
          else
             return strategy.urlCodingStrategyForPath(path);    
@@ -90,7 +90,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public RequestParameters decode(Request request) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             return cryptedStrategy.decode(request);
          else
             return strategy.decode(request);    
@@ -98,7 +98,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public CharSequence encode(RequestCycle requestCycle, IRequestTarget requestTarget) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             return cryptedStrategy.encode(requestCycle, requestTarget);
          else
             return strategy.encode(requestCycle, requestTarget);    
@@ -107,7 +107,7 @@ public class GeoServerRequestEncodingStrategy implements IRequestCodingStrategy 
 
     @Override
     public String rewriteStaticRelativeUrl(String string) {
-        if (manager.getSecurityConfig().isEncryptingUrlParams())
+        if (manager.isEncryptingUrlParams())
             return cryptedStrategy.rewriteStaticRelativeUrl(string);
          else
             return strategy.rewriteStaticRelativeUrl(string);    

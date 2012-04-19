@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.cas;
 
+import org.geoserver.security.config.SecurityAuthFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 
 
@@ -17,7 +18,7 @@ import org.geoserver.security.config.SecurityFilterConfig;
  * @author mcr
  *
  */
-public class CasAuthenticationFilterConfig extends SecurityFilterConfig implements CasAuthenticationProperties {
+public class CasAuthenticationFilterConfig extends SecurityFilterConfig implements CasAuthenticationProperties,SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
     

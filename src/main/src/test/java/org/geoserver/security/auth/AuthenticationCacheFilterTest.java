@@ -377,8 +377,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         
         
         for (RoleSource rs : RoleSource.values()) {            
-            if (RoleSource.Header.equals(rs))
-                continue;
+            getCache().removeAll();
             
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
@@ -392,6 +391,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
             Authentication auth = getAuth(testFilterName4, testUserName,null,null);
+            if (rs==RoleSource.Header) {
+                continue; // no cache
+            }
             assertNotNull(auth);
             assertNull(SecurityContextHolder.getContext().getAuthentication());
             checkForAuthenticatedRole(auth);
@@ -402,9 +404,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // unknown user
         for (RoleSource rs : RoleSource.values()) {
-            if (RoleSource.Header.equals(rs))
-                continue;
-                        
+            getCache().removeAll();            
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
 
@@ -415,6 +415,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             request.setHeader("principal", "unknown");
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+            if (rs==RoleSource.Header) {
+                continue; // no cache
+            }
             Authentication auth = getAuth(testFilterName4, "unknown",null,null);
             assertNotNull(auth);
             assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -742,6 +745,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setRoleServiceName("rs1");
         config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.RoleService);
         config.setUserGroupServiceName("ug1");
+        config.setRolesHeaderAttribute("roles");
         getSecurityManager().saveFilter(config);
         
         prepareFilterChain(pattern,
@@ -765,14 +769,22 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         
         for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
             org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+            getCache().removeAll();
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();
+            if (rs==RoleSource.Header) {
+                request.setHeader("roles", derivedRole+";"+rootRole);
+            }
             setCertifacteForUser(testUserName, request);                        
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+            
+            if (rs==RoleSource.Header) {
+                continue; // no cache
+            }
             Authentication auth = getAuth(testFilterName8, testUserName,null,null);
             assertNotNull(auth);
             assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -785,6 +797,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         // unknown user
         for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
             org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+            getCache().removeAll();
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
 
@@ -796,6 +809,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             setCertifacteForUser("unknown", request);
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+            if (rs==RoleSource.Header) {
+                continue; // no cache
+            }
             Authentication auth = getAuth(testFilterName8, "unknown",null,null);
             assertNotNull(auth);
             assertNull(SecurityContextHolder.getContext().getAuthentication());

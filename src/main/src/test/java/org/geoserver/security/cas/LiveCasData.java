@@ -173,7 +173,7 @@ public class LiveCasData extends LiveData {
             return null;            
         }
                 
-        keyStoreFile = new File(base,"cas.jks");
+        keyStoreFile = new File(base,"keystore.jks");
         if (keyStoreFile.exists()==false) {
             disableTest("Keystore not found: "+ keyStoreFile.getAbsolutePath());
             return null;
@@ -253,10 +253,10 @@ public class LiveCasData extends LiveData {
             SSLContext sslContext = SSLContext.getInstance ( "TLS" );
     
             // initialise the keystore
-            char[] password = "cascas".toCharArray ();
+            char[] password = "changeit".toCharArray ();
             KeyStore ks = KeyStore.getInstance ( "JKS" );
             File base = new File(System.getProperty("user.home"), ".geoserver");
-            File keystore = new File(base,"cas.jks");
+            File keystore = new File(base,"keystore.jks");
             FileInputStream fis = new FileInputStream ( keystore );
             ks.load ( fis, password );
     

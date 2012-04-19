@@ -10,13 +10,11 @@ public class KeyStoreProviderTest extends GeoServerTestSupport {
         //System.setProperty(MasterPasswordProvider.DEFAULT_PROPERTY_NAME, "mymasterpw");
         KeyStoreProvider ksp = getSecurityManager().getKeyStoreProvider();
         ksp.removeKey(KeyStoreProviderImpl.CONFIGPASSWORDKEY);
-        ksp.removeKey(KeyStoreProviderImpl.URLPARAMKEY);
         ksp.removeKey(ksp.aliasForGroupService("default"));
         ksp.storeKeyStore();
         ksp.reloadKeyStore();
         
         assertFalse(ksp.hasConfigPasswordKey());
-        assertFalse(ksp.hasUrlParamKey());
         assertFalse(ksp.hasUserGroupKey("default"));
         
                         
@@ -25,7 +23,6 @@ public class KeyStoreProviderTest extends GeoServerTestSupport {
         
         assertTrue(ksp.hasConfigPasswordKey());
         assertEquals("configKey",new String(ksp.getConfigPasswordKey()));
-        assertFalse(ksp.hasUrlParamKey());
         assertFalse(ksp.hasUserGroupKey("default"));
         
         RandomPasswordProvider rpp = getSecurityManager().getRandomPassworddProvider();
@@ -35,7 +32,6 @@ public class KeyStoreProviderTest extends GeoServerTestSupport {
         System.out.printf("Random password with length %d : %s\n",urlKey2.length,new String(urlKey2));
         assertFalse(urlKey.equals(urlKey2));
 
-        ksp.setSecretKey( KeyStoreProviderImpl.URLPARAMKEY, urlKey);
         ksp.setSecretKey( KeyStoreProviderImpl.USERGROUP_PREFIX+"default"+
                     KeyStoreProviderImpl.USERGROUP_POSTFIX, "defaultKey".toCharArray());
 
@@ -43,8 +39,6 @@ public class KeyStoreProviderTest extends GeoServerTestSupport {
         
         assertTrue(ksp.hasConfigPasswordKey());
         assertEquals("configKey",new String(ksp.getConfigPasswordKey()));
-        assertTrue(ksp.hasUrlParamKey());
-        assertEquals(new String(urlKey),new String(ksp.getUrlParamKey()));
         assertTrue(ksp.hasUserGroupKey("default"));
         assertEquals("defaultKey",new String(ksp.getUserGroupKey("default")));
         

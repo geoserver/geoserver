@@ -109,8 +109,11 @@
   <!--  needed for CAS proxy granting tickets -->  	
   <bean id="pgtStorage" class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>   
   <bean id="pgtCallback" class="org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter" />
-  
-    	    	
+
+  <bean id="urlParamEncryptionHttpListener" class="org.geoserver.security.password.URLParamEncryptionHttpSessionListener">
+    <constructor-arg ref="geoServerSecurityManager"/>
+  </bean>
+      	    	
   <bean id="urlMasterPasswordProvider" 
     class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
   

@@ -11,9 +11,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.list.ListView;
+import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.FormTestPage;
 
 public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurityWicketTestSupport implements Serializable{
@@ -26,6 +28,17 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
     
     protected abstract String getProblematicObjectRegExp() throws Exception;
     protected abstract String getRemoveableObjectRegExp() throws Exception;
+    
+    
+    @Override
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
+        // disable url parameter encoding for these tests
+        SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
+        config.setEncryptingUrlParams(false);
+        getSecurityManager().saveSecurityConfig(config);
+    }
+
     
     protected void removeObject() throws Exception {
         

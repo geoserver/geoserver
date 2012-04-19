@@ -212,6 +212,10 @@
       <listener-class>org.geoserver.platform.GeoServerContextLoaderListener</listener-class>
     </listener>
     
+    <!--  http session listener proxy -->
+    <listener>
+      <listener-class>org.geoserver.platform.GeoServerHttpSessionListenerProxy</listener-class>
+    </listener>
     
     <!-- spring dispatcher servlet, dispatches all incoming requests -->
     <servlet>

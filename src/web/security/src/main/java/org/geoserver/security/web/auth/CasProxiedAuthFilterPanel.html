@@ -10,11 +10,13 @@
   }
 </style>
 </wicket:head>
-<wicket:extend>
-   <li>
-        <label><wicket:message key="principalHeaderAttribute"></wicket:message></label>
-        <input wicket:id="principalHeaderAttribute" class="field text"></input>
-    </li>
-</wicket:extend>
+  <wicket:extend>
+        <fieldset>
+<!--           <legend>
+            <span><wicket:message key="connection"></wicket:message></span>
+          </legend>  -->
+          <div wicket:id="cas"></div>
+        </fieldset>
+  </wicket:extend>
 </body>
 </html>

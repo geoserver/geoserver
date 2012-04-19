@@ -1084,7 +1084,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setName(testFilterName8);
         config.setRoleServiceName("rs1");
         config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.RoleService);
-        config.setUserGroupServiceName("ug1");
+        config.setUserGroupServiceName("ug1");        
+        config.setRolesHeaderAttribute("roles");
         getSecurityManager().saveFilter(config);
         
         prepareFilterChain(pattern,
@@ -1116,6 +1117,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();
+            if (rs==RoleSource.Header) {
+                request.setHeader("roles", derivedRole+";"+rootRole);
+            }
+
             setCertifacteForUser(testUserName, request);                        
             getProxy().doFilter(request, response, chain);            
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());

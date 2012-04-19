@@ -110,24 +110,6 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         
     }
 
-    public byte[] getUrlParamKey() throws IOException {
-        readLock();
-        try {
-            return provider.getUrlParamKey();
-        } finally {
-            readUnLock();
-        }
-        
-    }
-
-    public boolean hasUrlParamKey() throws IOException {
-        readLock();
-        try {
-            return provider.hasUrlParamKey();
-        } finally {
-            readUnLock();
-        }        
-    }
 
     public boolean containsAlias(String alias) throws IOException {
         readLock();

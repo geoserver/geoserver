@@ -14,6 +14,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
@@ -34,6 +35,16 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         config.setJndi(jndi);
         setupPanel(config);
     }
+    
+    @Override
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
+        // disable url parameter encoding for these tests
+        SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
+        config.setEncryptingUrlParams(false);
+        getSecurityManager().saveSecurityConfig(config);
+    }
+
     
     protected void setupPanel(JDBCSecurityServiceConfig theConfig) {
         this.config = theConfig;

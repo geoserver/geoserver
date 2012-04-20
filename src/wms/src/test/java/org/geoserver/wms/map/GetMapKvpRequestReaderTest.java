@@ -135,7 +135,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(new Point2D.Double(1.2, 3.4), request.getTilesOrigin());
         assertEquals(1, request.getBuffer());
 
-        assertEquals(PaletteManager.safePalette, request.getPalette().getIcm());
+        assertEquals(PaletteManager.safePalette, request.getPalette());
         assertEquals(Arrays.asList(4.0), request.getElevation());
 
         Calendar cal = Calendar.getInstance();

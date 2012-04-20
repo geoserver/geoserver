@@ -91,7 +91,7 @@ public class GeoServerMetaTile extends MetaTile {
                 tileContext.setBgColor(metaTileContext.getBgColor());
                 tileContext.setMapWidth(tileDim.width);
                 tileContext.setMapHeight(tileDim.height);
-                tileContext.setPaletteInverter(metaTileContext.getPaletteInverter());
+                tileContext.setPalette(metaTileContext.getPalette());
                 tileContext.setTransparent(tileContext.isTransparent());
                 long[][] tileIndexes = getTilesGridPositions();
                 BoundingBox tileBounds = gridSubset.boundsFromIndex(tileIndexes[tileIdx]);

@@ -191,6 +191,12 @@
       <property name="request" value="GetFeatureInfo"/>
     </bean>
     -->
+    
+    <bean id="QuantizerMethodKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+		<constructor-arg value="quantizer"/>
+		<constructor-arg value="org.geoserver.wms.map.PNGMapResponse$QuantizeMethod"/>
+ 	</bean>
+    
     <bean id="AnimatedGIFDelayKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="animatedGIFDelay"/>
  	</bean>
@@ -419,10 +425,11 @@
       <constructor-arg ref="wms" />
       <property name="extension" value="png"/>
     </bean>
+    
     <bean id="PNGMapResponse" class="org.geoserver.wms.map.PNGMapResponse">
       <constructor-arg ref="wms" />
     </bean>
-  
+    
     <bean id="GeoTiffMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
       <constructor-arg>
         <description>The prescribed output format MIME-Type</description>

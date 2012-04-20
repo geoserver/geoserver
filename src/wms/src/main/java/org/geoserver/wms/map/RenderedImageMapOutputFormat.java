@@ -280,11 +280,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // figure out a palette for buffered image creation
         IndexColorModel palette = null;
-        final InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
         final boolean transparent = mapContent.isTransparent() && isTransparencySupported();
         final Color bgColor = mapContent.getBgColor();
-        if (paletteInverter != null && AA_NONE.equals(antialias)) {
-            palette = paletteInverter.getIcm();
+        if (AA_NONE.equals(antialias)) {
+            palette = mapContent.getPalette();
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
             List<Layer> layers = mapContent.layers();

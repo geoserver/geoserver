@@ -8,7 +8,6 @@ import java.awt.image.IndexColorModel;
 
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.ServiceException;
-import org.geotools.image.palette.InverseColorMapOp;
 
 /**
  * 
@@ -16,24 +15,22 @@ import org.geotools.image.palette.InverseColorMapOp;
  * 
  */
 public class PaletteKvpParser extends KvpParser {
-	public PaletteKvpParser() {
-		super("palette", IndexColorModel.class);
-	}
+    public PaletteKvpParser() {
+        super("palette", IndexColorModel.class);
+    }
 
-	public Object parse(String value) throws Exception {
-		// palette
-		try {
-			final InverseColorMapOp model = PaletteManager.getPalette(value);
-			if (model == null) {
-				throw new ServiceException("Palette " + value
-						+ " could not be found "
-						+ "in $GEOSERVER_DATA_DIR/palettes directory");
-			}
+    public Object parse(String value) throws Exception {
+        // palette
+        try {
+            final IndexColorModel model = PaletteManager.getPalette(value);
+            if (model == null) {
+                throw new ServiceException("Palette " + value + " could not be found "
+                        + "in $GEOSERVER_DATA_DIR/palettes directory");
+            }
 
-			return model;
-		} catch (Exception e) {
-			throw new ServiceException(e, "Palette " + value
-					+ " could not be loaded");
-		}
-	}
+            return model;
+        } catch (Exception e) {
+            throw new ServiceException(e, "Palette " + value + " could not be loaded");
+        }
+    }
 }

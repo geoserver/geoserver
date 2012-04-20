@@ -30,6 +30,11 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
  */
 public class PaletteManager {
     private static final Logger LOG = org.geotools.util.logging.Logging.getLogger("PaletteManager");
+    
+    /**
+     * The key used in the format options to specify what quantizer to use
+     */
+    public static final String QUANTIZER = "quantizer";
 
     /**
      * Safe palette, a 6x6x6 color cube, followed by a 39 elements gray scale,
@@ -38,9 +43,9 @@ public class PaletteManager {
      */
     public static final String SAFE = "SAFE";
     public static final IndexColorModel safePalette = buildDefaultPalette();
-    static SoftValueHashMap paletteCache = new SoftValueHashMap();
+    static SoftValueHashMap<String, PaletteCacheEntry> paletteCache = new SoftValueHashMap<String, PaletteCacheEntry>();
+    static SoftValueHashMap<IndexColorModel, InverseColorMapOp> opCache = new SoftValueHashMap<IndexColorModel, InverseColorMapOp>();
 
-	private static InverseColorMapOp safePaletteInversion= new InverseColorMapOp(safePalette);
     /**
      * TODO: we should probably provide the data directory as a constructor
      * parameter here
@@ -55,11 +60,11 @@ public class PaletteManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public static InverseColorMapOp getPalette(String name)
+	public static IndexColorModel getPalette(String name)
 			throws Exception {
 		// check for safe paletteInverter
 		if ("SAFE".equals(name.toUpperCase())) {
-			return safePaletteInversion;
+			return safePalette;
 		}
 
 		// check for cached one, making sure it's not stale
@@ -69,7 +74,7 @@ public class PaletteManager {
 			if (entry.isStale()) {
 				paletteCache.remove(name);
 			} else {
-				return entry.eicm;
+				return entry.icm;
 			}
 		}
 
@@ -109,10 +114,8 @@ public class PaletteManager {
 						.getIndexColorModel();
 
 				if (icm != null) {
-					final InverseColorMapOp eicm = new InverseColorMapOp(
-							icm);
-					paletteCache.put(name, new PaletteCacheEntry(file, eicm));
-					return eicm;
+					paletteCache.put(name, new PaletteCacheEntry(file, icm));
+					return icm;
 				}
 			} else {
 				ImageInputStream iis = ImageIO.createImageInputStream(file);
@@ -124,11 +127,9 @@ public class PaletteManager {
 							.getImageTypes(0).next()).getColorModel();
 					if (cm instanceof IndexColorModel) {
 						final IndexColorModel icm = (IndexColorModel) cm;
-						final InverseColorMapOp eicm = new InverseColorMapOp(
-								icm);
 						paletteCache.put(name,
-								new PaletteCacheEntry(file, eicm));
-						return eicm;
+								new PaletteCacheEntry(file, icm));
+						return icm;
 					}
 				}
 			}
@@ -139,6 +140,18 @@ public class PaletteManager {
 		}
 
 		return null;
+	}
+	
+	public static InverseColorMapOp getInverseColorMapOp(IndexColorModel icm) {
+	    // check for cached one, making sure it's not stale
+        InverseColorMapOp op = (InverseColorMapOp) opCache.get(icm);
+        if (op != null) {
+            return op;
+        } else {
+            op = new InverseColorMapOp(icm);
+            opCache.put(icm,  op);
+            return op;
+        }
 	}
 
 	/**
@@ -189,12 +202,12 @@ public class PaletteManager {
 
 		long lastModified;
 
-		InverseColorMapOp eicm;
+		IndexColorModel icm;
 
 		public PaletteCacheEntry(File file,
-				InverseColorMapOp eicm) {
+				IndexColorModel icm) {
 			this.file = file;
-			this.eicm = eicm;
+			this.icm = icm;
 			this.lastModified = file.lastModified();
 		}
 

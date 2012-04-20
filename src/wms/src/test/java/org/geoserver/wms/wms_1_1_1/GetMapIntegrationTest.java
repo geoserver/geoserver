@@ -11,6 +11,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
@@ -226,13 +227,47 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("inline; filename=sf-states.tif", response.getHeader("Content-Disposition"));
     }
     
-    public void testPng8Mime() throws Exception {
+    public void testPng8Opaque() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         assertEquals("image/png; mode=8bit", response.getContentType());
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+        
+        InputStream is = getBinaryInputStream(response);
+        BufferedImage bi = ImageIO.read(is);
+        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+        assertEquals(Transparency.OPAQUE , cm.getTransparency());
+        assertEquals(-1, cm.getTransparentPixel());
     }
+    
+    public void testPng8ForceBitmask() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&transparent=true&format_options=quantizer:octree");
+        assertEquals("image/png; mode=8bit", response.getContentType());
+        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+        
+        InputStream is = getBinaryInputStream(response);
+        BufferedImage bi = ImageIO.read(is);
+        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+        assertEquals(Transparency.BITMASK , cm.getTransparency());
+        assertTrue(cm.getTransparentPixel() >= 0);
+    }
+    
+    public void testPng8Translucent() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&transparent=true");
+        assertEquals("image/png; mode=8bit", response.getContentType());
+        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+        
+        InputStream is = getBinaryInputStream(response);
+        BufferedImage bi = ImageIO.read(is);
+        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+        assertEquals(Transparency.TRANSLUCENT , cm.getTransparency());
+    }
+
     
     public void testDefaultContentDisposition() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox

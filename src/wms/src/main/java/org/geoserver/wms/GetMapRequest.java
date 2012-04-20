@@ -6,6 +6,7 @@ package org.geoserver.wms;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.image.IndexColorModel;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.geoserver.ows.util.CaseInsensitiveMap;
-import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
@@ -226,8 +226,8 @@ public class GetMapRequest extends WMSRequest {
         return this.optionalParams.buffer;
     }
 
-    public InverseColorMapOp getPalette() {
-        return this.optionalParams.paletteInverter;
+    public IndexColorModel getPalette() {
+        return this.optionalParams.icm;
     }
 
     public int getWidth() {
@@ -488,8 +488,8 @@ public class GetMapRequest extends WMSRequest {
         this.optionalParams.buffer = buffer;
     }
 
-    public void setPalette(InverseColorMapOp paletteInverter) {
-        this.optionalParams.paletteInverter = paletteInverter;
+    public void setPalette(IndexColorModel icm) {
+        this.optionalParams.icm = icm;
     }
 
     public void setBuffer(Integer buffer) {
@@ -717,8 +717,8 @@ public class GetMapRequest extends WMSRequest {
         /** the rendering buffer, in pixels **/
         int buffer;
 
-        /** The paletteInverter used for rendering, if any */
-        InverseColorMapOp paletteInverter;
+        /** The palette used for rendering, if any */
+        IndexColorModel icm;
 
         /**
          * time parameter, a list since many pattern setup can be possible, see for

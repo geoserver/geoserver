@@ -244,7 +244,7 @@ public class GetMap {
         mapContent.setBgColor(request.getBgColor());
         mapContent.setTransparent(request.isTransparent());
         mapContent.setBuffer(request.getBuffer());
-        mapContent.setPaletteInverter(request.getPalette());
+        mapContent.setPalette(request.getPalette());
 
         // //
         //

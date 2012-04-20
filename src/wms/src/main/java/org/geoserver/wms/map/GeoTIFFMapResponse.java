@@ -4,6 +4,8 @@
  */
 package org.geoserver.wms.map;
 
+import java.awt.Transparency;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,6 +20,12 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.kvp.PaletteManager;
+import org.geoserver.wms.map.PNGMapResponse.QuantizeMethod;
+import org.geoserver.wms.map.quantize.CachingColorIndexer;
+import org.geoserver.wms.map.quantize.ColorIndexer;
+import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
+import org.geoserver.wms.map.quantize.LRUColorIndexer;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -78,14 +86,8 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
             LOGGER.fine("Writing tiff image ...");
         }
 
-        // get the one required by the GetMapRequest
-        GetMapRequest request = mapContent.getRequest();
-        final String format = request.getFormat();
         // do we want it to be 8 bits?
-        InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
-        if (IMAGE_GEOTIFF8.equalsIgnoreCase(format) || (paletteInverter != null)) {
-            image = forceIndexed8Bitmask(image, paletteInverter);
-        }
+        image = applyPalette(image, mapContent, IMAGE_GEOTIFF8, false);
         
         // crating a grid coverage
         final GridCoverage2D gc = factory.create("geotiff", image,

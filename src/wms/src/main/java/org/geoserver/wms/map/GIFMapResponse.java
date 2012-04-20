@@ -5,6 +5,7 @@
 package org.geoserver.wms.map;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,6 +31,7 @@ import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.resources.image.ImageUtilities;
@@ -141,8 +143,8 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
             // Now the magic
             //
             try {
-                InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
-                ImageWorker iw = new ImageWorker(super.forceIndexed8Bitmask(originalImage, paletteInverter));
+                originalImage = applyPalette(originalImage, mapContent, MIME_TYPE, false);
+                ImageWorker iw = new ImageWorker(originalImage);
                 iw.writeGIF(outStream, "LZW", 0.75f);
                 RasterCleaner.addImage(iw.getRenderedImage());
             } catch (IOException e) {
@@ -190,8 +192,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                 // get the image
                 RenderedImage ri = (RenderedImage) ril.get(i);
                 // convert it to gif compatible
-                InverseColorMapOp paletteInverter = mapContent.getPaletteInverter();
-                ri = super.forceIndexed8Bitmask(ri, paletteInverter);
+                ri = applyPalette(ri, mapContent, MIME_TYPE, false);
                 if (ri != null) {
                     // prepare metadata and write param
                     final IIOMetadata imageMetadata = gifWriter.getDefaultImageMetadata(

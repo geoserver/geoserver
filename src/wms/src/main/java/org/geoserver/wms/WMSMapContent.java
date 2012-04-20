@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.IndexColorModel;
 import java.util.Collection;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -69,9 +70,9 @@ public class WMSMapContent extends MapContent {
     private int buffer;
 
     /**
-     * The {@link InverseColorMapOp} that actually does the color inversion.
+     * The {@link IndexColorModel} the user required for the resulting map
      */
-    private InverseColorMapOp paletteInverter;
+    private IndexColorModel icm;
 
     private GetMapRequest request; // hold onto it so we can grab info from it
 
@@ -142,12 +143,12 @@ public class WMSMapContent extends MapContent {
         this.buffer = buffer;
     }
 
-    public InverseColorMapOp getPaletteInverter() {
-        return paletteInverter;
+    public IndexColorModel getPalette() {
+        return icm;
     }
 
-    public void setPaletteInverter(InverseColorMapOp paletteInverter) {
-        this.paletteInverter = paletteInverter;
+    public void setPalette(IndexColorModel paletteInverter) {
+        this.icm = paletteInverter;
     }
 
     /**

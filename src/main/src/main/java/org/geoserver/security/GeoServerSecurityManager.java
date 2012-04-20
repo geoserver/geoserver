@@ -49,6 +49,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.AuthenticationCacheImpl;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
+import org.geoserver.security.auth.LRUAuthenticationCacheImpl;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.concurrent.LockingKeyStoreProvider;
 import org.geoserver.security.concurrent.LockingRoleService;
@@ -488,7 +489,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     AuthenticationCache lookupAuthenticationCache() {
         AuthenticationCache authCache = GeoServerExtensions.bean(AuthenticationCache.class);
-        return authCache != null ? authCache : new AuthenticationCacheImpl();
+        return authCache != null ? authCache : new LRUAuthenticationCacheImpl(300,600,1000);
     }
 
     public RememberMeServices getRememberMeService() {

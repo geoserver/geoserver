@@ -112,7 +112,7 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                 doc);
 
         assertXpathEvaluatesTo(
-                "7.9 8.5 8.8 8.9 10.4 10.8 14.2 14.9 15.4 18.1 19.1 19.6 20.8 21.7 missing missing",
+                "missing missing 8.9 7.9 14.2 15.4 18.1 19.1 21.7 20.8 19.6 14.9 10.8 8.8 8.5 10.4",
                 "//csml:PointSeriesFeature[@gml:id='"
                         + id
                         + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
@@ -199,7 +199,7 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                 doc);
         
         assertXpathEvaluatesTo(
-                "3.8 7.1 9.2 9.3 10.2 12.3 12.9 14.0 16.2 17.0 17.1 17.2 17.6 21.6 21.9 22.0 22.8 23.6 23.9 25.1",
+                "16.2 17.1 22.0 25.1 23.9 22.8 17.0 10.2 9.2 7.1 12.3 12.9 17.2 23.6 21.6 21.9 17.6 14.0 9.3 3.8",
                 "//csml:PointSeriesFeature[@gml:id='"
                         + id
                         + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",

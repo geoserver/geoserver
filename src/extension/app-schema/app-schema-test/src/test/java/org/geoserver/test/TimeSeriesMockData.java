@@ -38,6 +38,6 @@ public class TimeSeriesMockData extends AbstractAppSchemaMockData {
     public void addContent() {
         putNamespace(CSML_PREFIX, CSML_URI);
         addFeatureType(CSML_PREFIX, "PointSeriesFeature", "TimeSeries.xml",
-                "timeseries.properties", "csmlMain.xsd");
+                "timeseries.properties", "schemas/csml/csmlMain.xsd");
     }
 }

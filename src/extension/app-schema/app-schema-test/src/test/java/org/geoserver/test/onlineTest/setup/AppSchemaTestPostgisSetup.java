@@ -64,6 +64,10 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
         + "<name>passwd</name>\n" //
         + "<value>${passwd}</value>" //
         + "\n</Parameter>" //
+        + "\n<Parameter>\n"
+        + "<name>Expose primary keys</name>"
+        + "<value>true</value>"
+        + "\n</Parameter>" //
         // only for postgis because it's just the public schema for oracle
         // because you have to have sys dba rights to create schemas in oracle
         + "\n<Parameter>\n" //
@@ -126,8 +130,8 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             buf.append("CREATE TABLE ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                     .append("\"(");
             List<GeometryDescriptor> geoms = new ArrayList<GeometryDescriptor>();
-            // + id
-            int size = schema.getAttributeCount() + 1;
+            // + id +pkey
+            int size = schema.getAttributeCount() + 2;
             String[] fieldNames = new String[size];
             List<String> createParams = new ArrayList<String>();
             int j = 0;
@@ -153,10 +157,12 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             if (schema.isIdentified()) {
                 fieldNames[j] = "ROW_ID";
                 createParams.add("\"ROW_ID\" TEXT");
+                j++;
             }
-            if (!createParams.isEmpty()) {
-                buf.append(StringUtils.join(createParams.iterator(), ", "));
-            }
+            // Add numeric PK for sorting
+            fieldNames[j] = "PKEY";
+            createParams.add("\"PKEY\" INTEGER");
+            buf.append(StringUtils.join(createParams.iterator(), ", "));
             buf.append(");\n");
 
             // add geometry columns
@@ -176,6 +182,8 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             // then insert rows
             SimpleFeature feature;
             FeatureId id;
+            // primary key sequence
+            int pKey = 0;
             while (reader.hasNext()) {
                 buf.append("INSERT INTO ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                         .append("\"(\"");
@@ -207,7 +215,11 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 id = feature.getIdentifier();
                 if (id != null) {
                     values[valueIndex] = "'" + id.toString() + "'";
+                    valueIndex++;
                 }
+                // insert primary key
+                values[valueIndex] = "'" + pKey + "'";
+                pKey++;
                 buf.append(StringUtils.join(values, ","));
                 buf.append(");\n");
             }

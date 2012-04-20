@@ -60,6 +60,10 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
         + "<name>passwd</name>\n" //
         + "<value>${passwd}</value>" //
         + "\n</Parameter>" //
+        + "\n<Parameter>\n"
+        + "<name>Expose primary keys</name>"
+        + "<value>true</value>"
+        + "\n</Parameter>" //
         + "\n</parameters>"; //
 
     private String sql;
@@ -130,14 +134,13 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
             buf.append("CALL DROP_TABLE_OR_VIEW('").append(tableName).append("')\n");
             // create the table
             buf.append("CREATE TABLE ").append(tableName).append("(");
-            // + id
-            int size = schema.getAttributeCount() + 1;
+            // + id + pkey
+            int size = schema.getAttributeCount() + 2;
             String[] fieldNames = new String[size];
             List<String> createParams = new ArrayList<String>();
             int j = 0;
             String type;
             String field;
-            
             int spatialIndexCounter = 0;
             for (PropertyDescriptor desc : schema.getDescriptors()) {
                 field = desc.getName().toString().toUpperCase();
@@ -192,15 +195,19 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 // can't differentiate between id and ID, we we use ROW_ID instead
                 fieldNames[j] = "ROW_ID";
                 createParams.add("ROW_ID VARCHAR2(30)");
+                j++;
             }
-            if (!createParams.isEmpty()) {
-                buf.append(StringUtils.join(createParams.iterator(), ", "));
-            }
+            // Add numeric PK for sorting
+            fieldNames[j] = "PKEY";
+            createParams.add("PKEY NUMBER(5)");
+            buf.append(StringUtils.join(createParams.iterator(), ", "));
             buf.append(")\n");
-
+            buf.append("ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + " PRIMARY KEY (PKEY)\n");
             // then insert rows
             SimpleFeature feature;
             FeatureId id;
+            // primary key sequence
+            int pKey = 0;
             while (reader.hasNext()) {
                 buf.append("INSERT INTO ").append(tableName).append("(");
                 feature = reader.next();
@@ -224,6 +231,8 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                         }
                         geomValue.append(")");
                         values[valueIndex] = geomValue.toString();
+                    } else if (prop.getType().getBinding().getSimpleName().equalsIgnoreCase("DATE")) {
+                        values[valueIndex] = "TO_DATE('" + value + "', 'yyyy-MM-dd')";
                     } else {
                         values[valueIndex] = "'" + value + "'";
                     }
@@ -232,7 +241,11 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 id = feature.getIdentifier();
                 if (id != null) {
                     values[valueIndex] = "'" + id.toString() + "'";
+                    valueIndex++;
                 }
+                // insert primary key
+                values[valueIndex] = "'" + pKey + "'";
+                pKey++;
                 buf.append(StringUtils.join(values, ","));
                 buf.append(")\n");
             }

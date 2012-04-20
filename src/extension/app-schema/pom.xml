@@ -26,6 +26,13 @@
 		    <module>app-schema-oracle-test</module>
 		    <module>app-schema-postgis-test</module>
 	    </modules>
+	    <dependencies>
+	    <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.1</version>
+        </dependency>
+	    </dependencies>
    </profile>
  </profiles>
 	 

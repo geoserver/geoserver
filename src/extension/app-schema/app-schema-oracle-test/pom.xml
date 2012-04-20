@@ -153,7 +153,7 @@
 			        <excludes>
 				        <exclude>**/onlineTest/*.java</exclude>
 				    </excludes>
-				    <argLine>-Dapp-schema.joining=true -DtestDatabase=oracle</argLine>
+				    <argLine>-Dapp-schema.joining=true -DtestDatabase=oracle -Xmx${test.maxHeapSize}</argLine>
 				</configuration>
 	        </plugin>
 	   </plugins>

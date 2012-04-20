@@ -37,7 +37,7 @@ Database Design Guidelines
 
 * Databases should be optimised for fast on-the-fly joining and ordering.
 
-* Make sure to put indexes on all fields used as identifiers and for feature chaining, unique indexes where possible.
+* Make sure to put indexes on all fields used as identifiers and for feature chaining, unique indexes where possible. Lack of indices may result in data being encoded in the wrong order or corrupted output when feature chaining is involved.
 
 * Map your features preferably to normalised tables.
 

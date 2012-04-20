@@ -489,7 +489,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     AuthenticationCache lookupAuthenticationCache() {
         AuthenticationCache authCache = GeoServerExtensions.bean(AuthenticationCache.class);
-        return authCache != null ? authCache : new LRUAuthenticationCacheImpl(300,600,1000);
+        return authCache != null ? authCache : new LRUAuthenticationCacheImpl(1000);
     }
 
     public RememberMeServices getRememberMeService() {

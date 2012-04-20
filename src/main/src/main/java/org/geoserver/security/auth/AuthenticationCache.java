@@ -18,7 +18,10 @@ import org.springframework.security.core.Authentication;
  * @author mcr
  */
 public interface AuthenticationCache {
-    
+
+    int DEFAULT_IDLE_TIME = 300;
+    int DEFAULT_LIVE_TIME = 600;
+
     /**
      * Clears all cache entries
      */

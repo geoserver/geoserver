@@ -75,8 +75,11 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         }
         
     };
-    
-    
+
+    public LRUAuthenticationCacheImpl(int maxEntries) {
+        this(DEFAULT_IDLE_TIME, DEFAULT_LIVE_TIME, maxEntries);
+    }
+
     public LRUAuthenticationCacheImpl(int timeToIdleSeconds, int timeToLiveSeconds, int maxEntries) {
         super();
         this.timeToIdleSeconds = timeToIdleSeconds;
@@ -86,7 +89,6 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         timer.schedule(removeExpiredTask,DEFAULT_MILLIS_BETWEEN_REMOVE_EXPIRED,DEFAULT_MILLIS_BETWEEN_REMOVE_EXPIRED );
     }
 
-    
     public int getTimeToIdleSeconds() {
         return timeToIdleSeconds;
     }
@@ -168,6 +170,9 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
     public void put(String filterName, String cacheKey, Authentication auth,
             Integer timeToIdleSeconds, Integer timeToLiveSeconds) {
         
+        timeToIdleSeconds = timeToIdleSeconds != null ? timeToIdleSeconds : this.timeToIdleSeconds;;
+        timeToLiveSeconds = timeToLiveSeconds != null ? timeToLiveSeconds : this.timeToLiveSeconds;
+
         writeLock.lock();
         try {
             cache.put(new AuthenticationCacheKey(filterName, cacheKey),

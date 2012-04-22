@@ -6,6 +6,7 @@ package org.geoserver.security.web.auth;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.logging.Level;
@@ -16,6 +17,9 @@ import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -25,9 +29,12 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.ListModel;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.GeoServerSecurityFilterChain.FilterChain;
+import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
@@ -98,20 +105,40 @@ public class AuthenticationPage extends AbstractSecurityPage {
         }
     }
 
+    class RequestChainDropDownChoice extends DropDownChoice<RequestFilterChain> {
+
+        public RequestChainDropDownChoice(String id, IModel<RequestFilterChain> model, 
+            IModel<List<RequestFilterChain>> choices) {
+            super(id, model, choices, new ChoiceRenderer<RequestFilterChain>() {
+                @Override
+                public Object getDisplayValue(RequestFilterChain object) {
+                    String name = object.getName();
+                    return new ResourceModel(RequestFilterChain.class.getSimpleName()+"."+name,name).getObject();
+                }
+                @Override
+                public String getIdValue(RequestFilterChain object, int index) {
+                    return object.getName();
+                }
+            });
+        }
+    }
+
     class AuthFilterChainPanel extends FormComponentPanel {
 
-        FilterChain cat = FilterChain.WEB;
-        
+        RequestFilterChain requestChain;
+
         public AuthFilterChainPanel(String id, IModel<GeoServerSecurityFilterChain> model) {
             super(id, new Model());
 
-            add(new ChainCategoryDropDownChoice("requestType", new PropertyModel(this, "cat"))
-                .add(new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        target.addComponent(AuthFilterChainPanel.this.get("authFilterChain"));
-                    }
-                }));
+            requestChain = model.getObject().getRequestChainByName("web");
+            add(new RequestChainDropDownChoice("requestChain", new PropertyModel(this, "requestChain"), 
+                new PropertyModel<List<RequestFilterChain>>(model, "requestChains")).add(new OnChangeAjaxBehavior() {
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    target.addComponent(AuthFilterChainPanel.this.get("authFilterChain"));
+                }
+            }));
+
             add(new AuthFilterChainPalette("authFilterChain", new AuthFilterNamesModel(model))
                 .setOutputMarkupId(true)); 
         }
@@ -128,9 +155,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
             public List<String> getObject() {
                 
                 GeoServerSecurityManager secMgr = getSecurityManager();
-                GeoServerSecurityFilterChain chain = filterChainModel.getObject();
-
-                List<String> filters = chain.filtersFor(cat);
+                List<String> filters = new ArrayList(requestChain.getFilterNames());
                 try {
                     filters.retainAll(secMgr.listFilters(GeoServerAuthenticationFilter.class));
                 } catch (IOException e) {
@@ -141,9 +166,8 @@ public class AuthenticationPage extends AbstractSecurityPage {
     
             @Override
             public void setObject(List<String> object) {
-                GeoServerSecurityFilterChain chain = filterChainModel.getObject();
-                if (!chain.updateAuthFilters(cat, object)) {
-                    throw new RuntimeException("Unable to update filters for " + cat);
+                if (!requestChain.updateAuthFilters(object)) {
+                    error("Unable to update filters for " + requestChain);
                 }
             }
             

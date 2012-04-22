@@ -6,6 +6,7 @@ package org.geoserver.security;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -320,5 +321,11 @@ public abstract class GeoServerSecurityProvider {
      */
     public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
        return new SecurityConfigValidator(securityManager); 
+    }
+
+    /**
+     * Configures the security filter chain.
+     */
+    public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {
     }
 }

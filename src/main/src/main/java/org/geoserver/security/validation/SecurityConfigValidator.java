@@ -149,13 +149,20 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
         
         // check the filter chain
         GeoServerSecurityFilterChain chain = config.getFilterChain();
-        Set<String> keys = chain.getFilterMap().keySet();
+        if (chain == null) {
+            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NULL_ERROR);
+        }
+
+        //JD: disabling this check, i don't see a point to maintaining both a list of patterns
+        // which are then duplicated by the keys of the filter map set... if we want to enforce 
+        // ording just change the map interface to a sorted/order map
+        /*Set<String> keys = chain.getFilterMap().keySet();
         if (keys.size()!=chain.getAntPatterns().size())
             throw createSecurityException(SecurityConfigException.FILTER_CHAIN_CONFIG_ERROR);
         for (String pattern : chain.getAntPatterns()) {
             if (keys.contains(pattern)==false)
                 throw createSecurityException(SecurityConfigException.FILTER_CHAIN_CONFIG_ERROR);
-        }        
+        }*/
     }
     
     protected void checkExtensionPont(Class<?> extensionPoint, String className) throws SecurityConfigException{
@@ -340,8 +347,8 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
     public void validateRemoveFilter(SecurityNamedServiceConfig config) throws SecurityConfigException{
         validateRemoveNamedService(GeoServerSecurityFilter.class, config);
         
-        List<String> patterns = manager.getSecurityConfig().getFilterChain().
-            patternsContainingFilter(config.getClassName());
+        List<String> patterns = 
+            manager.getSecurityConfig().getFilterChain().patternsForFilter(config.getClassName());
         if (patterns.isEmpty()==false) {
             throw createSecurityException(SecurityConfigException.FILTER_STILL_USED, 
                     config.getName(), 

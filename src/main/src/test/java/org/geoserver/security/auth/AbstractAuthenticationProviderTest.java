@@ -33,6 +33,7 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
@@ -125,8 +126,9 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
     
     protected void removeAnonymousFilter() throws Exception{
         SecurityManagerConfig mconfig = getSecurityManager().loadSecurityConfig();
-        mconfig.getFilterChain().getFilterMap().get(pattern).remove(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
-        getSecurityManager().saveSecurityConfig(mconfig);        
+        mconfig.getFilterChain().find(pattern).getFilterNames()
+            .remove(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+        getSecurityManager().saveSecurityConfig(mconfig);
     }
 
     
@@ -197,18 +199,17 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
     protected void prepareFilterChain(String pattern, String... filterNames) throws Exception{
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
-        if (config.getFilterChain().getAntPatterns().contains(pattern)) {
-            config.getFilterChain().getAntPatterns().remove(pattern);
-            config.getFilterChain().getFilterMap().remove(pattern);
-        }
-       config.getFilterChain().getAntPatterns().add(config.getFilterChain().getAntPatterns().size()-2, pattern);
-       ArrayList<String> filters = new ArrayList<String>();
-       
-       for (String filterName : filterNames)
-           filters.add(filterName);
-       
-       config.getFilterChain().getFilterMap().put(pattern,filters);
-       getSecurityManager().saveSecurityConfig(config);
+        GeoServerSecurityFilterChain filterChain = config.getFilterChain();
+
+        filterChain.removeForPattern(pattern);
+
+        RequestFilterChain requestChain = new RequestFilterChain(pattern);
+        requestChain.setFilterNames(filterNames);
+
+        //insert before default
+        filterChain.getRequestChains().add(filterChain.getRequestChains().size()-2, requestChain);
+
+        getSecurityManager().saveSecurityConfig(config);
     }
     
     protected void updateUser(String ugService, String userName,boolean enabled) throws Exception {

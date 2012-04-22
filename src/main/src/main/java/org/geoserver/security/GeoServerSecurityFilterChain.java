@@ -10,8 +10,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+
+import org.geoserver.platform.GeoServerExtensions;
+
+import com.sun.tools.jdi.LinkedHashMap;
 
 /**
  * The security filter filter chain.
@@ -30,64 +36,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    private List<String> antPatterns;
-    private HashMap<String,List<String>>  filterMap; 
-
-    public static enum FilterChain {
-
-        WEB(WEB_CHAIN, GWC_WEB_CHAIN) {
-            @Override
-            List<String> createInitial() {
-                return list(SECURITY_CONTEXT_ASC_FILTER, REMEMBER_ME_FILTER, ANONYMOUS_FILTER,
-                    GUI_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_INTERCEPTOR);
-            }
-        },
-        WEB_LOGIN(FORM_LOGIN_CHAIN) {
-            @Override
-            List<String> createInitial() {
-                return list(SECURITY_CONTEXT_ASC_FILTER, FORM_LOGIN_FILTER);
-            }
-        },
-        WEB_LOGOUT(FORM_LOGOUT_CHAIN) {
-            @Override
-            List<String> createInitial() {
-                return list(SECURITY_CONTEXT_ASC_FILTER, FORM_LOGOUT_FILTER);
-            }
-        },
-        REST(REST_CHAIN) {
-            @Override
-            List<String> createInitial() {
-                return list(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, ANONYMOUS_FILTER, 
-                    DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_REST_INTERCEPTOR);
-            }
-        }, 
-        GWC(GWC_REST_CHAIN) {
-            @Override
-            List<String> createInitial() {
-                return list(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, 
-                    DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_REST_INTERCEPTOR);
-            }
-        },
-        DEFAULT(DEFAULT_CHAIN) {
-            @Override
-            List<String> createInitial() {
-                return list(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, ANONYMOUS_FILTER, 
-                    DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_INTERCEPTOR);
-            }
-        };
-
-        List<String> patterns;
-
-        FilterChain(String... patterns) {
-            this.patterns = Arrays.asList(patterns);
-        }
-
-        List<String> getPatterns() {
-            return patterns;
-        }
-
-        abstract List<String> createInitial();
-    }
+    List<RequestFilterChain> requestChains = new ArrayList();
 
     /*
      * chain patterns 
@@ -122,21 +71,72 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String FILTER_SECURITY_INTERCEPTOR = "interceptor";
     public static final String FILTER_SECURITY_REST_INTERCEPTOR = "restInterceptor";
 
+    static RequestFilterChain WEB = new RequestFilterChain(WEB_CHAIN, GWC_WEB_CHAIN);
+    static {
+        WEB.setName("web");
+        WEB.setFilterNames(SECURITY_CONTEXT_ASC_FILTER, REMEMBER_ME_FILTER, ANONYMOUS_FILTER,
+            GUI_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_INTERCEPTOR);
+    }
+
+    private static RequestFilterChain WEB_LOGIN = new RequestFilterChain(FORM_LOGIN_CHAIN);
+    static {
+        WEB_LOGIN.setName("webLogin");
+        WEB_LOGIN.setFilterNames(SECURITY_CONTEXT_ASC_FILTER, FORM_LOGIN_FILTER);
+    }
+
+    private static RequestFilterChain WEB_LOGOUT = new RequestFilterChain(FORM_LOGOUT_CHAIN);
+    static {
+        WEB_LOGOUT.setName("webLogout");
+        WEB_LOGOUT.setFilterNames(SECURITY_CONTEXT_ASC_FILTER, FORM_LOGOUT_FILTER);
+    }
+
+    private static RequestFilterChain REST = new RequestFilterChain(REST_CHAIN);
+    static {
+        REST.setName("rest");
+        REST.setFilterNames(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, ANONYMOUS_FILTER, 
+            DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_REST_INTERCEPTOR);
+    }
+
+    private static RequestFilterChain GWC = new RequestFilterChain(GWC_REST_CHAIN);
+    static {
+        GWC.setName("gwc");
+        GWC.setFilterNames(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, 
+            DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_REST_INTERCEPTOR);
+    }
+
+    private static RequestFilterChain DEFAULT = new RequestFilterChain(DEFAULT_CHAIN);
+    static {
+        DEFAULT.setName("default");
+        DEFAULT.setFilterNames(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, ANONYMOUS_FILTER, 
+            DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_INTERCEPTOR);
+    }
+
+    private static List<RequestFilterChain> INITIAL = new ArrayList<RequestFilterChain>();
+    static {
+        INITIAL.add(WEB);
+        INITIAL.add(WEB_LOGIN);
+        INITIAL.add(WEB_LOGOUT);
+        INITIAL.add(REST);
+        INITIAL.add(GWC);
+        INITIAL.add(DEFAULT);
+    }
 
     public GeoServerSecurityFilterChain() {
-        antPatterns = new ArrayList<String>();
-        filterMap = new HashMap<String,List<String>>();   
+        requestChains = new ArrayList();
     }
-        
+
+    /**
+     * Constructor cloning all collections
+     */
+    public GeoServerSecurityFilterChain(List<RequestFilterChain> requestChains) {
+        this.requestChains = requestChains;
+    }
+
     /**
      * Constructor cloning all collections
      */
     public GeoServerSecurityFilterChain(GeoServerSecurityFilterChain other) {
-        this.antPatterns=new ArrayList<String>(other.antPatterns);
-        this.filterMap=new HashMap<String,List<String>>();
-        for (String pattern: other.filterMap.keySet()) {
-            this.filterMap.put(pattern, new  ArrayList<String>(other.getFilterMap().get(pattern)));
-        }
+        this.requestChains = new ArrayList(other.getRequestChains());
     }
 
     /**
@@ -145,179 +145,259 @@ public class GeoServerSecurityFilterChain implements Serializable {
      * @return
      */
     public static GeoServerSecurityFilterChain createInitialChain() {
-        GeoServerSecurityFilterChain chain = new GeoServerSecurityFilterChain();
+        return new GeoServerSecurityFilterChain(new ArrayList(INITIAL));
+    }
 
-        //gather up all the different patterns
-        List<String> patterns = new ArrayList();
-        for (FilterChain fc : FilterChain.values()) {
-            patterns.addAll(fc.getPatterns());
+    public void postConfigure(GeoServerSecurityManager secMgr) {
+        // TODO, Justin
+        // Not sure if this is correct, if it is, you can add the constant chain
+        // for the root user login
+        for(GeoServerSecurityProvider p : secMgr.lookupSecurityProviders()) {
+            p.configureFilterChain(this);
+        }
+    }
 
-            for (String p : fc.getPatterns()) {
-                chain.filterMap.put(p, fc.createInitial());
+    public static RequestFilterChain lookupRequestChainByName(
+        String name, GeoServerSecurityManager secMgr) {
+        //this is kind of a hack but we create an initial filter chain and run it through the 
+        // security provider extension points to get an actual final chain, and then look through
+        // the elements for a matching name
+        GeoServerSecurityFilterChain filterChain = createInitialChain();
+        filterChain.postConfigure(secMgr);
+
+        for (RequestFilterChain requestChain : filterChain.getRequestChains()) {
+            if (requestChain.getName().equals(name)) {
+                return requestChain;
             }
         }
-        chain.setAntPatterns(patterns);
-        return chain;
+
+        return null;
     }
 
-    /**
-     * Helper method to create a list
-     */
-    static List<String> list(String... filterName) {
-        return new ArrayList<String>(Arrays.asList(filterName));
-    }
-    
-    public List<String> getAntPatterns() {
-        return antPatterns;
+    public static RequestFilterChain lookupRequestChainByPattern(
+        String pattern, GeoServerSecurityManager secMgr) {
+        //this is kind of a hack but we create an initial filter chain and run it through the 
+        // security provider extension points to get an actual final chain, and then look through
+        // the elements for a matching name
+        GeoServerSecurityFilterChain filterChain = createInitialChain();
+        filterChain.postConfigure(secMgr);
+
+        for (RequestFilterChain requestChain : filterChain.getRequestChains()) {
+            if (requestChain.getPatterns().contains(pattern)) {
+                return requestChain;
+            }
+        }
+
+        return null;
     }
 
-    public void setAntPatterns(List<String> antPatterns) {
-        this.antPatterns = antPatterns;
+    public List<RequestFilterChain> getRequestChains() {
+        return requestChains;
     }
 
-    public HashMap<String, List<String>> getFilterMap() {
+    public RequestFilterChain getRequestChainByName(String name) {
+        for (RequestFilterChain requestChain : requestChains) {
+            if (requestChain.getName().equals(name)) {
+                return requestChain;
+            }
+        }
+        return null;
+    }
+
+    public Map<String,List<String>> compileFilterMap() {
+        Map<String,List<String>> filterMap = new LinkedHashMap();
+        
+        for (RequestFilterChain ch : requestChains) {
+            //patterns.addAll(ch.getPatterns());
+            
+            for (String p : ch.getPatterns()) {
+                filterMap.put(p, ch.getFilterNames());
+            }
+        }
+
         return filterMap;
     }
 
-    public void setFilterMap(HashMap<String, List<String>> filterMap) {
-        this.filterMap = filterMap;
+    public void simplify() {
+        int j = 0;
+        for (Iterator<RequestFilterChain> it = requestChains.iterator(); it.hasNext(); j++) {
+            RequestFilterChain requestChain = it.next();
+            RequestFilterChain toMerge = null;
+
+            //look at any previous chain to see if we can merge
+            for (int i = 0; i < j; i++) {
+                RequestFilterChain requestChain2 = requestChains.get(i);
+                if (requestChain2 == requestChain) {
+                    continue;
+                }
+                if (requestChain2.getFilterNames().equals(requestChain.getFilterNames())) {
+                    toMerge = requestChain2;
+                    break;
+                }
+            }
+
+            if (toMerge != null) {
+                toMerge.getPatterns().addAll(requestChain.getPatterns());
+                it.remove();
+                j--;
+            }
+        }
+    
+    }
+
+    public void decompileFilterMap(Map<String,List<String>> filterMap) {
+        List<RequestFilterChain> requestChains = new ArrayList();
+        for (String pattern : filterMap.keySet()) {
+            List<String> filterNames = filterMap.get(pattern);
+            RequestFilterChain requestChain = null;
+            for (RequestFilterChain chain : requestChains) {
+                if (chain.getFilterNames().equals(filterNames)) {
+                    requestChain = chain;
+                    break;
+                }
+            }
+            if (requestChain == null) {
+                //new chain
+                requestChain = new RequestFilterChain(pattern);
+                requestChain.setFilterNames(filterNames);
+            }
+            else {
+                //merge with existing chain
+                requestChain.getPatterns().add(pattern);
+            }
+            requestChains.add(requestChain);
+        }
+        this.requestChains = requestChains;
     }
 
     /**
-     * Convenience method, insert filter name at
-     * first position for the given pattern
-     * 
-     * returns true on success
-     * 
-     * @param pattern
-     * @param filterName
-     * @return
+     * Inserts a filter as the first of the filter list corresponding to the specified pattern.
+     *
+     * @return True if the filter was inserted.
      */
     public boolean insertFirst(String pattern, String filterName) {
-        List<String> filterNames = filterMap.get(pattern);
-        if (filterNames==null) return false;
-        filterNames.add(0,filterName);
-        return true;
-    }
-    
-    /**
-     * Convenience method, insert filter name at
-     * last position for the given pattern
-     * 
-     * returns true on success
-     * 
-     * @param pattern
-     * @param filterName
-     * @return
-     */
-    public boolean insertLast(String pattern, String filterName) {
-        List<String> filterNames = filterMap.get(pattern);
-        if (filterNames==null) return false;
-        filterNames.add(filterName);
-        return true;
+        RequestFilterChain requestChain = findAndCheck(pattern, filterName); 
+        if (requestChain == null) {
+            return false;
+        }
+        requestChain.getFilterNames().add(0, filterName);
+        return false;
     }
 
     /**
-     * Convenience method, insert filter name before
-     * filter named positionName for the given pattern
-     * 
-     * returns true on success
-     * 
-     * @param pattern
-     * @param filterName
-     * @param poslitionName
-     * @return
+     * Inserts a filter as the last of the filter list corresponding to the specified pattern.
+     *
+     * @return True if the filter was inserted.
+     */
+    public boolean insertLast(String pattern, String filterName) {
+        RequestFilterChain requestChain = findAndCheck(pattern, filterName); 
+        if (requestChain == null) {
+            return false;
+        }
+
+        return requestChain.getFilterNames().add(filterName);
+    }
+
+    /**
+     * Inserts a filter as before another in the list corresponding to the specified pattern.
+     *
+     * @return True if the filter was inserted.
      */
     public boolean insertBefore(String pattern, String filterName, String positionName) {
-        List<String> filterNames = filterMap.get(pattern);
-        if (filterNames==null) return false;
+        RequestFilterChain requestChain = findAndCheck(pattern, filterName); 
+        if (requestChain == null) {
+            return false;
+        }
+
+        List<String> filterNames = requestChain.getFilterNames();
         int index = filterNames.indexOf(positionName);
-        if (index==-1) return false;
-        filterNames.add(index,filterName);
+        if (index == -1) {
+            return false;
+        }
+
+        filterNames.add(index, filterName);
         return true;
     }
+
     
     /**
-     * Convenience method, insert filter name after
-     * filter named positionName for the given pattern
-     * 
-     * returns true on success
-     * 
-     * @param pattern
-     * @param filterName
-     * @param poslitionName
-     * @return
+     * Inserts a filter as after another in the list corresponding to the specified pattern.
+     *
+     * @return True if the filter was inserted.
      */
     public boolean insertAfter(String pattern, String filterName, String positionName) {
-        List<String> filterNames = filterMap.get(pattern);
-        if (filterNames==null) return false;
+        RequestFilterChain requestChain = findAndCheck(pattern, filterName); 
+        if (requestChain == null) {
+            return false;
+        }
+
+        List<String> filterNames = requestChain.getFilterNames();
         int index = filterNames.indexOf(positionName);
-        if (index==-1) return false;
+        if (index == -1) {
+            return false;
+        }
+
         filterNames.add(index+1,filterName);
         return true;
     }
 
+    public RequestFilterChain find(String pattern) {
+        return requestChain(pattern);
+    }
+
     /**
-     * Get a list of patterns having the filter in their chain
-     * 
-     * @param filterName
-     * @return
+     * Get a list of patterns having the filter in their chain.
      */
-    public List<String> patternsContainingFilter(String filterName) {
+    public List<String> patternsForFilter(String filterName) {
         List<String> result = new ArrayList<String>();
-        for (String pattern: antPatterns) {
-            if (filterMap.get(pattern).contains(filterName)) {
-                result.add(pattern);
+        for (RequestFilterChain requestChain : requestChains) {
+            if (requestChain.getFilterNames().contains(filterName)) {
+                result.addAll(requestChain.getPatterns());
             }
         }
         return result;
     }
 
+    /**
+     * Get the filters for the specified pattern.
+     */
     public List<String> filtersFor(String pattern) {
-        if (!filterMap.containsKey(pattern)) {
+        RequestFilterChain requestChain = requestChain(pattern);
+        if (requestChain == null) {
             return Collections.EMPTY_LIST;
         }
 
-        return new ArrayList(filterMap.get(pattern));
+        return new ArrayList(requestChain.getFilterNames());
     }
 
-    public List<String> filtersFor(FilterChain cat) {
-        LinkedHashSet<String> result = new LinkedHashSet<String>();
-        for (String p : cat.patterns) {
-            result.addAll(filtersFor(p));
+    public boolean removeForPattern(String pattern) {
+        RequestFilterChain requestChain = requestChain(pattern);
+        if (requestChain != null) {
+            return requestChains.remove(requestChain);
         }
-        return new ArrayList(result);
-    }
-
-    public boolean updateAuthFilters(FilterChain cat, List<String> filterNames) {
-        boolean update = true;
-        HashMap<String,ArrayList<String>> tmp = new HashMap<String,ArrayList<String>>();
-
-        for (String p : cat.patterns) {
-            ArrayList<String> list = new ArrayList(filterMap.get(p));
-            tmp.put(p, list);
-
-            int i = list.indexOf(SECURITY_CONTEXT_ASC_FILTER);
-            i = i != -1 ? i : list.indexOf(SECURITY_CONTEXT_NO_ASC_FILTER);
-
-            int j = list.indexOf(DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
-            j = j != -1 ? j : list.indexOf(GUI_EXCEPTION_TRANSLATION_FILTER);
-
-            if (i == -1 || j == -1) {
-                update = false;
-            }
-            else {
-                ArrayList<String> sub = new ArrayList(list.subList(i+1, j));
-                list.removeAll(sub);
-                list.addAll(i+1, filterNames);
-            }
-        }
-
-        if (update) {
-            filterMap.putAll(tmp);
-            return true;
-        }
-
         return false;
+    }
+
+    RequestFilterChain findAndCheck(String pattern, String filterName) {
+        RequestFilterChain requestChain = requestChain(pattern);
+        if (requestChain == null) {
+            return null;
+        }
+
+        if (requestChain.getFilterNames().contains(filterName)) {
+            //JD: perhaps we should move it
+            return null;
+        }
+
+        return requestChain;
+    }
+
+    RequestFilterChain requestChain(String pattern) {
+        for (RequestFilterChain requestChain : requestChains) {
+            if (requestChain.getPatterns().contains(pattern)) {
+                return requestChain;
+            }
+        }
+        return null;
     }
 }

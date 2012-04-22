@@ -2,6 +2,7 @@ package org.geoserver.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,16 +120,22 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
         }
 
         SecurityManagerConfig config = securityManager.getSecurityConfig(); 
-        GeoServerSecurityFilterChain filterChain = config.getFilterChain();
-        
-        Map<RequestMatcher,List<Filter>> filterChainMap = new LinkedHashMap<RequestMatcher,List<Filter>>();
+        GeoServerSecurityFilterChain filterChain = 
+                new GeoServerSecurityFilterChain(config.getFilterChain());
+
         // similar to the list of authentication providers
         // adding required providers like GeoServerRootAuthenticationProvider
-        addConstantFilterChains(filterChainMap); 
-                
-        for (String pattern : filterChain.getAntPatterns()) {
+        filterChain.postConfigure(securityManager);
+
+        //build up the actual filter chain
+        Map<String,List<String>> rawFilterChainMap = filterChain.compileFilterMap();
+
+        Map<RequestMatcher,List<Filter>> filterChainMap = 
+                new LinkedHashMap<RequestMatcher,List<Filter>>();
+
+        for (String pattern : rawFilterChainMap.keySet()) {
             List<Filter> filters = new ArrayList<Filter>();
-            for (String filterName : filterChain.getFilterMap().get(pattern)) {
+            for (String filterName : rawFilterChainMap.get(pattern)) {
                 try {
                     Filter filter = lookupFilter(filterName);
                     if (filter == null) {
@@ -153,6 +160,11 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
             }
         }
 
+        //TODO: move this out into cas extension
+        filterChainMap.put(
+            new AntPathRequestMatcher(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN),
+            (List) Arrays.asList(ProxyGrantingTicketCallbackFilter.get()));
+        
         synchronized (this) {
             // first, call destroy of all current filters        
             if (chainsInitialized) {
@@ -196,12 +208,6 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
      * 
      * @param filterChainMap
      */
-    protected void addConstantFilterChains(Map<RequestMatcher,List<Filter>> filterChainMap) {
-        // TODO, Justin
-        // Not sure if this is correct, if it is, you can add the constant chain
-        // for the root user login 
-        List<Filter> filters = new ArrayList<Filter>();
-        filters.add(ProxyGrantingTicketCallbackFilter.get());
-        filterChainMap.put(new AntPathRequestMatcher(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN),filters);
+    protected final void addConstantFilterChains(GeoServerSecurityFilterChain chain) {
     }
 }

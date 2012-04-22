@@ -6,9 +6,7 @@ import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityFilterChain;
-import org.geoserver.security.GeoServerSecurityFilterChain.FilterChain;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
-import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 
 import static org.geoserver.security.GeoServerSecurityFilterChain.*;
@@ -71,7 +69,8 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         activateRORoleService();
 
         tester.startPage(page = new AuthenticationPage());
-        tester.assertModelValue("form:filterChain:requestType", FilterChain.WEB); 
+        tester.assertModelValue("form:filterChain:requestChain", 
+            GeoServerSecurityFilterChain.lookupRequestChainByName("web", getSecurityManager())); 
         tester.assertComponent("form:filterChain:authFilterChain:recorder", Recorder.class);
 
         List<String> selected = 
@@ -81,10 +80,11 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         assertTrue(selected.contains(REMEMBER_ME_FILTER));
 
         GeoServerSecurityFilterChain filterChain = 
-                getSecurityManager().getSecurityConfig().getFilterChain();
-        assertTrue(filterChain.getFilterMap().get(WEB_CHAIN).contains(ANONYMOUS_FILTER));
-        assertTrue(filterChain.getFilterMap().get(WEB_CHAIN).contains(REMEMBER_ME_FILTER));
-        assertFalse(filterChain.getFilterMap().get(WEB_CHAIN).contains(BASIC_AUTH_FILTER));
+            getSecurityManager().getSecurityConfig().getFilterChain();
+
+        assertTrue(filterChain.getRequestChainByName("web").getFilterNames().contains(ANONYMOUS_FILTER));
+        assertTrue(filterChain.getRequestChainByName("web").getFilterNames().contains(REMEMBER_ME_FILTER));
+        assertFalse(filterChain.getRequestChainByName("web").getFilterNames().contains(BASIC_AUTH_FILTER));
         
         FormTester form = tester.newFormTester("form");
         form.setValue("filterChain:authFilterChain:recorder", BASIC_AUTH_FILTER);
@@ -92,7 +92,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.assertNoErrorMessage();
 
         filterChain = getSecurityManager().getSecurityConfig().getFilterChain();
-        assertTrue(filterChain.getFilterMap().get(WEB_CHAIN).contains(BASIC_AUTH_FILTER));
+        assertTrue(filterChain.getRequestChainByName("web").getFilterNames().contains(BASIC_AUTH_FILTER));
     }
 }
 

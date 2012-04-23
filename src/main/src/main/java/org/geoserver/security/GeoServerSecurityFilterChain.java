@@ -6,18 +6,11 @@ package org.geoserver.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.geoserver.platform.GeoServerExtensions;
-
-import com.sun.tools.jdi.LinkedHashMap;
 
 /**
  * The security filter filter chain.

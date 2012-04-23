@@ -6,21 +6,27 @@ Filter functions
 The OGC Filter Encoding specification provides a generic concept of a *filter function*.  
 A filter function is a named function with any number of arguments, which can be used in a filter expression to perform specific calculations.  
 This provides much richer expressiveness for defining filters. 
+Filter functions can be used in both the XML Filter Encoding language and
+the textual ECQL language, using the syntax appropriate to the language.
 
 GeoServer provides many different kinds of filter functions,  
-covering a wide range of functionality including mathematical functions, string formatting, and geometric operations.
+covering a wide range of functionality including mathematics, string formatting, and geometric operations.
 A complete list is provided in the :ref:`filter_function_reference`.
 
 
-.. note:: The Filter encoding specification provides a standard syntax for filter functions, but does not mandate specific functions.  Servers are free to provide whatever functions they want, so function expressions may work only in specific software.
+.. note:: The Filter Encoding specification provides a standard syntax for filter functions, but does not mandate a specific set of functions.  Servers are free to provide whatever functions they want, so some function expressions may work only in specific software.
 
-The following examples show how filter functions are used. The first concerns improving WFS filtering, and the second shows how to use functions in SLD to get richer rendering.
+Examples
+--------
 
-WFS filtering example
----------------------
+The following examples show how filter functions are used. 
+The first shows enhanced WFS filtering using the ``geometryType`` function.  
+The second shows how to use functions in SLD to get improved label rendering.
 
-Let's assume we have a WFS feature type whose geometry field, ``geom``, can contain any kind of geometry. 
+WFS filtering
+^^^^^^^^^^^^^
 
+Let's assume we have a feature type whose geometry field, ``geom``, can contain any kind of geometry. 
 For a certain application we need to extract only the features whose geometry is a simple point or a multipoint.
 This can be done using a GeoServer-specific filter function named ``geometryType``.
 Here is the WFS request including the filter function:
@@ -47,8 +53,8 @@ Here is the WFS request including the filter function:
     </wfs:GetFeature>
     
 
-SLD formatting example
-----------------------
+SLD formatting
+^^^^^^^^^^^^^^
 
 We want to display elevation labels in a contour map. The elevations are stored as floating point values, so the raw numeric values may display with unwanted decimal places (such as "150.0" or "149.999999"). 
 We want to ensure the numbers are rounded appropriately (i.e. to display "150"). 
@@ -73,6 +79,6 @@ Performance implications
 
 Using filter functions in SLD symbolizer expressions does not have significant overhead, unless the function is performing very heavy computation.
 
-However, using functions in WFS filtering or SLD rule expressions may cause performance issues in certain cases. This is usually because specific filter functions are not recognized by a native data store filter encoder, and thus GeoServer must perform the functions in memory instead.
+However, using functions in WFS filtering or SLD rule expressions may cause performance issues in certain cases. This is usually because specific filter functions are not recognized by a native data store filter encoder, and thus GeoServer must execute the functions in memory instead.
 
-For example, given a filter like ``BBOX(geom,-10,30,20,45) and geometryType(geom) = 'Point'`` most data stores will split the filter into two separate parts. The bounding box filter will be encoded as a primary filter and thus executed in SQL, while the geometry function will be executed in memory on the results coming from the primary filter.
+For example, given a filter like ``BBOX(geom,-10,30,20,45) and geometryType(geom) = 'Point'`` most data stores will split the filter into two separate parts. The bounding box filter will be encoded as a primary filter and executed in SQL, while the ``geometryType`` function will be executed in memory on the results coming from the primary filter.

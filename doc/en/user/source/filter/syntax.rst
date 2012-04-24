@@ -20,10 +20,11 @@ CQL/ECQL
 --------
 
 - `CQL, Common Query Language <http://portal.opengeospatial.org/files/?artifact_id=3843>`_, a plain-text language created for the OGC Catalog specification and adapted to be a general and easy-to-use filtering mechanism. 
-- `ECQL, Extended CQL <http://docs.codehaus.org/display/GEOTOOLS/ECQL+Parser+Design>`_, an extension to CQL that allows expressing the same filters OGC Filter 1.1 can encode. 
+- `ECQL, Extended CQL <http://docs.codehaus.org/display/GEOTOOLS/ECQL+Parser+Design>`_, an extension to CQL that allows expressing the same filters OGC Filter 1.1 can encode. ECQL is a superset of CQL, and is accepted anywhere in GeoServer where CQL is allowed.
 
-The :ref:`ecql_reference` describes the ECQL language provided in GeoServer.
-The  :ref:`cql_tutorial` tutorial in this guide shows examples of both CQL and ECQL.
+
+The :ref:`filter_ecql_reference` describes the features of the ECQL language.
+The  :ref:`cql_tutorial` tutorial shows examples of both CQL and ECQL.
 
 
 

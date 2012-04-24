@@ -128,18 +128,7 @@
         <property name="titleKey" value="X509AuthFilterPanel.title"/>
         <property name="descriptionKey" value="X509AuthFilterPanel.description"/>
     </bean>
-    <bean id="casPanelInfo" class="org.geoserver.security.web.auth.CasAuthFilterPanelInfo">
-        <property name="id" value="security.casAuthFilter" />
-        <property name="shortTitleKey" value="CasAuthFilterPanel.short"/>
-        <property name="titleKey" value="CasAuthFilterPanel.title"/>
-        <property name="descriptionKey" value="CasAuthFilterPanel.description"/>
-    </bean>            
-    <bean id="casProxiedPanelInfo" class="org.geoserver.security.web.auth.CasProxiedAuthFilterPanelInfo">
-        <property name="id" value="security.CasProxiedAuthFilter" />
-        <property name="shortTitleKey" value="CasProxiedAuthFilterPanel.short"/>
-        <property name="titleKey" value="CasProxiedAuthFilterPanel.title"/>
-        <property name="descriptionKey" value="CasProxiedAuthFilterPanel.description"/>
-    </bean>        
+
     <bean id="headerAuthPanelInfo" class="org.geoserver.security.web.auth.HeaderAuthFilterPanelInfo">
         <property name="id" value="security.headerAuthFilter" />
         <property name="shortTitleKey" value="HeaderAuthFilterPanel.short"/>

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.security.web.auth;
+package org.geoserver.security.web.cas;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,13 +13,12 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.cas.CasAuthenticationFilterConfig;
 import org.geoserver.security.cas.GeoServerCasProxiedAuthenticationFilter;
+import org.geoserver.security.web.auth.AuthenticationFilterPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.HelpLink;
 
 /**

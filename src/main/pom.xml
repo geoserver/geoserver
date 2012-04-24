@@ -200,10 +200,6 @@
     <artifactId>spring-security-config</artifactId>
    </dependency>
    <dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-cas</artifactId>
-   </dependency>
-   <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
    </dependency>

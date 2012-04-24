@@ -17,13 +17,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.cas.GeoServerCasConstants;
-import org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.web.FilterChainProxy;

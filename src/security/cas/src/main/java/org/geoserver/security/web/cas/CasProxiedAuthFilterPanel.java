@@ -2,11 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.security.web.auth;
+package org.geoserver.security.web.cas;
 
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.cas.CasProxiedAuthenticationFilterConfig;
 import org.geoserver.security.cas.GeoServerCasProxiedAuthenticationFilter;
+import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 
 /**
  * Configuration panel for {@link GeoServerCasProxiedAuthenticationFilter}.

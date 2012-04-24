@@ -25,6 +25,7 @@ import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -159,5 +160,12 @@ public class GeoServerCasProxiedAuthenticationFilter extends GeoServerPreAuthent
         return request.getParameter("ticket");
     }
 
-    
+    @Override
+    protected boolean cacheAuthentication(Authentication auth) {
+        if (auth instanceof Assertion && 
+            GeoServerUser.ROOT_USERNAME.equals(((Assertion)auth).getPrincipal().getName())) {
+            return false;
+        }
+        return super.cacheAuthentication(auth);
+    }
 }

@@ -2,11 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.security.web.auth;
+package org.geoserver.security.web.cas;
 
 import org.geoserver.security.cas.CasAuthenticationFilterConfig;
 import org.geoserver.security.cas.GeoServerCasAuthenticationFilter;
 import org.geoserver.security.cas.GeoServerCasProxiedAuthenticationFilter;
+import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
  * Configuration panel extension for {@link GeoServerCasProxiedAuthenticationFilter}.

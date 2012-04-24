@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.security.web.auth;
+package org.geoserver.security.web.cas;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

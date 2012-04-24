@@ -63,6 +63,7 @@
   </dependencies>
   
   <modules>
+    <module>cas</module>
     <module>jdbc</module>
     <module>ldap</module>
   </modules>

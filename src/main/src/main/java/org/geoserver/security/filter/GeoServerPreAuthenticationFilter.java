@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
-import org.jasig.cas.client.validation.Assertion;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,9 +64,9 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
             
             Authentication postAuthentication = SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey!=null) {
-                if ((postAuthentication instanceof Assertion==false) || 
-                        GeoServerUser.ROOT_USERNAME.equals(((Assertion)postAuthentication).getPrincipal().getName())==false)
-                getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,postAuthentication);
+                if (cacheAuthentication(postAuthentication)) {
+                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,postAuthentication);    
+                }
             }
         }
         
@@ -146,7 +145,11 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
     public AuthenticationEntryPoint getAuthenticationEntryPoint() {
         return aep;
     }
-    
+
+    protected boolean cacheAuthentication(Authentication auth) {
+        return true;
+    }
+
     @Override
     public String getCacheKey(HttpServletRequest request) {
         String retval = getPreAuthenticatedPrincipal(request);

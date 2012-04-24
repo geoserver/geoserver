@@ -125,7 +125,18 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
      }    
         
     byte[] shpZipAsBytes() throws IOException {
-        InputStream in = getClass().getResourceAsStream( "test-data/pds.zip" );
+        return toBytes(getClass().getResourceAsStream( "test-data/pds.zip" ));
+    }
+
+    byte[] shpChineseZipAsBytes() throws IOException {
+        return toBytes(getClass().getResourceAsStream( "test-data/chinese_poly.zip" ));
+    }
+    
+    byte[] shpMultiZipAsBytes() throws IOException {
+        return toBytes(getClass().getResourceAsStream( "test-data/pdst.zip" ));
+    }
+
+    byte[] toBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
         int c = -1;
@@ -135,17 +146,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         return out.toByteArray();
     }
 
-    byte[] shpChineseZipAsBytes() throws IOException {
-        InputStream in = getClass().getResourceAsStream( "test-data/chinese_poly.zip" );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        int c = -1;
-        while ( ( c = in.read() ) != -1 ) {
-            out.write( c );
-        }
-        return out.toByteArray();
-    }    
-    
     public void testShapeFileUploadExternal() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -213,6 +213,18 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertFeatures( dom );
     }
  
+    public void testShapefileUploadMultiple() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getDataStoreByName("gs", "pdst"));
+        
+        put("/rest/workspaces/gs/datastores/pdst/file.shp?configure=all", shpMultiZipAsBytes(), "application/zip");
+
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "pdst");
+        assertNotNull(ds);
+
+        assertEquals(2, cat.getFeatureTypesByDataStore(ds).size());
+    }
+
     public void testGet() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/datastores/pds/file.properties");
         assertEquals( 404, resp.getStatusCode() );

@@ -15,7 +15,7 @@ GeoServer supports the use of both CQL and ECQL in WMS and WFS requests, as well
 Whenever the documentation refers to CQL, ECQL syntax can be used as well (and if not, please report that as a bug!).
 
 This tutorial introduces the CQL/ECQL language by example.
-For a full reference, refer to the `ECQL BNF definition <http://docs.codehaus.org/display/GEOTOOLS/ECQL+Parser+Design>`_ in GeoTools.
+For a full reference, refer to the :ref:`filter_ecql_reference`.
 
 Getting started
 ---------------

@@ -4,12 +4,14 @@ ECQL Reference
 ==============
 
 This section provides a reference for the syntax of the ECQL language.
-The subsections present the major language constructs.
-Each construct is described by listing all syntax options for it
-(which may be defined recursively in terms of the current or other constructs).
+The full language grammar is documented in the the GeoTools `ECQL BNF definition <http://docs.codehaus.org/display/GEOTOOLS/ECQL+Parser+Design>`_ 
 
 Syntax Notes
 ------------
+
+The subsections present the major language constructs.
+Each construct is described by listing all syntax options for it
+(which may be defined recursively in terms of the current or other constructs).
 
 * Keywords are not case-sensitive. 
 * The vertical bar symbol **|** indicates where a choice of keyword can be made.  

@@ -1,6 +1,6 @@
 .. _filter_ecql_reference:
 
-ECQL Language Reference
+ECQL Reference
 =======================
 
 This section provides a reference for the syntax of the ECQL language.
@@ -108,7 +108,8 @@ Spatial predicates specify the relationship between geometric values.
      - Predicates for standard OGC spatial relationships
    * - ``RELATE`` ``(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *pattern* ``)``
      - Tests whether geometries have the spatial relationship specified by a DE-9IM matrix *pattern*.
-       DE-9IM patterns are specified using the characters ``*TF012``.
+       A DE-9IM pattern is a string of length 9 specified using the characters ``*TF012``.
+       Example: ``"1*T***T**"``
    * - ``DWITHIN`` | ``BEYOND`` ``(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *distance* ``,`` *units* ``)``
      - Tests whether geometries are within (beyond) a distance.
        *distance* is an unsigned numeric value for the distance tolerance.

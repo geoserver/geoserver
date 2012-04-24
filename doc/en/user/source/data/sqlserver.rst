@@ -84,7 +84,7 @@ Configuring a SQL Server data store
 Determining the port used by the SQL Server instance
 ````````````````````````````````````````````````````
 
-You can determine the port in use by connecting to your SQL server instance using some other software, and then using :command:`netstat` to display details on network connections.  In the following example on a Windows PC, the port is 2646 ..
-::
-  C:\>netstat -a | find "sql1"
-  TCP   DPI908194:1918   maittestsql1.dpi.nsw.gov.au:2646   ESTABLISHED
+You can determine the port in use by connecting to your SQL server instance using some other software, and then using :command:`netstat` to display details on network connections.  In the following example on a Windows PC, the port is 2646 ::
+
+    C:\>netstat -a | find "sql1"
+    TCP   DPI908194:1918   maittestsql1.dpi.nsw.gov.au:2646   ESTABLISHED

@@ -1,7 +1,7 @@
 .. _filter_ecql_reference:
 
 ECQL Reference
-=======================
+==============
 
 This section provides a reference for the syntax of the ECQL language.
 The subsections present the major language constructs.

@@ -55,6 +55,19 @@
 					</idExpression>
 				</AttributeMapping>
 				<AttributeMapping>
+					<targetAttribute>gml:coverageFunction/gml:MappingRule</targetAttribute>
+					<sourceExpression>
+						<OCQL>'string'</OCQL>
+					</sourceExpression>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gmlcov:rangeType</targetAttribute>
+					<ClientProperty>
+						<name>xlink:href</name>
+						<value>'http://ns.bgs.ac.uk/thesaurus/lithostratigraphy'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
 					<targetAttribute>gml:domainSet</targetAttribute>
 					<targetAttributeNode>wml2dr:TimePositionListPropertyType</targetAttributeNode>
 				</AttributeMapping>
@@ -76,7 +89,11 @@
 					<sourceExpression>
 						<OCQL>RANGE</OCQL>
 					</sourceExpression>
-					<isList>true</isList>
+					<isList>true</isList>										
+					<ClientProperty>
+					   <name>uom</name>
+					   <value>'degC'</value>
+					</ClientProperty>
 				</AttributeMapping>
 			</attributeMappings>
 		</FeatureTypeMapping>

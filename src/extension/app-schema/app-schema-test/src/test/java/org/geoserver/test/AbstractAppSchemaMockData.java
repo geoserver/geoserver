@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,6 +30,7 @@ import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geotools.data.complex.AppSchemaDataAccessTest;
+import org.geotools.xml.AppSchemaCatalog;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -157,6 +159,11 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
      * Indicates fixture id (postgis or oracle) if running in online mode
      */
     private String onlineTestId;
+    
+    /**
+     * AppSchemaCatalog to work with AppSchemaValidator for test requests validation. 
+     */
+    private AppSchemaCatalog catalog;
     /**
      * Constructor with the default namespaces, schema directory, and catalog file.
      */
@@ -194,6 +201,27 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
             }
         }
         setUpCatalog();
+    }
+
+    /**
+     * Set AppSchemaCatalog based on catalog location relative to test-data directory.
+     * 
+     * @param catalogLocation
+     *            file location relative to test-data dir.
+     */
+    protected void setAppSchemaCatalog(String catalogLocation) {
+        if (catalogLocation != null) {
+            URL resolvedCatalogLocation = getClass().getResource(TEST_DATA + catalogLocation);
+            if (resolvedCatalogLocation == null) {
+                throw new RuntimeException(
+                        "Test catalog location must be relative to test-data directory!");
+            }
+            this.catalog = AppSchemaCatalog.build(resolvedCatalogLocation);
+        }
+    }
+
+    public AppSchemaCatalog getAppSchemaCatalog() {
+        return catalog;
     }
 
     /**

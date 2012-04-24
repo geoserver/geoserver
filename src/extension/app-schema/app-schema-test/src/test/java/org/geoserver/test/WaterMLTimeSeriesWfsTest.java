@@ -39,6 +39,7 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
         Document doc = getAsDOM(path);
         LOGGER.info("WFS GetFeature, typename=wml2dr:MeasurementTimeseriesDomainRange response:\n"
                 + prettyString(doc));
+        validateGet(path);
         assertXpathCount(2, "//wml2dr:MeasurementTimeseriesDomainRange", doc);
 
         String id = "ID1";
@@ -46,28 +47,46 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("tpl." + id, "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='"
                 + id + "']/gml:domainSet/wml2dr:TimePositionList/@gml:id", doc);
         assertXpathEvaluatesTo(
-                "1948-01-01 1948-02-01 1948-03-01 1948-04-01 1948-05-01 1948-06-01 1948-07-01 1948-08-01 1948-09-01 "
-                        + "1948-10-01 1948-11-01 1948-12-01 1949-01-01 1949-02-01 1949-03-01 1949-04-01",
+                "1948-01-01T00:00:00 1948-02-01T00:00:00 1948-03-01T00:00:00 1948-04-01T00:00:00 1948-05-01T00:00:00 "
+                        + "1948-06-01T00:00:00 1948-07-01T00:00:00 1948-08-01T00:00:00 1948-09-01T00:00:00 1948-10-01T00:00:00 "
+                        + "1948-11-01T00:00:00 1948-12-01T00:00:00 1949-01-01T00:00:00 1949-02-01T00:00:00 1949-03-01T00:00:00 "
+                        + "1949-04-01T00:00:00",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
         assertXpathEvaluatesTo(
                 "missing missing 8.9 7.9 14.2 15.4 18.1 19.1 21.7 20.8 19.6 14.9 10.8 8.8 8.5 10.4",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
                         + "']/gml:rangeSet/gml:QuantityList", doc);
+        assertXpathEvaluatesTo("degC", "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
+                + "']/gml:rangeSet/gml:QuantityList/@uom", doc);
+        assertXpathEvaluatesTo("string", "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
+                + "']/gml:coverageFunction/gml:MappingRule", doc);
+        assertXpathEvaluatesTo("http://ns.bgs.ac.uk/thesaurus/lithostratigraphy",
+                "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
+                        + "']/gmlcov:rangeType/@xlink:href", doc);
 
         id = "ID2";
         assertXpathEvaluatesTo(id, "(//wml2dr:MeasurementTimeseriesDomainRange)[2]/@gml:id", doc);
         assertXpathEvaluatesTo("tpl." + id, "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='"
                 + id + "']/gml:domainSet/wml2dr:TimePositionList/@gml:id", doc);
         assertXpathEvaluatesTo(
-                "1949-05-01 1949-06-01 1949-07-01 1949-08-01 1949-09-01 1949-10-01 1949-11-01 1949-12-01 1950-01-01 "
-                        + "1950-02-01 1950-03-01 1950-04-01 1950-05-01 1950-06-01 1950-07-01 1950-08-01 1950-09-01 1950-10-01 1950-11-01 1950-12-01",
+                "1949-05-01T00:00:00 1949-06-01T00:00:00 1949-07-01T00:00:00 1949-08-01T00:00:00 1949-09-01T00:00:00 "
+                        + "1949-10-01T00:00:00 1949-11-01T00:00:00 1949-12-01T00:00:00 1950-01-01T00:00:00 1950-02-01T00:00:00 "
+                        + "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00 1950-07-01T00:00:00 "
+                        + "1950-08-01T00:00:00 1950-09-01T00:00:00 1950-10-01T00:00:00 1950-11-01T00:00:00 1950-12-01T00:00:00",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
         assertXpathEvaluatesTo(
                 "16.2 17.1 22.0 25.1 23.9 22.8 17.0 10.2 9.2 7.1 12.3 12.9 17.2 23.6 21.6 21.9 17.6 14.0 9.3 3.8",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
                         + "']/gml:rangeSet/gml:QuantityList", doc);
+        assertXpathEvaluatesTo("degC", "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
+                + "']/gml:rangeSet/gml:QuantityList/@uom", doc);
+        assertXpathEvaluatesTo("string", "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
+                + "']/gml:coverageFunction/gml:MappingRule", doc);
+        assertXpathEvaluatesTo("http://ns.bgs.ac.uk/thesaurus/lithostratigraphy",
+                "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
+                        + "']/gmlcov:rangeType/@xlink:href", doc);
 
     }
 

@@ -46,6 +46,8 @@ public class WaterMLTimeSeriesMockData extends AbstractAppSchemaMockData {
 
     public WaterMLTimeSeriesMockData() {
         super(GML32_NAMESPACES);
+        // add AppSchemaCatalog so validateGet() would work with unpublished schemas
+        setAppSchemaCatalog("schemas/wml2dr_catalog.xml");
     }
 
     /**
@@ -54,16 +56,8 @@ public class WaterMLTimeSeriesMockData extends AbstractAppSchemaMockData {
     @Override
     public void addContent() {
         putNamespace(WML2DR_PREFIX, WML2DR_URI);
+        putNamespace(GMLCOV_PREFIX, GMLCOV_URI);
         addFeatureType(WML2DR_PREFIX, "MeasurementTimeseriesDomainRange",
-                "WaterMLTimeSeriesTest.xml", "timeseries.properties", "schemas/wml2dr_catalog.xml",
-                "schemas/gmlcov/1.0/coverage.xsd",
-                "schemas/waterml/DR/2.0/timeseries-domain-range.xsd",
-                "schemas/sweCommon/2.0/swe.xsd", "schemas/sweCommon/2.0/simple_encodings.xsd",
-                "schemas/sweCommon/2.0/advanced_encodings.xsd",
-                "schemas/sweCommon/2.0/basic_types.xsd",
-                "schemas/sweCommon/2.0/block_components.xsd",
-                "schemas/sweCommon/2.0/choice_components.xsd",
-                "schemas/sweCommon/2.0/simple_components.xsd",
-                "schemas/sweCommon/2.0/record_components.xsd");
+                "WaterMLTimeSeriesTest.xml", "timeseries.properties", "schemas/wml2dr_catalog.xml");
     }
 }

@@ -32,6 +32,7 @@ import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
 import org.geotools.xml.AppSchemaCache;
+import org.geotools.xml.AppSchemaCatalog;
 import org.geotools.xml.AppSchemaResolver;
 import org.geotools.xml.AppSchemaValidator;
 import org.geotools.xml.AppSchemaXSDRegistry;
@@ -85,6 +86,11 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      * The XpathEngine to be used for this namespace context.
      */
     private XpathEngine xpathEngine;
+    
+    /**
+     * AppSchemaCatalog to work with AppSchemaValidator for test requests validation. 
+     */
+    private AppSchemaCatalog catalog;
 
     /**
      * Subclasses override this to construct the test data.
@@ -161,6 +167,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
         DataAccessRegistry.unregisterAndDisposeAll();
         AppSchemaDataAccessRegistry.clearAppSchemaProperties();
         AppSchemaXSDRegistry.getInstance().dispose();
+        catalog = null;
     }
 
     /**
@@ -265,6 +272,19 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
             xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));
         }
         return xpathEngine;
+    }
+    
+    /**
+     * Return the AppSchemaCatalog to resolve local schemas.
+     * @return AppSchemaCatalog
+     */    
+    private AppSchemaCatalog getAppSchemaCatalog() {
+        if (catalog == null) {
+            if (testData instanceof AbstractAppSchemaMockData) {
+                catalog = ((AbstractAppSchemaMockData) testData).getAppSchemaCatalog();
+            }
+        }
+        return catalog;
     }
 
     /**
@@ -443,7 +463,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      */
     protected void validateGet(String path) {
         try {
-            AppSchemaValidator.validate(get(path));
+            AppSchemaValidator.validate(get(path), getAppSchemaCatalog());
         } catch (RuntimeException e) {
             LOGGER.severe(e.getMessage());
             throw e;
@@ -470,7 +490,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      */
     protected void validatePost(String path, String xml) {
         try {
-            AppSchemaValidator.validate(post(path, xml));
+            AppSchemaValidator.validate(post(path, xml), getAppSchemaCatalog());
         } catch (RuntimeException e) {
             LOGGER.severe(e.getMessage());
             throw e;
@@ -496,7 +516,7 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      */
     protected void validate(String xml) {
         try {
-            AppSchemaValidator.validate(xml);
+            AppSchemaValidator.validate(xml, getAppSchemaCatalog());
         } catch (RuntimeException e) {
             LOGGER.severe(e.getMessage());
             throw e;

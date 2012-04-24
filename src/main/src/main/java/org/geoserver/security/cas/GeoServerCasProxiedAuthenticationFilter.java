@@ -19,6 +19,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
@@ -43,9 +44,13 @@ public class GeoServerCasProxiedAuthenticationFilter extends GeoServerPreAuthent
     protected Cas20ProxyTicketValidator validator;
     protected String service;
     protected ServiceAuthenticationDetailsSource casAuthenticationDetailsSource = new ServiceAuthenticationDetailsSource();
-    
-    
-    
+
+    protected ProxyGrantingTicketStorage pgtStorageFilter;
+
+    public GeoServerCasProxiedAuthenticationFilter(ProxyGrantingTicketStorage pgtStorageFilter) {
+        this.pgtStorageFilter = pgtStorageFilter;
+    }
+
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
@@ -56,7 +61,7 @@ public class GeoServerCasProxiedAuthenticationFilter extends GeoServerPreAuthent
         
         validator = new Cas20ProxyTicketValidator(authConfig.getCasServerUrlPrefix());
         validator.setAcceptAnyProxy(true);
-        validator.setProxyGrantingTicketStorage(ProxyGrantingTicketCallbackFilter.getPGTStorage());
+        validator.setProxyGrantingTicketStorage(pgtStorageFilter);
         
         validator.setRenew(authConfig.isSendRenew());
         if (StringUtils.hasLength(authConfig.getProxyCallbackUrlPrefix()))

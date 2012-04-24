@@ -16,6 +16,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.cas.GeoServerCasConstants;
 import org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter;
 import org.geoserver.security.config.SecurityManagerConfig;
@@ -160,11 +161,6 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
             }
         }
 
-        //TODO: move this out into cas extension
-        filterChainMap.put(
-            new AntPathRequestMatcher(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN),
-            (List) Arrays.asList(ProxyGrantingTicketCallbackFilter.get()));
-        
         synchronized (this) {
             // first, call destroy of all current filters        
             if (chainsInitialized) {
@@ -189,9 +185,12 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
      */
     Filter lookupFilter(String filterName) throws IOException {
         Filter filter = securityManager.loadFilter(filterName);
-//        if (filter == null) {
-//            filter = (Filter) GeoServerExtensions.bean(filterName, appContext);
-//        }
+        if (filter == null) {
+            Object obj = GeoServerExtensions.bean(filterName, appContext);
+            if (obj != null && obj instanceof Filter) {
+                filter = (Filter) obj;
+            }
+        }
         return filter;
     }
 

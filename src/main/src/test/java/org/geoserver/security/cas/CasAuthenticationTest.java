@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.data.test.TestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
 import org.geoserver.security.auth.TestingAuthenticationCache;
@@ -22,6 +23,7 @@ import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilt
 import org.geoserver.security.impl.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -551,8 +553,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerURLPrefix.toString());
         validator.setAcceptAnyProxy(true);
         validator.setProxyCallbackUrl(GeoServerCasConstants.createProxyCallBackURl(proxyCallbackUrlPrefix.toExternalForm()));
-        validator.setProxyGrantingTicketStorage(ProxyGrantingTicketCallbackFilter.getPGTStorage());
-                
+        validator.setProxyGrantingTicketStorage(GeoServerExtensions.bean(ProxyGrantingTicketStorage.class));
+
         Assertion result = validator.validate(ticket,serviceUrl.toExternalForm());
 
         assertNotNull(result);

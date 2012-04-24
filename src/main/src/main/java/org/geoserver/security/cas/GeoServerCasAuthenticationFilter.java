@@ -26,6 +26,7 @@ import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
@@ -71,22 +72,24 @@ import org.springframework.util.StringUtils;
  *
  */
 public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
-    
-
 
     public static final String LOGOUT_PARAM="logout";
-    
+
     protected Cas20ProxyTicketValidator validator;
     protected String service, userGroupServiceName;
     protected ServiceAuthenticationDetailsSource casAuthenticationDetailsSource = new ServiceAuthenticationDetailsSource();
     protected SimpleUrlAuthenticationSuccessHandler successHandler;
     protected String urlInCasLogoutPage;
     protected String casLogoutURL;
-    
-        
+
     private CasAuthenticationEntryPoint aep;
-    
-    
+
+    protected ProxyGrantingTicketStorage pgtStorageFilter;
+
+    public GeoServerCasAuthenticationFilter(ProxyGrantingTicketStorage pgtStorageFilter) {
+        this.pgtStorageFilter = pgtStorageFilter;
+    }
+
     protected static SingleSignOutHandler getHandler() {
         return GeoServerExtensions.bean(SingleSignOutHandler.class);
     }
@@ -121,7 +124,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
                         
         validator = new Cas20ProxyTicketValidator(authConfig.getCasServerUrlPrefix());
         validator.setAcceptAnyProxy(true);
-        validator.setProxyGrantingTicketStorage(ProxyGrantingTicketCallbackFilter.getPGTStorage());
+        validator.setProxyGrantingTicketStorage(pgtStorageFilter);
         
         validator.setRenew(authConfig.isSendRenew());
         if (StringUtils.hasLength(authConfig.getProxyCallbackUrlPrefix()))

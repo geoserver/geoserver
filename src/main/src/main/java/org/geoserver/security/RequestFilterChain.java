@@ -25,6 +25,7 @@ public class RequestFilterChain implements Serializable {
 
     public RequestFilterChain(String... patterns) {
         this.patterns = new ArrayList(Arrays.asList((patterns)));
+        filterNames = new ArrayList();
     }
 
     public void setName(String name) {

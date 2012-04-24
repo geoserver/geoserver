@@ -6,7 +6,6 @@ package org.geoserver.security;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -19,7 +18,6 @@ import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.SecurityConfigValidator;
-import org.springframework.security.authentication.AuthenticationProvider;
 
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 

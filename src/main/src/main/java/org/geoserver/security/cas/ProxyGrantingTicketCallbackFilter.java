@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerExtensions;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.util.CommonUtils;
+import org.springframework.beans.factory.BeanNameAware;
 
 /**
  * a singleton {@link Filter} object receiving
@@ -29,17 +30,23 @@ import org.jasig.cas.client.util.CommonUtils;
  * @author christian
  *
  */
-public class ProxyGrantingTicketCallbackFilter implements Filter{
-    
-    
-    static public ProxyGrantingTicketCallbackFilter get() {        
-        return GeoServerExtensions.bean(ProxyGrantingTicketCallbackFilter.class);
-    }
-    
-    static public ProxyGrantingTicketStorage getPGTStorage() {                
-        return GeoServerExtensions.bean(ProxyGrantingTicketStorage.class);
+public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware {
+
+    String name;
+    ProxyGrantingTicketStorage pgtStorageFilter;
+
+    public ProxyGrantingTicketCallbackFilter(ProxyGrantingTicketStorage pgtStorageFilter) {
+        this.pgtStorageFilter = pgtStorageFilter;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        this.name = name;
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -55,8 +62,7 @@ public class ProxyGrantingTicketCallbackFilter implements Filter{
             throws IOException, ServletException {
         CommonUtils.readAndRespondToProxyReceptorRequest(
                 (HttpServletRequest)request,
-                (HttpServletResponse) response,
-                ProxyGrantingTicketCallbackFilter.getPGTStorage());
+                (HttpServletResponse) response, pgtStorageFilter);
         return;
     }
 

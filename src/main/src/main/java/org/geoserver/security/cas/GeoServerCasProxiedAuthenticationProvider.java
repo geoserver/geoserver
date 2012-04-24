@@ -11,6 +11,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.validation.SecurityConfigValidator;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 
 /**
  * Security provider for CAS
@@ -18,6 +19,12 @@ import org.geoserver.security.validation.SecurityConfigValidator;
  * @author mcr
  */
 public class GeoServerCasProxiedAuthenticationProvider extends AbstractFilterProvider {
+
+    protected ProxyGrantingTicketStorage pgtStorageFilter;
+
+    public GeoServerCasProxiedAuthenticationProvider(ProxyGrantingTicketStorage pgtStorageFilter) {
+        this.pgtStorageFilter = pgtStorageFilter;
+    }
 
     @Override
     public void configure(XStreamPersister xp) {
@@ -32,7 +39,7 @@ public class GeoServerCasProxiedAuthenticationProvider extends AbstractFilterPro
 
     @Override
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
-        return new GeoServerCasProxiedAuthenticationFilter();
+        return new GeoServerCasProxiedAuthenticationFilter(pgtStorageFilter);
     }
     
     @Override

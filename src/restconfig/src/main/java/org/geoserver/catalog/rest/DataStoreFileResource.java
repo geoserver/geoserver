@@ -452,6 +452,19 @@ public class DataStoreFileResource extends StoreFileResource {
             }
         }
     }
+
+    @Override
+    protected File findPrimaryFile(File directory, String format) {
+        if ("shp".equalsIgnoreCase(format)) {
+            //special case for shapefiles, since shapefile datastore can handle directories just 
+            // return the directory, this handles the case of a user uploading a zip with multiple
+            // shapefiles in it
+            return directory;
+        }
+        else {
+            return super.findPrimaryFile(directory, format);
+        }
+    }
     
     void updateParameters(DataStoreInfo info, NamespaceInfo namespace, DataStoreFactorySpi factory, File uploadedFile) {
         Map connectionParameters = info.getConnectionParameters();

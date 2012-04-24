@@ -55,7 +55,7 @@ Predicates are boolean-valued expressions which specify relationships between va
    * - :ref:`ecql_expr` **[** ``NOT`` **]** ``BETWEEN`` :ref:`ecql_expr` ``AND`` :ref:`ecql_expr` 
      - Tests whether a value lies in or outside a range (inclusive)
    * - :ref:`ecql_expr` **[** ``NOT`` **]** ``LIKE`` *like-pattern*
-     - Simple pattern matching.  *like-pattern* uses the ```%`` character as a wild-card
+     - Simple pattern matching.  *like-pattern* uses the ``%`` character as a wild-card
    * - :ref:`ecql_expr` **[** ``NOT`` **]** ``IN (`` :ref:`ecql_expr`  **{** ``,``:ref:`ecql_expr`  **}**  ``)`` 
      - Tests whether an expression value is (not) in a set of values
    * - :ref:`ecql_expr` ``IN (`` :ref:`ecql_literal`  **{** ``,``:ref:`ecql_literal`  **}**  ``)`` 
@@ -98,6 +98,8 @@ Spatial Predicate
 ^^^^^^^^^^^^^^^^^
 
 Spatial predicates specify the relationship between geometric values.
+Spatial predicates utilize the model defined in the 
+OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ specification.
 
 .. list-table::
    :widths: 50 50
@@ -131,6 +133,8 @@ Expression
  
 An expression specifies a attribute, literal, or computed value.  
 The type of the value is determined by the nature of the expression.
+The standard `PEMDAS <http://en.wikipedia.org/wiki/Order_of_operations#Mnemonics>`_
+order of evaluation is used.
  
 .. list-table::
    :widths: 50 50
@@ -179,10 +183,13 @@ Literals specify constant values of various types.
      - String literal delimited by single quotes.  To include a single quote in the
        string use two single-quotes: ``''``
    * - *Geometry*
-     - Geometry in WKT format.  All standard types are supported:
+     - Geometry in WKT format. 
+       WKT is defined in the OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ specification.
+       All standard types are supported:
        ``POINT``, ``LINESTRING``, ``POLYGON``, 
        ``MULTIPOINT``, ``MULTILINESTRING``, ``MULTIPOLYGON``, ``GEOMETRYCOLLECTION``.
-       ``ENVELOPE`` is also supported.
+       A custom type of ``ENVELOPE`` is also provided.
+       
    * - *Time*
      - A UTC date/time value in the format ``yyyy-mm-hhThh:mm:ss``.
        The seconds value may have a decimal fraction.
@@ -203,7 +210,7 @@ Literals specify constant values of various types.
 Time Period
 ^^^^^^^^^^^
 
-A construct specifying a duration of time, in several different ways.
+Specifies a period of time, in several different formats.
 
 .. list-table::
    :widths: 50 50
@@ -211,10 +218,10 @@ A construct specifying a duration of time, in several different ways.
    * - **Syntax**
      - **Description**
    * - :ref:`Time <ecql_literal>` ``/`` :ref:`Time <ecql_literal>`
-     - Period specified by start and end time
-   * - :ref:`Time <ecql_literal>` ``/`` :ref:`Duration <ecql_literal>`
-     - Period specified by a duration before a given time
+     - Period specified by a start and end time
    * - :ref:`Duration <ecql_literal>` ``/`` :ref:`Time <ecql_literal>`
+     - Period specified by a duration before a given time
+   * - :ref:`Time <ecql_literal>` ``/`` :ref:`Duration <ecql_literal>`
      - Period specified by a duration after a given time
 
 

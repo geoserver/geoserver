@@ -30,7 +30,7 @@ A filter condition is a boolean-valued predicate, or a logical combination of ot
    * - **Syntax**
      - **Description**
    * - :ref:`ecql_pred`
-     - A predicate expression
+     - Single predicate expression
    * - :ref:`ecql_cond` ``AND`` | ``OR`` :ref:`ecql_cond` 
      - Conjunction or disjunction of conditions
    * - ``NOT`` :ref:`ecql_cond`

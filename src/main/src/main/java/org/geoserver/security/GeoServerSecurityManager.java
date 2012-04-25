@@ -1946,11 +1946,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             }
         } else  {
             // no user.properties, populate with default user and roles
-            if (userGroupService.getUserByUsername(GeoServerUser.AdminName) == null) {
+            if (userGroupService.getUserByUsername(GeoServerUser.ADMIN_USERNAME) == null) {
                 userGroupStore.addUser(GeoServerUser.createDefaultAdmin());
                 roleStore.addRole(GeoServerRole.ADMIN_ROLE);
-                roleStore.associateRoleToUser(GeoServerRole.ADMIN_ROLE,
-                        GeoServerUser.AdminName);
+                roleStore.associateRoleToUser(GeoServerRole.ADMIN_ROLE, GeoServerUser.ADMIN_USERNAME);
             }
         }
 

@@ -443,7 +443,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
     public void insertValues(GeoServerUserGroupStore userGroupStore) throws Exception {
                 
         GeoServerUser admin = userGroupStore.createUserObject(GeoServerUser.AdminName, 
-                GeoServerUser.AdminPasword, GeoServerUser.AdminEnabled);
+                GeoServerUser.DEFAULT_ADMIN_PASSWD, GeoServerUser.AdminEnabled);
         GeoServerUser user1 = userGroupStore.createUserObject("user1", "11111", true);
         GeoServerUser user2 = userGroupStore.createUserObject("user2", "22222", true);
         GeoServerUser disableduser = userGroupStore.createUserObject("disableduser", "", false);

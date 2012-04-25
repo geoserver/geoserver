@@ -26,17 +26,19 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
 
     private static final long serialVersionUID = 1L;
 
-    public static final String AdminName="admin";
-    public static final String AdminPasword="geoserver";
+    
+    public static final String DEFAULT_ADMIN_PASSWD="geoserver";
     public static final boolean AdminEnabled=true;
+    public static final String ADMIN_USERNAME="admin";
     final public static String ROOT_USERNAME="root";
     final public static String ANONYMOUS_USERNAME="anonymous";
+
     /**
      * Create the geoserver default administrator
      */
     public static GeoServerUser createDefaultAdmin() {
-        GeoServerUser admin = new GeoServerUser(AdminName);
-        admin.setPassword(AdminPasword);
+        GeoServerUser admin = new GeoServerUser(ADMIN_USERNAME);
+        admin.setPassword(DEFAULT_ADMIN_PASSWD);
         admin.setEnabled(AdminEnabled);
         return admin;
     }

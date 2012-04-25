@@ -3,6 +3,9 @@
 
 <beans>
 
+  <bean id="securityHomePageContentProvider"
+    class="org.geoserver.security.web.SecurityHomePageContentProvider"/>
+
   <!-- 
    Menu category for security work
    -->

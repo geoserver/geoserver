@@ -210,3 +210,25 @@ The above command will run GeoServer with the built in data directory. To
 specify a different data directory the ``GEOSERVER_DATA_DIR`` flag is used:: 
 
   mvn -DGEOSERVER_DATA_DIR=/path/to/datadir jetty:run
+  
+
+Installing the Oracle module
+----------------------------
+
+To configure GeoServer to provide the Oracle datastore option, do the following:
+
+Obtain the appropriate Oracle JDBC driver (possibly by downloading from Oracle).
+Install it in the Maven repository using the command::
+	
+  mvn install:install-file -Dfile=ojdbc14.jar -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=10.2.0.3.0 -Dpackaging=jar -DgeneratePom=true
+  
+Configure the Eclipse project using::
+
+  mvn -o -P oracle,oracleDriver eclipse:eclipse
+  
+In Eclipse, import the ``oracle`` module project. 
+Refresh the ``web-app`` project to configure the dependency on the ``oracle`` project.
+
+When GeoServer is run, Oracle should be provided as a **Vector Data Source** on the *New Data source* page
+
+

@@ -211,4 +211,17 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         assertNull(user.getPassword());
     }
 
+    public void testEraseCredentials() throws Exception {
+        
+        GeoServerUser user = store.createUserObject("user", "foobar", true);
+        store.addUser(user);
+        store.store();
+
+        user = store.getUserByUsername("user");
+        assertNotNull(user.getPassword());
+        user.eraseCredentials();
+
+        user = store.getUserByUsername("user");
+        assertNotNull(user.getPassword());
+    }
 }

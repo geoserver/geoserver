@@ -4,6 +4,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -1168,7 +1169,7 @@ public class CatalogImplTest extends TestCase {
         StyleInfo s2 = catalog.getFactory().createStyle();
         s2.setName(s.getName());
         s2.setFilename(s.getFilename());
-
+        
         try {
             catalog.add(s2);
             fail("Shoudl have failed with existing global style with same name");
@@ -1176,9 +1177,13 @@ public class CatalogImplTest extends TestCase {
         catch(IllegalArgumentException expected) {
         }
 
+        List<StyleInfo> currStyles = catalog.getStyles();
+        
         //should pass after setting workspace
         s2.setWorkspace(ws);
         catalog.add(s2);
+
+        assertFalse(new HashSet<StyleInfo>(currStyles).equals(new HashSet<StyleInfo>(catalog.getStyles())));
 
         StyleInfo s3 = catalog.getFactory().createStyle();
         s3.setName(s2.getName());

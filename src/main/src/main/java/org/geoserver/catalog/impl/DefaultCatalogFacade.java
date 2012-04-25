@@ -112,12 +112,12 @@ public class DefaultCatalogFacade implements CatalogFacade {
     /**
      * layer groups
      */
-    protected List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>();
+    protected List<LayerGroupInfo> layerGroups = new CopyOnWriteArrayList<LayerGroupInfo>();
     
     /**
      * styles
      */
-    protected List<StyleInfo> styles = new ArrayList();
+    protected List<StyleInfo> styles = new CopyOnWriteArrayList<StyleInfo>();
 
     /**
      * the catalog
@@ -894,9 +894,9 @@ public class DefaultCatalogFacade implements CatalogFacade {
         }
         return null;
     }
-
-    public List getStyles() {
-        return ModificationProxy.createList(styles,StyleInfo.class);
+    
+    public List<StyleInfo> getStyles() {
+        return ModificationProxy.createList(new ArrayList<StyleInfo>(styles), StyleInfo.class);
     }
 
     public List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace) {

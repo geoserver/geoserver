@@ -1,5 +1,5 @@
 GeoServer Printing Module
-====================
+=========================
 
 The ``printing`` module for GeoServer allows easy hosting of the Mapfish
 printing service within a GeoServer instance.  The Mapfish printing module

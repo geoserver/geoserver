@@ -68,8 +68,7 @@ Once the default values have been set the "Attributes" refresh link can be used 
 
 Going to the WMS preview for the ``popstates`` layer should result in all the states being displayed.
 The SQL view parameters can now be specified by adding the ``viewparams`` parameter in the GetMap request. ``viewparams`` is structured as a set of key/value pairs separated by semicolumns: ``viewparams=p1:v1;p2:v2;...``.  If you want to use semicolons or commas in your values they will need to be escaped with a backslash (``\,`` and ``\;``).
-For example, to select all states having more than 20 million inhabitatants the following params can be added to the normal GetMap request:
- ``low:20000000``
+For example, to select all states having more than 20 million inhabitatants the following params can be added to the normal GetMap request: ``low:20000000``
 
 .. figure:: images/sqlview-20millions.png
    :align: center

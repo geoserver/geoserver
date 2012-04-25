@@ -7,7 +7,7 @@ Starting with version 2.1.4 GeoServer support custom SQL scripts that can be run
 grabs a connection from the connection pool, and every time the sesion is returned to the pool.
 
 These scripts can be parametrized with the expansion of enviroment variables, which can be in turn
-set into the OGC request parameters with the same mechanism as :ref:`sld_parameter_substitution`.
+set into the OGC request parameters with the same mechanism as :ref:`sld_variable_substitution`.
 
 In addition to the parameters provided via the request the ``GSUSER`` variable is guaranteed to
 contain the current GeoServer user, or be null if no authentication is available. This is useful

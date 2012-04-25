@@ -115,8 +115,8 @@ Feature functions
      - Returns ``true`` if ``f`` has a property named ``propertyName``
      
 Spatial Relationship Functions
---------------------
-  
+------------------------------
+
 For more information about the precise meaning of the spatial relationships consult the `OGC Simple Feature Specification for SQL <http://www.opengeospatial.org/standards/sfs>`_
 
 .. list-table::

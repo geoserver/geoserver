@@ -9,9 +9,10 @@ these algorithims only account for other labels. This can result in labels
 overlapping other symbolizers and that effect may be unintended. 
 
 .. cssclass:: no-border
-======================================  ======================================
-.. figure:: images/label-obstacle1.jpg  .. figure:: images/label-obstacle2.jpg
-======================================  ======================================
+
+   ======================================  ======================================
+   .. figure:: images/label-obstacle1.jpg  .. figure:: images/label-obstacle2.jpg
+   ======================================  ======================================
 
 
 GeoServer supports a vendor option called ``labelObstacle`` that allows one to
@@ -48,9 +49,10 @@ a label that overlaps with it.
 	</StyledLayerDescriptor>
 
 .. cssclass:: no-border
-===========================================  ===========================================
-.. figure:: images/obs-externalGraphic1.png  .. figure:: images/obs-externalGraphic2.png
-===========================================  ===========================================
+
+   ===========================================  ===========================================
+   .. figure:: images/obs-externalGraphic1.png  .. figure:: images/obs-externalGraphic2.png
+   ===========================================  ===========================================
 	
 Applying the obstacle to a regular point style:
 
@@ -70,17 +72,19 @@ Applying the obstacle to a regular point style:
 	</PointSymbolizer>
 
 .. cssclass:: no-border
-================================  ================================
-.. figure:: images/obs-mark1.png  .. figure:: images/obs-mark2.png
-================================  ================================
+
+   ================================  ================================
+   .. figure:: images/obs-mark1.png  .. figure:: images/obs-mark2.png
+   ================================  ================================
 
 Applying the obstacle to line/polygon style style:
 
 .. cssclass:: no-border
-================================  ================================
-.. figure:: images/obs-line1.png  .. figure:: images/obs-line2.png
-.. figure:: images/obs-poly1.png  .. figure:: images/obs-poly2.png
-================================  ================================
+
+   ================================  ================================
+   .. figure:: images/obs-line1.png  .. figure:: images/obs-line2.png
+   .. figure:: images/obs-poly1.png  .. figure:: images/obs-poly2.png
+   ================================  ================================
 
 .. warning::
 

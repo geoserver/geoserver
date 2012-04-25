@@ -4,7 +4,6 @@
  */
 package org.geoserver.catalog.impl;
 
-import java.lang.reflect.Proxy;
 import java.util.AbstractList;
 import java.util.List;
 
@@ -35,12 +34,8 @@ public abstract class ProxyList extends AbstractList {
     
     @Override
     public Object set(int index, Object element) {
-        if ( !proxyInterface.isInstance( element ) || !(element instanceof Proxy) ) {
             throw new IllegalArgumentException( 
                 "Object is not a proxy, or not a proxy of the correct type");
-        }
-        
-        return proxyList.set(index, unwrapProxy(element, proxyInterface));
     }
     
     public int size() {

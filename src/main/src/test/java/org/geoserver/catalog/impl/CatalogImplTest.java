@@ -1386,16 +1386,22 @@ public class CatalogImplTest extends TestCase {
         List<StyleInfo> styles = catalog.getStyles();
         assertEquals( 2 , styles.size() );
         
-        assertEquals( s.getName(), styles.get( 0 ).getName() );
-        assertEquals( "a"+s.getName(), styles.get( 1).getName() );
-        
-        //test sorting
-        Collections.sort( styles, new Comparator<StyleInfo>() {
+        //test immutability
+        Comparator<StyleInfo> comparator = new Comparator<StyleInfo>() {
 
             public int compare(StyleInfo o1, StyleInfo o2) {
                 return o1.getName().compareTo( o2.getName());
             }
-        });
+        };
+        try {
+            Collections.sort(styles, comparator);
+            fail("Expected runtime exception, immutable collection");
+        } catch (RuntimeException e) {
+            assertTrue(true);
+        }
+
+        styles = new ArrayList<StyleInfo>(styles);
+        Collections.sort(styles, comparator);
         
         assertEquals( "a"+s.getName(), styles.get( 0 ).getName() );
         assertEquals( s.getName(), styles.get( 1 ).getName() );

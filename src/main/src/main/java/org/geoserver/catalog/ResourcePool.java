@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,9 +44,11 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.data.VersioningPlugin;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccess;
@@ -90,7 +91,6 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.filter.Filter;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -124,19 +124,6 @@ public class ResourcePool {
 
     /** logging */
     static Logger LOGGER = Logging.getLogger( "org.geoserver.catalog");
-    
-    static Class VERSIONING_FS = null;
-    static Class GS_VERSIONING_FS = null;
-    
-    static {
-        try {
-            // only support versioning if on classpath
-            VERSIONING_FS = Class.forName("org.geotools.data.VersioningFeatureSource");
-            GS_VERSIONING_FS = Class.forName("org.vfny.geoserver.global.GeoServerVersioningFeatureSource");
-        } catch (ClassNotFoundException e) {
-            //fall through
-        }
-    }
     
     /**
      * Default number of hard references
@@ -921,28 +908,6 @@ public class ResourcePool {
                         "Problem forcing CRS onto feature type", e);
             }
 
-            //
-            // versioning
-            //
-            try {
-                // only support versioning if on classpath
-                if (VERSIONING_FS != null && GS_VERSIONING_FS != null && VERSIONING_FS.isAssignableFrom( fs.getClass() ) ) {
-                    //class implements versioning, reflectively create the versioning wrapper
-                    try {
-                    Method m = GS_VERSIONING_FS.getMethod( "create", VERSIONING_FS, 
-                        SimpleFeatureType.class, Filter.class, CoordinateReferenceSystem.class, int.class );
-                    return (FeatureSource) m.invoke(null, fs, schema, info.getFilter(), 
-                        resultCRS, info.getProjectionPolicy().getCode());
-                    }
-                    catch( Exception e ) {
-                        throw new DataSourceException(
-                                "Creation of a versioning wrapper failed", e);
-                    }
-                }
-            } catch( ClassCastException e ) {
-                //fall through
-            } 
-
             //joining, check for join hint which requires us to create a shcema with some additional
             // attributes
             if (hints != null && hints.containsKey(JOINS)) {
@@ -958,8 +923,17 @@ public class ResourcePool {
             }
 
             //return a normal 
-            return GeoServerFeatureLocking.create(fs, schema,
+            fs = GeoServerFeatureLocking.create(fs, schema,
                     info.getFilter(), resultCRS, info.getProjectionPolicy().getCode());
+
+            // versioning
+            //
+            VersioningPlugin verPlugin = GeoServerExtensions.bean(VersioningPlugin.class);
+            if (verPlugin != null) {
+                fs = verPlugin.wrap(fs, schema, info, resultCRS);
+            }
+            
+            return fs;
         }
     }
     

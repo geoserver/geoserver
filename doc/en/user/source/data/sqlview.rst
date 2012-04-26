@@ -102,23 +102,24 @@ From this point the workflow is the same as for a non-parameterized query.
 Using a parametric SQL View
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Invoking the standard :guilabel:`Layer Preview` for the ``popstates`` parameterized SQL View layer results in all the states being displayed, 
-since no parameter values have been supplied and so the parameter defaults are used.
-The SQL view parameters can be specified by adding the ``viewparams`` parameter to the WMS ``GetMap`` request. 
-The ``viewparams``argument is structured as a list of ``key:value`` pairs, separated by semicolons: 
+The ``popstates`` SQL View layer can be displayed by invoking the :ref:`layerpreview`.
+Initially all the states are displayed, 
+since no parameter values have been supplied and so the defaults are used.
+The SQL view parameters are specified by adding the ``viewparams`` parameter to the WMS ``GetMap`` request. 
+The ``viewparams`` argument is structured as a list of ``key:value`` pairs, separated by semicolons: 
 
   ``viewparams=p1:v1;p2:v2;...``
   
-If the values contain semicolons or commas these must be escaped with a backslash (``\,`` and ``\;``).
+If the values contain semicolons or commas these must be escaped with a backslash (e.g. ``\,`` and ``\;``).
 
-For example, to display all states having more than 20 million inhabitatants the following parameter can be added to the ``GetMap`` request:
+For example, to display all states having more than 20 million inhabitatants the following parameter is added to the ``GetMap`` request:
 
   ``&viewparams=low:20000000``
 
 .. figure:: images/sqlview-20millions.png
    :align: center
 
-To display all states having between 2 and 5 millions inhabitatants the parameters are:  
+To display all states having between 2 and 5 millions inhabitatants the view parameters are:  
 
   ``&viewparams=low:2000000;high:5000000``
 

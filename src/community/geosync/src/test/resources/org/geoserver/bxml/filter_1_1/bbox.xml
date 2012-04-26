@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fes:Filter xmlns:fes="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+	<fes:BBOX>
+		<fes:PropertyName>geometry11</fes:PropertyName>
+		<gml:Envelope srsName="urn:ogc:def:crs:EPSG::900913">
+			<gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
+			<gml:upperCorner>35.5472 42.8143</gml:upperCorner>
+		</gml:Envelope>
+	</fes:BBOX>
+</fes:Filter>

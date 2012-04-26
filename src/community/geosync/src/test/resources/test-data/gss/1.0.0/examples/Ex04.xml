@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<gss:CreateTopic
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:Topic>
+      <gss:Feed>REPLICATIONFEED</gss:Feed>
+      <gss:Description>
+         <ows:Title>Val D'or Syncronization Feed</ows:Title>
+         <ows:Abstract>This feed filters the replication feed to identfy changes in the region of Val D'or, Quebec.</ows:Abstract>
+      </gss:Description>
+      <fes:Filter>
+         <fes:Intersects>
+            <fes:PropertyName>atom:entry/georss:where</fes:PropertyName>
+            <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
+               <gml:exterior>
+                  <gml:LinearRing>
+                     <gml:posList>48.123246933032 -77.808265686035 48.115683488677 -77.811698913574 48.109723627023 -77.823371887207 48.100553259308 -77.824058532715 48.098031121351 -77.864570617676 48.085647922138 -77.865257263184 48.089087998818 -77.853240966797 48.07945520427 -77.848434448242 48.080143320849 -77.839508056641 48.091839894493 -77.842254638672 48.089317329082 -77.830924987793 48.075785093733 -77.824058532715 48.076014483311 -77.817192077636 48.081290161361 -77.816505432129 48.080143320849 -77.808609008789 48.071197087392 -77.807922363281 48.071655906434 -77.803115844726 48.05238198435 -77.795906066894 48.03769224747 -77.786293029785 48.028049830821 -77.777366638183 48.032182516036 -77.771186828613 48.051463998531 -77.773246765137 48.069820605719 -77.776679992675 48.078767078486 -77.785606384277 48.086565298418 -77.785949707032 48.086106612324 -77.778396606445 48.090922612296 -77.775650024414 48.080143320849 -77.768440246582 48.080372690996 -77.738914489746 48.09115193438 -77.732734680176 48.096426060045 -77.74097442627 48.103992338935 -77.730674743653 48.116141910942 -77.734451293946 48.116371120541 -77.76123046875 48.125538666026 -77.765350341797 48.134246318893 -77.771530151367 48.133558926294 -77.785606384277 48.125997000355 -77.791786193848 48.122101028191 -77.793846130371 48.123246933032 -77.808265686035</gml:posList>
+                  </gml:LinearRing>
+               </gml:exterior>
+            </gml:Polygon>
+         </fes:Intersects>
+      </fes:Filter>
+   </gss:Topic>
+</gss:CreateTopic>

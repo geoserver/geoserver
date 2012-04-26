@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<gss:Subscribe
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:TopicId>urn:uuid:57aeeeac-8111-4cfb-8bcf-2673ab9674d0</gss:TopicId>
+   <gss:Delivery>mailto:roadrunner@desert.com</gss:Delivery>
+   <gss:Expiry>2010-10-13</gss:Expiry>
+</gss:Subscribe>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Delete xmlns="http://www.opengis.net/wfs"
+  xmlns:fes="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:f="http://opengeo.org/osm" typeName="f:planet_osm_point">
+  <fes:Filter>
+      <fes:Or>
+          <fes:PropertyIsEqualTo>
+              <fes:PropertyName>addresses</fes:PropertyName>
+              <fes:Literal>Adrees1</fes:Literal>
+          </fes:PropertyIsEqualTo>
+          <fes:Not>
+              <fes:And>
+                  <fes:PropertyIsBetween>
+                      <fes:PropertyName>depth</fes:PropertyName>
+                      <fes:LowerBoundary><fes:Literal>100</fes:Literal></fes:LowerBoundary>
+                      <fes:UpperBoundary><fes:Literal>200</fes:Literal></fes:UpperBoundary>
+                  </fes:PropertyIsBetween>
+                  <fes:PropertyIsEqualTo>
+                      <fes:PropertyName>street</fes:PropertyName>
+                      <fes:Literal>Street1</fes:Literal>
+                  </fes:PropertyIsEqualTo>
+              </fes:And>
+          </fes:Not>
+      </fes:Or>
+  </fes:Filter>
+</Delete>

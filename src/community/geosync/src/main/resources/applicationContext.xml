@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="gssInitializer" class="org.geoserver.gss.config.GSSInitializer">
+    <description>Makes sure the WFS setting 'override GML attributes' is set to true</description>
+  </bean>
+  
+  <bean id="GSS" class="org.geoserver.gss.impl.GSS">
+    <constructor-arg ref="GEOGIT" />
+    <constructor-arg ref="catalog" />
+  </bean>
+
+  <bean id="gssLoader" class="org.geoserver.gss.config.GSSXStreamLoader">
+    <constructor-arg ref="resourceLoader" />
+  </bean>
+
+  <!-- gss service -->
+  <bean id="gssServiceTarget" class="org.geoserver.gss.impl.DefaultGeoSynchronizationService">
+    <constructor-arg index="0" ref="GSS" />
+  </bean>
+
+  <bean id="gssService2" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.gss.service.GeoSynchronizationService</value>
+    </property>
+    <property name="targetName">
+      <value>gssServiceTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <!-- allow any other advise defined elsewhere and named "gssServiceInterceptor*" to be added to the interceptors 
+          list -->
+        <value>gssServiceInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+  <alias name="gssService2" alias="geoSyncronizationService" />
+
+  <!-- service descriptors -->
+  <bean id="gssService-1.0.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="gss" />
+    <constructor-arg index="1" ref="geoSyncronizationService" />
+    <constructor-arg index="2" value="1.0.0" />
+    <constructor-arg index="3">
+      <list>
+        <value>GetCapabilities</value>
+        <value>Transaction</value>
+        <value>GetEntries</value>
+        <value>AcceptChange</value>
+        <value>RejectChange</value>
+        <value>ReviewedChanges</value>
+        <value>CreateTopic</value>
+        <value>RemoveTopic</value>
+        <value>ListTopics</value>
+        <value>Subscribe</value>
+        <value>ListSubscriptions</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Exception handler, we need to output ows 1.1 exceptions -->
+  <bean id="gss100ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
+    <constructor-arg index="0">
+      <list>
+        <ref local="gssService-1.0.0" />
+      </list>
+    </constructor-arg>
+  </bean>
+  
+
+  <!-- GetCapabilities -->
+  <bean id="gssCapabilitiesKvpReader" class="org.geoserver.gss.impl.discovery.GetCapabilitiesKvpReader">
+  </bean>
+  <bean id="gssCapabilitiesOutputFormat" class="org.geoserver.gss.impl.discovery.GetCapabilitiesResponse">
+    <constructor-arg index="0" ref="GSS" />
+  </bean>
+  
+  <!-- GetEntries -->
+  <bean id="gssWKTGEomKvpParser" class="org.geoserver.gss.impl.query.GeomKvpParser">
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssSpatialOpKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+    <constructor-arg value="SPATIALOP"/>
+    <constructor-arg value="org.geoserver.gss.impl.query.SpatialOp"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssBboxKvpParser" class="org.geoserver.wfs.kvp.BBoxKvpParser">
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssFeedKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+    <constructor-arg value="FEED"/>
+    <constructor-arg value="org.geoserver.gss.service.FeedType"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssStartTimeKvpParser" class="org.geoserver.gss.impl.query.TimeStampKvpParser">
+    <constructor-arg value="STARTTIME"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssEndTimeKvpParser" class="org.geoserver.gss.impl.query.TimeStampKvpParser">
+    <constructor-arg value="ENDTIME"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssTemporalOpKvpParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+    <constructor-arg value="TEMPORALOP"/>
+    <constructor-arg value="org.geoserver.gss.impl.query.TemporalOp"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+    <property name="request" value="GetEntries"/>
+  </bean>
+  <bean id="gssSearchTermsKvpParser" class="org.geoserver.ows.FlatKvpParser">
+    <constructor-arg index="0" value="SEARCHTERMS"/>
+    <constructor-arg index="1" value="java.lang.String"/>
+    <property name="service"><value>GSS</value></property>
+    <property name="version"><value>1.0.0</value></property>
+  </bean>
+  <bean id="gssFilterKvpParser" class="org.geoserver.gss.impl.query.FilterKvpParser">
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+  </bean>
+  <bean id="gssSortOrderKvpParser" class="org.geoserver.gss.impl.query.SortOrderKvpParser">
+    <constructor-arg value="SORTORDER"/>
+    <property name="service" value="GSS"/>
+    <property name="version" value="1.0.0"/>
+  </bean>
+  
+
+  <bean id="gssGetEntriesKvpReader" class="org.geoserver.gss.impl.query.GetEntriesKvpRequestReader">
+  </bean>
+  
+  <bean id="gssGetEntriesResponse" class="org.geoserver.gss.impl.query.FeedResponse">
+    <constructor-arg ref="GSS"/>
+  </bean>
+
+  <!-- XML handling -->
+  <bean id="gssXsd" class="org.geoserver.gss.xml.GSSSchema">
+    <constructor-arg ref="wfsXsd-1.1" />
+  </bean>
+
+  <bean id="gssXmlConfiguration" class="org.geoserver.gss.xml.GSSConfiguration">
+    <constructor-arg>
+      <list>
+        <ref bean="wfsXmlConfiguration-1.1" />
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="gssXsd" />
+    <constructor-arg ref="catalog" />
+  </bean>
+    
+    
+  <!-- WEB UI -->
+  <bean id="gssServicePage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="gss"/>
+    <property name="titleKey" value="gss.name"/>
+    <property name="descriptionKey" value="GSSAdminPage.description"/>
+    <property name="componentClass" value="org.geoserver.gss.web.GSSAdminPage"/>
+    <property name="icon" value="server_feed.png"/>
+    <property name="category" ref="servicesCategory"/>
+  </bean> 
+  
+
+  <!-- GeoSync Client synchronizer -->  
+  <bean id="geosyncHttpClient" class="org.geoserver.data.gss.HTTPClient">
+    <description>httpclient used by geonodeSecurityClient to request authentication to GeoNode</description>
+    <constructor-arg index="0">
+      <description>Max connections per host</description>
+      <value>6</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <description>Connection time out in milliseconds</description>
+      <value>25000</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <description>Read time out in milliseconds</description>
+      <value>25000</value>
+    </constructor-arg>
+  </bean>
+  <bean id="geosyncClient" class="org.geoserver.data.gss.GeoSyncClient">
+    <constructor-arg ref="geosyncHttpClient" />
+    <constructor-arg ref="GSS" />
+  </bean>
+  
+  <!-- GeoSync DataStore config panel -->  
+  <bean id="geosyncDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="geosync_ds"/>
+    <property name="factoryClass" value="org.geoserver.data.gss.GeoSyncDataStoreFactory"/>
+    <property name="iconBase" value="org.geoserver.gss.web.GSSAdminPage"/>
+    <property name="icon" value="server_feed.png"/>
+    <property name="componentClass" value="org.geoserver.data.gss.web.GeoSyncDataStoreEditPanel"/>
+  </bean>
+  
+</beans>

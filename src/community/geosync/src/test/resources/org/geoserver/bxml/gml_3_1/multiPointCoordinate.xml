@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<MultiPoint xmlns="http://www.opengis.net/gml" srsName="urn:ogc:def:crs:EPSG::900913">
+	<pointMember>
+		<Point>
+			<coordinates>2.079641,45.001795</coordinates>
+		</Point>
+	</pointMember>
+	<pointMember>
+		<Point>
+			<coordinates>2.718330,45.541131</coordinates>
+		</Point>
+	</pointMember>
+	<pointMember>
+		<Point>
+			<coordinates>3.016384,45.143725</coordinates>
+		</Point>
+	</pointMember>
+	<pointMember>
+		<Point>
+			<coordinates>0.930003,45.001795</coordinates>
+		</Point>
+	</pointMember>
+</MultiPoint>

@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<gss:ListSubscriptionsResponse
+   service="GSS"
+   version="1.0.0"
+   owner="roadrunner"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:Subscription
+      status="active"
+      sid="urn:uuid:5a933c0d-85ff-49cf-9c50-d9b4883e46a4">
+      <gss:TopicId>urn:uuid:57aeeeac-8111-4cfb-8bcf-2673ab9674d0</gss:TopicId>
+      <gss:Delivery>mailto:roadrunner@desert.com</gss:Delivery>
+      <gss:Expiry>2010-10-13</gss:Expiry>
+   </gss:Subscription>
+   <gss:Subscription
+      status="active"
+      sid="urn:uuid:abd12195-4afa-48cd-af98-fb2c29aff1c9">
+      <gss:TopicId>urn:uuid:cf5fdc72-d55b-4ce7-8b4b-035b7197a8b4</gss:TopicId>
+      <gss:Delivery>mailto:bbunny@holeintheground.com</gss:Delivery>
+   </gss:Subscription>
+   <gss:Subscription
+      status="paused"
+      sid="urn:uuid:abd12195-4afa-48cd-af98-fb2c29aff1c9">
+      <gss:TopicId>urn:uuid:52d2c48c-3609-4ef3-b0b4-f13ea85217df</gss:TopicId>
+      <gss:Delivery>sync:http://www.planetmarscorp.com/server/wfs.cgi?service=WFS&amp;version=1.1.0&amp;request=GetCapabilities</gss:Delivery>
+   </gss:Subscription>
+</gss:ListSubscriptionsResponse>

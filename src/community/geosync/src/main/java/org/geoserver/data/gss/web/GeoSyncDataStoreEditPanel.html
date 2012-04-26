@@ -1,0 +1,25 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+	<fieldset>
+      <div><span wicket:id="namespace"></span></div>
+	  <legend><span><wicket:message key="connectionParameters">Connection Parameters</wicket:message></span></legend>
+	  <div><span wicket:id="capabilitiesUrl"></span></div>
+	  <div><span wicket:id="user"></span></div>
+	  <div><span wicket:id="password"></span></div>
+      <div class="button-group selfclear">
+        <a href="#" wicket:id="connect"><wicket:message key="connect">connect</wicket:message></a>
+        <span wicket:id="connectMessage"></span>
+      </div>
+    
+	  <div><span wicket:id="usePassiveReplication"></span></div>
+      <div><span wicket:id="useActiveReplication"></span></div>
+      <div><span wicket:id="activeReplicationPollInterval"></span></div>
+      <div>
+        <label><span><wicket:message key="lastSynchronized">Last synchronized</wicket:message></span></label>
+        <input wicket:id="lastSynchronized" type="text" readonly="readonly"/>
+      </div>
+	</fieldset>
+</wicket:panel>
+</body>
+</html>

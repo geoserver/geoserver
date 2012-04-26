@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss" xmlns:gss="http://www.opengis.net/gss/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:fes="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
+    <title>Delte of Feature planet_osm_point.100</title>
+    <id>453e5a7ba8917ed3550e088d69ff1ac0aa6d1a4d</id>
+    <content source="source1" type="type1">
+      <wfs:Delete xmlns:f="http://opengeo.org/osm" typeName="f:planet_osm_point">
+        <fes:Filter>
+            <fes:Or>
+                <fes:PropertyIsEqualTo>
+                    <fes:PropertyName>addresses</fes:PropertyName>
+                    <fes:Literal>Adrees1</fes:Literal>
+                </fes:PropertyIsEqualTo>
+                <fes:Not>
+                    <fes:And>
+                        <fes:PropertyIsBetween>
+                            <fes:PropertyName>depth</fes:PropertyName>
+                            <fes:LowerBoundary><fes:Literal>100</fes:Literal></fes:LowerBoundary>
+                            <fes:UpperBoundary><fes:Literal>200</fes:Literal></fes:UpperBoundary>
+                        </fes:PropertyIsBetween>
+                        <fes:PropertyIsEqualTo>
+                            <fes:PropertyName>street</fes:PropertyName>
+                            <fes:Literal>Street1</fes:Literal>
+                        </fes:PropertyIsEqualTo>
+                    </fes:And>
+                </fes:Not>
+            </fes:Or>
+        </fes:Filter>
+      </wfs:Delete>
+    </content>
+    <georss:where>
+      <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+			<gml:exterior>
+			  <gml:LinearRing>
+                <gml:pos>5 5</gml:pos>
+                <gml:pos>7 7</gml:pos>
+                <gml:pos>11 11</gml:pos>
+                <gml:pos>13 13</gml:pos>
+                <gml:pos>5 5</gml:pos>
+              </gml:LinearRing>
+			</gml:exterior>
+			<gml:interior>
+			  <gml:LinearRing>
+                <gml:pos>2 2</gml:pos>
+                <gml:pos>4 4</gml:pos>
+                <gml:pos>6 8</gml:pos>
+                <gml:pos>10 12</gml:pos>
+                <gml:pos>2 2</gml:pos>
+              </gml:LinearRing>
+			</gml:interior>
+			<gml:interior>
+			  <gml:LinearRing>
+			    <gml:pos>18 20</gml:pos>
+			    <gml:pos>22 24</gml:pos>
+			    <gml:pos>26 28</gml:pos>
+			    <gml:pos>29 30</gml:pos>
+			    <gml:pos>18 20</gml:pos>
+			  </gml:LinearRing>
+			</gml:interior>
+      </gml:Polygon>
+    </georss:where>
+</entry>

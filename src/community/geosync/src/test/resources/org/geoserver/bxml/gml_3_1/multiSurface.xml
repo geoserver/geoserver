@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<gml:MultiSurface srsDimension="2" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.opengis.net/gml"
+  srsName="urn:ogc:def:crs:EPSG::900913">
+  <gml:surfaceMember>
+    <gml:Polygon>
+      <gml:exterior>
+        <gml:LinearRing>
+          <gml:posList>0 0 0 1 1 1 1 0 0 0</gml:posList>
+        </gml:LinearRing>
+      </gml:exterior>
+    </gml:Polygon>
+  </gml:surfaceMember>
+  <gml:surfaceMember>
+    <gml:Polygon>
+      <gml:exterior>
+        <gml:LinearRing>
+          <gml:posList>10 10 10 11 11 11 11 10 10 10</gml:posList>
+        </gml:LinearRing>
+      </gml:exterior>
+    </gml:Polygon>
+  </gml:surfaceMember>
+</gml:MultiSurface>

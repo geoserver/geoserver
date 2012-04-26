@@ -1,0 +1,16 @@
+<gss:SubscribeResponse
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:SubscriptionId>urn:uuid:5a933c0d-85ff-49cf-9c50-d9b4883e46a4</gss:SubscriptionId>
+   <gss:Url>http://www.acme.com/subscription/urn:uuid:5a933c0d-85ff-49cf-9c50-d9b4883e46a4</gss:Url>
+   <gss:ResponseComment xml:lang="en">Subscription created.</gss:ResponseComment>
+   <gss:ResponseComment xml:lang="fr">L'abonnement a été créé.</gss:ResponseComment>
+   <gss:ResponseComment xml:lang="el">Η συνδρομή δημιουργήθηκε.</gss:ResponseComment>
+</gss:SubscribeResponse>

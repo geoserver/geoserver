@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Delete xmlns="http://www.opengis.net/wfs"
+  xmlns:fes="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:f="http://opengeo.org/osm" typeName="f:planet_osm_point">
+  <fes:Filter>
+    <fes:FeatureId fes:fid="planet_osm_point.100"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_point.101"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_point.102"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_point.103"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_point.104"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_point.105"></fes:FeatureId>
+  </fes:Filter>
+</Delete>

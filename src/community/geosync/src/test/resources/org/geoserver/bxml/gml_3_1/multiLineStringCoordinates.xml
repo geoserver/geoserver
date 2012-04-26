@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<MultiLineString xmlns="http://www.opengis.net/gml"
+	srsName="urn:ogc:def:crs:EPSG::900913">
+	<lineStringMember>
+		<LineString>
+			<coordinates> 45.67, 88.56 55.56,89.44 56.34, 32.98</coordinates>
+		</LineString>
+	</lineStringMember>
+	<lineStringMember>
+		<LineString>
+			<coordinates> 5.5, 7.9 5.6, 9.8 3.2, 3.8</coordinates>
+		</LineString>
+	</lineStringMember>
+	<lineStringMember>
+		<LineString>
+			<coordinates> 2.35, 2.15 3.26, 3.12 1.2, 3.21</coordinates>
+		</LineString>
+	</lineStringMember>
+	<lineStringMember>
+		<LineString>
+			<coordinates> 3.1, 2.15 21.1, 52.5 12.25, 32.5</coordinates>
+		</LineString>
+	</lineStringMember>
+</MultiLineString>

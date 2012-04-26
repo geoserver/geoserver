@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fes:Filter xmlns:fes="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+	<fes:Overlaps>
+		<fes:PropertyName>geometry5</fes:PropertyName>
+		<gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+			<gml:exterior>
+				<gml:LinearRing>
+					<gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+				</gml:LinearRing>
+			</gml:exterior>
+		</gml:Polygon>
+	</fes:Overlaps>
+</fes:Filter>

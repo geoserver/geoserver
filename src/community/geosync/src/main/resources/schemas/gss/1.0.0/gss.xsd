@@ -1,0 +1,545 @@
+<?xml version="1.0"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/gss/1.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   elementFormDefault="qualified"
+   version="1.0.0">
+
+   <!-- ================================================================== -->
+   <!-- =   Includes and Imports                                         = -->
+   <!-- ================================================================== -->
+   <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
+        schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/ows/1.1"
+        schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/ogc"
+        schemaLocation="../../filter/1.1.0/filter.xsd"/>
+   <xsd:import namespace="http://www.w3.org/1999/xlink"
+         schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+
+   <xsd:attributeGroup name="BaseAttributes">
+      <xsd:attribute name="service" type="ows:ServiceType"
+                     use="required" fixed="GSS"/>
+      <xsd:attribute name="version" type="xsd:string"
+                     use="required" fixed="1.0.0"/>
+      <xsd:attribute name="handle"
+                     type="xsd:string" use="optional"/>
+   </xsd:attributeGroup>
+
+   <xsd:simpleType name="DateType">
+      <xsd:union memberTypes="xsd:date xsd:dateTime"/>
+   </xsd:simpleType>
+
+   <!-- ================================================================== -->
+   <!-- =   BASE REQUEST TYPE                                            = -->
+   <!-- ================================================================== -->
+   <xsd:complexType name="BaseRequestType" abstract="true">
+      <xsd:attributeGroup ref="gss:BaseAttributes"/>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   BASE RESPONSE TYPES                                          = -->
+   <!-- ================================================================== -->
+   <xsd:complexType name="SubscriptionResponseType">
+      <xsd:sequence>
+         <xsd:element name="SubscriptionId" type="xsd:anyURI"/>
+         <xsd:element name="Url" type="xsd:anyURI" minOccurs="0"/>
+         <xsd:element name="ResponseComment" type="ows:LanguageStringType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="gss:BaseAttributes"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="TopicResponseType">
+      <xsd:sequence>
+         <xsd:element name="TopicId" type="xsd:anyURI"/>
+         <xsd:element name="Url" type="xsd:anyURI" minOccurs="0"/>
+         <xsd:element name="ResponseComment" type="ows:LanguageStringType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="gss:BaseAttributes"/>
+   </xsd:complexType>
+
+   <xsd:complexType name="EntryResponseType">
+      <xsd:sequence>
+         <xsd:element name="EntryId" type="xsd:anyURI"/>
+         <xsd:element name="Url" type="xsd:anyURI" minOccurs="0"/>
+         <xsd:element name="ResponseComment" type="ows:LanguageStringType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="gss:BaseAttributes"/>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   TOPIC                                                        = -->
+   <!-- ================================================================== -->
+   <xsd:element name="Topic" type="gss:TopicType"/>
+   <xsd:complexType name="TopicType">
+      <xsd:sequence>
+         <xsd:element name="Feed" type="xsd:anyURI"/>
+         <xsd:element name="Description" type="ows:DescriptionType"/>
+         <xsd:element ref="fes:Filter" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   SUBSCRIPTION                                                 = -->
+   <!-- ================================================================== -->
+   <xsd:element name="Subscription" type="gss:SubscriptionType"/>
+   <xsd:complexType name="SubscriptionType">
+      <xsd:sequence>
+         <xsd:element name="TopicId" type="xsd:anyURI"/>
+         <xsd:element name="Delivery" type="gss:DeliveryMethodType"/>
+         <xsd:element name="Expiry"
+                      type="gss:DateType" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="status" type="gss:SubscriptionStatusType"
+                     use="optional" default="active"/>
+   </xsd:complexType>
+   <xsd:simpleType name="DeliveryMethodType">
+      <xsd:restriction base="xsd:string">
+         <xsd:pattern value="mailto:[^@]+@[^@]+\.[^@]+"/>
+         <xsd:pattern value="xmpp:[^@]+@[^@]+\.[^@]+"/>
+         <xsd:pattern value="sync:http://(.)*"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="SubscriptionStatusType">
+      <xsd:restriction base="xsd:string">
+         <xsd:pattern value="active"/>
+         <xsd:pattern value="paused"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+
+   <!-- ================================================================== -->
+   <!-- =   GET CAPABILITIES                                             = -->
+   <!-- ================================================================== -->
+   <xsd:element name="GSS_Capabilities"
+                type="gss:GSS_CapabilitiesType"/>
+   <xsd:complexType name="GSS_CapabilitiesType">
+      <xsd:complexContent>	
+         <xsd:extension base="ows:CapabilitiesBaseType">
+            <xsd:sequence>
+               <xsd:element name="WSDL" minOccurs="0">
+                  <xsd:complexType>
+                     <xsd:complexContent>
+                        <xsd:restriction base="xsd:anyType">
+                           <xsd:attributeGroup ref="xlink:simpleLink"/>
+                        </xsd:restriction>
+                     </xsd:complexContent>
+                  </xsd:complexType>
+               </xsd:element>
+               <xsd:any namespace="http://www.w3.org/2007/app"
+                        processContents="lax"/>
+               <xsd:any namespace="http://a9.com/-/spec/opensearch/1.1/"
+                        processContents="lax"/>
+               <xsd:element ref="gss:ConformanceDeclaration"/>
+               <xsd:element ref="fes:Filter_Capabilities" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="ConformanceDeclaration">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="ConformanceClass"
+                         minOccurs="26" maxOccurs="26">
+               <xsd:complexType>
+                  <xsd:simpleContent>
+                     <xsd:extension base="xsd:boolean">
+                        <xsd:attribute name="name"
+                                       type="gss:ConformanceClassName"/>
+                     </xsd:extension>
+                  </xsd:simpleContent>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:simpleType name="ConformanceClassName">
+      <xsd:restriction base="xsd:string">
+         <xsd:pattern value="Discovery_OGC_POX"/>
+         <xsd:pattern value="Discovery_OGC_KVP"/>
+         <xsd:pattern value="Discovery_SOAP"/>
+         <xsd:pattern value="Transaction_OGC_POX"/>
+         <xsd:pattern value="Transaction_REST"/>
+         <xsd:pattern value="Transaction_SOAP"/>
+         <xsd:pattern value="Query_OGC_POX"/>
+         <xsd:pattern value="Query_OGC_KVP"/>
+         <xsd:pattern value="Query_REST"/>
+         <xsd:pattern value="Query_SOAP"/>
+         <xsd:pattern value="ChangeManagement_OGC_POX"/>
+         <xsd:pattern value="ChangeManagement_OGC_KVP"/>
+         <xsd:pattern value="ChangeManagement_REST"/>
+         <xsd:pattern value="ChangeManagement_SOAP"/>
+         <xsd:pattern value="TopicManagement_OGC_POX"/>
+         <xsd:pattern value="TopicManagement_OGC_KVP"/>
+         <xsd:pattern value="TopicManagement_REST"/>
+         <xsd:pattern value="TopicManagement_SOAP"/>
+         <xsd:pattern value="ActiveNotification_OGC_POX"/>
+         <xsd:pattern value="ActiveNotification_OGC_KVP"/>
+         <xsd:pattern value="ActiveNotification_REST"/>
+         <xsd:pattern value="ActiveNotification_SOAP"/>
+         <xsd:pattern value="Synchronization_OGC_POX"/>
+         <xsd:pattern value="Synchronization_OGC_KVP"/>
+         <xsd:pattern value="Synchronization_REST"/>
+         <xsd:pattern value="Synchronization_SOAP"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+
+   <!-- ================================================================== -->
+   <!-- =   TOPIC OPERATIONS                                             = -->
+   <!-- ================================================================== -->
+   <!-- CreateTopic -->
+   <xsd:element name="CreateTopic">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element ref="gss:Topic" />
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="CreateTopicResponse" type="gss:TopicResponseType"/>
+
+   <!-- RemoveTopic -->
+   <xsd:element name="RemoveTopic">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:attribute name="topicId" type="xsd:anyURI" use="required"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="RemoveTopicResponse" type="gss:TopicResponseType"/>
+
+   <!-- ListTopic -->
+   <xsd:element name="ListTopics">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="TopicId" type="xsd:anyURI"
+                               minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="ListTopicsResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="Topic" minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:complexContent>
+                     <xsd:extension base="gss:TopicType">
+                        <xsd:attribute name="tid"
+                                       type="xsd:anyURI" use="required"/>
+                        <xsd:attribute name="owner"
+                                       type="xsd:string" use="required"/>
+                     </xsd:extension>
+                  </xsd:complexContent>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attributeGroup ref="gss:BaseAttributes"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <!-- ================================================================== -->
+   <!-- =   SUBSCRIPTION OPERATIONS                                      = -->
+   <!-- ================================================================== -->
+   <xsd:element name="Subscribe">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:SubscriptionType">
+               <xsd:attributeGroup ref="gss:BaseAttributes"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="SubscribeResponse" type="gss:SubscriptionResponseType"/>
+
+   <xsd:element name="ListSubscriptions">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="SubscriptionId" type="xsd:anyURI"
+                               minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="ListSubscriptionsResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="Subscription"
+                         minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:complexContent>
+                     <xsd:extension base="gss:SubscriptionType">
+                        <xsd:attribute name="sid" 
+                                       type="xsd:anyURI" use="required"/>
+                     </xsd:extension>
+                  </xsd:complexContent>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attributeGroup ref="gss:BaseAttributes"/>
+         <xsd:attribute name="owner" 
+                        type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="PauseSubscription">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="SubscriptionId" type="xsd:anyURI"/>
+                  <xsd:sequence minOccurs="0">
+                     <xsd:element name="Delivery"
+                                  type="gss:DeliveryMethodType" minOccurs="0"/>
+                     <xsd:element name="Resume" type="gss:DateType"/>
+                  </xsd:sequence>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="PauseSubscriptionResponse"
+                type="gss:SubscriptionResponseType"/>
+
+   <xsd:element name="ResumeSubscription">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="SubscriptionId" type="xsd:anyURI"/>
+                  <xsd:element name="Delivery"
+                               type="gss:DeliveryMethodType" minOccurs="0"/>
+                  <xsd:element name="Expiry"
+                               type="gss:DateType" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="ResumeSubscriptionResponse"
+                type="gss:SubscriptionResponseType"/>
+
+   <xsd:element name="CancelSubscription">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="SubscriptionId" type="xsd:anyURI"/>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="CancelSubscriptionResponse"
+                type="gss:SubscriptionResponseType"/>
+
+   <!-- ================================================================== -->
+   <!-- =   CHANGE MANAGEMENT OPERATIONS                                 = -->
+   <!-- ================================================================== -->
+   <xsd:element name="AcceptChange">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="EntryId" type="xsd:anyURI"/>
+                   <xsd:element name="Comment"
+                                type="ows:LanguageStringType"
+                                minOccurs="0" maxOccurs="unbounded"/>
+                   <xsd:element name="Revision" minOccurs="0">
+                      <xsd:complexType>
+                         <xsd:sequence>
+                            <xsd:any namespace="##other" processContents="lax"/>
+                         </xsd:sequence>
+                      </xsd:complexType>
+                   </xsd:element>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="AcceptChangeResponse" type="gss:EntryResponseType"/>
+
+   <xsd:element name="RejectChange">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="EntryId" type="xsd:anyURI"/>
+                   <xsd:element name="Comment"
+                                type="ows:LanguageStringType"
+                                minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="RejectChangeResponse" type="gss:EntryResponseType"/>
+
+   <xsd:element name="ReviewedChanges">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:choice maxOccurs="unbounded">
+                  <xsd:element ref="gss:AcceptChange"/>
+                  <xsd:element ref="gss:RejectChange"/>
+               </xsd:choice>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="ReviewedChangesResponse">
+      <xsd:complexType>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element ref="gss:AcceptChangeResponse"/>
+            <xsd:element ref="gss:RejectChangeResponse"/>
+            <xsd:element ref="ows:ExceptionReport"/>
+         </xsd:choice>
+      </xsd:complexType>
+   </xsd:element>
+
+   <!-- ================================================================== -->
+   <!-- =   FEED OPERATIONS                                              = -->
+   <!-- ================================================================== -->
+   <!-- Query -->
+   <xsd:element name="GetEntries">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="gss:BaseRequestType">
+               <xsd:sequence>
+                  <xsd:element name="SearchTerms" type="xsd:string"
+                               minOccurs="0" maxOccurs="unbounded"/>
+                  <xsd:element ref="fes:Filter" minOccurs="0"/>
+               </xsd:sequence>
+               <xsd:attribute name="feed" type="xsd:anyURI"/>
+               <xsd:attribute name="outputFormat" type="xsd:string"
+                              use="optional"
+                              default="application/atom+xml; type=entry"/>
+               <xsd:attribute name="startPosition" type="xsd:nonNegativeInteger"
+                              use="optional" default="1"/>
+               <xsd:attribute name="maxEntries" type="xsd:nonNegativeInteger"
+                              use="optional" default="25"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   <!-- Entry Identifier -->
+   <xsd:element name="EntryId"
+                type="gss:EntryIdType"
+                substitutionGroup="fes:_Id"/>
+   <xsd:complexType name="EntryIdType">
+      <xsd:complexContent>
+         <xsd:extension base="fes:AbstractIdType">
+            <xsd:attribute name="eid" type="xsd:anyURI" use="required"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+  <!-- Transaction -->
+   <xsd:element name="Transaction" type="gss:TransactionType"/>
+   <xsd:complexType name="TransactionType">
+      <xsd:complexContent>
+         <xsd:extension base="gss:BaseRequestType">
+            <xsd:sequence>
+               <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                  <xsd:element ref="gss:AbstractTransactionAction"/>
+               </xsd:sequence>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:element name="AbstractTransactionAction"
+                type="gss:AbstractTransactionActionType" abstract="true"/>
+   <xsd:complexType name="AbstractTransactionActionType" abstract="true">
+      <xsd:attribute name="handle" type="xsd:string"/>
+   </xsd:complexType>
+
+   <xsd:element name="Insert" type="gss:InsertType"
+                substitutionGroup="gss:AbstractTransactionAction"/>
+   <xsd:complexType name="InsertType">
+      <xsd:complexContent>
+         <xsd:extension base="gss:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:any namespace="##other" processContents="lax"/>
+            </xsd:sequence>
+            <xsd:attribute name="feed" type="xsd:string" use="required"/>
+            <xsd:attribute name="inputFormat" type="xsd:string"
+                           default="application/atom+xml; type=entry"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:element name="Update" type="gss:UpdateType"
+                substitutionGroup="gss:AbstractTransactionAction"/>
+   <xsd:complexType name="UpdateType">
+      <xsd:complexContent>
+         <xsd:extension base="gss:AbstractTransactionActionType">
+            <xsd:sequence>
+               <xsd:any namespace="##other" processContents="lax"/>
+            </xsd:sequence>
+            <xsd:attribute name="feed" type="xsd:string" use="required"/>
+            <xsd:attribute name="entryId" type="xsd:anyURI" use="required"/>
+            <xsd:attribute name="inputFormat" type="xsd:string"
+                           default="application/atom+xml; type=entry"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:element name="Delete" type="gss:DeleteType"
+                substitutionGroup="gss:AbstractTransactionAction"/>
+   <xsd:complexType name="DeleteType">
+      <xsd:complexContent>
+         <xsd:extension base="gss:AbstractTransactionActionType">
+            <xsd:attribute name="feed" type="xsd:string" use="required"/>
+            <xsd:attribute name="entryId" type="xsd:anyURI" use="required"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:element name="TransactionResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="EntryId" minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:simpleContent>
+                     <xsd:extension base="xsd:anyURI">
+                        <xsd:attribute name="action"
+                                       type="gss:ActionType" use="required"/>
+                        <xsd:attribute name="featureRef"
+                                       type="xsd:anyURI" use="optional"/>
+                     </xsd:extension>
+                  </xsd:simpleContent>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attributeGroup ref="gss:BaseAttributes"/>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:simpleType name="ActionType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="Insert"/>
+         <xsd:enumeration value="Update"/>
+         <xsd:enumeration value="Delete"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+
+</xsd:schema>

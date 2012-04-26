@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="LongTaskMonitor" class="org.geoserver.task.LongTaskMonitor">
+  </bean>
+  <bean id="LongTasksHomePagePanelProvider" class="org.geoserver.task.web.LongTasksHomePagePanelProvider">
+  </bean>
+
+  <bean id="GEOGIT" class="org.geoserver.geogit.GEOGIT">
+    <constructor-arg ref="catalog" />
+    <constructor-arg ref="dataDirectory" />
+  </bean>
+
+  <bean id="GEOGITPlugin" class="org.geoserver.geogit.GEOGITPlugin"/>
+  
+  <!-- WEB UI -->
+  <bean id="versionedTypesMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="versionedTypes"/>
+    <property name="titleKey" value="VersionedLayersPage.title"/>
+    <property name="descriptionKey" value="VersionedLayersPage.description"/>
+    <property name="componentClass" value="org.geoserver.geogit.web.VersionedLayersPage"/>
+    <property name="category" ref="dataCategory"/>
+    <property name="icon" value="shape_square_feed.png"/>
+    <property name="order" value="50"/>
+  </bean>
+  
+  
+  <bean id="timelineRestConfigMapping" class="org.geoserver.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key>
+            <value>/versioning/timeline.xml</value>
+          </key>
+          <value>versioningTimeline</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  <bean id="versioningTimeline" class="org.geoserver.geogit.web.TimeLineRestlet"/>
+  
+</beans>

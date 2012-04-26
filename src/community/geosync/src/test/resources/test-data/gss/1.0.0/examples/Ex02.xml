@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<gss:Subscription
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:TopicId>urn:uuid:13e92f40-d45f-4b19-8866-91b271f165f8</gss:TopicId>
+   <gss:Delivery>mailto:pvretano@cubewerx.com</gss:Delivery>
+</gss:Subscription>

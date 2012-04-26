@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<gss:AcceptChange
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.org/wfs"
+   xmlns:tor="http://www.toronto.ca/planning"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:EntryId>urn:uuid:8032ea88-069c-4fbc-8dfb-1a9a586df139</gss:EntryId>
+   <gss:Comment>Change was accepted with a revision to the elevation.  Latest survey reports the elevation at the location is 2437m.</gss:Comment>
+   <gss:Revision>
+      <wfs:Transaction>
+         <wfs:Insert>            
+            <tor:Building>
+               <tor:bid>urn:uuid:551b3fb4-f3cdf530588e</tor:bid>
+               <tor:name>Skydome</tor:name>
+               <tor:revisionDate>2010-10-24</tor:revisionDate>
+               <tor:height uom="m">49</tor:height>
+               <tor:footprint>
+                  <gml:Polygon>
+                     <gml:exterior>
+                        <gml:LinearRing>
+                           <gml:posList>43.642178026869 -79.390994310379 43.642721509483 -79.388269186020 43.640671777928 -79.387400150299 43.640632956580 -79.387550354004 43.640438849463 -79.387722015381 43.640306856265 -79.387872219086 43.640198155766 -79.388022422790 43.640143805444 -79.388269186020 43.640050633347 -79.388440847397 43.639972989823 -79.388676881790 43.639957461106 -79.389030933380 43.639941932385 -79.389245510102 43.639988518535 -79.389653205872 43.640011811597 -79.389739036560 43.640089455071 -79.389835596084 43.640058397694 -79.390189647674 43.642170262796 -79.390962123870 43.642178026869 -79.390994310379</gml:posList>
+                        </gml:LinearRing>
+                     </gml:exterior>
+                  </gml:Polygon>
+               </tor:footprint>
+            </tor:Building>
+         </wfs:Insert>
+      </wfs:Transaction>
+   </gss:Revision>
+</gss:AcceptChange>

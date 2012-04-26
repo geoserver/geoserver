@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Point xmlns="http://www.opengis.net/gml" srsName="urn:ogc:def:crs:EPSG::900913">
+ <coord>
+  <X>1</X>
+  <Y>2</Y>
+  <Z>3</Z>
+ </coord>
+</Point>

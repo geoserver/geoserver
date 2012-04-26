@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<gss:Transaction
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.org/wfs"
+   xmlns:tor="http://www.toronto.ca/planning"
+   xmlns:atom="http://www.w3.org/2005/Atom"
+   xmlns:georss="http://www.georss.org/georss"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+             http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:Insert feed="CHANGEFEED">
+      <atom:entry>
+         <atom:title>Insert of feature urn:uuid:551b3fb4-f3cdf530588e</atom:title>
+         <atom:summary>
+            The proposed change add the footprint of the newly
+            built Skydome in Toronto, Ontario.
+         </atom:summary>
+         <atom:id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</atom:id>
+         <atom:updated>2008-12-13T18:30:02Z</atom:updated>
+         <atom:author>
+            <atom:name>John Doe</atom:name>
+            <atom:email>jdoe@toronto.ca</atom:email>
+         </atom:author>
+         <atom:category term="insert"
+                        scheme="http://www.opengis.org/geosync/actions"/>
+         <atom:link rel="targetServer"
+                    href="http://www.toronto.com/landregistry/wfs.cgi"/>
+         <atom:content type="application/gml+xml">
+            <wfs:Transaction>
+               <wfs:Insert>            
+                  <tor:Building>
+                     <tor:bid>urn:uuid:551b3fb4-f3cdf530588e</tor:bid>
+                     <tor:name>Skydome</tor:name>
+                     <tor:revisionDate>2010-10-24</tor:revisionDate>
+                     <tor:height uom="m">45</tor:height>
+                     <tor:footprint>
+                        <gml:Polygon>
+                           <gml:exterior>
+                              <gml:LinearRing>
+                                 <gml:posList>43.642178026869 -79.390994310379 43.642721509483 -79.388269186020 43.640671777928 -79.387400150299 43.640632956580 -79.387550354004 43.640438849463 -79.387722015381 43.640306856265 -79.387872219086 43.640198155766 -79.388022422790 43.640143805444 -79.388269186020 43.640050633347 -79.388440847397 43.639972989823 -79.388676881790 43.639957461106 -79.389030933380 43.639941932385 -79.389245510102 43.639988518535 -79.389653205872 43.640011811597 -79.389739036560 43.640089455071 -79.389835596084 43.640058397694 -79.390189647674 43.642170262796 -79.390962123870 43.642178026869 -79.390994310379</gml:posList>
+                              </gml:LinearRing>
+                           </gml:exterior>
+                        </gml:Polygon>
+                     </tor:footprint>
+                  </tor:Building>
+               </wfs:Insert>
+            </wfs:Transaction>
+         </atom:content>
+         <georss:where>
+            <gml:Envelope>
+               <gml:lowerCorner>-85.3486 10.1183</gml:lowerCorner>
+               <gml:upperCorner>-10.8013 80.4831</gml:upperCorner>
+            </gml:Envelope>
+         </georss:where>
+      </atom:entry>
+   </gss:Insert>
+</gss:Transaction>
+

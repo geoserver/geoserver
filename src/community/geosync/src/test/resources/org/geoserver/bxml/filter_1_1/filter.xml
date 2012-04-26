@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fes:Filter xmlns:fes="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+  <fes:Or>
+    <fes:PropertyIsEqualTo>
+      <fes:PropertyName>addresses</fes:PropertyName>
+      <fes:Literal>Adrees1</fes:Literal>
+    </fes:PropertyIsEqualTo>
+    <fes:Not>
+      <fes:And>
+        <fes:PropertyIsEqualTo>
+          <fes:PropertyName>street</fes:PropertyName>
+          <fes:Literal>Street1</fes:Literal>
+        </fes:PropertyIsEqualTo>
+        <fes:PropertyIsNotEqualTo>
+          <fes:PropertyName>name</fes:PropertyName>
+          <fes:Literal>Name1</fes:Literal>
+        </fes:PropertyIsNotEqualTo>
+        <fes:PropertyIsLessThan>
+          <fes:PropertyName>age</fes:PropertyName>
+          <fes:Literal>26</fes:Literal>
+        </fes:PropertyIsLessThan>
+        <fes:PropertyIsGreaterThan>
+          <fes:PropertyName>age2</fes:PropertyName>
+          <fes:Literal>30</fes:Literal>
+        </fes:PropertyIsGreaterThan>
+        <fes:PropertyIsLessThanOrEqualTo>
+          <fes:PropertyName>age4</fes:PropertyName>
+          <fes:Literal>37</fes:Literal>
+        </fes:PropertyIsLessThanOrEqualTo>
+        <fes:PropertyIsGreaterThanOrEqualTo>
+          <fes:PropertyName>age5</fes:PropertyName>
+          <fes:Literal>45</fes:Literal>
+        </fes:PropertyIsGreaterThanOrEqualTo>
+        <fes:PropertyIsLike>
+          <fes:PropertyName>name7</fes:PropertyName>
+          <fes:Literal>albert</fes:Literal>
+        </fes:PropertyIsLike>
+        <fes:PropertyIsNull>
+          <fes:PropertyName>propertyNull</fes:PropertyName>
+        </fes:PropertyIsNull>
+        <fes:PropertyIsBetween>
+          <fes:PropertyName>depth</fes:PropertyName>
+          <fes:LowerBoundary>
+            <fes:Literal>100</fes:Literal>
+          </fes:LowerBoundary>
+          <fes:UpperBoundary>
+            <fes:Literal>200</fes:Literal>
+          </fes:UpperBoundary>
+        </fes:PropertyIsBetween>
+        <fes:PropertyIsEqualTo>
+          <fes:PropertyName>addFilter</fes:PropertyName>
+          <fes:Add>
+            <fes:PropertyName>property1</fes:PropertyName>
+            <fes:Literal>100</fes:Literal>
+          </fes:Add>
+        </fes:PropertyIsEqualTo>
+        <fes:PropertyIsEqualTo>
+          <fes:PropertyName>subFilter</fes:PropertyName>
+          <fes:Sub>
+            <fes:PropertyName>property2</fes:PropertyName>
+            <fes:Literal>159</fes:Literal>
+          </fes:Sub>
+        </fes:PropertyIsEqualTo>
+        <fes:PropertyIsEqualTo>
+          <fes:PropertyName>mulFilter</fes:PropertyName>
+          <fes:Mul>
+            <fes:PropertyName>property3</fes:PropertyName>
+            <fes:Literal>543</fes:Literal>
+          </fes:Mul>
+        </fes:PropertyIsEqualTo>
+        <fes:PropertyIsEqualTo>
+          <fes:PropertyName>divFilter</fes:PropertyName>
+          <fes:Div>
+            <fes:PropertyName>property4</fes:PropertyName>
+            <fes:Literal>45</fes:Literal>
+          </fes:Div>
+        </fes:PropertyIsEqualTo>
+		<fes:PropertyIsEqualTo>
+            <fes:PropertyName>property4</fes:PropertyName>
+			<fes:Function name="sin">
+			     <fes:PropertyName>dispersion</fes:PropertyName>
+			</fes:Function>
+		</fes:PropertyIsEqualTo>
+        
+        <fes:Equals>
+          <fes:PropertyName>geometry</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+            <gml:interior>
+              <gml:LinearRing>
+                <gml:posList>15 16 17 18 19 20 21 21 15 16</gml:posList>
+              </gml:LinearRing>
+            </gml:interior>
+            <gml:interior>
+              <gml:LinearRing>
+                <gml:pos> 5 5</gml:pos>
+                <gml:pos>7 7</gml:pos>
+                <gml:pos>11 11</gml:pos>
+                <gml:pos>13 13</gml:pos>
+                <gml:pos>5 5</gml:pos>
+              </gml:LinearRing>
+            </gml:interior>
+          </gml:Polygon>
+        </fes:Equals>
+        <fes:Disjoint>
+          <fes:PropertyName>geometry2</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Disjoint>
+        <fes:Touches>
+          <fes:PropertyName>geometry3</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Touches>
+        <fes:Within>
+          <fes:PropertyName>geometry4</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Within>
+        <fes:Overlaps>
+          <fes:PropertyName>geometry5</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Overlaps>
+        <fes:Crosses>
+          <fes:PropertyName>geometry6</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Crosses>
+        <fes:Intersects>
+          <fes:PropertyName>geometry7</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Intersects>
+        <fes:Contains>
+          <fes:PropertyName>geometry8</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Contains>
+        <fes:DWithin>
+          <fes:PropertyName>geometry9</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+          <fes:Distance units="deg">101.25</fes:Distance>
+        </fes:DWithin>
+        <fes:Beyond>
+          <fes:PropertyName>geometry10</fes:PropertyName>
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>10 10 20 20 30 30 40 40 10 10</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+          <fes:Distance units="deg">142.23</fes:Distance>
+        </fes:Beyond>
+        <fes:BBOX>
+          <fes:PropertyName>geometry11</fes:PropertyName>
+          <gml:Envelope srsName="urn:ogc:def:crs:EPSG::900913">
+            <gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
+            <gml:upperCorner>35.5472 42.8143</gml:upperCorner>
+          </gml:Envelope>
+        </fes:BBOX>
+      </fes:And>
+    </fes:Not>
+  </fes:Or>
+</fes:Filter>

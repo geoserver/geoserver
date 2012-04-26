@@ -1,0 +1,29 @@
+<Polygon xmlns="http://www.opengis.net/gml" srsName="urn:ogc:def:crs:EPSG::900913">
+	<exterior>
+		<LinearRing>
+			<pos>5 5</pos>
+			<pos>7 7</pos>
+			<pos>11 11</pos>
+			<pos>13 13</pos>
+			<pos>5 5</pos>
+		</LinearRing>
+	</exterior>
+	<interior>
+		<LinearRing>
+			<pos>2 2</pos>
+			<pos>4 4</pos>
+			<pos>6 8</pos>
+			<pos>10 12</pos>
+			<pos>2 2</pos>
+		</LinearRing>
+	</interior>
+	<interior>
+		<LinearRing>
+			<pos>18 20</pos>
+			<pos>22 24</pos>
+			<pos>26 28</pos>
+			<pos>29 30</pos>
+			<pos>18 20</pos>
+		</LinearRing>
+	</interior>
+</Polygon>

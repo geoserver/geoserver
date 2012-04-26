@@ -1,0 +1,45 @@
+.status_bar {
+	display: block;
+	width: 100px;
+	height: 10px;
+	margin: 4px;
+	background-color: #e8e6e6;
+	border: 1px solid #555;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.progressPercent {
+	position: relative;
+	display: block;
+	z-index: 3;
+	background-color: green;
+	left: 0px;
+	height: 10px;
+	width: 50px;
+}
+
+.progressExcess {
+	position: relative;
+	display: block;
+	z-index: 4;
+	background-color: red;
+	left: 45px;
+	top: -10px;
+	height: 10px;
+	width: 50px;
+}
+.progressLabel {
+	position: relative;
+	z-index: 5;
+	font-size: 11px;
+	font-weight: bold;
+	color: buttontext;
+	text-align: justify;
+	vertical-align: middle;
+	top: -23px;
+	width: 100px;
+	height: 10px;
+	left: 30px;
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<LineString xmlns="http://www.opengis.net/gml" srsName="urn:ogc:def:crs:EPSG::900913">
+    <coordinates decimal="," cs=";" ts=" "> 45,67; 88,56 55,56;89,44 56,34; 32,98</coordinates>
+</LineString>

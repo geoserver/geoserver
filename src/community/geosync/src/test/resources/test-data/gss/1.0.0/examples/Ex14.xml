@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<gss:GetEntries
+   service="GSS"
+   version="1.0.0"
+   feed="CHANGEFEED"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd
+                       http://www.opengis.net/ogc 
+                       http://www.pvretano.com/schemas/filter/1.1.0/filter.xsd">
+   <fes:Filter>
+      <gss:EntryId eid="urn:uuid:c64563bc-1c9a-4ffd-a81e-9ee991d8ce40"/>
+   </fes:Filter>
+</gss:GetEntries>

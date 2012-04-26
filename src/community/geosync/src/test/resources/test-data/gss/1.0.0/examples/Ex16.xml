@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<gss:GetEntries
+   service="GSS"
+   version="1.0.0"
+   feed="CHANGEFEED"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd
+                       http://www.opengis.net/ogc 
+                       http://www.pvretano.com/schemas/filter/1.1.0/filter.xsd">
+   <fes:Filter>
+      <fes:PropertyIsGreaterThan>
+         <fes:PropertyName>atom:entry/atom:updated</fes:PropertyName>
+         <fes:Literal>2010-10-13T02:10:00Z</fes:Literal>
+      </fes:PropertyIsGreaterThan>
+   </fes:Filter>
+</gss:GetEntries>

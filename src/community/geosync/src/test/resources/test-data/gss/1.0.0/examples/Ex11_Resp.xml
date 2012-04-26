@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<gss:CancelSubscriptionResponse
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:SubscriptionId>urn:uuid:5a933c0d-85ff-49cf-9c50-d9b4883e46a4</gss:SubscriptionId>
+   <gss:ResponseComment xml:lang="en">The subscription was cancelled.</gss:ResponseComment>
+   <gss:ResponseComment xml:lang="fr">L'abonnement a été décommandé.</gss:ResponseComment>
+   <gss:ResponseComment xml:lang="el">Η συνδρομή ακυρώθηκε.</gss:ResponseComment>
+</gss:CancelSubscriptionResponse>

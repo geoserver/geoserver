@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+  xmlns:georss="http://www.georss.org/georss"
+  xmlns:gss="http://www.opengis.net/gss/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:fes="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml"
+  startPosition="1" maxEntries="50">
+  <entry>
+    <title>Delte of Feature planet_osm_point.100</title>
+    <summary>Commit automatically accepted as it comes from a WFS transaction</summary>
+    <id>453e5a7ba8917ed3550e088d69ff1ac0aa6d1a4d</id>
+  </entry>
+</feed>

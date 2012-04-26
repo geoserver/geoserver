@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Update xmlns="http://www.opengis.net/wfs" xmlns:fes="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:f="http://opengeo.org/osm" typeName="f:planet_osm_polygon">
+  <Property>
+    <Name>f:building</Name>
+    <Value>false</Value>
+  </Property>
+  <Property>
+    <Name>f:value</Name>
+    <Value>25</Value>
+  </Property>
+  <Property>
+    <Name>f:way</Name>
+    <Value>
+      <gml:Polygon gml:srsName="urn:ogc:def:crs:EPSG::900913">
+        <gml:exterior>
+          <gml:LinearRing>
+            <gml:posList gml:srsDimension="2" gml:count="5">-8421981.58 5074017.82 -8421975.14 5074027.33
+              -8421933.13 5073998.82 -8421939.57 5073990.31 -8421981.58 5074017.82</gml:posList>
+          </gml:LinearRing>
+        </gml:exterior>
+      </gml:Polygon>
+    </Value>
+  </Property>
+  <fes:Filter>
+    <fes:FeatureId fes:fid="planet_osm_polygon.100"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_polygon.101"></fes:FeatureId>
+    <fes:FeatureId fes:fid="planet_osm_polygon.102"></fes:FeatureId>
+  </fes:Filter>
+</Update>

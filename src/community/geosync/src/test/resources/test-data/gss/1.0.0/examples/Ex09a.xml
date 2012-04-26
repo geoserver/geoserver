@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<!-- THIS SHOULD NOT VALIDATE -->
+<gss:PauseSubscription
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:SubscriptionId>urn:uuid:5a933c0d-85ff-49cf-9c50-d9b4883e46a4</gss:SubscriptionId>
+   <gss:Delivery>pvretano@techie.com</gss:Delivery>
+</gss:PauseSubscription>

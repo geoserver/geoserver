@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<MultiPolygon xmlns="http://www.opengis.net/gml"
+    srsName="urn:ogc:def:crs:EPSG::900913">
+    <polygonMember>
+        <Polygon>
+            <exterior>
+                <LinearRing>
+                    <pos>0 0</pos>
+                    <pos>1 0</pos>
+                    <pos>1 1</pos>
+                    <pos>0 1</pos>
+                    <pos>0 0</pos>
+                </LinearRing>
+            </exterior>
+        </Polygon>
+    </polygonMember>
+    <polygonMember>
+        <Polygon>
+            <exterior>
+                <LinearRing>
+                    <pos>2 3</pos>
+                    <pos>9 4</pos>
+                    <pos>3 5</pos>
+                    <pos>2 1</pos>
+                    <pos>2 3</pos>
+                </LinearRing>
+            </exterior>
+        </Polygon>
+    </polygonMember>
+    <polygonMember>
+        <Polygon>
+            <exterior>
+                <LinearRing>
+                    <pos>1 3</pos>
+                    <pos>2 2</pos>
+                    <pos>4 4</pos>
+                    <pos>5 7</pos>
+                    <pos>1 3</pos>
+                </LinearRing>
+            </exterior>
+        </Polygon>
+    </polygonMember>
+    
+</MultiPolygon>

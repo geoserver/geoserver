@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss" xmlns:gss="http://www.opengis.net/gss/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:fes="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
+	<title>Delte of Feature planet_osm_point.100</title>
+	<summary>Commit automatically accepted as it comes from a WFS transaction</summary>
+	<id>453e5a7ba8917ed3550e088d69ff1ac0aa6d1a4d</id>
+	<updated>2012-05-28T18:27:15.466Z</updated>
+	<author>
+	  <name>msanchez</name>
+	  <email>msanchez@example.com</email>
+	  <uri>www.msanchez.org</uri>
+	</author>
+	<author>
+	  <name>pmolina</name>
+	  <email></email>
+	  <uri>www.pmolina.org</uri>
+	</author>
+	<contributor>
+	  <name>contributor1</name>
+	  <email>contributor1@test.com</email>
+	</contributor>
+	<category term="categoryTerm1" scheme="categoryScheme1"/>
+	<category term="categoryTerm2"/>
+	<category scheme="categoryScheme3"/>
+	<link title="Entry Title 1" type="text/html" hreflang="en" href="http://entryexample.org/"/>
+	<link title="Entry Title 3" rel="alternate" type="text/html" hreflang="es" href="http://entryexample2.org/"/>
+	<published>2010-08-20T21:48:06.466Z</published>
+	<rights>This are the entry rights.</rights>
+	<source>Entry source.</source>
+</entry>

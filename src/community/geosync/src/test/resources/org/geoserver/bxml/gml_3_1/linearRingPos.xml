@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<LinearRing xmlns="http://www.opengis.net/gml" srsName="urn:ogc:def:crs:EPSG::900913">
+    <pos>5 7</pos>
+    <pos>9 10</pos>
+    <pos>11 15</pos>
+    <pos>13 17</pos>
+    <pos>5 7</pos>
+</LinearRing>

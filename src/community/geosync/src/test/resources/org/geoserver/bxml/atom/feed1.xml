@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+  xmlns:georss="http://www.georss.org/georss"
+  xmlns:gss="http://www.opengis.net/gss/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:fes="http://www.opengis.net/ogc"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml"
+  startPosition="1" maxEntries="50">
+  <id>01cbd610bbf9e37714980377ffc6600dc3fef24e</id>
+  <updated>2011-05-31T21:48:06.466Z</updated>
+  <title>This is a feed title.</title>
+  <subtitle>This is a feed subtitle.</subtitle>
+  <author>
+    <name>mperez</name>
+    <email>mperez@host.com</email>
+    <uri></uri>
+  </author>
+  <contributor>
+    <name>fperez</name>
+    <email>fperez@host.com</email>
+    <uri></uri>
+  </contributor>
+  <category term="term1" scheme="scheme1"/>
+  <category term="term2" scheme="scheme2"/>
+  <generator uri="generatoruri.org" version="v1.3">Generator Value 1</generator>
+  <link title="title1" type="text/html" hreflang="en" href="http://example.org/"/>
+  <link title="title2" rel="alternate" type="text/html" hreflang="es" href="http://example2.org/"/>
+  <entry>
+    <title>Delte of Feature planet_osm_point.100</title>
+    <summary>Commit automatically accepted as it comes from a WFS transaction</summary>
+    <id>453e5a7ba8917ed3550e088d69ff1ac0aa6d1a4d</id>
+  </entry>
+</feed>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:fes="http://www.opengis.net/ogc" xmlns:georss="http://www.georss.org/georss"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:gss="http://www.opengis.net/gss/1.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:xlink="http://www.w3.org/1999/xlink" maxEntries="25">
+  <id>c23091984e5c132754caa3a3d3d3d2329b0041dd</id>
+  <updated>2011-07-14T19:58:15.653Z</updated>
+  <entry>
+    <title>Insert of Feature Buildings.1107531701010</title>
+    <summary>Initial import of FeatureType http://www.opengis.net/cite:Buildings</summary>
+    <id>ff5d595da8559c1d67efd11646ae882d26e3c202</id>
+    <updated>2011-07-14T19:58:15.483Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>admin</name>
+    </contributor>
+    <content>
+      <wfs:Insert xmlns:f="http://www.opengis.net/cite">
+        <f:Buildings gml:id="Buildings.1107531701010">
+          <f:the_geom>
+            <gml:MultiSurface>
+              <gml:surfaceMember>
+                <gml:Polygon>
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList gml:count="5" gml:srsDimension="2" gml:srsName="urn:x-ogc:def:crs:EPSG:4326">8.0E-4 5.0E-4 8.0E-4
+                        7.0E-4 0.0012 7.0E-4 0.0012 5.0E-4 8.0E-4 5.0E-4</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:Polygon>
+              </gml:surfaceMember>
+            </gml:MultiSurface>
+          </f:the_geom>
+          <f:FID>113</f:FID>
+          <f:ADDRESS>123 Main Street</f:ADDRESS>
+        </f:Buildings>
+      </wfs:Insert>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:lowerCorner>8.0E-4 8.0E-4</gml:lowerCorner>
+        <gml:upperCorner>0.0012 0.0012</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+  <entry>
+    <title>Delte of Feature Buildings.1107531701010</title>
+    <summary>Deleted building</summary>
+    <id>ff5d595da8559c1d67efd11646ae882d26e3c202</id>
+    <updated>2011-07-14T19:58:15.653Z</updated>
+    <author>
+      <name>admin</name>
+    </author>
+    <contributor>
+      <name>geoserver</name>
+    </contributor>
+    <content>
+      <wfs:Delete xmlns:f="http://www.opengis.net/cite" typeName="f:Buildings">
+        <fes:Filter>
+          <fes:FeatureId fid="Buildings.1107531701010" />
+        </fes:Filter>
+      </wfs:Delete>
+    </content>
+    <georss:where>
+      <gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:lowerCorner>8.0E-4 8.0E-4</gml:lowerCorner>
+        <gml:upperCorner>0.0012 0.0012</gml:upperCorner>
+      </gml:Envelope>
+    </georss:where>
+  </entry>
+</feed>

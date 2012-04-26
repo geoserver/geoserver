@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<gss:RemoveTopic
+   service="GSS"
+   version="1.0.0"
+   topicId="urn:uuid:57aeeeac-8111-4cfb-8bcf-2673ab9674d0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd"/>

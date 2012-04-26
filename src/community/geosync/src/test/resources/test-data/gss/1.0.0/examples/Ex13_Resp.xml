@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<gss:RejectChangeResponse
+   service="GSS"
+   version="1.0.0"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+                       http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd">
+   <gss:EntryId>urn:uuid:8032ea88-069c-4fbc-8dfb-1a9a586df139</gss:EntryId>
+</gss:RejectChangeResponse>

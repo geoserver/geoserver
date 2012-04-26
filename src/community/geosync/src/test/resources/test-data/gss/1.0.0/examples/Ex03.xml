@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GSS_Capabilities
+   xmlns="http://www.opengis.net/gss/1.0"
+   xmlns:os="http://a9.com/-/spec/opensearch/1.1/"
+   xmlns:gss="http://www.opengis.net/gss/1.0"
+   xmlns:ows="http://www.opengis.net/ows/1.1"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:fes="http://www.opengis.net/ogc"
+   xmlns:app="http://www.w3.org/2007/app"
+   xmlns:atom="http://www.w3.org/2005/Atom"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gss/1.0
+             http://www.pvretano.com/schemas/gss/1.0.0/gss.xsd
+             http://www.w3.org/1999/xlink
+             http://www.pvretano.com/schemas/xlink/1.0.0/xlinks.xsd
+             http://www.opengis.net/ows/1.1
+             http://www.pvretano.com/schemas/ows/1.1.0/owsAll.xsd
+             http://www.opengis.net/ogc
+             http://www.pvretano.com/schemas/filter/1.1.0/filter.xsd"
+   version="1.0.0">
+   <ows:ServiceIdentification>
+      <ows:Title>GeoSynchronization Service</ows:Title>
+      <ows:Abstract>GeoSynchronization is a method by which geospatial data
+within a data store is kept current, and by which two or
+more geospatial data stores can be kept "in-sync" with
+each other, using existing OGC interfaces, and standards-based
+subscription/notification models (RSS/ATOM).
+The GeoSynchronization service interface uses the Atom Publishing
+Protocol and Publish/Subscribe interface to provide functionality
+that:
+
+   -- advertises changes made to a geospatial database creates
+         and edits GeoRSS feeds in support of data currency and
+               replication, using the Atom Publishing Protocol
+
+   -- alerts subscribers to the service of proposed changes,
+         resolutions to those changes, and replication transactions
+               available
+
+   -- harvests those changes using the OpenSearch protocol
+
+The data currency and replication capability of the GeoSynchronization
+Service is accomplished by the use of feeds, managed by the Service.
+Feeds are published by one data source, (the Publisher) and subscribed
+to by another data source (the Subscriber).  The Publisher adds an entry
+in its feed for any change made to its database.  The Subscriber
+receives alerts when new transactions have occurred, retrieves their
+contents, and applies them to its database.
+
+The GeoSynchronization service uses the draft OpenSearch protocol to
+provide discovery and query of its feeds.</ows:Abstract>
+      <ows:Keywords>
+         <ows:Keyword>geo</ows:Keyword>
+         <ows:Keyword>synchronization</ows:Keyword>
+         <ows:Keyword>ATOM</ows:Keyword>
+         <ows:Keyword>REST</ows:Keyword>
+         <ows:Keyword>WFS</ows:Keyword>
+         <ows:Keyword>GSS</ows:Keyword>
+         <ows:Keyword>feed</ows:Keyword>
+         <ows:Keyword>entry</ows:Keyword>
+         <ows:Keyword>GeoRSS</ows:Keyword>
+      </ows:Keywords>
+      <ows:ServiceType>GSS</ows:ServiceType>
+      <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+   </ows:ServiceIdentification>
+   <ows:ServiceProvider>
+      <ows:ProviderName>Acme Inc.</ows:ProviderName>
+      <ows:ProviderSite xlink:href="http://www.acme.com"/>
+      <ows:ServiceContact>
+         <ows:IndividualName>Willey E. Coyote</ows:IndividualName>
+         <ows:PositionName>Senior Developer</ows:PositionName>
+         <ows:ContactInfo>
+            <ows:Phone>
+               <ows:Voice>(647)700-7701</ows:Voice>
+               <ows:Facsimile>(647)700-7702</ows:Facsimile>
+            </ows:Phone>
+            <ows:Address>
+               <ows:DeliveryPoint>123 Main St.</ows:DeliveryPoint>
+               <ows:City>Certain Endroit</ows:City>
+               <ows:AdministrativeArea>Quebec</ows:AdministrativeArea>
+               <ows:PostalCode>J8Y 6N5</ows:PostalCode>
+               <ows:Country>Canada</ows:Country>
+               <ows:ElectronicMailAddress>wecoyote@acme.com</ows:ElectronicMailAddress>
+            </ows:Address>
+            <ows:OnlineResource xlink:href="http://www.acme.com"/>
+         </ows:ContactInfo>
+      </ows:ServiceContact>
+   </ows:ServiceProvider>
+   <ows:OperationsMetadata>
+      <ows:Operation name="GetCapabilities">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+         <ows:Parameter name="AcceptVersions">
+            <ows:AllowedValues>
+               <ows:Value>1.0.0</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="AcceptFormats">
+            <ows:AllowedValues>
+               <ows:Value>text/xml</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+         <ows:Parameter name="Sections">
+            <ows:AllowedValues>
+               <ows:Value>ServiceIdentification</ows:Value>
+               <ows:Value>ServiceProvider</ows:Value>
+               <ows:Value>OperationsMetadata</ows:Value>
+               <ows:Value>Service</ows:Value>
+               <ows:Value>SupportsGMLObjectTypeList</ows:Value>
+               <ows:Value>Filter_Capabilities</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+      </ows:Operation>
+      <ows:Operation name="Transaction">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="GetEntries">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+         <ows:Parameter name="outputFormat">
+            <ows:AllowedValues>
+               <ows:Value>application/atom+xml</ows:Value>
+            </ows:AllowedValues>
+         </ows:Parameter>
+      </ows:Operation>
+      <ows:Operation name="AcceptChange">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="RejectChange">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="CreateTopic">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="RemoveTopic">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="ListTopics">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="Subscribe">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="ListSubscriptions">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="PauseSubscription">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="ResumeSubscription">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Operation name="CancelSubscription">
+         <ows:DCP>
+            <ows:HTTP>
+               <ows:Get xlink:href="http://www.acme.com/gss.cgi?"/>
+               <ows:Post xlink:href="http://www.acme.com/gss.cgi"/>
+            </ows:HTTP>
+         </ows:DCP>
+      </ows:Operation>
+      <ows:Parameter name="service">
+         <ows:AllowedValues>
+            <ows:Value>GSS</ows:Value>
+         </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="version">
+         <ows:AllowedValues>
+            <ows:Value>1.0.0</ows:Value>
+         </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Constraint name="srsName">
+         <ows:AllowedValues>
+            <ows:Value>urn:ogc:def:crs:EPSG::4326</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::84</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::3857</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::AUTO42001</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::AUTO42002</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::AUTO42003</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::AUTO42004</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::4267</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::27</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::4269</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::83</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26703</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26704</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26705</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26706</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26707</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26708</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26709</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26710</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26711</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26712</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26713</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26714</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26715</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26716</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26717</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26718</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26719</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26720</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26721</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26722</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26903</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26904</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26905</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26906</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26907</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26908</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26909</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26910</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26911</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26912</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26913</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26914</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26915</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26916</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26917</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26918</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26919</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26920</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26921</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26922</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::26923</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32601</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32602</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32603</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32604</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32605</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32606</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32607</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32608</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32609</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32610</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32611</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32612</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32613</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32614</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32615</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32616</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32617</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32618</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32619</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32620</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32621</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32622</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32623</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32624</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32625</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32626</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32627</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32628</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32629</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32630</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32631</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32632</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32633</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32634</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32635</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32636</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32637</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32638</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32639</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32640</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32641</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32642</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32643</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32644</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32645</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32646</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32647</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32648</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32649</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32650</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32651</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32652</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32653</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32654</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32655</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32656</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32657</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32658</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32659</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32660</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32701</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32702</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32703</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32704</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32705</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32706</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32707</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32708</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32709</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32710</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32711</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32712</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32713</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32714</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32715</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32716</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32717</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32718</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32719</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32720</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32721</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32722</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32723</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32724</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32725</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32726</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32727</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32728</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32729</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32730</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32731</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32732</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32733</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32734</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32735</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32736</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32737</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32738</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32739</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32740</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32741</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32742</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32743</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32744</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32745</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32746</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32747</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32748</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32749</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32750</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32751</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32752</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32753</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32754</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32755</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32756</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32757</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32758</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32759</ows:Value>
+            <ows:Value>urn:ogc:def:crs:EPSG::32760</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::41001</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::42101</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::42103</ows:Value>
+            <ows:Value>urn:ogc:def:crs:OGC::42105</ows:Value>
+         </ows:AllowedValues>
+      </ows:Constraint>
+      <ows:Constraint name="SupportsSOAP">
+         <ows:AllowedValues>
+            <ows:Value>FALSE</ows:Value>
+         </ows:AllowedValues>
+      </ows:Constraint>
+   </ows:OperationsMetadata>
+   <app:service xmlns="http://www.w3.org/2007/app"
+      xmlns:atom="http://www.w3.org/2005/Atom">
+      <app:workspace>
+         <atom:title>Geosynchronization Server Feeds</atom:title>
+         <app:collection
+            href="http://www.acme.com/feed/CHANGEFEED">
+            <atom:title>GSS Change Feed</atom:title>
+         </app:collection>
+         <app:collection
+            href="http://www.acme.com/feed/REPLICATIONFEED">
+            <atom:title>GSS Replication Feed</atom:title>
+         </app:collection>
+         <app:collection
+            href="http://www.acme.com/feed/RESOLUTIONFEED">
+            <atom:title>GSS Resolution Feed</atom:title>
+         </app:collection>
+      </app:workspace>
+   </app:service>
+   <os:OpenSearchDescription>
+      <os:ShortName>Geosynchronization Feed Search</os:ShortName>
+      <os:Description>Search the feeds managed by a GSS.</os:Description>
+      <os:Tags>Geosynchronization feed collaboration GSS search</os:Tags>
+      <os:Contact>admin@acme.com</os:Contact>
+      <os:Url type="application/atom+xml"
+              rel="collection"
+              template="http://www.acme.com/gss.cgi?
+                        service=GSS&amp;
+                        version=1.0.0&amp;
+                        request=GetEntries&amp;
+                        feed=CHANGEFEED&amp;
+                        outputFormat=ATOM&amp;
+                        startPosition={startIndex?}&amp;
+                        maxEntries={count?}&amp;
+                        searchTerms={searchTerms?}&amp;
+                        bbox={geo:box?}&amp;
+                        starttime={time:start?}&amp;
+                        temporalOp=After"/>   
+      <os:Url type="application/atom+xml"
+              rel="collection"
+              template="http://www.acme.com/gss.cgi?
+                        service=GSS&amp;
+                        version=1.0.0&amp;
+                        request=GetEntries&amp;
+                        feed=RESOLUTIONFEED&amp;
+                        outputFormat=ATOM&amp;
+                        startPosition={startIndex?}&amp;
+                        maxEntries={count?}&amp;
+                        searchTerms={searchTerms?}&amp;
+                        bbox={geo:box?}&amp;
+                        starttime={time:start?}&amp;
+                        temporalOp=After"/>
+      <os:Url type="application/atom+xml"
+              rel="collection"
+              template="http://www.acme.com/gss.cgi?
+                        service=GSS&amp;
+                        version=1.0.0&amp;
+                        request=GetEntries&amp;
+                        feed=REPLICATIONFEED&amp;
+                        outputFormat=ATOM&amp;
+                        startPosition={startIndex?}&amp;
+                        maxEntries={count?}&amp;
+                        searchTerms={searchTerms?}&amp;
+                        bbox={geo:box?}&amp;
+                        starttime={time:start?}&amp;
+                        temporalOp=After"/>
+      <os:LongName>Acme Geosynchronization Service Feed Search</os:LongName>
+      <os:Image height="64" width="64"
+                type="image/png">http://acme.com/websearch.png</os:Image>
+      <os:Query role="example" count="25" />
+      <os:Developer>Example.com Development Team</os:Developer>
+      <os:Attribution>Copyright 2005, Acme.com, Inc.</os:Attribution>
+      <os:SyndicationRight>open</os:SyndicationRight>
+      <os:AdultContent>false</os:AdultContent>
+      <os:Language>en-us</os:Language>
+      <os:OutputEncoding>UTF-8</os:OutputEncoding>
+      <os:InputEncoding>UTF-8</os:InputEncoding>
+   </os:OpenSearchDescription>
+   <gss:ConformanceDeclaration>
+      <gss:ConformanceClass 
+           name="Discovery_OGC_POX">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Discovery_OGC_KVP">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Discovery_SOAP">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Transaction_OGC_POX">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Transaction_REST">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Transaction_SOAP">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Query_OGC_POX">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Query_OGC_KVP">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Query_REST">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Query_SOAP">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ChangeManagement_OGC_POX">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ChangeManagement_OGC_KVP">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ChangeManagement_REST">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ChangeManagement_SOAP">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="TopicManagement_OGC_POX">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="TopicManagement_OGC_KVP">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="TopicManagement_REST">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="TopicManagement_SOAP">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ActiveNotification_OGC_POX">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ActiveNotification_OGC_KVP">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ActiveNotification_REST">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="ActiveNotification_SOAP">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Synchronization_OGC_POX">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Synchronization_OGC_KVP">true</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Synchronization_REST">false</gss:ConformanceClass>
+      <gss:ConformanceClass 
+           name="Synchronization_SOAP">false</gss:ConformanceClass>
+   </gss:ConformanceDeclaration>
+   <fes:Filter_Capabilities>
+      <fes:Spatial_Capabilities>
+         <fes:GeometryOperands>
+            <fes:GeometryOperand>gml:Point</fes:GeometryOperand>
+            <fes:GeometryOperand>gml:LineString</fes:GeometryOperand>
+            <fes:GeometryOperand>gml:Polygon</fes:GeometryOperand>
+            <fes:GeometryOperand>gml:Envelope</fes:GeometryOperand>
+         </fes:GeometryOperands>
+         <fes:SpatialOperators>
+            <fes:SpatialOperator name="BBOX"/>
+            <fes:SpatialOperator name="Equals"/>
+            <fes:SpatialOperator name="Disjoint"/>
+            <fes:SpatialOperator name="Intersects"/>
+            <fes:SpatialOperator name="Touches"/>
+            <fes:SpatialOperator name="Crosses"/>
+            <fes:SpatialOperator name="Within"/>
+            <fes:SpatialOperator name="Contains"/>
+            <fes:SpatialOperator name="Overlaps"/>
+         </fes:SpatialOperators>
+      </fes:Spatial_Capabilities>
+      <fes:Scalar_Capabilities>
+         <fes:LogicalOperators/>
+         <fes:ComparisonOperators>
+            <fes:ComparisonOperator>LessThan</fes:ComparisonOperator>
+            <fes:ComparisonOperator>GreaterThan</fes:ComparisonOperator>
+            <fes:ComparisonOperator>LessThanEqualTo</fes:ComparisonOperator>
+            <fes:ComparisonOperator>GreaterThanEqualTo</fes:ComparisonOperator>
+            <fes:ComparisonOperator>EqualTo</fes:ComparisonOperator>
+            <fes:ComparisonOperator>NotEqualTo</fes:ComparisonOperator>
+            <fes:ComparisonOperator>Like</fes:ComparisonOperator>
+            <fes:ComparisonOperator>Between</fes:ComparisonOperator>
+            <fes:ComparisonOperator>NullCheck</fes:ComparisonOperator>
+         </fes:ComparisonOperators>
+         <fes:ArithmeticOperators>
+            <fes:SimpleArithmetic/>
+         </fes:ArithmeticOperators>
+      </fes:Scalar_Capabilities>
+      <fes:Id_Capabilities>
+         <fes:Id_Element>gss:EntryId</fes:Id_Element>
+      </fes:Id_Capabilities>
+   </fes:Filter_Capabilities>
+</GSS_Capabilities>

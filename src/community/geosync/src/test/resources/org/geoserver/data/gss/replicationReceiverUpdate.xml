@@ -1,0 +1,50 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss"
+	xmlns:gss="http://www.opengis.net/gss/1.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+	xmlns:fes="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml"
+	startPosition="1" maxEntries="50">
+	<id>c003ed7f6dce013e1e8352823dd15faf6bee55f3</id>
+	<updated>2011-07-08T00:27:38.916Z</updated>
+	<entry>
+		<title>Update of Feature Points.1</title>
+		<summary>
+			Commit automatically accepted as it comes from a WFS
+			transaction
+		</summary>
+		<id>d974b30a0b87764e1f151f1df5c0140a4b3b9fda</id>
+		<updated>2011-07-08T00:27:38.916Z</updated>
+		<author />
+		<contributor>
+			<name>geoserver</name>
+		</contributor>
+		<content>
+			<wfs:Update xmlns:f="http://www.opengis.net/cite" typeName="f:Bridges">
+				<wfs:Property>
+					<wfs:Name>f:NAME</wfs:Name>
+					<wfs:Value>Cam Bridge 1</wfs:Value>
+				</wfs:Property>
+				<wfs:Property>
+					<wfs:Name>f:FID</wfs:Name>
+					<wfs:Value>150</wfs:Value>
+				</wfs:Property>
+				<wfs:Property>
+					<wfs:Name>f:the_geom</wfs:Name>
+					<wfs:Value>
+						<gml:Point>
+							<gml:coordinates>5, 6</gml:coordinates>
+						</gml:Point>
+					</wfs:Value>
+				</wfs:Property>
+				<fes:Filter>
+					<fes:FeatureId fid="Bridges.1107531599613" />
+				</fes:Filter>
+			</wfs:Update>
+		</content>
+		<georss:where>
+			<gml:Envelope gml:srsName="urn:x-ogc:def:crs:EPSG:4326">
+				<gml:lowerCorner>5 6</gml:lowerCorner>
+				<gml:upperCorner>5 6</gml:upperCorner>
+			</gml:Envelope>
+		</georss:where>
+	</entry>
+</feed>

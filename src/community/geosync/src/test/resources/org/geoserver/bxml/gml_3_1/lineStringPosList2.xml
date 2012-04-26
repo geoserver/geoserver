@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<LineString xmlns="http://www.opengis.net/gml" srsName="urn:ogc:def:crs:EPSG::900913">
+  <posList dimension="3">15 16 17 18 19 20 21 22 23</posList>
+</LineString>

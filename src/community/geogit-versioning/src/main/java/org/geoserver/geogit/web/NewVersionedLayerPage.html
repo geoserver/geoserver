@@ -1,0 +1,41 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="newLayerSelector">New layer selector</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+  <wicket:fragment wicket:id="header">
+    <ul>
+      <li><a class="add-link" href="#" wicket:id="publishLink"><wicket:message key="publishSelected" /></a></li>
+    </ul>
+  </wicket:fragment>
+  
+  <!-- Selector, used when no store has been specified in the constructor -->
+  <form wicket:id="selector">
+  	<wicket:message key="addALayerFrom">Add a layer from </wicket:message> <select wicket:id="storesDropDown"></select>
+  </form>
+  
+  <div wicket:id="selectLayersContainer">
+      <div wicket:id="createTypeContainer"></div>
+
+      <div wicket:id="selectLayers">
+		  <p>
+            <wicket:message key="listOfResourcesContained">Here is a list of resources...</wicket:message>
+		    <wicket:message key="selectTheFeatureTypeYouWishToConfigure">Click on the layer you wish to configure.</wicket:message>
+		  </p>
+          <div wicket:id="layers"></div>
+      	  <wicket:fragment wicket:id="publishedFragment">
+            <img wicket:id="publishedIcon" />
+          </wicket:fragment>
+          <wicket:fragment wicket:id="iconFragment">
+            <img wicket:id="layerIcon" />
+          </wicket:fragment>
+	  </div>
+  </div>
+
+  <!-- the publish confirmation dialog -->
+  <div wicket:id="dialog"></div>
+
+</wicket:extend>
+</body>
+</html>

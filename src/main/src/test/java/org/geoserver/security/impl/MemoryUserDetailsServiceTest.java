@@ -101,9 +101,9 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         store.store();
         
         String plainpassword = "geoserver";
-        UserDetails admin =  service.loadUserByUsername(GeoServerUser.AdminName);        
+        UserDetails admin =  service.loadUserByUsername(GeoServerUser.ADMIN_USERNAME);        
         assertFalse(plainpassword.equals(admin.getPassword()));
-        UserDetails admin2 =  decService.loadUserByUsername(GeoServerUser.AdminName);
+        UserDetails admin2 =  decService.loadUserByUsername(GeoServerUser.ADMIN_USERNAME);
         assertTrue(plainpassword.equals(admin2.getPassword()));
     }
 

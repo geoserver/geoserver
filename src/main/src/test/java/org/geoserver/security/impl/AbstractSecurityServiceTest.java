@@ -290,7 +290,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
         assertEquals(5, userGroupService.getUsers().size());
         assertEquals(5, userGroupService.getUserCount());
         
-        GeoServerUser admin = (GeoServerUser) userGroupService.getUserByUsername(GeoServerUser.AdminName);
+        GeoServerUser admin = (GeoServerUser) userGroupService.getUserByUsername(GeoServerUser.ADMIN_USERNAME);
         GeoServerUser user1 = (GeoServerUser) userGroupService.getUserByUsername("user1");
         GeoServerUser user2 = (GeoServerUser) userGroupService.getUserByUsername("user2");
         GeoServerUser disableduser = (GeoServerUser) userGroupService.getUserByUsername("disableduser");
@@ -442,7 +442,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
     }
     public void insertValues(GeoServerUserGroupStore userGroupStore) throws Exception {
                 
-        GeoServerUser admin = userGroupStore.createUserObject(GeoServerUser.AdminName, 
+        GeoServerUser admin = userGroupStore.createUserObject(GeoServerUser.ADMIN_USERNAME, 
                 GeoServerUser.DEFAULT_ADMIN_PASSWD, GeoServerUser.AdminEnabled);
         GeoServerUser user1 = userGroupStore.createUserObject("user1", "11111", true);
         GeoServerUser user2 = userGroupStore.createUserObject("user2", "22222", true);

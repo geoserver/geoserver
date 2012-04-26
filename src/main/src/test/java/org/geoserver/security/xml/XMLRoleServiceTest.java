@@ -98,8 +98,8 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
             assertEquals(1,service.getUserNamesForRole(adminRole).size());
             assertEquals(0,service.getUserNamesForRole(groupAdminRole).size());
             assertEquals(1, 
-                    service.getRolesForUser(GeoServerUser.AdminName).size());
-            assertTrue(service.getRolesForUser(GeoServerUser.AdminName).contains(adminRole));
+                    service.getRolesForUser(GeoServerUser.ADMIN_USERNAME).size());
+            assertTrue(service.getRolesForUser(GeoServerUser.ADMIN_USERNAME).contains(adminRole));
             
             
         } catch (Exception ex) {

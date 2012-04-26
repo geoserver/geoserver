@@ -106,7 +106,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             assertEquals(0, service.getUserGroups().size());
             assertEquals(0, service.getGroupCount());
                         
-            GeoServerUser admin= service.getUserByUsername(GeoServerUser.AdminName);
+            GeoServerUser admin= service.getUserByUsername(GeoServerUser.ADMIN_USERNAME);
             assertNotNull(admin);
             assertEquals(GeoServerUser.AdminEnabled,admin.isEnabled());
             

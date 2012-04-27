@@ -875,8 +875,8 @@ public class CatalogImplTest extends TestCase {
         
         List<ResourceInfo> r = catalog.getResourcesByStore(ds1,ResourceInfo.class);
         assertEquals( 2, r.size() );
-        assertEquals( ft1, r.get(0) );
-        assertEquals( ft2, r.get(1) );
+        assertTrue( r.contains(ft1) );
+        assertTrue( r.contains(ft2) );
     }
     
     public void testModifyFeatureType() {

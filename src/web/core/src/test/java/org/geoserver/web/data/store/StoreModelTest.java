@@ -27,6 +27,24 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
         assertEquals(s, model.getObject());
     }
 
+    public void testStoreModelSetNull() throws Exception {
+        DataStoreInfo s = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE).getStore();
+        StoreModel<DataStoreInfo> model = new StoreModel<DataStoreInfo>(s);
+
+        model = serializeDeserialize(model);
+        assertEquals(s, model.getObject());
+
+        model.detach();
+        assertEquals(s, model.getObject());
+
+        model.setObject(null);
+        assertNull(model.getObject());
+
+        model = serializeDeserialize(model);
+        model.detach();
+        assertNull(model.getObject());
+    }
+
     public void testStoresModel() throws Exception {
         WorkspaceDetachableModel ws = 
                 new WorkspaceDetachableModel(getCatalog().getWorkspaceByName("sf"));

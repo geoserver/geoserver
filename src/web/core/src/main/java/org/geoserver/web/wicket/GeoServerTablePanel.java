@@ -156,8 +156,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                                     + component.getId() + "' instead");
                         }
                         item.add(component);
+                        onPopulateItem(property, item);
                     }
-
                 };
                 items.setReuseItems(true);
                 item.add(items);
@@ -254,7 +254,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected void onSelectionUpdate(AjaxRequestTarget target) {
         // by default do nothing
     }
-    
+
     /**
      * Returns a model for this property title. Default behaviour is to lookup for a
      * resource name <page>.th.<propertyName>
@@ -499,7 +499,17 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected abstract Component getComponentForProperty(String id, IModel itemModel,
             Property<T> property);
-    
+
+    /**
+     * Called each time a new table item/column is created.
+     * <p>
+     * By default this method does nothing, subclasses may override for instance to add an attribute
+     * to the &lt;td> element created for the column.
+     * </p>
+     */
+    protected void onPopulateItem(Property<T> property, ListItem item) {
+    }
+
     IModel showingAllRecords(int first, int last, int size) {
         return new ParamResourceModel("showingAllRecords", this, first, last, size);
     }

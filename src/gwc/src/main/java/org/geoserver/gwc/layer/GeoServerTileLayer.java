@@ -500,7 +500,6 @@ public class GeoServerTileLayer extends TileLayer {
                     metaTile.setWebMap(map);
                     saveTiles(metaTile, tile);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 } finally {
                     META_GRID_LOCKS.remove(metaGridLoc);
@@ -760,14 +759,8 @@ public class GeoServerTileLayer extends TileLayer {
                     }
 
                     BoundingBox maxBounds = gridSet.getBounds();
-                    if (!maxBounds.contains(extent)) {
-                        if (LOGGER.isLoggable(Level.FINER)) {
-                            LOGGER.finer("Layer bounds exceed GridSet bounds for " + gridSetId
-                                    + ", clipping.");
-                        }
-                        BoundingBox intersection = maxBounds.intersection(extent);
-                        extent = intersection;
-                    }
+                    BoundingBox intersection = maxBounds.intersection(extent);
+                    extent = intersection;
                 } catch (RuntimeException e) {
                     LOGGER.log(Level.WARNING,
                             "Error computing layer bounds, assuming whole GridSet bounds", e);
@@ -828,12 +821,14 @@ public class GeoServerTileLayer extends TileLayer {
 
                 ReferencedEnvelope targetAovBounds = new ReferencedEnvelope(
                         targetAov.getEnvelopeInternal(), targetCrs);
-
+                // transform target AOV in target CRS to native CRS
                 ReferencedEnvelope targetAovInNativeCrs = targetAovBounds.transform(nativeCrs,
                         true, 10000);
-                ReferencedEnvelope clipped = new ReferencedEnvelope(
-                        targetAovInNativeCrs.intersection(nativeBounds), nativeCrs);
+                // get the intersection between the target aov in native crs and native layer bounds
+                Envelope intersection = targetAovInNativeCrs.intersection(nativeBounds);
+                ReferencedEnvelope clipped = new ReferencedEnvelope(intersection, nativeCrs);
 
+                // transform covered area in native crs to target crs
                 transformedBounds = clipped.transform(targetCrs, true, 10000);
             } catch (Exception e1) {
                 throw propagate(e1);

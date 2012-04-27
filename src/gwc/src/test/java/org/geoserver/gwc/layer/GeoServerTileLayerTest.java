@@ -47,6 +47,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.XMLGridSubset;
@@ -64,6 +65,7 @@ import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -355,6 +357,29 @@ public class GeoServerTileLayerTest extends TestCase {
         gridSubsets = layerGroupInfoTileLayer.getGridSubsets();
         assertNotNull(gridSubsets);
         assertEquals(2, gridSubsets.size());
+    }
+
+    public void testGridSubsetBoundsClippedToTargetCrsAreaOfValidity() throws Exception {
+
+        CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
+        layerGroup.setBounds(nativeBounds);
+        defaults.getDefaultCachingGridSetIds().clear();
+        defaults.getDefaultCachingGridSetIds().add("EPSG:900913");
+        layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+
+        // force building and setting the bounds to the saved representation
+        layerGroupInfoTileLayer.getGridSubsets();
+
+        XMLGridSubset savedSubset = layerGroupInfoTileLayer.getInfo().getGridSubsets().iterator()
+                .next();
+
+        BoundingBox gridSubsetExtent = savedSubset.getExtent();
+        BoundingBox expected = gridSetBroker.WORLD_EPSG3857.getOriginalExtent();
+        // don't use equals(), it uses an equality threshold we want to avoid here
+        double threshold = 1E-16;
+        assertTrue("Expected " + expected + ", got " + gridSubsetExtent,
+                expected.equals(gridSubsetExtent, threshold));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

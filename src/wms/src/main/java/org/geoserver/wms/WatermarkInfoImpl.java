@@ -6,6 +6,8 @@ package org.geoserver.wms;
 
 public class WatermarkInfoImpl implements WatermarkInfo {
 
+    private static final long serialVersionUID = -3306354572824960991L;
+
     boolean enabled;
 
     Position position = Position.BOT_RIGHT;

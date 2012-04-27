@@ -4,13 +4,15 @@
  */
 package org.geoserver.wms;
 
+import java.io.Serializable;
+
 /**
  * Configuration object for WMS water marking.
  * 
  * @author Justin Deoliveira, The Open Planning Project
  * 
  */
-public interface WatermarkInfo {
+public interface WatermarkInfo extends Serializable{
 
     /**
      * The position of a watermark logo.

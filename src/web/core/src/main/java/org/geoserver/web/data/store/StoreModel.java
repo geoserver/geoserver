@@ -32,11 +32,17 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
             workspace = new WorkspaceDetachableModel(object.getWorkspace());
             name = object.getName();
         }
+        else {
+            name = null;
+        }
     };
     
     @Override
     protected T load() {
         if (workspace == null) {
+            return null;
+        }
+        if (name == null) {
             return null;
         }
         return (T) GeoServerApplication.get().getCatalog().getStoreByName(

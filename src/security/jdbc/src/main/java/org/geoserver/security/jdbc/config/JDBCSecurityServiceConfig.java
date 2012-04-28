@@ -210,7 +210,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
         }
 
         if (propertyFileNameDML == null) {
-            propertyFileNameDML = isMySQL() ? defaultDMLFilenameMySQL() : defaultDDLFilename();
+            propertyFileNameDML = isMySQL() ? defaultDMLFilenameMySQL() : defaultDMLFilename();
         }
     }
 

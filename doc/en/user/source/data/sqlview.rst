@@ -16,7 +16,7 @@ to eliminate the risk of SQL injection attacks.
 Creating a SQL View
 -------------------------
 
-In order to create a SQL View the administrator invokes the "create new layer" page. 
+In order to create a SQL View the administrator invokes the :guilabel:`Create new layer` page. 
 When a database store is selected, the usual list of tables and views available for publication appears, 
 A link :guilabel:`Configure new SQL view...` also appears:
 
@@ -82,13 +82,13 @@ Here is an example of a SQL View query for a layer called ``popstates`` with two
    :align: center
 
 Each parameter needs to be defined with its name, default value, and validation expression.  
-The :guilabel:`Guess parameters from SQL` link can be clicked to infer the query parameters automatically, or they can be entered manually, . 
+The :guilabel:`Guess parameters from SQL` link can be clicked to infer the query parameters automatically, or they can be entered manually. 
 The result is a table filled with the parameter names, default values and validation expressions:
 
 .. figure:: images/sqlview-paramdefault.png
    :align: center
 
-Default values are optional, but in this case they should be specified, since the query cannot be executed without values for the parameters (``select gid, state_name, the_geom from pgstates where persons between and`` is invalid SQL). 
+Default values are optional, but in this case they should be specified, since the query cannot be executed without values for the parameters (because the query ``select gid, state_name, the_geom from pgstates where persons between and`` is invalid SQL). 
 Since the SQL query requires the parameters to be positive integer numbers, the validation regular expressions should be specified to allow only numeric input (i.e. ``^[\d]+$``):
 
 .. figure:: images/sqlview-paramcustom.png
@@ -163,5 +163,5 @@ The following are some useful resources for constructing regular expressions:
 
   * GeoServer uses the standard Java regular expression engine. The `Pattern class Javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_ contain the full specification of the allowed syntax.
   * `<http://www.regular-expressions.info>`_ has many tutorials and examples of regular expressions.
-  * The `myregexp applet <http://myregexp.com/>`_ can be used to test regular expressions online.
+  * The `myregexp <http://myregexp.com/>`_ applet can be used to test regular expressions online.
 

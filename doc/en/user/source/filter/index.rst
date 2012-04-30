@@ -7,7 +7,7 @@ Filtering allows selecting features that satisfy a specific set of conditions.
 Filters can be used in several contexts in GeoServer:
 
 - in WMS requests, to select which features should be displayed on a map
-- in WFS requests , to specify the features to be returned
+- in WFS requests, to specify the features to be returned
 - in SLD documents, to apply different symbolization to features on a thematic map.
 
 .. toctree::

@@ -9,14 +9,14 @@ The full language grammar is documented in the the GeoTools `ECQL BNF definition
 Syntax Notes
 ------------
 
-The subsections present the major language constructs.
-Each construct is described by listing all syntax options for it
-(which may be defined recursively in terms of the current or other constructs).
+The sections below describe the major language constructs.
+Each construct lists all syntax options for it.
+Each option is defined as a sequence of other constructs, or recursively in terms of itself.
 
 * Keywords are not case-sensitive. 
 * The vertical bar symbol **|** indicates where a choice of keyword can be made.  
-* Brackets **[ ]** show optional syntax.
-* Braces **{ }** show where syntax can be added zero or more times.
+* Brackets **[ ]** delimit optional syntax.
+* Braces **{ }** delimit syntax that is included zero or more times.
  
 
 .. _ecql_cond:
@@ -24,7 +24,7 @@ Each construct is described by listing all syntax options for it
 Condition
 ---------
  
-A filter condition is a boolean-valued predicate, or a logical combination of other conditions.
+A filter condition is a single predicate, or a logical combination of other conditions.
 
 .. list-table::
    :widths: 50 50
@@ -100,7 +100,7 @@ Spatial Predicate
 ^^^^^^^^^^^^^^^^^
 
 Spatial predicates specify the relationship between geometric values.
-Spatial predicates utilize the model defined in the 
+Spatial predicates are defined in terms of the DE-9IM model described in the 
 OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ specification.
 
 .. list-table::

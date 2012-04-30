@@ -1096,6 +1096,9 @@ public class CatalogImplTest extends TestCase {
         
         l2.setEnabled(false);
         catalog.save(l2);
+        // GR: if not saving also the associated resource, we're assuming saving the layer also
+        // saves its ResourceInfo, which is wrong, but works on the in-memory catalog by accident
+        catalog.save(l2.getResource());
         
         l2 = catalog.getLayerByName(l2.getName());
         assertFalse(l2.isEnabled());

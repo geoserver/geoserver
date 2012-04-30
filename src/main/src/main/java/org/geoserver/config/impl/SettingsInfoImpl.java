@@ -46,6 +46,10 @@ public class SettingsInfoImpl implements SettingsInfo {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public WorkspaceInfo getWorkspace() {
         return workspace;

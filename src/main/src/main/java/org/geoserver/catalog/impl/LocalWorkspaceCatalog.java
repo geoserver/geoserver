@@ -129,8 +129,13 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
-        WorkspaceInfo workspace = LocalWorkspace.get();//may be null
-        LayerGroupInfo lgi = super.getLayerGroupByName(workspace, name);
+        WorkspaceInfo workspace = LocalWorkspace.get();// may be null
+        LayerGroupInfo lgi;
+        if (null == workspace) {
+            lgi = super.getLayerGroupByName(name);
+        } else {
+            lgi = super.getLayerGroupByName(workspace, name);
+        }
         return wrap(lgi);
     }
 

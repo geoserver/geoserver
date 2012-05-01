@@ -86,7 +86,7 @@ public class LayerGroupResource extends AbstractCatalogResource {
                 + workspace == null ? ", workspace " + workspace : "");
         
         LayerGroupInfo lg = (LayerGroupInfo) object;
-        LayerGroupInfo original = catalog.getLayerGroupByName( layergroup );
+        LayerGroupInfo original = catalog.getLayerGroupByName(workspace, layergroup );
        
         //ensure not a name change
         if ( lg.getName() != null && !lg.getName().equals( original.getName() ) ) {

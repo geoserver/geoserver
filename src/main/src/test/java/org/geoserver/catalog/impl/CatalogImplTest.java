@@ -1537,13 +1537,15 @@ public class CatalogImplTest extends TestCase {
         assertNull(catalog.getLayerGroupByName(catalog.getDefaultWorkspace(), "layerGroup"));
         
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
+        lg2.setWorkspace(defaultWorkspace);
         lg2.setName("layerGroup2");
         lg2.getLayers().add(l);
         lg2.getStyles().add(s);
         catalog.add(lg2);
 
-        assertNotNull(catalog.getLayerGroupByName("layerGroup2"));
+        assertNull("layerGropu2 is not global, should not be found", catalog.getLayerGroupByName("layerGroup2"));
+        assertNotNull(catalog.getLayerGroupByName(defaultWorkspace.getName() + ":layerGroup2"));
         assertNotNull(catalog.getLayerGroupByName(catalog.getDefaultWorkspace(), "layerGroup2"));
         assertNull(catalog.getLayerGroupByName("cite", "layerGroup2"));
     }
@@ -1602,8 +1604,8 @@ public class CatalogImplTest extends TestCase {
         lg2.getStyles().add(s2);
         catalog.add(lg2);
 
-        //will randomly return one... we should probably return null with multiple matches
-        assertNotNull(catalog.getLayerGroupByName("lg"));
+        //lg is not global, should not be found at least we specify a prefixed name
+        assertNull(catalog.getLayerGroupByName("lg"));
         
         assertEquals(lg1, catalog.getLayerGroupByName(ws.getName(), "lg"));
         assertEquals(lg1, catalog.getLayerGroupByName(ws, "lg"));

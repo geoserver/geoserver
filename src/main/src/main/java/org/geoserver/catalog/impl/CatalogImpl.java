@@ -824,66 +824,47 @@ public class CatalogImpl implements Catalog {
         return facade.getLayerGroup(id);
     }
     
+    @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
         //handle prefixed name case
-        String prefix = null;
-        String resource = null;
+        String workspaceName = null;
+        String layerGroupName = null;
         
         int colon = name.indexOf( ':' );
-        if ( colon != -1 ) {
-            prefix = name.substring( 0, colon );
-            resource = name.substring( colon + 1 );
-
-            LayerGroupInfo layerGroup = getLayerGroupByName(prefix, resource);
-            if (layerGroup != null) {
-                return layerGroup;
-            }
+        if(colon == -1){
+            layerGroupName = name;
+        }if ( colon != -1 ) {
+            workspaceName = name.substring( 0, colon );
+            layerGroupName = name.substring( colon + 1 );
         }
 
-        //first try explicitly a global layer group
-        LayerGroupInfo layerGroup = facade.getLayerGroupByName(null, name);
-        if (layerGroup == null) {
-            //fall back to "any"
-            layerGroup = facade.getLayerGroupByName(name);
-        }
+
+        LayerGroupInfo layerGroup = getLayerGroupByName(workspaceName, layerGroupName);
         return layerGroup;
     }
 
+    @Override
     public LayerGroupInfo getLayerGroupByName(String workspaceName, String name) {
-        if (workspaceName == null) {
-            return getLayerGroupByName((WorkspaceInfo)null, name);
+        WorkspaceInfo workspace = null;
+        if (workspaceName != null) {
+            workspace = getWorkspaceByName(workspaceName);
+            if(workspace == null){
+                return null;
+            }
         }
 
-        WorkspaceInfo workspace = getWorkspaceByName(workspaceName);
-        if (workspace != null) {
-            return getLayerGroupByName(workspace, name);
-        }
-        return null;
+        return getLayerGroupByName(workspace, name);
     }
 
+    @Override
     public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace,
             String name) {
-        WorkspaceInfo ws = workspace;
-
-        LayerGroupInfo layerGroup = null;
-        if (ws == null) {
-            //first try for a global layer group
-            layerGroup = getLayerGroupByName(name);
-        }
-        if (layerGroup != null) {
-            return layerGroup;
-        }
-
-        if (ws == null) {
-            //next try default workspace
-            ws = getDefaultWorkspace();
-        }
         
-        layerGroup = facade.getLayerGroupByName(ws, name);
-        if (layerGroup == null && workspace == null) {
-            //finally look for one in any workspace
-            layerGroup = facade.getLayerGroupByName(DefaultCatalogFacade.ANY_WORKSPACE, name);
+        if(null == workspace){
+            workspace = DefaultCatalogFacade.NO_WORKSPACE;
         }
+
+        LayerGroupInfo layerGroup = facade.getLayerGroupByName(workspace, name);
         return layerGroup;
     }
 

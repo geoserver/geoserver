@@ -577,43 +577,37 @@ public class DefaultCatalogFacade implements CatalogFacade {
         return null;
     }
     
+    @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
-        for (LayerGroupInfo layerGroup : layerGroups ) {
-            if ( name.equals( layerGroup.getName() ) ) {
-                return ModificationProxy.create(layerGroup,LayerGroupInfo.class);
-            }
-        }
-        
-        return null;
+        return getLayerGroupByName(NO_WORKSPACE, name);
     }
 
     @Override
-    public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace,
-            String name) {
-        if (workspace == ANY_WORKSPACE) {
-            //do an exhaustive search through all workspaces
-            ArrayList<LayerGroupInfo> matches = new ArrayList();
-            for (Iterator i = layerGroups.iterator(); i.hasNext();) {
-                LayerGroupInfo layerGroup = (LayerGroupInfo) i.next();
-                if ( name.equals( layerGroup.getName() ) ) {
-                    matches.add( layerGroup );
-                }
+    public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name) {
+
+        ArrayList<LayerGroupInfo> matches = new ArrayList<LayerGroupInfo>(2);
+
+        for (LayerGroupInfo layerGroup : layerGroups) {
+            if (!name.equals(layerGroup.getName())) {
+                continue;
             }
-            
-            if ( matches.size() == 1 ) {
-                return ModificationProxy.create( matches.get( 0 ), LayerGroupInfo.class);
+            WorkspaceInfo lgWorkspace = layerGroup.getWorkspace();
+            if (NO_WORKSPACE == workspace) {
+                if (lgWorkspace == null) {
+                    matches.add(layerGroup);
+                }
+            } else if (ANY_WORKSPACE == workspace) {
+                matches.add(layerGroup);
+            } else if (lgWorkspace != null && workspace.equals(lgWorkspace)) {
+                matches.add(layerGroup);
+            }
+            if (matches.size() > 1) {
+                break;
             }
         }
-        else {
-            for (Iterator i = layerGroups.iterator(); i.hasNext();) {
-                LayerGroupInfo layerGroup = (LayerGroupInfo) i.next();
-                if (name.equals(layerGroup.getName())) {
-                    if (layerGroup.getWorkspace() != null && layerGroup.getWorkspace().equals(workspace) || 
-                        layerGroup.getWorkspace() == null && workspace == null) {
-                        return ModificationProxy.create( layerGroup, LayerGroupInfo.class );
-                    }
-                }
-            }
+
+        if (matches.size() == 1) {
+            return ModificationProxy.create(matches.get(0), LayerGroupInfo.class);
         }
         return null;
     }

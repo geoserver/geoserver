@@ -55,7 +55,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         //assertFalse(entry2.hashCode()==entry1.hashCode());
         assertFalse(entry2.equals(entry1));
 
-        long currentTime=System.currentTimeMillis();
+        long currentTime=entry2.getCreated();
      // check live time
         entry2.setLastAccessed(currentTime+6000);
         assertFalse(entry2.hasExpired(currentTime+10*1000));

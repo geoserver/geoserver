@@ -328,6 +328,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
                     Map<String, Object> outputs = processManager.getOutput(executionId, -1);
                     responseBuilder.setOutputs(outputs);
                 } catch (Exception exception) {
+                    LOGGER.log(Level.SEVERE, "Request failed during execution", exception);
                     responseBuilder.setException(exception);
                 }
 

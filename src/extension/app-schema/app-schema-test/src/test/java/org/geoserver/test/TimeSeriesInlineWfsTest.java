@@ -31,13 +31,70 @@ public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
         // chaining)
         // but the test cases from TimeSeriesWfsTest are the same
         return new TimeSeriesInlineMockData();
+    }  
+       
+    /**
+     * Test subsetting timePositionList.
+     */
+    public void testTimePositionSubset() {
+        String xml = "<wfs:GetFeature "
+                + "service=\"WFS\" " //
+                + "version=\"1.1.0\" " //
+                + "outputFormat=\"gml32\" " //
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" " //
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
+                + "xmlns:csml=\""
+                + TimeSeriesMockData.CSML_URI
+                + "\" " //
+                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
+                + "xsi:schemaLocation=\"" //
+                + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
+                + "\"" //
+                + ">" //
+                + "<wfs:Query typeName=\"csml:PointSeriesFeature\">"
+                + "    <ogc:Filter>"
+                + "        <ogc:PropertyIsBetween>"
+                + "             <ogc:PropertyName>csml:PointSeriesFeature/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList</ogc:PropertyName>"
+                + "             <ogc:LowerBoundary><ogc:Literal>1949-05-01</ogc:Literal></ogc:LowerBoundary>"
+                + "             <ogc:UpperBoundary><ogc:Literal>1949-09-01</ogc:Literal></ogc:UpperBoundary>"
+                + "        </ogc:PropertyIsBetween>" + "    </ogc:Filter>" + "</wfs:Query> "
+                + "</wfs:GetFeature>";
+        validate(xml);
+        Document doc = postAsDOM("wfs", xml);
+        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberReturned", doc);
+        assertXpathCount(1, "//csml:PointSeriesFeature", doc);
+        checkPointFeatureTwo(doc);
+
+        // HACK HACK HACK
+        // The result is a subset of the timePositionList value that matches the filter
+        // This is an experimental/temporary solution for Bureau of Meteorology subsetting
+        // requirement
+        assertXpathEvaluatesTo(
+                "1949-05-01 1949-06-01 1949-07-01 1949-08-01 1949-09-01",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + "ID2"
+                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
+                doc);
+
+        // matching subset for QuantityList without feature chaining
+        assertXpathEvaluatesTo(
+                "16.2 17.1 22.0 25.1 23.9",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + "ID2"
+                        + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
+                doc);
+        // END OF HACK
     }
 
     @Override
     /**
      * Test filtering quantity list that is not feature chained.
      */
-    public void testFilterQuantityList() {
+    public void testQuantityListSubset() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //
                 + "version=\"1.1.0\" " //
@@ -65,20 +122,21 @@ public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberReturned", doc);
         assertXpathCount(1, "//csml:PointSeriesFeature", doc);
-        checkPointFeatureTwo(doc, "ID2");
-        assertXpathEvaluatesTo(
-                "1949-05-01 1949-06-01 1949-07-01 1949-08-01 1949-09-01 1949-10-01 1949-11-01 1949-12-01 1950-01-01 1950-02-01"
-                        + " 1950-03-01 1950-04-01 1950-05-01 1950-06-01 1950-07-01 1950-08-01 1950-09-01 1950-10-01 1950-11-01 1950-12-01",
-                "//csml:PointSeriesFeature[@gml:id='"
-                        + "ID2"
-                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
-                doc);
+        checkPointFeatureTwo(doc);
         // subsetting works without feature chaining, therefore a subset of QuantityList expected
         assertXpathEvaluatesTo(
                 "16.2",
                 "//csml:PointSeriesFeature[@gml:id='"
                         + "ID2"
                         + "']/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList",
+                doc);
+
+        // matching subset of timePositionList expected
+        assertXpathEvaluatesTo(
+                "1949-05-01",
+                "//csml:PointSeriesFeature[@gml:id='"
+                        + "ID2"
+                        + "']/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList",
                 doc);
     }
 }

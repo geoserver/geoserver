@@ -123,13 +123,6 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("tpl." + "ID2",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
                         + "']/gml:domainSet/wml2dr:TimePositionList/@gml:id", doc);
-        assertXpathEvaluatesTo(
-                "1949-05-01T00:00:00 1949-06-01T00:00:00 1949-07-01T00:00:00 1949-08-01T00:00:00 1949-09-01T00:00:00 "
-                        + "1949-10-01T00:00:00 1949-11-01T00:00:00 1949-12-01T00:00:00 1950-01-01T00:00:00 1950-02-01T00:00:00 "
-                        + "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00 1950-07-01T00:00:00 "
-                        + "1950-08-01T00:00:00 1950-09-01T00:00:00 1950-10-01T00:00:00 1950-11-01T00:00:00 1950-12-01T00:00:00",
-                "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
-                        + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
         // truncated value as a result of subset filtering changes
         assertXpathEvaluatesTo("16.2", "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='"
                 + "ID2" + "']/gml:rangeSet/gml:QuantityList", doc);
@@ -140,6 +133,11 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertXpathEvaluatesTo("http://ns.bgs.ac.uk/thesaurus/lithostratigraphy",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
                         + "']/gmlcov:rangeType/@xlink:href", doc);
+        // timePositition is truncated too as they're value pairs with QuantityList
+        assertXpathEvaluatesTo(
+                "1949-05-01T00:00:00",
+                "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
+                        + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
     }
 
     /**
@@ -184,9 +182,9 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
                 "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
-        // full QuantityList
+        // matching subset of QuantityList
         assertXpathEvaluatesTo(
-                "16.2 17.1 22.0 25.1 23.9 22.8 17.0 10.2 9.2 7.1 12.3 12.9 17.2 23.6 21.6 21.9 17.6 14.0 9.3 3.8",
+                "12.3 12.9 17.2 23.6",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
                         + "']/gml:rangeSet/gml:QuantityList", doc);
         assertXpathEvaluatesTo("degC", "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='"

@@ -71,6 +71,41 @@ When the ``loose bbox`` option is set, only the bounding box of a geometry is us
 
 If the primary use of the database is through :ref:`WMS` this flag can be set safely since a loss of some accuracy is usually acceptable. However if using :ref:`WFS` and making use of BBOX filtering capabilities, this flag should not be set.
 
+Using the geometry metadata table
+`````````````````````````````````
+
+The Oracle data store will, by default, look into the ``MDSYS.USER_SDO*`` and ``MDSYS.ALL_SDO*`` views
+to determine the geometry type and native SRID of each geometry column.
+Those views are automatically populated with information about the geometry columns stored in tables that the current
+user owns (for the ``MDSYS.USER_SDO*`` views) or can otherwise access (for the ``MDSYS.ALL_SDO*`` views).
+
+There are a few hiccups in this process:
+
+  * if the connection pool user cannot access the tables (because :ref:`impersonation <data_sqlsession>` is used) 
+    the MDSYS views will be empty, making it impossible to determine either the geometry type and the native SRID
+  * the geometry type can be specified only while building the spatial indexes, as a index constraint, however 
+    such information is often not included when creating the indexes
+  * the views are populated dynamically based on the current user, if the database has thousands of tables and users
+    the views can become very slow
+    
+Starting with GeoServer 2.1.4 the administrator can address the above issues by manually creating a geometry metadata table
+describing each geometry column, and then indicate its presence among the Oracle data store connection parameter named *Geometry metadata table*
+(either as a simple table name, or a schema qualified one).
+The table has the following structure (the table name is free, just indicate the one chosen in the data store connection parameter)::
+
+	CREATE TABLE GEOMETRY_COLUMNS(
+	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL, 
+	   F_TABLE_NAME VARCHAR(30) NOT NULL, 
+	   F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL, 
+	   COORD_DIMENSION INTEGER, 
+	   SRID INTEGER NOT NULL, 
+	   TYPE VARCHAR(30) NOT NULL,
+	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
+	   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
+	   
+When the table is present the store wil first search it for information about each geometry column
+to be classified, and fall back on the MDSYS views only if such table does not contain any information.
+
 Configuring an Oracle database with JNDI
 ----------------------------------------
 

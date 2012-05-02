@@ -36,7 +36,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 @SuppressWarnings("serial")
 public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
-    static List<AccessMode> MODES = Arrays.asList(AccessMode.READ, AccessMode.WRITE);
+    static List<AccessMode> MODES = Arrays.asList(AccessMode.READ, AccessMode.WRITE, AccessMode.ADMIN);
 
     DropDownChoice<String> workspaceChoice, layerChoice;
     DropDownChoice<AccessMode> accessModeChoice;

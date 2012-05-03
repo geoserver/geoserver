@@ -264,6 +264,46 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( "new title", ft.getTitle() );
     }
     
+    public void testPutWithCalculation() throws Exception {
+        String clearLatLonBoundingBox =
+              "<featureType>"
+                + "<nativeBoundingBox>"
+                  + "<minx>-180.0</minx>" + "<maxx>180.0</maxx>"
+                  + "<miny>-90.0</miny>" + "<maxy>90.0</maxy>"
+                  + "<crs>EPSG:4326</crs>" 
+                + "</nativeBoundingBox>"
+                + "<latLonBoundingBox/>"
+            + "</featureType>";
+        
+        String path = "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature";
+        MockHttpServletResponse response =
+                putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
+        assertEquals("Couldn't remove lat/lon bounding box:\n" + response.getOutputStreamContent(),
+                200, response.getStatusCode());
+
+        Document dom = getAsDOM(path + ".xml");
+        assertXpathEvaluatesTo("0.0", "/featureType/latLonBoundingBox/minx", dom);
+        
+        String updateNativeBounds =
+                "<featureType>"
+                  + "<srs>EPSG:3785</srs>"
+                  + "<nativeBoundingBox>"
+                    + "<minx>-20037508.34</minx>"
+                    + "<maxx>20037508.34</maxx>"
+                    + "<miny>-20037508.34</miny>"
+                    + "<maxy>20037508.34</maxy>"
+                    + "<crs>EPSG:3785</crs>"
+                  + "</nativeBoundingBox>"
+              + "</featureType>";
+                     
+        response = putAsServletResponse(path + ".xml", updateNativeBounds, "text/xml");
+        assertEquals("Couldn't update native bounding box: \n" + response.getOutputStreamContent(),
+                200, response.getStatusCode());
+        dom = getAsDOM(path + ".xml");
+        print(dom);
+        assertXpathExists("/featureType/latLonBoundingBox/minx[text()!='0.0']", dom);
+    }
+
     public void testPutNonExistant() throws Exception {
         String xml = 
             "<featureType>" + 

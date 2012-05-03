@@ -655,7 +655,7 @@ are returned. It can take one of the three values "configured", "available", "av
      - 200
      - XML,JSON
      -
-     - 
+     - :ref:`recalculate <featuretype_recalculate>`
    * - DELETE
      - Delete feature type ``ft``
      - 200
@@ -680,6 +680,18 @@ are returned. It can take one of the three values "configured", "available", "av
 The ``recurse`` parameter is used to recursively delete all layers that reference
 by the specified feature type. Allowable values for this parameter are "true" or  
 "false".  The default value is "false".
+
+.. _featuretype_recalculate:
+
+Some properties of feature types are automatically recalculated when necessary.
+In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request.
+*The native and lat/lon bounding boxes are never automatically recalculated when they are explicitly included in the request.*
+In addition, the client may explicitly request a fixed set of fields to calculate by including a comma-separated list of their names as a parameter named ``recalculate``.  For example:
+
+   * ``recalculate=`` (empty parameter): Do not calculate any fields, regardless of the projection, projection policy, etc.
+     This might be useful to avoid slow recalculation when operating against large datasets.
+   * ``recalculate=nativebbox``: Recalculate the native boundingbox, do not recalculate the lat/lon bounding box.
+   * ``recalculate=nativebbox,latlonbbox``: Recalculate both the native boundingbox and the lat/lon bounding box.
 
 
 Coverage stores
@@ -820,7 +832,7 @@ following extensions are supported:
      - 405
      - 
      - 
-     -
+     - :ref:`recalculate <coverage_recalculate>`
    * - PUT
      - Creates or overwrites the files for coverage store ``cs``.
      - 200
@@ -862,6 +874,19 @@ receive the same name as its containing coverage store.
    Currently the relationship between a coverage store and a coverage is one to
    one. However there is currently work underway to support multi-dimensional
    coverages, so in the future this parameter is likely to change.
+
+.. _coverage_recalculate:
+
+Some properties of Coverages are automatically recalculated when necessary.
+In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request.
+*The native and lat/lon bounding boxes are never automatically recalculated when they are explicitly included in the request.*
+In addition, the client may explicitly request a fixed set of fields to calculate by including a comma-separated list of their names as a parameter named ``recalculate``.  For example:
+
+   * ``recalculate=`` (empty parameter): Do not calculate any fields, regardless of the projection, projection policy, etc.
+     This might be useful to avoid slow recalculation when operating against large datasets.
+   * ``recalculate=nativebbox``: Recalculate the native boundingbox, do not recalculate the lat/lon bounding box.
+   * ``recalculate=nativebbox,latlonbbox``: Recalculate both the native boundingbox and the lat/lon bounding box.
+
 
 Coverages
 ---------

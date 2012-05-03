@@ -119,6 +119,7 @@ public class CoverageResource extends AbstractCatalogResource {
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
         CoverageInfo original = catalog.getCoverageByCoverageStore( cs,  coverage );
         new CatalogBuilder(catalog).updateCoverage(original,c);
+        calculateOptionalFields(c, original);
         catalog.save( original );
         
         clear(original);

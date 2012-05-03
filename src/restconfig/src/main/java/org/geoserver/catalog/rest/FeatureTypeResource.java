@@ -17,7 +17,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
@@ -34,7 +33,6 @@ import org.restlet.data.Status;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureTypeResource extends AbstractCatalogResource {
 
@@ -53,21 +51,26 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         String datastore = getAttribute( "datastore");
         String featureType = getAttribute( "featuretype" );
 
-        if ( datastore == null ) {
+        FeatureTypeInfo ftInfo;
+        
+        if (datastore == null) {
             LOGGER.fine( "GET feature type" + workspace + "," + featureType );
             
             //grab the corresponding namespace for this workspace
             NamespaceInfo ns = catalog.getNamespaceByPrefix( workspace );
             if ( ns != null ) {
-                return catalog.getFeatureTypeByName(ns,featureType);
+                ftInfo = catalog.getFeatureTypeByName(ns,featureType);
+            } else {
+                String message = "No feature found in workspace '" + workspace
+                        + "' with name '" + featureType + "'";
+                throw new RestletException(message, Status.CLIENT_ERROR_NOT_FOUND);
             }
-
-            throw new RestletException( "", Status.CLIENT_ERROR_NOT_FOUND );
+        } else { // datastore != null
+            LOGGER.fine("GET feature type" + datastore + "," + featureType);
+            DataStoreInfo dsInfo = catalog.getDataStoreByName(workspace, datastore);
+            ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureType);
         }
-
-        LOGGER.fine( "GET feature type" + datastore + "," + featureType );
-        DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
-        return catalog.getFeatureTypeByDataStore( ds, featureType );
+        return ftInfo;
     }
 
     @Override
@@ -234,10 +237,10 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
         FeatureTypeInfo original = catalog.getFeatureTypeByDataStore( ds,  featuretype );
         new CatalogBuilder(catalog).updateFeatureType(original,ft);
+        calculateOptionalFields(ft, original);
         catalog.save( original );
         
         clear(original);
-        
         LOGGER.info( "PUT feature type" + datastore + "," + featuretype );
     }
     

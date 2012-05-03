@@ -4,20 +4,32 @@
  */
 package org.geoserver.catalog.rest;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.ReflectiveResource;
+import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.MediaTypes;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
@@ -125,6 +137,62 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
         } else {
             //encode as relative
             return pg.pageURI(link);
+        }
+    }
+
+    protected void calculateOptionalFields(ResourceInfo message, ResourceInfo resource) {
+        Form form = getRequest().getResourceRef().getQueryAsForm();
+        String calculate = form.getFirstValue("recalculate", true);
+        List<String> fieldsToCalculate;
+        if (calculate == null) {
+            boolean changedProjection = message.getSRS() != null;
+            boolean changedProjectionPolicy = message.getProjectionPolicy() != null;
+            boolean changedNativeBounds = message.getNativeBoundingBox() != null;
+            boolean changedLatLonBounds = message.getLatLonBoundingBox() != null;
+            boolean changedNativeInterpretation = changedProjectionPolicy || changedProjection;
+            fieldsToCalculate = new ArrayList<String>();
+            if (changedNativeInterpretation && !changedNativeBounds) {
+                fieldsToCalculate.add("nativebbox");
+            }
+            if ((changedNativeInterpretation || changedNativeBounds) && !changedLatLonBounds) {
+                fieldsToCalculate.add("latlonbbox");
+            }
+        } else {
+            fieldsToCalculate = Arrays.asList(calculate.toLowerCase().split("'"));
+        }
+        
+        if (fieldsToCalculate.contains("nativebbox")) {
+            CatalogBuilder builder = new CatalogBuilder(catalog);
+            try {
+                resource.setNativeBoundingBox(builder.getNativeBounds(resource));
+            } catch (IOException e) {
+                String errorMessage = "Error while calculating native bounds for layer: " + resource;
+                throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL, e);
+            }
+        }
+        if (fieldsToCalculate.contains("latlonbbox")) {
+            CatalogBuilder builder = new CatalogBuilder(catalog);
+            try {
+                resource.setLatLonBoundingBox(builder.getLatLonBounds(
+                        resource.getNativeBoundingBox(),
+                        resolveCRS(resource.getSRS())));
+            } catch (IOException e) {
+                String errorMessage =
+                        "Error while calculating lat/lon bounds for featuretype: " + resource;
+                throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL, e);
+            }
+        }
+    }
+
+    private CoordinateReferenceSystem resolveCRS(String srs) {
+        if ( srs == null ) {
+            return null;    
+        }
+        
+        try {
+            return CRS.decode(srs);
+        } catch(Exception e) {
+            throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
         }
     }
 }

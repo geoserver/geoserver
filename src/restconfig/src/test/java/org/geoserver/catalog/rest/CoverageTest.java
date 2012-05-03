@@ -5,6 +5,7 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.net.URL;
 
@@ -157,6 +158,44 @@ public class CoverageTest extends CatalogRESTTestSupport {
         dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.xml");
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
+    }
+
+    public void testPutWithCalculation() throws Exception {
+        String path = "/rest/workspaces/wcs/coveragestores/DEM/coverages/DEM.xml";
+        String clearLatLonBoundingBox =
+                "<coverage>"
+                + "<latLonBoundingBox/>" 
+              + "</coverage>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
+        assertEquals(
+                "Couldn't remove lat/lon bounding box: \n" + response.getOutputStreamContent(),
+                200,
+                response.getStatusCode());
+        
+        Document dom = getAsDOM(path);
+        assertXpathEvaluatesTo("0.0", "/coverage/latLonBoundingBox/minx", dom);
+        print(dom);
+        
+        String updateNativeBounds =
+                "<coverage>" 
+                + "<srs>EPSG:3785</srs>"
+              + "</coverage>";
+
+        response = putAsServletResponse(
+                path,
+                updateNativeBounds,
+                "text/xml");
+
+        assertEquals(
+                "Couldn't update native bounding box: \n"
+                        + response.getOutputStreamContent(), 200,
+                response.getStatusCode());
+        dom = getAsDOM(path);
+        print(dom);
+        assertXpathExists("/coverage/latLonBoundingBox/minx[text()!='0.0']",
+                dom);
     }
 
 //    public void testPostAsJSON() throws Exception {

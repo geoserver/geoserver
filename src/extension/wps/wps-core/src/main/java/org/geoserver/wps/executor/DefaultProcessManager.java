@@ -46,20 +46,26 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
 
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses) {
         if(asynchService == null) {
-            asynchService = new ThreadPoolExecutor(1, maxAsynchronousProcesses, 
+            // create a fixed size pool. If we allow a delta between core and max 
+            // the pool will create new threads only if the queue is full, but the linked queue never is
+            asynchService = new ThreadPoolExecutor(maxAsynchronousProcesses, maxAsynchronousProcesses, 
                                       0L, TimeUnit.MILLISECONDS,
                                       new LinkedBlockingQueue<Runnable>());
         } else {
+            asynchService.setCorePoolSize(maxAsynchronousProcesses);
             asynchService.setMaximumPoolSize(maxAsynchronousProcesses);
         }
     }
 
     public void setMaxSynchronousProcesses(int maxSynchronousProcesses) {
         if(synchService == null) {
-            synchService = new ThreadPoolExecutor(1, maxSynchronousProcesses, 
+            // create a fixed size pool. If we allow a delta between core and max 
+            // the pool will create new threads only if the queue is full, but the linked queue never is
+            synchService = new ThreadPoolExecutor(maxSynchronousProcesses, maxSynchronousProcesses, 
                                       0L, TimeUnit.MILLISECONDS,
                                       new LinkedBlockingQueue<Runnable>());
         } else {
+            synchService.setCorePoolSize(maxSynchronousProcesses);
             synchService.setMaximumPoolSize(maxSynchronousProcesses);
         }
     }

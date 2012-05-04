@@ -89,6 +89,9 @@ public class WPSResourceManager implements DispatcherCallback,
             id = UUID.randomUUID().toString();
             executionId.set(id);
             resourceCache.put(id, new ExecutionResources(synch != null ? synch : true));
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Associating process with execution id: " + id);
+            }
         }
         return id;
     }

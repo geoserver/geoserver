@@ -12,3 +12,4 @@ There are many ways to install GeoServer on your system.  This section will disc
    osx/index
    linux/index
    war
+   upgrade

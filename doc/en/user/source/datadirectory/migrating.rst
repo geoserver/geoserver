@@ -55,6 +55,8 @@ In order to revert the directory to be compatible with 1.7.x again:
 
 #. Rename ``services.xml.old`` to ``services.xml``.
 
+.. _migrating_data_directory_22x:
+
 Migrating between GeoServer 2.1.x and 2.2.x
 -------------------------------------------
 

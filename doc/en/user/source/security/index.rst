@@ -16,5 +16,6 @@ As of GeoServer 2.2.0, the security subsystem has been completely re-engineered,
    root
    service
    layer
+   rest
    disable
    tutorials/index

@@ -54,3 +54,53 @@ In order to revert the directory to be compatible with 1.7.x again:
 #. Rename ``catalog.xml.old`` to ``catalog.xml``.
 
 #. Rename ``services.xml.old`` to ``services.xml``.
+
+Migrating between GeoServer 2.1.x and 2.2.x
+-------------------------------------------
+
+The security changes that ship with GeoServer 2.2 require modifications to the ``security`` directory of the 
+GeoServer data directory.
+
+Files and directories added
+```````````````````````````
+
+::
+
+  security/*.xml
+  security/masterpw.*
+  security/geoserver.jceks
+  security/auth/*
+  security/filter/*
+  security/masterpw/*
+  security/pwpolicy/*
+  security/role/*
+  security/usergroup/*
+  
+Files renamed
+`````````````
+
+  * ``security/users.properties`` renamed to ``security/users.properties.old``
+
+
+Reverting from GeoServer 2.1.x and 2.1.x
+----------------------------------------
+
+In order to restore the GeoServer 2.1 configuration:
+
+#. Stop GeoServer.
+
+#. Rename ``users.properties.old`` to ``users.properties``.
+
+#. Additionally (although not mandatory) delete the following files and directories::
+
+     security/
+       config.xml
+       geoserver.jceks
+       masterpw.xml
+       masterpw.digest
+       auth/
+       filter/
+       masterpw/
+       pwpolicy/
+       role/
+       usergroup/

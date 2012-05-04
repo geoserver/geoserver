@@ -1737,4 +1737,14 @@ public class GWC implements DisposableBean, InitializingBean {
     public static String tileLayerName(LayerGroupInfo lgi) {
         return lgi.prefixedName();
     }
+
+    /**
+     * Flush caches
+     */
+    public void reset() {
+        CatalogConfiguration c = GeoServerExtensions.bean(CatalogConfiguration.class);
+        if (c != null) {
+            c.reset();
+        }
+    }
 }

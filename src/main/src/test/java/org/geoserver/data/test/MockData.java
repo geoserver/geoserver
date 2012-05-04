@@ -7,6 +7,7 @@ package org.geoserver.data.test;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -450,6 +451,25 @@ public class MockData implements TestData {
             Map props = new HashMap(extraProperties);
             props.put(KEY_STYLE, styleName);
             addPropertiesType(name, properties, props);
+        }
+    }
+    
+    public void removeFeatureType(QName typeName) throws IOException {
+        String prefix = typeName.getPrefix();
+        String type = typeName.getLocalPart();
+        File featureTypeDir = new File(featureTypes, prefix + "_" + type);
+        if (!featureTypeDir.exists()) {
+            throw new FileNotFoundException("Type directory not found: "
+                    + featureTypeDir.getAbsolutePath());
+        }
+        File info = new File(featureTypeDir, "info.xml");
+        if (!info.exists()) {
+            throw new FileNotFoundException("FeatureType file not found: "
+                    + featureTypeDir.getAbsolutePath());
+        }
+        if (!IOUtils.delete(featureTypeDir)) {
+            throw new IOException("FetureType directory not deleted: "
+                    + featureTypeDir.getAbsolutePath());
         }
     }
     

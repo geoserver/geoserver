@@ -7,6 +7,7 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 import static com.google.common.collect.Maps.newConcurrentMap;
 
 import java.util.Collections;
@@ -44,6 +45,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * A GWC's {@link Configuration} implementation that provides {@link TileLayer}s directly from the
@@ -59,6 +61,56 @@ import com.google.common.collect.Sets;
  * @see CatalogStyleChangeListener
  */
 public class CatalogConfiguration implements Configuration {
+
+    /**
+     * {@link GeoServerTileLayer} cache loader
+     * 
+     */
+    private final class TileLayerLoader extends CacheLoader<String, GeoServerTileLayer> {
+        private final TileLayerCatalog tileLayerCatalog;
+
+        private TileLayerLoader(TileLayerCatalog tileLayerCatalog) {
+            this.tileLayerCatalog = tileLayerCatalog;
+        }
+
+        @Override
+        public GeoServerTileLayer load(String layerId) throws Exception {
+            GeoServerTileLayer tileLayer = null;
+            final GridSetBroker gridSetBroker = CatalogConfiguration.this.gridSetBroker;
+
+            lock.readLock().lock();
+            try {
+                if (pendingDeletes.contains(layerId)) {
+                    throw new IllegalArgumentException("Tile layer '" + layerId + "' was deleted.");
+                }
+                GeoServerTileLayerInfo tileLayerInfo = pendingModications.get(layerId);
+                if (tileLayerInfo == null) {
+                    tileLayerInfo = tileLayerCatalog.getLayerById(layerId);
+                }
+                if (tileLayerInfo == null) {
+                    throw new IllegalArgumentException("GeoServerTileLayerInfo '" + layerId
+                            + "' does not exist.");
+                }
+
+                LayerInfo layerInfo = geoServerCatalog.getLayer(layerId);
+                if (layerInfo != null) {
+                    tileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker, tileLayerInfo);
+                } else {
+                    LayerGroupInfo lgi = geoServerCatalog.getLayerGroup(layerId);
+                    if (lgi != null) {
+                        tileLayer = new GeoServerTileLayer(lgi, gridSetBroker, tileLayerInfo);
+                    }
+                }
+            } finally {
+                lock.readLock().unlock();
+            }
+            if (null == tileLayer) {
+                throw new IllegalArgumentException("GeoServer layer or layer group '" + layerId
+                        + "' does not exist");
+            }
+            return tileLayer;
+        }
+    }
 
     private static final Logger LOGGER = Logging.getLogger(CatalogConfiguration.class);
 
@@ -96,44 +148,7 @@ public class CatalogConfiguration implements Configuration {
                 .expireAfterAccess(10, TimeUnit.MINUTES)//
                 .initialCapacity(10)//
                 .maximumSize(100)//
-                .build(new CacheLoader<String, GeoServerTileLayer>() {
-
-                    @Override
-                    public GeoServerTileLayer load(String layerId) throws Exception {
-                        GeoServerTileLayer tileLayer = null;
-                        final GridSetBroker gridSetBroker = CatalogConfiguration.this.gridSetBroker;
-
-                        lock.readLock().lock();
-                        try {
-                            if (pendingDeletes.contains(layerId)) {
-                                return null;
-                            }
-                            GeoServerTileLayerInfo tileLayerInfo = pendingModications.get(layerId);
-                            if (tileLayerInfo == null) {
-                                tileLayerInfo = tileLayerCatalog.getLayerById(layerId);
-                                if (tileLayerInfo == null) {
-                                    return null;
-                                }
-                            }
-
-                            LayerInfo layerInfo = geoServerCatalog.getLayer(layerId);
-                            if (layerInfo != null) {
-                                tileLayer = new GeoServerTileLayer(layerInfo, gridSetBroker,
-                                        tileLayerInfo);
-                                return tileLayer;
-                            }
-
-                            LayerGroupInfo lgi = geoServerCatalog.getLayerGroup(layerId);
-                            if (lgi != null) {
-                                tileLayer = new GeoServerTileLayer(lgi, gridSetBroker,
-                                        tileLayerInfo);
-                            }
-                        } finally {
-                            lock.readLock().unlock();
-                        }
-                        return tileLayer;
-                    }
-                });
+                .build(new TileLayerLoader(tileLayerCatalog));
     }
 
     /**
@@ -266,8 +281,11 @@ public class CatalogConfiguration implements Configuration {
         try {
             layer = layerCache.get(layerId);
         } catch (ExecutionException e) {
-            return null;
+            throw propagate(e.getCause());
+        } catch (UncheckedExecutionException e) {
+            throw propagate(e.getCause());
         }
+
         return layer;
     }
 
@@ -380,9 +398,27 @@ public class CatalogConfiguration implements Configuration {
     public int initialize(GridSetBroker gridSetBroker) {
         lock.writeLock().lock();
         try {
+            LOGGER.info("Initializing GWC configuration based on GeoServer's Catalog");
             this.gridSetBroker = gridSetBroker;
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.initialize();
+
+            // startup sanity check
+            for (String layerId : tileLayerCatalog.getLayerIds()) {
+                final String layerName = tileLayerCatalog.getLayerName(layerId);
+                try {
+                    getTileLayerById(layerId);
+                } catch (Exception e) {
+                    String msg = "GeoServer TileLayer named '" + layerName + "' with id '"
+                            + layerId + "' can't be loaded. "
+                            + "It will be removed from the configuration but you'll need"
+                            + " to delete its cache manually (if any). Original error message: "
+                            + e.getMessage();
+                    LOGGER.log(Level.SEVERE, msg, e);
+                    tileLayerCatalog.delete(layerId);
+                }
+            }
+            LOGGER.info("GWC configuration based on GeoServer's Catalog loaded successfuly");
         } finally {
             lock.writeLock().unlock();
         }
@@ -629,5 +665,15 @@ public class CatalogConfiguration implements Configuration {
             names.add(gridSubset.getGridSetName());
         }
         return names;
+    }
+
+    public void reset() {
+        lock.writeLock().lock();
+        try {
+            this.layerCache.invalidateAll();
+            this.tileLayerCatalog.reset();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 }

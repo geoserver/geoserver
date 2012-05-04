@@ -13,20 +13,25 @@ import org.geoserver.gwc.GWC;
  */
 public class GWCLifeCycleHandler implements GeoServerLifecycleHandler {
 
+    private final GWC mediator;
+
+    public GWCLifeCycleHandler(GWC mediator) {
+        this.mediator = mediator;
+    }
+
     @Override
     public void onReload() {
-        GWC mediator = GWC.get();
         mediator.reload();
     }
 
     @Override
     public void onReset() {
-        // nothing to flush?
+        mediator.reset();
     }
 
     @Override
     public void onDispose() {
-        // nothing to do, dispose is handled by GWC.destroy()
+        onReset();
     }
 
 }

@@ -7,6 +7,7 @@
 
   <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler">
     <description>Reloads the GWC config when GeoServer is called for a reload</description>
+    <constructor-arg ref="gwcFacade" />
   </bean>
   
   <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions">

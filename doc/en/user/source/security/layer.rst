@@ -7,29 +7,46 @@ GeoServer allows access to be determined on a per-layer basis.
 
 .. note::  Layer security and :ref:`sec_service` cannot be combined.  For example, it is not possible to specify access to a specific OWS service only for one specific layer.
 
-Access to layers are linked to :ref:`roles <sec_rolesystem_roles>`.  Layers and roles are linked in a file called ``layers.properties``, which is located in the ``security`` directory in your GeoServer data directory.
+Access to layers are linked to :ref:`roles <sec_rolesystem_roles>`.  Layers and roles are linked in a file called ``layers.properties``, which is located in the ``security`` directory in your GeoServer data directory. The file contains the
+rules that control access to workspaces and layers.
 
-The syntax for specifying layer security is as follows::
+Rules
+-----
 
-  namespace.layer.permission=role[,role2,...]
+The syntax for a layer security rule is as follows where ``[]`` denotes optional
+parameters::
+
+  workspace.layer.permission=role[,role2,...]
 
 where:
 
-* ``[]`` denotes optional parameters
-* ``namespace`` is the name of the namespace. The wildcard ``*`` is used to indicate all namespaces.
-* ``layer`` is the name of a featuretype or coverage. The wildcard ``*`` is used to indicate all layers.
-* ``permission`` is the type of access permission (``r`` for read access, ``w`` for write access).
+* ``workspace`` is the name of the workspace. The wildcard ``*`` is used to indicate all workspaces.
+* ``layer`` is the name of a resource (featuretype/coverage/etc...). The wildcard ``*`` is used to indicate all layers.
+* ``permission`` is the type of access permission/mode. 
+   
+   * ``r`` for read access
+   * ``w`` for write access
+   * ``a`` for admin access
+   
+   See :ref:`access_mode` for more details.
+   
 * ``role[,role2,...]`` is the name(s) of predefined roles. The wildcard ``*`` is used to indicate the permission is applied to all users, including anonymous users.
 
 .. note:: 
 
-   If a namespace or layer name is supposed to contain dots they can be escaped using double backslashes (``\\``). For example, if a layer is named ``layer.with.dots`` the following syntax for a rule can be used::
+   If a workspace or layer name is supposed to contain dots they can be escaped using double backslashes (``\\``). For example, if a layer is named ``layer.with.dots`` the following syntax for a rule can be used::
 
      topp.layer\\.with\\.dots.r=role[,role2,...]
 
-Each entry must have a unique combination of namespace, layer, and permission values.  If a permission at the global level is not specified, global permissions are assumed to allow read/write access.  If a permission for a namespace is not specified, it inherits permissions from the global specification.  If a permission for a layer is not specified, it inherits permissions from its namespace specification.  If a user belongs to multiple roles, the **least restrictive** permission they inherit will apply.
+Each entry must have a unique combination of workspace, layer, and permission values.  If a permission at the global level is not specified, global permissions are assumed to allow read/write access.  If a permission for a workspace is not specified, it inherits permissions from the global specification.  If a permission for a layer is not specified, it inherits permissions from its workspace specification.  If a user belongs to multiple roles, the **least restrictive** permission they inherit will apply.
 
-The ``layers.properties`` file may contain a further directive that specifies the way in which GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges. The line is::
+Catalog Mode
+------------
+
+The ``layers.properties`` file may contain a further directive that specifies the way in which GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges. The parameter is
+named ``mode`` and is commonly referred to as the "catalog mode".
+
+The syntax is::
 
    mode=option
 
@@ -47,14 +64,41 @@ where ``option`` can be one of three values:
    * - ``mixed``
      - Hides the layers the user cannot read from the capabilities documents, but triggers authentication for any other attempt to access the data or the metadata. This option is useful if you don't want the world to see the existence of some of your data, but you still want selected people to who have data access links to get the data after authentication.
 
+.. _access_mode:
 
+Access Mode
+-----------
 
+The access mode defines what level of access to grant on a specific 
+workspace/layer to a particular role. Three types of access mode exist:
+
+   * ``r`` represents the ability to *read* data from a workspace/layer
+   * ``w`` represents the ability to *write* data in a workspace/layer
+   * ``a`` represents the ability to *admin* (access and modify configuration) a workspace/layer
+   
+The read and write modes apply only the data of a layer itself, the admin mode applies onto to the configuration of a layer.
+
+.. note::
+
+   Currently it is only possible to assign admin permission to an entire 
+   workspace, and not on a layer by layer basis. For example, the following is 
+   possible::
+   
+       topp.*.a=ROLE_TOPP_ADMIN
+       
+   The following is not supported::
+   
+       topp.*.a=ROLE_TOPP_ADMIN
+   
+   In other words administrative access is only assignable at the workspace 
+   level ,and not at the layer level.
+   
 Examples
 --------
 
 The following are some examples of desired layer restrictions and the corresponding rules.
 
-Protecting a single namespace and a single layer
+Protecting a single workspace and a single layer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following entries demonstrate configuring GeoServer so that it is primarily a read-only server::
@@ -75,7 +119,7 @@ In this example, here is the map of roles to permissions:
      - private.*
      - topp.*
      - topp.congress_district
-     - (all other namespaces)
+     - (all other workspaces)
    * - ``NO_ONE``
      - (none)
      - w
@@ -117,7 +161,7 @@ In this example, here is the map of roles to permissions:
    * - Role
      - topp.*
      - army.*
-     - (All other namespaces)
+     - (All other workspaces)
    * - ``TRUSTED_ROLE``
      - r/w
      - r/w
@@ -131,10 +175,18 @@ In this example, here is the map of roles to permissions:
      - (none)
      - (none)
 
+Providing restricted administrative access
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following provides administrative access on a single workspace to a specific role, in additional to the full administrator role::
+
+  *.*.a=ROLE_ADMINISTRATOR
+  topp.*.a=ROLE_TOPP_ADMIN,ROLE_ADMINISTRATOR
+
 A more complex situation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following entries demonstrate configuring GeoServer with global-, namespace--, and layer-level permissions::
+The following entries demonstrate configuring GeoServer with global-, workspace--, and layer-level permissions::
 
    *.*.r=TRUSTED_ROLE
    *.*.w=NO_ONE
@@ -156,7 +208,7 @@ In this example, here is the map of roles to permissions:
      - topp.poly_landmarks
      - topp.military_bases
      - topp.(all other layers)
-     - (All other namespaces)
+     - (All other workspaces)
    * - ``NO_ONE``
      - w
      - r
@@ -200,7 +252,7 @@ In this example, here is the map of roles to permissions:
 Invalid configuration
 ~~~~~~~~~~~~~~~~~~~~~
 
-The following set of entries would not be valid because the namespace, layer, and permission combinations of the entries are not unique::
+The following set of entries would not be valid because the workspace, layer, and permission combinations of the entries are not unique::
 
    topp.state.rw=ROLE1
    topp.state.rw=ROLE2,ROLE3

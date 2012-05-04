@@ -1,9 +1,12 @@
 package org.geoserver.wps;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.geoserver.wps.jts.AnnotatedBeanProcessFactory;
+import org.geoserver.wps.jts.DescribeParameter;
 import org.geoserver.wps.jts.DescribeResult;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.ProcessException;
@@ -18,7 +21,7 @@ public class MonkeyProcess {
         Exit, SetProgress, Exception
     }
 
-    static BlockingQueue<Command> commands = new LinkedBlockingQueue<MonkeyProcess.Command>();
+    static Map<String, BlockingQueue<Command>> commands = new HashMap<String, BlockingQueue<MonkeyProcess.Command>>();
 
     private static class Command {
         CommandType type;
@@ -32,39 +35,50 @@ public class MonkeyProcess {
 
     }
 
-    public static void exit(SimpleFeatureCollection value, boolean wait) throws InterruptedException {
-        commands.offer(new Command(CommandType.Exit, value));
+    public static void exit(String id, SimpleFeatureCollection value, boolean wait) throws InterruptedException {
+        getCommandQueue(id).offer(new Command(CommandType.Exit, value));
         if(wait) {
-            while(commands.size() > 0) {
+            while(getCommandQueue(id).size() > 0) {
                 Thread.sleep(10);
             }
         }
     }
 
-    public static void progress(float progress, boolean wait) throws InterruptedException {
-        commands.offer(new Command(CommandType.SetProgress, progress));
+    private synchronized static BlockingQueue<Command> getCommandQueue(String id) {
+        BlockingQueue<Command> queue = commands.get(id);
+        if(queue == null) {
+            queue = new LinkedBlockingQueue<MonkeyProcess.Command>();
+            commands.put(id, queue);
+        }
+        
+        return queue;
+    }
+
+    public static void progress(String id, float progress, boolean wait) throws InterruptedException {
+        getCommandQueue(id).offer(new Command(CommandType.SetProgress, progress));
         if(wait) {
-            while(commands.size() > 0) {
+            while(getCommandQueue(id).size() > 0) {
                 Thread.sleep(10);
             }
         }
 
     }
 
-    public static void exception(ProcessException exception, boolean wait) throws InterruptedException {
-        commands.offer(new Command(CommandType.Exception, exception));
+    public static void exception(String id, ProcessException exception, boolean wait) throws InterruptedException {
+        getCommandQueue(id).offer(new Command(CommandType.Exception, exception));
         if(wait) {
-            while(commands.size() > 0) {
+            while(getCommandQueue(id).size() > 0) {
                 Thread.sleep(10);
             }
         }
     }
     
     @DescribeResult(name="result")
-    public SimpleFeatureCollection execute(ProgressListener listener) throws Exception {
+    public SimpleFeatureCollection execute(@DescribeParameter(name = "id") String id, ProgressListener listener) throws Exception {
         while (true) {
-            Command command = commands.take();
+            Command command = getCommandQueue(id).take();
             if (command.type == CommandType.Exit) {
+                commands.remove(id);
                 return (SimpleFeatureCollection) command.value;
             } else if (command.type == CommandType.SetProgress) {
                 listener.progress(((Number) command.value).floatValue());

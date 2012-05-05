@@ -61,7 +61,7 @@ If further changes to the view are required, the page has a link to the SQL View
    :align: center
 
 Once created, the SQL view layer is used in the same way as a conventional table-backed layer,
-with the one limitation that SQL Views are read-only.
+with the one limitation of being read-only.
 
 Parameterizing SQL Views
 ------------------------

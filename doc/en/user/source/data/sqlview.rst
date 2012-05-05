@@ -13,6 +13,8 @@ Parameter values can be supplied in both WMS and WFS requests.
 Default values can be supplied for parameters, and input values can be validated by Regular Expressions 
 to eliminate the risk of SQL injection attacks.
 
+SQL Views are read-only, and thus cannot be updated by WFS-T transactions.
+
 Creating a SQL View
 -------------------------
 
@@ -58,7 +60,8 @@ If further changes to the view are required, the page has a link to the SQL View
 .. figure:: images/sqlview-edit.png
    :align: center
 
-Once created, the SQL view layer is used in the same way as a conventional table-backed layer.
+Once created, the SQL view layer is used in the same way as a conventional table-backed layer,
+with the one limitation that SQL Views are read-only.
 
 Parameterizing SQL Views
 ------------------------

@@ -1,12 +1,20 @@
 .. _extension_querylayer:
 
-Cross layer filtering
+Cross-layer filtering
 =====================
 
 Cross-layer filtering provides the ability to find features from layer A that have a certain relationship to features in layer B.
-This can be used, for example, to find all bus stops within a given distance from a particular shop, or to find all coffe shops in a certain city district.
-The **querylayer** module adds a few extra filter functions that implement cross-layer filtering, 
-Filter functions are widely supported in GeoServer, so this allows cross-layer filtering to be used in SLDs and WMS and WFS requests, via both XML and CQL filters.
+This can be used, for example, to find all bus stops within a given distance from a specified shop, 
+or to find all coffee shops contained in a specified city district.
+
+The **querylayer** module adds filter functions that implement cross-layer filtering.
+The functions work by querying a secondary layer within a filter being applied to a primary layer.
+The name of the secondary layer and an attribute to extract from it are provided as arguments,
+along with an ECQL filter expression to determine which features are of interest.
+A common use case is to extract a geometry-valued attribute, and then use the
+value(s) in a spatial predicate against a geometry attribute in the primary layer.
+
+Filter functions are widely supported in GeoServer, so cross-layer filtering can be used in SLD rules and WMS and WFS requests, in either XML or CQL filters.
 
 Installing the querylayer module
 ----------------------------------
@@ -15,7 +23,7 @@ Installing the querylayer module
 
    .. warning:: The version of the extension **must** match the version of the GeoServer instance
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the extension archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 #. To check the module is properly installed request the WFS 1.1 capabilities from the GeoServer home page.
    The ``Filter_Capabilities`` section should contain a reference to a function named ``queryCollection``.
 
@@ -43,6 +51,8 @@ Installing the querylayer module
 
 Function reference
 ------------------
+
+The extension provides the following filter functions to support cross-layer filtering.
 
 .. list-table::
    :widths: 20 25 55
@@ -84,9 +94,10 @@ Memory limits
 -------------
 
 The ``queryCollection`` and ``collectGeometries`` functions do not perform a true database-style join.
-Instead they execute a query against the target layer every time they are executed, and load the result into memory.
-The functions thus risk filling up server memory with data if the query result set is large, or if the collected geometries are large.
-To avoid impacting server stability there are built-in limits to how much data can be processed:
+Instead they execute a query against the secondary layer every time they are executed, and load the entire result into memory.
+The functions thus risk using excessive server memory if the query result set is very large, 
+or if the collected geometries are very large.
+To prevent impacting server stability there are built-in limits to how much data can be processed:
 
 * at most 1000 features are collected by ``queryCollection``
 * at most 37000 coordinates (1MB worth of Coordinate objects) are collected by ``collectGeometries``
@@ -103,7 +114,7 @@ The following examples use the ``sf:bugsites``, ``sf:roads`` and ``sf:restricted
 
 * **Display only the bug sites overlapping the restricted area whose category is 3**:
 
-The CQL filter on the ``bugsites`` layer is 
+The CQL cross-layer filter on the ``bugsites`` layer is 
 
   ``INTERSECTS(the_geom, querySingle('restricted', 'the_geom','cat = 3'))``. 
   
@@ -120,7 +131,7 @@ The result is:
    
 * **Display all bug sites within 200 meters of any road**:
 
-The CQL filter on the ``bugsites`` layer is 
+The CQL cross-layer filter on the ``bugsites`` layer is 
 
   ``DWITHIN(the_geom, collectGeometries(queryCollection('sf:roads','the_geom','INCLUDE')), 200, meters)``. 
   

@@ -166,23 +166,40 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 item.add(new SimpleAttributeModifier("class", index % 2 == 0 ? "even" : "odd"));
 
                 final XMLGridSubset gridSubset = item.getModelObject();
-                final GridSet gridSet = GWC.get().getGridSetBroker()
-                        .get(gridSubset.getGridSetName());
+                GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
 
+                String gridsetDescription = null;
+                int gridsetLevels;
+                boolean gridsetExists;
+                {
+                    final GridSet gridSet = gridSetBroker.get(gridSubset.getGridSetName());
+                    gridsetExists = gridSet != null;
+                    if (gridsetExists) {
+                        gridsetLevels = gridSet.getNumLevels();
+                        gridsetDescription = gridSet.getDescription();
+                    } else {
+                        gridsetLevels = gridSubset.getZoomStop() == null ? 1 : gridSubset
+                                .getZoomStop().intValue();
+                    }
+                }
                 final Label gridSetLabel;
                 final Component gridSetBounds;
 
                 gridSetLabel = new Label("gridSet", new PropertyModel<String>(item.getModel(),
                         "gridSetName"));
+                if(!gridsetExists){
+                    gridSetLabel.add(new AttributeModifier("style", true, new Model<String>("color:red;text-decoration:line-through;")));
+                    getPage().warn("GridSet " + gridSubset.getGridSetName() + " does not exist");
+                }
                 item.add(gridSetLabel);
-                if (null != gridSet.getDescription()) {
-                    gridSetLabel.add(new AttributeModifier("title", true, new Model<String>(gridSet
-                            .getDescription())));
+                if (null != gridsetDescription) {
+                    gridSetLabel.add(new AttributeModifier("title", true, new Model<String>(
+                            gridsetDescription)));
                 }
 
                 final Component removeLink;
 
-                final int maxZoomLevel = gridSet.getGridLevels().length - 1;
+                final int maxZoomLevel = gridsetLevels - 1;
                 final ArrayList<Integer> zoomLevels = new ArrayList<Integer>(maxZoomLevel + 1);
                 for (int z = 0; z <= maxZoomLevel; z++) {
                     zoomLevels.add(Integer.valueOf(z));
@@ -212,17 +229,21 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                 final IModel<List<Integer>> allLevels = new Model(zoomLevels);
 
                 zoomStart = new ZoomLevelDropDownChoice("zoomStart", zoomStartModel, allLevels);
+                zoomStart.setEnabled(gridsetExists);
                 item.add(zoomStart);
 
                 zoomStop = new ZoomLevelDropDownChoice("zoomStop", zoomStopModel, allLevels);
+                zoomStop.setEnabled(gridsetExists);
                 item.add(zoomStop);
 
                 minCachedLevel = new ZoomLevelDropDownChoice("minCachedLevel", minCachedLevelModel,
                         allLevels);
+                minCachedLevel.setEnabled(gridsetExists);
                 item.add(minCachedLevel);
 
                 maxCachedLevel = new ZoomLevelDropDownChoice("maxCachedLevel", maxCachedLevelModel,
                         allLevels);
+                maxCachedLevel.setEnabled(gridsetExists);
                 item.add(maxCachedLevel);
 
                 for (ZoomLevelDropDownChoice dropDown : Arrays.asList(zoomStart, zoomStop,

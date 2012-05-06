@@ -9,5 +9,6 @@ This section describes how coordinate reference systems (CRS) are handled in Geo
    :maxdepth: 2
 
    configurecrs
+   gridshift
    customcrs
    manualepsg

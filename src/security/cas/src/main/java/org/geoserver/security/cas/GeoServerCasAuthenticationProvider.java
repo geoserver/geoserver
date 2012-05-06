@@ -67,6 +67,6 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
         RequestFilterChain casChain = 
             new RequestFilterChain(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN);
         casChain.setFilterNames(pgtCallback.getName());
-        filterChain.getRequestChains().add(casChain);
+        filterChain.getRequestChains().add(0,casChain);
     }
 }

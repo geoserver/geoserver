@@ -2,6 +2,7 @@ package org.vfny.geoserver.crs;
 
 import java.io.File;
 
+import org.geoserver.data.test.MockData;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.datum.BursaWolfParameters;
@@ -12,11 +13,13 @@ import org.opengis.referencing.crs.ProjectedCRS;
 public class OvverideCRSTest extends GeoServerTestSupport {
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        new File(dataDirectory.getDataDirectoryRoot(), "user_projections").mkdir();
+        dataDirectory.copyTo(OvverideCRSTest.class.getResourceAsStream("test_override_epsg.properties"), "user_projections/epsg_overrides.properties");
         
-        new File(getTestData().getDataDirectoryRoot(), "epsg").mkdir();
-        getTestData().copyTo(OvverideCRSTest.class.getResourceAsStream("override_epsg.properties"), "epsg/override_epsg.properties");
+        CRS.reset("all");
+
+        super.populateDataDirectory(dataDirectory);
     }
     
     public void testOverride() throws Exception {

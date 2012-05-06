@@ -1,0 +1,105 @@
+package org.vfny.geoserver.crs;
+
+import java.io.File;
+
+import org.geoserver.data.test.MockData;
+import org.geoserver.test.GeoServerTestSupport;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.ConcatenatedOperation;
+import org.opengis.referencing.operation.CoordinateOperation;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
+
+public class OvverideTransformationsTest extends GeoServerTestSupport {
+    
+    private static final String SOURCE_CRS = "EPSG:TEST1";
+    private static final String TARGET_CRS = "EPSG:TEST2";
+    
+    private static final double[] SRC_TEST_POINT = {39.592654167, 3.084896111};
+    private static final double[] DST_TEST_POINT = {39.594235744481225, 3.0844689951999427};
+
+    @Override
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        // setup the grid file, the definitions and the tx overrides
+        new File(dataDirectory.getDataDirectoryRoot(), "user_projections").mkdir();
+        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg.properties"), "user_projections/epsg.properties");
+        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg_operations.properties"), "user_projections/epsg_operations.properties");
+        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("stgeorge.las"), "user_projections/stgeorge.las");
+        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("stgeorge.los"), "user_projections/stgeorge.los");
+        
+        CRS.reset("all");
+
+        super.populateDataDirectory(dataDirectory);
+    }
+    
+    /**
+     * Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}.
+     * @throws TransformException 
+     */
+    public void testCreateOperationFromCustomCodes() throws Exception {
+        // Test CRSs
+        CoordinateReferenceSystem source = CRS.decode(SOURCE_CRS);
+        CoordinateReferenceSystem target = CRS.decode(TARGET_CRS);
+        MathTransform mt = CRS.findMathTransform(source, target, true);
+        
+        // Test MathTransform
+        double[] p = new double[2];
+        mt.transform(SRC_TEST_POINT, 0, p, 0, 1);
+        assertEquals(p[0], DST_TEST_POINT[0], 1e-8);
+        assertEquals(p[1], DST_TEST_POINT[1], 1e-8);
+    }
+    
+    /**
+     * Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}.
+     * @throws TransformException 
+     */
+    public void testOverrideEPSGOperation() throws Exception {
+        // Test CRSs
+        CoordinateReferenceSystem source = CRS.decode("EPSG:4269");
+        CoordinateReferenceSystem target = CRS.decode("EPSG:4326");
+        MathTransform mt = CRS.findMathTransform(source, target, true);
+        
+        // Test MathTransform
+        double[] p = new double[2];
+        mt.transform(SRC_TEST_POINT, 0, p, 0, 1);
+        assertEquals(p[0], DST_TEST_POINT[0], 1e-8);
+        assertEquals(p[1], DST_TEST_POINT[1], 1e-8);
+    }
+    
+    /**
+     * Check we are actually using the EPSG database for anything not in override
+     * 
+     * @throws TransformException 
+     */
+    public void testFallbackOnEPSGDatabaseStd() throws Exception {
+        // Test CRSs
+        CoordinateReferenceSystem source = CRS.decode("EPSG:3003");
+        CoordinateReferenceSystem target = CRS.decode("EPSG:4326");
+        CoordinateOperation co = CRS.getCoordinateOperationFactory(true).createOperation(source, target);
+        ConcatenatedOperation cco = (ConcatenatedOperation) co;
+        // the EPSG one only has two steps, the non EPSG one 4
+        assertEquals(2, cco.getOperations().size());
+    }
+    
+    /**
+     * See if we can use the stgeorge grid shift files as the ESPG db would like us to
+     * @throws Exception
+     */
+    public void testNadCon() throws Exception {
+        CoordinateReferenceSystem crs4138 = CRS.decode("EPSG:4138");
+        CoordinateReferenceSystem crs4326 = CRS.decode("EPSG:4326");
+        MathTransform mt = CRS.findMathTransform(crs4138, crs4326);
+        
+        assertTrue(mt.toWKT().contains("NADCON"));
+     
+        double[] src = new double[] {-169.625, 56.575};
+        double[] expected = new double [] {-169.62744, 56.576034};
+        double[] p = new double[2];
+        mt.transform(src, 0, p, 0, 1);
+        assertEquals(expected[0], p[0], 1e-6);
+        assertEquals(expected[1], p[1], 1e-6);
+    }
+    
+}

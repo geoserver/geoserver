@@ -18,9 +18,9 @@ import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
-import org.geoserver.security.password.GeoServerNullPasswordEncoder;
+import org.geoserver.security.password.GeoServerEmptyPasswordEncoder;
+import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
-import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.test.GeoServerAbstractTestSupport;
 import org.geotools.data.DataUtilities;
@@ -325,7 +325,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
         assertFalse(user2.isGroupAdmin());
         assertTrue(groupAdminUser.isGroupAdmin());*/
 
-        GeoServerPasswordEncoder encoder = getEncoder(userGroupService);
+        GeoServerMultiplexingPasswordEncoder encoder = getEncoder(userGroupService);
         assertTrue(encoder.isPasswordValid(admin.getPassword(), "geoserver", null));
         assertTrue(encoder.isPasswordValid(user1.getPassword(), "11111", null));
         assertTrue(encoder.isPasswordValid(user2.getPassword(), "22222", null));
@@ -396,7 +396,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
     protected void checkValuesModified(GeoServerUserGroupService userGroupService) throws IOException {
         GeoServerUser disableduser = userGroupService.getUserByUsername("disableduser");
         assertTrue(disableduser.isEnabled());
-        GeoServerPasswordEncoder encoder = getEncoder(userGroupService);
+        GeoServerMultiplexingPasswordEncoder encoder = getEncoder(userGroupService);
         assertTrue(encoder.isPasswordValid(disableduser.getPassword(), "hallo", null));
         assertEquals(1, disableduser.getProperties().size());
         assertEquals("miller", disableduser.getProperties().getProperty("lastname"));
@@ -546,19 +546,10 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
         return false;
     }
 
-    protected GeoServerPasswordEncoder getEncoder(GeoServerUserGroupService ugService) throws IOException {
-        GeoServerPasswordEncoder enc = 
-            getSecurityManager().loadPasswordEncoder(ugService.getPasswordEncoderName());
-        enc.initializeFor(ugService);
-        return enc;
+    protected GeoServerMultiplexingPasswordEncoder getEncoder(GeoServerUserGroupService ugService) throws IOException {
+        return new GeoServerMultiplexingPasswordEncoder(getSecurityManager(),ugService);
     }
 
-    /**
-     * Accessor for null password encoder.
-     */
-    protected GeoServerNullPasswordEncoder getNullPasswordEncoder() {
-        return getSecurityManager().loadPasswordEncoder(GeoServerNullPasswordEncoder.class);
-    }
 
     /**
      * Accessor for plain text password encoder.
@@ -587,4 +578,12 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
     protected GeoServerPBEPasswordEncoder getStrongPBEPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, true);
     }
+    
+    /**
+     * Accessor for empty password encoder.
+     */
+    protected GeoServerEmptyPasswordEncoder getEmptyEncoder() {
+        return getSecurityManager().loadPasswordEncoder(GeoServerEmptyPasswordEncoder.class);
+    }
+
 }

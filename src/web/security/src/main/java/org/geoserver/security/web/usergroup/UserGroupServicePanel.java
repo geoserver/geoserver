@@ -4,23 +4,27 @@
  */
 package org.geoserver.security.web.usergroup;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
+import org.geoserver.security.impl.Util;
 import org.geoserver.security.web.SecurityNamedServicePanel;
 import org.geoserver.security.web.SecurityNamedServiceTabbedPanel;
 import org.geoserver.security.web.group.GroupPanel;
-import org.geoserver.security.web.user.UserPanel;
 import org.geoserver.security.web.passwd.PasswordEncoderChoice;
 import org.geoserver.security.web.passwd.PasswordPolicyChoice;
+import org.geoserver.security.web.user.UserPanel;
 
 /**
  * Base class for user group service panels.
@@ -32,10 +36,38 @@ import org.geoserver.security.web.passwd.PasswordPolicyChoice;
 public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig> 
     extends SecurityNamedServicePanel<T> implements SecurityNamedServiceTabbedPanel<T> {
 
+    CheckBox recodeCheckBox=null;
+
     public UserGroupServicePanel(String id, IModel<T> model) {
         super(id, model);
 
-        add(new PasswordEncoderChoice("passwordEncoderName"));
+        
+        add(new PasswordEncoderChoice("passwordEncoderName").add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (recodeCheckBox.isVisible()) {
+                    recodeCheckBox.setEnabled(true);
+                    target.addComponent(recodeCheckBox);
+                }
+            }
+        }));
+
+        boolean canCreateStore=false;
+        SecurityUserGroupServiceConfig config = model.getObject();
+        try {
+            GeoServerUserGroupService s = 
+                (GeoServerUserGroupService) Class.forName(config.getClassName()).newInstance();
+            canCreateStore=s.canCreateStore();
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        
+        recodeCheckBox= new CheckBox("recodeExistingPasswords", Model.of(false));
+        recodeCheckBox.setOutputMarkupId(true);
+        recodeCheckBox.setVisible(canCreateStore);
+        recodeCheckBox.setEnabled(false);
+        add(recodeCheckBox);
         add(new PasswordPolicyChoice("passwordPolicyName"));
     }
 
@@ -60,10 +92,15 @@ public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig>
     @Override
     public void doSave(T config) throws Exception {
         getSecurityManager().saveUserGroupService(config);
+        if (recodeCheckBox.getModelObject()) {
+            GeoServerUserGroupService s = getSecurityManager().loadUserGroupService(config.getName());
+            if (s.canCreateStore()) {
+                Util.recodePasswords(s.createStore());
+            }
+        }
     }
 
     public void doLoad(T config) throws Exception {
         getSecurityManager().loadUserGroupServiceConfig(config.getName());
     }
-
 }

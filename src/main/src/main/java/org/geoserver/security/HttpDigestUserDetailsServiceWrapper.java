@@ -4,7 +4,6 @@
  */
 package org.geoserver.security;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,15 +14,14 @@ import java.util.List;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.UserDetailsWrapper;
-import org.geoserver.security.password.GeoServerPasswordEncoder;
-import org.geoserver.security.password.PasswordEncodingType;
+import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.UserDetailsPasswordWrapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
 /**
@@ -69,25 +67,14 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
     protected Charset charSet;
     protected final char[] delimArray= new char[] {':' };
     protected MessageDigest digest;
-    protected GeoServerPasswordEncoder enc;
+    protected GeoServerMultiplexingPasswordEncoder enc;
     
     public HttpDigestUserDetailsServiceWrapper(GeoServerUserGroupService service,Charset charSet) {
        this.service= service;
        this.charSet=charSet;
        manager = service.getSecurityManager();
-
-       enc = service.getSecurityManager().loadPasswordEncoder(service.getPasswordEncoderName());
-       if ((enc.getEncodingType()==PasswordEncodingType.PLAIN ||
-                  enc.getEncodingType()==PasswordEncodingType.ENCRYPT)==false)
-           throw new RuntimeException("Invalid configuration, cannot decode passwords");
-       
+       enc = new GeoServerMultiplexingPasswordEncoder(service.getSecurityManager(),service);                         
         try {
-            enc.initializeFor(service);
-        } catch (IOException e1) {
-            throw new RuntimeException(e1);
-        }
-                         
-        try {            
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("No MD5 algorithm available!");
@@ -109,18 +96,18 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
     UserDetails prepareForUser (GeoServerUser user) {
         char[] pw = null;
         try {            
-             pw = enc.decodeToCharArray(user.getPassword());
-            //pw = enc.decode(user.getPassword()).toCharArray();
-            String a1 = encodePasswordInA1Format(user.getUsername(), 
+            pw = enc.decodeToCharArray(user.getPassword());
+        } catch (UnsupportedOperationException ex) {
+            pw = user.getPassword().toCharArray();
+        }    
+             
+        String a1 = encodePasswordInA1Format(user.getUsername(), 
                     GeoServerSecurityManager.REALM, pw);
-            
-            List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
-            roles.addAll(user.getAuthorities());
-            roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-            return new DigestUserDetails(user, a1,roles);
-        } finally {
-            manager.disposePassword(pw);
-        }        
+        manager.disposePassword(pw);    
+        List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+        roles.addAll(user.getAuthorities());
+        roles.add(GeoServerRole.AUTHENTICATED_ROLE);                
+        return new DigestUserDetails(user, a1,roles);
     }
     
     UserDetails prepareForRootUser () {

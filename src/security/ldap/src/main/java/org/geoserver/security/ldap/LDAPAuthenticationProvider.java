@@ -37,19 +37,17 @@ public class LDAPAuthenticationProvider extends
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config)
             throws IOException {
-        // TODO Auto-generated method stub
         super.initializeFromConfig(config);
     }
-    
-    /** TODO, Justin
-     *  Added the GeoServerRole.AUTHENTICATED_ROLE system role 
-     */
+
     @Override
-    public Authentication authenticate(Authentication authentication, HttpServletRequest request)
-            throws AuthenticationException {
-        
+    protected Authentication doAuthenticate(Authentication authentication,
+            HttpServletRequest request) throws AuthenticationException {
+     
         UsernamePasswordAuthenticationToken  auth = 
                 (UsernamePasswordAuthenticationToken) super.authenticate(authentication, request);
+        
+        if (auth==null) return null; // next provider
         
         if (auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)==false) {
             List<GrantedAuthority> roles= new ArrayList<GrantedAuthority>();

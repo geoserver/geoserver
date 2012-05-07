@@ -141,8 +141,8 @@ public class ConfigurationPasswordEncryptionHelper {
      * Decrypts previously encrypted store connection parameters.
      */
     public void decode(StoreInfo info) {
-        List<GeoServerPBEPasswordEncoder> encoders =
-            securityManager.loadPasswordEncoders(GeoServerPBEPasswordEncoder.class);
+        List<GeoServerPasswordEncoder> encoders =
+            securityManager.loadPasswordEncoders(null,true,null);
 
         Set<String> encryptedFields = getEncryptedFields(info);
         if (info.getConnectionParameters() !=null) {
@@ -162,11 +162,13 @@ public class ConfigurationPasswordEncryptionHelper {
      */
     public String decode(String value) {
         return decode(value, 
-            securityManager.loadPasswordEncoders(GeoServerPBEPasswordEncoder.class));
+            securityManager.loadPasswordEncoders(null,true,null));
     }
 
-    String decode(String value, List<GeoServerPBEPasswordEncoder> encoders) {
-        for (GeoServerPBEPasswordEncoder encoder : encoders) {
+    String decode(String value, List<GeoServerPasswordEncoder> encoders) {
+        for (GeoServerPasswordEncoder encoder : encoders) {
+            if (encoder.isReversible()==false)
+                continue; // should not happen
             if (encoder.isResponsibleForEncoding(value)) {
                 return encoder.decode(value);
             }

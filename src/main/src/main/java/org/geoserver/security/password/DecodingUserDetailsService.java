@@ -30,19 +30,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class DecodingUserDetailsService implements UserDetailsService {
 
     protected GeoServerUserGroupService service;
-    protected GeoServerPasswordEncoder encoder;
-    /**
-     * True if passwords can be decoded
-     * 
-     * @param service
-     * @return
-     */
-    public static boolean canBeUsedFor(GeoServerUserGroupService service) {
-        GeoServerPasswordEncoder enc = 
-            service.getSecurityManager().loadPasswordEncoder(service.getPasswordEncoderName());
-        return enc.getEncodingType()==PasswordEncodingType.PLAIN ||
-               enc.getEncodingType()==PasswordEncodingType.ENCRYPT;
-    }
+    protected GeoServerMultiplexingPasswordEncoder encoder;
     
     /**
      * Creates a new Instance
@@ -51,8 +39,6 @@ public class DecodingUserDetailsService implements UserDetailsService {
      * @throws IOException
      */
     public static DecodingUserDetailsService newInstance(GeoServerUserGroupService service) throws IOException {
-        if (canBeUsedFor(service)==false)
-            throw new IOException("Invalid password encoding type");
         DecodingUserDetailsService decodingService = new DecodingUserDetailsService();
         decodingService.setGeoserverUserGroupService(service);        
         return decodingService;
@@ -74,12 +60,11 @@ public class DecodingUserDetailsService implements UserDetailsService {
      */
     public void setGeoserverUserGroupService(GeoServerUserGroupService service) throws IOException {
         this.service=service;
-        encoder = service.getSecurityManager().loadPasswordEncoder(service.getPasswordEncoderName());
-        encoder.initializeFor(service);
+        encoder=new GeoServerMultiplexingPasswordEncoder(service.getSecurityManager(),service);
     }
     
     /**
-     * loads the user and decodes the password to plain text.
+     * loads the user and decodes the password to plain text (if possible).
      * 
      */
     @Override
@@ -87,9 +72,12 @@ public class DecodingUserDetailsService implements UserDetailsService {
             DataAccessException {
         GeoServerUser user = (GeoServerUser) service.loadUserByUsername(username);
         if (user==null) return null;
-        if (encoder.isResponsibleForEncoding(user.getPassword()))
-            return new UserDetailsPasswordWrapper(user, encoder.decode(user.getPassword()));
-        return user;
+        try {
+            String decoded = encoder.decode(user.getPassword());
+            return new UserDetailsPasswordWrapper(user, decoded);
+        } catch (UnsupportedOperationException ex) {
+            return new UserDetailsPasswordWrapper(user, user.getPassword());
+        }
     }
 
 }

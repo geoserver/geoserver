@@ -9,6 +9,7 @@ import junit.framework.Assert;
 
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
 public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServiceTest {
 
@@ -23,6 +24,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
     }
 
     
+    abstract protected SecurityUserGroupServiceConfig createConfigObject( String name );
 
     public void testInsert() {
         try {
@@ -223,5 +225,82 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         user = store.getUserByUsername("user");
         assertNotNull(user.getPassword());
+    }
+    
+    public void testPasswordRecoding() throws Exception{
+
+        SecurityUserGroupServiceConfig config = getSecurityManager().loadUserGroupServiceConfig(service.getName());        
+        config.setPasswordEncoderName(getPlainTextPasswordEncoder().getName());
+        getSecurityManager().saveUserGroupService(config);
+        service.initializeFromConfig(config);
+        store=service.createStore();        
+        
+        store.addUser(store.createUserObject("u1", "p1", true));
+        store.addUser(store.createUserObject("u2", "p2", true));
+        store.store();
+        
+        Util.recodePasswords(service.createStore());
+        // no recoding
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getPlainTextPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getPlainTextPasswordEncoder().getPrefix()));
+
+        
+        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        getSecurityManager().saveUserGroupService(config);
+        service.initializeFromConfig(config);
+                        
+        Util.recodePasswords(service.createStore());
+        // recoding
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getPBEPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getPBEPasswordEncoder().getPrefix()));
+
+        config.setPasswordEncoderName(getDigestPasswordEncoder().getName());        
+        getSecurityManager().saveUserGroupService(config);
+        service.initializeFromConfig(config);
+
+        Util.recodePasswords(service.createStore());
+        // recoding
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        
+        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        getSecurityManager().saveUserGroupService(config);
+        service.initializeFromConfig(config);
+
+        Util.recodePasswords(service.createStore());
+        // recoding has no effect
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+
+        // add a user with pbe encoding
+        store = service.createStore();
+        store.addUser(store.createUserObject("u3", "p3", true));
+        store.store();
+        
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u3").getPassword().startsWith(getPBEPasswordEncoder().getPrefix()));
+
+        config.setPasswordEncoderName(getEmptyEncoder().getName());
+        getSecurityManager().saveUserGroupService(config);
+        service.initializeFromConfig(config);
+        
+        Util.recodePasswords(service.createStore());
+        // recode u3 to empty
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u3").getPassword().startsWith(getEmptyEncoder().getPrefix()));
+
+        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        getSecurityManager().saveUserGroupService(config);
+        service.initializeFromConfig(config);
+
+        Util.recodePasswords(service.createStore());
+        // recode has no effect
+        assertTrue(service.loadUserByUsername("u1").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2").getPassword().startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u3").getPassword().startsWith(getEmptyEncoder().getPrefix()));
+
+        
     }
 }

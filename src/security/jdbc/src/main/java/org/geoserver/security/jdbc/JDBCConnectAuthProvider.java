@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLInvalidAuthorizationSpecException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,11 +26,13 @@ import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * Authentication Provider based on a successful JDBC Connect
@@ -65,21 +68,29 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
         if (userGroupServiceName!=null) {
             try {
                 GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(userGroupServiceName);
-                details = service.loadUserByUsername(user);
-                if (details.isEnabled()==false) return null; // user is disabled
+                details = service.loadUserByUsername(user);                
+                if (details.isEnabled()==false) {
+                    log (new DisabledException("User "+user+" is disabled"));
+                    return null; 
+                }
             } catch (IOException ex ) {
-                throw new AuthenticationServiceException(ex.getLocalizedMessage(),ex);                
+                log(new AuthenticationServiceException(ex.getLocalizedMessage(),ex));
+                return null;
+            } catch (AuthenticationException ex) {
+                log(ex);
+                return null;
             }
         }
                         
         Connection con = null;
         try {
-            con =DriverManager.getConnection(connectUrl, user, password);                        
+            con =DriverManager.getConnection(connectUrl, user, password);
+        } catch (SQLInvalidAuthorizationSpecException ex) {
+            log(new BadCredentialsException("Bad credentials for "+user, ex));
+            return null;
         } catch (SQLException ex) {
-            // nasty situation, it is not clear if the connect URL is invalid or the 
-            // credentials are not ok, in any case throw a bad credentials exception
-            // TODO, check exception message
-            throw new BadCredentialsException(user);
+            log(new AuthenticationServiceException("JDBC connect error", ex));
+            return null;
         } finally {
             if (con!=null) {
                 try { 

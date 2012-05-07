@@ -46,11 +46,9 @@
 
  
   <!-- password encoders -->
-  <bean id="nullPasswordEncoder"        
-    class="org.geoserver.security.password.GeoServerNullPasswordEncoder">
-  </bean>
   <bean id="emptyPasswordEncoder"
     class="org.geoserver.security.password.GeoServerEmptyPasswordEncoder">
+    <property name="prefix" value="empty" />    
   </bean>
   <bean id="plainTextPasswordEncoder"        
     class="org.geoserver.security.password.GeoServerPlainTextPasswordEncoder">

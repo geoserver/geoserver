@@ -76,6 +76,7 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
             
         // not BadCredentialException is thrown, maybe there is another user with 
         // the same name
+        log(new BadCredentialsException("Bad credentials for"+ token.getPrincipal()));
         return null;
     }
 

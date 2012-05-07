@@ -23,8 +23,8 @@ import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
-import org.geoserver.security.password.PasswordEncodingType;
 import org.geoserver.security.validation.PasswordPolicyException;
 
 
@@ -52,24 +52,6 @@ public class Util {
         return Boolean.valueOf(booleanString.trim());
     }
 
-    /**
-     * Checks if users can be copied from one {@link GeoServerUserGroupService} to another.
-     * This depends on the password encoding
-     * 
-     * @param service
-     * @param store
-     * @return
-     */
-    static public boolean copyPossible(GeoServerUserGroupService service, GeoServerUserGroupStore store) {
-        
-        GeoServerPasswordEncoder from = (GeoServerPasswordEncoder)
-            service.getSecurityManager().loadPasswordEncoder(service.getPasswordEncoderName());
-        if (from.getEncodingType()==PasswordEncodingType.PLAIN || 
-                from.getEncodingType()==PasswordEncodingType.ENCRYPT)
-            return true;
-        
-        return service.getPasswordEncoderName().equals(store.getPasswordEncoderName());
-    }
     
     /**
      * Deep copy of the whole User/Group database
@@ -79,33 +61,30 @@ public class Util {
      * @throws IOException
      */
     static public void copyFrom(GeoServerUserGroupService service, GeoServerUserGroupStore store) throws IOException,PasswordPolicyException {
-        
-        
-        if (copyPossible(service, store)==false)
-            throw new IOException("Cannot copy user/group data, passwords encoders are not compatible");
-        
-        GeoServerPasswordEncoder storeEncoder = null;
-        GeoServerPasswordEncoder serviceEncoder = 
-            service.getSecurityManager().loadPasswordEncoder(service.getPasswordEncoderName());
 
-        serviceEncoder.initializeFor(service);
-        if (serviceEncoder.getEncodingType()==PasswordEncodingType.PLAIN || 
-                serviceEncoder.getEncodingType()==PasswordEncodingType.ENCRYPT) {
-            storeEncoder = 
-                service.getSecurityManager().loadPasswordEncoder(store.getPasswordEncoderName());
-            storeEncoder.initializeFor(store);
-        }
+        GeoServerPasswordEncoder encoder = store.getSecurityManager().loadPasswordEncoder(store.getPasswordEncoderName());
+        encoder.initializeFor(store);
+        
+        GeoServerMultiplexingPasswordEncoder mEncoder = new 
+                GeoServerMultiplexingPasswordEncoder(store.getSecurityManager(),service);  
 
+        
         store.clear();
         Map<String,GeoServerUser> newUserDict = new HashMap<String,GeoServerUser>();
         Map<String,GeoServerUserGroup> newGroupDict = new HashMap<String,GeoServerUserGroup>();
         
         for (GeoServerUser user : service.getUsers()) {
-            GeoServerUser newUser = store.createUserObject(user.getUsername(),user.getPassword(), user.isEnabled());
-            if (storeEncoder!=null) {
-                String plainText =serviceEncoder.decode(user.getPassword());
-                newUser.setPassword(storeEncoder.encodePassword(plainText, null));
+            
+            String rawPassword = null;
+            String encPassword = null;
+            try {
+                rawPassword = mEncoder.decode(user.getPassword());
+                encPassword= encoder.encodePassword(rawPassword, null);
+            } catch (UnsupportedOperationException ex) {
+                LOGGER.warning("Cannot recode user: "+user.getUsername()+" password: "+user.getPassword());
+                encPassword=user.getPassword();                
             }
+            GeoServerUser newUser = store.createUserObject(user.getUsername(),encPassword, user.isEnabled());
             for (Object key: user.getProperties().keySet()) {
                 newUser.getProperties().put(key, user.getProperties().get(key));
             }
@@ -168,10 +147,6 @@ public class Util {
         }                        
     }
     
-    static SortedSet<GeoServerUser> usersHavingRole(GeoServerRole role) {
-        // TODO
-        return null;
-    }
 
     public static String convertPropsToString(Properties props, String heading) {
         StringBuffer buff = new StringBuffer();
@@ -229,5 +204,44 @@ public class Util {
         finally {
             fin.close();
         }
+    }
+    
+    /**
+     * Tries recoding the old passwords.
+     * 
+     * If it is not possible to retrieve the raw password (digest encoding, 
+     * empty encoding), the old encoding is used.
+     * 
+     * If it is possible to retrieve the raw password, the password is recoded 
+     * using the actual password encoder 
+     *  
+     * @param store
+     * @throws IOException
+     */
+    public static void recodePasswords( GeoServerUserGroupStore store) throws IOException{
+        GeoServerPasswordEncoder encoder = store.getSecurityManager().loadPasswordEncoder(store.getPasswordEncoderName());
+        encoder.initializeFor(store);
+        
+        GeoServerMultiplexingPasswordEncoder mEncoder = new 
+                GeoServerMultiplexingPasswordEncoder(store.getSecurityManager(),store);  
+        for (GeoServerUser user : store.getUsers()) {
+            if (encoder.isResponsibleForEncoding(user.getPassword()))
+                continue; // nothing to do
+            try {
+                String rawpass= mEncoder.decode(user.getPassword());
+                // to avoid password policy exceptions, recode explicitly
+                String encPass=encoder.encodePassword(rawpass, null);
+                user.setPassword(encPass);
+                try {
+                    store.updateUser(user);
+                } catch (PasswordPolicyException e) {
+                    store.load();  // rollback
+                    throw new RuntimeException("Never should reach this point",e);
+                }
+            } catch (UnsupportedOperationException ex) {
+                LOGGER.warning("Cannot recode user: "+user.getUsername()+ " with password: "+user.getPassword());
+            }
+        }
+        store.store();
     }
 }

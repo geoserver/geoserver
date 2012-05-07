@@ -16,7 +16,7 @@ import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.AbstractUserDetailsServiceTest;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
-import org.geoserver.security.password.GeoServerPasswordEncoder;
+import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 
 public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
@@ -81,7 +81,7 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         
         GeoServerUser admin = (GeoServerUser) userService.loadUserByUsername("admin");
         assertNotNull(admin);
-        GeoServerPasswordEncoder enc= getEncoder(userService);
+        GeoServerMultiplexingPasswordEncoder enc= getEncoder(userService);
         assertTrue(enc.isPasswordValid(admin.getPassword(), "gs", null));
         
         assertTrue(admin.isEnabled());

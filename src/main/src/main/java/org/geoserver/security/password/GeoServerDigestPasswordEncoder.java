@@ -5,7 +5,6 @@
 package org.geoserver.security.password;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jasypt.digest.ByteDigester;
 import org.jasypt.digest.StandardByteDigester;
 import org.jasypt.spring.security3.PasswordEncoder;
 import org.jasypt.util.password.StrongPasswordEncryptor;

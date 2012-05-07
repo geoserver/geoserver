@@ -69,7 +69,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
 
             Form form = new Form("form", new CompoundPropertyModel<T>(config));
             add(form);
-            form.add(createPanel("panel", panelInfo, config));
+            form.add(panel = createPanel("panel", panelInfo, config));
             
             form.add(new SubmitLink("save", form) {
                 @Override

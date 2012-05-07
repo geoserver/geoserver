@@ -17,6 +17,7 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.validation.PasswordPolicyException;
+import org.geoserver.security.validation.PasswordValidatorImpl;
 
 /**
  * JDBC Implementation of {@link GeoServerUserGroupStore}
@@ -136,31 +137,35 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
 
     }
     
+    
     /**
-     * validates and encdoes the password. Do nothing
+     * validates and encodes the password. Do nothing
      * for a not changed password of an existing user
      * 
      * @param user
      * @throws IOException
-     * @throws PasswordPolicyException
      */
     protected void preparePassword(GeoServerUser user) throws IOException,PasswordPolicyException {
-
-        GeoServerPasswordEncoder enc  = 
-            getSecurityManager().loadPasswordEncoder(getPasswordEncoderName());
-        if (enc.isResponsibleForEncoding(user.getPassword()))
-            return; // do nothing, already encoded
+        
+        char []passwordArray = user.getPassword() != null ? user.getPassword().toCharArray() : null; 
+        
+        if (PasswordValidatorImpl.passwordStartsWithEncoderPrefix(passwordArray)!=null)
+            return; // do nothing, password already encoded
             
         // we have a plain text password
         // validate it
         getSecurityManager().loadPasswordValidator(getPasswordValidatorName()).
-        validatePassword(user.getPassword() != null ? user.getPassword().toCharArray() : null);
+            validatePassword(passwordArray);
 
         // validation ok, initializer encoder and set encoded password
-        enc.initializeFor(this);
-        user.setPassword(enc.encodePassword(user.getPassword(), null));        
-    }
+        GeoServerPasswordEncoder enc = 
+                getSecurityManager().loadPasswordEncoder(getPasswordEncoderName());
 
+        enc.initializeFor(this);
+        user.setPassword(enc.encodePassword(user.getPassword(), null));
+        
+    }
+    
     
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#addUser(org.geoserver.security.impl.GeoserverUser)

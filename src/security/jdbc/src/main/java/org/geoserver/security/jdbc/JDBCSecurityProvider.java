@@ -18,6 +18,7 @@ import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.jdbc.config.JDBCRoleServiceConfig;
+import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 import org.geoserver.security.validation.SecurityConfigValidator;
 
@@ -41,8 +42,7 @@ public class JDBCSecurityProvider extends GeoServerSecurityProvider {
         
         Set<String> fields= new HashSet<String>();
         fields.add("password");        
-        map.put(JDBCRoleServiceConfig.class,fields);
-        map.put(JDBCUserGroupServiceConfig.class,fields);
+        map.put(JDBCSecurityServiceConfig.class,fields);
         return map;
     }
     

@@ -56,7 +56,8 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         token = new UsernamePasswordAuthenticationToken("abc","def");
         boolean fail = false;
         try {
-            provider.authenticate(token);
+            if (provider.authenticate(token)==null) 
+                fail = true;
         } catch (BadCredentialsException ex) {
             fail=true;
         }        
@@ -110,7 +111,8 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         token = new UsernamePasswordAuthenticationToken("abc","def");
         boolean fail = false;
         try {
-            provider.authenticate(token);
+            if (provider.authenticate(token)==null)
+                fail = true;
         } catch (BadCredentialsException ex) {
             fail=true;
         } catch (UsernameNotFoundException ex) {
@@ -154,7 +156,8 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         token = new UsernamePasswordAuthenticationToken("abc","def");
         boolean fail = false;
         try {
-            provider.authenticate(token);
+            if (provider.authenticate(token)==null)
+                fail=true;
         } catch (BadCredentialsException ex) {
             fail=true;
         } catch (UsernameNotFoundException ex) {

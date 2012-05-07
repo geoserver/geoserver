@@ -12,6 +12,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.test.GeoServerTestSupport;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -29,10 +30,10 @@ public class GeoServerCustomAuthTest extends GeoServerSecurityTestSupport {
         UsernamePasswordAuthenticationToken upAuth = 
             new UsernamePasswordAuthenticationToken("foo", "bar");
         try {
-            getSecurityManager().authenticate(upAuth);
-            fail();
+            getSecurityManager().authenticate(upAuth);            
         }
         catch(BadCredentialsException e) {}
+        catch(ProviderNotFoundException e) {}
     }
 
     public void testActive() throws Exception {

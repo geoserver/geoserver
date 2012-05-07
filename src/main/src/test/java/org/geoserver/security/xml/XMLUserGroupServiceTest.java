@@ -20,7 +20,7 @@ import org.geoserver.security.impl.AbstractUserGroupServiceTest;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.Util;
-import org.geoserver.security.password.GeoServerPasswordEncoder;
+import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 
 public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
@@ -45,12 +45,28 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
     }
 
     
+    @Override
+    protected XMLUserGroupServiceConfig  createConfigObject( String name ) {
+        XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();         
+        config.setName(name);        
+        config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
+        config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
+        config.setClassName(XMLUserGroupService.class.getName());
+        config.setCheckInterval(1000); 
+        config.setFileName("users.xml");        
+        config.setValidating(true);
+        config.setPasswordEncoderName(getPlainTextPasswordEncoder().getName());
+        config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
+        return config;
+    }
+
+    
     protected GeoServerUserGroupService createUserGroupService(String serviceName,String xmlFileName) throws Exception {
         XMLUserGroupServiceConfig ugConfig =
             (XMLUserGroupServiceConfig) getSecurityManager().loadUserGroupServiceConfig(serviceName);
 
         if (ugConfig == null) {
-            ugConfig = new XMLUserGroupServiceConfig();
+            ugConfig = createConfigObject(serviceName);
             ugConfig.setName(serviceName);
         }
         
@@ -110,7 +126,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             assertNotNull(admin);
             assertEquals(GeoServerUser.AdminEnabled,admin.isEnabled());
             
-            GeoServerPasswordEncoder enc= getEncoder(service);
+            GeoServerMultiplexingPasswordEncoder enc= getEncoder(service);
             assertTrue(enc.isPasswordValid(admin.getPassword(), GeoServerUser.DEFAULT_ADMIN_PASSWD,null));
             assertEquals(admin.getProperties().size(),0);
             

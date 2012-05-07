@@ -16,12 +16,15 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.filter.GeoServerWebAuthenticationDetails;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * Authentication provider that delegates to a {@link GeoServerUserGroupService}.
@@ -52,11 +55,12 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
         authProvider.setUserDetailsService(ugService);
         
         //set up the password encoder
-        GeoServerPasswordEncoder encoder = 
-            getSecurityManager().loadPasswordEncoder(ugService.getPasswordEncoderName());
+        // multiplex password encoder actually allows us to handle all types of passwords for 
+        // decoding purposes, regardless of whatever the current one used by the user group service
+        // is
+        authProvider.setPasswordEncoder(
+            new GeoServerMultiplexingPasswordEncoder(getSecurityManager(),ugService));
 
-        encoder.initializeFor(ugService);
-        authProvider.setPasswordEncoder(encoder);
         try {
             authProvider.afterPropertiesSet();
         } catch (Exception e) {
@@ -72,9 +76,17 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
     @Override
     public Authentication authenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {
-        UsernamePasswordAuthenticationToken  auth = 
-                (UsernamePasswordAuthenticationToken) authProvider.authenticate(authentication);
-
+        UsernamePasswordAuthenticationToken  auth = null;
+        try {
+            auth = (UsernamePasswordAuthenticationToken) authProvider.authenticate(authentication);
+        } catch (AuthenticationException ex) {
+            log(ex);
+            return null; // pass request to next provider in the chain
+        }
+        if (auth == null) {
+            return null;
+        }
+        
         if (auth.getDetails() instanceof GeoServerWebAuthenticationDetails) {
             ((GeoServerWebAuthenticationDetails) auth.getDetails()).setUserGroupServiceName(userGroupServiceName);
         }

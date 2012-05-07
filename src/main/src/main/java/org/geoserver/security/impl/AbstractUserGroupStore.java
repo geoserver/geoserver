@@ -24,6 +24,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.event.UserGroupLoadedListener;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.validation.PasswordPolicyException;
+import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -161,18 +162,20 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
      */
     protected void preparePassword(GeoServerUser user) throws IOException,PasswordPolicyException {
         
-        GeoServerPasswordEncoder enc = 
-            getSecurityManager().loadPasswordEncoder(getPasswordEncoderName());
-
-        if (enc.isResponsibleForEncoding(user.getPassword()))
-            return; // do nothing, already encoded
+        char []passwordArray = user.getPassword() != null ? user.getPassword().toCharArray() : null; 
+        
+        if (PasswordValidatorImpl.passwordStartsWithEncoderPrefix(passwordArray)!=null)
+            return; // do nothing, password already encoded
             
         // we have a plain text password
         // validate it
         getSecurityManager().loadPasswordValidator(getPasswordValidatorName()).
-            validatePassword(user.getPassword() != null ? user.getPassword().toCharArray() : null);
+            validatePassword(passwordArray);
 
         // validation ok, initializer encoder and set encoded password
+        GeoServerPasswordEncoder enc = 
+                getSecurityManager().loadPasswordEncoder(getPasswordEncoderName());
+
         enc.initializeFor(this);
         user.setPassword(enc.encodePassword(user.getPassword(), null));
         

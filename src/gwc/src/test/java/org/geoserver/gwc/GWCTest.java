@@ -93,6 +93,10 @@ import com.vividsolutions.jts.geom.Envelope;
  * Unit test suite for the {@link GWC} mediator.
  * 
  */
+/**
+ * @author groldan
+ * 
+ */
 public class GWCTest extends TestCase {
 
     private GWC mediator;
@@ -856,6 +860,35 @@ public class GWCTest extends TestCase {
         request.setFeatureVersion("@version");
         assertDispatchMismatch(request, "no parameter filter exists for FEATUREVERSION");
         request.setFeatureVersion(null);
+    }
+
+    /**
+     * See GEOS-5003
+     */
+    public void testNullsInDimensionAndTimeParameters() throws Exception {
+        TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(tileLayerInfo, "ELEVATION", true);
+        TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(tileLayerInfo, "TIME", true);
+        tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
+        
+        GetMapRequest request = new GetMapRequest();
+        @SuppressWarnings("unchecked")
+        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        request.setRawKvp(rawKvp);
+
+        StringBuilder target = new StringBuilder();
+
+        boolean cachingPossible;
+
+        request.setElevation(Arrays.asList((Object) null));
+        cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
+        assertTrue(cachingPossible);
+        assertEquals(0, target.length());
+        request.setElevation(Collections.emptyList());
+        
+        request.setTime(Arrays.asList((Object)null));
+        cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
+        assertTrue(cachingPossible);
+        assertEquals(0, target.length());
     }
 
     private void assertDispatchMismatch(GetMapRequest request, String expectedReason) {

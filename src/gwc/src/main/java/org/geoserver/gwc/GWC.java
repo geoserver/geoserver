@@ -659,7 +659,7 @@ public class GWC implements DisposableBean, InitializingBean {
      *            the GetMap request to check whether it might match a tile
      * @param requestMistmatchTarget
      */
-    private boolean isCachingPossible(TileLayer layer, GetMapRequest request,
+    boolean isCachingPossible(TileLayer layer, GetMapRequest request,
             StringBuilder requestMistmatchTarget) {
 
         if (null != request.getRemoteOwsType() || null != request.getRemoteOwsURL()) {
@@ -718,7 +718,8 @@ public class GWC implements DisposableBean, InitializingBean {
             }
         }
         if (request.getElevation() != null && !request.getElevation().isEmpty()) {
-            if (!filterApplies(filters, request, "ELEVATION", requestMistmatchTarget)) {
+            if (null != request.getElevation().get(0) &&
+                    !filterApplies(filters, request, "ELEVATION", requestMistmatchTarget)) {
                 return false;
             }
         }
@@ -761,7 +762,8 @@ public class GWC implements DisposableBean, InitializingBean {
             }
         }
         if (null != request.getTime() && !request.getTime().isEmpty()) {
-            if (!filterApplies(filters, request, "TIME", requestMistmatchTarget)) {
+            if (null != request.getTime().get(0) && 
+                    !filterApplies(filters, request, "TIME", requestMistmatchTarget)) {
                 return false;
             }
         }

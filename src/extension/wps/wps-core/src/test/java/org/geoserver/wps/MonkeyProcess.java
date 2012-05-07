@@ -1,8 +1,8 @@
 package org.geoserver.wps;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.geoserver.wps.jts.AnnotatedBeanProcessFactory;
@@ -21,7 +21,7 @@ public class MonkeyProcess {
         Exit, SetProgress, Exception
     }
 
-    static Map<String, BlockingQueue<Command>> commands = new HashMap<String, BlockingQueue<MonkeyProcess.Command>>();
+    static Map<String, BlockingQueue<Command>> commands = new ConcurrentHashMap<String, BlockingQueue<MonkeyProcess.Command>>();
 
     private static class Command {
         CommandType type;

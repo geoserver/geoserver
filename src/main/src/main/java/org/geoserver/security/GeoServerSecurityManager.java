@@ -2015,7 +2015,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
         for (GeoServerSecurityProvider provider : 
             GeoServerExtensions.extensions(GeoServerSecurityProvider.class, appContext)) {
-            if (!provider.isAvaialble()) {
+            if (!provider.isAvailable()) {
                 continue;
             }
             list.add(provider);

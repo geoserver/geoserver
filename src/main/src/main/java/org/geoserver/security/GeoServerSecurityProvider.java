@@ -123,7 +123,7 @@ public abstract class GeoServerSecurityProvider {
      * </p>
      */
             
-    public boolean isAvaialble() {
+    public boolean isAvailable() {
         return true;
     }
 

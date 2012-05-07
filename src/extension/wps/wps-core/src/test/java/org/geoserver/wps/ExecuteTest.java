@@ -42,6 +42,14 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class ExecuteTest extends WPSTestSupport {
     
+    @Override
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
+        
+        // make extra sure we don't have anything else going
+        MonkeyProcess.clearCommands();
+    }
+    
     /* TODO GET requests A.4.4.1 */
 
     public void testDataInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
@@ -752,8 +760,8 @@ public class ExecuteTest extends WPSTestSupport {
     
     public void testProcessFailure() throws Exception {
         // have the monkey throw an exception 
-        MonkeyProcess.exception("x", new ProcessException("Sorry dude, things went pear shaped..."), false);
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs=" + urlEncode("id=x");
+        MonkeyProcess.exception("x1", new ProcessException("Sorry dude, things went pear shaped..."), false);
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs=" + urlEncode("id=x1");
         Document dom = getAsDOM(request);
         checkValidationErrors(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
@@ -763,7 +771,7 @@ public class ExecuteTest extends WPSTestSupport {
     
     public void testStoredNoStatus() throws Exception {
         // submit asynch request with no updates
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs=" + urlEncode("id=x");
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs=" + urlEncode("id=x2");
         Document dom = getAsDOM(request);
         assertXpathExists("//wps:ProcessAccepted", dom);
         XpathEngine xpath = XMLUnit.newXpathEngine();
@@ -771,14 +779,14 @@ public class ExecuteTest extends WPSTestSupport {
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
         
         // we move the clock forward, but we asked no status, nothing should change
-        MonkeyProcess.progress("x", 50f, true);
+        MonkeyProcess.progress("x2", 50f, true);
         dom = getAsDOM(statusLocation);
         // print(dom);
         assertXpathExists("//wps:ProcessAccepted", dom);
         
         // now schedule the exit and wait for it to exit
         ListFeatureCollection fc = collectionOfThings();
-        MonkeyProcess.exit("x", fc, true);
+        MonkeyProcess.exit("x2", fc, true);
         dom = waitForProcessEnd(statusLocation, 60);
         assertXpathExists("//wps:ProcessSucceeded", dom);
     }
@@ -795,24 +803,24 @@ public class ExecuteTest extends WPSTestSupport {
     
     public void testStoredWithStatus() throws Exception {
         // submit asynch request with no updates
-        String statusLocation = submitMonkey("x");
+        String statusLocation = submitMonkey("x3");
         
         // we move the clock forward, but we asked no status, nothing should change
-        MonkeyProcess.progress("x", 0.1f, true);
+        MonkeyProcess.progress("x3", 0.1f, true);
         Document dom = getAsDOM(statusLocation);
         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
         assertXpathEvaluatesTo("" + Math.round(0.66 * 10), "//wps:ProcessStarted/@percentCompleted", dom);
         
         // we move the clock forward, but we asked no status, nothing should change
-        MonkeyProcess.progress("x", 0.5f, true);
+        MonkeyProcess.progress("x3", 0.5f, true);
         dom = getAsDOM(statusLocation);
         // print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
         assertXpathEvaluatesTo("" + Math.round(0.66 * 50), "//wps:ProcessStarted/@percentCompleted", dom);
         
         // now schedule the exit and wait for it to exit
-        MonkeyProcess.exit("x", collectionOfThings(), true);
+        MonkeyProcess.exit("x3", collectionOfThings(), true);
         dom = waitForProcessEnd(statusLocation, 60);
         // print(dom);
         assertXpathExists("//wps:ProcessSucceeded", dom);
@@ -820,10 +828,10 @@ public class ExecuteTest extends WPSTestSupport {
     
     public void testAsynchFailEncode() throws Exception {
         // submit asynch request with no updates
-        String statusLocation = submitMonkey("x");
+        String statusLocation = submitMonkey("x5");
         
         // now schedule the exit and wait for it to exit
-        MonkeyProcess.exit("x", bombOutCollection(), true);
+        MonkeyProcess.exit("x5", bombOutCollection(), true);
         Document dom = waitForProcessEnd(statusLocation, 60);
         // print(dom);
         assertXpathExists("//wps:ProcessFailed", dom);
@@ -845,6 +853,12 @@ public class ExecuteTest extends WPSTestSupport {
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("one", collectionOfThings(), true);
         MonkeyProcess.exit("two", collectionOfThings(), true);
+        
+        Document dom = waitForProcessEnd(statusLocation1, 60);
+        // print(dom);
+        assertXpathExists("//wps:ProcessSucceeded", dom);
+        dom = waitForProcessEnd(statusLocation2, 60);
+        assertXpathExists("//wps:ProcessSucceeded", dom);
     }
     
     private void assertProgress(String statusLocation, String progress) throws Exception {

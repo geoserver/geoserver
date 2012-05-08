@@ -1499,7 +1499,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
     public void testMappedFeature() {
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&featureid=gsml.mappedfeature.195201,gsml.mappedfeature.192654,gsml.mappedfeature.191921,gsml.mappedfeature.179239,gsml.mappedfeature.185969,gsml.mappedfeature.186037,gsml.mappedfeature.185817,gsml.mappedfeature.185911,gsml.mappedfeature.178855,gsml.mappedfeature.185608";
-       // validateGet(path);
+        validateGet(path);
         Document doc = getAsDOM(path);
         LOGGER.info(prettyString(doc));
         assertXpathEvaluatesTo("10", "//wfs:FeatureCollection/@numberOfFeatures", doc);

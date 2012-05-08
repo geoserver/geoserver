@@ -54,7 +54,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     public void testLayerNamesPrefixed() throws Exception {
         Catalog cat = getCatalog();
 
-        LayerInfo ly = cat.getLayerByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
+        LayerInfo ly = cat.getLayerByName(getLayerId(MockData.STREAMS));
+        
+        assertNotNull(ly);
 
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
@@ -69,7 +71,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             Label l = (Label) c.get("itemProperties:1:component");
-            if (getLayerId(MockData.PRIMITIVEGEOFEATURE).equals(l.getDefaultModelObjectAsString())) {
+            if (getLayerId(MockData.STREAMS).equals(l.getDefaultModelObjectAsString())) {
                 exists = true;
             }
         }

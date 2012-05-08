@@ -423,7 +423,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
     
-    public void __testEnvDefault() throws Exception {
+    public void testEnvDefault() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=parametric&layers=" + layers + "&Format=image/png" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
@@ -439,7 +439,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         //assertEquals(0, rgba[2]);
     }
     
-    public void __testEnvRed() throws Exception {
+    public void testEnvRed() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=parametric&layers=" + layers + "&Format=image/png" + "&request=GetMap"
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326&env=color:0xFF0000");

@@ -53,14 +53,6 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
                 
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/outcrop.tiff").getFile()), imageBuffer, -1);
-        
-        /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/outcrop.jpg"))));
-        int data;
-        while((data = is.read()) >= 0) {
-                out.writeByte(data);
-        }
-        is.close();
-        out.close();*/
     }
     
     public void testGetMapPositionalAccuracy() throws Exception
@@ -71,6 +63,14 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
+        
+        /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/outcrop.jpg"))));
+        int data;
+        while((data = is.read()) >= 0) {
+                out.writeByte(data);
+        }
+        is.close();
+        out.close();*/
     }  
 
 }

@@ -156,12 +156,14 @@
 				<AttributeMapping>
 					<targetAttribute>
                        gsml:specification
-					</targetAttribute>					
-					<ClientProperty>
-						<name>xlink:href</name>
-						<value>specification</value>
-					</ClientProperty>					
-				</AttributeMapping>	
+					</targetAttribute>
+					<sourceExpression>
+						<OCQL>geologicalfeature_id</OCQL>
+						<linkElement>gsml:GeologicUnit</linkElement>
+						<linkField>FEATURE_LINK</linkField>						
+					</sourceExpression>	
+					<isMultiple>true</isMultiple>
+				</AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>
                        gsml:shape
@@ -170,14 +172,14 @@
 						<OCQL>shape</OCQL>						
 					</sourceExpression>									
 				</AttributeMapping>
-				<AttributeMapping>
+			<!-- 	<AttributeMapping>
 					<targetAttribute>
                        FEATURE_LINK
 					</targetAttribute>
 					<sourceExpression>
 						<OCQL>geologicalfeature_id</OCQL>						
 					</sourceExpression>
-				</AttributeMapping>
+				</AttributeMapping> -->
 			</attributeMappings>
 		</FeatureTypeMapping>
 	</typeMappings>

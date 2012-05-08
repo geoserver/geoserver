@@ -68,7 +68,7 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
 
     @Override
     public void setUp() throws Exception {
-        runSqlInsertScript();
+        //runSqlInsertScript();
     }
 
     @Override

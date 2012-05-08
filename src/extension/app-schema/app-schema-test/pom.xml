@@ -160,16 +160,12 @@
 					        <include>**/*.properties</include>
 					        <include>**/*.xml</include>
 					        <include>**/*.xsd</include>
-<<<<<<< HEAD
 							<include>**/*.sql</include>
 							<include>**/*.sld</include>
 			   				<include>**/*.tiff</include>
-=======
 							<include>**/*.sql</include>
-							<include>**/*.sld</include>
-			   				<include>**/*.tiff</include>
->>>>>>> wmstests
-				        </includes>
+							<include>**/*.tiff</include>
+					</includes>
 			        </testResource>
 		        </testResources>
 	        </build>

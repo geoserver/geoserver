@@ -62,7 +62,6 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         
         assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
-        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
         
         /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/outcrop.jpg"))));
         int data;

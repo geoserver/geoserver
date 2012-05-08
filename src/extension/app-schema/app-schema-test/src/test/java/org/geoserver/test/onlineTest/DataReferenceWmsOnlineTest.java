@@ -15,22 +15,17 @@ import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
 import org.geotools.image.test.ImageAssert;
 import org.w3c.dom.Document;
 
+/**
+ * 
+ * @author Niels Charlier
+ * 
+ */
 public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWfsTest {
 
     public DataReferenceWmsOnlineTest() throws Exception {
         super();
-        // TODO Auto-generated constructor stub
     }
-    
-    public void __testMappedFeature() {
-        String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&featureid=gsml.mappedfeature.191322";
-       // validateGet(path);
-        Document doc = getAsDOM(path);
-        LOGGER.info(prettyString(doc));
-        
-        
-    }
-    
+      
     public void testGetMapSimpleLithology() throws Exception
     {
         InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=simplelithology&BBOX=140,-38,145,-35&width=500&height=500&FORMAT=image/jpeg");
@@ -38,9 +33,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
         assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
         
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_simplelithology.tiff").getFile()), imageBuffer, -1);
-        
+        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_simplelithology.tiff").getFile()), imageBuffer, -1);       
     }  
     
     public void testGetMapStratChart() throws Exception
@@ -50,7 +43,6 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
         assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
         
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_stratchart.tiff").getFile()), imageBuffer, -1);
         
     } 

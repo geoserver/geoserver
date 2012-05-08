@@ -11,11 +11,15 @@ import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
 import org.geoserver.test.onlineTest.setup.ReferenceDataPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
+/**
+ * 
+ * @author Niels Charlier
+ * 
+ */
 public class DataReferenceWmsPostgisTest extends DataReferenceWmsOnlineTest {
 
     public DataReferenceWmsPostgisTest() throws Exception {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**

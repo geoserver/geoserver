@@ -13,6 +13,11 @@ import org.geoserver.test.NamespaceTestData;
 import org.geotools.image.test.ImageAssert;
 import java.io.File;
 
+/**
+ * 
+ * @author Niels Charlier
+ * 
+ */
 public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
 
     public WmsGetMapTest() throws Exception {

@@ -9,29 +9,29 @@ import org.geoserver.test.AbstractAppSchemaMockData;
 public class AppSchemaWmsReferenceMockData extends AbstractAppSchemaMockData {
     @Override
     protected void addContent() {
-        addFeatureType(GSML_PREFIX, "Contact", "WmsDataReferenceData/gsml_Contact/gsml_Contact.xml");
+        addFeatureType(GSML_PREFIX, "Contact", "DataReferenceData/gsml_Contact/gsml_Contact.xml");
         addFeatureType(GSML_PREFIX, "MappedFeature",
                 "WmsDataReferenceData/gsml_MappedFeature/gsml_MappedFeature.xml",
-                "WmsDataReferenceData/gsml_MappedFeature/MF_CGITermValue.xml");
+                "DataReferenceData/gsml_MappedFeature/MF_CGITermValue.xml");
 
         addFeatureType(GSML_PREFIX, "DisplacementEvent",
-                "WmsDataReferenceData/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
+                "DataReferenceData/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
 
         addFeatureType(GSML_PREFIX, "GeologicEvent",
                 "WmsDataReferenceData/gsml_GeologicEvent/gsml_GeologicEvent.xml",
-                "WmsDataReferenceData/gsml_GeologicEvent/GE_CGITermValue.xml");
+                "DataReferenceData/gsml_GeologicEvent/GE_CGITermValue.xml");
 
         addFeatureType(GSML_PREFIX, "GeologicUnit",
                 "WmsDataReferenceData/gsml_GeologicUnit/gsml_GeologicUnit.xml",
-                "WmsDataReferenceData/gsml_GeologicUnit/gsml_PhysicalDescription.xml",
-                "WmsDataReferenceData/gsml_GeologicUnit/GU_CGITermValue.xml",
-                "WmsDataReferenceData/gsml_CompositionPart/gsml_CompositionPart.xml",
-                "WmsDataReferenceData/gsml_CompositionPart/CP_CGITermValue.xml",
-                "WmsDataReferenceData/gsml_CompositionPart/gsml_ConstituentPart.xml",
-                "WmsDataReferenceData/gsml_CompositionPart/gsml_Mineral.xml",
-                "WmsDataReferenceData/gsml_CompositionPart/RockMaterial.xml");
+                "DataReferenceData/gsml_GeologicUnit/gsml_PhysicalDescription.xml",
+                "DataReferenceData/gsml_GeologicUnit/GU_CGITermValue.xml",
+                "DataReferenceData/gsml_CompositionPart/gsml_CompositionPart.xml",
+                "DataReferenceData/gsml_CompositionPart/CP_CGITermValue.xml",
+                "DataReferenceData/gsml_CompositionPart/gsml_ConstituentPart.xml",
+                "DataReferenceData/gsml_CompositionPart/gsml_Mineral.xml",
+                "DataReferenceData/gsml_CompositionPart/RockMaterial.xml");
 
         addFeatureType(GSML_PREFIX, "ShearDisplacementStructure",
-                "WmsDataReferenceData/gsml_ShearDisplacementStructure/gsml_ShearDisplacementStructure.xml");
+                "DataReferenceData/gsml_ShearDisplacementStructure/gsml_ShearDisplacementStructure.xml");
     }
 }

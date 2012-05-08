@@ -11,11 +11,15 @@ import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
 import org.geoserver.test.onlineTest.setup.ReferenceDataOracleSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
+/**
+ * 
+ * @author Niels Charlier
+ * 
+ */
 public class DataReferenceWmsOracleTest extends DataReferenceWmsOnlineTest {
 
     public DataReferenceWmsOracleTest() throws Exception {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**

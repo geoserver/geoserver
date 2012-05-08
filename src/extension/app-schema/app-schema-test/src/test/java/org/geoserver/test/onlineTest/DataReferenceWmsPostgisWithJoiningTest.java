@@ -4,6 +4,11 @@ import junit.framework.Test;
 
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 
+/**
+ * 
+ * @author Niels Charlier
+ * 
+ */
 public class DataReferenceWmsPostgisWithJoiningTest extends DataReferenceWmsPostgisTest {
 
     public DataReferenceWmsPostgisWithJoiningTest() throws Exception {

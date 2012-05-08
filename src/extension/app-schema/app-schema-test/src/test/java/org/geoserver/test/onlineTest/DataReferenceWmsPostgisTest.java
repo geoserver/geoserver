@@ -7,7 +7,7 @@ package org.geoserver.test.onlineTest;
 import junit.framework.Test;
 
 import org.geoserver.test.NamespaceTestData;
-import org.geoserver.test.onlineTest.setup.AppSchemaReferenceMockData;
+import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
 import org.geoserver.test.onlineTest.setup.ReferenceDataPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
@@ -33,7 +33,7 @@ public class DataReferenceWmsPostgisTest extends DataReferenceWmsOnlineTest {
     
     @Override
     protected NamespaceTestData buildTestData() {
-    	AppSchemaReferenceMockData mockData = new AppSchemaReferenceMockData();
+    	AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("simplelithology", "styles/cgi-simplelithology-200811.sld");
         return mockData;

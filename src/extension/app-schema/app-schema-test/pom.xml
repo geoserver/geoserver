@@ -165,9 +165,9 @@
 							<include>**/*.sld</include>
 			   				<include>**/*.tiff</include>
 =======
-				    	    <include>**/*.sql</include>
-                            <include>**/*.sld</include>
-			    <include>**/*.jpg</include>
+						<include>**/*.sql</include>
+						<include>**/*.sld</include>
+			   			<include>**/*.tiff</include>
 >>>>>>> wmstests
 				        </includes>
 			        </testResource>

@@ -47,11 +47,10 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
                 
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-<<<<<<< HEAD
+        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/outcrop.tiff").getFile()), imageBuffer, -1);
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/outcrop.tiff").getFile()), imageBuffer, -1);
 
 =======
-        //ImageAssert.assertEquals(new File(getClass().getResource("outcrop.jpg").getFile()), imageBuffer, -1);
         
         /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/outcrop.jpg"))));
         int data;
@@ -69,10 +68,9 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         
         assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
-<<<<<<< HEAD
+        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
         ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
 =======
-        //ImageAssert.assertEquals(new File(getClass().getResource("posacc.jpg").getFile()), imageBuffer, -1);
 >>>>>>> wmstests
         
        /* DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/posacc.jpg"))));

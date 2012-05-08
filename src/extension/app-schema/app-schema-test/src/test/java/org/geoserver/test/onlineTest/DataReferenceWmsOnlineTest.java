@@ -6,16 +6,13 @@ package org.geoserver.test.onlineTest;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
+import org.geotools.image.test.ImageAssert;
 import org.w3c.dom.Document;
 
 public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWfsTest {
@@ -26,7 +23,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
     }
     
     public void __testMappedFeature() {
-        String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&featureid=gsml.mappedfeature.191907";
+        String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&featureid=gsml.mappedfeature.191322";
        // validateGet(path);
         Document doc = getAsDOM(path);
         LOGGER.info(prettyString(doc));
@@ -34,21 +31,29 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
     }
     
-    public void testGetMapPositionalAccuracy() throws Exception
+    public void testGetMapSimpleLithology() throws Exception
     {
-        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=simplelithology&BBOX=0,0,50,50&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
-       // BufferedImage imageBuffer = ImageIO.read(is);
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=simplelithology&BBOX=140,-38,145,-35&width=500&height=500&FORMAT=image/jpeg");
+        BufferedImage imageBuffer = ImageIO.read(is);
         
-       // assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
+        assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
         
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/mappedfeature_positionalaccuracy.jpg"))));
-        int data;
-        while((data = is.read()) >= 0) {
-                out.writeByte(data);
-        }
-        is.close();
-        out.close();
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
+        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_simplelithology.tiff").getFile()), imageBuffer, -1);
+        
     }  
+    
+    public void testGetMapStratChart() throws Exception
+    {
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=stratchart&BBOX=140,-38,150,-35&width=500&height=500&FORMAT=image/jpeg");
+        BufferedImage imageBuffer = ImageIO.read(is);
+        
+        assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
+        
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
+        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_stratchart.tiff").getFile()), imageBuffer, -1);
+        
+    } 
 
     
 }

@@ -8,12 +8,12 @@ import junit.framework.Test;
 
 import org.geoserver.test.NamespaceTestData;
 import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
-import org.geoserver.test.onlineTest.setup.ReferenceDataPostgisSetup;
+import org.geoserver.test.onlineTest.setup.ReferenceDataOracleSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
-public class DataReferenceWmsPostgisTest extends DataReferenceWmsOnlineTest {
+public class DataReferenceWmsOracleTest extends DataReferenceWmsOnlineTest {
 
-    public DataReferenceWmsPostgisTest() throws Exception {
+    public DataReferenceWmsOracleTest() throws Exception {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -25,7 +25,7 @@ public class DataReferenceWmsPostgisTest extends DataReferenceWmsOnlineTest {
      */
     public static Test suite() {
         try {
-            return new OneTimeTestSetup(new DataReferenceWmsPostgisTest());
+            return new OneTimeTestSetup(new DataReferenceWmsOracleTest());
         } catch (Exception e) {
             return null;
         }
@@ -42,7 +42,7 @@ public class DataReferenceWmsPostgisTest extends DataReferenceWmsOnlineTest {
 
     @Override
     public AbstractReferenceDataSetup getReferenceDataSetup() throws Exception {
-        return new ReferenceDataPostgisSetup();
+        return new ReferenceDataOracleSetup();
     }
 
 }

@@ -151,12 +151,14 @@
 				<AttributeMapping>
 					<targetAttribute>
                        gsml:occurrence
-					</targetAttribute>					
-					<ClientProperty>
-						<name>xlink:href</name>
-						<value>strConcat('gsml.mappedfeature.' , id)</value>
-					</ClientProperty>					
-				</AttributeMapping>	
+					</targetAttribute>
+					<sourceExpression>
+						<OCQL>id</OCQL>
+						<linkElement>gsml:MappedFeature</linkElement>
+						<linkField>FEATURE_LINK</linkField>						
+					</sourceExpression>	
+					<isMultiple>true</isMultiple>
+				</AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>
                        gsml:preferredAge
@@ -253,14 +255,6 @@
 						<linkField>FEATURE_LINK</linkField>						
 					</sourceExpression>
 					<isMultiple>true</isMultiple>	
-				</AttributeMapping>
-				<AttributeMapping>
-					<targetAttribute>
-                       FEATURE_LINK
-					</targetAttribute>
-					<sourceExpression>
-						<OCQL>id</OCQL>						
-					</sourceExpression>
 				</AttributeMapping>
 			</attributeMappings>
 		</FeatureTypeMapping>			

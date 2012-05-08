@@ -8,6 +8,8 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 
@@ -42,6 +44,32 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             MarkupContainer c = (MarkupContainer) it.next();
             Label l = (Label) c.get("itemProperties:1:component");
             if ("sf:foo".equals(l.getDefaultModelObjectAsString())) {
+                exists = true;
+            }
+        }
+
+        assertTrue(exists);
+    }
+    
+    public void testLayerNamesPrefixed() throws Exception {
+        Catalog cat = getCatalog();
+
+        LayerInfo ly = cat.getLayerByName(getLayerId(MockData.PRIMITIVEGEOFEATURE));
+
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+
+        //move to next page
+        tester.clickLink("table:navigatorBottom:navigator:next", true);
+
+        DataView data = 
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        boolean exists = false;
+        for (Iterator it = data.iterator(); it.hasNext(); ) {
+            MarkupContainer c = (MarkupContainer) it.next();
+            Label l = (Label) c.get("itemProperties:1:component");
+            if (getLayerId(MockData.PRIMITIVEGEOFEATURE).equals(l.getDefaultModelObjectAsString())) {
                 exists = true;
             }
         }

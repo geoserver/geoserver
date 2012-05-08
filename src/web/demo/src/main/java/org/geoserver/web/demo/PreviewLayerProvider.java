@@ -27,7 +27,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         @Override
         public Object getPropertyValue(PreviewLayer item) {
             if (item.layerInfo != null) {
-                return item.layerInfo.getName();
+                return item.layerInfo.prefixedName();
             }
             if (item.groupInfo != null) {
                 return item.groupInfo.prefixedName();

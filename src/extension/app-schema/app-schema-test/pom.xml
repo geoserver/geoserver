@@ -160,8 +160,9 @@
 					        <include>**/*.properties</include>
 					        <include>**/*.xml</include>
 					        <include>**/*.xsd</include>
-				    	    <include>**/*.sql</include>
-                            <include>**/*.sld</include>
+							<include>**/*.sql</include>
+							<include>**/*.sld</include>
+			   				<include>**/*.tiff</include>
 				        </includes>
 			        </testResource>
 		        </testResources>
@@ -191,6 +192,10 @@
                                 <exclude>**/DataReferenceWfsPostgisWithJoiningTest.java</exclude>
 						        <exclude>**/WfsOnlineOracleTest.java</exclude>
 						        <exclude>**/WfsOnlinePostgisTest.java</exclude>
+						        <exclude>**/DataReferenceWmsOracleTest.java</exclude>
+						        <exclude>**/DataReferenceWmsPostgisTest.java</exclude>
+                                <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
+                                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>
 					        </excludes>
 				        </configuration>
 			        </plugin>
@@ -203,7 +208,8 @@
 					        <include>**/*.xml</include>
 					        <include>**/*.xsd</include>
 				    	    <include>**/*.sql</include>
-                            <include>**/*.sld</include>
+					    	<include>**/*.sld</include>
+					    	<include>**/*.tiff</include>
 				        </includes>
 			        </testResource>
 		        </testResources>

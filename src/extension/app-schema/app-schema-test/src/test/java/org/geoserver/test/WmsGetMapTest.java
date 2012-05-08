@@ -77,7 +77,7 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
 =======
 >>>>>>> wmstests
         
-       /* DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/temp"))));
+        /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/temp"))));
         int data;
         while((data = is.read()) >= 0) {
                 out.writeByte(data);

@@ -38,6 +38,13 @@ public class DimensionHelperTest extends TestCase {
         assertEquals("-265000000-01-01T00:00:00.000Z", fmt.format(cal.getTime()));
     }
     
+    /**
+     * The goal if this test is to verify behavior of a similar, but not complete,
+     * format provided by the standard libraries. The incomplete pattern does
+     * not support BC dates properly, so we will not test compliance here.
+     * 
+     * The random seed is not specified to allow various test runs broader coverage.
+     */
     public void testFormatterFuzz() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -47,9 +54,9 @@ public class DimensionHelperTest extends TestCase {
         GregorianCalendar cal = new GregorianCalendar();
         Random r = new Random();
         for (int i = 0; i < 1000; i++) {
-            cal.set(Calendar.YEAR, 1 + r.nextInt(2000));
-            cal.set(Calendar.DAY_OF_YEAR, r.nextInt(365));
-            cal.set(Calendar.HOUR, r.nextInt(24));
+            cal.set(Calendar.YEAR, 1 + r.nextInt(3000));
+            cal.set(Calendar.DAY_OF_YEAR, 1 + r.nextInt(365));
+            cal.set(Calendar.HOUR_OF_DAY, r.nextInt(24));
             cal.set(Calendar.MINUTE, r.nextInt(60));
             cal.set(Calendar.SECOND, r.nextInt(60));
             cal.set(Calendar.MILLISECOND, r.nextInt(1000));

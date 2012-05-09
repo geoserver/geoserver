@@ -32,7 +32,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
         assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
         
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/datareference_simplelithology.tiff")), imageBuffer, -1);       
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/datareference_simplelithology.tiff")), imageBuffer, 250);       
     }  
     
     public void testGetMapStratChart() throws Exception
@@ -42,8 +42,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
         assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
         
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/datareference_stratchart.tiff")), imageBuffer, -1);
-        
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/datareference_stratchart.tiff")), imageBuffer, 250);
     } 
 
     

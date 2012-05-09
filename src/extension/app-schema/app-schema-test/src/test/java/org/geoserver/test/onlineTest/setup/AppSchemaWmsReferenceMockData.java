@@ -6,37 +6,23 @@ package org.geoserver.test.onlineTest.setup;
 
 import org.geoserver.test.AbstractAppSchemaMockData;
 
-/**
- * 
- * @author Niels Charlier
- * 
- * Mock data for Wms Online tests - uses some different mappings to accomodate wms
- * 
- */
-public class AppSchemaReferenceMockData extends AbstractAppSchemaMockData {
+public class AppSchemaWmsReferenceMockData extends AbstractAppSchemaMockData {
     @Override
     protected void addContent() {
         addFeatureType(GSML_PREFIX, "Contact", "DataReferenceData/gsml_Contact/gsml_Contact.xml");
         addFeatureType(GSML_PREFIX, "MappedFeature",
-                "DataReferenceData/gsml_MappedFeature/gsml_MappedFeature.xml",
+                "WmsDataReferenceData/gsml_MappedFeature/gsml_MappedFeature.xml",
                 "DataReferenceData/gsml_MappedFeature/MF_CGITermValue.xml");
-
-//        addFeatureType(GSML_PREFIX, "CompositionPart",
-//                "DataReferenceData/gsml_CompositionPart/gsml_CompositionPart.xml",
-//                "DataReferenceData/gsml_CompositionPart/CGITermValue.xml",
-//                "DataReferenceData/gsml_CompositionPart/gsml_ConstituentPart.xml",
-//                "DataReferenceData/gsml_CompositionPart/gsml_Mineral.xml",
-//                "DataReferenceData/gsml_CompositionPart/RockMaterial.xml");
 
         addFeatureType(GSML_PREFIX, "DisplacementEvent",
                 "DataReferenceData/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
 
         addFeatureType(GSML_PREFIX, "GeologicEvent",
-                "DataReferenceData/gsml_GeologicEvent/gsml_GeologicEvent.xml",
+                "WmsDataReferenceData/gsml_GeologicEvent/gsml_GeologicEvent.xml",
                 "DataReferenceData/gsml_GeologicEvent/GE_CGITermValue.xml");
 
         addFeatureType(GSML_PREFIX, "GeologicUnit",
-                "DataReferenceData/gsml_GeologicUnit/gsml_GeologicUnit.xml",
+                "WmsDataReferenceData/gsml_GeologicUnit/gsml_GeologicUnit.xml",
                 "DataReferenceData/gsml_GeologicUnit/gsml_PhysicalDescription.xml",
                 "DataReferenceData/gsml_GeologicUnit/GU_CGITermValue.xml",
                 "DataReferenceData/gsml_CompositionPart/gsml_CompositionPart.xml",

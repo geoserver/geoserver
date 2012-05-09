@@ -46,7 +46,7 @@ public interface WPSInfo extends ServiceInfo {
 
     /**
      * Returns the maximum number of processes that can run in synchronous mode in parallel.
-     * Defaults to the twice the number of available CPU cores
+     * Defaults to the number of available CPU cores
      * 
      * @return
      */
@@ -61,7 +61,7 @@ public interface WPSInfo extends ServiceInfo {
 
     /**
      * Returns the maximum number of processes that can run in asynchronous mode in parallel.
-     * Defaults to the twice the number of available CPU cores
+     * Defaults to the number of available CPU cores
      * 
      * @return
      */

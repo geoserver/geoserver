@@ -41,7 +41,16 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class ExecuteTest extends WPSTestSupport {
-    
+
+    @Override
+    protected void oneTimeSetUp() throws Exception {
+        super.oneTimeSetUp();
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        // want at least two asynchronous processes to test concurrency
+        wps.setMaxAsynchronousProcesses(Math.max(2, wps.getMaxAsynchronousProcesses()));
+        getGeoServer().save(wps);
+    }
+
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();

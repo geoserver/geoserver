@@ -6,10 +6,10 @@ package org.geoserver.test.onlineTest;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
+import org.geotools.data.DataUtilities;
 import org.geotools.image.test.ImageAssert;
 
 /**
@@ -32,7 +32,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
         assertNotBlank("app-schema test getmap simple lithology", imageBuffer, Color.WHITE);
         
-        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_simplelithology.tiff").getFile()), imageBuffer, -1);       
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/datareference_simplelithology.tiff")), imageBuffer, -1);       
     }  
     
     public void testGetMapStratChart() throws Exception
@@ -42,7 +42,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
         
         assertNotBlank("app-schema test getmap stratchart", imageBuffer, Color.WHITE);
         
-        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/datareference_stratchart.tiff").getFile()), imageBuffer, -1);
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/datareference_stratchart.tiff")), imageBuffer, -1);
         
     } 
 

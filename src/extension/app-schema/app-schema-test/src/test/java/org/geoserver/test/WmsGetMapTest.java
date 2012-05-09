@@ -7,23 +7,19 @@ package org.geoserver.test;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import javax.imageio.ImageIO;
-import junit.framework.Test;
-import org.geoserver.test.NamespaceTestData;
-import org.geotools.image.test.ImageAssert;
-import java.io.File;
 
-/**
- * 
- * @author Niels Charlier
- * 
- */
+import javax.imageio.ImageIO;
+
+import junit.framework.Test;
+
+import org.geoserver.test.NamespaceTestData;
+
 public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
 
     public WmsGetMapTest() throws Exception {
         super();
     }
-    
+
     /**
      * Read-only test so can use one-time setup.
      * 
@@ -50,9 +46,8 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
     {
         InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
         BufferedImage imageBuffer = ImageIO.read(is);
-                
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/outcrop.tiff").getFile()), imageBuffer, -1);
+        
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);                
     }
     
     public void testGetMapPositionalAccuracy() throws Exception
@@ -61,9 +56,8 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         BufferedImage imageBuffer = ImageIO.read(is);
         
         assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
-        ImageAssert.assertEquals(new File(getClass().getResource("/test-data/img/posacc.tiff").getFile()), imageBuffer, -1);
         
-        /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/outcrop.jpg"))));
+        /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/temp"))));
         int data;
         while((data = is.read()) >= 0) {
                 out.writeByte(data);

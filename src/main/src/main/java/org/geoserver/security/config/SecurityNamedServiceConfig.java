@@ -8,20 +8,30 @@ package org.geoserver.security.config;
 /**
  * Base class for named security service configuration objects.
  * 
+ * In general, developers seeking to implement this interface should start from
+ * {@link BaseSecurityNamedServiceConfig } which provides valid default
+ * implementations for all methods in this interface.
+ * 
  * @author christian
  */
 public interface SecurityNamedServiceConfig extends SecurityConfig {
 
     /**
-     * Internal id of the config object. 
+     * Internal id of the config object.
      * <p>
-     * This method should be used by client code.
+     * This method is generally not useful to client code; the ID property
+     * is used within the configuration persistence system.
      * </p>
      */
     String getId();
 
     /**
      * Sets internal id of the config object.
+     * 
+     * <p>
+     * This method is generally not useful to client code; the ID property is
+     * used within the configuration persistence system.
+     * </p>
      */
     void setId(String newId);
 

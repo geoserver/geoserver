@@ -166,6 +166,7 @@
 			        <include>**/*.xsd</include>
 		    	    <include>**/*.sql</include>
                     <include>**/*.sld</include>
+                    <include>**/*.tiff</include>
 	            </includes>
 		    </testResource>
 	    </testResources>

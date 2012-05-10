@@ -3,21 +3,25 @@
 WFS vendor parameters
 =====================
 
-WFS Vendor parameters are options that are not defined in the official WFS specification, but are allowed by it.  GeoServer supports a range of custom WFS parameters.
+WFS vendor parameters are non-standard request parameters 
+that are defined by an implementation to provide enhanced capabilities. 
+GeoServer supports a variety of vendor-specific WFS parameters.
 
 CQL filters
 -----------
 
-When specifying a WFS :ref:`wfs_getfeature` GET request, a filter can be specified in CQL (Common Query Language), as opposed to encoding the XML into the request.  CQL sports a much more compact and human readable syntax compared to OGC filters.  CQL isn't as flexible as OGC filters, however, and can't encode as many types of filters as the OGC specification does. In particular, filters by feature ID are not supported.
+In WFS :ref:`wfs_getfeature` GET requests the ``cql_filter`` parameter can be used to specify a filter in ECQL (Extended Common Query Language).  
+ECQL provides a more compact and readable syntax compared to OGC XML filters.
+For full details see the :ref:`filter_ecql_reference` and :ref:`cql_tutorial` tutorial.
 
 Example
 ```````
 
-A sample filter request using an OGC filter taken from a GET request::
+A sample GET request OGC filter is::
 
    filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
 
-The same filter using CQL::
+Using ECQL the filter is::
 
    cql_filter=INTERSECT(the_geom,%20POINT%20(-74.817265%2040.5296504))
 

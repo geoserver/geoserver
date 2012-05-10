@@ -3,12 +3,15 @@
 WMS vendor parameters
 =====================
 
-WMS vendor parameters are custom request parameters that are not defined in the WMS specification, but are allowed by it.  GeoServer supports a variety of WMS vendor-specific parameters.
+WMS vendor parameters are non-standard request parameters 
+that are defined by an implementation to provide enhanced capabilities.  
+GeoServer supports a variety of vendor-specific WMS parameters.
 
 angle
 -----
 
-``angle=x`` rotates the output map around its center by `x` degrees clockwise. The rotation is supported in all raster formats, PDF, and SVG based on the Batik producer (which is the default).
+``angle=x`` rotates the output map around its center by `x` degrees clockwise. 
+The rotation is supported in all raster formats, PDF, and SVG based on the Batik producer (which is the default).
 
 buffer
 ------
@@ -36,18 +39,16 @@ In case the automatic evaluation fails, the following defaults apply:
 cql_filter
 ----------
 
-The ``cql_filter`` parameter is similar to the standard ``filter`` parameter, but the filter is expressed using CQL (Common Query Language).  
-This makes the filter logic more concise and readable.  
-However, CQL isn't as flexible as OGC filters, and can't express certain kinds of queries. 
-In particular, filtering by feature ID is not supported.  
+The ``cql_filter`` parameter is similar to the standard ``filter`` parameter, but the filter is expressed using ECQL (Extended Common Query Language).  
+ECQL provides a more compact and readable syntax compared to OGC XML filters.
+For full details see the :ref:`filter_ecql_reference` and :ref:`cql_tutorial` tutorial.
 
-If more than one layer is specified in the ``layers`` parameter, then more than one filter can be specified, each corresponding to a layer.
+If more than one layer is specified in the ``layers`` parameter, then a separate filter can be specified for each layer, separated by commas.
 
-An example of a CQL filter is::
+An example of a simple CQL filter is::
 
    cql_filter=INTERSECT(the_geom,%20POINT%20(-74.817265%2040.5296504))
    
-See also the :ref:`cql_tutorial` tutorial.
 
 env
 ---
@@ -69,12 +70,12 @@ filter
 ------
 
 The WMS specification allows only limited filtering of data.  
-GeoServer expands the WMS filter capability to match those allowed by WFS.
-The ``filter`` parameter specifies a list of OGC filters (encoded in in XML).  
-The list is enclosed in () parenthesis.  
+GeoServer enhances the WMS filter capability to match that provided by WFS.
+The ``filter`` parameter can specify a list of OGC XML filters.  
+The list is enclosed in parentheses: **( )**.  
 When used in a GET request, the XML tag brackets must be URL-encoded.  
 
-If more than one layer is specified in the ``layers`` parameter, then more than one filter can be specified, each corresponding to a layer.
+If more than one layer is specified in the ``layers`` parameter then a separate filter can be specified for each layer.
 
 An example of an OGC filter encoded in a GET request is::
 

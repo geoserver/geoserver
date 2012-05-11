@@ -1,6 +1,7 @@
 package org.geoserver.data.versioning.decorator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.ServiceInfo;
+import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
@@ -27,6 +29,7 @@ import org.opengis.filter.identity.ResourceId;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DataAccessDecorator<T extends FeatureType, F extends Feature> implements
@@ -156,11 +159,15 @@ public class DataAccessDecorator<T extends FeatureType, F extends Feature> imple
         ResourceIdFeatureCollector versionQuery;
         versionQuery = new ResourceIdFeatureCollector(repository, featureType, resourceIds);
 
-        DefaultFeatureCollection features = new DefaultFeatureCollection(null,
-                (SimpleFeatureType) featureType);
-        for (Feature f : versionQuery) {
-            features.add((SimpleFeature) f);
-        }
+        // DefaultFeatureCollection features = new DefaultFeatureCollection(null,
+        // (SimpleFeatureType) featureType);
+        // for (Feature f : versionQuery) {
+        // features.add((SimpleFeature) f);
+        // }
+        ArrayList<SimpleFeature> list = Lists.newArrayList(versionQuery);
+        ListFeatureCollection features = new ListFeatureCollection((SimpleFeatureType) featureType,
+                list);
+
         return features;
     }
 

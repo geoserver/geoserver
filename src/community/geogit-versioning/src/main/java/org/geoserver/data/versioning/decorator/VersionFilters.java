@@ -65,7 +65,7 @@ public class VersionFilters {
                         // does it contain any actual versioning predicate?
                         ResourceId rid = (ResourceId) id;
                         if (rid.getFeatureVersion() != null || rid.getEndTime() != null
-                                || rid.getStartTime() != null || rid.getVersion() != null) {
+                                || rid.getStartTime() != null || !rid.getVersion().isEmpty()) {
                             // yes, there's something to query in the version history
                             resourceIds.add((ResourceId) id);
                         }

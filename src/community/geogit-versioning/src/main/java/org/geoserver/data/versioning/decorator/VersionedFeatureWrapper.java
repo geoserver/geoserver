@@ -2,14 +2,10 @@ package org.geoserver.data.versioning.decorator;
 
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DecoratingFeature;
-import org.geotools.filter.identity.ResourceIdImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
-import org.opengis.filter.identity.ResourceId;
-
-import com.sun.org.apache.xpath.internal.operations.Gte;
 
 class VersionedFeatureWrapper {
 

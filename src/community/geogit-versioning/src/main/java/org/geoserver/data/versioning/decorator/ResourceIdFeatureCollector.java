@@ -1,5 +1,7 @@
 package org.geoserver.data.versioning.decorator;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
@@ -18,7 +20,7 @@ import org.opengis.filter.identity.ResourceId;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
-public class ResourceIdFeatureCollector implements Iterable<Feature> {
+public class ResourceIdFeatureCollector<F extends Feature> implements Iterable<F> {
 
     private final Repository repository;
 
@@ -34,7 +36,7 @@ public class ResourceIdFeatureCollector implements Iterable<Feature> {
     }
 
     @Override
-    public Iterator<Feature> iterator() {
+    public Iterator<F> iterator() {
 
         Iterator<Ref> featureRefs = Iterators.emptyIterator();
 
@@ -50,13 +52,13 @@ public class ResourceIdFeatureCollector implements Iterable<Feature> {
             throw new RuntimeException(e);
         }
 
-        Iterator<Feature> features = Iterators.transform(featureRefs, new RefToFeature(repository,
+        Iterator<F> features = Iterators.transform(featureRefs, new RefToFeature<F>(repository,
                 featureType));
 
         return features;
     }
 
-    private static class RefToFeature implements Function<Ref, Feature> {
+    private static class RefToFeature<F extends Feature> implements Function<Ref, F> {
 
         private final Repository repo;
 
@@ -71,18 +73,23 @@ public class ResourceIdFeatureCollector implements Iterable<Feature> {
         }
 
         @Override
-        public Feature apply(final Ref featureRef) {
+        public F apply(final Ref featureRef) {
             String featureId = featureRef.getName();
             ObjectId contentId = featureRef.getObjectId();
             StagingDatabase database = repo.getIndex().getDatabase();
-            Feature feature;
+            F feature;
             try {
-                ObjectReader<Feature> featureReader = serialisingFactory.createFeatureReader(type, featureId);
+                @SuppressWarnings("unchecked")
+                ObjectReader<F> featureReader = (ObjectReader<F>) serialisingFactory
+                        .createFeatureReader(type, featureId);
                 feature = database.get(contentId, featureReader);
+                checkState(feature != null);
+                checkState(featureId.equals(feature.getIdentifier().getID()));
+                checkState(feature.getIdentifier().getFeatureVersion() != null);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return VersionedFeatureWrapper.wrap(feature, featureRef.getObjectId().toString());
+            return feature;
         }
 
     }

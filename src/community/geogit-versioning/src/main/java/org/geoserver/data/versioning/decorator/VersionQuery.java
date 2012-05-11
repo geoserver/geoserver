@@ -98,6 +98,11 @@ public class VersionQuery {
                 }
             } else if (version.isIndex()) {
                 final int requestIndex = version.getIndex().intValue();
+                if (0 >= requestIndex) {
+                    throw new IllegalArgumentException(
+                            "Invalid ResourceId version index requested: " + requestIndex
+                                    + ". Must be a positive integer > 0.");
+                }
                 final int listIndex = requestIndex - 1;// version indexing starts at 1
                 List<Ref> allVersions = getAllInAscendingOrder(ggit, featureCommits, featureId);
                 if (allVersions.size() > 0) {

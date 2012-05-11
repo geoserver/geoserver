@@ -6,19 +6,23 @@ import java.awt.RenderingHints.Key;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.geogit.api.RevTree;
 import org.geogit.repository.Repository;
 import org.geogit.repository.WorkingTree;
+import org.geoserver.data.geogit.GeoGitSimpleFeatureCollection;
 import org.geoserver.data.versioning.VersioningFeatureSource;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureListener;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
+import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -33,6 +37,8 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.Identifier;
 import org.opengis.filter.identity.ResourceId;
 import org.springframework.util.Assert;
+
+import com.google.common.collect.Lists;
 
 /**
  * Provides support for {@link ResourceId} filtering by means of wrapping an unversioned feature
@@ -108,14 +114,19 @@ public class FeatureSourceDecorator<T extends FeatureType, F extends Feature> im
 
         final FeatureType featureType = getSchema();
         ResourceIdFeatureCollector versionQuery;
-        versionQuery = new ResourceIdFeatureCollector(repository, featureType, resourceIds);
+        versionQuery = new ResourceIdFeatureCollector<SimpleFeature>(repository, featureType,
+                resourceIds);
 
-        DefaultFeatureCollection features = new DefaultFeatureCollection(null,
-                (SimpleFeatureType) featureType);
-        
-        for (Feature f : versionQuery) {
-            features.add((SimpleFeature) f);
-        }
+        // DefaultFeatureCollection features = new DefaultFeatureCollection(null,
+        // (SimpleFeatureType) featureType);
+        //
+        // for (Feature f : versionQuery) {
+        // features.add((SimpleFeature) f);
+        // }
+
+        ArrayList<SimpleFeature> list = Lists.newArrayList(versionQuery);
+        ListFeatureCollection features = new ListFeatureCollection((SimpleFeatureType) featureType,
+                list);
         return features;
     }
 

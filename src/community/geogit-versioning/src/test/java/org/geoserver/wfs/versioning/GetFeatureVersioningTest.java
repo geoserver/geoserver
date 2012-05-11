@@ -376,7 +376,7 @@ public class GetFeatureVersioningTest extends WFS20VersioningTestSupport {
                 "    </wfs:GetFeature> ";
         Document dom = postAsDOM("wfs", xml);
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("OperationProcessingFailed", "//ows:Exception/@exceptionCode", dom);
+        XMLAssert.assertXpathEvaluatesTo("OperationParsingFailed", "//ows:Exception/@exceptionCode", dom);
     }
 
     /**

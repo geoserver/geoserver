@@ -64,10 +64,16 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
      */
     private boolean inline;
 
+    /**
+     * The map context
+     */
+    private final WMSMapContent mapContent;
+    
     private WMS wms;
 
-    public KMLNetworkLinkTransformer(WMS wms) {
+    public KMLNetworkLinkTransformer(WMS wms, WMSMapContent mapContent) {
         this.wms = wms;
+        this.mapContent = mapContent;
         standalone = true;
     }
 
@@ -127,6 +133,10 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
             }
             if (!inline) {
                 start("Folder");
+                if (standalone) {
+                    String kmltitle = (String) mapContent.getRequest().getFormatOptions().get("kmltitle");
+                    element("name", (kmltitle != null ? kmltitle : ""));
+                }
             }
             final List<MapLayerInfo> layers = request.getLayers();
 

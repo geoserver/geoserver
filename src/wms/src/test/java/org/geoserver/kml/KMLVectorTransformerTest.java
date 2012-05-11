@@ -7,10 +7,15 @@ package org.geoserver.kml;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
 
@@ -156,5 +161,29 @@ public class KMLVectorTransformerTest extends TestCase {
         assertXpathEvaluatesTo("next", "//Document/NetworkLink[2]/@id", dom);
     }
     
+    public void testKmltitleFormatOption() throws Exception {
+        SimpleFeatureCollection features = FeatureCollections
+                .newCollection();
+        Style style = mockData.getDefaultStyle().getStyle();
+        Layer layer = new FeatureLayer(features, style);
+
+        WMSMapContent mapContent = new WMSMapContent();
+        GetMapRequest request = mockData.createRequest();
+        mapContent.setRequest(request);
+
+        Map<String, Object> formatOptions = new HashMap<String, Object>();
+        formatOptions.put("kmltitle", "myCustomLayerTitle");
+        mapContent.getRequest().setFormatOptions(formatOptions);
+
+        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContent, layer);
+
+        Document document;
+
+        transformer.setStandAlone(true);
+        document = WMSTestSupport.transform(features, transformer);
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals("Document", document.getDocumentElement().getFirstChild().getNodeName());
+        assertEquals("myCustomLayerTitle", document.getDocumentElement().getFirstChild().getFirstChild().getTextContent());
+    }
     
 }

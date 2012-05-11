@@ -4,26 +4,19 @@
  */
 package org.geoserver.kml;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
 import junit.framework.Test;
 
-import org.apache.commons.io.FileUtils;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.MockData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
 import org.w3c.dom.Document;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class KMLTest extends WMSTestSupport {
     
@@ -146,5 +139,34 @@ public class KMLTest extends WMSTestSupport {
                 + KMLMapOutputFormat.MIME_TYPE + "&layers=" + getLayerId(STORM_OBS)
                 + "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&featureId=storm_obs.1321870537475");
         assertTrue(doc.contains("<when>1994-07-0"));
+    }
+
+    public void testKmltitleFormatOption() throws Exception {
+        final String kmlRequest = "wms?request=getmap&service=wms&version=1.1.1" + 
+            "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+            "&layers=" + getLayerId(MockData.BRIDGES) +  
+            "&styles=notthere" + 
+            "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326" +
+            "&format_options=kmltitle:myCustomLayerTitle";
+        
+        Document doc = getAsDOM(kmlRequest);
+        assertEquals("name", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getLocalName());
+        assertEquals("myCustomLayerTitle", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getTextContent());
+    }    
+
+    public void testKmltitleFormatOptionWithMultipleLayers() throws Exception {
+        final String kmlRequest = "wms?request=getmap&service=wms&version=1.1.1" + 
+        "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+        "&layers=" + getLayerId(MockData.BRIDGES) + "," + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart() +
+        "&styles=notthere" + "," + MockData.BASIC_POLYGONS.getLocalPart() +
+        "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326" +
+        "&format_options=kmltitle:myCustomLayerTitle";
+        
+        Document doc = getAsDOM(kmlRequest);
+        assertEquals("name", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getLocalName());
+        assertEquals(3, doc.getElementsByTagName("Document").getLength());
+        assertEquals("myCustomLayerTitle", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getTextContent());
+        assertEquals("cite:Bridges", doc.getElementsByTagName("Document").item(1).getFirstChild().getNextSibling().getTextContent());
+        assertEquals("cite:BasicPolygons", doc.getElementsByTagName("Document").item(2).getFirstChild().getNextSibling().getTextContent());
     }
 }

@@ -49,7 +49,7 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
     @SuppressWarnings("rawtypes")
     public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException,
             IOException {
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
         transformer.setIndentation(3);
         Charset encoding = wms.getCharSet();
         transformer.setEncoding(encoding);

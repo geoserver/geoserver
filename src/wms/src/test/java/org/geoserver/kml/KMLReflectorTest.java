@@ -132,6 +132,16 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertEquals("att1>1000", kvp2.get("CQL_FILTER"));
     }
 
+    public void testKmltitleFormatOption() throws Exception {
+        final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart();
+
+        final String requestUrl = "wms/kml?layers=" + layerName + "&styles=&mode=superoverlay&format_options=kmltitle:myCustomLayerTitle";
+        Document dom = getAsDOM(requestUrl);
+        // print(dom);
+        assertEquals("kml", dom.getDocumentElement().getLocalName());
+        assertXpathEvaluatesTo("myCustomLayerTitle", "kml/Folder/name", dom);
+    }
+    
     /**
      * Creates a key/value pair map from the cgi parameters in the provided url
      * 

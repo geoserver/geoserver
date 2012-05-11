@@ -7,6 +7,8 @@ package org.geoserver.kml;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -22,11 +24,13 @@ import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.w3c.dom.Document;
 
-
 public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
 
-    public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed", MockData.SF_PREFIX);
+    public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed",
+            MockData.SF_PREFIX);
+
     WMSMapContent mapContent;
+
     Layer Layer;
 
     /**
@@ -41,11 +45,11 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         super.setUpInternal();
 
         Layer = createMapLayer(DISPERSED_FEATURES);
-        
+
         mapContent = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         mapContent.addLayer(Layer);
     }
-    
+
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
         super.populateDataDirectory(dataDirectory);
@@ -53,27 +57,26 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         dataDirectory.addStyle("SingleFeature", getClass().getResource("singlefeature.sld"));
         dataDirectory.addStyle("Bridge", getClass().getResource("bridge.sld"));
 
-        dataDirectory.addPropertiesType(
-                DISPERSED_FEATURES,
-                getClass().getResource("Dispersed.properties"),
-                Collections.EMPTY_MAP
-                );
+        dataDirectory.addPropertiesType(DISPERSED_FEATURES,
+                getClass().getResource("Dispersed.properties"), Collections.EMPTY_MAP);
 
         dataDirectory.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
     }
- 
+
     /**
      * Verify that two overlay tiles are produced for a request that encompasses the world.
      */
     public void testWorldBoundsSuperOverlay() throws Exception {
-        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(), mapContent);
+        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
+                mapContent);
         transformer.setIndentation(2);
 
-        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        mapContent.getViewport().setBounds(
+                new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         transformer.transform(Layer, output);
-        
+
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
 
@@ -87,14 +90,16 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
      * Verify that when a tile smaller than one hemisphere is requested, four subtiles are included in the result.
      */
     public void testSubtileSuperOverlay() throws Exception {
-        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(), mapContent);
+        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
+                mapContent);
         transformer.setIndentation(2);
 
-        mapContent.getViewport().setBounds(new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        mapContent.getViewport().setBounds(
+                new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         transformer.transform(Layer, output);
-        
+
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
 
@@ -102,5 +107,27 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         assertEquals(6, document.getElementsByTagName("Region").getLength());
         assertEquals(5, document.getElementsByTagName("NetworkLink").getLength());
         assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
+    }
+
+    public void testKmltitleFormatOption() throws Exception {
+        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
+                mapContent);
+        transformer.setIndentation(2);
+
+        mapContent.getViewport().setBounds(
+                new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        Map<String, Object> formatOptions = new HashMap<String, Object>();
+        formatOptions.put("kmltitle", "myCustomLayerTitle");
+        mapContent.getRequest().setFormatOptions(formatOptions);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        transformer.transform(Layer, output);
+
+        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
+
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals("myCustomLayerTitle", document.getElementsByTagName("Document").item(0)
+                .getFirstChild().getNextSibling().getTextContent());
     }
 }

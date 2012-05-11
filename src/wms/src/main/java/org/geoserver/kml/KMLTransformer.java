@@ -109,7 +109,8 @@ public class KMLTransformer extends TransformerBase {
                 sb.setLength(sb.length() - 1);
 
                 start("Document");
-                element("name", sb.toString());
+                String kmltitle = (String) mapContent.getRequest().getFormatOptions().get("kmltitle");
+                element("name", (kmltitle != null ? kmltitle : sb.toString()));
             }
 
             // for every layer specified in the request
@@ -124,15 +125,15 @@ public class KMLTransformer extends TransformerBase {
                 superoverlay = (superoverlay == null ? Boolean.FALSE : superoverlay);
                 if (superoverlay) {
                     // encode as super overlay
-                    encodeSuperOverlayLayer(mapContent, layer);
+                    encodeSuperOverlayLayer(mapContent, layer, group);
                 } else {
                     // figure out which type of layer this is, raster or vector
                     if (layerInfo.getType() != MapLayerInfo.TYPE_RASTER) {
                         // vector
-                        encodeVectorLayer(mapContent, layer, lookAtOpts);
+                        encodeVectorLayer(mapContent, layer, lookAtOpts, group);
                     } else {
                         // encode as normal ground overlay
-                        encodeRasterLayer(mapContent, layer, lookAtOpts);
+                        encodeRasterLayer(mapContent, layer, lookAtOpts, group);
                     }
                 }
             }
@@ -143,7 +144,7 @@ public class KMLTransformer extends TransformerBase {
                 for (int i = 0; i < layers.size(); i++) {
                     // layer and info
                     Layer layer = layers.get(i);
-                    encodeLegend(mapContent, layer);
+                    encodeLegend(mapContent, layer, group);
                 }
             }
 
@@ -158,7 +159,7 @@ public class KMLTransformer extends TransformerBase {
          * Encodes a vector layer as kml.
          */
         protected void encodeVectorLayer(WMSMapContent mapContent, Layer layer,
-                KMLLookAt lookAtOpts) {
+                KMLLookAt lookAtOpts, boolean group) {
             // get the data
             SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureCollection features = null;
@@ -190,12 +191,12 @@ public class KMLTransformer extends TransformerBase {
                 if (useVector) {
                     // encode
                     KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts);
-                    initTransformer(tx);
+                    initTransformer(tx, group);
                     tx.setScaleDenominator(scaleDenominator);
                     tx.createTranslator(contentHandler).encode(features);
                 } else {
                     KMLRasterTransformer tx = createRasterTransfomer(mapContent, lookAtOpts);
-                    initTransformer(tx);
+                    initTransformer(tx, group);
 
                     // set inline to true to have the transformer reference images
                     // inline in the zip file
@@ -205,7 +206,7 @@ public class KMLTransformer extends TransformerBase {
             } else {
                 // kmz not selected, just do straight vector
                 KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts);
-                initTransformer(tx);
+                initTransformer(tx, group);
                 tx.setScaleDenominator(scaleDenominator);
                 tx.createTranslator(contentHandler).encode(features);
             }
@@ -239,9 +240,9 @@ public class KMLTransformer extends TransformerBase {
          * Encodes a raster layer as kml.
          */
         protected void encodeRasterLayer(WMSMapContent mapContent, Layer layer,
-                KMLLookAt lookAtOpts) {
+                KMLLookAt lookAtOpts, boolean group) {
             KMLRasterTransformer tx = createRasterTransfomer(mapContent, lookAtOpts);
-            initTransformer(tx);
+            initTransformer(tx, group);
 
             tx.setInline(kmz);
             tx.createTranslator(contentHandler).encode(layer);
@@ -249,26 +250,27 @@ public class KMLTransformer extends TransformerBase {
 
         /**
          * Encodes a layer as a super overlay.
+         * @param group 
          */
-        protected void encodeSuperOverlayLayer(WMSMapContent mapContent, Layer layer) {
+        protected void encodeSuperOverlayLayer(WMSMapContent mapContent, Layer layer, boolean group) {
             KMLSuperOverlayTransformer tx = new KMLSuperOverlayTransformer(wms, mapContent);
-            initTransformer(tx);
+            initTransformer(tx, group);
             tx.createTranslator(contentHandler).encode(layer);
         }
 
         /**
          * Encodes the legend for a maper layer as a scree overlay.
          */
-        protected void encodeLegend(WMSMapContent mapContent, Layer layer) {
+        protected void encodeLegend(WMSMapContent mapContent, Layer layer, boolean group) {
             KMLLegendTransformer tx = new KMLLegendTransformer(mapContent);
-            initTransformer(tx);
+            initTransformer(tx, group);
             tx.createTranslator(contentHandler).encode(layer);
         }
 
-        protected void initTransformer(KMLTransformerBase delegate) {
+        protected void initTransformer(KMLTransformerBase delegate, boolean group) {
             delegate.setIndentation(getIndentation());
             delegate.setEncoding(getEncoding());
-            delegate.setStandAlone(false);
+            delegate.setStandAlone(!group);
         }
 
         double computeScaleDenominator(Layer layer, WMSMapContent mapContent) {

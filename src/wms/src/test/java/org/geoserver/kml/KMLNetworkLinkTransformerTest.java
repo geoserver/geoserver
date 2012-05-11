@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -89,7 +90,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
         WMS wms = mockData.getWMS();
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
         transformer.setEncodeAsRegion(true);
         transformer.setIndentation(2);
 
@@ -146,7 +147,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
     public void testEncodeAsOverlay() throws Exception {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         WMS wms = mockData.getWMS();
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
         transformer.setEncodeAsRegion(false);
         transformer.setIndentation(2);
 
@@ -188,7 +189,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
      */
     public void testEncodeLookAtVendorSpecificParameters() throws Exception {
         WMS wms = mockData.getWMS();
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
         transformer.setEncodeAsRegion(false);
         transformer.setIndentation(2);
 
@@ -216,4 +217,23 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         assertXpathEvaluatesTo("2000.0", "//kml/Folder/LookAt/range", dom);
         assertXpathEvaluatesTo("absolute", "//kml/Folder/LookAt/altitudeMode", dom);
     }
+    
+    public void testKmltitleFormatOption() throws Exception {
+        WMS wms = mockData.getWMS();
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
+        transformer.setEncodeAsRegion(false);
+        transformer.setIndentation(2);
+
+        request.setBbox(new Envelope(-1, 1, -10, 10));
+
+        Map<String, Object> formatOptions = new HashMap<String, Object>();
+        formatOptions.put("kmltitle", "myCustomLayerTitle");
+        request.setFormatOptions(formatOptions);
+
+        Document dom = WMSTestSupport.transform(mapContent, transformer);
+        assertXpathEvaluatesTo("1", "count(//kml/Folder/name)", dom);
+
+        // explicit lookAt properties as set by FORMAT_OPTIONS
+        assertXpathEvaluatesTo("myCustomLayerTitle", "//kml/Folder/name", dom);
+    } 
 }

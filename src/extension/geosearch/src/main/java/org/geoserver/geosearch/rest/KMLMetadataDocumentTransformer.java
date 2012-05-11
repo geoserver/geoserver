@@ -114,7 +114,7 @@ class KMLMetadataDocumentTransformer extends TransformerBase {
             element("description", abstract1);
             // encodeBbox(mapContent.getAreaOfInterest());
 
-            KMLNetworkLinkTransformer networkLinkTransformer = new KMLNetworkLinkTransformer(wms);
+            KMLNetworkLinkTransformer networkLinkTransformer = new KMLNetworkLinkTransformer(wms, mapContent);
             networkLinkTransformer.setStandalone(false);
             networkLinkTransformer.setInline(true);
             networkLinkTransformer.setIndentation(getIndentation());

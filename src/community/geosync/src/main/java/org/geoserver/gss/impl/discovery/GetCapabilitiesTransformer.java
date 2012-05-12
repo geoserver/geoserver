@@ -8,6 +8,8 @@ import static org.geoserver.gss.xml.GSSSchema.GSS_Capabilities;
 
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.gss.config.GSSInfo;
 import org.geoserver.gss.impl.GSS;
 import org.geoserver.gss.impl.discovery.FilterCapabilitiesTransformer.FilterCapabilitiesTranslator;
@@ -65,8 +67,7 @@ public class GetCapabilitiesTransformer extends AbstractTransformer {
         }
 
         /**
-         * @param o
-         *            a {@link GetCapabilities} request
+         * @param o a {@link GetCapabilities} request
          * @see org.geotools.xml.transform.Translator#encode(java.lang.Object)
          */
         public void encode(Object o) throws IllegalArgumentException {
@@ -106,7 +107,9 @@ public class GetCapabilitiesTransformer extends AbstractTransformer {
         private void encodeServiceProvider() {
             GSSInfo serviceInfo = gss.getGssInfo();
             GeoServer geoServer = serviceInfo.getGeoServer();
-            ContactInfo contact = geoServer.getGlobal().getContact();
+            GeoServerInfo global = geoServer.getGlobal();
+            SettingsInfo settings = global.getSettings();
+            ContactInfo contact = settings.getContact();
 
             ServiceProviderTransformer tr;
             tr = new ServiceProviderTransformer(getNamespaceSupport());

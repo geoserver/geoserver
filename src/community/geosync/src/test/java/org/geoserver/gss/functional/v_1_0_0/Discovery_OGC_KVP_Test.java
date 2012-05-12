@@ -6,6 +6,9 @@ import junit.framework.Test;
 
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.config.ContactInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.gss.xml.GSSSchema;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,10 +54,14 @@ public class Discovery_OGC_KVP_Test extends GSSFunctionalTestSupport {
     }
 
     public void testBasicStructure() throws Exception {
-        ContactInfo contact = getGeoServer().getGlobal().getContact();
+        GeoServer geoServer = getGeoServer();
+        GeoServerInfo global = geoServer.getGlobal();
+        SettingsInfo settings = global.getSettings();
+        ContactInfo contact = settings.getContact();
         contact.setOnlineResource("http://test.example.com");
         contact.setContactVoice("1-800-OPENGEO");
-
+        geoServer.save(global);
+        
         Document dom = super.getAsDOM(BASE_REQUEST_PATH);
         // print(dom);
 

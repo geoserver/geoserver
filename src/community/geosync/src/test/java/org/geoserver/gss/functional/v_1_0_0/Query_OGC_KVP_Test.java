@@ -226,7 +226,7 @@ public class Query_OGC_KVP_Test extends GSSFunctionalTestSupport {
 
         request = REPLICATION_FEED_BASE;
         dom = super.getAsDOM(request);
-        print(dom);
+        // print(dom);
         result = evaluateAll("//atom:feed/atom:entry/atom:summary", dom);
         assertEquals(ALL_REPLICATION_SUMMARIES.size(), result.size());
         assertEquals(ALL_REPLICATION_SUMMARIES, result);

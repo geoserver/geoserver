@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -154,4 +155,15 @@ public class GeoServerHomePage extends GeoServerBasePage {
         return false;
     }
 
+    /**
+     * Overrides to return {@code null}, as the default ajax indicator gets annoying very quickly on
+     * the home page if there's some ajax timer to refresh some status, and it's not like we're
+     * going to have any "save" button on the home page that could be pressed twice anyways.
+     * 
+     * @see IAjaxIndicatorAware#getAjaxIndicatorMarkupId()
+     */
+    @Override
+    public String getAjaxIndicatorMarkupId() {
+        return null;
+    }
 }

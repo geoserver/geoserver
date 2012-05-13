@@ -979,6 +979,45 @@
       <artifactId>guava</artifactId>
       <version>11.0.1</version>
     </dependency>
+    <!-- Berkeley DB JE -->
+    <dependency>
+      <groupId>com.sleepycat</groupId>
+      <artifactId>je</artifactId>
+      <version>4.1.10</version>
+    </dependency>
+    <!-- GeoGIT -->
+    <dependency>
+      <groupId>org.geogit</groupId>
+      <artifactId>geogit</artifactId>
+      <version>1.0-M2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geogit</groupId>
+      <artifactId>geogit</artifactId>
+      <version>1.0-M2</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gvsig</groupId>
+      <artifactId>bxml-api</artifactId>
+      <version>1.0-M4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gvsig</groupId>
+      <artifactId>bxml-impl</artifactId>
+      <version>1.0-M4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gvsig</groupId>
+      <artifactId>bxml-utils</artifactId>
+      <version>1.0-M4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gvsig</groupId>
+      <artifactId>bxml-geoserver</artifactId>
+      <version>1.0-M4</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1423,8 +1462,8 @@
 
  <properties>
   <gs.version>2.2-SNAPSHOT</gs.version>
-  <gt.version>8-SNAPSHOT</gt.version>
-  <gwc.version>1.3-SNAPSHOT</gwc.version>
+  <gt.version>8-SNAPSHOT_r38714</gt.version>
+  <gwc.version>1.3-RC3</gwc.version>
   <spring.version>3.1.1.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <wicket.version>1.4.12</wicket.version>

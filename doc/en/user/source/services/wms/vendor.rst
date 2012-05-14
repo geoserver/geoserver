@@ -110,9 +110,13 @@ The syntax is::
 The supported format options are:
 
 * ``antialiasing`` (values = ``on``, ``off``, ``text``): controls the use of antialiased rendering in raster output. 
-* ``dpi``: sets the rendering dpi in raster outputs. The OGC standard dpi is 90, but if you need to create high resolution images (e.g for printing) it is advisable to request a larger image and set a higher dpi. For example, to print  a 100x100 image at 300dpi it is advisable to ask for a 333x333 image with the dpi value set to 300. In general the image size should be increased by a factor equal to ``targetDpi/90`` and the target dpi set in the format options.
+* ``dpi``: sets the rendering DPI (dots-per-inch) for raster outputs. 
+  The OGC standard output resolution is 90 DPI. 
+  If you need to create high resolution images (e.g for printing) it is advisable to request a larger image size and specify a higher DPI. 
+  In general, the image size should be increased by a factor equal to ``targetDPI/90``, with the target dpi set in the format options.
+  For example, to print  a 100x100 image at 300 DPI request a 333x333 image with the DPI value set to 300: ``&width=333&height=333&format_options=dpi:300`` 
 * ``layout``: specifies a layout name to use.  Layouts are used to add decorators such as compasses and legends.  This capability is discussed further in the :ref:`wms_decorations` section.
-* ``quantizer`` ((values = ``octree``, ``mediancut``): controls the color quantizer used to produce png8 images. GeoServer 2.2.0 provides two quantizers, a fast RGB quantizer called ``octree`` that does not handle translucency and a slower but more accurate RGBA quantizer called ``mediancut``. By default the first is used on opaque images, whilst the second is enabled if the client asks for a transparent image (``transparent=true``). This vendor parameter can be used to manually force the usage of a particular quantizer.
+* ``quantizer`` ((values = ``octree``, ``mediancut``): controls the color quantizer used to produce PNG8 images. GeoServer 2.2.0 provides two quantizers, a fast RGB quantizer called ``octree`` that does not handle translucency and a slower but more accurate RGBA quantizer called ``mediancut``. By default the first is used on opaque images, whilst the second is enabled if the client asks for a transparent image (``transparent=true``). This vendor parameter can be used to manually force the usage of a particular quantizer.
 
 kmattr
 ------

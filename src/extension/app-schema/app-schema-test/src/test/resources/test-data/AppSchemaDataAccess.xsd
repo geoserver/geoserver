@@ -310,7 +310,16 @@
     </annotation>
     <sequence>
       <choice minOccurs="0">
-        <element name="OCQL" type="string" />
+        <sequence>            
+          <element name="OCQL" type="string" />          
+          <element name="index" type="string" minOccurs="0" maxOccurs="1">
+            <annotation>
+              <documentation>
+                <![CDATA[ The index of database row if denormalised. Example of usage is timeseries endPosition that reflects the last timePosition where the timePosition value is dynamic. ]]>
+              </documentation>
+            </annotation>
+          </element>
+        </sequence>
         <element name="Expression">
           <complexType>
             <sequence>

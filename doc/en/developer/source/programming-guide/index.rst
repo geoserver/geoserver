@@ -13,4 +13,5 @@ Programming Guide
    extension-points/index.rst
    wps/index.rst
    versioning/index.rst
-   security/index.rst
+   security/index.rst   
+   app-schema/index.rst

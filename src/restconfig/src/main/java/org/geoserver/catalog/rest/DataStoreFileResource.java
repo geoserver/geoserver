@@ -361,6 +361,11 @@ public class DataStoreFileResource extends StoreFileResource {
             
             //load the target datastore
             //DataStore ds = (DataStore) info.getDataStore(null);
+            Map<String, FeatureTypeInfo> featureTypesByNativeName =
+                new HashMap<String, FeatureTypeInfo>();
+            for (FeatureTypeInfo ftInfo : catalog.getFeatureTypesByDataStore(info)) {
+                featureTypesByNativeName.put(ftInfo.getNativeName(), ftInfo);
+            }
             
             String[] featureTypeNames = source.getTypeNames();
             for ( int i = 0; i < featureTypeNames.length; i++ ) {
@@ -371,8 +376,8 @@ public class DataStoreFileResource extends StoreFileResource {
                 }
                 
                 FeatureSource fs = ds.getFeatureSource(featureTypeNames[i]); 
-                FeatureTypeInfo ftinfo = 
-                    catalog.getFeatureTypeByDataStore(info, featureTypeNames[i] );
+                FeatureTypeInfo ftinfo = featureTypesByNativeName.get(featureTypeNames[i]);
+                
                 if ( ftinfo == null) {
                     //auto configure the feature type as well
                     ftinfo = builder.buildFeatureType(fs);

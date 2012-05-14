@@ -59,7 +59,7 @@ Comparison Functions
    * - greaterThan
      - ``x``:Object, ``y``:Object
      - Returns true if ``x`` > ``y``. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)
-   * - in10, in9, in8, in7, in6, in5, in4, in3, in2
+   * - in2, in3, in4, in5, in6, in7, in8, in9, in10
      - ``candidate``:Object, ``v1``:Object, ..., ``v9``:Object
      - Returns true if ``candidate`` is equal to one of the ``v1``, ..., ``v9`` values. Use the appropriate function name depending on how many arguments you need to pass.
    * - isLike

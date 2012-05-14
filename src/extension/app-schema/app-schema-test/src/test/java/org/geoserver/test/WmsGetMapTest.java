@@ -14,6 +14,8 @@ import junit.framework.Test;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.image.test.ImageAssert;
+import org.w3c.dom.Document;
+
 
 /**
  * 
@@ -57,6 +59,16 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
     }
     
+    public void testGetMapOutcropCharacterReprojection() throws Exception
+    {
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4283&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+        BufferedImage imageBuffer = ImageIO.read(is);
+                
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
+
+    }
+    
     public void testGetMapPositionalAccuracy() throws Exception
     {
         InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=positionalaccuracy&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
@@ -73,5 +85,19 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         is.close();
         out.close();*/
     }  
+    
+   
+    public void testGetMapAfterWFS() throws Exception
+    {
+        Document doc = getAsDOM("wfs?version=1.1.0&request=getFeature&typeName=gsml:MappedFeature&maxFeatures=1");
+        LOGGER.info(prettyString(doc));
+        
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+        BufferedImage imageBuffer = ImageIO.read(is);
+                
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
+
+    }
 
 }

@@ -300,6 +300,21 @@ public class GetFeatureInfo {
                 
                 int size = collection.size();
                 if(size != 0) {
+
+                    // HACK HACK HACK
+                    // For complex features, we need the targetCrs and version in scenario where we have
+                    // a top level feature that does not contain a geometry(therefore no crs) and has a
+                    // nested feature that contains geometry as its property.Furthermore it is possible
+                    // for each nested feature to have different crs hence we need to reproject on each
+                    // feature accordingly.
+                    // This is a Hack, this information should not be passed through feature type
+                    // appschema will need to remove this information from the feature type again
+                	if (! (collection instanceof SimpleFeatureCollection)) {
+                       collection.getSchema().getUserData().put("targetCrs", request.getGetMapRequest().getCrs());
+                       collection.getSchema().getUserData().put("targetVersion", "wms:getfeatureinfo");
+                       
+                    }
+                	
                     results.add(collection);
                     
                     // don't return more than FEATURE_COUNT

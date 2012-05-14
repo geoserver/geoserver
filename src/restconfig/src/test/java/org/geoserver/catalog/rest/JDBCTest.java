@@ -4,10 +4,16 @@
  */
 package org.geoserver.catalog.rest;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -25,6 +31,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 public class JDBCTest extends CatalogRESTTestSupport {
 
@@ -203,5 +210,63 @@ public class JDBCTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:sqlview");
         // print(dom);
         assertEquals( 2, dom.getElementsByTagName( "gs:sqlview" ).getLength() );
+    }
+
+    public void testUploadUsesNativeNameForConflictDetection() throws Exception {
+        testCreateDataStore(); // creates "acme" datastore
+
+        // We expect no featuretypes as nothing has been configured yet.
+        assertXpathEvaluatesTo("0", "count(/featureTypes/featureType)",
+                getAsDOM("/rest/workspaces/gs/datastores/acme/featuretypes.xml"));
+
+        byte[] dataToUpload = zippedPropertyFile("pds.properties");
+        MockHttpServletResponse resp = 
+            putAsServletResponse("/rest/workspaces/gs/datastores/acme/file.properties",
+                    dataToUpload, "application/zip");
+
+        // Upload data, will be imported into DB table named "pds"
+        assertEquals("Upload into database datastore failed: " + resp.getOutputStreamContent(),
+                201, resp.getStatusCode());
+        // Now we expect one featuretype since we just imported it
+        assertXpathEvaluatesTo("1", "count(/featureTypes/featureType)",
+                getAsDOM("/rest/workspaces/gs/datastores/acme/featuretypes.xml"));
+
+        // Rename the published resource - note the underlying DB table is still named "pds"
+        resp = putAsServletResponse("/rest/workspaces/gs/datastores/acme/featuretypes/pds.xml",
+                "<featureType><name>pds_alt</name></featureType>", "application/xml");
+        assertEquals("Couldn't update featuretype settings: " + resp.getOutputStreamContent(),
+                200, resp.getStatusCode());
+
+        // Upload data to be imported into "pds" again. Should simply append to
+        // the table and not change the resource configuration
+        resp = putAsServletResponse("/rest/workspaces/gs/datastores/acme/file.properties",
+                dataToUpload, "application/zip");
+        assertEquals("Second upload to database datastore failed: " + resp.getOutputStreamContent(),
+                201, resp.getStatusCode());
+
+        // We expect one featuretype again since we should have appended data to the existing
+        // featuretype this time
+        assertXpathEvaluatesTo("1", "count(/featureTypes/featureType)",
+                getAsDOM("/rest/workspaces/gs/datastores/acme/featuretypes.xml"));
+    }
+
+    byte[] zippedPropertyFile(String filename) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ZipOutputStream zout = new ZipOutputStream(out);
+        zout.putNextEntry(new ZipEntry(filename));
+        zout.write(propertyFile());
+        zout.flush();
+        zout.close();
+        return out.toByteArray();
+    }
+
+    byte[] propertyFile() throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( output ) );
+        writer.write( "_=name:String,pointProperty:Point\n" );
+        writer.write( "ds.0='zero'|POINT(0 0)\n");
+        writer.write( "ds.1='one'|POINT(1 1)\n");
+        writer.flush();
+        return output.toByteArray();
     }
 }

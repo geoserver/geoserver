@@ -129,3 +129,18 @@ Functions in feature chaining
 `````````````````````````````
 
 If using feature chaining, avoid using functions in sourceExpression for linking attributes, i.e. attribute used in both OCQL and linkField. This is because functions used in feature chaining are not supported with joining support. 
+
+WMS tests
+`````````
+If you are testing Application Schema WMS support behaviour, it is highly recommended to also perform the optional perceptual diff tests, 
+which are included in both online as well as offline unit tests.
+Perceptual diff tests for app-schema WMS support will only be performed if::
+      
+	-Dorg.geotools.image.test.enabled=true
+
+and `Perceptual Diff
+<http://pdiff.sourceforge.net/>`_ is installed on the computer from which the tests are executed.
+
+
+
+

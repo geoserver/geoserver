@@ -313,6 +313,20 @@
                 */
             }
             
+            // sets the chosen style
+            function setStyle(style){
+                // we may be switching style on setup
+                if(tiled == null)
+                  return;
+                  
+                tiled.mergeNewParams({
+                    styles: style
+                });
+                untiled.mergeNewParams({
+                    styles: style
+                });
+            }
+            
             // sets the chosen WMS version
             function setWMSVersion(wmsVersion){
                 // we may be switching style on setup

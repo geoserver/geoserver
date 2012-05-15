@@ -53,21 +53,24 @@ them::
 Building offline
 ----------------
 
-Maven operates by automatically downloading any dependencies declared by a 
-module being built. When dealing with SNAPSHOT dependencies this can be 
-problematic. Each time Maven performs its first build of the day it tries to 
-update any SNAPSHOT dependencies it occurs.  
+Maven automatically downloads dependencies declared by 
+modules being built. In the case of SNAPSHOT dependencies,
+Maven downloads updates each time it performs the first build of the day.
 
-This can be a problem as GeoServer depends on SNAPSHOT versions of the GeoTools
-library. The end result is maven downloading a lot of updates GeoTools modules
-and an increased built time. Which if you built geotools locally, is unecessary.
+GeoServer depends on SNAPSHOT versions of the GeoTools library.  
+The automatic download can result in lengthy build time
+while Maven downloads updated GeoTools modules. 
+If GeoTools was built locally, these downloads are unecessary.
+
+Also, if GeoTools is being modified locally, then the local versions 
+rather than SNAPSHOT versions of modules should be used.
 
 This can be remedied by running maven in "offline mode"::
 
   mvn -o clean install
 
-In offline mode Maven will not attempt to download any external dependencies, 
-and will not attempt to update any SNAPSHOT dependencies.
+In offline mode Maven will not download external dependencies, 
+and will not update SNAPSHOT dependencies.
 
 Building extensions
 -------------------

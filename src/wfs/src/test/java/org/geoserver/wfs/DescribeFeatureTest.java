@@ -6,7 +6,10 @@ import junit.framework.Test;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,12 +17,12 @@ import org.w3c.dom.NodeList;
 
 public class DescribeFeatureTest extends WFSTestSupport {
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DescribeFeatureTest());
-    }
+//    /**
+//     * This is a READ ONLY TEST so we can use one time setup
+//     */
+//    public static Test suite() {
+//        return new OneTimeTestSetup(new DescribeFeatureTest());
+//    }
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
@@ -30,6 +33,31 @@ public class DescribeFeatureTest extends WFSTestSupport {
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+    }
+    
+    public void testSkipMisconfiguredLayers() throws Exception {
+        // make sure AggregateGeoFeature is in the mock data set
+        Document doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
+        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
+        
+        // enable skipping of misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+        
+        // misconfigure a layer
+        FeatureTypeInfo ftype =
+                getCatalog().getFeatureTypeByName(MockData.AGGREGATEGEOFEATURE.getLocalPart());
+        ftype.setNativeName("NOT ACTUALLY THERE");
+        getCatalog().save(ftype);
+        
+        // check the results again
+        doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
+        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("0",
+                "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
     }
 
     public void testPost() throws Exception {

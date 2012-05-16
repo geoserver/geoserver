@@ -7,8 +7,10 @@ package org.geoserver.wms.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.Component;
@@ -18,15 +20,19 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.value.AttributeMap;
+import org.apache.wicket.util.value.IValueMap;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
@@ -101,7 +107,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             }
         };
         form.add(bboxPerCRSInfoLink);
-
+        
         // general
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
         // resource limits
@@ -185,7 +191,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     protected String getServiceName(){
         return "WMS";
     }
-
+    
     private class WatermarkPositionRenderer implements  IChoiceRenderer {
 
         public Object getDisplayValue(Object object) {

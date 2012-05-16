@@ -13,6 +13,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.w3c.dom.Document;
@@ -20,12 +22,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GetCapabilitiesTest extends WFSTestSupport {
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCapabilitiesTest());
-    }
+//    /**
+//     * This is a READ ONLY TEST so we can use one time setup
+//     */
+//    public static Test suite() {
+//        return new OneTimeTestSetup(new GetCapabilitiesTest());
+//    }
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
@@ -40,6 +42,27 @@ public class GetCapabilitiesTest extends WFSTestSupport {
                 .getNodeName());
         XpathEngine xpath =  XMLUnit.newXpathEngine();
         assertTrue(xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength() > 0);
+    }
+    
+    public void testSkipMisconfiguredLayers() throws Exception {
+        // configure geoserver to skip misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+
+        // introduce misconfiguration
+        FeatureTypeInfo ftype = getCatalog().getFeatureTypeByName(MockData.UPDATES.getLocalPart());
+        ftype.setLatLonBoundingBox(null);
+        getCatalog().save(ftype);
+        
+        // fetch capabilities document
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities");
+        print(doc);
+        int count = 0; 
+        for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
+            if (ft.enabled()) count++;
+        }
+        assertXpathEvaluatesTo(String.valueOf(count - 1), "count(//wfs:FeatureType)", doc);
     }
     
     public void testNamespaceFilter() throws Exception {

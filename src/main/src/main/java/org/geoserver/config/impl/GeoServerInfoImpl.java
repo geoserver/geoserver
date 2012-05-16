@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
@@ -40,7 +41,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     protected boolean verbose = true;
 
     protected boolean verboseExceptions = false;
-
+    
     protected MetadataMap metadata = new MetadataMap();
 
     protected Map<Object, Object> clientProperties = new HashMap<Object, Object>();
@@ -57,6 +58,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     protected transient GeoServer geoServer;
 
     protected Integer xmlPostRequestLogBufferSize = 1024;
+
+    private ResourceErrorHandling resourceErrorHandling;
 
     public GeoServerInfoImpl(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -266,6 +269,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         result = prime * result + (verboseExceptions ? 1231 : 1237);
         result = prime * result + (globalServices ? 1231 : 1237);
         result = prime * result + xmlPostRequestLogBufferSize;
+        result = prime * result + 
+                ((resourceErrorHandling == null) ? 0 : resourceErrorHandling.hashCode());
         return result;
     }
 
@@ -341,6 +346,13 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         else if (!xmlPostRequestLogBufferSize.equals(other.getXmlPostRequestLogBufferSize())) {
             return false;
         }
+        
+        if (resourceErrorHandling == null) {
+            if (other.getResourceErrorHandling() != null) return false;
+        } else {
+            if (!resourceErrorHandling.equals(other.getResourceErrorHandling())) return false;
+        }
+        
         return true;
     }
 
@@ -361,6 +373,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
             this.xmlPostRequestLogBufferSize = 1024;
         }
         return this;
+    }
+
+    public void setResourceErrorHandling(ResourceErrorHandling mode) {
+        this.resourceErrorHandling = mode;
+    }
+
+    public ResourceErrorHandling getResourceErrorHandling() {
+        return this.resourceErrorHandling;
     }
 
 }

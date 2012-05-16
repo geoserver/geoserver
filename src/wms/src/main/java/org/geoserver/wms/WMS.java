@@ -800,5 +800,4 @@ public class WMS implements ApplicationContextAware {
     public static WMS get() {
         return GeoServerExtensions.bean(WMS.class);
     }
-
 }

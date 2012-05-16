@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.wcs10.CapabilitiesSectionType;
@@ -29,6 +30,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.WCSInfo;
@@ -70,6 +72,9 @@ public class Wcs10CapsTransformer extends TransformerBase {
     private WCSInfo wcs;
 
     private Catalog catalog;
+    
+    private final boolean skipMisconfigured;
+
 
     /**
      * Creates a new WFSCapsTransformer object.
@@ -80,6 +85,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
         this.wcs = geoServer.getService(WCSInfo.class);
         this.catalog = geoServer.getCatalog();
         setNamespaceDeclarationEnabled(false);
+        this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    geoServer.getGlobal().getResourceErrorHandling());
     }
 
     public Translator createTranslator(ContentHandler handler) {
@@ -691,7 +698,20 @@ public class Wcs10CapsTransformer extends TransformerBase {
             List<CoverageInfo> coverages = catalog.getCoverages();
             Collections.sort(coverages, new CoverageInfoLabelComparator());
             for (CoverageInfo cvInfo : coverages) {
-                handleCoverageOfferingBrief(cvInfo);
+                try {
+                    mark();
+                    handleCoverageOfferingBrief(cvInfo);
+                    commit();
+                } catch (Exception e) {
+                    if (skipMisconfigured) {
+                        reset();
+                        LOGGER.log(Level.SEVERE, "Skipping coverage: " + cvInfo.getPrefixedName()
+                                + " as its capabilities generation failed", e);
+                    } else {
+                        throw new RuntimeException("Capabilities document generation failed on coverage "
+                                + cvInfo.getPrefixedName(), e);
+                    }
+                }
             }
 
             end("wcs:ContentMetadata");

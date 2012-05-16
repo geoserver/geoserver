@@ -182,6 +182,18 @@ public interface GeoServerInfo extends Info {
      * @uml.property name="verboseExceptions"
      */
     boolean isVerboseExceptions();
+    
+    /**
+     * Set the XML error handling mode for the server.
+     * 
+     * @see ResourceErrorHandling
+     */
+    void setResourceErrorHandling(ResourceErrorHandling mode);
+    
+    /**
+     * Get the XML error handling mode for the server.
+     */
+    ResourceErrorHandling getResourceErrorHandling();
 
     /**
      * Sets verbosity flag for exceptions.

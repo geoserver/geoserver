@@ -3,6 +3,9 @@ package org.geoserver.wcs;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import junit.framework.Test;
 
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
@@ -11,18 +14,6 @@ import org.w3c.dom.Node;
 
 public class GetCapabilitiesTest extends WCSTestSupport {
 
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCapabilitiesTest());
-    }
-
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-    }
 
     // @Override
     // protected String getDefaultLogConfiguration() {
@@ -33,6 +24,25 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
         // print(dom);
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+    }
+    
+    public void testSkipMisconfigured() throws Exception {
+        // enable skipping of misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+
+        // manually misconfigure one layer
+        CoverageStoreInfo cvInfo = getCatalog().getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart());
+        cvInfo.setURL("file:///I/AM/NOT/THERE");
+        getCatalog().save(cvInfo);
+        
+        // check we got everything but that specific layer, and that the output is still schema compliant
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        
+        int count = getCatalog().getCoverages().size();
+        assertEquals(count - 1, dom.getElementsByTagName("wcs:CoverageOfferingBrief").getLength());
     }
 
     public void testNoServiceContactInfo() throws Exception {

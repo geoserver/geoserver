@@ -51,6 +51,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStylesResponse;
@@ -191,7 +192,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      * @author Gabriel Roldan
      * @version $Id
      */
-    private static class CapabilitiesTranslator extends TranslatorSupport {
+    private static class CapabilitiesTranslator extends  TranslatorSupport {
 
         private static final Logger LOGGER = org.geotools.util.logging.Logging
                 .getLogger(CapabilitiesTranslator.class.getPackage().getName());
@@ -219,6 +220,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         private WMS wmsConfig;
 
         private Collection<ExtendedCapabilitiesProvider> extCapsProviders;
+        
+        private final boolean skipping;
 
         /**
          * Creates a new CapabilitiesTranslator object.
@@ -235,6 +238,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             this.getMapFormats = getMapFormats;
             this.getLegendGraphicFormats = getLegendGraphicFormats;
             this.extCapsProviders = extCapsProviders;
+            this.skipping = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
         }
 
         /**
@@ -701,7 +706,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             for (LayerInfo layer : layers) {
                 ResourceInfo resource = layer.getResource();
                 layerBbox = resource.getLatLonBoundingBox();
-                latlonBbox.expandToInclude(layerBbox);
+                if (layerBbox != null)
+                    latlonBbox.expandToInclude(layerBbox);
             }
 
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -740,16 +746,26 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                                 + " the layer is geometryless", e);
                     }
                 }
-
+                
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
                 if (layer.enabled() && wmsExposable) {
                     try {
+                        mark();
                         handleLayer(layer);
+                        commit();
                     } catch (Exception e) {
-                        // report what layer we failed on to help the admin locate and fix it
-                        throw new ServiceException(
-                                "Error occurred trying to write out metadata for layer: "
-                                        + layer.getName(), e);
+                        if (skipping) {
+                            reset();
+//                            LOGGER.log(
+//                                Level.WARNING, 
+//                                "Error writing metadata; skipping layer: " + layer.getName(),
+//                                e);
+                        } else {
+                            // report what layer we failed on to help the admin locate and fix it
+                            throw new ServiceException(
+                                    "Error occurred trying to write out metadata for layer: "
+                                            + layer.getName(), e);
+                        }
                     }
                 }
             }

@@ -45,6 +45,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     int maxRenderingErrors;
 
+    private String capabilitiesErrorHandling;
+
     public WMSInfoImpl() {
         setId("wms");
         authorityURLs = new ArrayList<AuthorityURLInfo>(2);
@@ -133,5 +135,4 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     public void setIdentifiers(List<LayerIdentifierInfo> identifiers) {
         this.identifiers = identifiers;
     }
-
 }

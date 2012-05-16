@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
@@ -30,6 +31,7 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.GeoServerExtensions;
@@ -95,7 +97,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
     /** catalog */
     protected Catalog catalog;
-
+    
     /**
      * Creates a new CapabilitiesTransformer object.
      */
@@ -228,8 +230,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * Transformer for wfs 1.0 capabilities document.
      */
     public static class WFS1_0 extends CapabilitiesTransformer {
+        private final boolean skipMisconfigured;
+
         public WFS1_0(WFSInfo wfs, Catalog catalog) {
             super(wfs, catalog);
+            this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    wfs.getGeoServer().getGlobal().getResourceErrorHandling());
         }
 
         public Translator createTranslator(ContentHandler handler) {
@@ -675,7 +681,21 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
                 for (Iterator it = featureTypes.iterator(); it.hasNext();) {
                     FeatureTypeInfo ftype = (FeatureTypeInfo) it.next();
-                    handleFeatureType(ftype);
+                    try {
+                        mark();
+                        handleFeatureType(ftype);
+                        commit();
+                    } catch (RuntimeException e) {
+                        if (skipMisconfigured) {
+                            reset();
+                            LOGGER.log(Level.WARNING,
+                                    "Couldn't encode WFS Capabilities entry for FeatureType: "
+                                         + ftype.getPrefixedName(),
+                                     e);
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
 
                 end("FeatureTypeList");
@@ -833,8 +853,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * Transformer for wfs 1.1 capabilities document.
      */
     public static class WFS1_1 extends CapabilitiesTransformer {
+        private final boolean skipMisconfigured;
+        
         public WFS1_1(WFSInfo wfs, Catalog catalog) {
             super(wfs, catalog);
+            skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    wfs.getGeoServer().getGlobal().getResourceErrorHandling());
         }
 
         public Translator createTranslator(ContentHandler handler) {
@@ -1268,8 +1292,23 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
                 for (Iterator i = featureTypes.iterator(); i.hasNext();) {
                     FeatureTypeInfo featureType = (FeatureTypeInfo) i.next();
-                    if(featureType.enabled())
-                        featureType(featureType, crs, srsPrefix);
+                    if(featureType.enabled()) {
+                        try {
+                            mark();
+                            featureType(featureType, crs, srsPrefix);
+                            commit();
+                        } catch (RuntimeException ex) {
+                            if (skipMisconfigured) {
+                                reset();
+                                LOGGER.log(Level.WARNING,
+                                        "Couldn't encode WFS capabilities entry for featuretype: "
+                                            + featureType.getPrefixedName(),
+                                        ex);
+                            } else {
+                                throw ex;
+                            }
+                        }
+                    }
                 }
             }
 

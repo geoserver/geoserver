@@ -24,6 +24,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerHomePage;
@@ -50,6 +51,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("globalServices"));
         form.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
         form.add(new DropDownChoice("charset", AVAILABLE_CHARSETS));
+        form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values())));
         form.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
         
         logLevelsAppend(form, loggingInfoModel);

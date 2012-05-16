@@ -42,6 +42,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
@@ -173,6 +174,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         
         DimensionHelper dimensionHelper;
 
+        private boolean skipping;
 
         /**
          * Creates a new CapabilitiesTranslator object.
@@ -205,6 +207,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     Capabilities_1_3_0_Translator.this.element(element, content);
                 }
             };
+            this.skipping = 
+                ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
 
             // register namespaces provided by extended capabilities
             for (ExtendedCapabilitiesProvider cp : extCapsProviders) {
@@ -743,7 +748,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             for (LayerInfo layer : layers) {
                 ResourceInfo resource = layer.getResource();
                 layerBbox = resource.getLatLonBoundingBox();
-                latlonBbox.expandToInclude(layerBbox);
+                if (layerBbox != null)
+                   latlonBbox.expandToInclude(layerBbox);
             }
 
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -788,12 +794,18 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
                 if (layer.enabled() && wmsExposable) {
                     try {
+                        mark();
                         handleLayer(layer);
+                        commit();
                     } catch (Exception e) {
                         // report what layer we failed on to help the admin locate and fix it
-                        throw new ServiceException(
-                                "Error occurred trying to write out metadata for layer: "
-                                        + layer.getName(), e);
+                        if (skipping) {
+                            reset();
+                        } else { 
+                            throw new ServiceException(
+                                "Error occurred trying to write out metadata for layer: " + 
+                                layer.getName(), e);
+                        }
                     }
                 }
             }

@@ -24,7 +24,7 @@ import org.geoserver.catalog.LayerInfo;
 public class LayerConfigurationPanel extends Panel {
 	private static final long serialVersionUID = 4881474189619124359L;
 
-	public LayerConfigurationPanel(String id, IModel model){
+	public LayerConfigurationPanel(String id, IModel<LayerInfo> model){
 		super(id, model);
 	}
 	

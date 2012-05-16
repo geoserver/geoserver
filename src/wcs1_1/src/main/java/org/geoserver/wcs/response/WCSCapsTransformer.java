@@ -8,6 +8,7 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.wcs11.GetCapabilitiesType;
@@ -27,6 +29,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -63,6 +66,8 @@ public class WCSCapsTransformer extends TransformerBase {
     private WCSInfo wcs;
 
     private Catalog catalog;
+    
+    private final boolean skipMisconfigured;
 
     /**
      * Creates a new WFSCapsTransformer object.
@@ -71,6 +76,8 @@ public class WCSCapsTransformer extends TransformerBase {
         super();
         this.wcs = gs.getService(WCSInfo.class);
         this.catalog = gs.getCatalog();
+        this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                gs.getGlobal().getResourceErrorHandling());
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -396,15 +403,15 @@ public class WCSCapsTransformer extends TransformerBase {
         private void handleContents() {
             start("wcs:Contents");
 
-            List<CoverageInfo> coverages = wcs.getGeoServer().getCatalog().getCoverages();
+            List<CoverageInfo> coverages =
+                    new ArrayList<CoverageInfo>(wcs.getGeoServer().getCatalog().getCoverages());
             
             // filter out disabled coverages
-            for (Iterator it = coverages.iterator(); it.hasNext();) {
-                // GR: I don't think we should be removing directly from the list returned by
-                // Catalog?
+            for (Iterator<CoverageInfo> it = coverages.iterator(); it.hasNext();) {
                 CoverageInfo cv = (CoverageInfo) it.next();
-                if(!cv.enabled())
+                if (!cv.enabled()) {
                     it.remove();
+                }
             }
             
             // filter out coverages that are not in the requested namespace
@@ -420,8 +427,20 @@ public class WCSCapsTransformer extends TransformerBase {
             Collections.sort(coverages, new CoverageInfoLabelComparator());
             for (Iterator i = coverages.iterator(); i.hasNext();) {
                 CoverageInfo cv = (CoverageInfo) i.next();
-                if (cv.enabled())
+                try {
+                    mark();
                     handleCoverageSummary(cv);
+                    commit();
+                } catch (Exception e) {
+                    if (skipMisconfigured) {
+                        reset();
+                        LOGGER.log(Level.SEVERE, "Skipping coverage " + cv.getPrefixedName()
+                                + " as its capabilities generation failed", e);
+                    } else {
+                        throw new RuntimeException("Capabilities document generation failed on coverage "
+                                + cv.getPrefixedName(), e);
+                    }
+                }
             }
 
             end("wcs:Contents");

@@ -312,4 +312,5 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "//Layer[Name='" + linesName + "']/@queryable", doc);
         assertXpathEvaluatesTo("0", "//Layer[Name='" + pointsName + "']/@queryable", doc);
     }
+
 }

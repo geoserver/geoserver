@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
@@ -62,6 +63,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     @Deprecated
     protected Boolean verboseExceptions;
 
+    private ResourceErrorHandling resourceErrorHandling;
 
     public GeoServerInfoImpl(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -270,6 +272,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         result = prime * result + new Long(updateSequence).hashCode();
         result = prime * result + (globalServices ? 1231 : 1237);
         result = prime * result + xmlPostRequestLogBufferSize;
+        result = prime * result + 
+                ((resourceErrorHandling == null) ? 0 : resourceErrorHandling.hashCode());
         return result;
     }
 
@@ -315,6 +319,13 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         else if (!xmlPostRequestLogBufferSize.equals(other.getXmlPostRequestLogBufferSize())) {
             return false;
         }
+        
+        if (resourceErrorHandling == null) {
+            if (other.getResourceErrorHandling() != null) return false;
+        } else {
+            if (!resourceErrorHandling.equals(other.getResourceErrorHandling())) return false;
+        }
+        
         return true;
     }
 
@@ -378,6 +389,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         }
         
         return this;
+    }
+
+    public void setResourceErrorHandling(ResourceErrorHandling mode) {
+        this.resourceErrorHandling = mode;
+    }
+
+    public ResourceErrorHandling getResourceErrorHandling() {
+        return this.resourceErrorHandling;
     }
 
 }

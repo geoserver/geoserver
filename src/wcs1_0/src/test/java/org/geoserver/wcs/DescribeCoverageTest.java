@@ -12,24 +12,16 @@ import junit.framework.Test;
 
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class DescribeCoverageTest extends WCSTestSupport {
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DescribeCoverageTest());
-    }
-    
-    // @Override
-    // protected String getDefaultLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
 
     public void testDescribeAll() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&version=1.0.0");
@@ -40,6 +32,22 @@ public class DescribeCoverageTest extends WCSTestSupport {
         int count = getCatalog().getCoverages().size();
         assertEquals(count, dom.getElementsByTagName("wcs:CoverageOffering").getLength());
     }
+    
+      public void testSkipMisconfigured() throws Exception {
+          // enable skipping of misconfigured layers
+          GeoServerInfo global = getGeoServer().getGlobal();
+          global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+          getGeoServer().save(global);
+          // manually misconfigure one layer
+          CoverageStoreInfo cvInfo = getCatalog().getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart());
+          cvInfo.setURL("file:///I/AM/NOT/THERE");
+          getCatalog().save(cvInfo);
+          
+          Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&version=1.0.0");
+          checkValidationErrors(dom,  WCS10_DESCRIBECOVERAGE_SCHEMA);
+          int count = getCatalog().getCoverages().size();
+          assertEquals(count - 1, dom.getElementsByTagName("wcs:CoverageOffering").getLength());
+      }
 
     public void testDescribeUnknownCoverageKvp() throws Exception {
         Document dom = getAsDOM(BASEPATH

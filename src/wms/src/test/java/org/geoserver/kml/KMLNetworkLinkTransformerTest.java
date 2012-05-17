@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -38,6 +39,8 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
      */
     private GetMapRequest request;
 
+    private WMSMapContext mapContext;
+
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -51,7 +54,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         // XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
         MapLayerInfo layer = mockData.addFeatureTypeLayer("TestPoints", Point.class);
-        WMSMapContext mapContext = new WMSMapContext();
+        mapContext = new WMSMapContext();
         request = mockData.createRequest();
         request.setLayers(Collections.singletonList(layer));
 
@@ -77,7 +80,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
         WMS wms = mockData.getWMS();
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContext);
         transformer.setEncodeAsRegion(true);
         transformer.setIndentation(2);
 
@@ -128,7 +131,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
     public void testEncodeAsOverlay() throws Exception {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         WMS wms = mockData.getWMS();
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms);
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContext);
         transformer.setEncodeAsRegion(false);
         transformer.setIndentation(2);
 
@@ -162,4 +165,23 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         // expected value?
         assertXpathExists("//kml/Folder/LookAt/range", dom);
     }
+    
+    public void testKmltitleFormatOption() throws Exception {
+        WMS wms = mockData.getWMS();
+        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContext);
+        transformer.setEncodeAsRegion(false);
+        transformer.setIndentation(2);
+
+        request.setBbox(new Envelope(-1, 1, -10, 10));
+
+        Map<String, Object> formatOptions = new HashMap<String, Object>();
+        formatOptions.put("kmltitle", "myCustomLayerTitle");
+        request.setFormatOptions(formatOptions);
+
+        Document dom = WMSTestSupport.transform(request, transformer);
+        assertXpathEvaluatesTo("1", "count(//kml/Folder/name)", dom);
+
+        // explicit lookAt properties as set by FORMAT_OPTIONS
+        assertXpathEvaluatesTo("myCustomLayerTitle", "//kml/Folder/name", dom);
+    } 
 }

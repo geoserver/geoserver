@@ -11,6 +11,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
@@ -45,10 +46,16 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
      */
     boolean cachedMode = false;
 
+    /**
+     * The map context
+     */
+    private final WMSMapContext mapContext;
+    
     private WMS wms;
  
-    public KMLNetworkLinkTransformer(WMS wms){
+    public KMLNetworkLinkTransformer(WMS wms, WMSMapContext mapContext){
         this.wms = wms;
+        this.mapContext = mapContext;
     }
     
     public void setCachedMode(boolean cachedMode) {
@@ -70,11 +77,19 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
         }
         
         public void encode(Object o) throws IllegalArgumentException {
-            GetMapRequest request = (GetMapRequest) o;
+            GetMapRequest request;
+            if (o instanceof GetMapRequest) {
+                request = (GetMapRequest) o;
+            } else {
+                request = ((WMSMapContext) o).getRequest();
+            }
             
             start( "kml" );
             start( "Folder" );
         
+            String kmltitle = (String) mapContext.getRequest().getFormatOptions().get("kmltitle");
+            element("name", (kmltitle != null ? kmltitle : ""));
+            
             if ( encodeAsRegion ) {
                 encodeAsSuperOverlay( request );
             }

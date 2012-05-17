@@ -7,6 +7,8 @@ package org.geoserver.kml;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -103,4 +105,26 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         assertEquals(5, document.getElementsByTagName("NetworkLink").getLength());
         assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
     }
+    
+    public void testKmltitleFormatOption() throws Exception {
+        KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
+                mapContext);
+        transformer.setIndentation(2);
+
+        mapContext.getViewport().setBounds(
+                new ReferencedEnvelope(0, 180, -90, 90, DefaultGeographicCRS.WGS84));
+        Map<String, Object> formatOptions = new HashMap<String, Object>();
+        formatOptions.put("kmltitle", "myCustomLayerTitle");
+        mapContext.getRequest().setFormatOptions(formatOptions);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        transformer.transform(mapLayer, output);
+
+        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
+
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals("myCustomLayerTitle", document.getElementsByTagName("Document").item(0)
+                .getFirstChild().getNextSibling().getTextContent());
+    }    
 }

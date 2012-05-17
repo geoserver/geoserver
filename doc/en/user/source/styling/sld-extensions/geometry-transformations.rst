@@ -3,15 +3,23 @@
 Geometry transformations in SLD
 ===============================
 
-Each symbolizer in SLD 1.0 contains a `<Geometry>` element allowing the user to specify which geometry is to be used for rendering. In the most common case it is not specified, but it becomes useful in the case a feature has multiple geometries inside.
+in SLD each symbolizer contains a ``<Geometry>`` element allowing the user to specify which geometry is to be used for rendering. 
+In the common case of a single geometry attribute per feature it is not specified, 
+but it becomes useful in the case where a feature has multiple geometry-valued attributes.
 
-SLD 1.0 forces the `<Geometry>` content to be a `<ogc:PropertyName>`, GeoServer relaxes this constraint and allows a generic `sld:expression` to be used instead. Common expressions cannot manipulate geometries, but GeoServer provides a number of filter functions that can actually manipulate geometries by transforming them into something different: this is what we call *geometry transformations* in SLD.
+SLD 1.0 requires the ``<Geometry>`` content to be a ``<ogc:PropertyName>``.
+GeoServer relaxes this constraint and allows a general SLD expression to be used instead. 
+Expressions can contain  filter functions that manipulate geometries by transforming them into something different.  
+This is called SLD *geometry transformations*.
 
-A full list of transformations is available in the :ref:`filter_function_reference`.
+GeoServer provides a number of filter functions that can transform geometry.  
+A full list is available in the :ref:`filter_function_reference`.
 
-Transformations are pretty flexible, the major limitation of them is that they happen in the geometry own reference system and unit, before any reprojection and rescaling to screen happens.
+Geometry transformations are very flexible.  
+The only significant limitation is that they are computed in the geometry's original coordinate reference system, before any reprojection and rescaling to the output map happens.
+In particular, transformation parameters must use the units of the geometry CRS.
 
-Let's look into some examples.
+Let's look at some examples.
 
 Extracting vertices
 -------------------
@@ -133,11 +141,16 @@ Applied to the sample `tasmania_roads` layer this will result in:
 Other possibilities
 -------------------
 
-GeoServer set of transformations functions also contains a number of set related or constructive transformations, such as buffer, intersection, difference and so on. However, those functions are quite heavy in terms of CPU consumption so it is advise to use them with care, activating them only at the higher zoom levels.
+GeoServer's filter functions contain a number of set-related or constructive geometric functions, 
+such as ``buffer``, ``intersection``, ``difference`` and others.
+These can be used as transformations, but they be quite heavy in terms of CPU consumption so it is advisable to use them with care.
+One strategy is to activate them only at higher zoom levels, so that fewer features are processed.
 
-Buffering can often be approximated by adopting very large strokes and round line joins and line caps, without actually have to perform the geometry transformation.
+Buffering can often be visually approximated by using very large strokes together with round line joins and line caps.
+This avoids incurring the performance cost of the full geometric buffer transformation.
 
 Adding new transformations
 --------------------------
-
-Filter functions are pluggable, meaning it's possible to build new ones in Java and then drop the resulting .jar file in GeoServer as a plugin. A guide is not available at this time, but have a look into the GeoTools main module for examples.
+  
+Additional filter functions can be developed in Java and then deployed in a JAR file as a GeoServer plugin. 
+A guide is not available at this time, but have a look into the GeoTools main module for examples.

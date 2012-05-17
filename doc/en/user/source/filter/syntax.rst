@@ -15,7 +15,7 @@ XML Filters can be used in the following places in GeoServer:
 
 - in WMS ``GetMap`` requests, using the ``filter`` parameter
 - in WFS ``GetFeature`` requests, using the ``filter`` parameter
-- in SLD :ref:`Rule <sld_intro>` elements
+- in SLD Rules, in the :ref:`Filter <sld_intro>` element
 
 The Filter Encoding language is defined in the following OGC specifications:
 
@@ -26,10 +26,11 @@ The Filter Encoding language is defined in the following OGC specifications:
 CQL/ECQL
 --------
 
-**CQL** a plain-text language created for the *OGC Catalog* specification and adapted to be a general and easy-to-use filtering mechanism.
-GeoServer implements a more powerful extension called **ECQL (Extended CQL)**.
-ECQL allows expressing the same filters OGC Filter 1.1 can encode. 
-ECQL is a superset of CQL, and is accepted anywhere in GeoServer where CQL is allowed:
+**CQL (Common Query Language)** is a plain-text language created for the *OGC Catalog* specification.
+GeoServer has adapted it to be an easy-to-use filtering mechanism.
+GeoServer actually implements a more powerful extension called **ECQL (Extended CQL)**,
+which allows expressing the full range of filters that *OGC Filter 1.1* can encode. 
+ECQL is accepted in many places in GeoServer:
 
 - in WMS ``GetMap`` requests, using the :ref:`cql_filter <wms_vendor_parameters>` parameter 
 - in WFS ``GetFeature`` requests, using the :ref:`cql_filter <wfs_vendor_parameters>` parameter

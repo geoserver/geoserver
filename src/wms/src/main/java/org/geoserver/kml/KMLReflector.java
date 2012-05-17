@@ -4,7 +4,6 @@
  */
 package org.geoserver.kml;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMapService;
-import org.geoserver.wms.map.XMLTransformerMap;
 
 /**
  * KML reflecting service.
@@ -190,19 +188,15 @@ public class KMLReflector {
         //response.setContentType(request.getFormat());
 
         org.geoserver.wms.WebMap wmsResponse;
-        if ("download".equals(mode)) {
-            wmsResponse = wms.getMap(request);
-        } else {
-            KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wmsConfiguration);
-            transformer.setIndentation(3);
-            Charset encoding = wmsConfiguration.getCharSet();
-            transformer.setEncoding(encoding);
-            transformer.setEncodeAsRegion(superoverlay);
-            transformer.setCachedMode("cached".equals(KMLUtils.getSuperoverlayMode(request, wmsConfiguration)));
-
-            String mimeType = request.getFormat();
-            wmsResponse = new XMLTransformerMap(null, transformer, request, mimeType);
+        if (!"download".equals(mode)) {
+            if (KMLMapOutputFormat.MIME_TYPE.equals(request.getFormat())) {
+                request.setFormat(NetworkLinkMapOutputFormat.KML_MIME_TYPE);
+            } else {
+                request.setFormat(NetworkLinkMapOutputFormat.KMZ_MIME_TYPE);
+            }
         }
+        
+        wmsResponse = wms.getMap(request);
         
         filename.setLength(filename.length() - 1);
         String contentDisposition = "attachment; filename=" + filename.toString() + formatExtension;

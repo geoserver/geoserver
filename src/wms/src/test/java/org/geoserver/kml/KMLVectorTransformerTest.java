@@ -155,5 +155,40 @@ public class KMLVectorTransformerTest extends TestCase {
         assertXpathEvaluatesTo("next", "//Document/NetworkLink[2]/@id", dom);
     }
     
+    public void testKmltitleFormatOption() throws Exception {
+        MapLayerInfo layer = mockData.addFeatureTypeLayer("TestPoints", Point.class);
+        FeatureTypeInfo typeInfo = layer.getFeature();
+        SimpleFeatureType featureType = (SimpleFeatureType) typeInfo.getFeatureType();
+        mockData.addFeature(featureType, new Object[] { "name1", "POINT(1 1)" });
+        mockData.addFeature(featureType, new Object[] { "name2", "POINT(2 2)" });
+        mockData.addFeature(featureType, new Object[] { "name3", "POINT(3 3)" });
+        mockData.addFeature(featureType, new Object[] { "name4", "POINT(4 4)" });
+
+        SimpleFeatureSource fs = 
+            (SimpleFeatureSource) typeInfo.getFeatureSource(null, null);
+        SimpleFeatureCollection features = fs.getFeatures();
+
+        Style style = mockData.getDefaultStyle().getStyle();
+        MapLayer mapLayer = new DefaultMapLayer(features, style);
+        mapLayer.setTitle("TestPointsTitle");
+
+        WMSMapContext mapContext = new WMSMapContext();
+        GetMapRequest request = mockData.createRequest();
+        mapContext.setRequest(request);
+
+        Map<String, Object> formatOptions = new HashMap<String, Object>();
+        formatOptions.put("kmltitle", "myCustomLayerTitle");
+        mapContext.getRequest().setFormatOptions(formatOptions);
+
+        KMLVectorTransformer transformer = new KMLVectorTransformer(mockData.getWMS(), mapContext, mapLayer);
+
+        Document document;
+
+        transformer.setStandAlone(true);
+        document = WMSTestSupport.transform(features, transformer);
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals("Document", document.getDocumentElement().getFirstChild().getNodeName());
+        assertEquals("myCustomLayerTitle", document.getDocumentElement().getFirstChild().getFirstChild().getTextContent());
+    }
     
 }

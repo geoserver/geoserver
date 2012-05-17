@@ -532,6 +532,9 @@
     <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse">
       <constructor-arg ref="wms" />
     </bean>
+    <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
+      <constructor-arg ref="wms" />
+    </bean>
 
     <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
       <constructor-arg index="0" ref="wms" />

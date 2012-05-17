@@ -24,7 +24,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -80,6 +79,10 @@ public class KMLSuperOverlayTransformer extends KMLTransformerBase {
             }
 
             start("Document");
+            if (isStandAlone()) {
+                String kmltitle = (String) mapContext.getRequest().getFormatOptions().get("kmltitle");
+                element("name", (kmltitle != null && isStandAlone() ? kmltitle : mapLayer.getTitle()));
+            }
 
             if ("cached".equals(KMLUtils.getSuperoverlayMode(mapContext.getRequest(), wms))) {
                 if (KMLUtils.isRequestGWCCompatible(mapContext, mapLayer, wms)) {

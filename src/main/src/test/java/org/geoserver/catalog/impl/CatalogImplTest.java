@@ -1590,7 +1590,8 @@ public class CatalogImplTest extends TestCase {
         s2.setName( "styleName" );
         s2.setFilename( "styleFilename" );
         s2.setWorkspace(ws2);
-
+        catalog.add(s2);
+        
         LayerInfo l2 = factory.createLayer();
         l2.setEnabled(true);
         l2.setResource(ft2);

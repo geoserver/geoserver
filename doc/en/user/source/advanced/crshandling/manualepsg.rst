@@ -1,7 +1,7 @@
 .. _crs_manual_epsg:
 
-Manually editing the CRS database
-=================================
+Manually editing the EPSG database
+==================================
 
 .. warning:: These instructions are very advanced, and are here mainly for the curious who want to know details about the EPSG database subsystem.
 

@@ -47,7 +47,7 @@ copyright = u'2011 GeoServer'
 # The short X.Y version.
 version = '2.2'
 # The full version, including alpha/beta/rc tags.
-release = '2.2-SNAPSHOT'
+release = '2.2-beta2'
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
    release = '2.2.x'

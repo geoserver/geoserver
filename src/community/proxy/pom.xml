@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2-beta2</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>proxy</artifactId>
   <packaging>jar</packaging>
-  <version>2.2-SNAPSHOT</version>
+  <version>2.2-beta2</version>
   <name>HTTP Proxy Extension</name>
   
   <repositories>

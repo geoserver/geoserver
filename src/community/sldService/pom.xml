@@ -6,7 +6,7 @@
  <parent>
    <groupId>org.geoserver</groupId>
    <artifactId>community</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta2</version>
  </parent>
   
  <groupId>org.geoserver.community</groupId>
@@ -18,22 +18,22 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>main</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta2</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>rest</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta2</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>restconfig</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta2</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>wms</artifactId>
-   <version>2.2-SNAPSHOT</version>
+   <version>2.2-beta2</version>
   </dependency>
   <dependency>
     <groupId>jdom</groupId>

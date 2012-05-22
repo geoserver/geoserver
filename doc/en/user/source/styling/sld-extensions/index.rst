@@ -3,8 +3,8 @@
 SLD Extensions in GeoServer
 ===========================
 
-GeoServer sports a number of vendor specific extensions to SLD 1.0.
-While not portable they allow to make map making more flexible and to generate better looking maps.
+GeoServer provides a number of vendor-specific extensions to SLD 1.0.
+Although not portable, the extensions make styling more powerful and concise and generate better-looking maps.
 
 .. toctree::
    :maxdepth: 2

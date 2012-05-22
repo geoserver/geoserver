@@ -4,14 +4,18 @@ Point symbology in GeoServer
 ============================
 
 Point symbology is supported via the SLD ``Graphic`` element. 
-This element can appear in ``PointSymbolizer``, and also can be used as a ``GraphicStroke`` to repeat symbols over lines and as a ``GraphicFill`` to fill polygons with tiled and repeated symbols. 
+This element can appear directly in a :ref:`sld_reference_pointsymbolizer`. 
+It also can be used in a :ref:`sld_reference_linesymbolizer` ``GraphicStroke`` to repeat symbols along lines 
+and in a :ref:`sld_reference_polygonsymbolizer` ``GraphicFill`` to fill polygons with tiled and repeated symbols. 
 
-``Graphic`` can contain either a ``Mark`` or an ``ExternalGraphic`` element. 
-**Marks** are simple vector symbols whose stroke and fill are defined by the SLD itself.  
-**External Graphics** are external files (such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
+``Graphic`` contains either a ``Mark`` or an ``ExternalGraphic`` element. 
+**Marks** are predefined vector symbols whose stroke and fill are defined by the SLD itself.  
+**External Graphics** are external files (such as PNG images or SVG graphics) 
+that contain the shape and color information defining how to render a symbol.
 
-In standard SLD the ``Mark`` and ``ExternalGraphic`` names are static strings.  
-GeoServer improves this by providing `dynamic symbolizers`, which allow embedding attribute names and CQL expressions to define names on a per-feature basis. 
+In standard SLD the ``Mark`` and ``ExternalGraphic`` names are fixed strings.  
+GeoServer extends this by providing `dynamic symbolizers`, 
+which allow defining symbol names on a per-feature basis by embedding CQL expressions in them. 
 
 Marks
 -----
@@ -21,7 +25,7 @@ The symbol names are specified in the ``WellKnownName`` element.
 
 See also the :ref:`sld_reference_pointsymbolizer` reference for further details, as well as the examples in the :ref:`sld_cookbook_points` Cookbook section. 
 
-Built-in symbols
+Standard symbols
 ~~~~~~~~~~~~~~~~
 
 The SLD specification mandates the support of the following symbols:
@@ -45,9 +49,10 @@ The SLD specification mandates the support of the following symbols:
      - A square X with space around (not suitable for hatch fills)
 
 Shape symbols
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
-The shape symbols set adds extra symbols that are not part of the basic set.  They are prefixed by ``shape://``
+The shape symbols set adds extra symbols that are not part of the basic set.  
+They are prefixed by ``shape://``
 
 .. list-table::
    :widths: 20 80
@@ -76,7 +81,7 @@ The shape symbols set adds extra symbols that are not part of the basic set.  Th
 TTF marks
 ~~~~~~~~~~~~~
 
-It is possible to create a mark out of any decorative/symbol True Type Font, such as Wingdings, WebDings, and the many symbol fonts available on the internet,
+It is possible to create a mark using glyphs from any decorative or symbolic True Type Font, such as Wingdings, WebDings, or the many symbol fonts available on the internet.
 The syntax for specifying this is::
    
    ttf://<fontname>#<hexcode>
@@ -84,14 +89,14 @@ The syntax for specifying this is::
 where ``fontname`` is the full name of a TTF font available to GeoServer, and ``hexcode`` is the hexadecimal code of the symbol. 
 To get the hex code of a symbol, use the "Char Map" utility available in most operating systems (Windows and Gnome on Linux both have one).
 
-For example, to use the "shield" symbol contained in WebDings, the Gnome charmap reports the symbol code as follows:
+For example, to use the "shield" symbol contained in WebDings, the Gnome ``charmap`` reports the symbol hex code as shown:
 
 .. figure:: images/charmap.png
    :align: center
 
    *Selecting a symbol hex code in the Gnome char map*
 
-The SLD snippet to use the shield is:
+The SLD to use the shield glyph as a symbol is:
 
 .. code-block:: xml 
    :linenos: 
@@ -109,20 +114,21 @@ The SLD snippet to use the shield is:
       </Graphic>
     </PointSymbolizer>
 
-This will result in the following map symbols:
+This results in the following map display:
 
 .. figure:: images/shields.png
    :align: center
 
-   *Shield smybols rendered on the map*
+   *Shield symbols rendered on the map*
 
-Extending the Mark subsytem
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extending the Mark subsytem using Java
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Mark subsystem is user-extensible.  
-To do this, implement the ``MarkFactory`` interface and declare the implementation in the ``META-INF/services/org.geotools.renderer.style.MarkFactory`` file.
+To do this using Java code, implement the ``MarkFactory`` interface and declare the implementation in the ``META-INF/services/org.geotools.renderer.style.MarkFactory`` file.
 
-For further information see the Javadoc of the GeoTools MarkFactory, along with the following example code:
+For further information see the Javadoc of the GeoTools `MarkFactory <http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/java/org/geotools/renderer/style/MarkFactory.java>`_, 
+along with the following example code:
    
    * The `factory SPI registration file <http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/resources/META-INF/services/org.geotools.renderer.style.MarkFactory>`_
    * The `TTFMarkFactory <http://svn.osgeo.org/geotools/trunk/modules/library/render/src/main/java/org/geotools/renderer/style/TTFMarkFactory.java>`_ implementation
@@ -132,8 +138,8 @@ External Graphics
 -----------------
 
 ``ExternalGraphic`` is the other way to define point symbology. 
-Unlike marks, external graphic images are used as-is, so the specification is somewhat simpler.
-This consists of specifying the the file pathname and the image format using a mime type:  
+Unlike marks, external graphics are used as-is, so the specification is somewhat simpler.
+The element content specifies a graphic ``OnlineResource`` using a URL or file path, and the graphic ``Format`` using a MIME type:  
 
 .. code-block:: xml 
    :linenos: 
@@ -148,13 +154,14 @@ This consists of specifying the the file pathname and the image format using a m
     </PointSymbolizer>
 
 As with ``Mark``, a ``Size`` element can be optionally specified.  
-When using raster graphic symbols it is better to avoid resizing as that will blur them.  
-Use them at their natural size instead.
-In contrast, SVG is a vector description describing both shape and color.  
-It scales cleanly to any size, so specifying a ``Size`` is recommended.
+When using images as graphic symbols it is better to avoid resizing, as that may blur their appearance.  
+Use images at their native resolution by omitting the ``Size`` element.
+In contrast, for SVG graphics specifying a ``Size`` is recommended.
+SVG files are a vector-based format describing both shape and color,  
+so they scale cleanly to any size.
 
 If the path of the symbol file is relative,  
-the file is searched for in ``$GEOSERVER_DATA_DIR/styles``.  
+the file is looked for under ``$GEOSERVER_DATA_DIR/styles``.  
 For example:
 
 .. code-block:: xml 
@@ -170,12 +177,12 @@ For example:
       </Graphic>
     </PointSymbolizer>
 
-In this example an SVG image is being used, so the ``Size`` is specified. 
+In this example an SVG graphic is being used, so the size is specified explicitly. 
 
 Dynamic symbolizers
 -------------------
 
-In standard SLD, the ``Mark/WellKnowName`` element and the ``ExternalGraphic/OnlineResource/href`` attribute are static strings.  
+In standard SLD, the ``Mark/WellKnowName`` element and the ``ExternalGraphic/OnlineResource/@xlink:href`` attribute are fixed strings.  
 This means they have the same value for all rendered features.
 When the symbols to be displayed vary depending on feature attributes this restriction leads to very verbose styling, as a separate ``Rule`` and ``Symbolizer`` must be used for each different symbol.
 
@@ -191,14 +198,13 @@ The following style specifies the flag symbols using a single rule:
    
    <ExternalGraphic>
       <OnlineResource xlink:type="simple" xlink:href="http://mysite.com/tn_${STATE_ABBR}.jpg"/>
-      <Format>image/gif</Format>
+      <Format>image/jpeg</Format>
    </ExternalGraphic>
    
 If manipulation of the attribute values is required a full CQL expression can be specified. 
-CQL expressions can be embedded in ``WellKnownName`` content or an ``href`` URL by using the syntax::
+CQL expressions can be embedded in a ``WellKnownName`` string or an ``href`` URL by using the syntax::
 	
   ${<cql expression>}
-
 
 For example, if the values in the ``STATE_ABBR`` attribute are uppercase but the URL requires a lowercase name, the CQL ``strToLowerCase`` function can be used:
 
@@ -208,7 +214,7 @@ For example, if the values in the ``STATE_ABBR`` attribute are uppercase but the
    <ExternalGraphic>
       <OnlineResource xlink:type="simple"
       xlink:href="http://mysite.com/tn_${strToLowerCase(STATE_ABBR)}.jpg" />
-      <Format>image/gif</Format>
+      <Format>image/jpeg</Format>
    </ExternalGraphic>
    
 

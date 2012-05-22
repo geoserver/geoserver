@@ -3,14 +3,14 @@
 Geometry transformations in SLD
 ===============================
 
-in SLD each symbolizer contains a ``<Geometry>`` element allowing the user to specify which geometry is to be used for rendering. 
-In the common case of a single geometry attribute per feature it is not specified, 
-but it becomes useful in the case where a feature has multiple geometry-valued attributes.
+in SLD symbolizers may contain an optional ``<Geometry>`` element allowing the user to specify which geometry attribute is to be rendered. 
+In the common case of a featuretype with a single geometry attribute this element is usually omitted, 
+but it is useful when a featuretype has multiple geometry-valued attributes.
 
 SLD 1.0 requires the ``<Geometry>`` content to be a ``<ogc:PropertyName>``.
-GeoServer relaxes this constraint and allows a general SLD expression to be used instead. 
-Expressions can contain  filter functions that manipulate geometries by transforming them into something different.  
-This is called SLD *geometry transformations*.
+GeoServer relaxes this constraint to allow a general SLD expression to be used. 
+The expression can contain  filter functions that manipulate geometries by transforming them into something different.  
+This facility is called SLD *geometry transformations*.
 
 GeoServer provides a number of filter functions that can transform geometry.  
 A full list is available in the :ref:`filter_function_reference`.
@@ -19,12 +19,15 @@ Geometry transformations are very flexible.
 The only significant limitation is that they are computed in the geometry's original coordinate reference system, before any reprojection and rescaling to the output map happens.
 In particular, transformation parameters must use the units of the geometry CRS.
 
+Examples
+--------
+
 Let's look at some examples.
 
 Extracting vertices
--------------------
+^^^^^^^^^^^^^^^^^^^
 
-Here is an example that allows one to extract all the vertices of a geometry, and make them visible in a map, using the `vertices` function:
+Here is an example that allows one to extract all the vertices of a geometry, and make them visible in a map, using the ``vertices`` function:
 
 .. code-block:: xml 
    :linenos: 
@@ -57,7 +60,7 @@ Applied to the sample `tasmania_roads` layer this will result in:
    
    
 Start and end point
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 The `startPoint` and `endPoint` functions can be used to extract the start and end point of a line. 
 
@@ -109,7 +112,7 @@ Applied to the sample `tasmania_roads` layer this will result in:
 
 
 Drop shadow
------------
+^^^^^^^^^^^
 
 The `offset` function can be used to create drop shadow effects below polygons. Notice the odd offset value, set this way because the data used in the example is in geographic coordinates.
 
@@ -138,19 +141,19 @@ Applied to the sample `tasmania_roads` layer this will result in:
    
    *Dropping building shadows*
 
-Other possibilities
--------------------
+Performance tips
+----------------
 
 GeoServer's filter functions contain a number of set-related or constructive geometric functions, 
 such as ``buffer``, ``intersection``, ``difference`` and others.
-These can be used as transformations, but they be quite heavy in terms of CPU consumption so it is advisable to use them with care.
+These can be used as geometry transformations, but they be can quite heavy in terms of CPU consumption so it is advisable to use them with care.
 One strategy is to activate them only at higher zoom levels, so that fewer features are processed.
 
 Buffering can often be visually approximated by using very large strokes together with round line joins and line caps.
-This avoids incurring the performance cost of the full geometric buffer transformation.
+This avoids incurring the performance cost of a true geometric buffer transformation.
 
 Adding new transformations
 --------------------------
   
 Additional filter functions can be developed in Java and then deployed in a JAR file as a GeoServer plugin. 
-A guide is not available at this time, but have a look into the GeoTools main module for examples.
+A guide is not available at this time, but have a look into the GeoTools ``main`` module for examples.

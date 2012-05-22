@@ -81,7 +81,7 @@ public class KMLSuperOverlayTransformer extends KMLTransformerBase {
             start("Document");
             if (isStandAlone()) {
                 String kmltitle = (String) mapContext.getRequest().getFormatOptions().get("kmltitle");
-                element("name", (kmltitle != null && isStandAlone() ? kmltitle : mapLayer.getTitle()));
+                element("name", (kmltitle != null && mapContext.layers().size() <= 1 ? kmltitle : mapLayer.getTitle()));
             }
 
             if ("cached".equals(KMLUtils.getSuperoverlayMode(mapContext.getRequest(), wms))) {

@@ -103,7 +103,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
             start("Folder");
             //element("name", "layer_" + mapLayerOrder);
             String kmltitle = (String) mapContext.getRequest().getFormatOptions().get("kmltitle");
-            element("name", (kmltitle != null && isStandAlone() ? kmltitle : "layer_" + mapLayerOrder));
+            element("name", (kmltitle != null && mapContext.layers().size() <= 1 ? kmltitle : "layer_" + mapLayerOrder));
             element("description", mapLayer.getTitle());
 
             start("GroundOverlay");

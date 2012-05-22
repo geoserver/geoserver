@@ -14,7 +14,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContext;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.styling.Style;
-import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 
@@ -29,7 +28,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  *
  */
-public class KMLNetworkLinkTransformer extends TransformerBase {
+public class KMLNetworkLinkTransformer extends KMLMapTransformer {
 
     /**
      * logger
@@ -54,6 +53,8 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
     private WMS wms;
  
     public KMLNetworkLinkTransformer(WMS wms, WMSMapContext mapContext){
+        super(wms, mapContext, null);
+        
         this.wms = wms;
         this.mapContext = mapContext;
     }
@@ -84,7 +85,17 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
                 request = ((WMSMapContext) o).getRequest();
             }
             
-            start( "kml" );
+            // restore target mime type for the network links
+            if (NetworkLinkMapOutputFormat.KML_MIME_TYPE.equals(request.getFormat())) {
+                request.setFormat(KMLMapOutputFormat.MIME_TYPE);
+            } else {
+                request.setFormat(KMZMapOutputFormat.MIME_TYPE);
+            }
+            
+            if (isStandAlone())
+            {
+                start( "kml" );
+            }
             start( "Folder" );
         
             String kmltitle = (String) mapContext.getRequest().getFormatOptions().get("kmltitle");
@@ -101,7 +112,11 @@ public class KMLNetworkLinkTransformer extends TransformerBase {
             encodeLookAt( request );
             
             end( "Folder" );
-            end( "kml" );
+            
+            if (isStandAlone())
+            {
+                end( "kml" );
+            }
         }
         
         protected void encodeAsSuperOverlay(GetMapRequest request) {

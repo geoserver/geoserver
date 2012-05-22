@@ -66,7 +66,7 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         assertXpathEvaluatesTo("onStop", "kml/Folder/NetworkLink[1]/Url/viewRefreshMode", dom);
         assertXpathEvaluatesTo("1", "kml/Folder/NetworkLink[1]/Url/viewRefreshTime", dom);
-        Map<String, String> expectedKVP = toKvp("http://localhost:80/geoserver/wms?format_options=KMPLACEMARK%3Afalse%3BKMATTR%3Atrue%3BKMSCORE%3A40%3BSUPEROVERLAY%3Afalse%3B&service=wms&srs=EPSG%3A4326&width=1024&styles=BasicPolygons&height=1024&transparent=false&request=GetMap&layers=cite%3ABasicPolygons&format=application%2Fvnd.google-earth.kmz;mode&version=1.1.1");
+        Map<String, String> expectedKVP = toKvp("http://localhost:80/geoserver/wms?format_options=KMPLACEMARK%3Afalse%3BKMATTR%3Atrue%3BKMSCORE%3A40%3BSUPEROVERLAY%3Afalse%3B&service=wms&srs=EPSG%3A4326&width=1024&styles=BasicPolygons&height=1024&transparent=false&request=GetMap&layers=cite%3ABasicPolygons&format=application%2Fvnd.google-earth.kmz&version=1.1.1");
         Map<String, String> resultedKVP = toKvp(xpath.evaluate(
                 "kml/Folder/NetworkLink[1]/Url/href", dom));
 

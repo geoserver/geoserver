@@ -93,7 +93,7 @@ public class KMLVectorTransformer extends KMLMapTransformer {
                     new String[] {"xmlns:atom", "http://purl.org/atom/ns#" }));
             //element("name", mapLayer.getTitle());
             String kmltitle = (String) mapContext.getRequest().getFormatOptions().get("kmltitle");
-            element("name", (kmltitle != null && isStandAlone() ? kmltitle : mapLayer.getTitle()));
+            element("name", (kmltitle != null && mapContext.layers().size() <= 1 ? kmltitle : mapLayer.getTitle()));
 
             String relLinks = (String)mapContext.getRequest().getFormatOptions().get("relLinks");
             // Add prev/next links if requested

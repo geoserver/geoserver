@@ -99,7 +99,7 @@ public class KMLVectorTransformer extends KMLMapTransformer {
             start("Document",
                     KMLUtils.attributes(new String[] { "xmlns:atom", "http://purl.org/atom/ns#" }));
             String kmltitle = (String) mapContent.getRequest().getFormatOptions().get("kmltitle");
-            element("name", (kmltitle != null && isStandAlone() ? kmltitle : mapLayer.getTitle()));
+            element("name", (kmltitle != null && mapContent.layers().size() <= 1 ? kmltitle : mapLayer.getTitle()));
 
             if(lookAtOpts != null){
                 ReferencedEnvelope bounds = features.getBounds();

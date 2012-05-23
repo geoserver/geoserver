@@ -34,3 +34,5 @@
         </Rule>
       </FeatureTypeStyle>
     </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>

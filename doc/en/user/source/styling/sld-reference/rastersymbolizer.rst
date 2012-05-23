@@ -4,10 +4,6 @@ Raster Symbolizer
 =================
 
 
-
-Introduction
-------------
-
 GeoServer supports the ability to display raster data in addition to vector data.
 
 Raster data is not merely a picture, rather it can be thought of as a grid of georeferenced information, much like a graphic is a grid of visual information (with combination of reds, greens, and blues). Unlike graphics, which only contain visual data, each point/pixel in a raster grid can have lots of different attributes, with possibly none of them having an inherently visual component.
@@ -15,23 +11,23 @@ Raster data is not merely a picture, rather it can be thought of as a grid of ge
 With the above in mind, one needs to choose how to visualize the data, and this, like in all other cases, is done by using an SLD. The analogy to vector data is evident in the naming of the tags used. Vectors, consisting of points, line, and polygons, are styled by using the <PointSymbolizer>, <LineSymbolizer>, and <PolygonSymbolizer> tags. It is therefore not very surprising that raster data is styled with the tag <RasterSymbolizer>.
 
 
-Elements and Syntax
+Syntax
 -------------------
 
-The following elements are available to be used as parameters inside <RasterSymbolizer>.
+The following elements can be used inside the ``<RasterSymbolizer>`` element.
 
     - <Opacity>
     - <ColorMap>
     - <ChannelSelection>
     - <ContrastEnhancement>
-    - <ShadedRelief>
-    - <OverlapBehavior>
-    - <ImageOutline>
+    - <ShadedRelief> *
+    - <OverlapBehavior> *
+    - <ImageOutline> *
 
-Notice that not all the above are actually implemented in the current version of the GeoServer.
+.. warning::  The starred (*) elements are not yet implemented in GeoServer.
 
 Opacity
--------
+^^^^^^^
 
 This element sets the transparency level for the entire dataset. As is standard, the values range from zero (0) to one (1), with zero being totally transparent, and one being not transparent at all. The syntax for <Opacity> is very simple:
 
@@ -43,7 +39,7 @@ This element sets the transparency level for the entire dataset. As is standard,
 where, in this case, the raster would be displayed at 50% opacity.
 
 ColorMap
---------
+^^^^^^^^
 
 The <ColorMap> element sets rules for color gradients based on the quantity attribute. This quantity refers to the magnitude of the value of a data point. At its simplest, one could create two color map entries (the element called <ColorMapEntry>, one with a color for the "bottom" of the dataset, and another with a color for the "top" of the dataset. The colors in between will be automatically interpolated with the quantity values in between, making creating color gradients easy. One can also fine tune the color map by adding additional entries, which is handy if the dataset has more discrete values rather than a gradient. In that case, one could add an entry for each value to be set to a different color. In all cases, the color is denoted in standard hexadecimal RGB format (#RRGGBB). In addition to color and quantity, ColorMapEntry elements can also have opacity and label, the former which could be used instead of the global value mentioned previously, and the latter which could beused for legends.
 
@@ -132,7 +128,7 @@ the results are:
    :align: left
 
 ChannelSelection
-----------------
+^^^^^^^^^^^^^^^^
 
 This element specifies which color channel to access in the dataset. A dataset may contain standard three-channel colors (red, green, and blue channels) or one grayscale channel. Using <ChannelSelection> allows the mapping of a dataset channel to either a red, green, blue, or gray channel:
 
@@ -178,7 +174,7 @@ This is the result of gray ChannelSelection operation applied to an RGB image an
    :align: left 
 
 ContrastEnhancement
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 The <ContrastEnhancement> element is used in color channels to adjust the relative brightness of the data in that channel. There are three types of enhancements possible.
 
@@ -211,9 +207,9 @@ These examples turn on Normalize and Histogram, respectively:
 The above increases the brightness of the data by a factor of two.
 
 ShadedRelief
-------------
+^^^^^^^^^^^^
 
-.. warning:: Support for this elements has not been implemented yet.
+.. warning:: Support for this element has not been implemented yet.
 
 The <ShadedRelief> element can be used to create a 3-D effect, by selectively adjusting brightness. This is a nice effect to use on an elevation dataset. There are two types of shaded relief possible.
 
@@ -232,9 +228,9 @@ BrightnessOnly, which takes no parameters, applies shading in WHAT WAY? ReliefFa
 The above example turns on Relief shading in WHAT WAY?
 
 OverlapBehavior
----------------
+^^^^^^^^^^^^^^^
 
-.. warning:: Support for this elements has not been implemented yet.
+.. warning:: Support for this element has not been implemented yet.
 
 Sometimes raster data is comprised of multiple image sets. Take, for example, a `satellite view of the Earth at night <http://apod.nasa.gov/apod/ap001127.html>`_ . As all of the Earth can't be in nighttime at once, a composite of multiple images are taken. These images are georeferenced, and pieced together to make the finished product. That said, it is possible that two images from the same dataset could overlap slightly, and the OverlapBehavior element is designed to determine how this is handled. There are four types of OverlapBehavior:
 
@@ -254,9 +250,9 @@ Sometimes raster data is comprised of multiple image sets. Take, for example, a 
 The above sets the OverlapBehavior to AVERAGE.
 
 ImageOutline
-------------
+^^^^^^^^^^^^
 
-.. warning:: Support for this elements has not been implemented yet.
+.. warning:: Support for this element has not been implemented yet.
 
 Given the situation mentioned previously of the image composite, it is possible to style each image so as to have an outline. One can even set a fill color and opacity of each image; a reason to do this would be to "gray-out" an image. To use ImageOutline, you would define a <LineSymbolizer> or <PolygonSymbolizer> inside of the element:
 

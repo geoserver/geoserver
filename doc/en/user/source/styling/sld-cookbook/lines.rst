@@ -313,11 +313,15 @@ between each hatch to both be 12 pixels.
 Spaced graphic symbols
 ----------------------
 
-This example uses a graphic stroke along with dash arrays to create a "dot and space" line type.  Without using the dash
+This example uses a graphic stroke along with dash arrays to create a "dot and space" line type.  
+Adding the dash array specification allows to control the amount of space between one symbol and the next one.
+Without using the dash
 array the lines would be densely populated with dots, each one touching the previous one.
 
-Adding the dash array specification allows to control the amount of space between one symbol and the next one.
+.. note:: This example may not work in other systems using SLD, since they may not support combining the use of ``stroke-dasharray`` and ``GraphicStroke``. 
+          While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce. 
 
+          
 .. figure:: images/line_dashspace.png
    :align: center
 
@@ -348,9 +352,9 @@ Code
                     </Fill>
                   </Mark>
                   <Size>4</Size>
-                  <CssParameter name="stroke-dasharray">4 6</CssParameter>
                 </Graphic>
               </GraphicStroke>
+              <CssParameter name="stroke-dasharray">4 6</CssParameter>
             </Stroke>
           </LineSymbolizer>
         </Rule>
@@ -360,11 +364,8 @@ Details
 ~~~~~~~
 This example, like others before, uses a ``GraphicStroke`` to place a graphic symbol along a line. The symbol, defined
 at **lines 7-16** is a 4 pixels gray circle with a dark gray outline. The spacing between symbols is controlled with
-the ``stroke-dasharray`` at **line 18**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up, 
+the ``stroke-dasharray`` at **line 20**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up, 
 to provide the spacing.
-
-.. note:: This example may not work in other systems using SLD, since they may not support combining the use of ``stroke-dasharray`` and ``GraphicStroke``. While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce. 
-
 
 
 .. _sld_cookbook_lines_defaultlabel:
@@ -388,11 +389,14 @@ section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of
 The example shows how to use these features to create two synchronized sequences of dash arrays, 
 one drawing line segments and the other symbols.
 
+.. note:: This example may not work in other systems using SLD, since they may not support combining the use of ``stroke-dasharray`` and ``GraphicStroke``. 
+          While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce. 
+
 
 .. figure:: images/line_dashdot.png
    :align: center
 
-   *Dash and symbol*
+   *Alternating dash and symbol*
 
 Code
 ~~~~
@@ -423,10 +427,10 @@ Code
                     </Stroke>
                   </Mark>
                   <Size>5</Size>
-                  <CssParameter name="stroke-dasharray">5 15</CssParameter>
-                  <CssParameter name="stroke-dashoffset">7.5</CssParameter>
                 </Graphic>
               </GraphicStroke>
+              <CssParameter name="stroke-dasharray">5 15</CssParameter>
+              <CssParameter name="stroke-dashoffset">7.5</CssParameter>
             </Stroke>
           </LineSymbolizer>
         </Rule>
@@ -437,14 +441,17 @@ Details
 
 In this example two ``LineSymbolizer``\ s use ``stroke-dasharray``  and different symbology
 to produce a sequence of alternating dashes and symbols. The first symbolizer
-(**lines 3-9**) is a simple line dash array alternating 10 pixels of pen-down with 10 pixels of pen-up. The
-second symbolizer (**lines 10-27**) alternates a 5 pixel empty circle with 15 pixels of white space. In order
-to have the two sequences positioned correctly the second one uses a ``stroke-dashoffset`` of 7.5.  
+(**lines 3-9**) is a simple dashed line alternating 10 pixels of pen-down with 10 pixels of pen-up. 
+The second symbolizer (**lines 10-27**) alternates a 5 pixel empty circle with 15 pixels of white space.
+The circle symbol is produced by a ``Mark`` element, with its symbology specified
+by ``stroke`` parameters (**lines 17-18**).
+The spacing between symbols is controlled with
+the ``stroke-dasharray`` (**line 24**), which specifies 5 pixels of pen-down (just enough to draw the circle) and 15 pixels of pen-up.
+In order to have the two sequences positioned correctly the second one uses a ``stroke-dashoffset`` of 7.5 (**line 25**).  
 This makes the sequence start with 12.5
-pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), then
-15 pixels of white space, and so on.
+pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), 
+then 15 pixels of white space, and so on.
 
-.. note:: This example may not work in other systems using SLD, since they may not support combining the use of ``stroke-dasharray`` and ``GraphicStroke``. While the SLD is spec-compliant, the SLD specification does not state what this combination is supposed to produce. 
 
 
 Line with default label

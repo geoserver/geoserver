@@ -343,13 +343,13 @@ Code
                 <Graphic>
                   <Mark>
                     <WellKnownName>circle</WellKnownName>
+                    <Fill>
+                      <CssParameter name="fill">#666666</CssParameter>  
+                    </Fill>
                     <Stroke>
                       <CssParameter name="stroke">#333333</CssParameter>
                       <CssParameter name="stroke-width">1</CssParameter>
                     </Stroke>
-                    <Fill>
-                      <CssParameter name="stroke">#666666</CssParameter>  
-                    </Fill>
                   </Mark>
                   <Size>4</Size>
                 </Graphic>
@@ -363,7 +363,7 @@ Code
 Details
 ~~~~~~~
 This example, like others before, uses a ``GraphicStroke`` to place a graphic symbol along a line. The symbol, defined
-at **lines 7-16** is a 4 pixels gray circle with a dark gray outline. The spacing between symbols is controlled with
+at **lines 7-16** is a 4 pixel gray circle with a dark gray outline. The spacing between symbols is controlled with
 the ``stroke-dasharray`` at **line 20**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up, 
 to provide the spacing.
 

@@ -3,21 +3,24 @@
 Geometry transformations in SLD
 ===============================
 
-in SLD symbolizers may contain an optional ``<Geometry>`` element allowing the user to specify which geometry attribute is to be rendered. 
+In SLD symbolizers may contain an optional ``<Geometry>`` element, which allows specifying which geometry attribute is to be rendered. 
 In the common case of a featuretype with a single geometry attribute this element is usually omitted, 
 but it is useful when a featuretype has multiple geometry-valued attributes.
 
 SLD 1.0 requires the ``<Geometry>`` content to be a ``<ogc:PropertyName>``.
-GeoServer relaxes this constraint to allow a general SLD expression to be used. 
+GeoServer extends this to allow a general SLD expression to be used. 
 The expression can contain  filter functions that manipulate geometries by transforming them into something different.  
 This facility is called SLD *geometry transformations*.
 
 GeoServer provides a number of filter functions that can transform geometry.  
 A full list is available in the :ref:`filter_function_reference`.
+They can be used to do things such as extracting line vertices or endpoints,
+offsetting polygons, or buffering geometries.
 
-Geometry transformations are very flexible.  
-The only significant limitation is that they are computed in the geometry's original coordinate reference system, before any reprojection and rescaling to the output map happens.
-In particular, transformation parameters must use the units of the geometry CRS.
+Geometry transformations are computed in the geometry's original coordinate reference system, before any reprojection and rescaling to the output map is performed.
+For this reason, transformation parameters must be expressed in the units of the geometry CRS.
+This must be taken into account when using geometry transformations at different screen scales,
+since the parameters will not change with scale.
 
 Examples
 --------
@@ -114,7 +117,8 @@ Applied to the sample `tasmania_roads` layer this will result in:
 Drop shadow
 ^^^^^^^^^^^
 
-The `offset` function can be used to create drop shadow effects below polygons. Notice the odd offset value, set this way because the data used in the example is in geographic coordinates.
+The `offset` function can be used to create drop shadow effects below polygons. 
+Notice that the offset values reflect the fact that the data used in the example is in a geographic coordinate system.
 
 .. code-block:: xml 
    :linenos: 
@@ -156,4 +160,4 @@ Adding new transformations
 --------------------------
   
 Additional filter functions can be developed in Java and then deployed in a JAR file as a GeoServer plugin. 
-A guide is not available at this time, but have a look into the GeoTools ``main`` module for examples.
+A guide is not available at this time, but see the GeoTools ``main`` module for examples.

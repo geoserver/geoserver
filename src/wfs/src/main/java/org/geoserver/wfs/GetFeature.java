@@ -606,7 +606,7 @@ public class GetFeature {
         }
         
         //handle offset / start index
-        if (offset > 0) {
+        if (offset > -1) {
             // GeoServer makes sure offset is always supported
             dataQuery.setStartIndex(offset);
         }

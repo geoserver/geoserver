@@ -309,6 +309,14 @@ public class GetFeature {
 
         //offset into result set in which to return features
         int totalOffset = request.getStartIndex() != null ? request.getStartIndex().intValue() : -1;
+        if (totalOffset == -1 && request.getVersion().startsWith("2") && wfs.isCiteCompliant()) {
+            // Strict compliance with the WFS 2.0 spec requires startindex to default to zero.
+            // This is not enforced because startindex triggers sorting and reduces performance.
+            // The CITE tests for WFS 2.0 do not yet exist; the CITE compliance setting is taken
+            // as a request for strict(er) compliance with the WFS 2.0 spec.
+            // See GEOS-5085.
+            totalOffset = 0;
+        }
         int offset = totalOffset;
 
         List results = new ArrayList();
@@ -685,7 +693,7 @@ public class GetFeature {
                 result.setPrevious(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
             }
 
-            if (count > 0) {
+            if (count > 0 && offset > -1) {
                 //next
 
                 //calculate the count of the next result set 
@@ -929,7 +937,7 @@ public class GetFeature {
         }
 
         //handle offset / start index
-        if (offset > 0) {
+        if (offset > -1) {
             dataQuery.setStartIndex(offset);
         }
         

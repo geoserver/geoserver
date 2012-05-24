@@ -1,15 +1,12 @@
 package org.geoserver.wfs.v2_0;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -36,7 +33,6 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.Identifier;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 public class GetFeaturePagingTest extends WFS20TestSupport {
 
@@ -306,6 +302,13 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         Document doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&count=5");
         assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        // Without startindex, results are not sorted and next would be inconsistent,
+        // so next is not encoded. See GEOS-5085.
+        assertFalse(doc.getDocumentElement().hasAttribute("next"));
+        
+        doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
+                "typename=" + typeName + "&startIndex=0&count=5");
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
         assertStartIndexCount(doc, "next", 5, 5);
         
         doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
@@ -328,8 +331,15 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         Document doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + fifteen + "&count=5");
         assertFalse(doc.getDocumentElement().hasAttribute("previous"));
-        assertStartIndexCount(doc, "next", 5, 5);
+        // Without startindex, results are not sorted and next would be inconsistent,
+        // so next is not encoded. See GEOS-5085.
+        assertFalse(doc.getDocumentElement().hasAttribute("next"));
         
+        doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
+                "typename=" + fifteen + "&startIndex=0&count=5");
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        assertStartIndexCount(doc, "next", 5, 5);
+
         doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
             "typename=" + fifteen + "&startIndex=5&count=7");
         assertStartIndexCount(doc, "previous", 0, 5);
@@ -349,6 +359,12 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
     public void doTestNextPreviousPOST(String typeName) throws Exception {
         
         Document doc = postAsDOM("wfs", startIndexSimpleXML(typeName, -1, 5));
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        // Without startindex, results are not sorted and next would be inconsistent,
+        // so next is not encoded. See GEOS-5085.
+        assertFalse(doc.getDocumentElement().hasAttribute("next"));
+        
+        doc = postAsDOM("wfs", startIndexSimpleXML(typeName, 0, 5));
         assertFalse(doc.getDocumentElement().hasAttribute("previous"));
         assertStartIndexCount(doc, "next", 5, 5);
         
@@ -495,6 +511,13 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
     public void doTestNextPreviousHitsGET(String typeName) throws Exception {
         Document doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
                 "typename=" + typeName + "&count=5&resulttype=hits");
+        assertFalse(doc.getDocumentElement().hasAttribute("previous"));
+        // Without startindex, results are not sorted and next would be inconsistent,
+        // so next is not encoded. See GEOS-5085.
+        assertFalse(doc.getDocumentElement().hasAttribute("next"));
+        
+        doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
+                "typename=" + typeName + "&startIndex=0&count=5&resulttype=hits");
         assertFalse(doc.getDocumentElement().hasAttribute("previous"));
         assertStartIndexCount(doc, "next", 5, 5);
         

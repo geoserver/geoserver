@@ -3,16 +3,17 @@
 Labeling
 ========
 
-Controlling Label Placement
----------------------------
+Controlling where the WMS server places labels with SLD is a bit complex. 
+The SLD specification only defines the most basic way of controlling placement 
+(and explicitly says that defining more control is "a real can of worms"!). 
+Geoserver fully supports the SLD specification,
+and adds some extra elements and vender options to allow better cartographic output.
 
-Controlling where the WMS server places labels with SLD is bit complex. The SLD specification only defines the most basic way of controlling placement explicitly says that defining more control is "a real can of worms". Geoserver fully supports the SLD specification plus adds a few extra parameters so you can make pretty maps.
 
+LabelPlacement
+--------------
 
-Basic SLD Placement
--------------------
-
-The SLD specification indicates two types of LabelPlacement:
+The SLD specification defines two types of LabelPlacement:
 
   * for Point Geometries ("PointPlacement")
   * for Linear (line) geometries ("LinePlacement")
@@ -23,9 +24,6 @@ The SLD specification indicates two types of LabelPlacement:
     * Polygons are intersected with the viewport and the centroid is used.
     * Lines are intersected with the viewport and the middle of the line is used.
 
-
-Code
-````
 
 .. code-block:: xml
 
@@ -51,7 +49,7 @@ Code
 PointPlacement
 --------------
 
-When you use a <PointPlacement> element, the geometry you are labeling will be reduced to a single point (usually the "middle" of the geometry - see algorithm below for details). You can control where the label is relative to this point using the options:
+When you use a <PointPlacement> element, the geometry you are labeling will be treated as a single point (usually the "middle" of the geometry - see algorithm below for details). You can control where the label is relative to this point using the options:
 
 .. list-table::
    :widths: 30 70 
@@ -65,10 +63,11 @@ When you use a <PointPlacement> element, the geometry you are labeling will be r
    * - Rotation
      - This is the clockwise rotation of the label in degrees.
  	
-The best way to understand these is with examples:
+The best way to understand these is with examples.
 
+	
 AnchorPoint
-```````````
+^^^^^^^^^^^
 
 The anchor point determines where the label is placed relative to the label point. These measurements are relative to the bounding box of the label. The (x,y) location inside the label's bounding box (specified by the AnchorPoint) is placed at the label point.
 
@@ -111,7 +110,7 @@ By changing the values, you can control where the label is placed.
 
 
 Displacement
-````````````
+^^^^^^^^^^^^
 
 Displacement allows fine control of the placement of the label. The displacement values are in pixels and simply move the location of the label on the resulting image.
 
@@ -141,7 +140,7 @@ displacement of y=-10 pixels, compare with anchor point (x=0.5,y=1.0) not shown
 
 
 Rotation
-````````
+^^^^^^^^
 
 Rotation is simple - it rotates the label clockwise the number of degrees you specify. See the examples below for how it interacts with AnchorPoints and displacements.
 
@@ -169,26 +168,21 @@ simple 45 degrees rotation
 
 
 LinePlacement
-`````````````
+-------------
 
-When you are labeling a line (i.e. a road or river), you can specify a <LinePlacement> element. This tells the labeling system two things:
-(a) that you want Geoserver to determine the best rotation and placement for the label (b) a minor option to control how the label is placed relative to the line.
+When you are labeling a line (i.e. a road or river), you can specify a ``<LinePlacement>`` element. 
+This tells the labeling system two things:
+(a) that you want Geoserver to determine the best rotation and placement for the label 
+(b) how the label is placed relative to the line.
 
-The line placement option is very simple - it only allows you to move a label up-and-down from a line.
+PerpendicularOffset
+^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: xml 
+The optional ``PerpendicularOffset`` element allows you to move a label up or down relative to a line.
+The displacement value is specified in pixels.  
+A positive value displaces upwards, a negative value downwards.
 
-  <xs:elementname="LinePlacement">
-   <xs:complexType>
-     <xs:sequence>
-       <xs:element ref="sld:PerpendicularOffset" minOccurs="0"/>
-     </xs:sequence>
-   </xs:complexType>
-  </xs:element>
-  ...
-  <xs:element name="PerpendicularOffset" type="sld:ParameterValueType"/>
-
-This is very similiar to the DisplacementY option (see above).
+This is similiar to the ``DisplacementY`` element (see above).
 
 .. code-block:: xml 
 
@@ -203,16 +197,16 @@ This is very similiar to the DisplacementY option (see above).
 .. figure:: img/lp_1.gif
 	
 
-PerpendicularOffset=0 	
+PerpendicularOffset = 0 (default)	
 
 .. figure:: img/lp_2.gif
 
 
-PerpendicularOffset=10 pixels
+PerpendicularOffset = 10 pixels
 
 
 Composing labels from multiple attributes
-`````````````````````````````````````````
+-----------------------------------------
 
 The <Label> element in TextSymbolizer is said to be mixed, that is, its content can be a mixture of plain text and OGC Expressions. The mix gets interepreted as a concatenation, this means you can leverage it to get complex labels out of multiple attributes.
 
@@ -238,7 +232,7 @@ So, for example, if you wanted to have the state abbreviation sitting on the nex
   ]]>(<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
   </Label>
 
-Geoserver Specific Enhanced Options
+Geoserver Enhanced Options
 -----------------------------------
 
 The following options are all extensions of the SLD specification.  Using these options gives much more control over how the map looks, since the SLD standard isn't expressive enough to handle all the options one might want.  In time we hope to have them be an official part of the specification.  
@@ -246,7 +240,7 @@ The following options are all extensions of the SLD specification.  Using these 
 .. _labeling_priority:
 
 Priority Labeling (<Priority>)
-``````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 GeoServer has extended the standard SLD to also include priority labeling. This allows you to control which labels are rendered in preference to other labels.
 
@@ -294,7 +288,7 @@ Notice that larger cities are more readily named than smaller cities.
 .. _labeling_group:
 
 Grouping Geometries (<VendorOption name="group">)
-`````````````````````````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sometimes you will have a set of related features that you only want a single label for. The grouping option groups all features with the same label text, then finds a representative geometry for the group.
 
@@ -332,7 +326,7 @@ With the grouping option on, all the geometries with the same label are grouped 
 .. _labeling_space_around:
 
 Overlapping and Separating Labels (<VendorOption name="spaceAround">)
-`````````````````````````````````````````````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default geoserver will not put labels "on top of each other". By using the spaceAround option you can allow labels to overlap and you can also add extra space around a label.
 
@@ -364,7 +358,7 @@ With a spaceAround value of 10 for all TextSymbolizers, each label will be 20 pi
 .. _labeling_follow_line:
 
 followLine
-``````````
+^^^^^^^^^^
 
 The **followLine** option forces a label to follow the curve of the line. To use this option place the following in your *<TextSymbolizer>*.
 
@@ -383,7 +377,7 @@ It is required to use *<LinePlacement>* along with this option to ensure that al
 .. _labeling_max_displacement:
 
 maxDisplacement
-```````````````
+^^^^^^^^^^^^^^^
 
 The **maxDisplacement** option controls the displacement of the label along a line. Normally GeoServer would label a line at its center point only, provided the location is not busy with another label, and not label it at all otherwise. When set, the labeller will search for another location within **maxDisplacement** pixels from the pre-computed label point.
 
@@ -396,7 +390,7 @@ When used in conjunction with **repeat**, the value for **maxDisplacement** shou
 .. _labeling_repeat:
 
 repeat
-``````
+^^^^^^
 
 The **repeat** option determines how often GeoServer labels a line. Normally GeoServer would label each line only once, regardless of their length. Specify a positive value to make it draw the label every **repeat** pixels.
 
@@ -408,7 +402,7 @@ The **repeat** option determines how often GeoServer labels a line. Normally Geo
 .. _labeling_all_group:
 
 labelAllGroup
-`````````````
+^^^^^^^^^^^^^
 
 The **labelAllGroup** option makes sure that all of the segments in a line group are labeled instead of just the longest one.
 
@@ -419,7 +413,7 @@ The **labelAllGroup** option makes sure that all of the segments in a line group
 .. _labeling_max_angle_delta:
 
 maxAngleDelta
-`````````````
+^^^^^^^^^^^^^
 
 Designed to use used in conjuection with **followLine**, the **maxAngleDelta** option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.
 
@@ -430,7 +424,7 @@ Designed to use used in conjuection with **followLine**, the **maxAngleDelta** o
 .. _labeling_autowrap:
 
 autoWrap
-`````````
+^^^^^^^^
 
 The **autoWrap** option wraps labels when they exceed the given value, given in pixels. Make sure to give a dimension wide enough to accommodate the longest word other wise this option will split words over multiple lines.
 
@@ -441,7 +435,7 @@ The **autoWrap** option wraps labels when they exceed the given value, given in 
 .. _labeling_force_left_to_right:
 
 forceLeftToRight
-````````````````
+^^^^^^^^^^^^^^^^
 
 The labeller always tries to draw labels so that they can be read, meaning the label does not always follow the line orientation, but sometimes it's flipped 180° instead to allow for normal reading. This may get in the way if the label is a directional arrow, and you're trying to show one way directions (assuming the geometry is oriented along the one way, and that you have a flag to discern one ways from streets with both circulations).
 
@@ -454,7 +448,7 @@ The following setting disables label flipping, making the label always follow th
 .. _labeling_conflict_resolution:
 
 conflictResolution
-````````````````````
+^^^^^^^^^^^^^^^^^^
 
 By default labels are subjected to conflict resolution, meaning the renderer will not allow any label to overlap with a label that has been drawn already. Setting this parameter to false pull the label out of the conflict resolution game, meaning the label will be drawn even if it overlaps with other labels, and other labels drawn after it won't mind overlapping with it.
 
@@ -465,7 +459,7 @@ By default labels are subjected to conflict resolution, meaning the renderer wil
 .. _labeling_goodness_of_fit:
 
 Goodness of Fit
-````````````````
+^^^^^^^^^^^^^^^
 
 Geoserver will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
@@ -488,7 +482,7 @@ The default value is 0.5, but it can be modified using:
   <VendorOption name="goodnessOfFit">0.3</VendorOption>
   
 Polygon alignment
-````````````````````
+^^^^^^^^^^^^^^^^^
 
 GeoServer normally tries to place horizontal labels within a polygon, and give up in case the label position is busy or if the label does not fit enough in the polygon. This options allows GeoServer to try alternate rotations for the labels.
 

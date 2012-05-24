@@ -43,7 +43,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
     }
 
     public ReferencedEnvelope getBounds() {
-        return ReferencedEnvelope.reference(DataUtilities.bounds(this));
+        return DataUtilities.bounds(this);
     }
 
     public int getCount() throws IOException {

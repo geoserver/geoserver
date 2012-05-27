@@ -946,7 +946,7 @@ public class XStreamPersister {
         public String toString(Object obj) {
             CoordinateReferenceSystem crs = (CoordinateReferenceSystem) obj;
             try {
-                Integer epsg = CRS.lookupEpsgCode(crs, true);
+                Integer epsg = CRS.lookupEpsgCode(crs, false);
                 if (epsg != null) {
                     return "EPSG:" + epsg;
                 }

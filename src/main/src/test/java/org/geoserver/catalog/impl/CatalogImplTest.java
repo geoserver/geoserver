@@ -1116,7 +1116,6 @@ public class CatalogImplTest extends TestCase {
         catalog.addListener( tl );
         
         assertTrue( tl.added.isEmpty() );
-        addStyle();
         catalog.add( l );
         assertEquals( 1, tl.added.size() );
         assertEquals( l, tl.added.get(0).getSource() );

@@ -303,7 +303,10 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
         }
 
         try {
-            return SimpleFeatureBuilder.build(schema, attributes, feature.getID());
+            SimpleFeature f = SimpleFeatureBuilder.build(schema, attributes, feature.getID());
+            //copy over the user data from original
+            f.getUserData().putAll(feature.getUserData());
+            return f;
         } catch (IllegalAttributeException e) {
             String msg = "Error creating reprojeced feature";
             throw (IOException) new IOException(msg).initCause(e);

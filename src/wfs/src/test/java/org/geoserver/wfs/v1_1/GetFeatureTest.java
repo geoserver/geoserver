@@ -498,7 +498,20 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Buildings)", dom);
         XMLAssert.assertXpathEvaluatesTo("113", "//cite:Buildings[1]/cite:FID", dom);
     }
-    
+
+    public void testEncodeSrsDimension() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typename=" 
+            + getLayerId(MockData.PRIMITIVEGEOFEATURE));
+        XMLAssert.assertXpathExists("//gml:Point[@srsDimension = '2']", dom);
+
+        WFSInfo wfs = getWFS();
+        wfs.setCiteCompliant(true);
+        getGeoServer().save(wfs);
+
+        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typename=" 
+                + getLayerId(MockData.PRIMITIVEGEOFEATURE));
+        XMLAssert.assertXpathNotExists("//gml:Point[@srsDimension = '2']", dom);
+    }
     public static void main(String[] args) {
         TestRunner runner = new TestRunner();
         runner.run(GetFeatureTest.class);

@@ -173,7 +173,15 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         else {
             configuration.getProperties().add( GMLConfiguration.NO_FEATURE_BOUNDS);
         }
-        
+
+        if (wfs.isCiteCompliant()) {
+            //cite compliance forces us to forgo srsDimension attribute
+            configuration.getProperties().add(GMLConfiguration.NO_SRS_DIMENSION);
+        }
+        else {
+            configuration.getProperties().remove(GMLConfiguration.NO_SRS_DIMENSION);
+        }
+
         /*
          * Set property encoding featureMemeber as opposed to featureMembers
          * 

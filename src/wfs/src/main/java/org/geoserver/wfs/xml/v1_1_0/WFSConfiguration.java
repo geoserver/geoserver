@@ -40,6 +40,7 @@ import org.geoserver.wfs.xml.filter.v1_1.FilterTypeBinding;
 import org.geoserver.wfs.xml.filter.v1_1.PropertyNameTypeBinding;
 import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
 import org.geoserver.wfs.xml.gml3.CircleTypeBinding;
+import org.geoserver.wfs.xml.gml3.WFSConfigurationParameter;
 import org.geoserver.wfs.xml.xs.DateBinding;
 import org.geotools.data.DataAccess;
 import org.geotools.filter.v1_0.OGCBBOXTypeBinding;
@@ -255,6 +256,7 @@ public class WFSConfiguration extends Configuration {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void configureBindings(Map bindings) {
         //register our custom bindings
@@ -273,7 +275,10 @@ public class WFSConfiguration extends Configuration {
             GML.AbstractGeometryType,
             new SetterInjectionComponentAdapter( 
                 GML.AbstractGeometryType, AbstractGeometryTypeBinding.class, 
-                new Parameter[]{ new OptionalComponentParameter(CoordinateReferenceSystem.class)} 
+                new Parameter[]{ 
+                    new OptionalComponentParameter(CoordinateReferenceSystem.class),
+                    new WFSConfigurationParameter(WFSConfiguration.this)
+                } 
             )
         );
         

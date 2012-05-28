@@ -32,9 +32,13 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class AbstractGeometryTypeBinding extends org.geotools.gml3.bindings.AbstractGeometryTypeBinding {
-    
+
     CoordinateReferenceSystem crs;
-    
+
+    public AbstractGeometryTypeBinding() {
+        super(null);
+    }
+
     public void setCRS(CoordinateReferenceSystem crs) {
         this.crs = crs;
     }

@@ -29,7 +29,10 @@ public class GetCapabilitiesKvpRequestReader extends WFSKvpRequestReader {
         //set the version attribute on the request
         if (kvp.containsKey("version")) {
             GetCapabilitiesRequest req = GetCapabilitiesRequest.adapt(request);
-            req.setAcceptVersions((String)kvp.get("version"));
+            //TODO: put this check in a cite hack
+            if (req.getAcceptVersions() == null || req.getAcceptVersions().isEmpty()) {
+                req.setAcceptVersions((String)kvp.get("version"));    
+            }
         }
 
         return request;

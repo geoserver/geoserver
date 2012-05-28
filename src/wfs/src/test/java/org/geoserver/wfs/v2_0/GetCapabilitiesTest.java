@@ -237,6 +237,12 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals("1.1.0", dom.getDocumentElement().getAttribute("version"));
     }
 
+    public void testAcceptVersions11WithVersion() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetCapabilities&version=2.0.0&acceptversions=1.1.0,1.0.0");
+        assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
+        assertEquals("1.1.0", dom.getDocumentElement().getAttribute("version"));   
+    }
+
     public void testAcceptFormats() throws Exception {
         ServletResponse response = getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0");
         assertEquals("application/xml", response.getContentType());

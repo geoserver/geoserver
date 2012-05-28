@@ -1,15 +1,30 @@
 package org.geoserver.wfs.v1_1;
 
 import java.util.Collections;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.data.DataStore;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class TransactionTest extends WFSTestSupport {
 
@@ -23,7 +38,7 @@ public class TransactionTest extends WFSTestSupport {
                 Collections.EMPTY_MAP
              );
     }
-    
+
     public void testInsert1() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
                 + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -646,4 +661,59 @@ public class TransactionTest extends WFSTestSupport {
        assertEquals( "1", updated.getFirstChild().getNodeValue());
    }
 
+   public void testInsertUseExistingId() throws Exception {
+       // create a store that can actually handle user specified ids
+       // TODO: factor this out into base class or something
+       Catalog cat = getCatalog();
+       DataStoreInfo ds = cat.getFactory().createDataStore();
+       ds.setName("foo");
+       ds.setWorkspace(cat.getDefaultWorkspace());
+       
+       Map params = ds.getConnectionParameters(); 
+       params.put("dbtype", "h2");
+       params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+       cat.add(ds);
+       
+       FeatureSource fs1 = getFeatureSource(MockData.FIFTEEN);
+       FeatureSource fs2 = getFeatureSource(MockData.SEVEN);
+       
+       DataStore store = (DataStore) ds.getDataStore(null);
+       SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+       tb.setName("bar");
+       tb.add("name", String.class);
+       tb.add("geom", Point.class);
+       
+       store.createSchema(tb.buildFeatureType());
+       
+       CatalogBuilder cb = new CatalogBuilder(cat);
+       cb.setStore(ds);
+
+       SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("bar");
+       SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
+       b.add("one");
+       b.add(new WKTReader().read("POINT(1 1)"));
+       fs.getFeatures().add(b.buildFeature(null));
+
+       FeatureTypeInfo ft = cb.buildFeatureType(fs);
+       cat.add(ft);
+
+       String xml = 
+           "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+               + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+               + " xmlns:gml=\"http://www.opengis.net/gml\" "
+               + " xmlns:gs='" + MockData.DEFAULT_URI + "'>"
+               + "<wfs:Insert idgen='UseExisting'>"
+               + " <gs:bar gml:id='bar.1234'>"
+               + "    <gs:name>acme</gs:name>" 
+               + " </gs:bar>"
+               + "</wfs:Insert>"
+           + "</wfs:Transaction>";
+
+       Document dom = postAsDOM("wfs", xml);
+       assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+       XMLAssert.assertXpathExists("//ogc:FeatureId[@fid = 'bar.1234']", dom);
+
+       dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=bar.1234");
+       XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1234']",dom);
+   }
 }

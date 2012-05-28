@@ -36,6 +36,7 @@ import org.geotools.data.FeatureStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.factory.Hints;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
@@ -98,6 +99,12 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                 if (collection == null) {
                     collection = new DefaultFeatureCollection(null, schema);
                     schema2features.put(schema, collection);
+                }
+
+                // do a check for idegen = useExisting, if set try to tell the datastore to use
+                // the privided fid
+                if (insert.isIdGenUseExisting()) {
+                    feature.getUserData().put(Hints.USE_PROVIDED_FID, true);
                 }
 
                 collection.add(feature);

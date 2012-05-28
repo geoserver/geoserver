@@ -16,6 +16,8 @@ import net.opengis.wfs.GetCapabilitiesType;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
+import org.geoserver.wfs.GetCapabilities;
+import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
 
 
@@ -35,12 +37,11 @@ public class GetCapabilitiesResponse extends Response {
     }
 
     public String getMimeType(Object value, Operation operation) {
-        GetCapabilitiesType request = (GetCapabilitiesType) OwsUtils.parameter(operation
-                .getParameters(), GetCapabilitiesType.class);
+        GetCapabilitiesRequest request = GetCapabilitiesRequest.adapt(operation.getParameters()[0]);
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
             //look for an accepted format
-            List formats = request.getAcceptFormats().getOutputFormat();
+            List formats = request.getAcceptFormats();
 
             for (Iterator f = formats.iterator(); f.hasNext();) {
                 String format = (String) f.next();

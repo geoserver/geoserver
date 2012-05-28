@@ -37,7 +37,11 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
     public List<String> getAcceptVersions() {
         return eGet(adaptee, "acceptVersions.version", List.class);
     }
-    
+
+    public List<String> getAcceptFormats() {
+        return eGet(adaptee, "acceptFormats.outputFormat", List.class);
+    }
+
     public void setAcceptVersions(String... versions) {
         Object acceptedVersions = createAcceptedVersions();
         eAdd(acceptedVersions, "version", Arrays.asList(versions));

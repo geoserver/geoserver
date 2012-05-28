@@ -371,8 +371,10 @@
 		<constructor-arg value="java.math.BigInteger"/>
 	</bean>
 	<bean id="resultTypeKvpParser" class="org.geoserver.wfs.kvp.ResultTypeKvpParser"/>
-	<bean id="acceptVersionsKvpParser" class="org.geoserver.wfs.kvp.AcceptVersionsKvpParser"/>
-	<bean id="acceptFormatsKvpParser" class="org.geoserver.wfs.kvp.AcceptFormatsKvpParser"/>
+	<bean id="acceptVersions11KvpParser" class="org.geoserver.wfs.kvp.AcceptVersionsKvpParser"/>
+	<bean id="acceptVersionsKvpParser" class="org.geoserver.wfs.kvp.v2_0.AcceptVersionsKvpParser"/>
+	<bean id="acceptFormats11KvpParser" class="org.geoserver.wfs.kvp.AcceptFormatsKvpParser"/>
+	<bean id="acceptFormatsKvpParser" class="org.geoserver.wfs.kvp.v2_0.AcceptFormatsKvpParser"/>
     <bean id="strictKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
         <constructor-arg value="strict"/>
     </bean>

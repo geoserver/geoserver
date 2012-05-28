@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.ServletResponse;
+
 import junit.framework.Test;
 
 import org.custommonkey.xmlunit.XMLAssert;
@@ -227,5 +229,19 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:WFS_Capabilities").getLength());
+    }
+
+    public void testAcceptVersions11() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetCapabilities&acceptversions=1.1.0,1.0.0");
+        assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
+        assertEquals("1.1.0", dom.getDocumentElement().getAttribute("version"));
+    }
+
+    public void testAcceptFormats() throws Exception {
+        ServletResponse response = getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0");
+        assertEquals("application/xml", response.getContentType());
+
+        response = getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0&acceptformats=text/xml");
+        assertEquals("text/xml", response.getContentType());
     }
 }

@@ -1016,7 +1016,8 @@ public class CatalogImplTest extends TestCase {
     }
 
     public void testGetLayerByNameWithColon() {
-        
+        addNamespace();
+        addDataStore();
         FeatureTypeInfo ft = catalog.getFactory().createFeatureType();
         ft.setEnabled(true);
         ft.setName( "foo:bar" );
@@ -1026,6 +1027,7 @@ public class CatalogImplTest extends TestCase {
         ft.setNamespace( ns );
         catalog.add(ft);
         
+        addStyle();
         LayerInfo l = catalog.getFactory().createLayer();
         l.setEnabled(true);
         l.setResource(ft);
@@ -1108,6 +1110,7 @@ public class CatalogImplTest extends TestCase {
     
     public void testLayerEvents() {
         addFeatureType();
+        addStyle();
         
         TestListener tl = new TestListener();
         catalog.addListener( tl );
@@ -1462,7 +1465,10 @@ public class CatalogImplTest extends TestCase {
     public void testGetLayerByIdWithConcurrentAdd() throws Exception {
         addDataStore();
         addNamespace();
-        
+        addStyle();
+        catalog.add(ft);
+
+
         LayerInfo layer = catalog.getFactory().createLayer();
         layer.setResource(ft);
         layer.setName("LAYER");

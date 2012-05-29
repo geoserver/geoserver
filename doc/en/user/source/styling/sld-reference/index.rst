@@ -3,18 +3,33 @@
 SLD Reference
 =============
 
-A symbolizer specifies how data should be visualized.  There are 5 types of symbolizers:  ``PointSymbolizer``, which is used to portray **point** data; ``LineSymbolizer``, which is used to portray **line** data; ``PolygonSymbolizer``, which is used to portray **polygon** data; ``RasterSymbolizer``, which is used to portray **raster** data; and ``TextSymbolizer``, which is used to portray **text labels**.
-
-.. warning:: Intro for filters and scale.
+In SLD documents ``Rule``\ s  and ``Filter``\ s are used to determine sets of features to be styled with particular symbology.
+Rules may also specify the scale range in which the feature styling is visible.
 
 .. toctree::
    :maxdepth: 2
    
+   filters
+   
+Rues contain **symbolizers** to specify how features are styled.  
+There are 5 types of symbolizers:  
+
+* ``PointSymbolizer``, which styles features as **points**
+* ``LineSymbolizer``, which styles features as **lines**
+* ``PolygonSymbolizer``, which styles features as **polygons**
+* ``TextSymbolizer``, which styles **text labels** for features
+* ``RasterSymbolizer``, which styles **raster coverages**
+
+Each symbolizer type has options and parameters to control styling.
+
+   
+.. toctree::
+   :maxdepth: 2
+   
+
    pointsymbolizer
    linesymbolizer
    polygonsymbolizer
-   rastersymbolizer
    textsymbolizer
    labeling
-   filters
-   scale
+   rastersymbolizer

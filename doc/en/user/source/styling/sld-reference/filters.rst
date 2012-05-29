@@ -5,7 +5,7 @@ Filters
 
 A *filter* is the mechanism in SLD for specifying predicates. Similar in nature to a "WHERE" clause in SQL, filters are the language for specifying which styles should be applied to which features in a data set.
 
-The filter language used by SLD is itself an `<OGC standard <http://www.opengeospatial.org/standards/filter>`_ defined in the Filter Encoding specification freely available.
+The filter language used by SLD follows the `OGC Filter Encoding standard <http://www.opengeospatial.org/standards/filter>`_.
 
 A filter is used to select a subset of features of a dataset to apply a symbolizer to.
 
@@ -14,17 +14,18 @@ There are three types of filters:
 Attribute filters
 -----------------
 
-Attribute filters are used to constrain the non-spatial attributes of a feature. Example
+Attribute filters are used to constrain the non-spatial attributes of a feature. 
+For example:
 
 .. code-block:: xml 
-   :linenos: 
    
    <PropertyIsEqualTo>
       <PropertyName>NAME</PropertyName>
       <Literal>Bob</Literal>
    </PropertyIsEqualTo>
 
-The above filter selects those features which have a {{NAME}} attribute which has a value of "Bob". A variety of equality operators are available:
+The above filter selects those features which have a ``NAME`` attribute which has a value of "Bob". 
+A variety of comparison operators are available:
 
    * PropertyIsEqualTo
    * PropertyIsNotEqualTo
@@ -37,10 +38,10 @@ The above filter selects those features which have a {{NAME}} attribute which ha
 Spatial filters
 ---------------
 
-Spatial filters used to constrain the spatial attributes of a feature. Example
+Spatial filters used to constrain the spatial attributes of a feature. 
+For example:
 
 .. code-block:: xml 
-   :linenos: 
 
    <Intersects>
       <PropertyName>GEOMETRY</PropertyName>
@@ -51,7 +52,8 @@ Spatial filters used to constrain the spatial attributes of a feature. Example
       </Literal>
    </Intersects>
 
-The above filter selects those features with a geometry that intersects the point (1,1). A variety of spatial operators are available:
+The above filter selects those features with a geometry that intersects the point (1,1). 
+A variety of spatial operators are available:
 
    * Intersects
    * Equals
@@ -66,11 +68,10 @@ The above filter selects those features with a geometry that intersects the poin
 Logical filters
 ---------------
 
-Logical filters are used to create combinations of filters using the logical operators And, Or, and Not. Example
+Logical filters are used to create combinations of filters using the logical operators ``And``, ``Or``, and ``Not``. 
+For example:
 
 .. code-block:: xml 
-   :linenos: 
-
   
    <And>
       <PropertyIsEqualTo>
@@ -92,9 +93,10 @@ Logical filters are used to create combinations of filters using the logical ope
 Rules
 -----
 
-A *rule* combines a number of symbolizers with a filter to define the portrayal of a feature. Consider the following example:: 
+A **rule** combines a filter with any number of symbolizers to define the portrayal of the features which satisfy the filter condition. 
+Consider the following example:
 
-
+.. code-block:: xml 
 
   <Rule>
      <ogc:Filter>
@@ -116,10 +118,13 @@ A *rule* combines a number of symbolizers with a filter to define the portrayal 
 
 The above rule applies only to features which have a ``POPULATION`` attribute greater than ``100,000`` and symbolizes then with a red point. 
 
-An SLD document can contain many rules. Multiple rule SLD's are the basis for "thematic styling". Consider the above example expanded::
+An SLD document can contain many rules. 
+Multiple-rule SLD's are the basis for thematic styling. 
+Consider the above example expanded:
 
+.. code-block:: xml 
 
-  <Rule>
+   <Rule>
      <ogc:Filter>
        <ogc:PropertyIsGreaterThan>
          <ogc:PropertyName>POPULATION</ogc:PropertyName>
@@ -133,8 +138,8 @@ An SLD document can contain many rules. Multiple rule SLD's are the basis for "t
          </Mark>
        </Graphic>
      </PointSymbolizer>
-  </Rule>
-  <Rule>
+   </Rule>
+   <Rule>
      <ogc:Filter>
        <ogc:PropertyIsLessThan>
          <ogc:PropertyName>POPULATION</ogc:PropertyName>
@@ -148,13 +153,23 @@ An SLD document can contain many rules. Multiple rule SLD's are the basis for "t
          </Mark>
        </Graphic>
      </PointSymbolizer>
-  </Rule>
+   </Rule>
 
-The above snippet defines an additional rule which engages when ``POPULATION`` is less than 100,000 and symbolizes the feature as a green point.
+   
+The above snippet defines an additional rule which applies to features whose ``POPULATION`` attribute is less than 100,000, and symbolizes them as green points.
 
-Rules support the notion of *scale dependence* which allows one to specify the scale at which a rule should engage. This allows for different portrayals of a feature based on map scale. Consider the following example:: 
+Scale Selection
+---------------
 
+Rules support **scale selection**,
+to allow specifying the scale range in which a rule may be applied. 
+This allows for varying portrayal of features at different map scales.
+In particular, at smaller scales it is common to use simpler styling for features, 
+or even prevent the display of some features altogether.
 
+Consider the following example:
+
+.. code-block:: xml 
 
   <Rule>
      <MaxScaleDenominator>20000</MaxScaleDenominator>
@@ -177,4 +192,6 @@ Rules support the notion of *scale dependence* which allows one to specify the s
      </PointSymbolizer>
   </Rule>
 
-The above rules specify that at a scale below ``1:20000`` features are symbolized with red points, and at a scale above ``1:20000`` features are symbolized with blue points.
+The above rules specify that at scales above 1:20,000 features are symbolized with red points, 
+and at scales at or below 1:20,000 features are symbolized with blue points.
+

@@ -3,12 +3,39 @@
 LineSymbolizer
 ==============
 
-The LineSymbolizer styles **lines**.  Lines are one-dimensional geometry elements that contain position and length.  Lines can be comprised of multiple line segments.
+The LineSymbolizer styles features as **lines**.  
+Lines are one-dimensional geometries that have both position and length.  
+Each line is comprised of one or more **line segments**,
+and has either two **ends** or none (if it is closed).
+
 
 Syntax
 ------
 
-The outermost tag is the ``<Stroke>`` tag.  This tag is required, and determines the visualization of the line.  There are three possible tags that can be included inside the ``<Stroke>`` tag.
+A ``LineSymbolizer`` contains an optional ``Geometry`` element,
+and a required ``Stroke`` element specifying the line symbology.
+
+
+Geometry
+^^^^^^^^
+
+The ``Geometry`` element is optional.  
+If present, it specifies the featuretype property from which to obtain the geometry to style
+using the ``PropertyName`` element.
+See also :ref:`geometry_transformations` for GeoServer extensions for specifying geometry.
+
+Non-linear geometry may be styled with a ``LineSymbolizer``.  
+Point geometries are treated as lines of zero length, with a horizontal orientation.
+For polygonal geometries the boundary (or boundaries) are used as the lines, 
+each line being a closed ring with no ends.
+
+.. _sld_reference_stroke:
+
+Stroke
+^^^^^^
+
+The ``<Stroke>`` element specifies the styling of a line.  
+There are three elements that can be included inside the ``<Stroke>`` element.
 
 .. list-table::
    :widths: 20 20 60
@@ -26,9 +53,39 @@ The outermost tag is the ``<Stroke>`` tag.  This tag is required, and determines
      - No
      - Determines the stroke styling parameters.
      
-When using the ``<GraphicStroke>`` and ``<GraphicFill>`` tags, it is required to insert the ``<Graphic>`` tag inside them.  The syntax for this tag is identical to that mentioned in the :ref:`sld_reference_pointsymbolizer` section above.
 
-Within the ``<CssParameter>`` tag, there are also additional parameters that go inside the actual tag:
+GraphicFill
+^^^^^^^^^^^
+
+The ``GraphicFill`` element specifies that the pixels of the line are to be filled 
+with a repeating graphic image or symbol.
+The graphic is specified by a ``<Graphic>`` sub-element,  
+which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.
+
+GraphicStroke
+^^^^^^^^^^^^^
+
+The ``GraphicStroke`` element specifies the the line is to be drawn 
+using a repeated graphic image or symbol following the line.
+The graphic is specified by a ``<Graphic>`` sub-element,  
+which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.
+
+The spacing of the graphic symbol can be specified using the ``Size`` element in the ``Graphic`` element,
+or the ``<CSSParameter name="stroke-dasharray">`` in the ``Stroke`` element.
+
+CssParameter
+^^^^^^^^^^^^
+
+The ``CssParameter`` elements describe the basic styling of the line.
+Any number of ``<CssParameter>`` elements can be specified.
+
+The ``name`` **attribute** indicates what aspect of styling an element specifies,
+using the standard CSS/SVG styling model.
+The **content** of s ``CssParameter`` element supplies the
+value of the styling parameter.
+The value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
+
+The following parameters are supported:
 
 .. list-table::
    :widths: 30 15 55
@@ -44,16 +101,19 @@ Within the ``<CssParameter>`` tag, there are also additional parameters that go 
      - Specifies the width of the line in pixels.  Default is ``1``.
    * - ``name="stroke-opacity"``
      - No
-     - Specifies the opacity (transparency) of the line.  possible values are between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.
+     - Specifies the opacity (transparency) of the line.  The value is a number are between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.
    * - ``name="stroke-linejoin"``
      - No
      - Determines how lines are rendered at intersections of line segments.  Possible values are ``mitre`` (sharp corner), ``round`` (rounded corner), and ``bevel`` (diagonal corner).  Default is ``mitre``.
    * - ``name="stroke-linecap"``
      - No
-     - Determines how lines are rendered at ends of line segments.  Possible values are ``butt`` (sharp square edge), ``round`` (rounded edge), and ``square`` (slightly elongated square edge).  Default is ``butt``.
+     - Determines how lines are rendered at their ends.  Possible values are ``butt`` (sharp square edge), ``round`` (rounded edge), and ``square`` (slightly elongated square edge).  Default is ``butt``.
    * - ``name="stroke-dasharray"``
      - No
      - Encodes a dash pattern as a series of numbers separated by spaces.  Odd-indexed numbers (first, third, etc) determine the length in pxiels to draw the line, and even-indexed numbers (second, fourth, etc) determine the length in pixels to blank out the line.  Default is an unbroken line. `Starting from version 2.1` dash arrays can be combined with graphic strokes to generate complex line styles with alternating symbols or a mix of lines and symbols.
    * - ``name="stroke-dashoffset"``
      - No
      - Specifies the distance in pixels into the ``dasharray`` pattern at which to start drawing.  Default is ``0``.
+     
+
+

@@ -3,12 +3,17 @@
 PolygonSymbolizer
 =================
 
-The LineSymbolizer styles **polygons**.  Lines are two-dimensional geometry elements.  They can contain styling information about their border (stroke) and their fill.
+The ``PolygonSymbolizer`` styles features as **polygons**.  
+Polygons are two-dimensional geometries.  
+They can be depicted with styling for their interior (fill) and their border (stroke).
+Polygons may contain one or more holes, which are stroked but not filled.
 
 Syntax
 ------
 
-A ``<PolygonSymbolizer>`` can have two outermost tags:
+A ``<PolygonSymbolizer>`` contains an optional ``Geometry`` element, and two elements
+``Fill`` and ``Stroke`` for specifying styling:
+
 
 .. list-table::
    :widths: 20 20 60
@@ -17,15 +22,41 @@ A ``<PolygonSymbolizer>`` can have two outermost tags:
      - **Required?**
      - **Description**
    * - ``<Fill>``
-     - No (when using ``<Stroke>``)
-     - Determines the styling for the fill of the polygon.
+     - No
+     - Determines the styling for the polygon interior.
    * - ``<Stroke>``
-     - No (when using ``<Fill>``)
-     - Determines the styling for the stroke of the polygon.
+     - No
+     - Determines the styling for the polygon border.
 
-The details for the ``<Stroke>`` tag are identical to that mentioned in the :ref:`sld_reference_linesymbolizer` section above.
+When rendering a polygon, the fill is rendered before the border is stroked.     
 
-Within the ``<Fill>`` tag, there are additional tags:
+
+Geometry
+^^^^^^^^
+
+The ``Geometry`` element is optional.  
+If present, it specifies the featuretype property from which to obtain the geometry to style
+using the ``PropertyName`` element.
+See also :ref:`geometry_transformations` for GeoServer extensions for specifying geometry.
+
+Non-polygonal geometry may be styled with a ``PolygonSymbolizer``.  
+Point geometries are treated as small orthonormal square polygons.
+Linear geometries are closed by joining their ends.
+
+
+Stroke
+^^^^^^
+
+The ``Stroke`` element specifies the styling for the **border** of a polygon.
+The syntax is described in the ``LineSymbolizer`` :ref:`sld_reference_stroke` section.
+
+.. _sld_reference_fill:
+
+Fill
+^^^^
+
+The ``Fill`` element determines the styling for the **interior** of a polygon.
+It can contain the sub-elements:
 
 .. list-table::
    :widths: 20 20 60
@@ -40,9 +71,26 @@ Within the ``<Fill>`` tag, there are additional tags:
      - No
      - Determines the fill styling parameters.
 
-When using the ``<GraphicFill>`` tag, it is required to insert the ``<Graphic>`` tag inside it.  The syntax for this tag is identical to that mentioned in the :ref:`sld_reference_pointsymbolizer` section above.
- 
-Within the ``<CssParameter>`` tag, there are also additional parameters that go inside the actual tag:
+GraphicFill
+^^^^^^^^^^^
+
+The ``<GraphicFill>`` element contains a ``<Graphic>`` element,
+which specifies a graphic image or symbol to use for a repeated fill pattern.  
+The syntax is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.
+
+CssParameter
+^^^^^^^^^^^^
+
+The ``CssParameter`` elements describe the styling of a solid polygon fill.
+Any number of ``<CssParameter>`` elements can be specified. 
+
+The ``name`` **attribute** indicates what aspect of styling an element specifies,
+using the standard CSS/SVG styling model.
+The **content** of s ``CssParameter`` element supplies the
+value of the styling parameter.
+The value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
+
+The following parameters are supported:
 
 .. list-table::
    :widths: 30 15 55
@@ -55,13 +103,14 @@ Within the ``<CssParameter>`` tag, there are also additional parameters that go 
      - Specifies the fill color for the polygon, in the form #RRGGBB.  Default is grey (``#808080``).
    * - ``name="fill-opacity"``
      - No
-     - Specifies the opacity (transparency) of the fill of the polygon.  Possible values are between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.
+     - Specifies the opacity (transparency) of the fill of the polygon.  The value is a number between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.
+
 
 
 Example
 -------
 
-Consider the following symbolizer taken from the Simple Point example in the :ref:`sld_cookbook_polygons` section in the :ref:`sld_cookbook`.
+The following symbolizer is taken from the :ref:`sld_cookbook_polygons` section in the :ref:`sld_cookbook`.
 
 .. code-block:: xml 
    :linenos: 
@@ -72,6 +121,7 @@ Consider the following symbolizer taken from the Simple Point example in the :re
             </Fill>
           </PolygonSymbolizer>
           
-This symbolizer contains only a ``<Fill>`` tag.  Inside this tag is a ``<CssParameter>`` that specifies a fill color for the polygont o be ``#000080``, or a muted blue.
+This symbolizer contains only a ``<Fill>`` element.  
+Inside this element is a ``<CssParameter>`` that specifies the fill color for the polygon to be ``#000080`` (a muted blue).
  
- Further examples can be found in the :ref:`sld_cookbook_polygons` section of the :ref:`sld_cookbook`.
+Further examples can be found in the :ref:`sld_cookbook_polygons` section of the :ref:`sld_cookbook`.

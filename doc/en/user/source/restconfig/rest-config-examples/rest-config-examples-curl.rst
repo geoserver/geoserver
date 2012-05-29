@@ -29,7 +29,7 @@ Note the ``Location`` response header which specifies the location of the
 newly created workspace. The following retrieves the new workspace as XML with a
 GET request::
 
-  curl -XGET -H 'Accept: text/xml' http://localhost:8080/geoserver/rest/workspaces/acme
+  curl -u admin:geoserver -XGET -H 'Accept: text/xml' http://localhost:8080/geoserver/rest/workspaces/acme
 
 The response should look like:
 
@@ -49,7 +49,7 @@ Specifying the ``Accept`` header to relay the desired representation of the
 workspace can be tedious. The following is an equivalent (yet less RESTful)
 request::
 
-  curl -XGET http://localhost:8080/geoserver/rest/workspaces/acme.xml
+  curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme.xml
 
 Uploading a Shapefile
 ---------------------
@@ -64,7 +64,7 @@ datastore named ``roads``::
 
 The following retrieves the created data store as XML::
 
-  curl -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads.xml
+  curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads.xml
 
 .. code-block:: xml
 
@@ -87,8 +87,7 @@ By default when a shapefile is uploaded a feature type is automatically created.
 See :ref:`webadmin_layers` page for details on how to control this behaviour. The following 
 retrieves the created feature type as XML:: 
 
-  curl -XGET 
-    http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/featuretypes/roads.xml
+  curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/featuretypes/roads.xml
 
 .. code-block:: xml
    
@@ -142,7 +141,7 @@ In the previous example a Shapefile was uploaded, and in the process a feature
 type was created. Whenever a feature type is created an layer is implicitly 
 created for it. The following retrieves the layer as XML::
 
-  curl -XGET http://localhost:8080/geoserver/rest/layers/acme:roads.xml
+  curl  -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/layers/acme:roads.xml
 
 .. code-block:: xml
 
@@ -239,7 +238,7 @@ example will be added as feature types. The following adds the table
 
 The following retrieves the created feature type::
 
-  curl -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes/buildings.xml
+  curl  -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes/buildings.xml
 
 This GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:buildings) 
 shows the rendered buildings layer.

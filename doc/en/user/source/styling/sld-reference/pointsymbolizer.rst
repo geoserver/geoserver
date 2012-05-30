@@ -3,26 +3,39 @@
 PointSymbolizer
 ===============
 
-The ``PointSymbolizer`` styles features as **points**.  
+A **PointSymbolizer** styles features as **points**.  
 Points are depicted as graphic symbols at a single location on the map.
 
 
 Syntax
 ------
 
-A ``PointSymbolizer`` contains an optional ``Geometry`` element,
-and a required ``Graphic`` element specifying the point symbology.
+A ``<PointSymbolizer>`` contains an optional ``<Geometry>`` element,
+and a required ``<Graphic>`` element specifying the point symbology.
+
+.. list-table::
+   :widths: 20 20 60
+   
+   * - **Tag**
+     - **Required?**
+     - **Description**
+   * - ``<Geometry>``
+     - No
+     - Specifies the geometry to be rendered.
+   * - ``<Graphic>``
+     - Yes
+     - Specifies the styling for the point symbol.
 
 Geometry
 ^^^^^^^^
 
-The ``Geometry`` element is optional.  
+The ``<Geometry>`` element is optional.  
 If present, it specifies the featuretype property from which to obtain the geometry to style
-using the ``PropertyName`` element.
+using a ``<PropertyName>`` element.
 See also :ref:`geometry_transformations` for GeoServer extensions for specifying geometry.
 
-Non-point geometry may be styled with a PointSymbolizer.
-In this case, a representative point is used (such as the centroid of a line or polygon).
+Any kind of geometry may be styled with a ``<PointSymbolizer>``.
+For non-point geometries, a representative point is used (such as the centroid of a line or polygon).
 
 
 .. _sld_reference_graphic:
@@ -31,8 +44,8 @@ Graphic
 ^^^^^^^
 
 Symbology is specified using a ``<Graphic>`` element. 
-``Graphic`` contains either an ``ExternalGraphic`` or a ``Mark`` element to specify the symbol to use. 
-**External Graphics** are image files (such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
+The point symbol is specified by either an ``<ExternalGraphic>`` or a ``<Mark>`` element. 
+**External Graphics** are image files (in formats such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
 **Marks** are vector shapes whose stroke and fill are defined explicitly in the symbolizer.  
 
 There are five possible sub-elements of the ``<Graphic>`` element.
@@ -72,7 +85,7 @@ One of ``<ExternalGraphic>`` or ``<Mark>`` must be specified; the others are opt
 ExternalGraphic
 ^^^^^^^^^^^^^^^
 
-**External Graphics** are image files (such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
+**External Graphics** are image files (in formats such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
 For GeoServer extensions for specifying external graphics, see :ref:`pointsymbols`.
 
 The ``<ExternalGraphic>`` element has the sub-elements:
@@ -97,7 +110,8 @@ The ``<ExternalGraphic>`` element has the sub-elements:
 Mark
 ^^^^
 
-**Marks** are predefined vector shapes whose fill and stroke are defined explicitly in the SLD.  
+**Marks** are predefined vector shapes identified by a well-known name.  
+Their fill and stroke can be defined explicitly in the SLD.  
 For GeoServer extensions for specifying mark symbols, see :ref:`pointsymbols`.
 
 The ``<Mark>`` element has the sub-elements:

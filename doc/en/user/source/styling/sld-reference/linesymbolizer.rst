@@ -3,7 +3,7 @@
 LineSymbolizer
 ==============
 
-The LineSymbolizer styles features as **lines**.  
+A **LineSymbolizer** styles features as **lines**.  
 Lines are one-dimensional geometries that have both position and length.  
 Each line is comprised of one or more **line segments**,
 and has either two **ends** or none (if it is closed).
@@ -12,19 +12,32 @@ and has either two **ends** or none (if it is closed).
 Syntax
 ------
 
-A ``LineSymbolizer`` contains an optional ``Geometry`` element,
-and a required ``Stroke`` element specifying the line symbology.
+A ``<LineSymbolizer>`` contains an optional ``<Geometry>`` element,
+and a required ``<Stroke>`` element specifying the line symbology.
+
+.. list-table::
+   :widths: 20 20 60
+   
+   * - **Tag**
+     - **Required?**
+     - **Description**
+   * - ``<Geometry>``
+     - No
+     - Specifies the geometry to be rendered.
+   * - ``<Stroke>``
+     - Yes
+     - Specifies the styling for the line.
 
 
 Geometry
 ^^^^^^^^
 
-The ``Geometry`` element is optional.  
+The ``<Geometry>`` element is optional.  
 If present, it specifies the featuretype property from which to obtain the geometry to style
 using the ``PropertyName`` element.
 See also :ref:`geometry_transformations` for GeoServer extensions for specifying geometry.
 
-Non-linear geometry may be styled with a ``LineSymbolizer``.  
+Any kind of geometry may be styled with a ``<LineSymbolizer>``.  
 Point geometries are treated as lines of zero length, with a horizontal orientation.
 For polygonal geometries the boundary (or boundaries) are used as the lines, 
 each line being a closed ring with no ends.
@@ -57,7 +70,7 @@ There are three elements that can be included inside the ``<Stroke>`` element.
 GraphicFill
 ^^^^^^^^^^^
 
-The ``GraphicFill`` element specifies that the pixels of the line are to be filled 
+The ``<GraphicFill>`` element specifies that the pixels of the line are to be filled 
 with a repeating graphic image or symbol.
 The graphic is specified by a ``<Graphic>`` sub-element,  
 which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.
@@ -65,23 +78,23 @@ which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` secti
 GraphicStroke
 ^^^^^^^^^^^^^
 
-The ``GraphicStroke`` element specifies the the line is to be drawn 
+The ``<GraphicStroke>`` element specifies the the line is to be drawn 
 using a repeated graphic image or symbol following the line.
 The graphic is specified by a ``<Graphic>`` sub-element,  
 which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.
 
-The spacing of the graphic symbol can be specified using the ``Size`` element in the ``Graphic`` element,
+The spacing of the graphic symbol can be specified using the ``<Size>`` element in the ``<Graphic>`` element,
 or the ``<CSSParameter name="stroke-dasharray">`` in the ``Stroke`` element.
 
 CssParameter
 ^^^^^^^^^^^^
 
-The ``CssParameter`` elements describe the basic styling of the line.
+The ``<CssParameter>`` elements describe the basic styling of the line.
 Any number of ``<CssParameter>`` elements can be specified.
 
 The ``name`` **attribute** indicates what aspect of styling an element specifies,
 using the standard CSS/SVG styling model.
-The **content** of s ``CssParameter`` element supplies the
+The **content** of the element supplies the
 value of the styling parameter.
 The value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
 
@@ -95,7 +108,7 @@ The following parameters are supported:
      - **Description**
    * - ``name="stroke"``
      - No
-     - Specifies the solid color given to the line, in the form #RRGGBB.  Default is black (``#000000``).
+     - Specifies the solid color given to the line, in the form ``#RRGGBB``.  Default is black (``#000000``).
    * - ``name="stroke-width"``
      - No
      - Specifies the width of the line in pixels.  Default is ``1``.

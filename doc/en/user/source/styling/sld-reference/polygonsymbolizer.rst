@@ -3,17 +3,17 @@
 PolygonSymbolizer
 =================
 
-The ``PolygonSymbolizer`` styles features as **polygons**.  
+A **PolygonSymbolizer** styles features as **polygons**.  
 Polygons are two-dimensional geometries.  
 They can be depicted with styling for their interior (fill) and their border (stroke).
 Polygons may contain one or more holes, which are stroked but not filled.
+When rendering a polygon, the fill is rendered before the border is stroked.     
 
 Syntax
 ------
 
-A ``<PolygonSymbolizer>`` contains an optional ``Geometry`` element, and two elements
-``Fill`` and ``Stroke`` for specifying styling:
-
+A ``<PolygonSymbolizer>`` contains an optional ``<Geometry>`` element, and two elements
+``<Fill>`` and ``<Stroke>`` for specifying styling:
 
 .. list-table::
    :widths: 20 20 60
@@ -21,25 +21,26 @@ A ``<PolygonSymbolizer>`` contains an optional ``Geometry`` element, and two ele
    * - **Tag**
      - **Required?**
      - **Description**
+   * - ``<Geometry>``
+     - No
+     - Specifies the geometry to be rendered.
    * - ``<Fill>``
      - No
-     - Determines the styling for the polygon interior.
+     - Specifies the styling for the polygon interior.
    * - ``<Stroke>``
      - No
-     - Determines the styling for the polygon border.
-
-When rendering a polygon, the fill is rendered before the border is stroked.     
+     - Specifies the styling for the polygon border.
 
 
 Geometry
 ^^^^^^^^
 
-The ``Geometry`` element is optional.  
+The ``<Geometry>`` element is optional.  
 If present, it specifies the featuretype property from which to obtain the geometry to style
 using the ``PropertyName`` element.
 See also :ref:`geometry_transformations` for GeoServer extensions for specifying geometry.
 
-Non-polygonal geometry may be styled with a ``PolygonSymbolizer``.  
+Any kind of geometry may be styled with a ``<PolygonSymbolizer>``.  
 Point geometries are treated as small orthonormal square polygons.
 Linear geometries are closed by joining their ends.
 
@@ -47,15 +48,15 @@ Linear geometries are closed by joining their ends.
 Stroke
 ^^^^^^
 
-The ``Stroke`` element specifies the styling for the **border** of a polygon.
-The syntax is described in the ``LineSymbolizer`` :ref:`sld_reference_stroke` section.
+The ``<Stroke>`` element specifies the styling for the **border** of a polygon.
+The syntax is described in the ``<LineSymbolizer>`` :ref:`sld_reference_stroke` section.
 
 .. _sld_reference_fill:
 
 Fill
 ^^^^
 
-The ``Fill`` element determines the styling for the **interior** of a polygon.
+The ``<Fill>`` element specifies the styling for the **interior** of a polygon.
 It can contain the sub-elements:
 
 .. list-table::
@@ -81,12 +82,12 @@ The syntax is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` 
 CssParameter
 ^^^^^^^^^^^^
 
-The ``CssParameter`` elements describe the styling of a solid polygon fill.
+The ``<CssParameter>`` elements describe the styling of a solid polygon fill.
 Any number of ``<CssParameter>`` elements can be specified. 
 
 The ``name`` **attribute** indicates what aspect of styling an element specifies,
 using the standard CSS/SVG styling model.
-The **content** of s ``CssParameter`` element supplies the
+The **content** of the element supplies the
 value of the styling parameter.
 The value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
 
@@ -100,7 +101,7 @@ The following parameters are supported:
      - **Description**
    * - ``name="fill"``
      - No
-     - Specifies the fill color for the polygon, in the form #RRGGBB.  Default is grey (``#808080``).
+     - Specifies the fill color for the polygon, in the form ``#RRGGBB``.  Default is grey (``#808080``).
    * - ``name="fill-opacity"``
      - No
      - Specifies the opacity (transparency) of the fill of the polygon.  The value is a number between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.

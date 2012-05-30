@@ -3,7 +3,7 @@
 SLD Reference
 =============
 
-In SLD documents ``Rule``\ s  and ``Filter``\ s are used to determine sets of features to be styled with particular symbology.
+In SLD documents **rules**  and **filters** are used to determine sets of features to be styled with particular symbology.
 Rules may also specify the scale range in which the feature styling is visible.
 
 .. toctree::

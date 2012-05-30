@@ -1,0 +1,6 @@
+
+# windows specific stuff
+
+if [ -z $NSIS_EXE ]; then
+   NSIS_EXE="/c/Program Files/NSIS/makensis"
+fi

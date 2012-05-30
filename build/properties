@@ -1,0 +1,53 @@
+
+# as environment variables
+
+# constants
+SVN_ROOT=https://svn.codehaus.org/geoserver
+GT_SVN_ROOT=http://svn.osgeo.org/geotools
+GWC_GIT_URL=git://github.com/GeoWebCache/geowebcache.git
+JIRA_REST=http://jira.codehaus.org/rest/api/latest
+JIRA_PROJ=GEOS
+WIN_HUDSON=http://10.52.11.58:8080/hudson
+MAC_HUDSON=http://10.52.11.40:8080
+SF_HOST=frs.sourceforge.net
+
+# parameter defaults
+if [ -z $branch ]; then
+  branch="trunk"
+fi
+
+if [ -z $rev ]; then
+  rev="HEAD"
+fi
+
+if [ -z $DIST_PATH ]; then
+  DIST_PATH=/var/www/html/geoserver/release
+fi
+
+if [ -z $DIST_HOST ]; then
+  DIST_HOST=gridlock.opengeo.org
+fi
+
+if [ -z $DIST_URL ]; then
+  DIST_URL=http://$DIST_HOST/geoserver/release
+fi
+
+if [ -z $DIST_PORT ]; then
+  DIST_PORT=7777
+fi
+
+if [ -z $DIST_USER ]; then
+  DIST_USER=tomcat
+fi
+
+if [ -z $DIST_PK ]; then
+  DIST_PK=$HOME/.ssh/id_rsa_${DIST_USER}_${DIST_HOST}
+fi
+
+if [ -z $SF_USER ]; then
+  SF_USER=jdeolive
+fi
+
+if [ -z $SF_PK ]; then
+  SF_PK=$HOME/.ssh/id_dsa_${SF_USER}_frs.sourceforge.net
+fi

@@ -1,0 +1,99 @@
+# common functions
+
+# get_file <base_url> <file> <dir>
+# downlaods file from $base_url/$file into directory $dir
+function get_file() {
+  local base_url=$1
+  local file=$2
+  local dir=$3
+
+  if [ ! -e $dir ]; then
+    mkdir $dir
+  fi
+  if [ -e $dir/$file ]; then
+    rm $dir/$file
+  fi
+  pushd $dir > /dev/null
+  wget $base_url/$file
+  popd > /dev/null
+}
+
+# setup_artifacts <tag> <suffix>
+# downloads artifacts to build installer:
+#   1. geoserver bin artifact
+#   2. installer specific artifact specified by <suffix>
+# files are unpacked into tmp directory
+function setup_artifacts() {
+  local tag=$1
+  local suf=$2
+
+  local gs_artifact=geoserver-$tag-bin.zip
+  local installer_artifact=geoserver-$tag-$suf.zip
+
+  if [ -z $SKIP_DOWNLOAD ]; then
+    get_file $DIST_URL/$tag $gs_artifact files
+    get_file $DIST_URL/$tag $installer_artifact files
+  fi
+
+  # unpack the artifacts
+  if [ -e tmp ]; then
+    rm -rf tmp
+  fi
+  mkdir -p tmp
+
+  unzip -d tmp files/$installer_artifact
+  unzip -d tmp files/$gs_artifact
+}
+
+# upload_installer <tag> <file>
+# uploads file <file> to distribution server under tag <tag>
+function upload_installer() {
+  local tag=$1
+  local file=$2
+  local ssh_opts="-i $DIST_PK -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+  if [ -z $SKIP_UPLOAD ]; then
+    echo "uploading $file"
+    scp $ssh_opts -P $DIST_PORT $file $DIST_USER@$DIST_HOST:$DIST_PATH/$tag
+  fi
+}
+
+# start_installer_job <hudson_url> <tag>
+# starts a hudson installer job
+function start_installer_job() {
+  curl -k --connect-timeout 10 "$1/job/geoserver-installer/buildWithParameters?TAG=$2"
+}
+
+# is_version_nuym <str>
+# tests a string to see if it is a x.y.z or x.y-z style version number
+function is_version_num() {
+  local str=$1
+  if [ "$( echo $str | egrep "[0-9]+\.[0-9]+((\.|-).*)?" )" == "$str" ]; then
+    echo "1"
+  else
+     if [ "$( echo $str | egrep "[0-9]+-.*" )" == "$str" ]; then
+       echo "1"
+     else
+       echo "0"
+     fi
+  fi
+}
+
+# get_pom_version <pom>
+# gets the version declared in a pom file
+function get_pom_version() {
+  local pom=$1
+  echo `grep "<version>" $pom | head -n 1 | sed 's/<.*>\(.*\)<\/.*>/\1/g' | sed 's/ //g'`
+}
+
+# get_jira_id <tag>
+# gets the jira id for a version named <tag>
+function get_jira_id() {
+  local tag=$1
+  local jira_id=`curl -s -G $JIRA_REST/project/$JIRA_PROJ/versions | tr "{" "\n" | grep $tag | tr "," "\n" | grep "\"id\"" | sed 's/"id": *"\([0-9]\+\).*/\1/g'`
+
+  #sed 's/"id": *\([0-9]*\).*/\1/g'`
+  if [ ! -z $jira_id ]; then
+    echo $jira_id
+  fi
+}

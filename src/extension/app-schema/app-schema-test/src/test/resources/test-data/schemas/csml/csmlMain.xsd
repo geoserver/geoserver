@@ -1,12 +1,12 @@
 <!-- copied from http://proj.badc.rl.ac.uk/svn/ndg/TI02-CSML/branches/CSML-egged/XMLSchemas/csmlMain.xsd and edited for unit test by Rini Angreani (CSIRO Earth Science and Resource Engineering) 
 The editing was partly due to bug GEOT-4022 with gml 3.1 types that are required here. The changes replace the types with gml 3.2 types where the problem does not occur. -->
 
-<schema targetNamespace="http://ndg.nerc.ac.uk/csml" xmlns:swe="http://www.opengis.net/swe/1.0.1" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:csml="http://ndg.nerc.ac.uk/csml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.9">
+<schema targetNamespace="http://ndg.nerc.ac.uk/csml" xmlns:swe="http://www.opengis.net/swe/1.0/gml32" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:csml="http://ndg.nerc.ac.uk/csml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.9">
 	<annotation>
 		<documentation>Main CSML schema file - includes domain geometries, coverage classes, feature types etc.</documentation>
 	</annotation>
 	<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
-	<import namespace="http://www.opengis.net/swe/1.0.1" schemaLocation="http://schemas.opengis.net/sweCommon/1.0.1/swe.xsd"/>
+	<import namespace="http://www.opengis.net/swe/1.0/gml32" schemaLocation="http://dp.schemas.opengis.net/08-127/sweCommon/1.0.1_gml32/swe.xsd"/>
 	<!--====================================================================== -->
 	<!--==== CSML 'dataset' types ====-->
 	<!--====================================================================== -->

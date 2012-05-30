@@ -19,7 +19,7 @@
 		</Namespace>
 		<Namespace>
 			<prefix>swe</prefix>
-			<uri>http://www.opengis.net/swe/1.0.1</uri>
+			<uri>http://www.opengis.net/swe/1.0/gml32</uri>
 		</Namespace>
 		<Namespace>
 			<prefix>xlink</prefix>

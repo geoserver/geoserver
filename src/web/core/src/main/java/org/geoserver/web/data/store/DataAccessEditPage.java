@@ -79,7 +79,14 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
 
         initUI(dataStoreInfo);
     }
-    
+
+    /**
+     * Creates a new edit page directly from a store object.
+     */
+    public DataAccessEditPage(DataStoreInfo store) {
+        initUI(store);
+    }
+
     protected void initUI(final DataStoreInfo dataStoreInfo) {
         // the confirm dialog
         dialog = new GeoServerDialog("dialog");
@@ -87,9 +94,12 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         
         super.initUI(dataStoreInfo);
 
-        final String wsId = dataStoreInfo.getWorkspace().getId();
-        workspacePanel.getFormComponent().add(
-                new CheckExistingResourcesInWorkspaceValidator(dataStoreInfo.getId(), wsId));
+        if (dataStoreInfo.getId() != null) {
+            //null id means detached from catalog, don't bother with uniqueness check
+            final String wsId = dataStoreInfo.getWorkspace().getId();
+            workspacePanel.getFormComponent().add(
+                    new CheckExistingResourcesInWorkspaceValidator(dataStoreInfo.getId(), wsId));
+        }
     }
 
     /**
@@ -180,7 +190,13 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         });
     }
 
-    private void doSaveStore(final DataStoreInfo info) {
+    /**
+     * Performs the save of the store.
+     * <p>
+     * This method may be subclasses to provide custom save functionality.
+     * </p>
+     */
+    protected void doSaveStore(final DataStoreInfo info) {
         try {
             final Catalog catalog = getCatalog();
 

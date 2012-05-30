@@ -7,6 +7,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -127,4 +128,14 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         }
     }
 
+    public void testEditDettached() throws Exception {
+        final Catalog catalog = getCatalog();
+        DataStoreInfo ds = catalog.getFactory().createDataStore();
+        new CatalogBuilder(catalog).updateDataStore(ds, store);
+
+        assertNull(ds.getId());
+        
+        tester.startPage(new DataAccessEditPage(ds));
+        tester.assertNoErrorMessage();
+    }
 }

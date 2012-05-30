@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -103,4 +104,25 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         }
     }
 
+    public void testEditDetached() throws Exception {
+        final Catalog catalog = getCatalog();
+        CoverageStoreInfo store = catalog.getFactory().createCoverageStore();
+        new CatalogBuilder(catalog).updateCoverageStore(store, coverageStore);
+        assertNull(store.getId());
+
+        tester.startPage(new CoverageStoreEditPage(store));
+        tester.assertNoErrorMessage();
+        
+        FormTester form = tester.newFormTester("rasterStoreForm");
+        form.setValue("namePanel:border:paramValue", "foo");
+        form.submit();
+        tester.clickLink("rasterStoreForm:save");
+        tester.assertNoErrorMessage();
+
+        assertNull(store.getId());
+        assertEquals("foo", store.getName());
+        assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
+        assertNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
+
+    }
 }

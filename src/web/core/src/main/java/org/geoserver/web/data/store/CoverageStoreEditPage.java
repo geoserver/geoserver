@@ -71,16 +71,26 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         initUI(store);
     }
 
+    /**
+     * Creates a new edit page directly from a store object.
+     */
+    public CoverageStoreEditPage(CoverageStoreInfo store) throws IllegalArgumentException {
+        initUI(store);
+    }
+
     @Override
     void initUI(CoverageStoreInfo store) {
         dialog = new GeoServerDialog("dialog");
         add(dialog);
         
         super.initUI(store);
-        
-        String workspaceId = store.getWorkspace().getId();
-        workspacePanel.getFormComponent().add(
-                new CheckExistingResourcesInWorkspaceValidator(store.getId(), workspaceId));
+
+        if (store.getId() != null) {
+            //store id == null means the store is not part of catalog, forgo uniqueness check
+            String workspaceId = store.getWorkspace().getId();
+            workspacePanel.getFormComponent().add(
+                    new CheckExistingResourcesInWorkspaceValidator(store.getId(), workspaceId));
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -164,7 +174,13 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         });
     }
 
-    private void doSaveStore(final CoverageStoreInfo info) {
+    /**
+     * Performs the save of the store.
+     * <p>
+     * This method may be subclasses to provide custom save functionality.
+     * </p>
+     */
+    protected void doSaveStore(final CoverageStoreInfo info) {
         try {
             Catalog catalog = getCatalog();
 

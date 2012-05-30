@@ -963,7 +963,7 @@ public class XStreamPersister {
     /**
      * Converter for coordinate reference system objects that converts by SRS code.
      */
-    static class SRSConverter extends AbstractSingleValueConverter {
+    public static class SRSConverter extends AbstractSingleValueConverter {
         
         public boolean canConvert(Class type) {
             return CoordinateReferenceSystem.class.isAssignableFrom(type);
@@ -1011,7 +1011,7 @@ public class XStreamPersister {
      * Converter for coordinate reference system objects that converts by WKT. 
      *
      */
-    static class CRSConverter extends AbstractSingleValueConverter {
+    public static class CRSConverter extends AbstractSingleValueConverter {
 
         @Override
         public boolean canConvert(Class type) {

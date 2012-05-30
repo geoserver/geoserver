@@ -34,11 +34,15 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.util.XStreamPersister.CRSConverter;
+import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -615,7 +619,30 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertNotNull(vt2);
         assertEquals(vt, vt2);
     }
-    
+
+    public void testCRSConverter() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        CRSConverter c = new CRSConverter();
+
+        assertEquals(crs.toWKT(), c.toString(crs));
+        assertEquals(DefaultGeographicCRS.WGS84.toWKT(), c.toString(DefaultGeographicCRS.WGS84));
+
+        CoordinateReferenceSystem crs2 = (CoordinateReferenceSystem) c.fromString(crs.toWKT());
+        assertTrue(CRS.equalsIgnoreMetadata(crs, crs2));
+
+        crs2 = (CoordinateReferenceSystem) c.fromString("EPSG:4326");
+        assertTrue(CRS.equalsIgnoreMetadata(crs, crs2));
+    }
+
+    public void testSRSConverter() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        SRSConverter c = new SRSConverter();
+
+        assertEquals("EPSG:4326", c.toString(crs));
+        assertFalse("EPSG:4326".equals( 
+            c.toString(CRS.parseWKT("GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"))));
+    }
+
     ByteArrayOutputStream out() {
         return new ByteArrayOutputStream();
     }

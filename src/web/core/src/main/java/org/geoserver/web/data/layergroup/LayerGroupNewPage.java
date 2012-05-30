@@ -45,7 +45,7 @@ public class LayerGroupNewPage extends AbstractLayerGroupPage {
         catalog.add(lg);
 
         lg = catalog.getLayerGroup(lg.getId());
-        setResponsePage(LayerGroupPage.class);
+        doReturn();
     }
 
 }

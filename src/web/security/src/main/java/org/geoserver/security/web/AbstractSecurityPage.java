@@ -14,7 +14,6 @@ import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDialog;
 
@@ -30,16 +29,6 @@ public abstract class AbstractSecurityPage extends GeoServerSecuredPage {
      */
     boolean dirty = false;
 
-    /**
-     * page for this page to return to when the page is finished, could be null.
-     */
-    protected Page returnPage;
-
-    /** 
-     * page class for this page to return to when the page is finished, could be null. 
-     */
-    protected Class<? extends Page> returnPageClass = GeoServerHomePage.class;
-
     protected GeoServerDialog dialog;
 
     public AbstractSecurityPage() {
@@ -54,32 +43,11 @@ public abstract class AbstractSecurityPage extends GeoServerSecuredPage {
         this.dirty = dirty;
     }
 
-    public AbstractSecurityPage setReturnPage(Page returnPage) {
-        this.returnPage = returnPage;
-        return this;
-    }
-
-    public AbstractSecurityPage setReturnPage(Class<Page> returnPageClass) {
-        this.returnPageClass = returnPageClass;
-        return this;
-    }
-
     protected void setReturnPageDirtyAndReturn(boolean dirty) {
         if (returnPage instanceof AbstractSecurityPage) {
             ((AbstractSecurityPage)returnPage).setDirty(dirty);
         }
         doReturn();
-    }
-
-    protected void doReturn() {
-        if (returnPage != null) {
-            setResponsePage(returnPage);
-            return;
-        }
-        if (returnPageClass != null) {
-            setResponsePage(returnPageClass);
-            return;
-        }
     }
 
     public Link<Page> getCancelLink() {

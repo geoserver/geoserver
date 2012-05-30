@@ -38,7 +38,7 @@ public class EditServiceAccessRulePage extends AbstractServiceAccessRulePage {
             orig.getRoles().addAll(rolesFormComponent.getRolesNamesForStoring());
 
             dao.storeRules();
-            setResponsePage(ServiceAccessRulePage.class);
+            doReturn(ServiceAccessRulePage.class);
         } catch(Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred while saving rule ", e);
             error(new ParamResourceModel("saveError", getPage(), e.getMessage()));

@@ -92,7 +92,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         
         if(wsi == null) {
             error(new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString());
-            setResponsePage(WorkspacePage.class);
+            doReturn(WorkspacePage.class);
             return;
         }
         
@@ -211,7 +211,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 }
             }
         }
-        setResponsePage(WorkspacePage.class);
+        doReturn(WorkspacePage.class);
     }
 
     @Override
@@ -440,7 +440,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                                 }
                                 
                             }
-                            ((BaseServiceAdminPage)page).responsePage(WorkspaceEditPage.this);
+                            ((BaseServiceAdminPage)page).setReturnPage(WorkspaceEditPage.this);
                             setResponsePage(page);
                         }
                     };

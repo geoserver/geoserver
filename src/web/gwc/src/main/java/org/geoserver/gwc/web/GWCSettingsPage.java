@@ -129,7 +129,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
                     gwc.saveDiskQuotaConfig(dqConfig);
                 }
 
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         });
         form.add(new GeoServerAjaxFormLink("cancel") {
@@ -137,7 +137,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
 
         });

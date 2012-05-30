@@ -50,7 +50,7 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
                 SecurityManagerConfig config = (SecurityManagerConfig) getForm().getModelObject();
               try {
                   getSecurityManager().saveSecurityConfig(config);
-                  setResponsePage(GeoServerHomePage.class);
+                  doReturn();
               } catch (Exception e) {
                   error(e);
               }
@@ -59,7 +59,7 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
         form.add(new AjaxLink("cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         });
     }

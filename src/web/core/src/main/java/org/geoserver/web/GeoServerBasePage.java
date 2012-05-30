@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
@@ -63,6 +64,16 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      * feedback panel for subclasses to report errors and information.
      */
     protected FeedbackPanel feedbackPanel;
+
+    /**
+     * page for this page to return to when the page is finished, could be null.
+     */
+    protected Page returnPage;
+
+    /** 
+     * page class for this page to return to when the page is finished, could be null. 
+     */
+    protected Class<? extends Page> returnPageClass;
 
 	@SuppressWarnings("serial")
     public GeoServerBasePage() {
@@ -310,4 +321,62 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
        return feedbackPanel;
    }
 
+   /**
+    * Sets the return page to navigate to when this page is done its task.
+    * @see #doReturn()
+    */
+   public GeoServerBasePage setReturnPage(Page returnPage) {
+       this.returnPage = returnPage;
+       return this;
+   }
+
+   /**
+    * Sets the return page class to navigate to when this page is done its task.
+    * @see #doReturn()
+    */
+   public GeoServerBasePage setReturnPage(Class<? extends Page> returnPageClass) {
+       this.returnPageClass = returnPageClass;
+       return this;
+   }
+
+   /**
+    * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass},
+    * processed in that order.
+    * <p>
+    * This method should be called by pages that must return after doing some task on a form submit
+    * such as a save or a cancel. If no return page has been set via {@Link {@link #setReturnPage(Page)}} 
+    * or {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is used.
+    * </p>
+    */
+   protected void doReturn() {
+       doReturn(null);
+   }
+
+   /**
+    * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass},
+    * processed in that order.
+    * <p>
+    * This method accepts a parameter to use as a default in cases where {@link #returnPage} and
+    * {@link #returnPageClass} are not set and a default other than {@link GeoServerHomePage} should
+    * be used.
+    * </p>
+    * <p>
+    * This method should be called by pages that must return after doing some task on a form submit
+    * such as a save or a cancel. If no return page has been set via {@Link {@link #setReturnPage(Page)}} 
+    * or {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is used.
+    * </p>
+    */
+   protected void doReturn(Class<? extends Page> defaultPageClass) {
+       if (returnPage != null) {
+           setResponsePage(returnPage);
+           return;
+       }
+       if (returnPageClass != null) {
+           setResponsePage(returnPageClass);
+           return;
+       }
+
+       defaultPageClass = defaultPageClass != null ? defaultPageClass : GeoServerHomePage.class;
+       setResponsePage(defaultPageClass);
+   }
 }

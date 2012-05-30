@@ -60,7 +60,7 @@ public class CoverageAccessPage extends ServerAdminPage {
                 GeoServer gs = (GeoServer) geoServerModel.getObject();
                 gs.getGlobal().setCoverageAccess( (CoverageAccessInfo)coverageModel.getObject() );
                 gs.save( gs.getGlobal() ); 
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         };
         form.add(submit);
@@ -68,7 +68,7 @@ public class CoverageAccessPage extends ServerAdminPage {
         Button cancel = new Button("cancel") {
             @Override
             public void onSubmit() {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         };
         form.add(cancel);

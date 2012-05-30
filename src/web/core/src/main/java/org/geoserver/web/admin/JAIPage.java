@@ -56,7 +56,7 @@ public class JAIPage extends ServerAdminPage {
                 GeoServer gs = (GeoServer) geoServerModel.getObject();
                 gs.getGlobal().setJAI( (JAIInfo)jaiModel.getObject() );
                 gs.save( gs.getGlobal() ); 
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         };
         form.add(submit);
@@ -64,7 +64,7 @@ public class JAIPage extends ServerAdminPage {
         Button cancel = new Button("cancel") {
             @Override
             public void onSubmit() {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         };
         form.add(cancel);

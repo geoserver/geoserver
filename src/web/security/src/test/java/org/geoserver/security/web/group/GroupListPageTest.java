@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.SortedSet;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.web.AbstractSecurityPage;
@@ -19,14 +20,15 @@ public class GroupListPageTest extends AbstractTabbedListPageTest<GeoServerUserG
         AbstractSecurityPage result = initializeForUGServiceNamed(serviceName); 
         tester.clickLink(getTabbedPanelPath()+":tabs-container:tabs:2:link", true);
         return result;
-    }
-    protected AbstractSecurityPage newPage(AbstractSecurityPage page,Object...params) {
+    }    
+
+    protected Page newPage(AbstractSecurityPage page,Object...params) {
         if (params.length==0)
             return new  NewGroupPage(getUserGroupServiceName()).setReturnPage(page);
         else
             return new  NewGroupPage((String) params[0]).setReturnPage(page);
     }
-    protected AbstractSecurityPage editPage(AbstractSecurityPage page,Object...params) {
+    protected Page editPage(AbstractSecurityPage page,Object...params) {
         if (params.length==0) {
             return new  EditGroupPage(
                     getUserGroupServiceName(),

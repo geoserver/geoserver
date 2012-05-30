@@ -72,7 +72,7 @@ public class StyleNewPage extends AbstractStylePage {
             return;
         }
 
-        setResponsePage(StylePage.class);
+        doReturn(StylePage.class);
 
     }
 

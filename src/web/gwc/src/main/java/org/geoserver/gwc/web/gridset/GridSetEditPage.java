@@ -54,7 +54,7 @@ public class GridSetEditPage extends AbstractGridSetPage {
         try {
             // TODO: warn and eliminate caches
             gwc.modifyGridSet(originalName, newGridset);
-            setResponsePage(GridSetsPage.class);
+            doReturn(GridSetsPage.class);
         } catch (Exception e) {
             e.printStackTrace();
             form.error("Error saving gridset: " + e.getMessage());

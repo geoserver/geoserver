@@ -29,7 +29,7 @@ public class LayerGroupEditPage extends AbstractLayerGroupPage {
         
         if(lg == null) {
             error(new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName).getString());
-            setResponsePage(LayerGroupPage.class);
+            doReturn(LayerGroupPage.class);
             return;
         }
         
@@ -64,7 +64,7 @@ public class LayerGroupEditPage extends AbstractLayerGroupPage {
         LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
         
         getCatalog().save( lg );
-        setResponsePage(super.returnPage);
+        doReturn();
     }
     
 }

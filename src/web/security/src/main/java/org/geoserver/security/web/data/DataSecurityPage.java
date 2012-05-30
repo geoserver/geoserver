@@ -91,7 +91,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
                     CatalogMode newMode = dao.getByAlias(catalogModeChoice.getValue());
                     dao.setCatalogMode(newMode);
                     dao.storeRules();
-                    setResponsePage(GeoServerHomePage.class);
+                    doReturn();
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error occurred while saving user", e);
                     error(new ParamResourceModel("saveError", getPage(), e.getMessage()));

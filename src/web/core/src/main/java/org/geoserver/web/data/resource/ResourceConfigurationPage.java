@@ -90,8 +90,6 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
      */
     private LinkedHashMap<Class<? extends LayerEditTabPanel>, IModel<?>> tabPanelCustomModels;
 
-    private Class<? extends Page> returnPage;
-
     public ResourceConfigurationPage(PageParameters parameters) {
         this(parameters.getString(WORKSPACE), parameters.getString(NAME));
     }
@@ -145,7 +143,7 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
      * 
      */
     private void initComponents() {
-        this.returnPage = LayerPage.class;
+        this.returnPageClass = LayerPage.class;
         this.tabPanelCustomModels = new LinkedHashMap<Class<? extends LayerEditTabPanel>, IModel<?>>();
 
         add(new Label("resourcename", getResourceInfo().getPrefixedName()));
@@ -472,14 +470,14 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
      * By default brings back the user to LayerPage, subclasses can override this behavior
      */
     protected void onSuccessfulSave() {
-        setResponsePage(returnPage);
+        doReturn();
     }
 
     /**
      * By default brings back the user to LayerPage, subclasses can override this behavior
      */
     protected void onCancel() {
-        setResponsePage(returnPage);
+        doReturn();
     }
 
     /**
@@ -498,17 +496,6 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
      */
     public void updateLayer(LayerInfo info) {
         myLayerModel.setObject(info);
-    }
-
-    /**
-     * Allows to set the page to return to after this page is submitted or cancelled, defaults to
-     * {@link LayerPage}
-     * 
-     * @param returnPage
-     *            the page to return to
-     */
-    public void setReturnPage(Class<? extends Page> returnPage) {
-        this.returnPage = returnPage == null? LayerPage.class : returnPage;
     }
 
     @Override

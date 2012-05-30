@@ -55,7 +55,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
                     catalog.setDefaultWorkspace(ws);
                 
                 //TODO: set the response page to be the edit 
-                setResponsePage(WorkspacePage.class );
+                doReturn(WorkspacePage.class);
             }
         };
         add(form);
@@ -90,7 +90,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         AjaxLink cancelLink = new AjaxLink( "cancel" ) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                setResponsePage(WorkspacePage.class);
+                doReturn(WorkspacePage.class);
             }
         };
         form.add( cancelLink );

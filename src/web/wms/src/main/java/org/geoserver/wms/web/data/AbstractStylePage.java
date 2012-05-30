@@ -170,7 +170,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         Link cancelLink = new Link("cancel") {
             @Override
             public void onClick() {
-                setResponsePage(StylePage.class);
+                doReturn(StylePage.class);
             }
         };
         add(cancelLink);

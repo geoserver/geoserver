@@ -51,7 +51,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
     
     private void doSaveStore(WMSStoreInfo info) {
         getCatalog().save(info);
-        setResponsePage(StorePage.class);
+        doReturn(StorePage.class);
     }
 
     @SuppressWarnings("serial")
@@ -94,7 +94,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
             @Override
             public void onClose(AjaxRequestTarget target) {
                 if (accepted) {
-                    setResponsePage(StorePage.class);
+                    doReturn(StorePage.class);
                 }
             }
         });

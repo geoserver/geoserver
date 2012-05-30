@@ -31,7 +31,7 @@ public class NewServiceAccessRulePage extends AbstractServiceAccessRulePage {
             ServiceAccessRuleDAO dao = ServiceAccessRuleDAO.get();
             dao.addRule(rule);
             dao.storeRules();
-            setResponsePage(ServiceAccessRulePage.class);
+            doReturn(ServiceAccessRulePage.class);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred while saving service rule", e);
             error(new ParamResourceModel("saveError", getPage(), e.getMessage()));

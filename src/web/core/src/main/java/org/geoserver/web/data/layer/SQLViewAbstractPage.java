@@ -148,7 +148,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             DataAccess da = store.getDataStore(null);
             if (!(da instanceof JDBCDataStore)) {
                 error("Cannot create a SQL view if the store is not database based");
-                setResponsePage(StorePage.class);
+                doReturn(StorePage.class);
                 return;
             }
 

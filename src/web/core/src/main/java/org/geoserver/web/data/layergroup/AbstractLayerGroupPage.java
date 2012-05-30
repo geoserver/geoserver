@@ -20,8 +20,6 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.validation.IFormValidator;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -40,8 +38,6 @@ import org.geoserver.web.data.layer.LayerDetachableModel;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
-import org.geoserver.web.publish.LayerConfigurationPanel;
-import org.geoserver.web.publish.LayerConfigurationPanelInfo;
 import org.geoserver.web.publish.LayerGroupConfigurationPanel;
 import org.geoserver.web.publish.LayerGroupConfigurationPanelInfo;
 import org.geoserver.web.wicket.EnvelopePanel;
@@ -66,14 +62,13 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     LayerGroupEntryPanel lgEntryPanel;
     String layerGroupId;
     
-    protected Class<? extends Page> returnPage;
     private ListView<LayerGroupConfigurationPanelInfo> extensionPanels;
     /**
      * Subclasses must call this method to initialize the UI for this page 
      * @param layerGroup
      */
     protected void initUI(LayerGroupInfo layerGroup) {
-        this.returnPage = LayerGroupPage.class;
+        this.returnPageClass = LayerGroupPage.class;
         lgModel = new LayerGroupDetachableModel( layerGroup );
         layerGroupId = layerGroup.getId();
         
@@ -178,7 +173,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         return new AjaxLink<String>("cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                setResponsePage(returnPage);
+                doReturn();
             }
         };
     }
@@ -339,16 +334,6 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
             }
         }
         
-    }
-
-    /**
-     * Allows to set a different return page, defaults to {@link LayerGroupPage} if not set
-     * 
-     * @param returnPage
-     *            the page to return to when this one is either submitted or cancelled
-     */
-    public void setReturnPage(Class<? extends Page> returnPage) {
-        this.returnPage = returnPage == null? LayerGroupPage.class : returnPage;
     }
 
     @Override

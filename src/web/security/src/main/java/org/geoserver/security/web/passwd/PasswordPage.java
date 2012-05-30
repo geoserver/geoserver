@@ -38,7 +38,7 @@ public class PasswordPage extends AbstractSecurityPage {
               MasterPasswordConfig config = (MasterPasswordConfig) getForm().getModelObject();
               try {
                   getSecurityManager().saveMasterPasswordConfig(config);
-                  setResponsePage(GeoServerHomePage.class);
+                  doReturn();
               } catch (Exception e) {
                   error(e);
               }
@@ -47,7 +47,7 @@ public class PasswordPage extends AbstractSecurityPage {
         form.add(new AjaxLink("cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         });
     }

@@ -31,7 +31,7 @@ public class NewDataAccessRulePage extends AbstractDataAccessRulePage {
             DataAccessRuleDAO dao = DataAccessRuleDAO.get();
             dao.addRule(rule);
             dao.storeRules();
-            setResponsePage(DataSecurityPage.class);
+            doReturn(DataSecurityPage.class);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred while saving rule ", e);
             error(new ParamResourceModel("saveError", getPage(), e.getMessage()));

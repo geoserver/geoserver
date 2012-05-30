@@ -49,7 +49,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         
         if(csi == null) {
             error(new ParamResourceModel("CoverageStoreEditPage.notFound", this, storeName, wsName).getString());
-            setResponsePage(StorePage.class);
+            doReturn(StorePage.class);
             return;
         }
         
@@ -70,7 +70,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
         initUI(store);
     }
-    
+
     @Override
     void initUI(CoverageStoreInfo store) {
         dialog = new GeoServerDialog("dialog");
@@ -115,7 +115,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
                 LOGGER.info("Connection to store " + info.getName() + " validated. Got a "
                         + reader.getClass().getName() + ". Saving store");
                 doSaveStore(info);
-                setResponsePage(StorePage.class);
+                doReturn(StorePage.class);
             } catch (IOException e) {
                 confirmSaveOnConnectionFailure(info, requestTarget, e);
             } catch (RuntimeException e) {
@@ -124,7 +124,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         } else {
             // store's disabled, no need to check for availability
             doSaveStore(info);
-            setResponsePage(StorePage.class);
+            doReturn(StorePage.class);
         }
     }
 
@@ -158,7 +158,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             @Override
             public void onClose(AjaxRequestTarget target) {
                 if (accepted) {
-                    setResponsePage(StorePage.class);
+                    doReturn(StorePage.class);
                 }
             }
         });

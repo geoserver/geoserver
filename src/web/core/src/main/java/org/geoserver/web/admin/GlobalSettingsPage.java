@@ -71,7 +71,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 GeoServer gs = getGeoServer();
                 gs.save( (GeoServerInfo) globalInfoModel.getObject() );
                 gs.save( (LoggingInfo) loggingInfoModel.getObject() );
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         };
         form.add(submit);
@@ -79,7 +79,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         Button cancel = new Button("cancel") {
             @Override
             public void onSubmit() {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         };
         form.add(cancel);

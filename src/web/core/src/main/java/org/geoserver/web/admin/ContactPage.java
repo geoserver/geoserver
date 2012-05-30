@@ -25,13 +25,13 @@ public class ContactPage extends ServerAdminPage {
                 GeoServerInfo global = gs.getGlobal();
                 global.setContact((ContactInfo)contactModel.getObject());
                 gs.save(global);
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         });
         form.add(new Button("cancel") {
             @Override
             public void onSubmit() {
-                setResponsePage(GeoServerHomePage.class);
+                doReturn();
             }
         });
     }

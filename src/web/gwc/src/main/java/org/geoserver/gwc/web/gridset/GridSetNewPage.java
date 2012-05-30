@@ -32,7 +32,7 @@ public class GridSetNewPage extends AbstractGridSetPage {
         try {
             GWC gwc = GWC.get();
             gwc.addGridSet(gridset);
-            setResponsePage(GridSetsPage.class);
+            doReturn(GridSetsPage.class);
         } catch (Exception e) {
             form.error(e.getMessage());
             target.addComponent(form);

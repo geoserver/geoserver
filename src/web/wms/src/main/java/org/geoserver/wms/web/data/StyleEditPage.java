@@ -38,7 +38,7 @@ public class StyleEditPage extends AbstractStylePage {
         
         if(si == null) {
             error(new ParamResourceModel("StyleEditPage.notFound", this, name).getString());
-            setResponsePage(StylePage.class);
+            doReturn(StylePage.class);
             return;
         }
         
@@ -94,7 +94,7 @@ public class StyleEditPage extends AbstractStylePage {
                 throw new WicketRuntimeException(e);
             }
             getCatalog().save(style);
-            setResponsePage( StylePage.class );
+            doReturn( StylePage.class );
         } catch( Exception e ) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             styleForm.error( e );

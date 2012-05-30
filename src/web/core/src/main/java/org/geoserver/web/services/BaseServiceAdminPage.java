@@ -69,8 +69,6 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  */
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
 
-    protected Page responsePage;
-    
     protected GeoServerDialog dialog;
 
     public BaseServiceAdminPage() {
@@ -132,12 +130,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             public void onSubmit() {
                 try {
                     handleSubmit((T)infoModel.getObject());
-                    if (responsePage != null) {
-                        setResponsePage(responsePage);
-                    }
-                    else {
-                        setResponsePage(GeoServerHomePage.class);
-                    }
+                    doReturn();
                 }
                 catch(Exception e) {
                     error(e);
@@ -148,29 +141,14 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         
         Button cancel = new Button( "cancel", new StringResourceModel( "cancel", (Component)null, null) ) {
             public void onSubmit() {
-                if (responsePage != null) {
-                    setResponsePage(responsePage);
-                }
-                else {
-                    setResponsePage(GeoServerHomePage.class);
-                }
+                doReturn();
             }
         };
         form.add( cancel );
         //cancel.setDefaultFormProcessing( false );
     }
 
-    /**
-     * Sets the response page that will be returned to when the user submits/or cancels.
-     * <p>
-     * If unset, GeoServerHomePage is used.
-     * </p>
-     */
-    public void responsePage(Page responsePage) {
-        this.responsePage = responsePage;
-    }
-
-    protected ListView createExtensionPanelList(String id, final IModel infoModel) {
+   protected ListView createExtensionPanelList(String id, final IModel infoModel) {
         List<AdminPagePanelInfo> panels = 
             getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
         for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext();) {

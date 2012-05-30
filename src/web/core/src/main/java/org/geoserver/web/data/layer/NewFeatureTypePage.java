@@ -210,7 +210,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
 
             @Override
             public void onClick() {
-                setResponsePage(NewLayerPage.class);
+                doReturn(NewLayerPage.class);
             }
 
         };

@@ -45,7 +45,7 @@ public class SQLViewNewPage extends SQLViewAbstractPage {
     }
     
     protected void onCancel() {
-        setResponsePage(LayerPage.class);
+        doReturn(LayerPage.class);
     }
 
 }

@@ -2,6 +2,8 @@ package org.geoserver.wfs;
 
 import java.io.Serializable;
 
+import org.geotools.gml2.SrsSyntax;
+
 /**
  * Configuration for gml encoding.
  * 
@@ -20,25 +22,54 @@ public interface GMLInfo extends Serializable {
      * </ul>
      * <p>
      *
+     * @deprecated use {@link SrsSyntax}
      */
     public static enum SrsNameStyle {
         NORMAL {
-            public String getPrefix() {
-                return "EPSG:";
+            @Override
+            public SrsSyntax toSrsSyntax() {
+                return SrsSyntax.EPSG_CODE;
             }
         },
         XML {
-            public String getPrefix() {
-                return "http://www.opengis.net/gml/srs/epsg.xml#";
+            @Override
+            public SrsSyntax toSrsSyntax() {
+                return SrsSyntax.OGC_HTTP_URL;
             }
         },
         URN {
-            public String getPrefix() {
-                return "urn:x-ogc:def:crs:EPSG:";
+            @Override
+            public SrsSyntax toSrsSyntax() {
+                return SrsSyntax.OGC_URN_EXPERIMENTAL;
             }  
+        },
+        URN2 {
+            @Override
+            public SrsSyntax toSrsSyntax() {
+                return SrsSyntax.OGC_URN;
+            }
+        }, 
+        URL {
+            @Override
+            public SrsSyntax toSrsSyntax() {
+                return SrsSyntax.OGC_HTTP_URI;
+            }
         };
         
-        abstract public String getPrefix();
+        public String getPrefix() {
+            return toSrsSyntax().getPrefix();
+        }
+
+        public abstract SrsSyntax toSrsSyntax();
+
+        public SrsNameStyle fromSrsSyntax(SrsSyntax srsSyntax) {
+            for (SrsNameStyle s : values()) {
+                if (s.toSrsSyntax() == srsSyntax) {
+                    return s;
+                }
+            }
+            return null;
+        }
     }
     
     /**

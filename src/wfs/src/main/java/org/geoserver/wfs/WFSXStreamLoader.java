@@ -4,6 +4,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.wfs.GMLInfo.SrsNameStyle;
 import org.geotools.util.Version;
 
 /**
@@ -23,6 +24,8 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
         xp.getXStream().alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
+        xp.getXStream().alias( "version", WFSInfo.Version.class);
+        xp.getXStream().alias( "gml", GMLInfo.class, GMLInfoImpl.class );
     }
     
     protected WFSInfo createServiceFromScratch(GeoServer gs) {
@@ -69,6 +72,13 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         gml = service.getGML().get(WFSInfo.Version.V_11);
         if (gml.getOverrideGMLAttributes() == null) {
             gml.setOverrideGMLAttributes(false);
+        }
+        gml = service.getGML().get(WFSInfo.Version.V_20);
+        if (gml == null) {
+            gml = new GMLInfoImpl();
+            gml.setOverrideGMLAttributes(false);
+            gml.setSrsNameStyle(SrsNameStyle.URN2);
+            service.getGML().put(WFSInfo.Version.V_20, gml);
         }
         return service;
     }

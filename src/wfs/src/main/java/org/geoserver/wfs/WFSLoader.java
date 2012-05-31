@@ -56,9 +56,16 @@ public class WFSLoader extends LegacyServiceLoader<WFSInfo> {
         gml.setSrsNameStyle(SrsNameStyle.URN);
         gml.setOverrideGMLAttributes(false);
         wfs.getGML().put( WFSInfo.Version.V_11 , gml );
-        
+
+        //gml32
+        gml = new GMLInfoImpl();
+        gml.setSrsNameStyle(SrsNameStyle.URN2);
+        gml.setOverrideGMLAttributes(false);
+        wfs.getGML().put( WFSInfo.Version.V_20 , gml );
+
         wfs.getVersions().add( new Version( "1.0.0" ) );
         wfs.getVersions().add( new Version( "1.1.0" ) );
+        wfs.getVersions().add( new Version( "2.0.0" ) );
         
         return wfs;
     }

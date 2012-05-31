@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.xml.namespace.QName;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -19,11 +21,23 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
+import org.geoserver.wfs.xml.v1_0_0.WFSConfiguration;
 import org.geotools.gml2.FeatureTypeCache;
+import org.geotools.gml2.GML;
+import org.geotools.gml2.SrsSyntax;
+import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.Configuration;
+import org.geotools.xml.OptionalComponentParameter;
 import org.geotools.xml.Parser;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.picocontainer.ComponentAdapter;
 import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.Parameter;
+import org.picocontainer.PicoContainer;
+import org.picocontainer.defaults.BasicComponentParameter;
+import org.picocontainer.defaults.SetterInjectionComponentAdapter;
 import org.xml.sax.InputSource;
 
 /**
@@ -115,5 +129,74 @@ public class WFSXmlUtils {
         //add the wfs handler factory to handle feature elements
         context.registerComponentInstance(featureTypeCache);
         context.registerComponentInstance(new WFSHandlerFactory(gs.getCatalog(), schemaBuilder));
+    }
+
+    public static void registerAbstractGeometryTypeBinding(final Configuration config, Map bindings, 
+        QName qName) {
+        //use setter injection for AbstractGeometryType bindign to allow an 
+        // optional crs to be set in teh binding context for parsing, this crs
+        // is set by the binding of a parent element.
+        // note: it is important that this component adapter is non-caching so 
+        // that the setter property gets updated properly every time
+        bindings.put(
+            qName,
+            new SetterInjectionComponentAdapter( 
+                qName, AbstractGeometryTypeBinding.class, 
+                new Parameter[]{ 
+                    new OptionalComponentParameter(CoordinateReferenceSystem.class),
+                    new DirectObjectParameter(config, Configuration.class), 
+                    new DirectObjectParameter(getSrsSyntax(config), SrsSyntax.class)
+                } 
+            )
+        );
+    }
+
+    public static SrsSyntax getSrsSyntax(Configuration obj) {
+        for (Configuration dep : ((List<Configuration>)obj.getDependencies())) {
+            if (dep instanceof org.geotools.gml2.GMLConfiguration) {
+                return ((org.geotools.gml2.GMLConfiguration) dep).getSrsSyntax();
+            }
+            if (dep instanceof org.geotools.gml3.GMLConfiguration) {
+                return ((org.geotools.gml3.GMLConfiguration) dep).getSrsSyntax();
+            }
+        }
+        return null;
+    }
+
+    public static void setSrsSyntax(Configuration obj, SrsSyntax srsSyntax) {
+        for (Configuration dep : ((List<Configuration>)obj.getDependencies())) {
+            if (dep instanceof org.geotools.gml2.GMLConfiguration) {
+                ((org.geotools.gml2.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
+            }
+            if (dep instanceof org.geotools.gml3.GMLConfiguration) {
+                ((org.geotools.gml3.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
+            }
+        }
+    }
+
+    static class DirectObjectParameter extends BasicComponentParameter {
+        Object obj;
+        Class clazz;
+
+        public DirectObjectParameter(Object obj, Class clazz) {
+            super(clazz);
+            this.obj = obj;
+            this.clazz = clazz;
+        }
+    
+        public boolean isResolvable(PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+            if (clazz.isAssignableFrom(expectedType)) {
+                return true;
+            }
+            return super.isResolvable(container, adapter, expectedType);
+        };
+    
+        @Override
+        public Object resolveInstance(PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+            if (clazz.isAssignableFrom(expectedType)) {
+                return obj;
+            }
+            return super.resolveInstance(container, adapter, expectedType);
+        }
     }
 }

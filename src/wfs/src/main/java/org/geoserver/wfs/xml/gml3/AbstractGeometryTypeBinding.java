@@ -36,7 +36,7 @@ public class AbstractGeometryTypeBinding extends org.geotools.gml3.bindings.Abst
     CoordinateReferenceSystem crs;
 
     public AbstractGeometryTypeBinding() {
-        super(null);
+        super(null, null);
     }
 
     public void setCRS(CoordinateReferenceSystem crs) {

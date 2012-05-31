@@ -13,6 +13,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
@@ -77,8 +78,16 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             }
         };
 
+        IModel gml32Model = new LoadableDetachableModel() {
+            @Override
+            protected Object load() {
+                return ((WFSInfo)info.getObject()).getGML().get(WFSInfo.Version.V_20);
+            }
+        };
+
         form.add(new GMLPanel("gml2", gml2Model));
         form.add(new GMLPanel("gml3", gml3Model));
+        form.add(new GMLPanel("gml32", gml32Model));
 
         form.add( new CheckBox("canonicalSchemaLocation") );
         
@@ -122,7 +131,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             //srsNameStyle
             List<GMLInfo.SrsNameStyle> choices = 
                 Arrays.asList(SrsNameStyle.values());
-            DropDownChoice srsNameStyle = new DropDownChoice("srsNameStyle", choices);
+            DropDownChoice srsNameStyle = new DropDownChoice("srsNameStyle", choices, new EnumChoiceRenderer());
             add(srsNameStyle);
             
             add(new CheckBox("overrideGMLAttributes"));

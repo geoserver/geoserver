@@ -48,6 +48,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.GMLInfo.SrsNameStyle;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
@@ -182,6 +183,9 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
             configuration.getProperties().remove(GMLConfiguration.NO_SRS_DIMENSION);
         }
 
+        //set up the srsname syntax
+        configuration.setSrsSyntax(wfs.getGML().get(WFSInfo.Version.V_11).getSrsNameStyle().toSrsSyntax());
+
         /*
          * Set property encoding featureMemeber as opposed to featureMembers
          * 
@@ -307,7 +311,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     protected String getRelativeWfsSchemaLocation() {
         return "wfs/1.1.0/wfs.xsd";
     }
-    
+
     public static boolean isComplexFeature(FeatureCollectionResponse results) {
         boolean hasComplex = false;
         for (int fcIndex = 0; fcIndex < results.getFeature().size(); fcIndex++) {

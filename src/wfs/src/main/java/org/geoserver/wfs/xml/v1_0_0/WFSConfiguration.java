@@ -27,9 +27,8 @@ import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.PropertyTypePropertyExtractor;
 import org.geoserver.wfs.xml.WFSHandlerFactory;
+import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geoserver.wfs.xml.gml2.GMLBoxTypeBinding;
-import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
-import org.geoserver.wfs.xml.gml3.WFSConfigurationParameter;
 import org.geotools.data.DataAccess;
 import org.geotools.filter.v1_0.OGCBBOXTypeBinding;
 import org.geotools.filter.v1_0.OGCConfiguration;
@@ -199,21 +198,8 @@ public class WFSConfiguration extends Configuration {
         bindings.put(GML.AbstractFeatureType,
             GMLAbstractFeatureTypeBinding.class);
         
-        //use setter injection for AbstractGeometryType bindign to allow an 
-        // optional crs to be set in teh binding context for parsing, this crs
-        // is set by the binding of a parent element.
-        // note: it is important that this component adapter is non-caching so 
-        // that the setter property gets updated properly every time
-        bindings.put(
-                GML.AbstractGeometryType,
-            new SetterInjectionComponentAdapter( 
-                GML.AbstractGeometryType, AbstractGeometryTypeBinding.class, 
-                new Parameter[]{ 
-                    new OptionalComponentParameter(CoordinateReferenceSystem.class),
-                    new WFSConfigurationParameter(WFSConfiguration.this)
-                } 
-            )
-        );
+        WFSXmlUtils.registerAbstractGeometryTypeBinding(this, bindings, GML.AbstractGeometryType);
+        
         bindings.put(
                 GML.BoxType,
             new SetterInjectionComponentAdapter( 

@@ -22,10 +22,12 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.WFSInfo.Version;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.gml3.v3_2.GML;
+import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
@@ -79,9 +81,11 @@ public class GML32OutputFormat extends GML3OutputFormat {
         
         ApplicationSchemaXSD2 xsd = new ApplicationSchemaXSD2(schemaBuilder, featureTypes);
         xsd.setBaseURL(GetFeatureRequest.adapt(request).getBaseURL());
-        
-        ApplicationSchemaConfiguration2 config = new ApplicationSchemaConfiguration2(xsd, 
-            new org.geotools.wfs.v2_0.WFSConfiguration());
+
+        org.geotools.wfs.v2_0.WFSConfiguration wfs = new org.geotools.wfs.v2_0.WFSConfiguration();
+        wfs.getDependency(GMLConfiguration.class).setSrsSyntax(
+            getInfo().getGML().get(WFSInfo.Version.V_20).getSrsNameStyle().toSrsSyntax());
+        ApplicationSchemaConfiguration2 config = new ApplicationSchemaConfiguration2(xsd, wfs);
         
         return new Encoder(config);
     }

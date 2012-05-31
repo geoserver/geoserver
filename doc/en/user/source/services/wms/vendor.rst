@@ -42,13 +42,13 @@ In both operations GeoServer attempts to compute the ``buffer`` value automatica
 All active symbolizers are evaluated, and the size of the largest is used (i.e. largest point symbolizer, thickest line symbolizer). 
 Automatic buffer sizing cannot be computed if:
 
-  * the SLD contains sizes that are specified as feature attribute values
-  * the SLD contains external graphics and does not specify their size explicitly
+* the SLD contains sizes that are specified as feature attribute values
+* the SLD contains external graphics and does not specify their size explicitly
 
 In this event, the following defaults are used:
 
-  * 0 pixels for :ref:`wms_getmap` requests
-  * 2 pixels for :ref:`wms_getfeatureinfo` requests
+* 0 pixels for :ref:`wms_getmap` requests
+* 2 pixels for :ref:`wms_getfeatureinfo` requests
   
 If these are not sufficiently large, the explicit parameter can be used.
 
@@ -59,7 +59,10 @@ The ``cql_filter`` parameter is similar to the standard ``filter`` parameter, bu
 ECQL provides a more compact and readable syntax compared to OGC XML filters.
 For full details see the :ref:`filter_ecql_reference` and :ref:`cql_tutorial` tutorial.
 
-If more than one layer is specified in the ``layers`` parameter, then a separate filter can be specified for each layer, separated by commas.
+If more than one layer is specified in the ``layers`` parameter, then a separate filter can be specified for each layer, separated by semicolons.
+The syntax is::
+
+   cql_filter=filter1;filter2...
 
 An example of a simple CQL filter is::
 

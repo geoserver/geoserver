@@ -407,4 +407,47 @@ public class DispatcherTest extends TestCase {
         assertTrue(invokeDirectCalled.get());
     }
 
+    public void testDispatchWithNamespace() throws Exception {
+        URL url = getClass().getResource("applicationContextNamespace.xml");
+        FileSystemXmlApplicationContext context = 
+                new FileSystemXmlApplicationContext(url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+            String encoding;
+
+            public int getServerPort() {
+                return 8080;
+            }
+
+            public String getCharacterEncoding() {
+                return encoding;
+            }
+
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+    
+        request.setContextPath("/geoserver");
+        request.setMethod("POST");
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        request.setContentType("application/xml");
+        request.setBodyContent("<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org' />");
+        request.setRequestURI("http://localhost/geoserver/hello");
+        
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!", response.getOutputStreamContent());
+
+        request.setBodyContent("<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org/v2' />");
+
+        response = new MockHttpServletResponse();
+        dispatcher.handleRequest(request, response);
+        assertEquals("Hello world!:V2", response.getOutputStreamContent());
+    }
 }

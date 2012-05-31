@@ -464,6 +464,9 @@ public class Dispatcher extends AbstractController {
             if (req.getOutputFormat() == null) {
                 req.setOutputFormat(normalize((String) xml.get("outputFormat")));    
             }
+            if (req.getNamespace() == null) {
+                req.setNamespace(normalize((String)xml.get("namespace")));
+            }
         }
 
         //try to infer from context
@@ -495,12 +498,12 @@ public class Dispatcher extends AbstractController {
         }
 
         //load from teh context
-        Service serviceDescriptor = findService(service, req.getVersion());
+        Service serviceDescriptor = findService(service, req.getVersion(), req.getNamespace());
         if (serviceDescriptor == null) {
             //hack for backwards compatability, try finding the service with the context instead 
             // of the service
             if (req.getContext() != null) {
-                serviceDescriptor = findService(req.getContext(), req.getVersion());
+                serviceDescriptor = findService(req.getContext(), req.getVersion(), req.getNamespace());
                 if (serviceDescriptor != null) {
                     //found, assume that the client is using <service>/<request>
                     if (req.getRequest() == null) {
@@ -1013,7 +1016,7 @@ public class Dispatcher extends AbstractController {
         return services;
     }
 
-    Service findService(String id, String ver) throws ServiceException {
+    Service findService(String id, String ver, String namespace) throws ServiceException {
         Version version = (ver != null) ? new Version(ver) : null;
         Collection services = loadServices();
         
@@ -1065,6 +1068,25 @@ public class Dispatcher extends AbstractController {
                 }
             }
 
+            //if still multiple matches use namespace, if available, to filter
+            if (namespace != null && vmatches.size() > 1) {
+                List nmatches = new ArrayList(vmatches);
+                for (Iterator itr = nmatches.iterator(); itr.hasNext();) {
+                    Service s = (Service) itr.next();
+                    if (s.getNamespace() != null && !s.getNamespace().equals(namespace)) {
+                        //service declares namespace, kick it out if there is no match
+                        itr.remove();
+                    }
+                    else {
+                        //service does not declare namespace, leave it along
+                    }
+                }
+
+                if (!nmatches.isEmpty()) {
+                    vmatches = nmatches;
+                }
+            }
+            
             //multiple services found, sort by version
             if (vmatches.size() > 1) {
                 //use highest version
@@ -1466,6 +1488,7 @@ public class Dispatcher extends AbstractController {
 
         Map map = new HashMap();
         map.put("request", parser.getName());
+        map.put("namespace", parser.getNamespace());
 
         for (int i = 0; i < parser.getAttributeCount(); i++) {
             String attName = parser.getAttributeName(i);

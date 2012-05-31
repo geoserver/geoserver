@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <import resource="applicationContext.xml"/>
+
+    <bean id="helloWorldService" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="hello"/>
+        <constructor-arg index="1" value="http://hello.org"/>
+        <constructor-arg index="2" ref="helloWorld"/>
+        <constructor-arg index="3">
+            <bean class="org.geotools.util.Version">
+                <constructor-arg value="1.0.0"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="4">
+           <list>
+             <value>hello</value>
+             <value>httpErrorCodeException</value>
+           </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="helloWorld2" class="org.geoserver.ows.HelloWorld2"/>
+    <bean id="helloWorldServiceV2" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="hello"/>
+        <constructor-arg index="1" value="http://hello.org/v2"/>
+        <constructor-arg index="2" ref="helloWorld2"/>
+        <constructor-arg index="3">
+            <bean class="org.geotools.util.Version">
+                <constructor-arg value="2.0.0"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="4">
+           <list>
+             <value>hello</value>
+             <value>httpErrorCodeException</value>
+           </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="messageXmlReader1" class="org.geoserver.ows.MessageXmlParser">
+      <constructor-arg value="http://hello.org"/>
+      <constructor-arg>
+        <bean class="org.geotools.util.Version">
+            <constructor-arg value="1.0.0"/>
+        </bean>
+      </constructor-arg>
+    </bean>
+    <bean id="messageXmlReader2" class="org.geoserver.ows.MessageXmlParser">
+      <constructor-arg value="http://hello.org/v2"/>
+      <constructor-arg>
+        <bean class="org.geotools.util.Version">
+            <constructor-arg value="2.0.0"/>
+        </bean>
+      </constructor-arg>
+    </bean>
+</beans>

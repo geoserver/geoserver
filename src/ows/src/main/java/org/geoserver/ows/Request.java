@@ -65,6 +65,12 @@ public class Request {
     protected String version;
 
     /**
+     * xml namespace used in request body, only relevant for post requests and when request body 
+     * content is namespace qualified
+     */
+    protected String namespace;
+
+    /**
      * The ows service descriptor of the service/version that was actually dispatched  
      */
     protected Service serviceDescriptor;
@@ -176,6 +182,13 @@ public class Request {
     }
 
     /**
+     * The request namespace
+     */
+    public String getNamespace() {
+        return namespace;
+    }
+
+    /**
      * The service descriptor of the service/version that was actually dispatched.
      */
     public Service getServiceDescriptor() {
@@ -279,6 +292,13 @@ public class Request {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * Sets the request namespace
+     */
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     /**

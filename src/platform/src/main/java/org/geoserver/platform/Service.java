@@ -30,6 +30,11 @@ public final class Service {
     final String id;
 
     /**
+     * Namespace for the service
+     */
+    final String namespace;
+
+    /**
      * The service implementation.
      */
     final Object service;
@@ -52,11 +57,24 @@ public final class Service {
      * @param version The version of the service.
      */
     public Service(String id, Object service, Version version, List<String> operations) {
+        this(id, null, service, version, operations);
+    }
+
+    /**
+     * Creates a new service descriptor.
+     *
+     * @param id A string identifying the service.
+     * @param namespace The namespace of the service, may be <code>null</code>
+     * @param service The object implementing the service.
+     * @param version The version of the service.
+     * @param operations The list of operations the service provides 
+     */
+    public Service(String id, String namespace, Object service, Version version, List<String> operations) {
         this.id = id;
         this.service = service;
         this.version = version;
         this.operations = operations;
-        
+        this.namespace = namespace;
         if (id == null) {
             throw new NullPointerException("id");
         }
@@ -64,6 +82,10 @@ public final class Service {
 
     public String getId() {
         return id;
+    }
+
+    public String getNamespace() {
+        return namespace;
     }
 
     public Object getService() {

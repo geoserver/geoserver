@@ -162,12 +162,43 @@ Scale Selection
 ---------------
 
 Rules support **scale selection**,
-to allow specifying the scale range in which a rule may be applied. 
-This allows for varying portrayal of features at different map scales.
+to allow specifying the scale range in which a rule may be applied
+(assuming the filter is matched as well, if present). 
+Scale selection allows for varying portrayal of features at different map scales.
 In particular, at smaller scales it is common to use simpler styling for features, 
 or even prevent the display of some features altogether.
 
-Consider the following example:
+Scale ranges are specified by using **scale denominators**. 
+These values correspond directly to the ground distance covered by a map, 
+but are inversely related to the common "large" and "small" terminology for map scale.  
+In other words:
+
+* **large scale** maps cover *less* area and have a *smaller* scale denominator
+* **small scale** maps cover *more* area and have a *larger* scale denominator
+
+
+
+Two elements specify the scale range for a rule:
+
+.. list-table::
+   :widths: 30 15 55 
+
+   * - **Tag** 
+     - **Required?**
+     - **Description**
+   * - ``<MinScaleDenominator>``
+     - No
+     - Specifies the minimum scale denominator (inclusive) for the scale range
+       in which this rule applies.
+       If omitted, the rule applies at the given scale and all smaller scales.
+   * - ``<MaxScaleDenominator>``
+     - No
+     - Specifies the maximum scale denominator (exclusive) for the scale range 
+       in which this rule applies.
+       If omitted, the rule applies at all larger scales.
+
+       
+The following example shows the use of scale selection:
 
 .. code-block:: xml 
 
@@ -176,8 +207,10 @@ Consider the following example:
      <PointSymbolizer>
        <Graphic>
          <Mark>
+           <WellKnownName>square</WellKnownName>
            <Fill><CssParameter name="fill">#FF0000</CssParameter>
          </Mark>
+         <Size>10</Size>
        </Graphic>
      </PointSymbolizer>
   </Rule>
@@ -186,12 +219,20 @@ Consider the following example:
      <PointSymbolizer>
        <Graphic>
          <Mark>
+           <WellKnownName>triangle</WellKnownName>
            <Fill><CssParameter name="fill">#0000FF</CssParameter>
          </Mark>
+         <Size>4</Size>
        </Graphic>
      </PointSymbolizer>
   </Rule>
 
-The above rules specify that at scales above 1:20,000 features are symbolized with red points, 
-and at scales at or below 1:20,000 features are symbolized with blue points.
+The above rules specify:
+
+* at scales **above** 1:20,000 
+  (*larger* scales, with scale denominators *smaller* than 20,000) 
+  features are symbolized with 10-pixel red squares, 
+* at scales **at or below** 1:20,000 
+  (*smaller* scales, with scale denominators *larger* than 20,000) 
+  features are symbolized with 4-pixel blue triangles.
 

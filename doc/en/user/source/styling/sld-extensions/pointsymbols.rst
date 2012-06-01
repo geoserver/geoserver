@@ -188,7 +188,16 @@ When the symbols to be displayed vary depending on feature attributes this restr
 
 GeoServer improves this by allowing CQL expressions to be embedded inside the content of both ``WellKnownName`` and ``OnlineResource/@xlink:href``.
 When the name of the symbols to be used can be derived from the feature attribute values, this provides much more compact styling. 
+CQL expressions can be embedded in a ``WellKnownName`` string or an ``href`` URL by using the syntax::
+	
+  ${<cql expression>}
 
+.. note:: 
+
+  Currently ``xlink:href`` strings must be valid URLs *before* expression expansion is performed.
+  This means that the URL string cannot be completely provided by an expression.
+
+  
 The simplest form of expression is a single attribute name, such as ``${STATE_ABBR}``.
 For example, suppose we want to display the flags of the US states using symbols whose file names match the state name.
 The following style specifies the flag symbols using a single rule:
@@ -197,15 +206,12 @@ The following style specifies the flag symbols using a single rule:
    :linenos: 
    
    <ExternalGraphic>
-      <OnlineResource xlink:type="simple" xlink:href="http://mysite.com/tn_${STATE_ABBR}.jpg"/>
+      <OnlineResource xlink:type="simple" 
+                      xlink:href="http://mysite.com/tn_${STATE_ABBR}.jpg"/>
       <Format>image/jpeg</Format>
    </ExternalGraphic>
    
 If manipulation of the attribute values is required a full CQL expression can be specified. 
-CQL expressions can be embedded in a ``WellKnownName`` string or an ``href`` URL by using the syntax::
-	
-  ${<cql expression>}
-
 For example, if the values in the ``STATE_ABBR`` attribute are uppercase but the URL requires a lowercase name, the CQL ``strToLowerCase`` function can be used:
 
 .. code-block:: xml 
@@ -213,7 +219,7 @@ For example, if the values in the ``STATE_ABBR`` attribute are uppercase but the
 
    <ExternalGraphic>
       <OnlineResource xlink:type="simple"
-      xlink:href="http://mysite.com/tn_${strToLowerCase(STATE_ABBR)}.jpg" />
+               xlink:href="http://mysite.com/tn_${strToLowerCase(STATE_ABBR)}.jpg" />
       <Format>image/jpeg</Format>
    </ExternalGraphic>
    

@@ -146,17 +146,17 @@ The following symbolizer is taken from the :ref:`sld_cookbook_points` section in
 .. code-block:: xml 
    :linenos: 
 
-          <PointSymbolizer>
-            <Graphic>
-              <Mark>
-                <WellKnownName>circle</WellKnownName>
-                <Fill>
-                  <CssParameter name="fill">#FF0000</CssParameter>
-                </Fill>
-              </Mark>
-              <Size>6</Size>
-            </Graphic>
-          </PointSymbolizer>
+    <PointSymbolizer>
+      <Graphic>
+        <Mark>
+	  <WellKnownName>circle</WellKnownName>
+          <Fill>
+  	    <CssParameter name="fill">#FF0000</CssParameter>
+  	  </Fill>
+        </Mark>
+        <Size>6</Size>
+      </Graphic>
+    </PointSymbolizer>
 
 The symbolizer contains the required ``<Graphic>`` element.  
 Inside this element is the ``<Mark>`` element and ``<Size>`` element, which are the minimum required element inside ``<Graphic>`` (when not using the ``<ExternalGraphic>`` element).  
@@ -166,6 +166,23 @@ No other element are required.  In summary, this example specifies the following
 #. Features will be rendered as points
 #. Points will be rendered as circles
 #. Circles will be rendered with a diameter of 6 pixels and filled with the color red
+
+The next example uses an external graphic loaded from the file system:
+
+.. code-block:: xml 
+   :linenos: 
+
+    <PointSymbolizer>
+      <Graphic>
+        <ExternalGraphic>
+          <OnlineResource xlink:type="simple" 
+                          xlink:href="file:///var/www/htdocs/sun.gif" />
+          <Format>image/gif</Format>
+        </ExternalGraphic>
+      </Graphic>
+    </PointSymbolizer>
+
+For ``file://`` URLs, the file must be readable by the user the Geoserver process is running as. You can also use ``href://`` URLs to reference remote graphics. 
 
 Further examples can be found in the :ref:`sld_cookbook_points` section of the :ref:`sld_cookbook`.
 

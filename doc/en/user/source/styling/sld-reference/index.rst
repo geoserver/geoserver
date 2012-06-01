@@ -9,6 +9,7 @@ Rules may also specify the scale range in which the feature styling is visible.
 .. toctree::
    :maxdepth: 2
    
+   rules
    filters
    
 Rues contain **symbolizers** to specify how features are styled.  

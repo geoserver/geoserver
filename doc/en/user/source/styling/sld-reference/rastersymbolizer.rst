@@ -1,7 +1,7 @@
-.. _raster_symbolizer:
+.. _sld_reference_rastersymbolizer:
 
-Raster Symbolizer
-=================
+RasterSymbolizer
+================
 
 
 GeoServer supports the ability to display raster data in addition to vector data.

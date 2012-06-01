@@ -60,7 +60,7 @@ The ``<Rule>`` element can contain the following elements:
    * - ``<RasterSymbolizer>``
      - 0..N
      - Specifies styling for raster data.
-       See :ref:`raster_symbolizer`
+       See :ref:`sld_reference_rastersymbolizer`
 
        
 Scale Selection

@@ -128,5 +128,29 @@ The following parameters are supported:
      - No
      - Specifies the distance in pixels into the ``dasharray`` pattern at which to start drawing.  Default is ``0``.
      
+Example
+-------
+
+The following symbolizer is taken from the :ref:`sld_cookbook_lines` section in the :ref:`sld_cookbook`.
+
+.. code-block:: xml 
+   :linenos:
+
+          <LineSymbolizer>
+            <Stroke>
+              <CssParameter name="stroke">#0000FF</CssParameter>
+              <CssParameter name="stroke-width">3</CssParameter>
+              <CssParameter name="stroke-dasharray">5 2</CssParameter>
+            </Stroke>
+          </LineSymbolizer>
+
+The symbolizer styles a feature as a dashed blue line of width 3 pixels.
+
+.. figure:: img/line_dashedline.png
+   :align: center
+
+   *Dashed blue line*
+
+
 
 

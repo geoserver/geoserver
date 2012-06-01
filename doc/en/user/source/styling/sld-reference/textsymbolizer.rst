@@ -154,10 +154,12 @@ following sub-elements:
        Values may contain :ref:`expressions <sld_reference_parameter_expressions>`.
    * - ``<Rotation>``
      - No
-     - Specifies the rotation of the label in clockwise degrees.  
+     - Specifies the rotation of the label in clockwise degrees
+       (negative values are counterclockwise).  
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``0``.
 
+The anchor point justification, displacement offsetting, and rotation are applied in that order. 
 
 LinePlacement
 ^^^^^^^^^^^^^
@@ -211,3 +213,52 @@ Fill
 The ``<Fill>`` element specifies the fill style for the label text.  
 The syntax is identical to that of the ``PolygonSymbolizer`` :ref:`sld_reference_fill` element.
      
+Example
+-------
+
+The following symbolizer is taken from the :ref:`sld_cookbook_points` section in the :ref:`sld_cookbook`.
+
+.. code-block:: xml 
+   :linenos:
+
+          <TextSymbolizer>
+            <Label>
+              <ogc:PropertyName>name</ogc:PropertyName>
+            </Label>
+            <Font>
+              <CssParameter name="font-family">Arial</CssParameter>
+              <CssParameter name="font-size">12</CssParameter>
+              <CssParameter name="font-style">normal</CssParameter>
+              <CssParameter name="font-weight">bold</CssParameter>
+            </Font>
+            <LabelPlacement>
+              <PointPlacement>
+                <AnchorPoint>
+                  <AnchorPointX>0.5</AnchorPointX>
+                  <AnchorPointY>0.0</AnchorPointY>
+                </AnchorPoint>
+                <Displacement>
+                  <DisplacementX>0</DisplacementX>
+                  <DisplacementY>25</DisplacementY>
+                </Displacement>
+                <Rotation>-45</Rotation>
+              </PointPlacement>
+            </LabelPlacement>
+            <Fill>
+              <CssParameter name="fill">#990099</CssParameter>
+            </Fill>
+          </TextSymbolizer>
+
+The symbolizer labels features with the text from the ``name`` property.
+The font is Arial in bold at 12 pt size, filled in purple.
+The labels are centered on the point along their lower edge,
+then displaced 25 pixels upwards, 
+and finally rotated 45 degrees counterclockwise.
+
+The displacement takes effect before the rotation during rendering, 
+so the 25 pixel vertical displacement is itself rotated 45 degrees.
+
+.. figure:: img/text_pointwithrotatedlabel.png
+   :align: center
+
+   *Point with rotated label*

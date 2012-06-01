@@ -12,7 +12,7 @@ Rules may also specify the scale range in which the feature styling is visible.
    rules
    filters
    
-Rues contain **symbolizers** to specify how features are styled.  
+Rules contain **symbolizers** to specify how features are styled.  
 There are 5 types of symbolizers:  
 
 * ``PointSymbolizer``, which styles features as **points**

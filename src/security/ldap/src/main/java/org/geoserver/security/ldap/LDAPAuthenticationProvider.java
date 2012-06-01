@@ -45,7 +45,7 @@ public class LDAPAuthenticationProvider extends
             HttpServletRequest request) throws AuthenticationException {
      
         UsernamePasswordAuthenticationToken  auth = 
-                (UsernamePasswordAuthenticationToken) super.authenticate(authentication, request);
+                (UsernamePasswordAuthenticationToken) super.doAuthenticate(authentication, request);
         
         if (auth==null) return null; // next provider
         

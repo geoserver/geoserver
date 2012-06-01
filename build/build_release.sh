@@ -90,14 +90,14 @@ mvn -version
 
 svn_opts="--username $svn_user --password $svn_passwd --non-interactive --trust-server-cert"
 
+if [ "$branch" == "trunk" ]; then
+   svn_url=$SVN_ROOT/trunk
+else
+   svn_url=$SVN_ROOT/branches/$branch
+fi
+
 if [ ! -z $BUILD_FROM_BRANCH ]; then
   if [ ! -e tags/$tag ]; then
-    if [ "$branch" == "trunk" ]; then
-      svn_url=$SVN_ROOT/trunk
-    else
-      svn_url=$SVN_ROOT/branches/$branch
-    fi
-    
     echo "checking out $svn_url"
     svn co $svn_opts $svn_url tags/$tag  
   fi
@@ -119,7 +119,7 @@ else
     fi
   
     echo "Creating $tag tag from $branch ($rev) at $svn_tag_url"
-    svn cp $svn_opts -m "tagging $tag" $revopt $SVN_ROOT/$branch $svn_tag_url
+    svn cp $svn_opts -m "tagging $tag" $revopt $svn_url $svn_tag_url
 
     # checkout newly created tag
     if [ -e tags/$tag ]; then

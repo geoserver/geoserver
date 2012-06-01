@@ -57,7 +57,17 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         styleContainer.add(defStyleImg);
 
         String wmsURL = getRequest().getRelativePathPrefixToContextRoot();
-        wmsURL += wmsURL.endsWith("/")? "wms?" : "/wms?";
+        //append the workspace
+        String wsName = null;
+        if (resource.getStore() != null && resource.getStore().getWorkspace() != null) {
+            wsName = resource.getStore().getWorkspace().getName();
+        }
+
+        if (wsName != null) {
+            wmsURL += wmsURL.endsWith("/") ? wsName : ("/" + wsName);
+        }
+        wmsURL += wmsURL.endsWith("/") ? "wms?" : "/wms?";
+
         final LegendGraphicAjaxUpdater defaultStyleUpdater;
         defaultStyleUpdater = new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
 

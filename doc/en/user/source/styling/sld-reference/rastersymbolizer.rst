@@ -3,12 +3,15 @@
 RasterSymbolizer
 ================
 
-
 GeoServer supports the ability to display raster data in addition to vector data.
 
-Raster data is not merely a picture, rather it can be thought of as a grid of georeferenced information, much like a graphic is a grid of visual information (with combination of reds, greens, and blues). Unlike graphics, which only contain visual data, each point/pixel in a raster grid can have lots of different attributes, with possibly none of them having an inherently visual component.
+Raster data is not merely a picture, rather it can be thought of as a grid of georeferenced information, much like a graphic is a grid of visual information (with combination of reds, greens, and blues). 
+Unlike graphics, which only contain visual data, each point/pixel in a raster grid can have many different attributes (bands), with possibly none of them having an inherently visual component.
 
-With the above in mind, one needs to choose how to visualize the data, and this, like in all other cases, is done by using an SLD. The analogy to vector data is evident in the naming of the tags used. Vectors, consisting of points, line, and polygons, are styled by using the <PointSymbolizer>, <LineSymbolizer>, and <PolygonSymbolizer> tags. It is therefore not very surprising that raster data is styled with the tag <RasterSymbolizer>.
+With the above in mind, one needs to choose how to visualize the data, and this, like in all other cases, is done by using an SLD. 
+The analogy to vector data is evident in the naming of the tags used. 
+Vectors, consisting of points, line, and polygons, are styled by using the ``<PointSymbolizer>``, ``<LineSymbolizer>``, and ``<PolygonSymbolizer>`` tags. 
+It is therefore not very surprising that raster data is styled with the tag <RasterSymbolizer>.
 
 
 Syntax
@@ -29,21 +32,49 @@ The following elements can be used inside the ``<RasterSymbolizer>`` element.
 Opacity
 ^^^^^^^
 
-This element sets the transparency level for the entire dataset. As is standard, the values range from zero (0) to one (1), with zero being totally transparent, and one being not transparent at all. The syntax for <Opacity> is very simple:
+The ``<Opacity>`` element sets the transparency level for the entire rendered image. 
+As is standard, the values range from zero (0) to one (1), 
+with zero being transparent, and one being opaque. 
+The syntax is:
 
 .. code-block:: xml
 
 	<Opacity>0.5</Opacity>
 
-
-where, in this case, the raster would be displayed at 50% opacity.
+where, in this case, the raster is rendered at 50% opacity.
 
 ColorMap
 ^^^^^^^^
 
-The <ColorMap> element sets rules for color gradients based on the quantity attribute. This quantity refers to the magnitude of the value of a data point. At its simplest, one could create two color map entries (the element called <ColorMapEntry>, one with a color for the "bottom" of the dataset, and another with a color for the "top" of the dataset. The colors in between will be automatically interpolated with the quantity values in between, making creating color gradients easy. One can also fine tune the color map by adding additional entries, which is handy if the dataset has more discrete values rather than a gradient. In that case, one could add an entry for each value to be set to a different color. In all cases, the color is denoted in standard hexadecimal RGB format (#RRGGBB). In addition to color and quantity, ColorMapEntry elements can also have opacity and label, the former which could be used instead of the global value mentioned previously, and the latter which could beused for legends.
+The ``<ColorMap>`` element defines the color values for the pixels 
+of a raster image, as either color gradients,
+or a mapping of specific values to fixed colors.
 
-For example a simple ColorMap can be:
+A color map is defined by a series of ``<ColorMapEntry>`` elements.
+Each ``<ColorMapEntry>`` element specifies a ``color`` and a ``quantity`` attribute. 
+The quantity refers to the value of a raster pixel. 
+The ``color`` value is denoted in standard hexadecimal RGB format (#RRGGBB).
+``<ColorMapEntry>`` elements can also have ``opacity`` and ``label`` attributes.
+The ``opacity`` attribute overrides the global ``<Opacity>`` value.
+The ``label`` attribute is used to provide text for legends.
+
+The simplest ``<ColorMap>`` has two color map entries. 
+One specifyies a color for the "bottom" of the dataset, 
+and the other specifyies a color for the "top" of the dataset. 
+Pixels with values equal to or less than the minimum value
+are rendered with the bottom color (and opacity).
+Pixels with values equal to or great than the maximum value
+are rendered with the top color and opacity.
+The colors for values in between are automatically interpolated, 
+making creating color gradients easy. 
+
+A color map can be refined by adding additional intermediate entries. 
+This is useful if the dataset has discrete values rather than a gradient,
+or if a multi-colored gradient is desired. 
+One entry is added for each different color to be used,
+along with the corresponding quantity value. 
+
+For example, a simple ColorMap can define a color gradient from color #323232 to color #BBBBBB over quantity values from -300 to 200:
 
 .. code-block:: xml
 
@@ -55,7 +86,12 @@ For example a simple ColorMap can be:
 .. figure:: img/colormap1.png
    :align: left
 
-This example would create a color gradient from #323232 color to #BBBBBB color using quantity values -300 to 200:
+A more refined example defines a color gradient from color #FFCC32 through color #BBBBBB, 
+running through color #3645CC and color #CC3636. 
+The bottom color #FFCC32 is defined to be transparent
+This simulates an alpha channel, since
+pixels with values of -300 and below will not be rendered.
+Notice that the default opacity is 1 (opaque) when not specified.
 
 .. code-block:: xml
 
@@ -69,24 +105,23 @@ This example would create a color gradient from #323232 color to #BBBBBB color u
 .. figure:: img/colormap2.png
    :align: left
 
-This example would create a color gradient from #FFCC32 color through #BBBBBB color running through #3645CC color and #CC3636 color. Here, though, #FFCC32 color would be transparent (simulating an alpha channel). Notice that default opacity, when not specified, is 1, which means opaque.
 
-Two attributes can be created in ColorMap root node like 'type' and 'extended'.
 
-The 'type' attribute specifies the kind of ColorMap to use. There are three different types of ColorMaps that can be specified througth this attribute: ramp, intervals and values.
+type
+""""
 
-The 'ramp' is the default ColorMap type and the outcome is like the one presented at the beginning of this section (if into the ColorMap tag the attribute 'type' is not specified, the default value is 'ramp'). 
+GeoServer extends the ``<ColorMap>`` element to allow two attributes: ``type`` and ``extended``.
 
-.. figure:: img/colormap3.png
-   :align: left
+The ``<ColorMap>`` ``type`` attribute specifies the kind of ColorMap to use. 
+There are three different types of ColorMaps that can be specified: ``ramp``, ``intervals`` and ``values``.
 
-The 'values' means that only the specified entry quantities will be rendered, i.e. no color interpolation is applied between the entries.
-
-The following example can clarify this aspect:
+``type="ramp"`` is the default ColorMap type.  
+It specifies that colors should be interpolated for values between the color map entries.
+The result is shown in the following example.   
 
 .. code-block:: xml
 
-	<ColorMap type="values">
+	<ColorMap type="ramp">
     		<ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
     		<ColorMapEntry color="#2851CC" quantity="0" label="values" opacity="1"/>
     		<ColorMapEntry color="#211F1F" quantity="50" label="label" opacity="1"/>
@@ -100,11 +135,32 @@ The following example can clarify this aspect:
     		<ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
 	</ColorMap>
 
+
+.. figure:: img/colormap3.png
+   :align: left
+
+``type="values"`` means that only pixels with the specified entry quantity values are rendered.
+Pixels with other values are not rendered.
+Using the example set of color map entries:
+
+.. code-block:: xml
+
+	<ColorMap type="values">
+    		<ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
+    		...
+    		<ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
+	</ColorMap>
+
+
+The result image is:
+
 .. figure:: img/colormap4.png
    :align: left
 
-The 'intervals' value means that every interval defined by two entries will be colorized using the value of the first entrie, i.e. no color interpolation is applied between the intervals:
-
+``type="intervals"`` value means that each interval defined by two entries is rendered using the color of the first (lowest-value) entry.
+No color interpolation is applied across the intervals.
+Using the example set of color map entries:
+	
 .. code-block:: xml
 
 	<ColorMap type="intervals" extended="true">
@@ -113,45 +169,58 @@ The 'intervals' value means that every interval defined by two entries will be c
     		<ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
 	</ColorMap>   
 
+The result image is:
+
 .. figure:: img/colormap5.png
    :align: left
 
-The 'extended' attribute allows ColorMap to compiute gradients using 256 or 65536 colors; extended=false means that the color scale is calculated on 8 bit, else 16 bit if the value is true.  
-
-The difference between ramp, values and intervals values is also visible into raster legend. In order to get the raster legend from GeoServer the typically request is::
+The color map type is also reflected in the legend graphic. 
+A typical request for a raster legend is 
+(using the ``forceRule:true`` option to force output of the color map)::
 
 	http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&&STYLE=raster100&FORMAT=image/png&WIDTH=50&HEIGHT=20&LEGEND_OPTIONS=forceRule:true&LAYER=it.geosolutions:di08032_da
 
-the results are:
+The legends returned for the different types are:
 
 .. figure:: img/rasterlegend.png
    :align: left
 
+extended
+""""""""
+
+The ``extended`` attribute specifies whether the color map gradient uses 256 (8-bit) or 65536 (16-bit) colors. 
+The value ``false`` (the default) specifies that the color scale is calculated using 8-bit color, and ``true`` specifies using 16-bit color.  
+
+
+   
 ChannelSelection
 ^^^^^^^^^^^^^^^^
 
-This element specifies which color channel to access in the dataset. A dataset may contain standard three-channel colors (red, green, and blue channels) or one grayscale channel. Using <ChannelSelection> allows the mapping of a dataset channel to either a red, green, blue, or gray channel:
+The ``<ChannelSelection>`` element specifies how dataset bands are mapped to image color channels. 
+Named dataset bands may be mapped to red, green and blue channels, or a single named band may be mapped to a grayscale channel.
+
+The following example maps source channels 1, 2 and 3 to the red, green, and blue color channels.
 
 .. code-block:: xml
 
 	<ChannelSelection>
-   		<RedChannel>
-      		<SourceChannelName>1</SourceChannelName>
-   		</RedChannel>
-   		<GreenChannel>
-      		<SourceChannelName>2</SourceChannelName>
-   		</GreenChannel>
-   		<BlueChannel>
-      		<SourceChannelName>3</SourceChannelName>
-   		</BlueChannel>
+   	  <RedChannel>
+      	    <SourceChannelName>1</SourceChannelName>
+   	  </RedChannel>
+   	  <GreenChannel>
+      	    <SourceChannelName>2</SourceChannelName>
+   	  </GreenChannel>
+   	  <BlueChannel>
+      	    <SourceChannelName>3</SourceChannelName>
+   	  </BlueChannel>
 	</ChannelSelection>
 
 .. figure:: img/channelselection.png
    :align: left 
 
-The above would map source channels 1, 2,and 3 to the red, green, and blue Channels, respectively.
 
-This is the result of gray ChannelSelection operation applied to an RGB image and re-colorized through a ColorMap:
+The next example shows selecting a single band of an RGB image as a grayscale channel, 
+and re-colorizing it via a ColorMap:
 
 .. code-block:: xml
 
@@ -159,7 +228,7 @@ This is the result of gray ChannelSelection operation applied to an RGB image an
     		<Opacity>1.0</Opacity>
     		<ChannelSelection>
         		<GrayChannel>
-        			<SourceChannelName>11</SourceChannelName>
+        			<SourceChannelName>1</SourceChannelName>
         		</GrayChannel>
     		</ChannelSelection>
     		<ColorMap extended="true">
@@ -176,13 +245,23 @@ This is the result of gray ChannelSelection operation applied to an RGB image an
 ContrastEnhancement
 ^^^^^^^^^^^^^^^^^^^
 
-The <ContrastEnhancement> element is used in color channels to adjust the relative brightness of the data in that channel. There are three types of enhancements possible.
+The ``<ContrastEnhancement>`` element is used to adjust the relative brightness of the image data. 
+A ``<ContrastEnhancement>`` element can be specified for the entire image, or in individual ``Channel`` elements. 
+In this way, different enhancements can be used on each channel.
 
-    - Normalize
-    - Histogram
-    - GammaValue
+There are three types of enhancements possible:
 
-Normalize means to expand the contrast so that the minimum quantity is mapped to minimum brightness, and the maximum quantity is mapped to maximum brightness. Histogram is similar to Normalize, but the algorithm used attempts to produce an image with an equal number of pixels at all brightness levels. Finally, GammaValue is a scaling factor that adjusts the brightness of the data, with a value less than one (1) darkening the image, and a value greater than one (1) brightening it. (Normalize and Histogram do not have any parameters.) One can use <ContrastEnhancement> on a specific channel (say red only) as opposed to globally, if it is desired. In this way, different enhancements can be used on each channel:
+* Normalize
+* Histogram
+* GammaValue
+
+``<Normalize>`` means to expand the contrast so that the minimum quantity is mapped to minimum brightness, and the maximum quantity is mapped to maximum brightness. 
+
+``<Histogram>`` is similar to Normalize, but the algorithm used attempts to produce an image with an equal number of pixels at all brightness levels. 
+
+``<GammaValue>`` is a scaling factor that adjusts the brightness of the image. A value less than one (1) darkens the image, and a value greater than one (1) brightens it.  The default is 1 (no change). 
+
+These examples turn on Normalize and Histogram, respectively:
 
 .. code-block:: xml
 
@@ -196,7 +275,7 @@ Normalize means to expand the contrast so that the minimum quantity is mapped to
    		<Histogram/>
 	</ContrastEnhancement>
 
-These examples turn on Normalize and Histogram, respectively:
+This example increases the brightness of the image by a factor of two.
 
 .. code-block:: xml
 
@@ -204,14 +283,13 @@ These examples turn on Normalize and Histogram, respectively:
    		<GammaValue>2</GammaValue>
 	</ContrastEnhancement>
 
-The above increases the brightness of the data by a factor of two.
 
 ShadedRelief
 ^^^^^^^^^^^^
 
 .. warning:: Support for this element has not been implemented yet.
 
-The <ShadedRelief> element can be used to create a 3-D effect, by selectively adjusting brightness. This is a nice effect to use on an elevation dataset. There are two types of shaded relief possible.
+The ``<ShadedRelief>`` element can be used to create a 3-D effect, by selectively adjusting brightness. This is a nice effect to use on an elevation dataset. There are two types of shaded relief possible.
 
     - BrightnessOnly
     - ReliefFactor

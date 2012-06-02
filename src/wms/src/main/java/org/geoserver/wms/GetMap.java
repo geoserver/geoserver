@@ -47,6 +47,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.resources.CRSUtilities;
 import org.geotools.styling.FeatureTypeConstraint;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -449,6 +450,12 @@ public class GetMap {
         EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
         EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
         EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
+        try {
+            EnvFunction.setLocalValue("wms_scale_denominator", RendererUtilities.calculateScale(mapContent.getRenderingArea(),
+                    mapContent.getMapWidth(), mapContent.getMapHeight(), null));
+        } catch(Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to compute the scale denominator, wms_scale_denominator env variable is unset", e);
+        }
         
         // set the buffer value if the admin has set a specific value for some layers
         // in this map

@@ -31,8 +31,6 @@ Other data sources require the use of GeoServer extensions, extra downloads that
    shapefile
    postgis
    directory
-   wfs
-   wms
    properties
    arcgrid
    geotiff

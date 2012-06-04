@@ -28,17 +28,11 @@ Other data sources require the use of GeoServer extensions, extra downloads that
 .. toctree::
    :maxdepth: 1
 
-   shapefile
-   directory
-   properties
    arcgrid
    geotiff
    gtopo30
    imagemosaic
    worldimage
-   gml
-   featurepregen
-   vpf
    gdal
    imagepyramid
    imagemosaicjdbc

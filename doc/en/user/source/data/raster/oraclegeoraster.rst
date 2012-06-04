@@ -3,7 +3,7 @@
 Oracle Georaster
 =================
 
-.. note:: GeoServer does not come built-in with support for Oracle Georaster; it must be installed through an extension. Proceed to :doc:`Image Mosaic JDBC</data/imagemosaicjdbc>` for installation details. This extension includes the support for Oracle Georaster.
+.. note:: GeoServer does not come built-in with support for Oracle Georaster; it must be installed through an extension. Proceed to :doc:`Image Mosaic JDBC<imagemosaicjdbc>` for installation details. This extension includes the support for Oracle Georaster.
 
 
 Adding an Oracle Georaster data store

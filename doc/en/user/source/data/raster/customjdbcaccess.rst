@@ -3,7 +3,7 @@
 Custom JDBC Access for image data
 =================================
 
-.. note:: GeoServer does not come built-in with support for Custom JDBC Access; it must be installed through an extension. Proceed to :doc:`Image Mosaic JDBC</data/imagemosaicjdbc>` for installation details. This extension includes the support for Custom JDBC Access.
+.. note:: GeoServer does not come built-in with support for Custom JDBC Access; it must be installed through an extension. Proceed to :doc:`Image Mosaic JDBC<imagemosaicjdbc>` for installation details. This extension includes the support for Custom JDBC Access.
 
 
 Adding a coverage based on Custom JDBC Access

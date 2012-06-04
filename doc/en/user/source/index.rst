@@ -14,6 +14,7 @@ This User Manual is a comprehensive guide to all aspects of using GeoServer. Whe
    datadirectory/index
    webadmin/index
    data/index
+   data/database/index
    data/cascaded/index
    filter/index
    styling/index

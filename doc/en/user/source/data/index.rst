@@ -29,7 +29,6 @@ Other data sources require the use of GeoServer extensions, extra downloads that
    :maxdepth: 1
 
    shapefile
-   postgis
    directory
    properties
    arcgrid
@@ -37,26 +36,14 @@ Other data sources require the use of GeoServer extensions, extra downloads that
    gtopo30
    imagemosaic
    worldimage
-   arcsde
    gml
-   db2
-   h2
-   mysql
    featurepregen
-   oracle
-   sqlserver
-   teradata
    vpf
    gdal
    imagepyramid
    imagemosaicjdbc
    oraclegeoraster
    customjdbcaccess
-   connection-pooling
-   sqlview
-   primarykey/
-   sqlsession
    app-schema/index
-   jndi
 
    

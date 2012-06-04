@@ -6,7 +6,10 @@ Specifying symbolizer sizes in ground units
 The SLD 1.0 specification allows giving symbolizer sizes in a single unit of measure: pixels.  
 This means that the size of symbolizers is the same at all zoom levels (which is commonly the desired behaviour).
 
-The Symbology Encoding 1.1 specification provides a ``uom`` attribute on ``Symbolizer`` elements.  This allows specifying sizes in ground units of metres or feet, as well as the default screen pixels. When ground units are used, the screen size of symbolizers increases as the map is zoomed in.  GeoServer supports the SE 1.1 ``uom`` attribute in its extended SLD 1.0 support.  
+The Symbology Encoding 1.1 specification provides a ``uom`` attribute on ``Symbolizer`` elements.  
+This allows specifying styling parameter sizes in ground units of metres or feet, as well as the default screen pixels. 
+When ground units are used, the screen size of styled elements increases as the map is zoomed in to larger scales.  
+GeoServer supports the SE 1.1 ``uom`` attribute in its extended SLD 1.0 support.  
 
 .. note:: This extended feature is officially supported in GeoServer 2.1.0.  It is available in GeoServer 2.0.3 if the ``-DenableDpiUomRescaling=true`` system variable is specified for the JVM.
 
@@ -16,7 +19,7 @@ The value of the ``uom`` attribute is a URI indicating the desired unit.  The un
    http://www.opengeospatial.org/se/units/foot
    http://www.opengeospatial.org/se/units/pixel
 
-.. note:: The ``px`` modifier for values is not currently supported. 
+.. note:: The ``px`` override modifier for parameters values is not currently supported. 
 
 
 Example

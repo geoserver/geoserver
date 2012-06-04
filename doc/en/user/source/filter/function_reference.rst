@@ -23,15 +23,17 @@ Function argument type reference
    * - **Type**
      - **Description**
    * - Double
-     - Floating point number, 8 bytes, IEEE 754. ranging from 4.94065645841246544e-324d to 1.79769313486231570e+308d
+     - Floating point number, 8 bytes, IEEE 754. Ranges from 4.94065645841246544e-324d to 1.79769313486231570e+308d
    * - Float
-     - Floating point number, 4 bytes, IEEE 754. ranging from 1.40129846432481707e-45 to 3.40282346638528860e+38. Smaller range and less accurate than Double.
+     - Floating point number, 4 bytes, IEEE 754. Ranges from 1.40129846432481707e-45 to 3.40282346638528860e+38. Smaller range and less accurate than Double.
    * - Integer
      - Integer number, ranging from -2,147,483,648 to 2,147,483,647
    * - Long
      - Integer number, ranging from -9,223,372,036,854,775,808 to +9,223,372,036,854,775,807
    * - Number
-     - Can be any type of number
+     - A numeric value of any type
+   * - Object
+     - A value of any type
    * - String
      - A sequence of characters
    * - Timestamp
@@ -405,7 +407,10 @@ String functions
    * - **Name**
      - **Arguments**
      - **Description**
-   * - strCapitalize (since 2.0.2)
+   * - Concatenate
+     - ``s1``:String, ``s2``:String, ...
+     - Concatenates any number of strings.  Non-string arguments are allowed.
+   * - strCapitalize
      - ``sentence``:String
      - Fully capitalizes the sentence. For example, "HoW aRe YOU?" will be turned into "How Are You?"
    * - strConcat

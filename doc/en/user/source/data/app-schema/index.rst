@@ -16,8 +16,6 @@ GeoServer provides support for a broad selection of simple feature data stores, 
 
 The app-schema module looks to GeoServer just like any other data store and so can be loaded and used to service WFS requests. In effect, the app-schema data store is a wrapper or adapter that converts a simple feature data store into complex features for delivery via WFS. The mapping works both ways, so queries against properties of complex features are supported.
 
-Contents
---------
 
 .. toctree::
    :maxdepth: 2

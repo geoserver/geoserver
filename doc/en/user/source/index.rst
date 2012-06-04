@@ -16,7 +16,7 @@ This User Manual is a comprehensive guide to all aspects of using GeoServer. Whe
    data/vector/index
    data/raster/index
    data/database/index
-   data/index
+   data/app-schema/index
    data/cascaded/index
    filter/index
    styling/index

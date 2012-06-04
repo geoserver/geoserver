@@ -401,6 +401,9 @@ Math Functions
 String functions
 -----------------   
 
+String functions generally will accept any type of value for ``String`` arguments.  
+Non-string values will be converted into a string representation automatically.
+
 .. list-table::
    :widths: 20 25 55
    

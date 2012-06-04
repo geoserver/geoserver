@@ -1,19 +1,22 @@
 .. _mixed_geometries:
 
-Dealing with mixed geometry types
-==================================
+Styling mixed geometry types
+============================
 
-On occasion one might have the need to render data with a single geometry column whose content type can be different for each feature (some have a polygon, some have a point, etc).
+On occasion one might have the need to style a geometry column whose geometry type can be different for each feature 
+(some are polygons, some are points, etc), and use different styling for different geometry types.
 
-SLD 1.0 does not provide a clean solution for dealing with such a case. This is due to a mix of two issues. The first one is that point, line, and polygon  symbolizers can apply to other geometry types:
+SLD 1.0 does not provide a clean solution for dealing with this situation. 
+Point, Line, and Polygon symbolizers do not select geometry by type, since they can each apply to all geometry types:
 
-*  Point symbolizers can apply to any kind of geometry; if the geometry is not a point, the centroid of the feature will be used in its place.
+*  Point symbolizers can apply to any kind of geometry. If the geometry is not a point, the centroid of the geometry is used.
 *  Line symbolizers can apply to both lines and polygons.
-*  Polygon symbolizers can apply to lines as well, by adding a segment connecting the last point of the line to the first.
+*  Polygon symbolizers can apply to lines, by adding a closing segment connecting the first and last points of the line.
 
-The second issue is that there is no standard way to apply a filter identifying the type of the chosen geometry attribute.
+There is also no standard filter to identify the type of a geometry attribute which could be used in rules.
 
-There are a number of workarounds, either requiring data restructuring or the use of non-standard filter functions.
+There are a number of possible ways to accomplish styling by geometry type.  
+They require either data restructuring or the use of non-standard filter functions.
 
 Restructuring the data
 ----------------------

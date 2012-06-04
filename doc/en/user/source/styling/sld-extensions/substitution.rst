@@ -50,20 +50,24 @@ The predefined variables are:
      - **Description**
    * - ``wms_bbox``
      - ``ReferencedEnvelope``
-     - returns the georeferenced extent of the request output
+     - the georeferenced extent of the request output
    * - ``wms_crs``
      - ``CoordinateReferenceSystem``
-     - returns the definition of the output coordinate reference system
+     - the definition of the output coordinate reference system
    * - ``wms_srs``
      - ``String``
-     - returns the code for the output coordinate reference system
+     - the code for the output coordinate reference system
    * - ``wms_width``
      - ``Integer``
-     - returns the width (in pixels) of the output image
+     - the width (in pixels) of the output image
    * - ``wms_height``
      - ``Integer``
-     - returns the height (in pixels) of the output image
+     - the height (in pixels) of the output image
+   * - ``wms_scale_denominator``
+     - ``Integer``
+     - the denominator of the output map scale
 
+     
 
 Example
 -------     

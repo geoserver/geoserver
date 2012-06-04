@@ -67,9 +67,11 @@ Parameterizing SQL Views
 ------------------------
 
 A parametric SQL view is based on a SQL query containing named parameters.  
-The values for the parameters can be provided dynamically in WMS and WFS requests.  
-They can have default values specified.  
-Input validation is supported by specifying validation regular expressions.
+The values for the parameters can be provided dynamically in WMS and WFS requests
+using the ``viewparams`` request parameter.  
+Parameters can have default values specified,
+to handle the situation where they are not supplied in a request.
+Validation of supplied parameter values is supported by specifying validation regular expressions.
 Parameter values are only accepted if they match the regular expression defined for them.
 Appropriate parameter validation should always be used to avoid the risk of `SQL injection attacks <http://en.wikipedia.org/wiki/SQL_injection>`_.
 
@@ -78,53 +80,59 @@ Appropriate parameter validation should always be used to avoid the risk of `SQL
   SQL View parameter substitution should be used with caution, since improperly validated parameters open the risk of SQL injection attack.  
   Where possible, consider using safer methods such as :ref:`dynamic filtering <filtering>` in the request, or :ref:`sld_variable_substitution`.
 
-Parameter names are delimited by ``%`` signs in the query.
+  
+Defining parameters
+^^^^^^^^^^^^^^^^^^^
+
+Within the SQL View query, parameter names are delimited by leading and trailing ``%`` signs.
+The parameters can occur anywhere within the query text, 
+including such uses as within SQL string constants,
+in place of SQL keywords, or representing entire SQL clauses.
+
 Here is an example of a SQL View query for a layer called ``popstates`` with two parameters, ``low`` and ``high``:
 
 .. figure:: images/sqlview-parametricsql.png
    :align: center
 
-Each parameter needs to be defined with its name, default value, and validation expression.  
+Each parameter needs to be defined with its name, an optional default value, and a validation expression.  
 The :guilabel:`Guess parameters from SQL` link can be clicked to infer the query parameters automatically, or they can be entered manually. 
 The result is a table filled with the parameter names, default values and validation expressions:
 
 .. figure:: images/sqlview-paramdefault.png
    :align: center
 
-Default values are optional, but in this case they should be specified, since the query cannot be executed without values for the parameters (because the query ``select gid, state_name, the_geom from pgstates where persons between and`` is invalid SQL). 
-Since the SQL query requires the parameters to be positive integer numbers, the validation regular expressions should be specified to allow only numeric input (i.e. ``^[\d]+$``):
+In this case the default values should be specified, since the query cannot be executed without values for the parameters (because the expanded query ``select gid, state_name, the_geom from pgstates where persons between and`` is invalid SQL). 
+Since the use of the parameters in the SQL query requires their values to be positive integer numbers, the validation regular expressions are specified to allow only numeric input (i.e. ``^[\d]+$``):
 
 .. figure:: images/sqlview-paramcustom.png
    :align: center
    
-Once the default values have been set the **Attributes** :guilabel:`Refresh` link can be clicked to parse the query and retrieve the attribute columns.
-The geometry and identifier details can be corrected if required. 
-From this point the workflow is the same as for a non-parameterized query.
+Once the parameters have been defined, 
+the **Attributes** :guilabel:`Refresh` link is clicked to parse the query and retrieve the attribute columns.
+The computed geometry type and column identifier details can be corrected if required. 
+From this point on the workflow is the same as for a non-parameterized query.
 
 
 Using a parametric SQL View
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``popstates`` SQL View layer can be displayed by invoking the :ref:`layerpreview`.
-Initially all the states are displayed, 
-since no parameter values have been supplied and so the defaults are used.
-The SQL view parameters are specified by adding the ``viewparams`` parameter to the WMS ``GetMap`` request. 
-The ``viewparams`` argument is structured as a list of ``key:value`` pairs, separated by semicolons: 
+The SQL view parameters are specified by adding the ``viewparams`` parameter to the WMS ``GetMap``
+or the WFS ``GetFeature`` request. 
+The ``viewparams`` argument is a list of ``key:value`` pairs, separated by semicolons: 
 
   ``viewparams=p1:v1;p2:v2;...``
   
 If the values contain semicolons or commas these must be escaped with a backslash (e.g. ``\,`` and ``\;``).
 
-For example, to display all states having more than 20 million inhabitatants the following parameter is added to the ``GetMap`` request:
+For example, the ``popstates`` SQL View layer can be displayed by invoking the :ref:`layerpreview`.
+Initially no parameter values are supplied, so the defaults are used and all the states are displayed, 
 
-  ``&viewparams=low:20000000``
+To display all states having more than 20 million inhabitatants the following parameter is added to the ``GetMap`` request: ``&viewparams=low:20000000``
 
 .. figure:: images/sqlview-20millions.png
    :align: center
 
-To display all states having between 2 and 5 millions inhabitatants the view parameters are:  
-
-  ``&viewparams=low:2000000;high:5000000``
+To display all states having between 2 and 5 millions inhabitatants the view parameters are: ``&viewparams=low:2000000;high:5000000``
 
 .. figure:: images/sqlview-2m-5m.png
    :align: center
@@ -157,12 +165,12 @@ For example:
   * ``^[\d\.\+-eE]+$`` checks that a parameter value contains valid characters for floating-point numbers (including scientific notation), but does not check that the value is actually a valid number
   * ``[^;']+`` checks that a parameter value does not contain quotes or semicolumn.  This prevents common SQL injection attacks, but otherwise does not impose much limitation on the actual value
 
-Resources for Regular expressions
+Resources for Validation Regular expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Creating proper validation regular expressions is important for security. 
+Defining effective validation regular expressions is important for security. 
 Regular expressions are a complex topic that cannot be fully addressed here. 
-The following are some useful resources for constructing regular expressions:
+The following are some resources for constructing regular expressions:
 
   * GeoServer uses the standard Java regular expression engine. The `Pattern class Javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_ contain the full specification of the allowed syntax.
   * `<http://www.regular-expressions.info>`_ has many tutorials and examples of regular expressions.

@@ -8,4 +8,5 @@ This section details various advanced strategies for working with SLD.
 .. toctree::
    :maxdepth: 2
 
-   mixed-geometries.rst
+   mixed-geometries
+   transformation-func

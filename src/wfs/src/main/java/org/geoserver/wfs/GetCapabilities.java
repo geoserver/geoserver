@@ -75,7 +75,11 @@ public class GetCapabilities {
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
         provided.add("1.1.0");
-        provided.add("2.0.0");
+
+        if (request instanceof GetCapabilitiesRequest.WFS20) {
+            provided.add("2.0.0");    
+        }
+        
         List<String> accepted = request.getAcceptVersions();
 
         String version = RequestUtils.getVersionPreOws(provided, accepted);

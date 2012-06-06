@@ -242,7 +242,12 @@ public abstract class FeatureTypeSchemaBuilder {
             
             //set the first namespace as the target one
             NamespaceInfo ns = featureTypeInfos[0].getNamespace();
-            schema.setTargetNamespace(ns.getURI());
+
+            //hack for wfs 1.0, the cite tests mandate that in the case of a heterogeneous schema
+            // no target namespace be declared, this conflicts with wfs 2.0
+            if (!(this instanceof GML2)) {
+                schema.setTargetNamespace(ns.getURI());  
+            }
             
             // map of namespace to schemaLocation used to prevent duplicate imports
             Map<String, String> imports = new HashMap<String, String>();

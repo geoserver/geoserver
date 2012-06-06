@@ -155,4 +155,10 @@ public class DescribeFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathExists("//ogc:ServiceException", doc);
         
     }
+
+    public void testMultipleNamespaceNoTargetNamespace() throws Exception {
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&typeName=sf:PrimitiveGeoFeature,cgf:Points");
+        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        assertFalse(doc.getDocumentElement().hasAttribute("targetNamespace"));
+    }
 }

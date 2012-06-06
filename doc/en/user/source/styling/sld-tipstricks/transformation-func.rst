@@ -7,7 +7,7 @@ The Symbology Encoding 1.1 specification defines the following **transformation 
 
 * ``Recode`` transforms a set of discrete attribute values into another set of values
 * ``Categorize`` transforms a continuous-valued attribute into a set of discrete values
-* ``Interpolate`` transforms a continuous-valued attribute into another range of values
+* ``Interpolate`` transforms a continuous-valued attribute into another continuous range of values
 
 These functions provide a concise way to compute styling parameters from feature attribute values.
 Geoserver implements them as :ref:`filter_function` with the same names.

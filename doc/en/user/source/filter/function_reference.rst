@@ -492,3 +492,56 @@ Parsing and formatting functions
    * - parseLong
      - ``number``:String
      - Parses a string into a long integer
+     
+Transformation functions
+--------------------------------
+
+Transformation functions transform values from one data space into another.
+These functions provide a concise way to compute styling parameters from feature attribute values.
+See also :ref:`transformation_func`.
+
+.. list-table::
+   :widths: 20 25 55
+   
+   * - **Name**
+     - **Arguments**
+     - **Description**
+   * - Recode
+     - ``lookupValue``:Object, 
+     
+       ``data``:Object,
+       ``value``:Object, ...
+     - Transforms a ``lookupValue`` from a set of discrete attribute values into another set of values.
+       Any number of ``data``/``value`` pairs may be specified.
+       ``belongsTo`` is optional, and has the value ``succeeding`` or ``preceding``.
+   * - Categorize
+     - ``lookupValue``:Object, 
+       ``thresholdLow``:Object,
+       
+       ``value``:Object,
+       ``threshold``:Object, ...
+       
+       ``belongsTo`` : String
+     - Transforms a continuous-valued attribute value into a set of discrete values.
+       ``lookupValue`` and ``value`` must be an orderable type (typically numeric).
+       The initial ``thresholdLow`` value is required.
+       Any number of additional ``value``/``threshold`` pairs may be specified.
+       ``belongsTo`` is optional, and defines which interval contains lookup values equal to a threshold value
+       with the value ``succeeding`` or ``preceding``.
+   * - Interpolate
+     - ``lookupValue``:Numeric, 
+       
+       ``data``:Numeric,
+       ``value``:Numeric *or* String, 
+       ...
+       
+       ``mode``:String,
+       ``method``:String
+     - Transforms a continuous-valued attribute value into another continuous range of values.
+       Any number of ``data``/``value`` pairs may be specified.
+       ``mode`` is optional, and defines the interpolation algorithm used
+       with the value ``linear``, ``cosine`` or ``cubic``.
+       ``method`` is optional, and defines whether the target values are numeric or colors
+       with the value ``numeric`` or ``color``.
+
+

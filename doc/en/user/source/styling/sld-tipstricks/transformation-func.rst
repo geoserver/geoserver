@@ -37,14 +37,14 @@ The function can be used within SLD styling parameters
 to convert the value of a feature attribute
 into specific values for a parameter such as color, size, width, opacity, etc.
 
-The transformation is defined by a set of *(input, output)* value pairs.
+The recoding is defined by a set of *(input, output)* value pairs.
 
 Example
 ^^^^^^^
 
 Consider a chloropleth map of the US states dataset 
 using the fill color to indicate the topographic regions for the states.  
-The dataset has an attribute ``SUB_REGION`` which contains the region code for each state.
+The dataset has an attribute ``SUB_REGION`` containing the region code for each state.
 The ``Recode`` function is used to map each region code into a different color.
 
 The symbolizer for this style is:
@@ -106,8 +106,10 @@ The function can be used within SLD styling parameters
 to convert the value of a feature attribute
 into specific values for a parameter such as color, size, width, opacity, etc.
 
-The transformation is defined by a set of *(input, output)* value pairs
-specifying how ranges in the input map to output values.
+The categorization is defined by a list of alternating output values 
+and data thresholds.
+The threshold values define the breaks between the input ranges.
+Inputs are converted into output values depending on which range they fall in.
 
 Example
 ^^^^^^^
@@ -115,8 +117,10 @@ Example
 Consider a chloropleth map of the US states dataset 
 using the fill color to indicate a categorization of the states by population.  
 The dataset has attributes ``PERSONS`` and ``LAND_KM`` from which the population density 
-can be computed using the ``Div`` operator.
-The ``Categorize`` function is used to map density ranges code into a set of colors.
+is computed using the ``Div`` operator.
+This value is input to the ``Categorize`` function,
+which is used to assign different colors 
+to the density ranges [ <= 20], [20 - 100], and [ > 100].
 
 The symbolizer for this style is:
 
@@ -163,7 +167,8 @@ such as color, size, width, opacity, etc.
 
 The transformation is defined by a set of *(input, output)* control points 
 chosen along a desired mapping curve.
-Input values are interpolated along the curve to compute output values.
+Piecewise interpolation along the curve is used
+to compute an output value for any input value.
 
 The function is able to compute either numeric or color values as output.
 This is known as the **interpolation method**, 
@@ -176,20 +181,25 @@ which is an optional parameter with values of
 Example
 ^^^^^^^
 
-Interpolating over color ranges allows concisely specifying 
+Interpolating over color ranges allows concise definition of 
 continuously-varying colors for chloropleth (thematic) maps.
-As an example, consider a chloropleth map of the US states dataset 
+As an example, consider a map of the US states dataset 
 using the fill color to indicate the population of the states.  
-The dataset has an attribute ``PERSONS`` which contains the population of each state.
-The population values lie in the range 0 to around 30,000,000.  
-(The range used for interpolation is 0 - 23,000,000, to create a better spread of values through the range.) 
-The population values are interpolated across a curve mapping population count into colors.
-In this case three number/color pairs are used to define the mapping curve, 
-int order to reveal the population difference in low-population states
-as well as accomodate the states with very large populations.
+The dataset has an attribute ``PERSONS`` containing the population of each state.
+The population values lie in the range 0 to around 30,000,000.
+The interpolation curve is defined by three control points which assign colors to the 
+population levels 0, 9,000,000 and 23,000,000.
+The colors for population values are computed by
+piecewise linear interpolation along this curve. 
+For example, a state with a population of
+16,000,000 is displayed with a color midway between the ones
+for the middle and upper control points. 
+States with populations greater than 23,000,000 are displayed with the last color.
+
 Because the interpolation is being performed over color values, 
-the method parameter is supplied, with a value of ```color``.
-No interpolation mode is supplied, so the default linear interpolation is used.
+the method parameter is supplied, with a value of ``color``.
+Since the default linear interpolation is used,
+no interpolation mode is supplied,
 
 The symbolizer for this style is:
 

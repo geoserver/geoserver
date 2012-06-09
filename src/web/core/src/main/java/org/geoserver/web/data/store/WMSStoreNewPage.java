@@ -94,8 +94,13 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 WebMapServer server = new WebMapServer(new URL(url), client);
                 server.getCapabilities();
             } catch(Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to connect to the remote WMS server", e);
+                String msg = e.getMessage();
+                if(msg == null) {
+                    msg = e.toString();
+                }
                 error(validatable, "WMSCapabilitiesValidator.connectionFailure", 
-                        Collections.singletonMap("error", e.getMessage()));
+                        Collections.singletonMap("error", msg));
             }
         }
         

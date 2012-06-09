@@ -28,17 +28,6 @@ import org.w3c.dom.NodeList;
 
 public class GetCapabilitiesTest extends WFSTestSupport {
     
-    protected static final Schema WFS100_SCHEMA;
-    
-    static {
-        try {
-            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            WFS100_SCHEMA = factory.newSchema(new File("./src/main/resources/schemas/wfs/1.0.0/WFS-capabilities.xsd"));
-        } catch(Exception e) {
-            throw new RuntimeException("Could not parse the WFS 1.0.0 schemas", e);
-        }
-    }
-    
 //    /**
 //     * This is a READ ONLY TEST so we can use one time setup
 //     */
@@ -55,12 +44,11 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.0.0");
-        print(doc);
+        // print(doc);
         assertEquals("WFS_Capabilities", doc.getDocumentElement()
                 .getNodeName());
         XpathEngine xpath =  XMLUnit.newXpathEngine();
         assertTrue(xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength() > 0);
-        checkValidationErrors(doc, WFS100_SCHEMA);
     }
     
     public void testSkipMisconfiguredLayers() throws Exception {

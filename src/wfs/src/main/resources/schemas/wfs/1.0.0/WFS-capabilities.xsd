@@ -339,6 +339,7 @@
    <xsd:element name="SHAPE-ZIP" type="wfs:EmptyType" substitutionGroup="wfs:_OutputFormat"/>
    <xsd:element name="GML3" type="wfs:EmptyType" substitutionGroup="wfs:_OutputFormat"/>
    <xsd:element name="GEOJSON" type="wfs:EmptyType" substitutionGroup="wfs:_OutputFormat"/>
+   <xsd:element name="CSV" type="wfs:EmptyType" substitutionGroup="wfs:_OutputFormat"/>
    <xsd:complexType name="ResultFormatType">
       <xsd:choice maxOccurs="unbounded">
          <xsd:element ref="wfs:GML2"/>

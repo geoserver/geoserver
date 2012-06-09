@@ -1,0 +1,72 @@
+      <ogc:Filter_Capabilities
+         xmlns:ogc="http://www.opengis.net/ogc"
+         xmlns:gml="http://www.opengis.net/gml"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.opengis.net/ogc
+http://schemas.opengis.net/filter/1.1.0/filterCapabilities.xsd">
+      <ogc:Spatial_Capabilities>
+         <ogc:GeometryOperands>
+            <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:ArcByCenterPoint</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:CircleByCenterPoint</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Arc</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Circle</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:ArcByBulge</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Bezier</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Clothoid</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:CubicSpline</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Geodesic</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:OffsetCurve</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Triangle</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:PolyhedralSurface</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:TriangulatedSurface</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Tin</ogc:GeometryOperand>
+            <ogc:GeometryOperand>gml:Solid</ogc:GeometryOperand>
+         </ogc:GeometryOperands>
+         <ogc:SpatialOperators>
+            <ogc:SpatialOperator name="BBOX"/>
+            <ogc:SpatialOperator name="Equals"/>
+            <ogc:SpatialOperator name="Disjoint"/>
+            <ogc:SpatialOperator name="Intersects"/>
+            <ogc:SpatialOperator name="Touches"/>
+            <ogc:SpatialOperator name="Crosses"/>
+            <ogc:SpatialOperator name="Within"/>
+            <ogc:SpatialOperator name="Contains"/>
+            <ogc:SpatialOperator name="Overlaps"/>
+            <ogc:SpatialOperator name="Beyond"/>
+         </ogc:SpatialOperators>
+      </ogc:Spatial_Capabilities>
+      <ogc:Scalar_Capabilities>
+         <ogc:LogicalOperators/>
+         <ogc:ComparisonOperators>
+           <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+           <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+         </ogc:ComparisonOperators>
+         <ogc:ArithmeticOperators>
+            <ogc:SimpleArithmetic/>
+            <ogc:Functions>
+               <ogc:FunctionNames>
+                  <ogc:FunctionName nArgs="1">MIN</ogc:FunctionName>
+                  <ogc:FunctionName nArgs="1">MAX</ogc:FunctionName>
+                  <ogc:FunctionName nArgs="1">SIN</ogc:FunctionName>
+                  <ogc:FunctionName nArgs="1">COS</ogc:FunctionName>
+                  <ogc:FunctionName nArgs="1">TAN</ogc:FunctionName>
+               </ogc:FunctionNames>
+            </ogc:Functions>
+         </ogc:ArithmeticOperators>
+      </ogc:Scalar_Capabilities>
+      <ogc:Id_Capabilities>
+         <ogc:EID/>
+         <ogc:FID/>
+      </ogc:Id_Capabilities>
+   </ogc:Filter_Capabilities>

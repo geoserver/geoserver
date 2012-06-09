@@ -4,7 +4,9 @@
  */
 package org.geoserver.wfs;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -78,5 +80,24 @@ public abstract class WFSTestSupport extends GeoServerTestSupport {
         
         getTestData().registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+    }
+    
+    protected void setUpNamespaces(Map<String,String> namespaces) {
+    }
+
+    protected List<String> getSupportedSpatialOperatorsList(boolean v1_0_0) {
+        return Arrays.asList(new String[] {
+                "Disjoint",
+                "Equals",
+                "DWithin",
+                "Beyond",
+                "Intersect" + (v1_0_0 ? "" : "s"),
+                "Touches",
+                "Crosses",
+                "Within",
+                "Contains",
+                "Overlaps",
+                "BBOX"
+        });
     }
 }

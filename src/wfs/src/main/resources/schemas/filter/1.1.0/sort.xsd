@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+   targetNamespace="http://www.opengis.net/ogc"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="1.1.1">
+   <!-- 
+      filter is an OGC Standard.
+      Copyright (c) 2002,2003,2004,2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+      To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+      
+      Updated: 2010-01-22
+   -->
+   <xsd:include schemaLocation="expr.xsd"/>
+
+   <!-- ============================================= -->
+   <!-- SORTBY EXPRESSION                             -->
+   <!-- ============================================= -->
+   <xsd:element name="SortBy" type="ogc:SortByType"/>
+
+   <!-- ============================================= -->
+   <!-- COMPLEX TYPES                                 -->
+   <!-- ============================================= -->
+   <xsd:complexType name="SortByType">
+      <xsd:sequence>
+         <xsd:element name="SortProperty"
+                      type="ogc:SortPropertyType"
+                      maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="SortPropertyType">
+      <xsd:sequence>
+         <xsd:element ref="ogc:PropertyName"/>
+         <xsd:element name="SortOrder"
+                      type="ogc:SortOrderType"
+                      minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="SortOrderType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="DESC"/>
+         <xsd:enumeration value="ASC"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

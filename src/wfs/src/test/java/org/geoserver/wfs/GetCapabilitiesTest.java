@@ -2,9 +2,14 @@ package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import junit.framework.Test;
 
@@ -22,6 +27,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GetCapabilitiesTest extends WFSTestSupport {
+    
+    protected static final Schema WFS100_SCHEMA;
+    
+    static {
+        try {
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            WFS100_SCHEMA = factory.newSchema(new File("./src/main/resources/schemas/wfs/1.0.0/WFS-capabilities.xsd"));
+        } catch(Exception e) {
+            throw new RuntimeException("Could not parse the WFS 1.0.0 schemas", e);
+        }
+    }
+    
 //    /**
 //     * This is a READ ONLY TEST so we can use one time setup
 //     */
@@ -37,11 +54,13 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     
 
     public void testGet() throws Exception {
-        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities");
-        assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement()
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.0.0");
+        print(doc);
+        assertEquals("WFS_Capabilities", doc.getDocumentElement()
                 .getNodeName());
         XpathEngine xpath =  XMLUnit.newXpathEngine();
         assertTrue(xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength() > 0);
+        checkValidationErrors(doc, WFS100_SCHEMA);
     }
     
     public void testSkipMisconfiguredLayers() throws Exception {
@@ -114,6 +133,24 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         }
         
         assertEquals( s1, s2 );
+    }
+
+    public void testSupportedSpatialOperators() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.0.0");
+
+        Element spatialOperators = getFirstElementByTagName(doc,
+                "ogc:Spatial_Operators");
+        NodeList ops = spatialOperators.getChildNodes();
+
+        TreeSet<String> o = new TreeSet<String>();
+        for (int i = 0; i < ops.getLength(); i++) {
+            String operator = ops.item(i).getLocalName();
+            o.add(operator);
+        }
+
+        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList(true);
+        assertEquals(expectedSpatialOperators.size(), o.size());
+        assertTrue(o.containsAll(expectedSpatialOperators));
     }
 
     public void testTypeNameCount() throws Exception {

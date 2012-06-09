@@ -115,21 +115,21 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * @throws ServiceException
      */
     public void verifyUpdateSequence(GetCapabilitiesType request) throws ServiceException {
-    	long reqUS = -1;
+        long reqUS = -1;
         if (request.getUpdateSequence() != null) {
-	        try {
-	        	reqUS = Long.parseLong(request.getUpdateSequence());
-	        } catch (NumberFormatException nfe) {
-	        	throw new ServiceException("GeoServer only accepts numbers in the updateSequence parameter");
-	        }
+            try {
+                reqUS = Long.parseLong(request.getUpdateSequence());
+            } catch (NumberFormatException nfe) {
+                throw new ServiceException("GeoServer only accepts numbers in the updateSequence parameter");
+            }
         }
         long geoUS = wfs.getGeoServer().getGlobal().getUpdateSequence();
-    	if (reqUS > geoUS) {
-    		throw new ServiceException("Client supplied an updateSequence that is greater than the current sever updateSequence","InvalidUpdateSequence");
-    	}
-    	if (reqUS == geoUS) {
-    		throw new ServiceException("WFS capabilities document is current (updateSequence = " + geoUS + ")","CurrentUpdateSequence");
-    	}
+        if (reqUS > geoUS) {
+            throw new ServiceException("Client supplied an updateSequence that is greater than the current sever updateSequence","InvalidUpdateSequence");
+        }
+        if (reqUS == geoUS) {
+            throw new ServiceException("WFS capabilities document is current (updateSequence = " + geoUS + ")","CurrentUpdateSequence");
+        }
     }
     
     Set<FunctionName> getAvailableFunctionNames() {
@@ -1063,14 +1063,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0" }),
                         parameter("AcceptFormats", new String[] { "text/xml" })
-                    //    				parameter( 
-                    //    					"Sections", 
-                    //    					new String[]{ 
-                    //    						"ServiceIdentification", "ServiceProvider", "OperationsMetadata",
-                    //    						"FeatureTypeList", "ServesGMLObjectTypeList", "SupportsGMLObjectTypeList", 
-                    //    						"Filter_Capabilities"
-                    //    					} 
-                    //    				) 
+                    //                  parameter( 
+                    //                      "Sections", 
+                    //                      new String[]{ 
+                    //                          "ServiceIdentification", "ServiceProvider", "OperationsMetadata",
+                    //                          "FeatureTypeList", "ServesGMLObjectTypeList", "SupportsGMLObjectTypeList", 
+                    //                          "Filter_Capabilities"
+                    //                      } 
+                    //                  ) 
                     };
                 operation("GetCapabilities", parameters, true, true);
             }
@@ -1444,6 +1444,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     attributes(new String[] { "name", "Intersects" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Touches" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Crosses" }));
+                element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Within" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Contains" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Overlaps" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "BBOX" }));

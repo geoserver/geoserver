@@ -131,7 +131,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
             ops.add(format);
         }
 
-        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList();
+        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList(false);
         assertEquals(expectedSpatialOperators.size(), ops.size());
         assertTrue(ops.containsAll(expectedSpatialOperators));
     }

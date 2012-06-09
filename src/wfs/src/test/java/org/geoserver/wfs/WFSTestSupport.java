@@ -87,13 +87,13 @@ public abstract class WFSTestSupport extends GeoServerTestSupport {
     protected void setUpNamespaces(Map<String,String> namespaces) {
     }
 
-    protected List<String> getSupportedSpatialOperatorsList() {
+    protected List<String> getSupportedSpatialOperatorsList(boolean wfs1_0_0) {
         return Arrays.asList(new String[] {
                 "Disjoint",
                 "Equals",
                 "DWithin",
                 "Beyond",
-                "Intersects",
+                "Intersect" + (wfs1_0_0 ? "" : "s"),
                 "Touches",
                 "Crosses",
                 "Within",

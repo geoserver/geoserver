@@ -793,7 +793,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 element(ogc + "Equals", null);
                 element(ogc + "DWithin", null);
                 element(ogc + "Beyond", null);
-                element(ogc + "Intersects", null);
+                element(ogc + "Intersect", null);
                 element(ogc + "Touches", null);
                 element(ogc + "Crosses", null);
                 element(ogc + "Within", null);

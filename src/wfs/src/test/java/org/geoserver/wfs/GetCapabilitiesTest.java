@@ -2,11 +2,10 @@ package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-
-import junit.framework.Test;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -17,6 +16,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wfs.xml.v1_0_0.WFSConfiguration;
+import org.geotools.xml.Parser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -57,12 +58,12 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         
         // fetch capabilities document
         Document doc = getAsDOM("wfs?version=1.0.0&service=WFS&request=getCapabilities");
-        print(doc);
+        // print(doc);
         int count = 0; 
         for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
             if (ft.enabled()) count++;
         }
-        print(doc);
+        // print(doc);
         assertXpathEvaluatesTo(String.valueOf(count - 1), "count(//wfs:FeatureType)", doc);
     }
     
@@ -130,7 +131,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             o.add(operator);
         }
 
-        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList();
+        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList(true);
         assertEquals(expectedSpatialOperators.size(), o.size());
         assertTrue(o.containsAll(expectedSpatialOperators));
     }

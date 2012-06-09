@@ -113,6 +113,29 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         
         assertEquals( s1, s2 );
     }
+
+    public void testSupportedSpatialOperators() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+
+        // let's look for the spatial capabilities, extract all the spatial operators
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList spatialOperators = engine
+                .getMatchingNodes(
+                        "//fes:Spatial_Capabilities/fes:SpatialOperators/fes:SpatialOperator/@name",
+                        doc);
+
+        Set<String> ops = new TreeSet<String>();
+        for (int i = 0; i < spatialOperators.getLength(); i++) {
+            String format = spatialOperators.item(i).getFirstChild()
+                    .getNodeValue();
+            ops.add(format);
+        }
+
+        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList();
+        assertEquals(expectedSpatialOperators.size(), ops.size());
+        assertTrue(ops.containsAll(expectedSpatialOperators));
+    }
+
     public void testFunctionArgCount() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
         

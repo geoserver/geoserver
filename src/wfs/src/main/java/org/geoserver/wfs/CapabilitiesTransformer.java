@@ -793,7 +793,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 element(ogc + "Equals", null);
                 element(ogc + "DWithin", null);
                 element(ogc + "Beyond", null);
-                element(ogc + "Intersect", null);
+                element(ogc + "Intersects", null);
                 element(ogc + "Touches", null);
                 element(ogc + "Crosses", null);
                 element(ogc + "Within", null);
@@ -1517,6 +1517,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     attributes(new String[] { "name", "Intersects" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Touches" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Crosses" }));
+                element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Within" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Contains" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "Overlaps" }));
                 element("ogc:SpatialOperator", null, attributes(new String[] { "name", "BBOX" }));
@@ -2126,6 +2127,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                    element("fes:SpatialOperator", null, attributes(new String[] { "name", "Intersects" }));
                    element("fes:SpatialOperator", null, attributes(new String[] { "name", "Touches" }));
                    element("fes:SpatialOperator", null, attributes(new String[] { "name", "Crosses" }));
+                   element("fes:SpatialOperator", null, attributes(new String[] { "name", "Within" }));
                    element("fes:SpatialOperator", null, attributes(new String[] { "name", "Contains" }));
                    element("fes:SpatialOperator", null, attributes(new String[] { "name", "Overlaps" }));
                    element("fes:SpatialOperator", null, attributes(new String[] { "name", "BBOX" }));

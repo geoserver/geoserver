@@ -117,6 +117,24 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals( s1, s2 );
     }
 
+    public void testSupportedSpatialOperators() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=1.0.0");
+
+        Element spatialOperators = getFirstElementByTagName(doc,
+                "ogc:Spatial_Operators");
+        NodeList ops = spatialOperators.getChildNodes();
+
+        TreeSet<String> o = new TreeSet<String>();
+        for (int i = 0; i < ops.getLength(); i++) {
+            String operator = ops.item(i).getLocalName();
+            o.add(operator);
+        }
+
+        List<String> expectedSpatialOperators = getSupportedSpatialOperatorsList();
+        assertEquals(expectedSpatialOperators.size(), o.size());
+        assertTrue(o.containsAll(expectedSpatialOperators));
+    }
+
     public void testTypeNameCount() throws Exception {
         // filter on an existing namespace
         Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=getCapabilities");

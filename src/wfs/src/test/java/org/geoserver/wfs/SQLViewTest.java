@@ -101,7 +101,7 @@ public class SQLViewTest extends WFSTestSupport {
     }
     
     public void testViewParams() throws Exception {
-        Document dom = getAsDOM("wfs?request=GetFeature&typename=" + viewTypeName + "&version=1.1&viewparams=bool:true;name:name-f003");
+        Document dom = getAsDOM("wfs?service=WFS&request=GetFeature&typename=" + viewTypeName + "&version=1.1&viewparams=bool:true;name:name-f003");
         print(dom);
         
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", dom);

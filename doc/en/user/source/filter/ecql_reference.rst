@@ -56,8 +56,10 @@ Predicates are boolean-valued expressions which specify relationships between va
      - Comparison operations
    * - :ref:`ecql_expr` **[** ``NOT`` **]** ``BETWEEN`` :ref:`ecql_expr` ``AND`` :ref:`ecql_expr` 
      - Tests whether a value lies in or outside a range (inclusive)
-   * - :ref:`ecql_expr` **[** ``NOT`` **]** ``LIKE`` *like-pattern*
-     - Simple pattern matching.  *like-pattern* uses the ``%`` character as a wild-card
+   * - :ref:`ecql_expr` **[** ``NOT`` **]** ``LIKE`` | ``ILIKE`` *like-pattern*
+     - Simple pattern matching.  
+       *like-pattern* uses the ``%`` character as a wild-card for any number of characters.
+       ``ILIKE`` does case-insensitive matching.
    * - :ref:`ecql_expr` **[** ``NOT`` **]** ``IN (`` :ref:`ecql_expr`  **{** ``,``:ref:`ecql_expr`  **}**  ``)`` 
      - Tests whether an expression value is (not) in a set of values
    * - :ref:`ecql_expr` ``IN (`` :ref:`ecql_literal`  **{** ``,``:ref:`ecql_literal`  **}**  ``)`` 

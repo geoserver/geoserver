@@ -52,4 +52,4 @@ if [ ! -r "$GEOSERVER_HOME"/start.jar ]; then
 fi
 
 cd "$GEOSERVER_HOME"
-exec "$_RUNJAVA" -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar --stop
+exec "$_RUNJAVA" $JAVA_OPTS -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar --stop

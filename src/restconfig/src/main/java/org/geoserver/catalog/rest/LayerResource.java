@@ -99,10 +99,16 @@ public class LayerResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override
-            protected void postEncodeReference(Object obj, String ref,
+            protected void postEncodeReference(Object obj, String ref, String prefix, 
                     HierarchicalStreamWriter writer, MarshallingContext context) {
                 if ( obj instanceof StyleInfo ) {
-                    encodeLink( "/styles/" + encode(((StyleInfo)obj).getName()), writer);
+                    StyleInfo style = (StyleInfo) obj;
+                    StringBuffer link = new StringBuffer();
+                    if (style.getWorkspace() != null) {
+                        link.append("/workspaces/").append(encode(style.getWorkspace().getName()));
+                    }
+                    link.append("/styles/").append(encode(style.getName()));
+                    encodeLink(link.toString(), writer);
                 }
                 if ( obj instanceof ResourceInfo ) {
                     ResourceInfo r = (ResourceInfo) obj;

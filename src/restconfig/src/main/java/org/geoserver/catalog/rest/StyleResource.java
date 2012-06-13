@@ -132,28 +132,33 @@ public class StyleResource extends AbstractCatalogResource {
             }
             
             //ensure that the style does not already exist
-            if ( catalog.getStyleByName( name ) != null ) {
+            if ( catalog.getStyleByName(workspace, name ) != null ) {
                 throw new RestletException( "Style " + name + " already exists.", Status.CLIENT_ERROR_FORBIDDEN  );
             }
             
             //serialize the style out into the data directory
             GeoServerResourceLoader loader = catalog.getResourceLoader();
+            String path = "styles/" +  name + ".sld";
+            if (workspace != null) {
+                path = "workspaces/" + workspace + "/" + path;
+            }
+
             File f;
             try {
-                f = loader.find( "styles/" +  name + ".sld" );
+                f = loader.find(path);
             } 
             catch (IOException e) {
                 throw new RestletException( "Error looking up file", Status.SERVER_ERROR_INTERNAL, e );
             }
             
             if ( f != null ) {
-                String msg = "SLD file " + name + ".sld already exists."; 
+                String msg = "SLD file " + path + ".sld already exists."; 
                 throw new RestletException( msg, Status.CLIENT_ERROR_FORBIDDEN);
             }
             
             //TODO: have the writing out of the style delegate to ResourcePool.writeStyle()
             try {
-                f = loader.createFile( "styles/" + name + ".sld") ;
+                f = loader.createFile(path) ;
                 
                 //serialize the file to the styles directory
                 BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream ( f ) );

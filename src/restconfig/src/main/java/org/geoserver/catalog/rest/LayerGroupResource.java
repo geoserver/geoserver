@@ -126,11 +126,16 @@ public class LayerGroupResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( new XStreamPersister.Callback() {
            @Override
-           protected void postEncodeReference(Object obj, String ref,
+           protected void postEncodeReference(Object obj, String ref, String prefix,
                 HierarchicalStreamWriter writer, MarshallingContext context) {
             
                if ( obj instanceof StyleInfo ) {
-                   encodeLink("/styles/" + encode(ref), writer);
+                   StringBuffer link = new StringBuffer();
+                   if (prefix != null) {
+                       link.append("/workspaces/").append(encode(prefix));
+                   }
+                   link.append("/styles/").append(encode(ref));
+                   encodeLink(link.toString(), writer);
                }
                if ( obj instanceof LayerInfo ) {
                    encodeLink("/layers/" + encode(ref), writer);

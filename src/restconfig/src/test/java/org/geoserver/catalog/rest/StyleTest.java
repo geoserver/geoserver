@@ -17,6 +17,7 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.styling.Style;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -141,6 +142,23 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull( catalog.getStyleByName( "foo" ) );
     }
     
+    public void testPostAsSLDToWorkspace() throws Exception {
+        assertNull( catalog.getStyleByName( "gs", "foo" ) );
+        
+        String xml = newSLDXML();
+
+        MockHttpServletResponse response = 
+            postAsServletResponse( "/rest/workspaces/gs/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+        assertEquals( 201, response.getStatusCode() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/styles/foo" ) );
+        
+        assertNotNull( catalog.getStyleByName( "gs", "foo" ) );
+
+        GeoServerResourceLoader rl = getResourceLoader();
+        assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
+    }
+
     public void testPostAsSLDWithName() throws Exception {
         String xml = newSLDXML();
 
@@ -301,6 +319,22 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatusCode());
 
         assertNull(cat.getStyleByName("gs", "foo"));
+    }
+
+    public void testDeleteFromWorkspaceWithPurge() throws Exception {
+        testPostAsSLDToWorkspace();
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+
+        GeoServerResourceLoader rl = getResourceLoader();
+        assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
+        
+        MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/styles/foo?purge=true");
+        assertEquals(200, response.getStatusCode());
+
+        assertNull(cat.getStyleByName("gs", "foo"));
+        assertNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
     }
 
     public void testGetAllByLayer() throws Exception {

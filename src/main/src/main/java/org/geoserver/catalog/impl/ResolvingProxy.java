@@ -36,7 +36,16 @@ public class ResolvingProxy extends ProxyBase {
      * @throws RuntimeException If creating the proxy fails.
      */
     public static <T> T create( String ref, Class<T> clazz ) {
-        InvocationHandler h = new ResolvingProxy( ref );
+        return create(ref, null, clazz);
+    }
+
+    /**
+     * Wraps an object in the proxy, specifying a prefix for the reference.
+     * 
+     * @throws RuntimeException If creating the proxy fails.
+     */
+    public static <T> T create( String ref, String prefix, Class<T> clazz ) {
+        InvocationHandler h = new ResolvingProxy(ref, prefix);
         
         Class proxyClass = 
             Proxy.getProxyClass( clazz.getClassLoader(), clazz );
@@ -58,6 +67,8 @@ public class ResolvingProxy extends ProxyBase {
             InvocationHandler h = Proxy.getInvocationHandler( object );
             if ( h instanceof ResolvingProxy ) {
                 String ref = ((ResolvingProxy)h).getRef();
+                String pre = ((ResolvingProxy)h).getPrefix();
+
                 if ( object instanceof WorkspaceInfo ) {
                     Object ws = catalog.getWorkspace( ref );
                     if ( ws == null ) { 
@@ -103,6 +114,13 @@ public class ResolvingProxy extends ProxyBase {
                 if ( object instanceof StyleInfo ) {
                     Object s = catalog.getStyle( ref );
                     if ( s == null ) {
+                        if (pre != null) {
+                            //look up in workspace
+                            s = catalog.getStyleByName(pre, ref);
+                        }
+                    }
+                    if (s == null) {
+                        //still no luck
                         s = catalog.getStyleByName( ref );
                     }
                     return (T) s;
@@ -118,14 +136,28 @@ public class ResolvingProxy extends ProxyBase {
      */
     String ref;
     
+    /**
+     * optional prefix, used to reference by name inside of a workspace
+     */
+    String prefix;
+    
     public ResolvingProxy(String ref) {
-        this.ref = ref;
+        this(ref, null);
     }
     
+    public ResolvingProxy(String ref, String prefix) {
+        this.ref = ref;
+        this.prefix = prefix;
+    }
+
     public String getRef() {
         return ref;
     }
-    
+
+    public String getPrefix() {
+        return prefix;
+    }
+
     @Override
     protected Object handleGetUnSet(Object proxy, Method method, String property) throws Throwable {
         if ( "id".equalsIgnoreCase( property ) ) {

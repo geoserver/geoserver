@@ -289,7 +289,7 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         persister.setHideFeatureTypeAttributes();
         persister.setCallback( new XStreamPersister.Callback() {
             @Override
-            protected void postEncodeReference(Object obj, String ref,
+            protected void postEncodeReference(Object obj, String ref, String prefix,
                     HierarchicalStreamWriter writer, MarshallingContext context) {
                 if ( obj instanceof NamespaceInfo ) {
                     NamespaceInfo ns = (NamespaceInfo) obj;

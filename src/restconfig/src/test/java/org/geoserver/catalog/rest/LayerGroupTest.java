@@ -242,4 +242,65 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
         assertNull(cat.getLayerGroupByName("sf", "foo"));
     }
+
+    public void testLayersStylesInWorkspace() throws Exception {
+        testPostToWorkspace();
+
+        Catalog cat = getCatalog();
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName("s1");
+        s.setWorkspace(cat.getWorkspaceByName("sf"));
+        s.setFilename("s1.sld");
+        cat.add(s);
+
+        s = cat.getFactory().createStyle();
+        s.setName("s2");
+        s.setWorkspace(cat.getWorkspaceByName("sf"));
+        s.setFilename("s2.sld");
+        cat.add(s);
+        
+        String xml = 
+                "<layerGroup>" +
+                    "<layers>" +
+                      "<layer>PrimitiveGeoFeature</layer>" +
+                      "<layer>AggregateGeoFeature</layer>" +
+                    "</layers>" + 
+                    "<styles>" +
+                      "<style>" + 
+                          "<name>s1</name>" + 
+                          "<workspace>sf</workspace>" + 
+                      "</style>" +
+                      "<style>" + 
+                          "<name>s2</name>" + 
+                          "<workspace>sf</workspace>" + 
+                      "</style>" +
+                    "</styles>" +
+                  "</layerGroup>";
+            
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/sf/layergroups/foo", xml, "text/xml" );
+        assertEquals( 200, response.getStatusCode() );
+        
+        LayerGroupInfo lg = cat.getLayerGroupByName("sf", "foo");
+        assertEquals(2, lg.getLayers().size());
+        assertEquals(2, lg.getStyles().size());
+
+        assertEquals("PrimitiveGeoFeature", lg.getLayers().get(0).getName());
+        assertEquals("AggregateGeoFeature", lg.getLayers().get(1).getName());
+
+        assertEquals("s1", lg.getStyles().get(0).getName());
+        assertNotNull(lg.getStyles().get(0).getWorkspace());
+        assertEquals("sf", lg.getStyles().get(0).getWorkspace().getName());
+        
+        assertEquals("s2", lg.getStyles().get(1).getName());
+        assertNotNull(lg.getStyles().get(1).getWorkspace());
+        assertEquals("sf", lg.getStyles().get(1).getWorkspace().getName());
+
+        Document dom = getAsDOM("/rest/workspaces/sf/layergroups/foo.xml");
+        
+        assertXpathEvaluatesTo("http://localhost/geoserver/rest/workspaces/sf/styles/s1.xml", 
+           "//style[name = 's1']/atom:link/@href", dom );
+        assertXpathEvaluatesTo("http://localhost/geoserver/rest/workspaces/sf/styles/s2.xml", 
+                "//style[name = 's2']/atom:link/@href", dom );
+    }
 }

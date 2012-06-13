@@ -148,7 +148,7 @@ public class WMSStoreResource extends AbstractCatalogResource {
                     writer.endNode();
                 }
                 @Override
-                protected void postEncodeReference(Object obj, String ref,
+                protected void postEncodeReference(Object obj, String ref, String prefix,
                         HierarchicalStreamWriter writer, MarshallingContext context) {
                     if ( obj instanceof WorkspaceInfo ) {
                         encodeLink("/workspaces/" + ref, writer );

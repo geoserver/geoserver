@@ -16,6 +16,7 @@ import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 
 public class GeoServerCustomAuthTest extends GeoServerSecurityTestSupport {
 
@@ -77,7 +78,7 @@ public class GeoServerCustomAuthTest extends GeoServerSecurityTestSupport {
                     (UsernamePasswordAuthenticationToken)authentication;
                 if ("foo".equals(up.getPrincipal()) && "bar".equals(up.getCredentials())) {
                     authentication = new UsernamePasswordAuthenticationToken("foo", "bar", 
-                        (List) Collections.emptyList());
+                        Collections.<GrantedAuthority> emptyList());
                 }
             }
             return authentication;

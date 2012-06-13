@@ -326,4 +326,18 @@ public abstract class GeoServerSecurityProvider {
      */
     public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {
     }
+    
+    /**
+     * Startup hook - this will be executed after loading the security 
+     * configuration, allowing plugins to apply custom modifications to the 
+     * security settings.
+     */
+    public void init(GeoServerSecurityManager manager) {
+    }
+
+    /**
+     * Shutdown hook - this will be executed before unloading the security configuration.
+     */
+    public void destroy(GeoServerSecurityManager manager) {
+    }
 }

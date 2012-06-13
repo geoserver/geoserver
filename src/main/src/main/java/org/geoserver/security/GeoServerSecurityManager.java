@@ -294,6 +294,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 keyStoreProvider.commitMasterPasswordChange();
                 // check if there is an outstanding master password change in case of SPrin injection                 
                 init();
+                for (GeoServerSecurityProvider securityProvider 
+                        : GeoServerExtensions.extensions(GeoServerSecurityProvider.class))
+                {
+                    securityProvider.init(this);
+                }
             } catch (Exception e) {
                 throw new BeanCreationException("Error occured reading security configuration", e);
             }
@@ -324,6 +329,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     }
 
     public void destroy() throws Exception {
+        for (GeoServerSecurityProvider securityProvider 
+                : GeoServerExtensions.extensions(GeoServerSecurityProvider.class))
+        {
+            securityProvider.destroy(this);
+        }
         userGroupServices.clear();
         roleServices.clear();
 

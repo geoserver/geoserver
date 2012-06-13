@@ -63,7 +63,7 @@ There are three elements that can be included inside the ``<Stroke>`` element.
      - No
      - Renders the line with a repeated linear graphic.
    * - ``<CssParameter>``
-     - No
+     - 0..N
      - Determines the stroke styling parameters.
      
 

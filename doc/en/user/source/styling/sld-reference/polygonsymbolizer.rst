@@ -69,7 +69,7 @@ It can contain the sub-elements:
      - No
      - Renders the fill of the polygon with a repeated pattern.
    * - ``<CssParameter>``
-     - No
+     - 0..N
      - Determines the fill styling parameters.
 
 GraphicFill

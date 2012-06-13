@@ -98,7 +98,11 @@ public class RESTfulDefinitionSource implements FilterInvocationDefinitionSource
         //force a read of the property file at startup
         dao.reload();
     }
-    
+
+    public void reload() {
+        delegate = null;
+    }
+
     RESTfulPathBasedFilterInvocationDefinitionMap delegate() {
         if (delegate == null || dao.isModified()) {
             synchronized(this) {

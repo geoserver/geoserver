@@ -44,7 +44,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Parsed rules
      */
-    TreeSet<R> rules;
+    Set<R> rules;
 
     /**
      * Used to check the file for modifications

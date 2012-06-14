@@ -13,4 +13,4 @@ Operations on resources are implemented with the standard primitives of HTTP:
 GET, DELETE, PUT, POST, HEAD, etc. Each resource is represented as a standard 
 URI.
 
-For more information about REST visit the `wikedia page <http://en.wikipedia.org/wiki/Representational_State_Transfer>`_.
+For more information about REST visit the `wikipedia page <http://en.wikipedia.org/wiki/Representational_State_Transfer>`_.

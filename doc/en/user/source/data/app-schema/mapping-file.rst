@@ -270,6 +270,15 @@ E.g.::
 Note that the GML encoding rules require that complex types are never the direct property of another complex type; they are always contained in a property type to ensure that their type is encoded in a surrounding element. Encoded GML is always type/property/type/property. This is also known as the GML "striping" rule. The consequence of this for app-schema mapping files is that ``targetAttributeNode`` must be applied to the property and the type must be set to the XSD property type, not to the type of the contained attribute (``gsml:CGI_TermValuePropertyType`` not ``gsml:CGI_TermValueType``). Because the XPath refers to a property type not the encoded content, ``targetAttributeNode`` appears in a mapping with ``targetAttribute`` and no other elements when using with complex types.
 
 
+encodeIfEmpty (optional)
+````````````````````````
+
+The ``encodeIfEmpty`` element will determine if an attribute will be encoded if it contains a null or empty value. By default ``encodeIfEmpty`` is set to false therefore any attribute that does not contain a value will be skipped::
+
+	<encodeIfEmpty>true</encodeIfEmpty>
+
+``encodeIfEmpty`` can be used to bring up attributes that only contain client properties such as ``xlink:title``.
+
 isMultiple (optional)
 `````````````````````
 

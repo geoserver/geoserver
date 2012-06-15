@@ -439,6 +439,13 @@
           </documentation>
         </annotation>
       </element>
+      <element name="encodeIfEmpty" type="boolean" default="false" minOccurs="0">
+        <annotation>
+          <documentation>
+            <![CDATA[ Flag to determine whether to skip a attribute mapping if it is empty default to false]]>
+          </documentation>
+        </annotation>
+      </element>	  
       <element name="isList" type="boolean" default="false" minOccurs="0">
         <annotation>
           <documentation>

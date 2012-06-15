@@ -122,6 +122,7 @@
                     <sourceExpression>
                         <OCQL>BODY_VALUE</OCQL>
                     </sourceExpression>
+					<encodeIfEmpty>true</encodeIfEmpty>	
                     <ClientProperty>
                         <name>codeSpace</name>
                         <value>BODY_CODESPACE</value>

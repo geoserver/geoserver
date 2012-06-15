@@ -77,7 +77,7 @@ public class ValidationTest extends AbstractAppSchemaWfsTestSupport {
                 "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.gu.2']/gsml:composition/gsml:CompositionPart/gsml:lithology[2]/gsml:ControlledConcept/gml:name",
                 doc);
         assertXpathCount(
-                0,
+                1,
                 "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.gu.2']/gsml:rank[@codeSpace='myBodyCodespace2']",
                 doc);
 

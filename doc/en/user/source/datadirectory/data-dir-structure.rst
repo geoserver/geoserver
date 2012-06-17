@@ -164,5 +164,6 @@ www
 
 The ``www`` directory is used to allow GeoServer to serve files like a regular web server. 
 While not a replacement for a full blown web server, the ``www`` directory can be useful for serving `OpenLayers <http://openlayers.org>`_ map applications.
+See the tutorial :ref:`tutorials_staticfiles`.
 
 

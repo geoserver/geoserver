@@ -166,7 +166,7 @@ For example:
   * ``[^;']+`` checks that a parameter value does not contain quotes or semicolumn.  This prevents common SQL injection attacks, but otherwise does not impose much limitation on the actual value
 
 Resources for Validation Regular expressions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Defining effective validation regular expressions is important for security. 
 Regular expressions are a complex topic that cannot be fully addressed here. 

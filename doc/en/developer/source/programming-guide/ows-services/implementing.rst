@@ -28,7 +28,7 @@ The first step in creating our plug-in is setting up a maven project for it. The
     <parent>
       <groupId>org.geoserver</groupId>
       <artifactId>community</artifactId>
-      <version>2.0.1</version>
+      <version>2.2.0</version>
     </parent>  
   
     <groupId>org.geoserver</groupId>
@@ -42,7 +42,7 @@ The first step in creating our plug-in is setting up a maven project for it. The
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>main</artifactId>
-        <version>2.0.1</version>
+        <version>2.2.0</version>
       </dependency>
     </dependencies>
 
@@ -188,63 +188,106 @@ Trying it Out
 
 #. Restart GeoServer
 
-#. Visit http://<host>/geoserver/ows?request=sayHello&service=hello&version=1.0.0
+#. Visit:: 
 
-request
-  the method we defined in our service
-service
-  the name we passed to the Service descriptor in the applicationContext.xml
-version
-  the version we passed to the Service descriptor in the applicationContext.xml
+      http://<host>/geoserver/ows?request=sayHello&service=hello&version=1.0.0
+
+   request
+      the method we defined in our service
+
+   service
+      the name we passed to the Service descriptor in the applicationContext.xml
+
+   version
+      the version we passed to the Service descriptor in the applicationContext.xml
 
 .. figure:: firefox_helloworld.png
    :align: center
 
-Alternative 1: Bundling with Web Module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note::
 
-An alternative is to declare a dependency from the **web** module on the new plugin project.
+   A common pitfall is to bundle an extension without the 
+   :file:`applicationContext.xml` file. If you receive the error message 
+   "No service: ( hello )" this is potentially the case. To ensure the file is 
+   present inspect the contents of the hello jar present in the :file:`target` 
+   directory of the hello module.
 
+Bundling with Web Module
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+An alternative to plugging into an existing installation is to build a complete
+GeoServer war that includes the custom hello plugin. To acheive this a new 
+dependency is declared from the core **web/app** module on the new plugin 
+project. This requires building GeoServer from sources.
+
+#. Build GeoServer from sources as described :ref:`here <maven_guide>`.
 #. Install the :file:`hello` module as above.
-#. Edit :file:`web/pom.xml` and add the following dependency:
+#. Edit :file:`web/app/pom.xml` and add the following dependency:
 
-  .. code-block:: xml
+   .. code-block:: xml
 
-    <dependency>
-        <groupId>org.geoserver</groupId>
-        <artifactId>hello</artifactId>
-        <version>1.0</version>
-    </dependency>
+      <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>hello</artifactId>
+          <version>1.0</version>
+      </dependency>
   
-#. Install and run the :file:`web` module 
+#. Install the :file:`web/app` module 
 
   .. code-block:: sh
 
-    [web] mvn install jetty:run
+    [web/app] mvn install
 
-#. Visit http://localhost:8080/geoserver/ows?request=sayHello&service=hello&version=1.0.0
+A GeoServer war including the hello extension should now be present in the 
+:file:`target` directory. 
 
-Alternative 2: Running from GeoServer Source
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note::
 
-As an alternative to trying the plugin:
+   To verify the plugin was bundled properly unpack :file:`geoserver.war` and 
+   inspect the contents of the :file:`WEB-INF/lib` directory and ensure the 
+   hello jar is present.
 
-#. Install the *hello* module
+Running from Source
+~~~~~~~~~~~~~~~~~~~
 
-#. Change directory to the web module
+During development the most convenient way to work with the extension is to run
+it directly from sources.
 
-#. Install the web module
+#. Setup GeoServer in eclipse as described :ref:`here <eclipse_guide>`.
+#. Move the hello module into the GeoServer source tree under the ``community``
+   root module.
+#. Edit the :file:`community/pom.xml` and add a new profile::
 
-#. Copy :file:`<hello module>/target/hello-1.0.jar` to :file:`<web module>/target/geoserver/WEB-INF/lib`:
+     <profile>
+       <id>hello</id>
+       <modules>
+         <module>hello</module>
+       </modules>
+     </profile>
+ 
+#. If not already done, edit :file:`web/app/pom.xml` and add the following 
+   dependency:
 
-   .. code-block:: sh
+   .. code-block:: xml
 
-     [/dev/geoserver/web]% cp ~/hello/target/hello-1.0.jar target/geoserver/WEB-INF/lib
+      <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>hello</artifactId>
+          <version>1.0</version>
+      </dependency>
 
-#. Run the exploded war with Jetty:
+#. From the root of the GeoServer source tree run the following maven command:
 
-   .. code-block:: sh
+   .. code-block: sh
 
-     [/dev/geoserver/web]% mvn jetty6:run-exploded
+      [src]% mvn -P hello eclipse:eclipse
+   
+#. In eclipse import the new hello module and refresh all modules.
+#. In the ``web-app`` module run the ``Start.java`` main class to start 
+   GeoServer.
 
-#. Visit http://localhost:8080/geoserver/ows?request=sayHello&service=hello&version=1.0.0
+.. note::
+
+   Ensure that the ``web-app`` module in eclipse depends on the newly imported
+   ``hello`` module. This can be done by inspeceting the ``web-app`` module 
+   properties and ensuring the ``hello`` module is a projcet dependency.

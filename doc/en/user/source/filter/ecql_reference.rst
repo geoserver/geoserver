@@ -13,10 +13,12 @@ The sections below describe the major language constructs.
 Each construct lists all syntax options for it.
 Each option is defined as a sequence of other constructs, or recursively in terms of itself.
 
-* Keywords are not case-sensitive. 
-* The vertical bar symbol **|** indicates where a choice of keyword can be made.  
-* Brackets **[ ]** delimit optional syntax.
-* Braces **{ }** delimit syntax that is included zero or more times.
+* Symbols which are part of the ECQL language are shown in ``code font``.  
+  All other symbols are part of the grammar description. 
+* ECQL keywords are not case-sensitive. 
+* A vertical bar symbol '**|**' indicates that a choice of keyword can be made.  
+* Brackets '**[** ... **]**' delimit syntax that is optional.
+* Braces '**{** ... **}**' delimit syntax that may be present zero or more times.
  
 
 .. _ecql_cond:
@@ -120,11 +122,13 @@ OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ spe
      - Tests whether geometries are within (beyond) a distance.
        *distance* is an unsigned numeric value for the distance tolerance.
        *units* is one of ``feet``, ``meters``, ``statute miles``, ``nautical miles``, ``kilometers``      
-   * - ``BBOX (`` :ref:`ecql_expr` ``,`` *Number* ``,`` *Number* ``,`` *Number* ``,`` *Number* **[** ``,`` *CRS* **]** ``)``
+   * - ``BBOX (`` :ref:`ecql_expr` ``,``
+       :ref:`Number <ecql_literal>` ``,`` :ref:`Number <ecql_literal>` ``,`` :ref:`Number <ecql_literal>` ``,`` :ref:`Number <ecql_literal>`
+       [ ``,`` *CRS* ] ``)``
      - Tests whether a geometry intersects a bounding box 
        specified by its minimum and maximum X and Y values.  
-       *CRS* is a string containing an SRS code (the default is *EPSG:4326*)
-   * - ``BBOX (`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` **|** *Geometry* ``)``
+       The optional *CRS* is a string containing an SRS code (the default is *EPSG:4326*)
+   * - ``BBOX (`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` **|** :ref:`Geometry <ecql_literal>` ``)``
      - Tests whether a geometry intersects a bounding box 
        specified by a geometric value computed by a function
        or provided by a geometry literal.
@@ -146,13 +150,14 @@ order of evaluation is used.
    * - **Syntax**
      - **Description**
    * - :ref:`ecql_attr`
-     - Value of a feature attribute
+     - Name of a feature attribute
    * - :ref:`ecql_literal`
      - Literal value
    * - :ref:`ecql_expr`  ``+`` | ``-`` | ``*`` | ``/`` :ref:`ecql_expr`
      - Arithmetic operations
-   * - *function*  ``(`` :ref:`ecql_expr` { ``,`` :ref:`ecql_expr` } ``)``
+   * - *function*  ``(`` [ :ref:`ecql_expr` { ``,`` :ref:`ecql_expr` } ] ``)``
      - Value computed by evaluation of a :ref:`filter function <filter_function_reference>`
+       with zero or more arguments.
    * - ``(`` | ``[`` :ref:`ecql_expr` ``]`` | ``)``
      - Bracketing with ``(`` or ``[`` controls evaluation order
 
@@ -189,10 +194,11 @@ Literals specify constant values of various types.
    * - *Geometry*
      - Geometry in WKT format. 
        WKT is defined in the OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ specification.
-       All standard types are supported:
+       All standard geometry types are supported:
        ``POINT``, ``LINESTRING``, ``POLYGON``, 
        ``MULTIPOINT``, ``MULTILINESTRING``, ``MULTIPOLYGON``, ``GEOMETRYCOLLECTION``.
-       A custom type of ``ENVELOPE`` is also provided.
+       A custom type of Envelope is also supported 
+       with syntax ``ENVELOPE (`` *x1* *x2* *y1* *y2* ``)``.
        
    * - *Time*
      - A UTC date/time value in the format ``yyyy-mm-hhThh:mm:ss``.
@@ -202,9 +208,10 @@ Literals specify constant values of various types.
    * - *Duration*
      - A time duration specified as ``P`` **[** y ``Y`` m ``M`` d ``D`` **]** ``T`` **[** h ``H`` m ``M`` s ``S`` **]**.  
        The duration can be specified to any desired precision by including 
-       only the required year, month, day, hour, minute and second values.
-       Example: 
-       ``P4Y2M``, 
+       only the required year, month, day, hour, minute and second components.
+       Examples: 
+       ``P1Y2M``, 
+       ``P4Y2M20D``, 
        ``P4Y2M1DT20H3M36S`` 
  
 

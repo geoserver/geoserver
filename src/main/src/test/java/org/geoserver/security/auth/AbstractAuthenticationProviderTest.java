@@ -155,7 +155,6 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         MemoryRoleServiceConfigImpl config = new MemoryRoleServiceConfigImpl();
         config.setName(name);
         config.setClassName(MemoryRoleService.class.getName());
-        config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         config.setToBeEncrypted("encryptme");
         return config;
         

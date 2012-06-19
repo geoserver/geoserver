@@ -5,7 +5,6 @@
 
 package org.geoserver.security.validation;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -100,27 +99,27 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
         }
         
         if (password.length < config.getMinLength())
-            throw createSecurityException(PW_MIN_LENGTH, config.getMinLength());
+            throw createSecurityException(MIN_LENGTH_$1, config.getMinLength());
         
         if (config.getMaxLength() >=0 &&  password.length >config.getMaxLength())
-            throw createSecurityException(PW_MAX_LENGTH,config.getMaxLength());
+            throw createSecurityException(MAX_LENGTH_$1,config.getMaxLength());
 
         if (config.isDigitRequired()) {
             if (checkUsingMethod("isDigit", password)==false)
-                throw createSecurityException(PW_NO_DIGIT);
+                throw createSecurityException(NO_DIGIT);
         }
         if (config.isUppercaseRequired()) {
             if (checkUsingMethod("isUpperCase", password)==false)
-                throw createSecurityException(PW_NO_UPPERCASE);
+                throw createSecurityException(NO_UPPERCASE);
         }
         if (config.isLowercaseRequired()) {
             if (checkUsingMethod("isLowerCase", password)==false)
-                throw createSecurityException(PW_NO_LOWERCASE);
+                throw createSecurityException(NO_LOWERCASE);
         }    
         
         String prefix = passwordStartsWithEncoderPrefix(password); 
         if (prefix!=null)
-            throw createSecurityException(PW_RESERVED_PREFIX,prefix);
+            throw createSecurityException(RESERVED_PREFIX_$1,prefix);
     }
     
     /**

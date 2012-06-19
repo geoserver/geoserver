@@ -50,12 +50,12 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
     
     protected void validateFileName(String fileName) throws SecurityConfigException {
         if (isNotEmpty(fileName)==false)
-            throw createSecurityException(SEC_ERR_104);
+            throw createSecurityException(FILENAME_REQUIRED);
     }
     
     protected void validateCheckIntervall(long msecs) throws SecurityConfigException {
         if (msecs !=0 && msecs < 1000)
-            throw createSecurityException(SEC_ERR_100);
+            throw createSecurityException(CHECK_INTERVAL_INVALID);
     }
     
 
@@ -81,7 +81,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
                 return;
             // file in security sub dir, check if roles exists
             if (manager.loadRoleService(config.getName()).getRoleCount()>0) {
-                throw createSecurityException(SEC_ERR_102, config.getName());
+                throw createSecurityException(ROLE_SERVICE_NOT_EMPTY_$1, config.getName());
             }
             
         } catch (IOException e) {
@@ -112,7 +112,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
             // file in security sub dir, check if roles exists
             GeoServerUserGroupService service = manager.loadUserGroupService(config.getName()); 
             if (service.getGroupCount()>0 || service.getUserCount()>0) {
-                throw createSecurityException(SEC_ERR_103, config.getName());
+                throw createSecurityException(USERGROUP_SERVICE_NOT_EMPTY_$1, config.getName());
             }
             
         } catch (IOException e) {
@@ -131,7 +131,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
         XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig) config;
         File file  = new File(xmlConfig.getFileName());
         if (checkFile(file)==false)
-            throw createSecurityException(SEC_ERR_101,
+            throw createSecurityException(FILE_CREATE_FAILED_$1,
                 file.getPath());
 
     }
@@ -148,7 +148,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
                 (XMLUserGroupServiceConfig) config;
         File file  = new File(xmlConfig.getFileName());
         if (checkFile(file)==false)
-            throw createSecurityException(SEC_ERR_101,
+            throw createSecurityException(FILE_CREATE_FAILED_$1,
                     file.getPath());
 
     }
@@ -162,7 +162,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
         
         if (old.getFileName().equals(
                 modified.getFileName()) == false) 
-                throw createSecurityException(SEC_ERR_105,
+                throw createSecurityException(FILENAME_CHANGE_INVALID_$2,
                         old.getFileName(),modified.getFileName());
     }
     @Override
@@ -174,7 +174,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
         
         if (old.getFileName().equals(
                 modified.getFileName()) == false) 
-                throw createSecurityException(SEC_ERR_105,
+                throw createSecurityException(FILENAME_CHANGE_INVALID_$2,
                         old.getFileName(),modified.getFileName());
 
     }
@@ -183,7 +183,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
     public void validate(SecurityAuthProviderConfig config) throws SecurityConfigException{
         
         if (isNotEmpty(config.getUserGroupServiceName())==false) {
-            throw createSecurityException(SEC_ERR_106);
+            throw createSecurityException(USERGROUP_SERVICE_REQUIRED);
         }
         super.validate(config);
     }

@@ -109,7 +109,6 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
             boolean isActive = GeoServerApplication.get().getSecurityManager().
                     getActiveRoleService().getName().equals(roleServiceName);                    
             RoleServiceValidationWrapper valService = new RoleServiceValidationWrapper(gaService,isActive); 
-            valService.checkRemovalOfAdminRole(role);
             valService.checkRoleIsUsed(role);
         } catch (IOException e) {
             if (e.getCause() instanceof AbstractSecurityException) {

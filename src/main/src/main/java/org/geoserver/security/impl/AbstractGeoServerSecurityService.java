@@ -20,7 +20,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public abstract class AbstractGeoServerSecurityService implements GeoServerSecurityService {
 
     public static String DEFAULT_NAME = "default";
-
+    // Default for local administrator role mapped to system role ROLE_ADMINISTRATOR
+    // TODO Justin, feel free to change the name
+    public static String DEFAULT_LOCAL_ADMIN_ROLE = "ADMIN";
+    // Default for local group administrator role mapped to system role ROLE_GROUP_ADMIN
+    // TODO Justin, feel free to change the name
+    public static String DEFAULT_LOCAL_GROUP_ADMIN_ROLE = "GROUP_ADMIN";
     /** logger */
     protected static Logger LOGGER = 
         org.geotools.util.logging.Logging.getLogger("org.geoserver.security");

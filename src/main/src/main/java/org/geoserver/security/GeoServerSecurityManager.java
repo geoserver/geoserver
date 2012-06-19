@@ -6,11 +6,15 @@ package org.geoserver.security;
 
 import static org.geoserver.data.util.IOUtils.xStreamPersist;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.rmi.server.UID;
@@ -115,6 +119,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geoserver.security.xml.XMLConstants;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLRoleServiceConfig;
+import org.geoserver.security.xml.XMLRoleStore;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 import org.geotools.util.logging.Logging;
@@ -1164,7 +1169,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * 
      */
     public boolean checkAuthenticationForAdminRole(Authentication auth) {
-        return checkAuthenticationForRole(auth, activeRoleService.getAdminRole());
+        return checkAuthenticationForRole(auth, GeoServerRole.ADMIN_ROLE);
     }
 
     /**
@@ -1695,8 +1700,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         mpConfig.setProviderName(mpProviderConfig.getName());
         saveMasterPasswordConfig(mpConfig);
 
-        // check for service.properties, create if necessary
-        File serviceFile = new File(getSecurityRoot(), "service.properties");
+        // check for services.properties, create if necessary
+        File serviceFile = new File(getSecurityRoot(), "services.properties");
         if (serviceFile.exists()==false) {
             FileUtils.copyURLToFile(Util.class.getResource("serviceTemplate.properties"),
                     serviceFile);
@@ -1764,7 +1769,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             gaConfig.setCheckInterval(checkInterval); 
             gaConfig.setFileName(XMLConstants.FILE_RR);
             gaConfig.setValidating(true);
-            gaConfig.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
+            gaConfig.setAdminRoleName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
+            gaConfig.setGroupAdminRoleName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE);
             saveRoleService(gaConfig);
             roleService = loadRoleService(XMLRoleService.DEFAULT_NAME);
         }
@@ -1922,7 +1928,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         GeoServerUserGroupStore userGroupStore = userGroupService.createStore();
         GeoServerRoleStore roleStore = roleService.createStore();
 
-        //migradate from users.properties
+        //migrate from users.properties
         File usersFile = new File(getSecurityRoot(), "users.properties");
         if (usersFile.exists()) {
             //load user.properties populate the services 
@@ -1944,10 +1950,12 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                     userGroupStore.addUser(user);
 
                     for (GrantedAuthority auth : attr.getAuthorities()) {
+                        String roleName = GeoServerRole.ADMIN_ROLE.getAuthority().equals(auth.getAuthority()) ?
+                                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE : auth.getAuthority();
                         GeoServerRole role = 
-                            roleStore.getRoleByName(auth.getAuthority());
+                            roleStore.getRoleByName(roleName);
                         if (role==null) {
-                            role = roleStore.createRoleObject(auth.getAuthority());
+                            role = roleStore.createRoleObject(roleName);
                             roleStore.addRole(role);
                         }
                         roleStore.associateRoleToUser(role, username);
@@ -1958,13 +1966,38 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             // no user.properties, populate with default user and roles
             if (userGroupService.getUserByUsername(GeoServerUser.ADMIN_USERNAME) == null) {
                 userGroupStore.addUser(GeoServerUser.createDefaultAdmin());
-                roleStore.addRole(GeoServerRole.ADMIN_ROLE);
-                roleStore.associateRoleToUser(GeoServerRole.ADMIN_ROLE, GeoServerUser.ADMIN_USERNAME);
+                GeoServerRole localAdminRole = roleStore.createRoleObject(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE); 
+                roleStore.addRole(localAdminRole);
+                roleStore.associateRoleToUser(localAdminRole, GeoServerUser.ADMIN_USERNAME);
             }
         }
+        
+        //add the local group administrator role
+        if (roleStore.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE) == null) {
+            roleStore.addRole(roleStore.createRoleObject(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE));
+        }
 
-        // check for roles in service.properties but not in user.properties 
-        serviceFile = new File(getSecurityRoot(), "service.properties");
+        // replace all occurrences of ROLE_ADMINISTRATOR  in the property files
+        // TODO Justin, a little bit brute force, is this ok ?
+        for (String filename : new String[]{"services.properties","layers.properties","rest.properties"}) {
+            File file = new File(getSecurityRoot(), filename);
+            if (file.exists()==false) continue;
+            List<String> lines = new ArrayList<String>();
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null)
+            	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
+            reader.close();
+            PrintWriter writer = new PrintWriter(new FileWriter(file));
+            for (String s : lines) {
+            	writer.println(s);
+            }
+            writer.close();
+        }
+                                
+
+        // check for roles in services.properties but not in user.properties 
+        serviceFile = new File(getSecurityRoot(), "services.properties");
         if (serviceFile.exists()) {
             Properties props = Util.loadPropertyFile(serviceFile);
             for (Entry<Object,Object> entry: props.entrySet()) {
@@ -1980,7 +2013,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
 
         // check for  roles in data.properties but not in user.properties
-        File dataFile = new File(getSecurityRoot(), "layer.properties");
+        File dataFile = new File(getSecurityRoot(), "layers.properties");
         if (dataFile.exists()) {
             Properties props = Util.loadPropertyFile(dataFile);
             for (Entry<Object,Object> entry: props.entrySet()) {
@@ -1997,10 +2030,6 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             }
         }
 
-        //add the built-in group admin role
-        if (roleStore.getRoleByName(GeoServerRole.GROUP_ADMIN_ROLE.getAuthority()) == null) {
-            roleStore.addRole(GeoServerRole.GROUP_ADMIN_ROLE);
-        }
 
         //persist the changes
         roleStore.store();
@@ -2710,5 +2739,29 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             return filterChain;
         }
 
+    }
+    
+    /**
+     * Calculates the union of roles from all role services and
+     * adds {@link GeoServerRole#ANONYMOUS_ROLE} and {@link GeoServerRole#AUTHENTICATED_ROLE}
+     * 
+     * @throws IOException
+     */
+    public SortedSet<GeoServerRole> getRolesForAccessControl() throws IOException {
+    	
+    	SortedSet<GeoServerRole> allRoles = new TreeSet<GeoServerRole>();
+    	for (String serviceName : listRoleServices()) {
+    		// catch the IOException for each role service.
+    		// As an example, it does not make sense to throw an IOException if 
+    		// a jdbc connection cannot be established.
+    		try {
+    			allRoles.addAll(loadRoleService(serviceName).getRoles());
+    		} catch (IOException ex) {
+    			LOGGER.log(Level.WARNING,ex.getMessage(),ex);
+    		}
+    	}
+    	allRoles.add(GeoServerRole.AUTHENTICATED_ROLE);
+    	allRoles.add(GeoServerRole.ANONYMOUS_ROLE);
+    	return allRoles;
     }
 }

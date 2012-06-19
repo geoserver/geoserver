@@ -53,6 +53,25 @@ public class GeoServerRole  implements GrantedAuthority,  Comparable<GeoServerRo
      * Predefined anonymous role
      */
     public final static GeoServerRole ANONYMOUS_ROLE = new GeoServerRole("ROLE_ANONYMOUS");
+    
+    
+    /**
+     * Geoserver system roles
+     */
+    public final static GeoServerRole[] SystemRoles = new GeoServerRole[] 
+            {ADMIN_ROLE,GROUP_ADMIN_ROLE,AUTHENTICATED_ROLE,ANONYMOUS_ROLE };
+    
+    /**
+     * Mappable system roles
+     */
+    public final static GeoServerRole[] MappedRoles = new GeoServerRole[] {ADMIN_ROLE,GROUP_ADMIN_ROLE };
+    
+    
+    /**
+     * Roles which cannot be assigned to a user or a group
+     */
+    public final static GeoServerRole[] UnAssignableRoles = new GeoServerRole[] { AUTHENTICATED_ROLE,ANONYMOUS_ROLE };
+    
 
     private static final long serialVersionUID = 1L;
 

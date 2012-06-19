@@ -63,37 +63,37 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
     
     protected void checkUserName(String userName) throws IOException{
         if (isNotEmpty(userName)==false)
-            throw createSecurityException(UG_ERR_01);        
+            throw createSecurityException(USERNAME_REQUIRED);        
     }
     
     protected void checkGroupName(String groupName) throws IOException{
         if (isNotEmpty(groupName)==false)
-            throw createSecurityException(UG_ERR_02);        
+            throw createSecurityException(GROUPNAME_REQUIRED);        
     }
 
         
     protected void checkExistingUserName(String userName) throws IOException{
         checkUserName(userName);
         if (service.getUserByUsername(userName)==null)
-            throw createSecurityException(UG_ERR_03,userName);
+            throw createSecurityException(USER_NOT_FOUND_$1,userName);
     }
     
     protected void checkExistingGroupName(String groupName) throws IOException{
         checkGroupName(groupName);
         if (service.getGroupByGroupname(groupName)==null)
-            throw createSecurityException(UG_ERR_04,groupName);
+            throw createSecurityException(GROUP_NOT_FOUND_$1,groupName);
     }
     
     protected void checkNotExistingUserName(String userName) throws IOException{
         checkUserName(userName);
         if (service.getUserByUsername(userName)!=null)
-            throw createSecurityException(UG_ERR_05,userName);
+            throw createSecurityException(USER_ALREADY_EXISTS_$1,userName);
     }
     
     protected void checkNotExistingGroupName(String groupName) throws IOException{
         checkGroupName(groupName);
         if (service.getGroupByGroupname(groupName)!=null)
-            throw createSecurityException(UG_ERR_06,groupName);
+            throw createSecurityException(GROUP_ALREADY_EXISTS_$1,groupName);
     }
 
     

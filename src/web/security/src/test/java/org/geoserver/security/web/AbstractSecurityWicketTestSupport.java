@@ -152,7 +152,6 @@ public class AbstractSecurityWicketTestSupport extends GeoServerWicketTestSuppor
     protected void activateRORoleService() throws Exception{
         MemoryRoleServiceConfigImpl config = new MemoryRoleServiceConfigImpl();
         config.setName(getRORoleServiceName());
-        config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         config.setClassName(ReadOnlyRoleService.class.getName());
         getSecurityManager().saveRoleService(config);
         gaService = getSecurityManager().loadRoleService(getRORoleServiceName());

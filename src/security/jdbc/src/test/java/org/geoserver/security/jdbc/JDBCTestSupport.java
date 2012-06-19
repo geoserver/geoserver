@@ -128,7 +128,6 @@ public class JDBCTestSupport {
         config.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);
         config.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
         config.setCreatingTables(false);
-        config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         securityManager.saveRoleService(config);
         return securityManager.loadRoleService(serviceName);
     }
@@ -145,7 +144,6 @@ public class JDBCTestSupport {
             config.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);
             config.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
             config.setCreatingTables(false);
-            config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
             securityManager.saveRoleService(config);
             return securityManager.loadRoleService(serviceName);
         }
@@ -166,7 +164,6 @@ public class JDBCTestSupport {
         config.setUserName(props.getProperty("user") == null ? props.getProperty("username") : props.getProperty("user"));
         config.setPassword(props.getProperty("password"));            
         config.setClassName(JDBCRoleService.class.getName());
-        config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         config.setCreatingTables(false);
         if ("mysql".equals(fixtureId)) {
             config.setPropertyFileNameDDL("rolesddl.mysql.xml");            

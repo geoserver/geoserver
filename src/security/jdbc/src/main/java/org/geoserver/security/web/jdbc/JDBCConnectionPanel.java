@@ -111,7 +111,15 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
             add(new JDBCDriverChoice("driverClassName").setRequired(true));
             add(new TextField("connectURL").setRequired(true));
             add(new TextField("userName").setRequired(true));
-            add(new PasswordTextField("password").setRequired(false));
+            
+            PasswordTextField pwdField = new PasswordTextField("password");
+            pwdField.setRequired(false);
+
+            // avoid reseting the password which results in an 
+            //empty password on saving a modified configuration 
+            pwdField.setResetPassword(false);
+            
+            add(pwdField);
         }
 
         @Override

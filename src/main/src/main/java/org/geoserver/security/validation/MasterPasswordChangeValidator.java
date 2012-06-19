@@ -6,15 +6,10 @@
 package org.geoserver.security.validation;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Properties;
 
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.MasterPasswordChangeRequest;
-import org.geoserver.security.password.MasterPasswordConfig;
 import org.geoserver.security.password.PasswordValidator;
 
 

@@ -7,15 +7,22 @@ package org.geoserver.security.xml;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
+import junit.framework.Assert;
 
 import org.geoserver.data.test.LiveData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.AbstractUserDetailsServiceTest;
+import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.RESTAccessRuleDAO;
+import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 
@@ -51,7 +58,6 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         gaConfig.setCheckInterval(1000); 
         gaConfig.setFileName(XMLConstants.FILE_RR);
         gaConfig.setValidating(true);
-        gaConfig.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         getSecurityManager().saveRoleService(gaConfig/*,isNewRoleService(serviceName)*/);
 
         GeoServerRoleService service = 
@@ -96,7 +102,7 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         assertTrue(enc.isPasswordValid(disabledUser.getPassword(), "nah", null));
         assertFalse(disabledUser.isEnabled());
         
-        GeoServerRole role_admin = roleService.getRoleByName("ROLE_ADMINISTRATOR");
+        GeoServerRole role_admin = roleService.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         assertNotNull(role_admin);
         GeoServerRole role_wfs_read = roleService.getRoleByName("ROLE_WFS_READ");
         assertNotNull(role_wfs_read);
@@ -111,8 +117,9 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
 
         
 
-        assertEquals(1,admin.getAuthorities().size());
+        assertEquals(2,admin.getAuthorities().size());
         assertTrue(admin.getAuthorities().contains(role_admin));
+        assertTrue(admin.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
         
         assertEquals(2,wfs.getAuthorities().size());
         assertTrue(wfs.getAuthorities().contains(role_wfs_read));
@@ -134,7 +141,29 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         File userXSD = new File (new File(securityManager.getUserGroupRoot(), userService.getName()), 
             XMLConstants.FILE_UR_SCHEMA);
         assertTrue(userXSD.exists());
+        
+        /* does not work from the command line
+         * 
+        ServiceAccessRuleDAO sdao = GeoServerExtensions.bean(ServiceAccessRuleDAO.class);
+        assertTrue(sdao.getRulesAssociatedWithRole(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE).isEmpty()==false);
+        assertTrue(sdao.getRulesAssociatedWithRole(GeoServerRole.ADMIN_ROLE.getAuthority()).isEmpty());
+        
+        DataAccessRuleDAO ddao = GeoServerExtensions.bean(DataAccessRuleDAO.class);
+        assertTrue(ddao.getRulesAssociatedWithRole(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE).isEmpty()==false);
+        assertTrue(ddao.getRulesAssociatedWithRole(GeoServerRole.ADMIN_ROLE.getAuthority()).isEmpty());
 
+        RESTAccessRuleDAO rdao = GeoServerExtensions.bean(RESTAccessRuleDAO.class);
+        List<String> rules = rdao.getRules();
+        
+        boolean found = false;
+        for (String rule : rules) {
+        	if (rule.contains(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE))
+        		found=true;
+        	if (rule.contains(GeoServerRole.ADMIN_ROLE.getAuthority()))
+        		Assert.fail("Migration of admin role not successful");
+        }
+        assertTrue(found);
+        */
 
     }
 

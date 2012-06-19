@@ -39,7 +39,9 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         filter.setAuthenticationManager(getSecurityManager());
         
         List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
-        voters.add(new RoleVoter());
+        RoleVoter roleVoter = new RoleVoter();
+        roleVoter.setRolePrefix("");
+        voters.add(roleVoter);
         voters.add(new AuthenticatedVoter());
         AffirmativeBased accessDecisionManager = new AffirmativeBased(voters); 
         accessDecisionManager.setAllowIfAllAbstainDecisions(siConfig.isAllowIfAllAbstainDecisions());
@@ -51,7 +53,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         try {
             filter.afterPropertiesSet();
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
         getNestedFilters().add(filter);        
     }

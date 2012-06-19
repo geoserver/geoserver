@@ -14,6 +14,15 @@ public class XMLRoleServiceConfig extends XMLSecurityServiceConfig
     private static final long serialVersionUID = 1L;
 
     protected String adminRoleName;
+    protected String groupAdminRoleName;
+
+    public String getGroupAdminRoleName() {
+        return groupAdminRoleName;
+    }
+
+    public void setGroupAdminRoleName(String groupAdminRoleName) {
+        this.groupAdminRoleName = groupAdminRoleName;
+    }
 
     @Override
     public String getAdminRoleName() {

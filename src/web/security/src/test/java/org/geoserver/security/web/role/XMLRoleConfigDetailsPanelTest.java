@@ -175,7 +175,8 @@ public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedService
         xmlConfig=
                 (XMLRoleServiceConfig)
                 getSecurityNamedServiceConfig("default");        
-        assertEquals("ROLE_ADMINISTRATOR",xmlConfig.getAdminRoleName());
+        assertEquals(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,xmlConfig.getAdminRoleName());
+        assertEquals(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE,xmlConfig.getGroupAdminRoleName());
         assertEquals("roles.xml",xmlConfig.getFileName());
         assertEquals(10000,xmlConfig.getCheckInterval());
         assertEquals(true,xmlConfig.isValidating());

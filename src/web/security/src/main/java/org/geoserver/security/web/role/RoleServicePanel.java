@@ -28,6 +28,7 @@ public class RoleServicePanel<T extends SecurityRoleServiceConfig>
         super(id, model);
 
         add(new RoleChoice("adminRoleName", model));
+        add(new RoleChoice("groupAdminRoleName", model));
     }
 
     @Override

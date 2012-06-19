@@ -11,18 +11,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.event.RoleLoadedListener;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.ServiceAccessRule;
 import org.geoserver.security.impl.ServiceAccessRuleDAO;
+import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
 
 import static org.geoserver.security.validation.RoleServiceException.*;
@@ -47,6 +51,8 @@ import static org.geoserver.security.validation.RoleServiceException.*;
  *
  */
 public class RoleServiceValidationWrapper extends AbstractSecurityValidator implements GeoServerRoleService{
+
+    static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     protected GeoServerRoleService service;
     protected GeoServerUserGroupService[] services;
@@ -96,31 +102,16 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
      */
     protected void checkValidUserName(String userName) throws IOException{
         if (isNotEmpty(userName)==false)
-            throw createSecurityException(ROLE_ERR_04);
+            throw createSecurityException(USERNAME_REQUIRED);
         
         if (services.length==0) return;
         for (GeoServerUserGroupService service : services) {
             if (service.getUserByUsername(userName)!=null)
                 return;
         }
-        throw createSecurityException(ROLE_ERR_06,userName);
+        throw createSecurityException(USERNAME_NOT_FOUND_$1,userName);
     }
     
-    /**
-     * Prevents the removal of the admin and group admin roles.
-     * 
-     * @param role
-     * @throws IOException
-     */
-    public void checkRemovalOfAdminRole(GeoServerRole role) throws IOException {
-        if (getAdminRole() != null && role.getAuthority().equals(getAdminRole().getAuthority())) {
-            throw createSecurityException(ROLE_ERR_08,role.getAuthority());
-        }
-        if (getGroupAdminRole() != null 
-            && role.getAuthority().equals(getGroupAdminRole().getAuthority())) {
-            throw createSecurityException(GROUP_ADMIN_ROLE_NOT_REMOVABLE_$1, role.getAuthority());
-        }
-    }
 
     /**
      * Prevents removal of a role used by access rules
@@ -143,9 +134,28 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
         
         if (keys.size()>0) {
             String ruleString = StringUtils.collectionToCommaDelimitedString(keys);    
-            throw createSecurityException(ROLE_ERR_09, role.getAuthority(),ruleString);
+            throw createSecurityException(ROLE_IN_USE_$2, role.getAuthority(),ruleString);
         }
     }
+    
+    /**
+     * Checks if the roles is mapped to a system role, see
+     * 
+     * {@link SecurityRoleServiceConfig#getAdminRoleName()}
+     * {@link SecurityRoleServiceConfig#getGroupAdminRoleName()()}
+     * 
+     * @param role
+     * @throws IOException
+     */
+    public void checkRoleIsMapped(GeoServerRole role) throws IOException {
+        GeoServerRole mappedRole = service.getAdminRole();
+        if (mappedRole!=null && mappedRole.equals(role))
+            throw createSecurityException(ADMIN_ROLE_NOT_REMOVABLE_$1, role.getAuthority());
+        mappedRole = service.getGroupAdminRole();
+        if (mappedRole!=null && mappedRole.equals(role))
+            throw createSecurityException(GROUP_ADMIN_ROLE_NOT_REMOVABLE_$1, role.getAuthority());        
+    }
+
     
     
     /**
@@ -158,31 +168,56 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
      */
     protected void checkValidGroupName(String groupName) throws  IOException{
         if (isNotEmpty(groupName)==false)
-            throw createSecurityException(ROLE_ERR_05);
+            throw createSecurityException(GROUPNAME_REQUIRED);
         
         if (services.length==0) return;
         for (GeoServerUserGroupService service : services) {
             if (service.getGroupByGroupname(groupName)!=null)
                 return;
         }
-        throw createSecurityException(ROLE_ERR_07,groupName);
+        throw createSecurityException(GROUPNAME_NOT_FOUND_$1 ,groupName);
     }
 
     protected void checkRoleName(String roleName) throws IOException{
         if (isNotEmpty(roleName)==false)
-            throw createSecurityException(ROLE_ERR_01);        
+            throw createSecurityException(NAME_REQUIRED);        
     }
     
     protected void checkExistingRoleName(String roleName) throws IOException{
         checkRoleName(roleName);
         if (service.getRoleByName(roleName)==null)
-            throw createSecurityException(ROLE_ERR_02,roleName);
+            throw createSecurityException(NOT_FOUND,roleName);
+    }
+    
+    protected void checkReservedNames(String roleName) throws IOException{
+        for (GeoServerRole systemRole : GeoServerRole.SystemRoles) {
+            if (systemRole.getAuthority().equals(roleName))
+                throw createSecurityException(RESERVED_NAME,roleName);
+        }
+    }
+    
+    protected void checkNotExistingInOtherServices(String roleName) throws IOException{
+        checkRoleName(roleName);
+        for (String serviceName : service.getSecurityManager().listRoleServices()) {
+            // dont check myself
+            if (service.getName().equals(serviceName)) continue;
+            GeoServerRole role = null;
+            try {
+            	role = service.getSecurityManager().loadRoleService(serviceName).getRoleByName(roleName);
+            } catch (IOException ex) {
+            	LOGGER.log(Level.WARNING,ex.getMessage(),ex);
+            	throw createSecurityException(CANNOT_CHECK_ROLE_IN_SERVICE,roleName,serviceName);
+            }
+            if (role!=null) {
+                throw createSecurityException(ALREADY_EXISTS_IN,roleName,serviceName);                
+            }
+        }
     }
     
     protected void checkNotExistingRoleName(String roleName) throws IOException{
         checkRoleName(roleName);
         if (service.getRoleByName(roleName)!=null)
-            throw createSecurityException(ROLE_ERR_03,roleName);
+            throw createSecurityException(ALREADY_EXISTS,roleName);
     }
 
     // start wrapper methods

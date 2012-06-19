@@ -26,7 +26,6 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
     public GeoServerRoleService createRoleService(String name) throws IOException {
         MemoryRoleServiceConfigImpl config = new MemoryRoleServiceConfigImpl();
         config.setName(name);
-        config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         GeoServerRoleService service = new MemoryRoleService();
         service.initializeFromConfig(config);
         service.setSecurityManager(GeoServerExtensions.bean(GeoServerSecurityManager.class));
@@ -51,10 +50,11 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         }
     }
     
-    public void testMappedAdminRole() throws Exception {
+    public void testMappedAdminRoles() throws Exception {
         MemoryRoleServiceConfigImpl config = new MemoryRoleServiceConfigImpl();
         config.setName("testAdminRole");
         config.setAdminRoleName("adminRole");
+        config.setGroupAdminRoleName("groupAdminRole");
         config.setClassName(MemoryRoleService.class.getName());
         GeoServerRoleService service = new MemoryRoleService();
         service.initializeFromConfig(config);
@@ -62,15 +62,18 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         service.setSecurityManager(manager);
         manager.setActiveRoleService(service);
         manager.saveRoleService(config);
+        
         GeoServerRoleStore store = service.createStore();
         GeoServerRole adminRole = store.createRoleObject("adminRole");
+        GeoServerRole groupAdminRole = store.createRoleObject("groupAdminRole");       
         GeoServerRole role1 = store.createRoleObject("role1");
         store.addRole(adminRole);
+        store.addRole(groupAdminRole);
         store.addRole(role1);
         
         store.associateRoleToUser(adminRole, "user1");
+        store.associateRoleToUser(groupAdminRole, "user1");
         store.associateRoleToUser(adminRole, "user2");
-        store.associateRoleToUser(GeoServerRole.ADMIN_ROLE, "user2");
         store.associateRoleToUser(role1, "user3");
         store.store();
      
@@ -88,9 +91,12 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         SortedSet<GeoServerRole> roles;
         
         roles = calc.calculateRoles(ugService.createUserObject("user1", "abc", true));
-        assertTrue(roles.size()==2);
+        assertTrue(roles.size()==4);
         assertTrue(roles.contains(adminRole));
         assertTrue(roles.contains(GeoServerRole.ADMIN_ROLE));
+        assertTrue(roles.contains(groupAdminRole));
+        assertTrue(roles.contains(GeoServerRole.GROUP_ADMIN_ROLE));
+
         
         roles = calc.calculateRoles(ugService.createUserObject("user2", "abc", true));
         assertTrue(roles.size()==2);

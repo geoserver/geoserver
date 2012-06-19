@@ -27,6 +27,7 @@ import org.geoserver.security.event.RoleLoadedListener;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.Util;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
+import org.springframework.util.StringUtils;
 
 /**
  * JDBC implementation of {@link GeoServerRoleService}
@@ -44,7 +45,7 @@ public  class JDBCRoleService extends AbstractJDBCService implements GeoServerRo
     protected Set<RoleLoadedListener> listeners = 
         Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
     
-    protected GeoServerRole adminRole, groupAdminRole;
+    protected String adminRoleName, groupAdminRoleName;
     
     
     public JDBCRoleService() {
@@ -53,14 +54,25 @@ public  class JDBCRoleService extends AbstractJDBCService implements GeoServerRo
     
     @Override
     public GeoServerRole getAdminRole() {
-        if (adminRole!=null) return adminRole;
-        return GeoServerRole.ADMIN_ROLE;
+        if (StringUtils.hasLength(adminRoleName)==false)
+            return null;
+        try {
+            return getRoleByName(adminRoleName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public GeoServerRole getGroupAdminRole() {
-        if (groupAdminRole != null) return groupAdminRole;
-        return GeoServerRole.GROUP_ADMIN_ROLE;
+        if (StringUtils.hasLength(groupAdminRoleName)==false)
+            return null;
+        try {
+            return getRoleByName(groupAdminRoleName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -103,10 +115,8 @@ public  class JDBCRoleService extends AbstractJDBCService implements GeoServerRo
             }
 
         }
-        if (((SecurityRoleServiceConfig)config).getAdminRoleName()!=null) {
-            adminRole = createRoleObject(GeoServerRole.ADMIN_ROLE.getAuthority());
-        }
-
+        this.adminRoleName=((SecurityRoleServiceConfig)config).getAdminRoleName();
+        this.groupAdminRoleName=((SecurityRoleServiceConfig)config).getGroupAdminRoleName();
     }
 
     

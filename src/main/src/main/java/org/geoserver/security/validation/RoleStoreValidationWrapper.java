@@ -66,7 +66,9 @@ public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper imp
 
 
     public void addRole(GeoServerRole role) throws IOException {
+        checkReservedNames(role.getAuthority());
         checkNotExistingRoleName(role.getAuthority());
+        checkNotExistingInOtherServices(role.getAuthority());
         getStore().addRole(role);
     }
 
@@ -76,8 +78,8 @@ public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper imp
         getStore().updateRole(role);
     }
 
-    public boolean removeRole(GeoServerRole role) throws IOException {
-        checkRemovalOfAdminRole(role);
+    public boolean removeRole(GeoServerRole role) throws IOException {        
+        checkRoleIsMapped(role);
         checkRoleIsUsed(role);
         return getStore().removeRole(role);
     }
@@ -98,8 +100,6 @@ public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper imp
     public void associateRoleToUser(GeoServerRole role, String username) throws IOException {
         checkExistingRoleName(role.getAuthority());
         checkValidUserName(username);
-        //TODO:
-        //checkGroupAdminRole(username);
         getStore().associateRoleToUser(role, username);
     }
     public void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException {

@@ -32,7 +32,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
     protected void assertSecurityException (IOException ex, String id, Object... params) {
         assertTrue (ex.getCause() instanceof AbstractSecurityException);
         AbstractSecurityException secEx = (AbstractSecurityException) ex.getCause(); 
-        assertEquals(id,secEx.getErrorId());
+        assertEquals(id,secEx.getId());
         for (int i = 0; i <  params.length ;i++) {
             assertEquals(params[i], secEx.getArgs()[i]);
         }
@@ -46,7 +46,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         try { 
             store.addUser(store.createUserObject("", "", true));            
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_01);
+            assertSecurityException(ex, USERNAME_REQUIRED);
             failed=true;
         }
         assertTrue(failed);
@@ -55,7 +55,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         try { 
             store.addGroup(store.createGroupObject(null, true));            
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_02);
+            assertSecurityException(ex, GROUPNAME_REQUIRED);
             failed=true;
         }
         assertTrue(failed);
@@ -71,7 +71,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         try { 
             store.addUser(store.createUserObject("user1", "abc", true));            
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_05,"user1");
+            assertSecurityException(ex, USER_ALREADY_EXISTS_$1,"user1");
             failed=true;
         }
         assertTrue(failed);
@@ -80,7 +80,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         try { 
             store.addGroup(store.createGroupObject("group1", true));            
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_06,"group1");
+            assertSecurityException(ex, GROUP_ALREADY_EXISTS_$1,"group1");
             failed=true;
         }
         assertTrue(failed);
@@ -93,7 +93,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         try { 
             store.updateUser(store.createUserObject("user1xxxx", "abc", true));            
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_03,"user1xxxx");
+            assertSecurityException(ex, USER_NOT_FOUND_$1,"user1xxxx");
             failed=true;
         }
         assertTrue(failed);
@@ -102,7 +102,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         try { 
             store.updateGroup(store.createGroupObject("group1xxx", true));            
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_04,"group1xxx");
+            assertSecurityException(ex, GROUP_NOT_FOUND_$1,"group1xxx");
             failed=true;
         }
         assertTrue(failed);
@@ -115,7 +115,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
                     store.createUserObject("xxx", "abc", true),
                     group1);
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_03,"xxx");
+            assertSecurityException(ex, USER_NOT_FOUND_$1,"xxx");
             failed=true;
         }
         assertTrue(failed);
@@ -126,7 +126,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
                     user1,
                     store.createGroupObject("yyy", true));
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_04,"yyy");
+            assertSecurityException(ex, GROUP_NOT_FOUND_$1,"yyy");
             failed=true;
         }
         assertTrue(failed);
@@ -140,7 +140,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
             store.getGroupsForUser(
                     store.createUserObject("xxx", "abc", true));
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_03,"xxx");
+            assertSecurityException(ex, USER_NOT_FOUND_$1,"xxx");
             failed=true;
         }
         assertTrue(failed);
@@ -150,7 +150,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
             store.getUsersForGroup(
                     store.createGroupObject("yyy", true));
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_04,"yyy");
+            assertSecurityException(ex, GROUP_NOT_FOUND_$1,"yyy");
             failed=true;
         }
         assertTrue(failed);
@@ -161,7 +161,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
                     store.createUserObject("xxx", "abc", true),
                     group1);
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_03,"xxx");
+            assertSecurityException(ex, USER_NOT_FOUND_$1,"xxx");
             failed=true;
         }
         assertTrue(failed);
@@ -172,7 +172,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
                     user1,
                     store.createGroupObject("yyy", true));
         } catch (IOException ex) {
-            assertSecurityException(ex, UG_ERR_04,"yyy");
+            assertSecurityException(ex, GROUP_NOT_FOUND_$1,"yyy");
             failed=true;
         }
         assertTrue(failed);

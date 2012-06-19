@@ -74,8 +74,7 @@ public class MemoryRoleService extends AbstractRoleService {
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
-        this.name=config.getName();
-        adminRole = createRoleObject (((SecurityRoleServiceConfig)config).getAdminRoleName());
+        super.initializeFromConfig(config);
         toBeEncrypted = (((MemoryRoleServiceConfigImpl)config).getToBeEncrypted());
     }
 

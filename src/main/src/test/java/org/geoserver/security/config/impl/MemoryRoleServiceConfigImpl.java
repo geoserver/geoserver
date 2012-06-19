@@ -12,6 +12,8 @@ public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig
         implements SecurityRoleServiceConfig {
     private static final long serialVersionUID = 1L;
     protected String adminRoleName;
+    protected String groupAdminRoleName;
+
     protected String toBeEncrypted;
 
     public MemoryRoleServiceConfigImpl() {
@@ -20,6 +22,7 @@ public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig
     public MemoryRoleServiceConfigImpl(MemoryRoleServiceConfigImpl other) {
         super(other);
         adminRoleName = other.getAdminRoleName();
+        groupAdminRoleName = other.getGroupAdminRoleName();
         toBeEncrypted = other.getToBeEncrypted();
     }
 
@@ -39,6 +42,14 @@ public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig
     @Override
     public void setAdminRoleName(String name) {
         adminRoleName=name;
+    }
+
+    public String getGroupAdminRoleName() {
+        return groupAdminRoleName;
+    }
+
+    public void setGroupAdminRoleName(String groupAdminRoleName) {
+        this.groupAdminRoleName = groupAdminRoleName;
     }
 
 }

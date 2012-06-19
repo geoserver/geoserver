@@ -1,15 +1,10 @@
 package org.geoserver.security.validation;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
-import java.util.Properties;
 
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.AbstractSecurityServiceTest;
 import org.geoserver.security.password.MasterPasswordChangeRequest;
-import org.geoserver.security.password.MasterPasswordConfig;
-import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.security.password.MasterPasswordProviderException;
 import org.geoserver.security.password.URLMasterPasswordProvider;
 import org.geoserver.security.password.URLMasterPasswordProviderConfig;

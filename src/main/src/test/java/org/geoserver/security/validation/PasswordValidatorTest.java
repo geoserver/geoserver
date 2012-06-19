@@ -1,10 +1,15 @@
 package org.geoserver.security.validation;
 
-import java.io.IOException;
+import static org.geoserver.security.validation.PasswordPolicyException.IS_NULL;
+import static org.geoserver.security.validation.PasswordPolicyException.MAX_LENGTH_$1;
+import static org.geoserver.security.validation.PasswordPolicyException.MIN_LENGTH_$1;
+import static org.geoserver.security.validation.PasswordPolicyException.NO_DIGIT;
+import static org.geoserver.security.validation.PasswordPolicyException.NO_LOWERCASE;
+import static org.geoserver.security.validation.PasswordPolicyException.NO_UPPERCASE;
+import static org.geoserver.security.validation.PasswordPolicyException.RESERVED_PREFIX_$1;
 
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.impl.AbstractSecurityServiceTest;
-import static org.geoserver.security.validation.PasswordPolicyException.*;
 
 public class PasswordValidatorTest extends AbstractSecurityServiceTest {
 
@@ -21,38 +26,38 @@ public class PasswordValidatorTest extends AbstractSecurityServiceTest {
     }
     
     public void testPasswords() throws PasswordPolicyException{
-        checkForException(null, PW_IS_NULL);
+        checkForException(null, IS_NULL);
         
         validator.validatePassword("".toCharArray());
         validator.validatePassword("a".toCharArray());
         
         
-        checkForException("plain:a", PW_RESERVED_PREFIX,"plain:");
-        checkForException("crypt1:a", PW_RESERVED_PREFIX,"crypt1:");
-        checkForException("digest1:a", PW_RESERVED_PREFIX,"digest1:");
+        checkForException("plain:a", RESERVED_PREFIX_$1,"plain:");
+        checkForException("crypt1:a", RESERVED_PREFIX_$1,"crypt1:");
+        checkForException("digest1:a", RESERVED_PREFIX_$1,"digest1:");
         
         validator.validatePassword("plain".toCharArray());
         validator.validatePassword("plaina".toCharArray());
         
         config.setMinLength(2);
-        checkForException("a", PW_MIN_LENGTH,2);
+        checkForException("a", MIN_LENGTH_$1,2);
         validator.validatePassword("aa".toCharArray());
         
         config.setMaxLength(10);
-        checkForException("01234567890", PW_MAX_LENGTH,10);
+        checkForException("01234567890", MAX_LENGTH_$1,10);
         validator.validatePassword("0123456789".toCharArray());
         
         config.setDigitRequired(true);
-        checkForException("abcdef", PW_NO_DIGIT);
+        checkForException("abcdef", NO_DIGIT);
 
         validator.validatePassword("abcde4".toCharArray());
         
         config.setUppercaseRequired(true);
-        checkForException("abcdef4", PW_NO_UPPERCASE);
+        checkForException("abcdef4", NO_UPPERCASE);
         validator.validatePassword("abcde4F".toCharArray());
         
         config.setLowercaseRequired(true);
-        checkForException("ABCDE4F", PW_NO_LOWERCASE);
+        checkForException("ABCDE4F", NO_LOWERCASE);
         validator.validatePassword("abcde4F".toCharArray());        
     }
     

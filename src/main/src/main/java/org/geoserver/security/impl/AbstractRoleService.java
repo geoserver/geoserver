@@ -15,8 +15,11 @@ import java.util.SortedSet;
 
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.event.RoleLoadedEvent;
 import org.geoserver.security.event.RoleLoadedListener;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -29,7 +32,7 @@ public abstract class AbstractRoleService extends AbstractGeoServerSecurityServi
     implements GeoServerRoleService {
     
     
-    protected GeoServerRole adminRole, groupAdminRole;
+    protected String adminRoleName, groupAdminRoleName;
     protected RoleStoreHelper helper;
     
     
@@ -40,16 +43,36 @@ public abstract class AbstractRoleService extends AbstractGeoServerSecurityServi
         helper=new RoleStoreHelper();
     }
 
+    
+    @Override
+    public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
+        this.name=config.getName();
+        adminRoleName = ((SecurityRoleServiceConfig)config).getAdminRoleName();
+        groupAdminRoleName = ((SecurityRoleServiceConfig)config).getGroupAdminRoleName();
+    }
+
+    
     @Override
     public GeoServerRole getAdminRole() {
-        if (adminRole!=null) return adminRole;
-        return GeoServerRole.ADMIN_ROLE;
+        if (StringUtils.hasLength(adminRoleName)==false)
+            return null;
+        try {
+            return getRoleByName(adminRoleName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public GeoServerRole getGroupAdminRole() {
-        if (groupAdminRole != null) return groupAdminRole;
-        return GeoServerRole.GROUP_ADMIN_ROLE;
+        if (StringUtils.hasLength(groupAdminRoleName)==false)
+            return null;
+        try {
+            return getRoleByName(groupAdminRoleName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

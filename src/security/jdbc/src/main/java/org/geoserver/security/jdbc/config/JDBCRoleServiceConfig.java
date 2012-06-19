@@ -12,6 +12,8 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
     private static final long serialVersionUID = 1L;
 
     protected String adminRoleName;
+    protected String groupAdminRoleName;
+
 
     public JDBCRoleServiceConfig() {
         super();
@@ -20,6 +22,7 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
     public JDBCRoleServiceConfig(JDBCRoleServiceConfig other) {
         super(other);
         adminRoleName = other.getAdminRoleName();
+        groupAdminRoleName = other.getGroupAdminRoleName();
     }
 
     @Override
@@ -50,6 +53,14 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
     @Override
     protected String defaultDMLFilenameMySQL() {
         return defaultDMLFilename();
+    }
+
+    public String getGroupAdminRoleName() {
+        return groupAdminRoleName;
+    }
+
+    public void setGroupAdminRoleName(String groupAdminRoleName) {
+        this.groupAdminRoleName = groupAdminRoleName;
     }
 
 }

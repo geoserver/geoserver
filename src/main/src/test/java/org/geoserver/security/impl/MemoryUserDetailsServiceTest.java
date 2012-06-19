@@ -57,7 +57,6 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         MemoryRoleServiceConfigImpl config = new MemoryRoleServiceConfigImpl();
         config.setName(name);
         config.setClassName(MemoryRoleService.class.getName());
-        config.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         config.setToBeEncrypted(plainTextRole);
         return config;
         

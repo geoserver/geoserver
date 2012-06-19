@@ -61,12 +61,9 @@ public class XMLRoleService extends AbstractRoleService {
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
 
-        this.name=config.getName();
+        super.initializeFromConfig(config);
         validatingXMLSchema=false;
 
-        String adminRoleName = ((SecurityRoleServiceConfig)config).getAdminRoleName();
-        adminRole = createRoleObject(
-            adminRoleName != null ? adminRoleName : GeoServerRole.ADMIN_ROLE.getAuthority());
                 
         if (config instanceof XMLSecurityServiceConfig) {
             validatingXMLSchema =((XMLSecurityServiceConfig) config).isValidating();

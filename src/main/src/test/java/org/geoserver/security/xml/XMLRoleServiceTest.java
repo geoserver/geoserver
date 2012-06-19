@@ -53,7 +53,6 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         gaConfig.setCheckInterval(1000);   
         gaConfig.setFileName(xmlFileName);
         gaConfig.setValidating(true);
-        gaConfig.setAdminRoleName(GeoServerRole.ADMIN_ROLE.getAuthority());
         getSecurityManager().saveRoleService(gaConfig/*,isNewRoleService(serviceName)*/);
         return getSecurityManager().loadRoleService(serviceName);
     }
@@ -85,13 +84,13 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
 
     public void testDefault() {
         try {
-            GeoServerRoleService service = getSecurityManager().loadRoleService("default");
+            GeoServerRoleService service = getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
             
             assertEquals(2, service.getRoles().size());
             GeoServerRole adminRole =
-                service.getRoleByName(GeoServerRole.ADMIN_ROLE.getAuthority());
+                service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
             GeoServerRole groupAdminRole = 
-                service.getRoleByName(GeoServerRole.GROUP_ADMIN_ROLE.getAuthority());
+                service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE);
             
             assertEquals(0,service.getGroupNamesForRole(adminRole).size());
             assertEquals(0,service.getGroupNamesForRole(groupAdminRole).size());

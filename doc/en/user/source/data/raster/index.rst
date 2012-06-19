@@ -1,4 +1,4 @@
-.. _raster_data:
+.. _data_raster:
 
 Working with Raster Data
 ========================

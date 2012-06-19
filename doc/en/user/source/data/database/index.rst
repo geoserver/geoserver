@@ -1,4 +1,4 @@
-.. _database_data:
+.. _data_database:
 
 Working with Databases
 ======================

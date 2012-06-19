@@ -3,9 +3,12 @@
 Extensions
 ==========
 
-Extensions are modules that add various bits of functionality to GeoServer.  They need to be installed separately from GeoServer.
+Extensions are modules that add functionality to GeoServer.  
+They are installed as add-ons to the bsae GeoServer installation.
 
-This section describes the various extensions available to GeoServer.  For information about extensions that add support for additional data formats, such as ArcSDE or SQL Server, see the :ref:`data` section.
+This section describes most of the extensions available for GeoServer.  
+For information about extensions that add support for additional data formats, such as ArcSDE or SQL Server, 
+see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` sections.
 
 .. toctree::
    :maxdepth: 2

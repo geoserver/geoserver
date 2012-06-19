@@ -30,7 +30,7 @@ While there are many potential formats for data source, there are only four type
 Editing a Store
 ---------------
 
-In order to view and edit a store, click on a store name.  The exact contents of this page will depend on the specific format chosen.  (See the section on :ref:`data` for information about specific data formats.)  In the example below we have the contents of the ``nurc:ArcGridSample`` store.
+In order to view and edit a store, click on a store name.  The exact contents of this page depend on the specific format chosen.  (See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information about specific data formats.)  In the example below we have the contents of the ``nurc:ArcGridSample`` store.
 
 .. figure:: ../images/data_stores_edit.png
    :align: center
@@ -56,7 +56,7 @@ To add a workspace, select the :guilabel:`Add new Store` button.  You will be pr
    
    *Choosing the data source for a new store*
 
-The next page will configure the store. (The example below shows the ArcGrid raster configuration page.)  However, since connection parameters differ across data sources, the exact contents of this page depend on the store's specific format. Please see the section on :ref:`data` for information on specific data formats.
+The next page will configure the store. (The example below shows the ArcGrid raster configuration page.)  However, since connection parameters differ across data sources, the exact contents of this page depend on the store's specific format. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information on specific data formats.
 
 .. figure:: ../images/data_stores_add.png
    :align: center

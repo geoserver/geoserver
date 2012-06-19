@@ -12,7 +12,7 @@ Using an external data directory allows for much easier upgrades, since there is
 Use a spatial database
 **********************
 
-Shapefiles are a very common format for geospatial data. But if you are running GeoServer in a production environment, it is better to use a spatial database such as `PostGIS <http://www.postgis.org>`_.  This is essential if doing transactions (WFS-T). Most spatial databases provide shapefile conversion tools. Although there are many options for spatial databases (see the section on :ref:`data`), PostGIS is recommended. Oracle, DB2, and ArcSDE are also supported.
+Shapefiles are a very common format for geospatial data. But if you are running GeoServer in a production environment, it is better to use a spatial database such as `PostGIS <http://www.postgis.org>`_.  This is essential if doing transactions (WFS-T). Most spatial databases provide shapefile conversion tools. Although there are many options for spatial databases (see the section on :ref:`data_database`), PostGIS is recommended. Oracle, DB2, and ArcSDE are also supported.
 
 Pick the best performing coverage formats
 *****************************************

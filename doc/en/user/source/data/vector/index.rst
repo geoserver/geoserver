@@ -1,4 +1,4 @@
-.. _vector_data:
+.. _data_vector:
 
 Working with Vector Data
 ========================

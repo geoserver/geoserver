@@ -37,7 +37,7 @@ if [ -z $DIST_PORT ]; then
 fi
 
 if [ -z $DIST_USER ]; then
-  DIST_USER=tomcat
+  DIST_USER=jetty
 fi
 
 if [ -z $DIST_PK ]; then

@@ -200,6 +200,10 @@
     <bean id="gridProcess" class="org.geotools.process.feature.gs.GridProcess" />
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     
+    <bean id="barnesSurfaceProcess" class="org.geotools.process.raster.surface.BarnesSurfaceProcess" />
+    <bean id="heatmapProcess" class="org.geotools.process.raster.surface.HeatmapProcess" />
+    <bean id="pointStackerProcess" class="org.geotools.process.feature.gs.PointStackerProcess" />
+    
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">
     	<property name="config" ref="georectifyConfiguration" /> 
       <property name="resourceManager" ref="wpsResourceManager" />

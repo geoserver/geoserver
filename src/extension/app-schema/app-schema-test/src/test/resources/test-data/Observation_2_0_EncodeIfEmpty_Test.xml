@@ -128,36 +128,36 @@
 					</ClientProperty>
 				</AttributeMapping>
 				<AttributeMapping>
-					<targetAttribute>om:result/wml2dr:MeasurementTimeseriesDomainRange/gmlcov:rangeType/swe:DataRecord</targetAttribute>					
+					<targetAttribute>om:result/wml2dr:MeasurementTimeseriesDomainRange/gmlcov:rangeType/swe:DataRecord</targetAttribute>
+					<encodeIfEmpty>true</encodeIfEmpty>
 					<ClientProperty>
 						<name>id</name>
 						<value>ID</value>
-					</ClientProperty>
-					<encodeIfEmpty>true</encodeIfEmpty>
+					</ClientProperty>					
 				</AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>om:result/wml2dr:MeasurementTimeseriesDomainRange/gmlcov:rangeType/swe:DataRecord/swe:field</targetAttribute>
+					<encodeIfEmpty>true</encodeIfEmpty>
 					<ClientProperty>
 						<name>name</name>
 						<value>'time'</value>
-					</ClientProperty>
-					<encodeIfEmpty>true</encodeIfEmpty>
+					</ClientProperty>					
 				</AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>om:result/wml2dr:MeasurementTimeseriesDomainRange/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity</targetAttribute>
+					<encodeIfEmpty>true</encodeIfEmpty>
 					<ClientProperty>
 						<name>definition</name>
 						<value>'http://www.opengis.net/def/property/OGC/0/SamplingTime'</value>
-					</ClientProperty>
-					<encodeIfEmpty>true</encodeIfEmpty>
+					</ClientProperty>					
 				</AttributeMapping>	
 				<AttributeMapping>
 					<targetAttribute>om:result/wml2dr:MeasurementTimeseriesDomainRange/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity/swe:uom</targetAttribute>
+					<encodeIfEmpty>false</encodeIfEmpty>
 					<ClientProperty>
 						<name>code</name>
 						<value>'Cal'</value>
-					</ClientProperty>
-					<encodeIfEmpty>false</encodeIfEmpty>
+					</ClientProperty>					
 				</AttributeMapping>	
 			</attributeMappings>
 		</FeatureTypeMapping>

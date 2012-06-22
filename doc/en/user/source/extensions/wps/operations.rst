@@ -3,9 +3,8 @@
 WPS Operations
 ==============
 
-.. note:: For the official WPS specification, please go to http://www.opengeospatial.org/standards/wps.
-
-WPS defines three main operations for the publishing of geospatial processes.  These operations are modeled on similar operations in WFS and WMS.  They are named:
+WPS defines three operations for the discovery and execution of geospatial processes.  
+The operations are:
 
 * GetCapabilities
 * DescribeProcess
@@ -16,26 +15,34 @@ WPS defines three main operations for the publishing of geospatial processes.  T
 GetCapabilities
 ---------------
 
-The **GetCapabilities** operation requests the WPS server to provide details of service offerings.  This information includes server metadata and metadata describing all processes implemented.  The response from the service is an XML document called the **capabilities document**.
+The **GetCapabilities** operation requests details of the service offering,  
+including service metadata and metadata describing the available processes.  
+The response is an XML document called the **capabilities document**.
 
-To make a GetCapabilities request, use the following URL::
+The required parameters, as in all OGC GetCapabilities requests, are ``service=WPS``, ``version=1.0.0`` and ``request=GetCapabilities``.
+
+An example of a GetCapabilities request is::
 
   http://localhost:8080/geoserver/ows?
     service=WPS&
     version=1.0.0&
     request=GetCapabilities
 
-This URL assumes that GeoServer is located at ``http://localhost:8080/geoserver/``.
-
-The required parameters, as in all GetCapabilities requests,  are **service** (``service=WPS``), **version** (``version=1.0.0``), and **request** (``request=GetCapabilities``).
-
 
 DescribeProcess
 ----------------
 
-The **DescribeProcess** operation makes a request to the WPS server for a full description of a process known to the WPS.
+The **DescribeProcess** operation requests a description of a WPS process supplied by the server.
 
-An example GET request (again, assuming a GeoServer at ``http://localhost:8080/geoserver/``) using the process ``JTS:buffer``, would look like this::
+The parameter ``identifier`` specifies the process to describe.  
+Multiple processes can be requested, separated by commas (for example, ``identifier=JTS:buffer,gs:Clip``).
+At least one process must be specified.
+
+The response is an XML document containing metadata about the requested processes.
+
+.. note:: As with all OGC parameters, the keys (``request``, ``version``, etc) are case-insensitive, and the values (``GetCapabilities``, ``JTS:buffer``, etc.) are case-sensitive.  GeoServer is generally more relaxed about case, but it is best to follow the specification.
+
+An example request for the process ``JTS:buffer`` is::
 
   http://localhost:8080/geoserver/ows?
     service=WPS&
@@ -43,11 +50,7 @@ An example GET request (again, assuming a GeoServer at ``http://localhost:8080/g
     request=DescribeProcess&
     identifier=JTS:buffer
 
-Here, the important parameter here is the ``identifier=JTS:buffer``, as this defines what process to describe.  Multiple processes can be requested, separated by commas (for example, ``identifier=JTS:buffer,gs:Clip``), but at least one process must be specified.
-
-.. warning:: As with all OGC parameters, the keys (``request``, ``version``, etc) are case insensitive, and the values (``GetCapabilities``, ``JTS:buffer``, etc.) are case sensitive.  GeoServer is generally more relaxed about case, but it is good to be aware of the specification.
-
-The response to this request contains the following information:
+The response is an XML document containing the following information:
 
 .. list-table:: 
    :widths: 20 80 
@@ -63,16 +66,25 @@ The response to this request contains the following information:
    * - **Output formats**
      - One of GML 3.1.1, GML 2.1.2, or WKT
 
-.. note:: The specific processes available in GeoServer are subject to change.
-
 Execute
 -------
 
-The **Execute** operation makes a request to the WPS server to perform the actual process.
+The **Execute** operation makes a request to perform the process 
+with specified input values and output data items.
+The request may be made as either a GET URL, or a POST with an XML request document.
+Because the request has a complex structure, the POST form is more typically used.
 
-The inputs required for this request depend on the process being executed.  For more information about WPS processes in GeoServer, please see the section on :ref:`wps_processes`.
+The inputs and outputs required for the request depend on the process being executed.
+GeoServer provides a wide variety of processes to process geometry, features, and coverage data. 
+For more information see the section :ref:`wps_processes`.
 
-This operation is cumbersome to view as a GET request, so below is an example of a POST request.  The specific process takes as an input a point at the origin (described in WKT as ``POINT(0 0)``) and runs a buffer operation (JTS:buffer) of 10 units with single quadrant segments and a flat style, and outputs GML 3.1.1.
+Below is an example of a ``Execute`` POST request.  
+The example process (``JTS:buffer``) takes as input 
+a geometry ``geom`` (in this case the point ``POINT(0 0)``),
+a ``distance`` (with the value ``10``),
+a quantization factor ``quadrantSegments`` (here set to be 1),
+and a ``capStyle`` (specified as ``flat``).
+The ``<ResponseForm>`` element specifies the format for the single output ``result`` to be GML 3.1.1.
 
 .. code-block:: xml
 
@@ -112,7 +124,9 @@ This operation is cumbersome to view as a GET request, so below is an example of
       </wps:ResponseForm>
     </wps:Execute>
 
-The response from such a request would be (numbers rounded for clarity):
+The process performs a buffer operation using the supplied inputs,
+and returns the outputs as specified.
+The response from the request is (with numbers rounded for clarity):
 
 .. code-block:: xml
 
@@ -133,7 +147,7 @@ The response from such a request would be (numbers rounded for clarity):
       </gml:exterior>
     </gml:Polygon>
 
-For help in generating WPS requests, you can use the built-in :ref:`wps_request_builder`.
+For help in generating WPS requests you can use the built-in interactive :ref:`wps_request_builder`.
 
 
 

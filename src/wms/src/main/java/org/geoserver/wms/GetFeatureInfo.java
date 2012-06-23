@@ -292,7 +292,7 @@ public class GetFeatureInfo {
             
 
             if (collection != null) {
-                if (! (collection instanceof SimpleFeatureCollection)) {
+                if (!(collection.getSchema() instanceof SimpleFeatureType)) {
                     //put wrapper around it with layer name
                     Name name = new NameImpl (layer.getFeature().getNamespace().getName(), layer.getFeature().getName());                
                     collection = new FeatureCollectionDecorator(name, collection);

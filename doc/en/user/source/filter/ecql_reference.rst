@@ -104,7 +104,10 @@ Spatial Predicate
 ^^^^^^^^^^^^^^^^^
 
 Spatial predicates specify the relationship between geometric values.
-Spatial predicates are defined in terms of the DE-9IM model described in the 
+Topological spatial predicates
+(``INTERSECTS``, ``DISJOINT``, ``CONTAINS``, ``WITHIN``, 
+``TOUCHES`` ``CROSSES``, ``OVERLAPS`` and ``RELATE``)
+are defined in terms of the DE-9IM model described in the 
 OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ specification.
 
 .. list-table::
@@ -112,16 +115,39 @@ OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ spe
    
    * - **Syntax**
      - **Description**
-   * - ``INTERSECTS`` | ``DISJOINT`` | ``CONTAINS`` | ``WITHIN`` | ``TOUCHES`` | ``CROSSES`` | ``OVERLAPS`` | ``EQUALS`` ``(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
-     - Predicates for standard OGC spatial relationships
-   * - ``RELATE`` ``(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *pattern* ``)``
+   * - ``INTERSECTS(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether two geometries intersect.
+       The converse of ``DISJOINT`` 
+   * - ``DISJOINT(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether two geometries are disjoint.
+       The converse of ``INTERSECTS`` 
+   * - ``CONTAINS(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether the first geometry topologically contains the second.
+       The converse of  ``WITHIN`` 
+   * - ``WITHIN(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether the first geometry is topologically within the second.
+       The converse of ``CONTAINS``
+   * - ``TOUCHES(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether two geometries touch.
+       Geometries touch if they have at least one point in common, but their interiors do not intersect.
+   * - ``CROSSES(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether two geometries cross.
+       Geometries cross if they have some but not all interior points in common
+   * - ``OVERLAPS(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether two geometries overlap.
+       Geometries overlap if they have the same dimension, have at least one point each not shared by the other, and the intersection of the interiors of the two geometries has the same dimension as the geometries themselves
+   * - ``EQUALS(``:ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``)``
+     - Tests whether two geometries are topologically equal
+   * - ``RELATE(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *pattern* ``)``
      - Tests whether geometries have the spatial relationship specified by a DE-9IM matrix *pattern*.
        A DE-9IM pattern is a string of length 9 specified using the characters ``*TF012``.
        Example: ``"1*T***T**"``
-   * - ``DWITHIN`` | ``BEYOND`` ``(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *distance* ``,`` *units* ``)``
-     - Tests whether geometries are within (beyond) a distance.
+   * - ``DWITHIN(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *distance* ``,`` *units* ``)``
+     - Tests whether the distance between two geometries is no more than the specified distance.
        *distance* is an unsigned numeric value for the distance tolerance.
        *units* is one of ``feet``, ``meters``, ``statute miles``, ``nautical miles``, ``kilometers``      
+   * - ``BEYOND(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *distance* ``,`` *units* ``)``
+     - Similar to ``DWITHIN``, but tests whether the distance between two geometries is greater than the given distance.
    * - ``BBOX (`` :ref:`ecql_expr` ``,``
        :ref:`Number <ecql_literal>` ``,`` :ref:`Number <ecql_literal>` ``,`` :ref:`Number <ecql_literal>` ``,`` :ref:`Number <ecql_literal>`
        [ ``,`` *CRS* ] ``)``

@@ -10,6 +10,7 @@ Although not portable, the extensions make styling more powerful and concise and
    :maxdepth: 2
 
    geometry-transformations
+   rendering-transform
    pointsymbols
    substitution
    uom

@@ -85,7 +85,7 @@ abstract class DimensionHelper {
             try {
                 handleTimeDimensionVector(typeInfo);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to handle time attribute for layer " + e);
+                throw new RuntimeException("Failed to handle time attribute for layer", e);
             }
         }
         // elevation dimension

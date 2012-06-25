@@ -11,7 +11,7 @@ Programming Guide
    web-ui/index.rst
    wicket-pages/index.rst
    extension-points/index.rst
-   wps/index.rst
+   wps-services/index.rst
    versioning/index.rst
    security/index.rst   
    app-schema/index.rst

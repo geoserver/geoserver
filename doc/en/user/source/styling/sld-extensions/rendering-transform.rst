@@ -163,6 +163,36 @@ and styles the contours as black lines.
                    <CssParameter name="stroke-width">1</CssParameter>
                  </Stroke>
                </LineSymbolizer>
+               <TextSymbolizer>
+                 <Label>
+                   <ogc:PropertyName>value</ogc:PropertyName>
+                 </Label>
+                 <Font>
+                   <CssParameter name="font-family">Arial</CssParameter>
+                   <CssParameter name="font-style">Normal</CssParameter>
+                   <CssParameter name="font-size">10</CssParameter>
+                 </Font>
+                 <LabelPlacement>
+                   <LinePlacement/>
+                 </LabelPlacement>
+                 <Halo>
+                   <Radius>
+                     <ogc:Literal>2</ogc:Literal>
+                   </Radius>
+                   <Fill>
+                     <CssParameter name="fill">#FFFFFF</CssParameter>
+                     <CssParameter name="fill-opacity">0.6</CssParameter>        
+                   </Fill>
+                 </Halo>
+                 <Fill>
+                   <CssParameter name="fill">#000000</CssParameter>
+                 </Fill>
+                 <Priority>2000</Priority>
+                 <VendorOption name="followLine">true</VendorOption>
+                 <VendorOption name="repeat">100</VendorOption>
+                 <VendorOption name="maxDisplacement">50</VendorOption>
+                 <VendorOption name="maxAngleDelta">30</VendorOption>
+               </TextSymbolizer>
              </Rule>
            </FeatureTypeStyle>
          </UserStyle>
@@ -176,6 +206,7 @@ Key aspects of the SLD are:
 * **Lines 19-29** supply values for the process's ``levels`` parameter, 
   which specifies the elevation levels for the contours to extract.
 * **Lines 35-40** specify a ``LineSymbolizer`` to style the contour lines.
+* **Lines 41-70** specify a ``TextSymbolizer`` to show the contour levels along the lines.
 
 
 The result of using this transformation is shown in the following map image

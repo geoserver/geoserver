@@ -6,21 +6,38 @@ Rendering Transformations
 **Rendering Transformations** allow processing to be carried out 
 on datasets within the GeoServer rendering pipeline.
 A typical transformation computes aggregated or derived data from the input data,
-and may also transform data from one format into another 
-(e.g. from vector to raster or raster to vector).
-This allows various useful visualization effects to be obtained, such as:
+allowing various useful visualization effects to be obtained.
+Transformations may transform data from one format into another
+(i.e vector to raster or vice-versa),
+to provide an appropriate format for display.
 
-* displaying point datasets as interpolated surfaces
-* displaying contours derived from raster datasets 
-* displaying dense point datasets as point clusters
+The following table lists examples of various kinds of rendering transformations
+available in GeoServer:
 
-Rendering transformations are invoked by adding special ``<Transformation>`` elements to SLD styles. 
-Tranformations are usually provided with parameters to control the appearance of the output.
-The styling rules and symbolizers in the SLD are applied to the result
-of the transformation to produce the final layer rendering.
+.. list-table::
+   :widths: 25 75 
+   
+   * - **Type** 
+     - **Examples**
+   * - Raster-to-Vector
+     - **Contour** extracts contours from a DEM raster.
+       **RasterAsPointCollections** extracts a vector field from a multi-band raster 
+   * - Vector-to-Raster
+     - **BarnesSurfaceInterpolation** computes a surface from scattered data points.
+       **Heatmap** computes a heatmap surface from weighted data points.
+   * - Vector-to-Vector
+     - **PointStacker** aggregates dense point data into clusters.
+       
+ 
+Rendering transformations are invoked within SLD styles by including the special ``<Transformation>`` element.
+Parameters may be supplied to control the appearance of the output.
+The final layer rendering is produced 
+by applying the styling rules and symbolizers in the SLD to the transformation output.
 
 Rendering transformations are implemented using the same mechanism as :ref:`wps_processes`.
 They can thus also be executed via the WPS protocol, if required.
+Conversely, any WPS process can be executed as a transformation, as long
+as the input and output are appropriate for use within an SLD.
 
 This section is a general guide to rendering transformation usage in GeoServer. 
 For details of input, parameters, and output for any specific 
@@ -31,6 +48,13 @@ Installation
 ------------
 
 Using Rendering Transformations requires the WPS extension to be installed. See :ref:`wps_install`.
+
+.. note:: 
+
+   The WPS service does not need to be **enabled** to use Rendering Transformations.
+   To avoid unwanted use of server resources
+   it may be desirable to disable the WPS service if it is not being used directly,
+
 
 Usage
 -----
@@ -45,8 +69,10 @@ The content of the transformation element is a function with the name of the tra
 Transformation processes can accept any number of named parameters.
 Each parameter's name and value are supplied via another function ``<ogc:Function name="parameter">``.
 The first argument to this function is a literal giving the name of the parameter.
-The optional second argument provides the value for the parameter.
-As with any filter function argument, it may be supplied in several ways:
+The optional following arguments provide the value for the parameter.
+Some parameters accept only a single value, while others may
+accept a list of values.
+As with any filter function argument, values may be supplied in several ways:
 
 * As a literal value
 * As a computed expression
@@ -54,7 +80,7 @@ As with any filter function argument, it may be supplied in several ways:
   (see :ref:`sld_variable_substitution`).
 * As a predefined SLD environment variable (which allows obtaining values 
   for the current request such as output image width and height).
-  
+
 The order of the named parameters is not significant.
 
 Most rendering transformations take as input a dataset to be transformed.
@@ -73,7 +99,7 @@ This is done by specifying the column name in the symbolizer ``<Geometry>`` elem
 
 The output of the rendering transformation is styled using the symbolizers 
 appropriate to its format: 
-  :ref:`sld_reference_pointsymbolizer`, :ref:`sld_reference_linesymbolizer`, :ref:`sld_reference_polygonsymbolizer`, 
+:ref:`sld_reference_pointsymbolizer`, :ref:`sld_reference_linesymbolizer`, :ref:`sld_reference_polygonsymbolizer`, 
 and :ref:`sld_reference_textsymbolizer` for vector data, 
 and :ref:`sld_reference_rastersymbolizer` for raster coverage data.
 
@@ -83,14 +109,92 @@ Notes
 * Rendering transformations may not work correctly in tiled mode, 
   unless they have been specifically written to accomodate it.
   
-Example
--------
+Examples
+--------
 
-The following SLD invokes a Heatmap rendering transformation
-to compute a heatmap surface as a raster coverage.
-The SLD is designed to be applied to any featuretype with point geometries
-and an attribute ``pop2000`` supplying a weight for the points
-(in this case, a dataset of world urban areas).
+Contour extraction
+^^^^^^^^^^^^^^^^^^
+
+``gs:Contour`` is a **Raster-to-Vector** rendering transformation
+which extracts contours as vector linestrings at specified levels from a raster DEM.
+The following SLD invokes the transformation
+and styles the contours as black lines.
+
+.. code-block:: xml
+   :linenos:
+
+     <?xml version="1.0" encoding="ISO-8859-1"?>
+     <StyledLayerDescriptor version="1.0.0" 
+       xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
+       xmlns="http://www.opengis.net/sld" 
+       xmlns:ogc="http://www.opengis.net/ogc" 
+       xmlns:xlink="http://www.w3.org/1999/xlink" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+       <NamedLayer>
+         <Name>contour_dem</Name>
+         <UserStyle>
+           <Title>Contour DEM</Title>
+           <Abstract>Extracts contours from DEM</Abstract>
+           <FeatureTypeStyle>
+             <Transformation>
+               <ogc:Function name="gs:Contour">
+                 <ogc:Function name="parameter">
+                   <ogc:Literal>data</ogc:Literal>
+                 </ogc:Function>
+                 <ogc:Function name="parameter">
+                   <ogc:Literal>levels</ogc:Literal>
+                   <ogc:Literal>1100</ogc:Literal>
+                   <ogc:Literal>1200</ogc:Literal>
+                   <ogc:Literal>1300</ogc:Literal>
+                   <ogc:Literal>1400</ogc:Literal>
+                   <ogc:Literal>1500</ogc:Literal>
+                   <ogc:Literal>1600</ogc:Literal>
+                   <ogc:Literal>1700</ogc:Literal>
+                   <ogc:Literal>1800</ogc:Literal>
+                 </ogc:Function>
+               </ogc:Function>
+             </Transformation>
+             <Rule>
+               <Name>rule1</Name>
+               <Title>Contour Line</Title>
+               <LineSymbolizer>
+                 <Stroke>
+                   <CssParameter name="stroke">#000000</CssParameter>
+                   <CssParameter name="stroke-width">1</CssParameter>
+                 </Stroke>
+               </LineSymbolizer>
+             </Rule>
+           </FeatureTypeStyle>
+         </UserStyle>
+       </NamedLayer>
+      </StyledLayerDescriptor>
+
+Key aspects of the SLD are:
+      
+* **Lines 14-15** define the rendering transformation, using the process ``gs:Contour``.
+* **Lines 16-18** supply the input data parameter, named ``data`` in this process.
+* **Lines 19-29** supply values for the process's ``levels`` parameter, 
+  which specifies the elevation levels for the contours to extract.
+* **Lines 35-40** specify a ``LineSymbolizer`` to style the contour lines.
+
+
+The result of using this transformation is shown in the following map image
+(which also shows the underlying DEM raster):
+
+.. figure:: images/transform_contour_sf_dem.png
+   :align: center
+
+   
+   
+Heatmap generation
+^^^^^^^^^^^^^^^^^^
+
+``gs:Heatmap`` is a **Vector-to-Raster** rendering transformation 
+which generates a heatmap surface from weighted point data.
+The following SLD invokes a Heatmap rendering transformation 
+on a featuretype with point geometries
+and an attribute ``pop2000`` supplying the weight for the points
+(in this example, a dataset of world urban areas is used).
 The output is styled using a color ramp across the output data value range [0 .. 1].
 
 .. code-block:: xml
@@ -186,17 +290,16 @@ Key aspects of the SLD are:
   which is given the value of the standard SLD environment variable ``wms_width``.
 * **Lines 46-52** supply the ``outputHeight`` parameter, 
   which is given the value of the standard SLD environment variable ``wms_height``.
-* **Lines 55-70** specify a ``RasterSymbolizer`` with which to style 
-  the computed raster surface.
+* **Lines 55-70** specify a ``RasterSymbolizer`` to style the computed raster surface.
   The symbolizer contains a ramped color map for the data range [0..1].
 * **Line 58** specifies the geometry attribute of the input featuretype, 
   which is necessary to pass SLD validation.
 
 
 This transformation styles a layer to produce a heatmap surface 
-for the data in the current view extent, as shown in the map image below.
+for the data in the requested map extent, as shown in the image below.
 (The map image also shows the original input data points 
-styled by another SLD operating on the original vector data,
+styled by another SLD,
 as well as a base map layer.)
 
 .. figure:: images/heatmap_urban_us_east.png

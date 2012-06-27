@@ -4,7 +4,7 @@ REST Configuration Examples
 ===========================
 
 This section contains a number of examples which illustrate various uses of the
-REST data configuration api. The examples are grouped by environment/language.  
+REST data configuration API. The examples are grouped by environment/language.  
 
 
 .. toctree::
@@ -14,4 +14,5 @@ REST data configuration api. The examples are grouped by environment/language.
    rest-config-examples-php
    rest-config-examples-python
    rest-config-examples-java
+   rest-config-examples-ruby
 

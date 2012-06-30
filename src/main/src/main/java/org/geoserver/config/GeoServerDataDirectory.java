@@ -1209,7 +1209,7 @@ public class GeoServerDataDirectory implements ResourceStore {
         }
         final DefaultResourceLocator locator = new DefaultResourceLocator();
         locator.setSourceUrl(resourceToUrl(styleResource));
-        final StyledLayerDescriptor sld = Styles.parse(styleResource, null, s.getSLDVersion(), locator);
+        final StyledLayerDescriptor sld = Styles.parse(styleResource, s.getFormat(), s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
         assert style!=null;
         return style;
@@ -1243,7 +1243,7 @@ public class GeoServerDataDirectory implements ResourceStore {
             
         };
         locator.setSourceUrl(resourceToUrl(styleResource));
-        final StyledLayerDescriptor sld = Styles.parse(input, null, s.getSLDVersion(), locator);
+        final StyledLayerDescriptor sld = Styles.parse(input, s.getFormat(), s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
         
         assert style!=null;

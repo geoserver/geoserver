@@ -232,4 +232,9 @@
   <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
   <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
   <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
+
+  <!-- default style handlers -->
+  <bean id="sldHandler-1.0" class="org.geoserver.catalog.SLD10Handler"/>
+  <bean id="sldHandler-1.1" class="org.geoserver.catalog.SLD11Handler"/>
+  
 </beans>

@@ -160,6 +160,13 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
+     * Gets the string specified by the "STYLE_FORMAT" parameter.
+     */
+    public String getStyleFormat() {
+        return this.optionalParams.styleFormat;
+    }
+
+    /**
      * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the "SLD
      * paramter is schema validated.
      */
@@ -370,6 +377,13 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      */
     public void setSldVersion(String sldVersion) {
         this.optionalParams.sldVersion = sldVersion;
+    }
+
+    /**
+     * Sets the string specified by the "STYLE_FORMAT" parameter
+     */
+    public void setStyleFormat(String styleFormat) {
+        this.optionalParams.styleFormat = styleFormat;
     }
 
     /**
@@ -658,7 +672,12 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
          * SLD_VERSION parameter
          */
         String sldVersion;
-        
+
+        /**
+         * STYLE_FORMAT parameter
+         */
+        String styleFormat;
+
         /** flag to validate SLD parameter */
         Boolean validateSLD = Boolean.FALSE;
 

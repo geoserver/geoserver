@@ -1638,7 +1638,7 @@ public class ResourcePool {
                 style = styleCache.get( info );
                 if ( style == null ) {
                     style = dataDir().parsedStyle(info);
-                    // set the name of the style to be the name of the style metadata
+
                     // remove this when wms works off style info
                     style.setName( info.getName() );
                     styleCache.put( info, style );
@@ -1708,7 +1708,8 @@ public class ResourcePool {
             BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( styleFile ) );
             
             try {
-                Styles.encode(Styles.sld(style), info.getSLDVersion(), format, out);
+                Styles.encode(Styles.sld(style), info.getFormat(), info.getFormatVersion(), 
+                    format, out);
                 clear(info);
             }
             finally {

@@ -28,6 +28,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -76,6 +77,7 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.EntityResolver;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -560,11 +562,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      */
     private List validateSld(InputStream stream, GetMapRequest getMap) {
         try {
+            String language = getStyleFormat(getMap);
+            EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
             if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
+                return Styles.validate(stream, language, new Version(getMap.getSldVersion()), entityResolver);
             }
             else {
-                return Styles.validate(stream, entityResolverProvider.getEntityResolver());
+                return Styles.validate(stream, language, entityResolver);
             }
         } 
         catch (IOException e) {
@@ -578,11 +583,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
         StyledLayerDescriptor sld;
         try {
+            String format = getStyleFormat(getMap);
+            EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
             if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
+                sld = Styles.parse(stream, format, new Version(getMap.getSldVersion()), null, entityResolver);
             }
             else {
-                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver());
+                sld = Styles.parse(stream, format, null, entityResolver);
             }
         }
         catch(IOException e) {
@@ -590,6 +598,13 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         }
        
         return sld;
+    }
+
+    /*
+     * Get style language from request, falling back on SLD as default. 
+     */
+    private String getStyleFormat(GetMapRequest request) {
+        return request.getStyleFormat() != null ? request.getStyleFormat() : SLDHandler.FORMAT;
     }
 
     private void processSld(final GetMapRequest request, final List<?> requestedLayers,

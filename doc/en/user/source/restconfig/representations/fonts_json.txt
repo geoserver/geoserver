@@ -1,0 +1,18 @@
+
+{"fonts": [
+  "Palatino",
+  "Lucida Bright Demibold Italic",
+  "Didot-Bold",
+  "BellMTBold",
+  "LucidaSans",
+  "LiHeiPro",
+  "HiraMinPro-W3",
+  "StoneSansITCTT-SemiIta",
+  "MyriadPro-SemiExtIt",
+  "GillSans-Light",
+  "Skia-Regular_Light-Condensed",
+  "MicrosoftHimalaya",
+  "LucidaSansUnicode",
+  "Bradley Hand ITC TT",
+  "Bordeaux Roman Bold LET",
+]}

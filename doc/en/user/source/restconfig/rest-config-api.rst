@@ -1483,6 +1483,48 @@ Operations
 - :download:`XML <representations/layergroup_xml.txt>`
 - :download:`JSON <representations/layergroup_json.txt>`
 
+Fonts 
+-----
+
+This operation provides the list of ``fonts`` available in GeoServer and can be useful to verify if a ``font`` used in a SLD file is available before uploading it.
+
+Operations
+^^^^^^^^^^
+
+``/fonts[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return the fonts available in GeoServer
+     - 200
+     - XML, JSON
+     - XML
+   * - POST
+     -
+     - 405
+     - 
+     - 
+   * - PUT
+     -
+     - 405
+     - 
+     - 
+   * - DELETE
+     -
+     - 405
+     - 
+     - 
+
+- :download:`XML <representations/fonts_xml.txt>`
+- :download:`JSON <representations/fonts_json.txt>`
+
 Configuration reloading 
 ----------------------- 
 

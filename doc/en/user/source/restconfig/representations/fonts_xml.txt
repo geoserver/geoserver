@@ -1,0 +1,21 @@
+
+<root>
+  <fonts>
+    <entry>Palatino</entry>
+    <entry>Lucida Bright Demibold Italic</entry>
+    <entry>Didot-Bold</entry>
+    <entry>BellMTBold</entry>
+    <entry>LucidaSans</entry>
+    <entry>LiHeiPro</entry>
+    <entry>HiraMinPro-W3</entry>
+    <entry>StoneSansITCTT-SemiIta</entry>
+    <entry>MyriadPro-SemiExtIt</entry>
+    <entry>GillSans-Light</entry>
+    <entry>Skia-Regular_Light-Condensed</entry>
+    <entry>MicrosoftHimalaya</entry>
+    <entry>LucidaSansUnicode</entry>
+    <entry>Bradley Hand ITC TT</entry>
+    <entry>LucidaSans-TypewriterBoldOblique</entry>
+    <entry>Bordeaux Roman Bold LET</entry>
+  </fonts>
+</root>

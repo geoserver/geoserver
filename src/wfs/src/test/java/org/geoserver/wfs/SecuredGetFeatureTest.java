@@ -69,7 +69,10 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
     public void testGetNoAuthChallenge() throws Exception {
         DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.CHALLENGE);
-        
+
+        //this test seems to fail on the build server without storing the rules...
+        dao.storeRules();
+
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName=" + getLayerId(MockData.BUILDINGS));
         assertEquals(401, resp.getErrorCode());
         assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));

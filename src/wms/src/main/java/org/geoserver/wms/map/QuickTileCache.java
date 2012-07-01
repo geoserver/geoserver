@@ -21,6 +21,7 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionListener;
@@ -33,7 +34,7 @@ import org.geotools.util.CanonicalSet;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class QuickTileCache implements TransactionListener {
+public class QuickTileCache implements TransactionListener, GeoServerLifecycleHandler {
     /**
      * Set of parameters that we can ignore, since they do not define a map, are either unrelated,
      * or define the tiling instead
@@ -369,6 +370,22 @@ public class QuickTileCache implements TransactionListener {
         // contains a string with part of the map request where the layer
         // name is included, but we would have to parse it and consider
         // also that the namespace may be missing in the getmap request
+        tileCache.clear();
+    }
+
+    @Override
+    public void onReset() {
+        // data might have changed in the meantime
+        tileCache.clear();        
+    }
+
+    @Override
+    public void onDispose() {
+        tileCache.clear();
+    }
+
+    @Override
+    public void onReload() {
         tileCache.clear();
     }
 }

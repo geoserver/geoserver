@@ -78,6 +78,8 @@ public class KMLTransformerTest extends WMSTestSupport {
         dataDirectory.addStyle("BridgeSubdir", getClass().getResource("bridgesubdir.sld"));
         dataDirectory
                 .addStyle("dynamicsymbolizer", getClass().getResource("dynamicsymbolizer.sld"));
+        dataDirectory
+                 .addStyle("relativeds", getClass().getResource("relativeds.sld"));
         dataDirectory.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
         new File(dataDirectory.getDataDirectoryRoot(), "styles/graphics").mkdir();
         dataDirectory.copyTo(getClass().getResourceAsStream("bridge.png"),
@@ -446,6 +448,23 @@ public class KMLTransformerTest extends WMSTestSupport {
         assertEquals("kml", document.getDocumentElement().getNodeName());
         assertEquals(1, document.getElementsByTagName("Style").getLength());
         XMLAssert.assertXpathEvaluatesTo("http://example.com/Cam Stream",
+                "//Style[1]/IconStyle/Icon/href", document);
+    }
+    
+    public void testRelativeDynamicSymbolizer() throws Exception {
+        KMLTransformer transformer = new KMLTransformer(getWMS());
+        mapContext.removeLayer(mapContext.layers().get(0));
+        mapContext.addLayer(createMapLayer(MockData.STREAMS, "relativeds"));
+        mapContext.getViewport().setBounds(new ReferencedEnvelope(-180, 0, -90, 90,
+                DefaultGeographicCRS.WGS84));
+        mapContext.setMapHeight(256);
+        mapContext.setMapWidth(256);
+
+        Document document = WMSTestSupport.transform(mapContext, transformer, false);
+        
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals(1, document.getElementsByTagName("Style").getLength());
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/styles/icons/Cam%20Stream",
                 "//Style[1]/IconStyle/Icon/href", document);
     }
 

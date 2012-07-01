@@ -10,6 +10,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -643,10 +644,18 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                 ExternalGraphic graphic = symbolizer.getGraphic().getExternalGraphics()[0];
 
                 try {
-                    if ("file".equals(graphic.getLocation().getProtocol())) {
+                    // Before doing anything else (that might mess with "$", "{",
+                    // or "}" characters), we evaluate the string as an expression.
+                     URL graphicLocation = graphic.getLocation();
+                     iconHref = graphicLocation.toString();
+                     iconHref = evaluateDynamicSymbolizer(iconHref, feature);
+                     graphicLocation = new URL(iconHref);
+                     String graphicProtocol = new URL(iconHref).getProtocol();
+                    
+                    if ("file".equals(graphicProtocol)) {
                         // it is a local file, reference locally from "styles"
                         // directory
-                        File file = DataUtilities.urlToFile(graphic.getLocation());
+                        File file = DataUtilities.urlToFile(graphicLocation);
                         File styles = null;
                         File graphicFile = null;
                         if (file.isAbsolute()) {
@@ -667,25 +676,26 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                             }
                         }
 
+                        // rebuild the icon href accordingly
                         if (file != null && styles != null) {
                             iconHref = ResponseUtils.buildURL(mapContent.getRequest().getBaseUrl(),
                                     "styles/" + styles.toURI().relativize(graphicFile.toURI()),
                                     null, URLType.RESOURCE);
+                        } else {
+                            // we don't know how to handle this then...
+                            iconHref = null;
                         }
-                    } else if ("http".equals(graphic.getLocation().getProtocol())) {
-                        iconHref = graphic.getLocation().toString();
-                    } else {
+                    } else if (!("http".equals(graphicProtocol) || "https".equals(graphicProtocol))) {
                         // TODO: should we check for http:// and use it
                         // directly?
                         // other protocols?
+                        iconHref = null;
                     }
 
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Error processing external graphic:" + graphic, e);
                 }
             }
-
-            iconHref = evaluateDynamicSymbolizer(iconHref, feature);
 
             if (iconHref == null) {
                 iconHref = "http://maps.google.com/mapfiles/kml/pal4/icon25.png";

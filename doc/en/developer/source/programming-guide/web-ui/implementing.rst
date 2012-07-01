@@ -22,16 +22,16 @@ Create a new module
 
    .. code-block:: xml
 
-	  <project xmlns="http://maven.apache.org/POM/4.0.0"
+      <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
         <modelVersion>4.0.0</modelVersion>
 
-     	<parent>
-	      <groupId>org.geoserver</groupId>
-	      <artifactId>web2</artifactId>
-	      <version>2.0-SNAPSHOT</version>
-	    </parent>
+        <parent>
+          <groupId>org.geoserver</groupId>
+          <artifactId>web</artifactId>
+          <version>2.2-SNAPSHOT</version>
+        </parent>
 
         <groupId>org.geoserver</groupId>
         <artifactId>hello_web</artifactId>
@@ -43,7 +43,7 @@ Create a new module
           <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>web-core</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <version>2.2-SNAPSHOT</version>
           </dependency>
         </dependencies>
 
@@ -136,26 +136,30 @@ web application should be interationalized. In GeoServer, this is performed by
 creating an internationalization (i18n) file named 
 ``GeoServerApplication.properties``.
 
-#. Create the (i18n) file ``GeoServerApplication.properties`` in the ``src/main/java`` directory::
+#. Create the directory ``src/main/resources`` under the root of the 
+   ``hello_web`` module::
+
+    [hello_web]% mkdir -p src/main/resources
+
+#. Create the (i18n) file ``GeoServerApplication.properties`` in the ``src/main/resources`` directory::
 
       HelloPage.page.title=Hello
       HelloPage.page.description=A page to say hello
 
-   The above i18n file declares two keys, one for the title of the page and one
-   for the description of the page.
+      HelloPage.title=Hello Page Title
+      HelloPage.description=This is the description of the page
+
+   The first two keys in the above i18n file declare the title of the page and the description 
+   of the page. This will be the title of the link to the page and the tooltip for the page link.
+   The next two keys are the title and description that are displayed on the page itself.
 
 Create the application context
 -------------------------------
 
-#. The final step is to create an application context which tells GeoServer 
-   about the page created in the previous section. Create the directory 
-   ``src/main/resources`` under the root of the ``hello_web`` module::
-
-     [hello_web]% mkdir src/main/resources
-
-#. Add the following ``applicationContext.xml`` file to the
-   ``src/main/resources`` directory, under the root of the ``hello_rest``
-   module:
+#. The final step is to create an application context which tells GeoServer
+   about the page created in the previous section. Add the following 
+   ``applicationContext.xml`` file to the ``src/main/java`` directory, under the root 
+   of the ``hello_web`` module:
 
    .. code-block:: xml
 
@@ -183,9 +187,10 @@ At this point, the ``hello_web`` module should look like the following::
 
    hello_web/
       pom.xml
+      src/main/resources
+          GeoServerApplication.properties
       src/main/java
           applicationContext.xml
-          GeoServerApplication.properties
           org/geoserver/helloweb/
                HelloPage.java
                HelloPage.html

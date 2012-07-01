@@ -14,7 +14,7 @@ In Wicket, each page has one corresponding Java class.  To add a page, you need 
 
     import org.geoserver.web.GeoServerBasePage;
 
-    public class MyPage extends GeoServerBasePage{
+    public class MyPage extends GeoServerBasePage {
         // We will fill in the rest later, for now the page can just be blank
     }
 
@@ -39,7 +39,7 @@ There would also need to be a Spring application context document (:file:`src/ma
          <property name="order" value="100"/>
      </bean>
 
-The third necessary file is the default dictionary for internationalized strings, at :file:`src/main/java/GeoServerApplication.properties`: 
+The third necessary file is the default dictionary for internationalized strings, at :file:`src/main/resources/GeoServerApplication.properties`: 
 
 .. code-block:: ini
 
@@ -130,7 +130,7 @@ The corresponding HTML would look like:
 Making it Internationalizable
 -----------------------------
 
-In the GeoServer UI, we use a customized resource lookup utility within Wicket to allow any module to provide resource strings.  All you need to do is include your :abbr:`i18n (Internationalization)` values in a Java Properties file named ``GeoServerApplication.properties`` in the root of your ``src`` directory (ie, :file:`{project}/src/main/java/GeoServerApplication.properties`).
+In the GeoServer UI, we use a customized resource lookup utility within Wicket to allow any module to provide resource strings.  All you need to do is include your :abbr:`i18n (Internationalization)` values in a Java Properties file named ``GeoServerApplication.properties`` in the ``resources`` directory of your ``src`` directory (ie, :file:`{project}/src/main/resources/GeoServerApplication.properties`).
 
 The ``<wicket:message>`` element makes it quite easy to make text internationalizable, but in the event that you need to insert a value into a sentence at a position that changes dependent on the language, you'll need to use something more complicated.
 
@@ -153,7 +153,7 @@ A brief listing of UI design guidelines for Wicket pages in GeoServer follows.
 
             <ul>
                 <li>
-                    <label for="foo"><wicket:message key="foo"> Foo </wicket:message>
+                    <label for="foo"><wicket:message key="foo"> Foo </wicket:message></label>
                     <input wicket:id="foo" type="text"></input>
                 </li>
             </ul>

@@ -5,7 +5,7 @@ Rendering Transformations
 
 **Rendering Transformations** allow processing to be carried out 
 on datasets within the GeoServer rendering pipeline.
-A typical transformation computes aggregated or derived data from the input data,
+A typical transformation computes a derived or aggregated result from the input data,
 allowing various useful visualization effects to be obtained.
 Transformations may transform data from one format into another
 (i.e vector to raster or vice-versa),
@@ -29,10 +29,10 @@ available in GeoServer:
      - **PointStacker** aggregates dense point data into clusters.
        
  
-Rendering transformations are invoked within SLD styles by including the special ``<Transformation>`` element.
+Rendering transformations are invoked within SLD styles.
 Parameters may be supplied to control the appearance of the output.
-The final layer rendering is produced 
-by applying the styling rules and symbolizers in the SLD to the transformation output.
+The rendered output for the layer is produced 
+by applying the styling rules and symbolizers in the SLD to the result of transformation.
 
 Rendering transformations are implemented using the same mechanism as :ref:`wps_processes`.
 They can thus also be executed via the WPS protocol, if required.
@@ -40,7 +40,7 @@ Conversely, any WPS process can be executed as a transformation, as long
 as the input and output are appropriate for use within an SLD.
 
 This section is a general guide to rendering transformation usage in GeoServer. 
-For details of input, parameters, and output for any specific 
+For details of input, parameters, and output for any particular 
 rendering transformation, refer to its own documentation.
 
 
@@ -52,8 +52,8 @@ Using Rendering Transformations requires the WPS extension to be installed. See 
 .. note:: 
 
    The WPS service does not need to be **enabled** to use Rendering Transformations.
-   To avoid unwanted use of server resources
-   it may be desirable to disable the WPS service if it is not being used directly,
+   To avoid unwanted consumption of server resources
+   it may be desirable to disable the WPS service if it is not being used directly.
 
 
 Usage
@@ -62,16 +62,18 @@ Usage
 Rendering Transformations are invoked by adding the ``<Transformation>`` element 
 to a ``<FeastureTypeStyle>`` element in an SLD document.
 This element specifies the name of the transformation process, 
-and usually also includes values for the process parameters controlling the operation of the transformation.
+and usually includes parameter values controlling the operation of the transformation.
 
-The transformation element syntax leverages the OGC Filter function syntax. 
-The content of the transformation element is a function with the name of the transformation process.
-Transformation processes can accept any number of named parameters.
+The ``<Transformation>`` element syntax leverages the OGC Filter function syntax. 
+The content of the element is a ``<ogc:Function>`` with the name of the rendering transformation process.
+Transformation processes may accept some number of parameters,
+which may be either required (in which case they must be specified),
+or optional (in which case they may be omitted if the default value is acceptable).
+Parameters are supplied as name/value pairs.
 Each parameter's name and value are supplied via another function ``<ogc:Function name="parameter">``.
-The first argument to this function is a literal giving the name of the parameter.
-The optional following arguments provide the value for the parameter.
-Some parameters accept only a single value, while others may
-accept a list of values.
+The first argument to this function is an ``<ogc:Literal>`` containing the name of the parameter.
+The optional following arguments provide the value for the parameter (if any).
+Some parameters accept only a single value, while others may accept a list of values.
 As with any filter function argument, values may be supplied in several ways:
 
 * As a literal value
@@ -81,27 +83,34 @@ As with any filter function argument, values may be supplied in several ways:
 * As a predefined SLD environment variable (which allows obtaining values 
   for the current request such as output image width and height).
 
-The order of the named parameters is not significant.
+The order of the supplied parameters is not significant.
 
 Most rendering transformations take as input a dataset to be transformed.
-This is supplied via a special named parameter which does not have a value specified in the SLD.
-The name of the parameter is determined by the particular transformation being run.
-When the transformation is executed, the dataset it is being applied to
-is passed via this parameter.
+This is supplied via a special named parameter which does not have a value specified.
+The name of the parameter is determined by the particular transformation being used.
+When the transformation is executed, the input dataset
+is passed to it via this parameter.
+
 The input dataset is determined by the same query mechanism as used for all WMS requests,
-and can thus be filtered and reprojected as necessary.
+and can thus be filtered in the request if required.
 
-For rendering transformations which take as input a featuretype (vector dataset)
-and convert it to a raster dataset, in order to pass SLD validation
-the SLD needs to mention the geometry column of the input dataset, 
-even though it is not used.  
-This is done by specifying the column name in the symbolizer ``<Geometry>`` element.
+In rendering transformations which take as input a featuretype (vector dataset)
+and convert it to a raster dataset, in order to pass validation
+the SLD needs to mention the geometry attribute of the input dataset 
+(even though it is not used).  
+This is done by specifying the attribute name in the symbolizer ``<Geometry>`` element.
 
-The output of the rendering transformation is styled using the symbolizers 
+The output of the rendering transformation is styled using symbolizers 
 appropriate to its format: 
 :ref:`sld_reference_pointsymbolizer`, :ref:`sld_reference_linesymbolizer`, :ref:`sld_reference_polygonsymbolizer`, 
 and :ref:`sld_reference_textsymbolizer` for vector data, 
 and :ref:`sld_reference_rastersymbolizer` for raster coverage data.
+
+If it is desired to display the input dataset in its orginal form, 
+or transformed in another way, there are two options:
+
+* Another ``<FeatureTypeStyle>`` can be used in the same SLD
+* Another SLD can be created, and the layer displayed twice using the different SLDs
 
 Notes
 ^^^^^
@@ -116,7 +125,7 @@ Contour extraction
 ^^^^^^^^^^^^^^^^^^
 
 ``gs:Contour`` is a **Raster-to-Vector** rendering transformation
-which extracts contours as vector linestrings at specified levels from a raster DEM.
+which extracts contour lines at specified levels from a raster DEM.
 The following SLD invokes the transformation
 and styles the contours as black lines.
 
@@ -216,7 +225,6 @@ The result of using this transformation is shown in the following map image
    :align: center
 
    
-   
 Heatmap generation
 ^^^^^^^^^^^^^^^^^^
 
@@ -286,12 +294,15 @@ The output is styled using a color ramp across the output data value range [0 ..
               </Transformation>
              <Rule>
                <RasterSymbolizer>
-               <!-- specify geometry column of input FT to pass SLD validation, although not used -->
-                 <Geometry><ogc:PropertyName>the_geom</ogc:PropertyName></Geometry>
+               <!-- specify geometry attribute to pass validation -->
+                 <Geometry>
+                   <ogc:PropertyName>the_geom</ogc:PropertyName></Geometry>
                  <Opacity>0.6</Opacity>
                  <ColorMap type="ramp" >
-                   <ColorMapEntry color="#FFFFFF" quantity="0" label="nodata" opacity="0"/>
-                   <ColorMapEntry color="#FFFFFF" quantity="0.02" label="nodata" opacity="0"/>
+                   <ColorMapEntry color="#FFFFFF" quantity="0" label="nodata" 
+                     opacity="0"/>
+                   <ColorMapEntry color="#FFFFFF" quantity="0.02" label="nodata" 
+                     opacity="0"/>
                    <ColorMapEntry color="#4444FF" quantity=".1" label="nodata"/>
                    <ColorMapEntry color="#FF0000" quantity=".5" label="values" />
                    <ColorMapEntry color="#FFFF00" quantity="1.0" label="values" />

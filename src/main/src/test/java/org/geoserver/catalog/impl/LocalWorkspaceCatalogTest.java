@@ -1,19 +1,23 @@
 package org.geoserver.catalog.impl;
 
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+
 import java.util.Arrays;
+
+import junit.framework.TestCase;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.feature.NameImpl;
-
-import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
 
 public class LocalWorkspaceCatalogTest extends TestCase {
 
@@ -81,6 +85,19 @@ public class LocalWorkspaceCatalogTest extends TestCase {
         expect(l2.getResource()).andReturn(ft2).anyTimes();
         replay(l2);
 
+        // set up layer name collisions: lc
+        // use same name, but different featuretypeinfo objects
+        // pointing to different workspaces
+        LayerInfo lc1 = createNiceMock(LayerInfo.class);
+        expect(lc1.getName()).andReturn("lc").anyTimes();
+        expect(lc1.getResource()).andReturn(ft1).anyTimes();
+        replay(lc1);
+
+        LayerInfo lc2 = createNiceMock(LayerInfo.class);
+        expect(lc2.getName()).andReturn("lc").anyTimes();
+        expect(lc2.getResource()).andReturn(ft2).anyTimes();
+        replay(lc2);
+
         Catalog cat = createNiceMock(Catalog.class);
 
         expect(cat.getWorkspaces()).andReturn(Arrays.asList(ws1,ws2)).anyTimes();
@@ -114,6 +131,12 @@ public class LocalWorkspaceCatalogTest extends TestCase {
         //expect(cat.getLayerByName(ws2, "l2")).andReturn(l2).anyTimes();
         expect(cat.getLayerByName(new NameImpl("ws2", "l2"))).andReturn(l2).anyTimes();
         expect(cat.getLayerByName("l2")).andReturn(null).anyTimes();
+
+        // with namespace prefixes, return the appropriate layer info
+        expect(cat.getLayerByName(new NameImpl("ws1", "lc"))).andReturn(lc1).anyTimes();
+        expect(cat.getLayerByName(new NameImpl("ws2", "lc"))).andReturn(lc2).anyTimes();
+        // return back the first one without a namespace prefix
+        expect(cat.getLayerByName("lc")).andReturn(lc1).anyTimes();
 
         replay(cat);
 
@@ -187,5 +210,20 @@ public class LocalWorkspaceCatalogTest extends TestCase {
 
         assertNull(catalog.getLayerByName("l1"));
         assertNull(catalog.getLayerByName("l2"));
+    }
+
+    public void testGetLayersWithSameName() throws Exception {
+        LayerInfo layerInfo1 = catalog.getLayerByName(new NameImpl("ws1", "lc"));
+        ResourceInfo resource1 = layerInfo1.getResource();
+        NamespaceInfo namespace1 = resource1.getNamespace();
+        String nsPrefix1 = namespace1.getPrefix();
+
+        LayerInfo layerInfo2 = catalog.getLayerByName(new NameImpl("ws2", "lc"));
+        ResourceInfo resource2 = layerInfo2.getResource();
+        NamespaceInfo namespace2 = resource2.getNamespace();
+        String nsPrefix2 = namespace2.getPrefix();
+
+        assertEquals("Invalid namespace prefix", "ws1", nsPrefix1);
+        assertEquals("Invalid namespace prefix", "ws2", nsPrefix2);
     }
 }

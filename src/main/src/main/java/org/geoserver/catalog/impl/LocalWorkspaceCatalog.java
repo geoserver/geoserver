@@ -78,7 +78,12 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public LayerInfo getLayerByName(Name name) {
-        return getLayerByName(name.getLocalPart());
+        if (LocalWorkspace.get() != null) {
+            //if local workspace active drop the prefix
+            return getLayerByName(name.getLocalPart());
+        } else {
+            return super.getLayerByName(name);
+        }
     }
 
     @Override

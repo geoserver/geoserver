@@ -373,18 +373,15 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         tileCache.clear();
     }
 
-    @Override
     public void onReset() {
         // data might have changed in the meantime
         tileCache.clear();        
     }
 
-    @Override
     public void onDispose() {
         tileCache.clear();
     }
 
-    @Override
     public void onReload() {
         tileCache.clear();
     }

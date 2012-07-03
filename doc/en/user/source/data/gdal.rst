@@ -28,7 +28,7 @@ Installing GDAL native libraries
 ````````````````````````````````
 
 #. Navigate to the `ImageI/O-Ext releases download page <http://java.net/projects/imageio-ext/downloads/directory/Releases/ImageIO-Ext>`_.
-#. Select the proper ImageI/O-Ext version (You can check the version you need by looking at the suffix of the imageio-ext-gdal*** jars of the GeoServer libs. As an instance, if they contain an imageio-ext-gdalframework-1.0.8.jar, you need to refer to the ImageIO-Ext 1.0.8 version).
+#. Select the proper ImageI/O-Ext version. Latest GeoServer 2.1.4 uses ImageI/O-Ext 1.1.3. (For different GeoServer version, you can check the version you need by looking at the suffix of the imageio-ext-gdal*** jars of the GeoServer libs. As an instance, if they contain an imageio-ext-gdalframework-1.1.3.jar, you need to refer to the ImageI/O-Ext 1.1.3 version)
 
 #. Click on the "GDAL CRS definitions _REQUIRED_" to download the gdal_data-X.X.X archive.
 #. Extract this archive on disk.

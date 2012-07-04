@@ -1202,24 +1202,6 @@
     </executions>
    </plugin>
 
-   <!-- initialize git revision info -->
-   <plugin>
-     <groupId>pl.project13.maven</groupId>
-     <artifactId>git-commit-id-plugin</artifactId>
-     <version>2.0.4</version>
-     <executions>
-       <execution>
-         <goals>
-           <goal>revision</goal>
-         </goals>
-       </execution>
-     </executions>
-     <configuration>
-       <prefix>build</prefix>
-       <failOnNoGitDirectory>false</failOnNoGitDirectory>
-     </configuration>
-   </plugin>
-
   </plugins>
  </build>
 
@@ -1383,6 +1365,8 @@
   <test.maxHeapSize>512M</test.maxHeapSize>
   <remoteOwsTests>false</remoteOwsTests>
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
+  <build.revision>-1</build.revision>
+  <build.branch>2.1.x</build.branch>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
   <javac.maxHeapSize>256m</javac.maxHeapSize>
@@ -1476,7 +1460,7 @@
                <copy file="release/VERSION.txt" todir="target" filtering="true">
                 <filterset begintoken="$${" endtoken="}">
                   <filter token="project.version" value="${project.version}"/>
-                  <filter token="build.revision" value="${build.commit.id}"/>
+                  <filter token="build.revision" value="${build.revision}"/>
                   <filter token="build.branch" value="${build.branch}"/>
                   <filter token="build.timestamp" value="${build.timestamp}"/>
                   <filter token="gt.version" value="${gt.version}"/>

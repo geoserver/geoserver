@@ -146,7 +146,7 @@
                 <replace dir="${build.outputDirectory}">
                   <include name="*.properties"/> 
                   <replacefilter token="@project.version@" value="${project.version}"/>
-                  <replacefilter token="@build.revision@" value="${build.revision}"/>
+                  <replacefilter token="@build.revision@" value="${build.commit.id}"/>
                   <replacefilter token="@build.timestamp@" value="${build.timestamp}"/>
                 </replace>
               </tasks>

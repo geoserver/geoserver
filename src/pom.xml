@@ -84,16 +84,6 @@
     <enabled>false</enabled>
    </releases>
   </pluginRepository>
-  <pluginRepository>
-   <id>maven-svn-revision-number-plugin.googlecode.com</id>
-   <url>http://maven-svn-revision-number-plugin.googlecode.com/svn/m2/releases</url>
-   <releases>
-    <enabled>true</enabled>
-   </releases>
-   <snapshots>
-    <enabled>false</enabled>
-   </snapshots>
-  </pluginRepository>
  </pluginRepositories>
 
  <dependencyManagement>
@@ -1239,24 +1229,21 @@
     </executions>
    </plugin>
 
-   <!-- initialize svn revision info -->
+   <!-- initialize git revision info -->
    <plugin>
-     <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-     <artifactId>svn-revision-number-maven-plugin</artifactId>
-     <version>1.8-SVN7</version>
+     <groupId>pl.project13.maven</groupId>
+     <artifactId>git-commit-id-plugin</artifactId>
+     <version>2.0.4</version>
      <executions>
        <execution>
          <goals>
-            <goal>revision</goal>
+           <goal>revision</goal>
          </goals>
        </execution>
      </executions>
      <configuration>
-       <entries>
-         <entry>
-           <prefix>build</prefix>
-         </entry>
-       </entries>
+       <prefix>build</prefix>
+       <failOnNoGitDirectory>false</failOnNoGitDirectory>
      </configuration>
    </plugin>
 
@@ -1529,10 +1516,11 @@
                <copy file="release/VERSION.txt" todir="target" filtering="true">
                 <filterset begintoken="$${" endtoken="}">
                   <filter token="project.version" value="${project.version}"/>
-                  <filter token="build.revision" value="${build.revision}"/>
+                  <filter token="build.revision" value="${build.commit.id}"/>
+                  <filter token="build.branch" value="${build.branch}"/>
                   <filter token="build.timestamp" value="${build.timestamp}"/>
                   <filter token="gt.version" value="${gt.version}"/>
-                  <filter token="gt.revision" value="${Svn-Revision}"/>
+                  <filter token="gt.revision" value="${Git-Revision}"/>
                   <filter token="build.hudsonId" value="${build.hudsonId}"/>
                 </filterset>
                </copy>

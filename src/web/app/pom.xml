@@ -277,7 +277,7 @@
   
   <properties>
     <configId>minimal</configId>
-    <configDirectory>${basedir}</configDirectory>
+    <configDirectory>${basedir}/../../../data</configDirectory>
     <webappSourceDirectory>${basedir}/src/main/webapp</webappSourceDirectory>
     <sde.version>9.3</sde.version>
     <jetty.port>8080</jetty.port>

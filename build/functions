@@ -64,6 +64,16 @@ function start_installer_job() {
   curl -k --connect-timeout 10 "$1/job/geoserver-installer/buildWithParameters?TAG=$2"
 }
 
+function is_primary_branch_num() {
+  local str=$1
+  if [ "$( echo $str | egrep "[0-9]+\.x" )" == "$str" ] || [ "master" == "$str" ]; then
+    echo "1"
+  else
+    echo "0"
+  fi
+
+}
+
 # is_version_nuym <str>
 # tests a string to see if it is a x.y.z or x.y-z style version number
 function is_version_num() {

@@ -8,7 +8,6 @@ function usage() {
   echo "$0 [options] <tag>"
   echo
   echo " tag : Release tag (eg: 2.1.4, 2.2-beta1, ...)"
-  echo " tag : Release tag (eg: 2.1.4, 2.2-beta1, ...)"
   echo
   echo "Options:"
   echo " -h          : Print usage"
@@ -16,12 +15,10 @@ function usage() {
   echo " -r <rev>    : Revision to release (eg: 12345)"
   echo " -g <ver>    : GeoTools version/revision (eg: 2.7.4, trunk:12345)"
   echo " -w <ver>    : GeoWebCache version/revision (eg: 1.3-RC1, stable:abcd)"
-  echo " -u <user>   : Subversion username"
-  echo " -p <passwd> : Subversion password"
+  echo " -u <user>   : git username"
+  echo " -e <passwd> : git email"
   echo
   echo "Environment variables:"
-  echo " BUILD_FROM_BRANCH : Builds release from branch rather than tag"
-  echo " SKIP_SVN_TAG : Skips creation of svn tag"
   echo " SKIP_BUILD : Skips main release build"
   echo " SKIP_INSTALLERS : Skips building of mac and windows installers"
   echo " SKIP_GT : Skips the GeoTools build"
@@ -29,7 +26,7 @@ function usage() {
 }
 
 # parse options
-while getopts "hb:r:g:w:u:p:" opt; do
+while getopts "hb:r:g:w:u:e:" opt; do
   case $opt in
     h)
       usage
@@ -48,10 +45,10 @@ while getopts "hb:r:g:w:u:p:" opt; do
       gwc_ver=$OPTARG
       ;;
     u)
-      svn_user=$OPTARG
+      git_user=$OPTARG
       ;;
-    p)
-      svn_passwd=$OPTARG
+    e)
+      git_email=$OPTARG
       ;;
     \?)
       usage
@@ -78,6 +75,16 @@ fi
 . "$( cd "$( dirname "$0" )" && pwd )"/properties
 . "$( cd "$( dirname "$0" )" && pwd )"/functions
 
+# more sanity checks
+if [ `is_version_num $tag` == "0" ]; then
+  echo "$tag is a not a valid release tag"
+  exit 1
+fi
+if [ `is_primary_branch_num $tag` == "1" ]; then
+  echo "$tag is a not a valid release tag, can't be same as primary branch name"
+  exit 1
+fi
+
 echo "Building release with following parameters:"
 echo "  branch = $branch"
 echo "  revision = $rev"
@@ -88,55 +95,36 @@ echo "  geowebcache = $gwc_ver"
 echo "maven/java settings:"
 mvn -version
 
-svn_opts="--username $svn_user --password $svn_passwd --non-interactive --trust-server-cert"
-
-if [ "$branch" == "trunk" ]; then
-   svn_url=$SVN_ROOT/trunk
-else
-   svn_url=$SVN_ROOT/branches/$branch
+if [ ! -z $git_user ] && [ ! -z $git_email ]; then
+  git_opts="--author '$git_user <$git_email>'"
 fi
 
-if [ ! -z $BUILD_FROM_BRANCH ]; then
-  if [ ! -e tags/$tag ]; then
-    echo "checking out $svn_url"
-    svn co $svn_opts $svn_url tags/$tag  
-  fi
-else
-  # check if the svn tag already exists
-  if [ -z $SKIP_SVN_TAG ]; then
-    svn_tag_url=$SVN_ROOT/tags/$tag
-    set +e && svn ls $svn_opts $svn_tag_url >& /dev/null && set -e
-    if [ $? == 0 ]; then
-      # tag already exists
-      echo "svn tag $tag already exists, deleteing"
-      svn $svn_opts rm -m "removing $tag tag" $svn_tag_url
-    fi
-  
-    # create svn tag
-    revopt="-r $rev"
-    if [ "$rev" == "latest" ]; then
-      revopt=""
-    fi
-  
-    echo "Creating $tag tag from $branch ($rev) at $svn_tag_url"
-    svn cp $svn_opts -m "tagging $tag" $revopt $svn_url $svn_tag_url
+# move to root of source tree
+pushd .. > /dev/null
 
-    # checkout newly created tag
-    if [ -e tags/$tag ]; then
-      # remove old checkout
-      rm -rf tags/$tag
-    fi
+# clear out any changes
+git reset --hard HEAD
 
-    echo "checking out tag $tag"
-    svn $svn_opts co $svn_tag_url tags/$tag
-  fi
+# checkout and update primary / release branches
+git checkout rel_$branch
+git pull origin rel_$branch
+git checkout $branch
+git pull origin $branch
+
+# check to see if a release branch already exists
+set +e && git checkout rel_$tag && set -e
+if [ $? == 0 ]; then
+  # release branch already exists, kill it
+  git checkout $branch
+  echo "branch rel_$tag exists, deleting it"
+  git branch -D rel_$tag
 fi
 
-if [ ! -z $SKIP_SVN_TAG ] || [ ! -z $BUILD_FROM_BRANCH ]; then
-  echo "updating tag $tag"
-  svn revert --recursive tags/$tag
-  svn up tags/$tag 
-fi
+# checkout the branch to release from
+git checkout $branch
+
+# create a release branch
+git checkout -b rel_$tag $rev
 
 # generate release notes
 jira_id=`get_jira_id $tag`
@@ -145,7 +133,6 @@ if [ -z $jira_id ]; then
   exit -1
 fi
 echo "jira id = $jira_id"
-
 
 # update README
 #search?jql=project+%3D+%22GEOS%22+and+fixVersion+%3D+%222.2-beta2%22"
@@ -162,29 +149,31 @@ if [ -z $SKIP_GT ]; then
     if [ -z $gt_tag ]; then
       arr=(${gt_ver//@/ }) 
       if [ "${#arr[@]}" != "2" ]; then
-         echo "Bad version $gt_ver, must be specified as <branch>:<revision>"
+         echo "Bad version $gt_ver, must be specified as <branch>@<revision>"
          exit 1
       fi
 
       gt_branch=${arr[0]}
       gt_rev=${arr[1]}
-      gt_dir=geotools/$gt_branch/$gt_rev
+      gt_dir=geotools
       if [ ! -e $gt_dir ]; then
-         mkdir -p $gt_dir 
-         echo "checking out geotools ${gt_branch}@${gt_rev}"
-         svn co -r $gt_rev $GT_SVN_ROOT/$gt_branch $gt_dir
+         echo "cloning geotools repo from $GT_GIT_URL"
+         git clone $GT_GIT_URL $gt_dir
       fi
 
-      # build geotools
+      # checkout branch/rev
       pushd $gt_dir > /dev/null
+      echo "checking out geotools ${gt_branch}@${gt_rev}"
+      git checkout $gt_rev
+
+      # build geotools
       mvn clean install -DskipTests -Dall
       popd > /dev/null
 
       # derive the gt version
       gt_tag=`get_pom_version $git_dir/pom.xml`
     fi
-
-    fi
+  fi
 fi
 
 if [ ! -z $gt_tag ]; then
@@ -235,8 +224,6 @@ if [ ! -z $gwc_tag ]; then
   echo "GeoWebCache version = $gwc_tag"
 fi
 
-pushd tags/$tag > /dev/null
-
 # update geotools + geowebcache versions
 if [ ! -z $gt_tag ]; then
   sed -i "s/\(<gt.version>\).*\(<\/gt.version>\)/\1$gt_tag\2/g" src/pom.xml
@@ -283,9 +270,8 @@ find doc -name conf.py -exec sed -i "s/$old_ver/$tag/g" {} \;
 pushd src/release > /dev/null
 sed -i "s/$old_ver/$tag/g" *.xml installer/win/*.nsi installer/win/*.conf installer/mac/GeoServer.app/Contents/Info.plist
 popd > /dev/null
-popd > /dev/null
 
-pushd tags/$tag/src > /dev/null
+pushd src > /dev/null
 
 # build the release
 if [ -z $SKIP_BUILD ]; then
@@ -360,7 +346,7 @@ set +e && find . -type d -name target -exec rm -rf {} \; && set -e
 rm ../$src
 zip -r ../$src *
 
-popd
+popd > /dev/null
 popd > /dev/null
 
 echo "copying artifacts to $dist"
@@ -369,8 +355,6 @@ for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
 
-popd > /dev/null
-
 # fire off mac and windows build machines
 if [ -z $SKIP_INSTALLERS ]; then
   echo "starting installer jobs"
@@ -378,12 +362,13 @@ if [ -z $SKIP_INSTALLERS ]; then
   start_installer_job $MAC_HUDSON $tag
 fi
 
-# svn commit changes on the tag
-if [ -z $SKIP_SVN_TAG ]; then
-  pushd tags/$tag > /dev/null
-  svn commit $svn_opts -m "updating version numbers and release notes for $tag" .
-  popd > /dev/null
-fi
+# git commit changes on the release branch
+pushd .. > /dev/null
+git add . 
+git commit $git_opts -m "updating version numbers and release notes for $tag" .
+popd > /dev/null
+
+popd > /dev/null
 
 echo "build complete, artifacts available at $DIST_URL/$tag"
 exit 0

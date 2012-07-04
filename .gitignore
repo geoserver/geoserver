@@ -1,0 +1,7 @@
+target
+.settings
+.classpath
+.project
+*.class
+*.pyc
+

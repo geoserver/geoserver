@@ -27,9 +27,9 @@ any version greater than 2.0.8 should also work.
 Maven tracks global settings in your home directory .m2/settings.xml. This file is used to control
 global options such as proxy settings or listing repository mirrors to download from.
 
-Subversion
-----------
+Git
+---
 
-GeoServer source code is stored and versioned in a subversion repository. There
-are a variety of subversion clients available for a number of different 
-platforms. Visit http://subversion.tigris.org/getting.html for more details.
+GeoServer source code is stored and version in a git repository on `github <http://github.com/geoserver/geoserver>`_
+There are a variety of git clients available for a number of different 
+platforms. Visit http://git-scm.com/ for more details.

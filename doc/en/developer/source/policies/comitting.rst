@@ -31,29 +31,25 @@ The process of getting community commit access is as follows:
    Therefore any developer looking for commit access must first describe what
    they want to commit (usually a community module), and what it does.
 
-#. **Join the project on CodeHaus**
+#. **Sign up for a GitHub account**
 
-   After a developer has stated intentions via the email list, a PSC member 
-   will approve the request for commit access. At which point the developer 
-   must:
+   GeoServer source code is hosted on Github and you'll need an account in 
+   order to access it. You can sign-up `here <https://github.com/signup/>`_.
+   
+#. **Notify the developer list**
 
-   #. Create a Codehaus account by visiting http://xircles.codehaus.org/signup
+   After a developer has signed up on Github they must notify the developer
+   list. A project despot will then add them to the group of GeoServer 
+   committers and grant write access to the canonical repository.
+   
+#. **Fork the canonical GeoServer repository**
 
-      .. note::
+   All committers maintain a fork of the GeoServer repository that they work 
+   from. Fork the canonical repository into your own account.
+   
+#. **Configure your local setup**
 
-         If you already have a JIRA (bug tracker) or Confluence (wiki) 
-         account it is best to use the same userid for the Codehaus account.
-
-   #. Visit http://xircles.codehaus.org/projects/geoserver
-   #. Click the ``Apply to join as a developer`` link
-
-      .. image:: codehaus-join.jpg
-         :width: 450
-
-#. Notify the developer list
-
-   After a developer has signed up on Codehaus they must notify the developer
-   list. A project despot will then approve the request to join the project.
+   Follow this :ref:`guide <source>` in the developer manual.
 
 Core commit access
 ^^^^^^^^^^^^^^^^^^

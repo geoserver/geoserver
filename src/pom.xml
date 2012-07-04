@@ -1202,24 +1202,21 @@
     </executions>
    </plugin>
 
-   <!-- initialize svn revision info -->
+   <!-- initialize git revision info -->
    <plugin>
-     <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-     <artifactId>maven-svn-revision-number-plugin</artifactId>
-     <version>1.5</version>
+     <groupId>pl.project13.maven</groupId>
+     <artifactId>git-commit-id-plugin</artifactId>
+     <version>2.0.4</version>
      <executions>
        <execution>
          <goals>
-            <goal>revision</goal>
+           <goal>revision</goal>
          </goals>
        </execution>
      </executions>
      <configuration>
-       <entries>
-         <entry>
-           <prefix>build</prefix>
-         </entry>
-       </entries>
+       <prefix>build</prefix>
+       <failOnNoGitDirectory>false</failOnNoGitDirectory>
      </configuration>
    </plugin>
 
@@ -1479,10 +1476,11 @@
                <copy file="release/VERSION.txt" todir="target" filtering="true">
                 <filterset begintoken="$${" endtoken="}">
                   <filter token="project.version" value="${project.version}"/>
-                  <filter token="build.revision" value="${build.revision}"/>
+                  <filter token="build.revision" value="${build.commit.id}"/>
+                  <filter token="build.branch" value="${build.branch}"/>
                   <filter token="build.timestamp" value="${build.timestamp}"/>
                   <filter token="gt.version" value="${gt.version}"/>
-                  <filter token="gt.revision" value="${Svn-Revision}"/>
+                  <filter token="gt.revision" value="${Git-Revision}"/>
                   <filter token="build.hudsonId" value="${build.hudsonId}"/>
                 </filterset>
                </copy>

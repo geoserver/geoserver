@@ -7,7 +7,7 @@ The GeoServer source code is located at https://github.com/geoserver/geoserver.
 
 To clone the repository::
 
-  % git co git://github.com/geoserver/geoserver.git geoserver
+  % git clone git://github.com/geoserver/geoserver.git geoserver
   
 To list available branches in the repsitory::
 

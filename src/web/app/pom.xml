@@ -225,6 +225,8 @@
   
   <properties>
     <configId>minimal</configId>
+    <configDirectory>${basedir}/../../../data</configDirectory>
+    <webappSourceDirectory>${basedir}/src/main/webapp</webappSourceDirectory>
     <sde.version>9.3</sde.version>
   </properties>
 

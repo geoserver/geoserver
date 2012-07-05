@@ -217,6 +217,36 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("0", "count(//cite:ADDRESS)", doc);
     }
     
+    public void testDescribeLimitedAttributes() throws Exception {
+        // this one should see all attributes
+        authenticate("admin", "geoserver");
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS));
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='the_geom'])", doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='ADDRESS'])", doc);
+
+        // this one should see only 2
+        authenticate("cite_readatts", "cite");
+        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS));
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='the_geom'])", doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
+        assertXpathEvaluatesTo("0", "count(//xsd:element[@name='ADDRESS'])", doc);
+        
+        // paranoid check to make sure there is no caching
+        authenticate("admin", "geoserver");
+        doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&service=wfs&typeName="
+                + getLayerId(MockData.BUILDINGS));
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='the_geom'])", doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:element[@name='ADDRESS'])", doc);
+
+    }
+    
     public void testFilterRequestedAttribute() throws Exception {
         // should only see one feature
         authenticate("cite_readatts", "cite");
@@ -280,7 +310,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
     public void testInsertAttributeRestricted() throws Exception {
         authenticate("cite_writeatts", "cite");
         Document dom = postAsDOM("wfs", INSERT_RESTRICTED_STREET);
-        // print(dom);
+        print(dom);
         assertXpathEvaluatesTo("1", "count(//wfs:WFS_TransactionResponse)", dom);
         assertXpathEvaluatesTo("1", "count(//wfs:Status/wfs:FAILED)", dom);
         XpathEngine xpath = XMLUnit.newXpathEngine();

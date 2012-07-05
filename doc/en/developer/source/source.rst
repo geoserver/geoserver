@@ -9,7 +9,7 @@ To clone the repository::
 
   % git clone git://github.com/geoserver/geoserver.git geoserver
   
-To list available branches in the repsitory::
+To list available branches in the repository::
 
   % git branch
      2.1.x
@@ -23,9 +23,9 @@ To switch to the stable branch::
 Git
 ---
 
-Those coming from a Subversion or CSV background will find the git learning curve is a steep one.
+Those coming from a Subversion or CSV background will find the Git learning curve is a steep one.
 Luckily there is lots of great documentation around. Before continuing developers should take the 
-time to educate themselves about git. The following is some good references material:
+time to educate themselves about git. The following are good references:
 
 * `The Git Book <http://git-scm.com/book/>`_
 * `A nice introduction <http://www.sbf5.com/~cduan/technical/git/>`_
@@ -50,17 +50,17 @@ Repository distribution
 -----------------------
 
 Git is a distributed versioning system which means there is strictly no notion of a single 
-central repository, but many distributed ones. Including:
+central repository, but many distributed ones. For GeoServer these are:
 
-* The **canonical** repository located on github that serves as the official authoritative 
+* The **canonical** repository located on Github that serves as the official authoritative 
   copy of the source code for project
-* Developers **forked** repositories that are also hosted on github. These repositories 
-  generally contain everything in the canonical repository and as well any feature or
+* Developers' **forked** repositories that are also hosted on Github. These repositories 
+  generally contain everything in the canonical repository, as well any feature or
   topic branches an individual developer is working.
-* A developers **local** repository that work is actually done in.
+* Developers' **local** repositories that work is actually done in.
 
 Even though there are numerous copies of the repository they are essentially the same because
-they have a common history. This is the magic of git. Any repository that interact seamlessly 
+they have a common history. This is the magic of git! Any repository can interact seamlessly 
 with another repository as long as they share a common history.
 
 A local repository contains a number of *remote* references to repositories hosted on github. 
@@ -68,7 +68,7 @@ A local repository typically contains the following remote references:
   
 * A remote called **origin** that points to the developers forked github repository.
 * A remote called **upstream** that points to the canonical github repositories.
-* Any number of remotes that point to other developers forked repositories on github. 
+* Optionally, any number of remotes that point to other developers forked repositories on github. 
 
 To set up a local repository in this manner:
 
@@ -85,7 +85,7 @@ To set up a local repository in this manner:
     
       % git remote add upstream git://github.com/geoserver/geoserver.git
 
-#. Set up remotes pointing to any number of developer forks. These remotes are typically always 
+#. Optionally, set up remotes pointing to other developer's forks. These remotes are typically 
    read-only::
    
       % git remote add aaime git://github.com/aaime/geoserver.git
@@ -127,22 +127,22 @@ corresponding release branch. At present this includes:
 * **rel_2.1.x** - The previous stable release branch
 
 Release branches are only used during a versioned release of the software. At any given time a release branch
-corresponds to the exact state of the last release from that branch. During released these branches are tagged.
+corresponds to the exact state of the last release from that branch. During release these branches are tagged.
 
 Release branches are also present in all repositories.
 
 Feature branches
 ^^^^^^^^^^^^^^^^
 
-Feature branches are what developers use for day to day development. This can include smaller scale bug fixes or 
+Feature branches are what developers use for day-to-day development. This can include small-scale bug fixes or 
 major new features. Feature branches serve as a staging area for work that allows a developer to freely commit to
-them without affecting any of the stable primary branches. For this reason feature branches generally only live
-in a developers local repository, and possibly their remote forked repository. Feature branches are not every pushed
+them without affecting the primary branches. For this reason feature branches generally only live
+in a developer's local repository, and possibly their remote forked repository. Feature branches are never pushed
 up into the canonical repository.
 
 When a developer feels a particular feature is complete enough the feature branch is merged into a primary branch,
-usually master. If the work is suitable for the current stable branch the changeset is generally ported back to the
-stable branch as well. This is explained in greater detail in the :ref:`` section.
+usually ``master``. If the work is suitable for the current stable branch the changeset is generally ported back to the
+stable branch as well. This is explained in greater detail in the :ref:`source_workflow` section.
 
 Codebase structure
 ------------------
@@ -190,26 +190,29 @@ Some useful reading on this subject:
 * https://help.github.com/articles/dealing-with-line-endings
 * http://stackoverflow.com/questions/170961/whats-the-best-crlf-handling-strategy-with-git
 
+.. _source_workflow:
+
 Development workflow
 --------------------
 
-This section contains a number of workflow examples a developer will typically use on a day to day basis. In order 
+This section contains a number of workflow examples a developer will typically use on a daily basis. In order 
 to understand these examples it is crucial to understand the various phases that a changeset goes though in a git
-workflow. The lifecycle of a single change set is as follows:
+workflow. The lifecycle of a single changeset is:
 
-#. Change is made in a developers local repository.
-#. The change is then **staged** for commit. 
-#. The staged change is then **committed**.
-#. The committed changed is then **pushed** up to a remote repository
+#. A change is made in a developer's local repository.
+#. The change is **staged** for commit. 
+#. The staged change is **committed**.
+#. The committed changed is **pushed** up to a remote repository
 
-All changes don't necessarily have to follow this exact workflow, there are many variations. For instance it is 
+Changes follow this general workflow, but there are many variations. For instance it is 
 common to make many local commits and then push them all up in batch to a remote repository.
 
 Updating from canonical
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Generally developers always work a recent version of the official source code. The following example will pull
-down the latest changes from the canonical repository on the master branch::
+Generally developers always work on a recent version of the official source code. The following example 
+shows how to pull
+down the latest changes from the canonical repository for the master branch::
 
   % git checkout master
   % git pull upstream master
@@ -222,28 +225,28 @@ And similarly for the stable branch::
 Making local changes
 ^^^^^^^^^^^^^^^^^^^^
 
-As mentioned above with git there is a two-phase change workflow in which first changes are made and committed 
-locally. For example, changing a single file::
+As mentioned above, git has a two-phase change workflow in which changes are first staged and then committed 
+locally. For example, to change and commit a single file::
 
   % git checkout master
   # do some work on file x
   % git add x
   % git commit -m "commit message" x
   
-The above example included both the staging of a changed file and the committing of it. AGain there are many 
+The above example included both the staging of a changed file and the committing of it. Again there are many 
 variations but generally the staging process involves using ``git add`` to stage files that have been added 
-or modified, and ``git rm`` to stage files that have been deleted. ``git mv`` is also used to move files (and
-stage the changes) in one step.
+or modified and ``git rm`` to stage files that have been deleted. ``git mv`` is also used to move files and
+stage the changes in one step.
   
 Pushing changes to canonical
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once a developer has made some local commits they generally will want to push them up to a remote repository.
 For the primary branches these changes should always be pushed up to the canonical repository. If they are for
-some reason not suitable to be pushed to the canonical repository then the work shouldn't be done on a primary
+some reason not suitable to be pushed to the canonical repository then the work should not be done on a primary
 branch, but on a feature branch. 
 
-For example, pushing a local bug fix up to canonical master::
+For example, to push a local bug fix up to canonical ``master``::
   
   % git checkout master
   # make a change
@@ -253,7 +256,7 @@ For example, pushing a local bug fix up to canonical master::
   % git push upstream master
   
 The example shows the practice of first pulling from canonical before pushing to it. Developers should **always** do 
-this. Actually if there are changes pending in canonical that you have yet to pull down git will by default not allow 
+this. Actually if there are changes in canonical that you have yet to pull down, by default git will not allow 
 you to push the commit until you have pulled down those changes.
 
 .. note:: 
@@ -273,8 +276,8 @@ Working with feature branches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As mentioned before it is always a good idea to work on a feature branch and not directly on a primary branch. A classic
-situation every developer who has used a version control system has run into is one that occurs when a developer has 
-worked on a new feature locally, made a tone of changes but then needs to switch context to work on some other feature or 
+situation every developer who has used a version control system has run into is when a developer has 
+worked on a new feature locally and made a ton of changes, but then needs to switch context to work on some other feature or 
 bug fix. The developer tries to do that in the midst of the other changes and ends up committing a file they never intended
 to. Feature branches are the remedy for this.
 
@@ -285,9 +288,9 @@ To create a new feature branch off of the master branch::
   % git add/rm, etc...
   % git commit -m "first part of my_feature"
   
-Rinse, wash, repeat. The nice about thing this work being on a feature branch is that it is easy to switch context
-to work on something else. Just switch back to whatever other branch you need to work on, which will be in a clean
-state and then return to the feature branch.
+Rinse, wash, repeat. The nice about thing about doing this work on a feature branch is that it is easy to switch context
+to work on something else. Just ``git checkout`` whatever other branch you need to work on (which will be in a clean
+state) and then return to the feature branch when ready.
 
 Merging feature branches
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -307,8 +310,8 @@ It's as easy as that. After the feature branch has been merged into the primary 
 Porting changes among primary branches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-More often than not a single change like a bug fix has to be committed to multiple branches. Unfortunately primary
-branches can **not** be merged with the ``git merge`` command. Instead we use ``git cherry-pick``.
+Often a single change like a bug fix has to be committed to multiple branches. Unfortunately primary
+branches **cannot** be merged with the ``git merge`` command. Instead we use ``git cherry-pick``.
 
 As an example consider making a change to master::
 
@@ -319,8 +322,8 @@ As an example consider making a change to master::
   % git pull --rebase upstream master
   % git push upstream master
   
-And we want to backport the bug fix to the stable branch as well. To do so we have to note the commit
-id of the change we just made on master. The ``git log`` command will do this. Let's assume the commit
+We want to backport the bug fix to the stable branch as well. To do so we have to note the commit
+id of the change we just made on master. The ``git log`` command will provide this. Let's assume the commit
 id is "123". Backporting to the stable branch then becomes::
 
   % git checkout 2.2.x
@@ -331,14 +334,14 @@ id is "123". Backporting to the stable branch then becomes::
 Cleaning up feature branches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Consider the following situation. A developer has been working on a feature branch and continually gone back 
+Consider the following situation. A developer has been working on a feature branch and has gone back 
 and forth to and from it making commits here and there. The result is that the feature branch has accumulated
-a number of commits on it. But all the commits are really related and what we want is really just one commit.
+a number of commits on it. But all the commits are related, and what we want is really just one commit.
 
 This is easy with git and you have two options:
 
-#. Do an interactive rebase on the feature branch
-#. Do a "squashing" merge
+#. Do an **interactive rebase** on the feature branch
+#. Do a **merge with squash**
 
 Interactive rebase before commit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

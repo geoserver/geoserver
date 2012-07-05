@@ -12,8 +12,9 @@
  <name>GeoServer</name>
 
  <scm>
-  <connection>scm:svn:http://svn.codehaus.org/geoserver/trunk/geoserver</connection>
-  <url>http://svn.codehaus.org/geoserver/trunk/geoserver</url>
+  <connection>scm:git:git://github.com/geoserver/geoserver.git</connection>
+  <developerConnection>scm:git:[fetch=]git://github.com/geoserver/geoserver.git[push=]git@github.com:geoserver/geoserver.git</developerConnection>
+  <url>https://github.com/geoserver/geoserver</url>
  </scm>
 
  <organization>

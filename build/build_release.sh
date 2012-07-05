@@ -95,10 +95,6 @@ echo "  geowebcache = $gwc_ver"
 echo "maven/java settings:"
 mvn -version
 
-if [ ! -z $git_user ] && [ ! -z $git_email ]; then
-  git_opts="--author='$git_user <$git_email>'"
-fi
-
 # move to root of source tree
 pushd .. > /dev/null
 
@@ -364,6 +360,16 @@ fi
 
 # git commit changes on the release branch
 pushd .. > /dev/null
+
+# setup the author, for some reason I can;t for the life of me get to this
+# to work properly from a script using the --author option to git commit
+git config --unset user.name
+git config --unset user.email
+if [ ! -z $git_user ] && [ ! -z $git_email ]; then
+  git config user.name $git_user
+  git config user.email $git_email
+fi
+
 git add . 
 git commit $git_opts -m "updating version numbers and release notes for $tag" .
 popd > /dev/null

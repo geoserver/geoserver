@@ -147,9 +147,8 @@ stable branch as well. This is explained in greater detail in the :ref:`` sectio
 Codebase structure
 ------------------
 
-Each  branch has the following structure::
-
-  http://svn.codehaus.org/geoserver/
+Each branch has the following structure::
+  
      build/
      doc/
      src/

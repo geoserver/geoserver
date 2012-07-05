@@ -96,7 +96,7 @@ echo "maven/java settings:"
 mvn -version
 
 if [ ! -z $git_user ] && [ ! -z $git_email ]; then
-  git_opts="--author '$git_user <$git_email>'"
+  git_opts="--author="$git_user <$git_email>""
 fi
 
 # move to root of source tree

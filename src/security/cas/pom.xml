@@ -37,7 +37,7 @@
       <artifactId>main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
-      <scope>tests</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

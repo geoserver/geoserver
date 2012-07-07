@@ -4,9 +4,7 @@
  */
 package org.geoserver.wcs.response;
 
-import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
-import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,9 +25,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -458,24 +455,43 @@ public class WCSCapsTransformer extends TransformerBase {
             end("wcs:CoverageSummary");
         }
 
+        /**
+         * Converts each metadata URL to XML.
+         * 
+         * @param links
+         *              a collection of links
+         * @param linkType
+         *              the type of links
+         */
         private void handleMetadataLinks(List<MetadataLinkInfo> links, String linkType) {
-        	for (MetadataLinkInfo  mdl : links) {
-        		if (mdl != null) {
-                    AttributesImpl attributes = new AttributesImpl();
-
-                    if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
-                        attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-                    }
-
-                    if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                        attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
-                    }
-
-                    if (attributes.getLength() > 0) {
-                        element("ows:Metadata", null, attributes);
-                    }
+            for (MetadataLinkInfo  mdl : links) {
+                if (mdl != null) {
+                    handleMetadataLink(mdl, linkType);
                 }
-			}
+            }
+        }
+
+        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
+            AttributesImpl attributes = new AttributesImpl();
+
+            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+                attributes.addAttribute("", "about", "about", "", mdl.getAbout());
+            }
+            
+            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
+                        .getMetadataType());
+            }
+
+            if ((linkType != null) && (linkType != "")) {
+                attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
+            }
+
+            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+                attributes.addAttribute("", "xlink:href", "xlink:href", 
+                        "", mdl.getContent());
+                element("ows:Metadata", null, attributes);
+            }
         }
 
         /**

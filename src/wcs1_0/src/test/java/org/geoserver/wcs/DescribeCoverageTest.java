@@ -1,18 +1,17 @@
 package org.geoserver.wcs;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.data.test.MockData.ROTATED_CAD;
-import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.geoserver.data.test.MockData.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Test;
-
-import org.geoserver.catalog.DimensionPresentation;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
@@ -87,6 +86,28 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals("InvalidParameterValue", element.getAttribute("code"));
         assertEquals("coverage", element.getAttribute("locator"));
         assertTrue(element.getTextContent().contains("plop"));
+    }
+    
+    public void testMetadataLinks() throws Exception {
+        
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        ml.setMetadataType("FGDC");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                + getLayerId(TASMANIA_DEM));
+        // print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        assertXpathEvaluatesTo("http://www.geoserver.org", "//wcs:metadataLink/@about", dom);
+        assertXpathEvaluatesTo("FGDC", "//wcs:metadataLink/@metadataType", dom);
+        assertXpathEvaluatesTo("simple", "//wcs:metadataLink/@xlink:type", dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", "//wcs:metadataLink/@xlink:href", dom);
     }
 
     public void testDescribeDemCoverageKvp() throws Exception {

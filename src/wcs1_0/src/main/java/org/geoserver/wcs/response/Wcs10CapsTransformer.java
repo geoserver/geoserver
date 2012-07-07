@@ -248,7 +248,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 attributes.addAttribute("", "version", "version", "", CUR_VERSION);
             }
             start("wcs:Service", attributes);
-            handleMetadataLink(wcs.getMetadataLink());
+            handleMetadataLink(wcs.getMetadataLink(), "simple");
             element("wcs:description", wcs.getAbstract());
             element("wcs:name", wcs.getName());
             element("wcs:label", wcs.getTitle());
@@ -273,37 +273,29 @@ public class Wcs10CapsTransformer extends TransformerBase {
             end("wcs:Service");
         }
 
-        /**
-         * DOCUMENT ME!
-         * 
-         * @param metadataLink
-         *            DOCUMENT ME!
-         * 
-         * @throws SAXException
-         *             DOCUMENT ME!
-         */
-        private void handleMetadataLink(MetadataLinkInfo mdl) {
-            if (mdl != null) {
-                AttributesImpl attributes = new AttributesImpl();
+        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
+            AttributesImpl attributes = new AttributesImpl();
 
-                if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
-                    attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-                }
+            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+                attributes.addAttribute("", "about", "about", "", mdl.getAbout());
+            }
 
-                // if( mdl.getType() != null && mdl.getType() != "" ) {
-                // attributes.addAttribute("", "type", "type", "",
-                // mdl.getType());
-                // }
-                if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                    attributes.addAttribute("", "metadataType", "metadataType", "", mdl
-                            .getMetadataType());
-                }
+            if ((linkType != null) && (linkType != "")) {
+                attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
+            }
+            
+            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
+                        .getMetadataType());
+            }
 
-                if (attributes.getLength() > 0) {
-                    start("wcs:metadataLink", attributes);
-                    // characters(mdl.getContent());
-                    end("wcs:metadataLink");
-                }
+            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+                attributes.addAttribute("", "xlink:href", "xlink:href", 
+                        "", mdl.getContent());
+            }
+
+            if (attributes.getLength() > 0) {
+                element("wcs:metadataLink", null, attributes);
             }
         }
 
@@ -671,29 +663,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
         /**
          * 
-         * @param mdl
-         * @param linkType
-         */
-        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
-            if (mdl != null) {
-                AttributesImpl attributes = new AttributesImpl();
-
-                if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
-                    attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-                }
-
-                if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                    attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
-                }
-
-                if (attributes.getLength() > 0) {
-                    element("ows:Metadata", null, attributes);
-                }
-            }
-        }
-
-        /**
-         * 
          */
         private void handleContentMetadata(boolean allSections) {
             AttributesImpl attributes = new AttributesImpl();
@@ -736,7 +705,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 String tmp;
 
                 for (MetadataLinkInfo mdl : cv.getMetadataLinks())
-                    handleMetadataLink(mdl);
+                    handleMetadataLink(mdl, "simple");
 
                 tmp = cv.getDescription();
 

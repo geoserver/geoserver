@@ -2,12 +2,13 @@ package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
 import static org.geoserver.data.test.MockData.*;
-import junit.framework.Test;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.impl.ContactInfoImpl;
@@ -289,5 +290,23 @@ public class GetCapabilitiesTest extends WCSTestSupport {
             layer.setAdvertised(true);
             getCatalog().save(layer);
         }
+    }
+    
+    public void testMetadataLink() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+        
+        Document dom = getAsDOM("wcs?request=GetCapabilities");
+        // print(dom);
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getLocalPart() + "']/ows:Metadata";
+        assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
+        assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase + "/@xlink:href", dom);
     }
 }

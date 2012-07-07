@@ -1,9 +1,13 @@
 package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.data.test.MockData.*;
 import junit.framework.Test;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.config.GeoServerInfo;
@@ -149,6 +153,27 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wcs:Service)", dom);
         assertXpathEvaluatesTo("0", "count(//wcs:Capability)", dom);
         assertXpathEvaluatesTo("0", "count(//wcs:ContentMetadata)", dom);
+    }
+    
+    public void testMetadataLinks() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        ml.setMetadataType("FGDC");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=GetCapabilities&service=WCS&version=1.0.0");
+        print(dom);
+        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+        String xpathBase = "//wcs:CoverageOfferingBrief[wcs:name = '" + getLayerId(TASMANIA_DEM) + "']/wcs:metadataLink";
+        assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
+        assertXpathEvaluatesTo("FGDC", xpathBase + "/@metadataType", dom);
+        assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase + "/@xlink:href", dom);
     }
     
     public void testWorkspaceQualified() throws Exception {

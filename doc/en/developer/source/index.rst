@@ -16,4 +16,5 @@ Welcome to the GeoServer Developer Manual.  The manual is for those who want to 
    release-guide/index
    release-testing-checklist/index
    cite-test-guide/index
+   translation
    policies/index

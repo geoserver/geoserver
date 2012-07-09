@@ -1146,7 +1146,6 @@
       <descriptor>release/war.xml</descriptor>
       <descriptor>release/javadoc.xml</descriptor>
       <descriptor>release/bin.xml</descriptor>
-      <descriptor>release/doc.xml</descriptor>
       <descriptor>release/ext-db2.xml</descriptor>
       <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
       <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>

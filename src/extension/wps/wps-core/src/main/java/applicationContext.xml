@@ -163,26 +163,14 @@
       <constructor-arg index="1" value="gs"/>
       <constructor-arg index="2" value="org.geotools.process.gs.GSProcess"/>
     </bean>
-    <bean id="boundsProcess" class="org.geotools.process.feature.gs.BoundsProcess"/>
-    <bean id="nearestProcess" class="org.geotools.process.feature.gs.NearestProcess"/>
-    <bean id="snapProcess" class="org.geotools.process.feature.gs.SnapProcess"/>
     <bean id="importProcess" class="org.geoserver.wps.gs.ImportProcess">
       <constructor-arg index="0" ref="catalog"/>
     </bean>
-    <bean id="reprojectProcess" class="org.geotools.process.feature.gs.ReprojectProcess"/>
     <bean id="reprojectGeometryProcess" class="org.geotools.process.geometry.gs.ReprojectGeometry"/>
-    <bean id="queryProcess" class="org.geotools.process.feature.gs.QueryProcess"/>
-    <bean id="aggregateProcess" class="org.geotools.process.feature.gs.AggregateProcess"/>
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
-    <bean id="countProcess" class="org.geotools.process.feature.gs.CountProcess"/>
-    <bean id="uniqueProcess" class="org.geotools.process.feature.gs.UniqueProcess"/>
-    <bean id="simplifyProcess" class="org.geotools.process.feature.gs.SimplifyProcess"/>
     <bean id="rasterAsPointCollectionProcess" class="org.geotools.process.raster.gs.RasterAsPointCollectionProcess"/>
     <bean id="contourProcess" class="org.geotools.process.raster.gs.ContourProcess"/>
     <bean id="polygonExtractionProcess" class="org.geotools.process.raster.gs.PolygonExtractionProcess"/>
-    <bean id="rclipProcess" class="org.geotools.process.feature.gs.RectangularClipProcess"/>
-    <bean id="clipProcess" class="org.geotools.process.feature.gs.ClipProcess"/>
-    <bean id="collectGeometriesProcess" class="org.geotools.process.feature.gs.CollectGeometries" />
     <bean id="cropCoverageProcess" class="org.geotools.process.raster.gs.CropCoverage" />
     <bean id="scaleCoverageProcess" class="org.geotools.process.raster.gs.ScaleCoverage" />
     <bean id="styleCoverageProcess" class="org.geotools.process.raster.gs.StyleCoverage" />
@@ -190,14 +178,11 @@
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsStorageCleaner"></constructor-arg>
     </bean>
-    <bean id="vectorZonalStatistics" class="org.geotools.process.feature.gs.VectorZonalStatistics" />
-    <bean id="pointBuffersProces" class="org.geotools.process.feature.gs.PointBuffers" />
     <bean id="rasterZonalStatistics" class="org.geotools.process.raster.gs.RasterZonalStatistics" />
     <bean id="rangeLookupProcess" class="org.geotools.process.raster.gs.RangeLookupProcess" />
     <bean id="addCoveragesProcess" class="org.geotools.process.raster.gs.AddCoveragesProcess" />
     
     <bean id="multiplyCoveragesProcess" class="org.geotools.process.raster.gs.MultiplyCoveragesProcess" />
-    <bean id="gridProcess" class="org.geotools.process.feature.gs.GridProcess" />
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     
     <bean id="barnesSurfaceProcess" class="org.geotools.process.raster.surface.BarnesSurfaceProcess" />

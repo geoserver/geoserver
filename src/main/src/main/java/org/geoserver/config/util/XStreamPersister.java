@@ -103,6 +103,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.crs.DefaultProjectedCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
@@ -1023,7 +1024,7 @@ public class XStreamPersister {
                 XStreamPersister.LOGGER.warning( "Could not determine epsg code of crs, encoding as WKT");
             }
             
-            return crs.toWKT();
+            return new CRSConverter().toString(crs);
         }
         
         @Override
@@ -1061,7 +1062,7 @@ public class XStreamPersister {
 
         @Override
         public String toString(Object obj) {
-            return ((CoordinateReferenceSystem)obj).toWKT();
+            return ((Formattable)obj).toWKT(2, false);
         }
         
         @Override

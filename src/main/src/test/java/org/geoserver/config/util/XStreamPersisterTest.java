@@ -42,6 +42,8 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.wkt.Formattable;
+import org.geotools.referencing.wkt.UnformattableObjectException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -641,6 +643,28 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals("EPSG:4326", c.toString(crs));
         assertFalse("EPSG:4326".equals( 
             c.toString(CRS.parseWKT("GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"))));
+    }
+
+    public void testCRSConverterInvalidWKT() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3575");
+        try {
+            ((Formattable)crs).toWKT(2, true);
+            fail("expected exception");
+        }
+        catch(UnformattableObjectException e){
+        }
+
+        String wkt = null;
+        try {
+            wkt = new CRSConverter().toString(crs);
+        }
+        catch(UnformattableObjectException e) {
+            fail("Should have thrown exception");
+        }
+
+        CoordinateReferenceSystem crs2 = 
+            (CoordinateReferenceSystem) new CRSConverter().fromString(wkt);
+        assertTrue(CRS.equalsIgnoreMetadata(crs, crs2));
     }
 
     ByteArrayOutputStream out() {

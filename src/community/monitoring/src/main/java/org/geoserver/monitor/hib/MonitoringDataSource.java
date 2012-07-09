@@ -10,14 +10,21 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorConfig;
+import org.geotools.util.logging.Logging;
 
 public class MonitoringDataSource extends BasicDataSource {
+
+    static Logger LOGGER = Logging.getLogger(Monitor.class);
 
     MonitorConfig config;
     GeoServerDataDirectory dataDirectory;
@@ -56,9 +63,11 @@ public class MonitoringDataSource extends BasicDataSource {
     }
 
     void initializeDataSource() throws Exception {
-        File monitoringDir = dataDirectory.findOrCreateDataDir("monitoring");
+        File monitoringDir = dataDirectory.findOrCreateDir("monitoring");
         File dbprops = new File(monitoringDir, "db.properties");
         if (dbprops.exists()) {
+            LOGGER.info("Configuring monitoring database from: " + dbprops.getAbsolutePath());
+
             //attempt to configure
             try {
                 configureDataSource(dbprops, monitoringDir);
@@ -114,7 +123,9 @@ public class MonitoringDataSource extends BasicDataSource {
             db.load(in);
             in.close();
         }
-        
+
+        logDbProperties(db);
+
         //TODO: check for nulls
         setDriverClassName(db.getProperty("driver"));
         setUrl(getURL(db));
@@ -136,6 +147,16 @@ public class MonitoringDataSource extends BasicDataSource {
         super.getConnection();
     }
     
+    void logDbProperties(Properties db) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            StringBuffer sb = new StringBuffer("Monitoring database connection info:\n");
+            for (Map.Entry e : db.entrySet()) {
+                sb.append(e.getKey()).append(" = ").append(e.getValue()).append("\n"); 
+            }
+            LOGGER.fine(sb.toString());
+        }
+    }
+
     String getURL(Properties db) {
         return db.getProperty("url").replace("${GEOSERVER_DATA_DIR}", dataDirectory.root().getAbsolutePath());
     }

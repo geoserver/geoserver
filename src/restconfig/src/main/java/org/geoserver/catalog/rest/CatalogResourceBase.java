@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.PageInfo;
@@ -47,6 +48,9 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
      * the catalog
      */
     protected Catalog catalog;
+
+    protected GeoServer geoServer;
+
     /**
      * the class of the resource
      */
@@ -62,6 +66,7 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
         this.clazz = clazz;
         this.catalog = catalog;
         this.xpf = GeoServerExtensions.bean(XStreamPersisterFactory.class);
+        this.geoServer = GeoServerExtensions.bean(GeoServer.class);
     }
     
     @Override

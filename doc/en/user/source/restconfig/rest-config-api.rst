@@ -60,6 +60,90 @@ A Http request uses a ``status code`` to relay the outcome of the request to the
 client. Different status codes are used for various purposes through out this 
 document. These codes are described in detail by the `http specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.
 
+Global Settings
+---------------
+
+Allows accessing global settings for GeoServer
+
+Operations
+^^^^^^^^^^
+
+``/settings[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - List all global settings
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     - 
+     - 
+   * - PUT
+     - Update global settings
+     - 200
+     - XML, JSON
+     -
+   * - DELETE
+     -
+     - 405
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/settings_html.txt>`
+- :download:`XML <representations/settings_xml.txt>`
+- :download:`JSON <representations/settings_json.txt>`
+
+
+``/settings/contact[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - List global contact information
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     - 
+     - 
+   * - PUT
+     - Update global contact
+     - 200
+     - XML, JSON
+     -
+   * - DELETE
+     -
+     - 405
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/contact_html.txt>`
+- :download:`XML <representations/contact_xml.txt>`
+- :download:`JSON <representations/contact_json.txt>`
+
+
 Workspaces
 ----------
 
@@ -198,6 +282,46 @@ The default value is "false".
      - 405
      -
      -
+
+
+``/workspaces/<ws>/settings[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Returns workspace settings
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     - 
+     - 
+   * - PUT
+     - Creates or updates workspace settings
+     - 200
+     - XML, JSON
+     -
+   * - DELETE
+     - Deletes workspace settings
+     - 200
+     - XML, JSON
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/workspaceSettings_html.txt>`
+- :download:`XML <representations/workspaceSettings_xml.txt>`
+- :download:`JSON <representations/workspaceSettings_json.txt>`
+
+
 
 Namespaces
 ----------
@@ -1483,13 +1607,12 @@ Operations
 - :download:`XML <representations/layergroup_xml.txt>`
 - :download:`JSON <representations/layergroup_json.txt>`
 
+
 Fonts 
------
+------
 
 This operation provides the list of ``fonts`` available in GeoServer and can be useful to verify if a ``font`` used in a SLD file is available before uploading it.
 
-Operations
-^^^^^^^^^^
 
 ``/fonts[.<format>]``
 
@@ -1524,6 +1647,256 @@ Operations
 
 - :download:`XML <representations/fonts_xml.txt>`
 - :download:`JSON <representations/fonts_json.txt>`
+
+
+OWS Services
+-------------
+
+GeoServer includes several types of OGC services like WCS, WFS and
+WMS, commonly referred to as "OWS" services. These services can be
+global for the whole GeoServer instance or local to a particular
+workspace. In this last case, they are usually called "Virtual
+Services".
+
+
+Operations
+^^^^^^^^^^
+
+``/services/wcs/settings[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return global wcs settings
+     - 200
+     - XML, JSON
+     - HTML
+   * - POST
+     -
+     - 405
+     - 
+     - 
+   * - PUT
+     - Modify global wcs settings
+     - 200
+     - 
+     - 
+   * - DELETE
+     -
+     - 405
+     - 
+     - 
+
+
+
+
+*Representations*:
+
+- :download:`HTML <representations/wcs_html.txt>`
+- :download:`XML <representations/wcs_xml.txt>`
+- :download:`JSON <representations/wcs_json.txt>`
+
+
+``/services/wcs/<ws>/settings[.<format>]``
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return wcs settings for workspace <ws>
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Create or modify wcs settings for workspace <ws>
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - Delete wcs settings for workspace <ws>
+     - 200
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/wcsWS_html.txt>`
+- :download:`XML <representations/wcsWS_xml.txt>`
+- :download:`JSON <representations/wcsWS_json.txt>`
+
+
+``/services/wfs/settings[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return global wfs settings
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify global wfs settings
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - 
+     - 405
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/wfs_html.txt>`
+- :download:`XML <representations/wfs_xml.txt>`
+- :download:`JSON <representations/wfs_json.txt>`
+
+
+``/services/wfs/<ws>/settings[.<format>]``
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return wfs settings for workspace <ws>
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify wfs settings for workspace <ws>
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - Delete wfs settings for workspace <ws>
+     - 200
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/wfsWS_html.txt>`
+- :download:`XML <representations/wfsWS_xml.txt>`
+- :download:`JSON <representations/wfsWS_json.txt>`
+
+
+``/services/wms/settings[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return global wms settings
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify global wms settings
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - 
+     - 405
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/wms_html.txt>`
+- :download:`XML <representations/wms_xml.txt>`
+- :download:`JSON <representations/wms_json.txt>`
+
+
+``/services/wms/<ws>/settings[.<format>]``
+
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return wms settings for workspace <ws>
+     - 200
+     - HTML, XML, JSON
+     - HTML
+   * - POST
+     - 
+     - 405
+     -
+     -
+   * - PUT
+     - Modify wms settings for workspace <ws>
+     - 200
+     - XML,JSON
+     - 
+   * - DELETE
+     - Delete wms settings for workspace <ws>
+     - 200
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/wmsWS_html.txt>`
+- :download:`XML <representations/wmsWS_xml.txt>`
+- :download:`JSON <representations/wmsWS_json.txt>`
+
 
 Configuration reloading 
 ----------------------- 

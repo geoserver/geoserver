@@ -316,6 +316,87 @@
           <key><value>/fonts.{format}</value></key>
           <value>fontFinder</value>
         </entry>
+
+        <entry>
+            <key><value>/settings.{format}</value></key>
+            <value>globalSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/settings</value></key>
+            <value>globalSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/settings/contact.{format}</value></key>
+            <value>globalContactFinder</value>
+        </entry>
+        <entry>
+            <key><value>/settings/contact</value></key>
+            <value>globalContactFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/workspaces/{workspace}/settings</value></key>
+            <value>localSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/settings.{format}</value></key>
+            <value>localSettingsFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/services/wms/settings</value></key>
+            <value>wmsSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/services/wms/settings.{format}</value></key>
+            <value>wmsSettingsFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/services/wms/{workspace}/settings</value></key>
+            <value>wmsSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/services/wms/{workspace}/settings.{format}</value></key>
+            <value>wmsSettingsFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/services/wfs/settings</value></key>
+            <value>wfsSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/services/wfs/settings.{format}</value></key>
+            <value>wfsSettingsFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/services/wfs/{workspace}/settings</value></key>
+            <value>wfsSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/services/wfs/{workspace}/settings.{format}</value></key>
+            <value>wfsSettingsFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/services/wcs/settings</value></key>
+            <value>wcsSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/services/wcs/settings.{format}</value></key>
+            <value>wcsSettingsFinder</value>
+        </entry>
+
+        <entry>
+            <key><value>/services/wcs/{workspace}/settings</value></key>
+            <value>wcsSettingsFinder</value>
+        </entry>
+        <entry>
+            <key><value>/services/wcs/{workspace}/settings.{format}</value></key>
+            <value>wcsSettingsFinder</value>
+        </entry>
+
   </map>
 </property>
 </bean>
@@ -353,5 +434,16 @@
 
   <!-- admin request callback -->
   <bean id="adminRequestRestCallback" class="org.geoserver.catalog.rest.AdminRequestCallback"/>
-  
+
+  <bean id="abstractGeoServerFinder" class="org.geoserver.rest.AbstractGeoServerFinder" abstract="true">
+    <constructor-arg ref="geoServer"></constructor-arg>
+  </bean>
+
+  <bean id="globalSettingsFinder" class="org.geoserver.rest.GlobalSettingsFinder" parent="abstractGeoServerFinder"/>
+  <bean id="globalContactFinder" class="org.geoserver.rest.GlobalContactFinder" parent="abstractGeoServerFinder"/>
+  <bean id="localSettingsFinder" class="org.geoserver.rest.LocalSettingsFinder" parent="abstractGeoServerFinder"/>
+  <bean id="wmsSettingsFinder" class="org.geoserver.service.rest.WMSSettingsFinder" parent="abstractGeoServerFinder"/>
+  <bean id="wfsSettingsFinder" class="org.geoserver.service.rest.WFSSettingsFinder" parent="abstractGeoServerFinder"/>
+  <bean id="wcsSettingsFinder" class="org.geoserver.service.rest.WCSSettingsFinder" parent="abstractGeoServerFinder"/>
+
 </beans>

@@ -16,7 +16,7 @@ contains the most update documentation of how to checkout and build the tools. T
 
   git clone git://github.com/jdeolive/geoserver-cite-tools.git
   cd geoserver-cite-tools
-  git submodule --init update
+  git submodule update --init
   mvn clean install
   
 Run WFS 1.0 tests
@@ -53,7 +53,7 @@ Run WFS 1.0 tests
 
    #. ``Capabilities URL``
       
-        http://localhost:8080/geoserver/wfs?request=getcapabilities&service=wfs&version-1.0.0
+        http://localhost:8080/geoserver/wfs?request=getcapabilities&service=wfs&version=1.0.0
 
    #. ``All`` tests included
 
@@ -117,7 +117,7 @@ Run WMS 1.1 tests
 
    #. ``Capabilities URL``
 
-          http://localhost:8080/geoserver/wms?&service=wms&request=getcapabilities
+          http://localhost:8080/geoserver/wms?service=wms&request=getcapabilities&version=1.1.1
 
    #. ``UpdateSequence Values``:
 

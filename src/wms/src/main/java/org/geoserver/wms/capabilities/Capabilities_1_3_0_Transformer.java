@@ -409,12 +409,18 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     try {
                         if ("localhost".equals(url.getHost())) {
                             Map<String, String> kvp = null;
-                            if (url.getQuery() != null && !"".equals(url.getQuery())) {
-                                kvp = KvpUtils.parseQueryString(url.getQuery());
+                            if (url.getFile() != null && !"".equals(url.getFile())) {
+                                kvp = KvpUtils.parseQueryString(url.getFile());
                             }
 
                             content = buildURL(request.getBaseUrl(), url.getPath(), kvp,
                                     URLType.RESOURCE);
+                            
+                            // check to see if the new url has a different path
+                            URL newUrl = new URL (content);
+                            if (!url.getPath().equals(newUrl.getPath())) {
+                                content = content.replaceFirst(newUrl.getPath(), url.getPath());
+                            }
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING,

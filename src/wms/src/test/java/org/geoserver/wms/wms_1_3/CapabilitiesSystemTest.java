@@ -81,7 +81,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
         XMLUnit.setXpathNamespaceContext(ctx);
 
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
         LayerInfo layer = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());

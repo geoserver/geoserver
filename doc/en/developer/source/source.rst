@@ -269,8 +269,7 @@ you to push the change until you have pulled those commits.
    A **merge commit** may occur when one branch is merged with another. 
    A merge commit occurs when two branches are merged and the merge is not a "fast-forward" merge.
    This happens when the target branch has changed since the commits were created.
-   Fast-forward merges are described `here <http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging>`_ 
-   and are worth reading about. 
+   Fast-forward merges are worth `reading about <http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging>`_. 
    
    An easy way to avoid merge commits is to do a "rebase" when pulling down changes::
    
@@ -283,13 +282,14 @@ you to push the change until you have pulled those commits.
 Working with feature branches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As mentioned before it is always a good idea to work on a feature branch and not directly on a primary branch. A classic
-situation every developer who has used a version control system has run into is when a developer has 
-worked on a new feature locally and made a ton of changes, but then needs to switch context to work on some other feature or 
-bug fix. The developer tries to do that in the midst of the other changes and ends up committing a file they never intended
-to. Feature branches are the remedy for this.
+As mentioned before, it is always a good idea to work on a feature branch rather than directly on a primary branch. 
+A classic problem every developer who has used a version control system has run into is when they have 
+worked on a feature locally and made a ton of changes, but then need to switch context to work on some other feature or 
+bug fix. The developer tries to make the fix in the midst of the other changes 
+and ends up committing a file that should not have been changed. 
+Feature branches are the remedy for this problem.
 
-To create a new feature branch off of the master branch::
+To create a new feature branch off the master branch::
 
   % git checkout -b my_feature master
   % # make some changes
@@ -299,6 +299,15 @@ To create a new feature branch off of the master branch::
 Rinse, wash, repeat. The nice about thing about using a feature branch is that it is easy to switch context
 to work on something else. Just ``git checkout`` whatever other branch you need to work on,
 and then return to the feature branch when ready.
+
+.. note:: 
+   
+   When a branch is checked out, all the files in the working area are modified to reflect
+   the current state of the branch.  When using development tools which cache the state of the
+   project (such as Eclipse) it may be necessary to refresh their state to match the file system.
+   If the branch is very different it may even be necessary to perform a rebuild so that 
+   build artifacts match the modified source code.
+
 
 Merging feature branches
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -364,7 +373,7 @@ really be done. You can read more about interactive rebasing `here <http://git-s
    with other repositories.
    
 
-The following example of an interactive rebase on a feature branch::
+The following example shows an interactive rebase on a feature branch::
 
   % git checkout my_feature
   % git log
@@ -374,22 +383,22 @@ We make some changes and commit the result::
 
   % git commit "fixing bug x" # results in commit 456
 
-Then we realized we forgot to stage a change before committing. So we add the file and commit::
+We realize we forgot to stage a change before committing, so we add the file and commit::
 
   % git commit -m "oops, forgot to commit that file" # results in commit 678
 
-Again we made a mistake, a typo, so we fix and commit again::
+Then we notice a small mistake, so we fix and commit again::
 
   % git commit -m "darn, made a typo" # results in commit #910
 
-At this point we have three commits when what we really want is one. So we rebase specifying the 
-revision before the first first commit::
+At this point we have three commits when what we really want is one. So we rebase, 
+specifying the revision immediately prior to the first commit::
 
   % git rebase -i 123
   
-This invokes an editor that allows us to indicate which commits should be combined together.
-Git *squashes* the commits into an equivalent single commit. 
-Once this is done we can merge the cleaned-up feature branch into master as usual::
+This invokes an editor that allows indicating which commits should be combined.
+Git then *squashes* the commits into an equivalent single commit. 
+After this we can merge the cleaned-up feature branch into master as usual::
 
   % git checkout master
   % git merge my_feature
@@ -399,9 +408,10 @@ Again, be sure to read up on this feature before attempting to use it. And again
 Merge with squash
 ~~~~~~~~~~~~~~~~~
 
-The ``git merge`` command takes an option ``--squash`` that basically does the merge but does not commit the result 
-to the target branch. This will squash all the commits from the feature branch into a single staged changeset that
-is ready to be committed::
+The ``git merge`` command takes an option ``--squash`` that performs the merge 
+against the working area but does not commit the result to the target branch. 
+This squashes all the commits from the feature branch into a single changeset that
+is staged and ready to be committed::
 
   % git checkout master
   % git merge --squash my_feature

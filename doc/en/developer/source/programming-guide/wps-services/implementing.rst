@@ -1,35 +1,39 @@
 .. _wps_services_implementing:
 
-Implementing a WPS Service
+Implementing a WPS Process
 ==========================
 
-This section describes how to implement a WPS service in GeoServer, using
-a "Hello World" example. The service is designed to be extremely simple, 
-taking a single parameter and returning text. It is meant to show the 
-developer how to put together all the pieces necessary to build a WPS
-service on top of GeoServer
+This section describes how to implement a WPS process for use in GeoServer. 
+It demonstrates the development artifacts and build steps 
+necessary to create a WPS process, deploy it in GeoServer,
+and test it.
+
+The example process used is a simple "Hello World" process 
+which accepts a single input parameter and returns a single text output.
 
 Prerequisites
 -------------
 
-Before being able to proceed, GeoServer must be built on the local system. See
-the :ref:`source` and :ref:`quickstart` sections for details. In addition to these,
+Before starting, GeoServer must be built on the local system. See
+the :ref:`source` and :ref:`quickstart` sections for details.
 GeoServer must be built with WPS support as described in the 
-:ref:`maven_guide` section, make sure it is built with the ``-Pwps`` profile
+:ref:`maven_guide` section. 
+Specifically, make sure GeoServer is built using the ``-Pwps`` profile.
 
-You can also create a custom WPS module and deploy it into an existing GeoServer
-with the WPS extension already deployed into it. 
+Alternatively, the custom WPS plug-in can be deployed into an existing GeoServer
+instance (which must have the WPS extension installed). 
 
-Create a new module
--------------------
-In order to create a new WPS plug-in the first step is to create a custom Maven project.
-The project will be called "hello_wps".
+Create the process module
+-------------------------
+
+To create a new WPS process plug-in module the first step is to create a Maven project.
+For this example the project will be called "hello_wps".
 
 #. Create a new directory named ``hello_wps`` somewhere on the file system.
 
-#. Add the following ``pom.xml`` to the root of the new module, inside the hello_wps directory:
+#. Add the following ``pom.xml`` to the root of the new module in the ``hello_wps`` directory:
 
- .. code-block:: xml
+.. code-block:: xml
 
     <project xmlns="http://maven.apache.org/POM/4.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -95,7 +99,7 @@ The project will be called "hello_wps".
 
    [hello_wps]% mkdir -p src/main/java
 
-   The project that was just created should have the following structure::
+   The project should now have the following structure::
 
      hello_wps/
       + pom.xml
@@ -108,20 +112,25 @@ The project will be called "hello_wps".
 Create the process class
 ------------------------
 
-#. Create the package that will contain your custom WPS process
+#. Create the package that will contain the custom WPS process.
 
    Package naming plays an important role in creating a WPS process. The rightmost
-   part of the package name will be the namespace for the WPS process being created.
-   Create a package named ``org.geoserver.wps.gs`` inside the *src/main/java* directory
-   structure. The namespace for the new WPS process will be ``gs``.
+   part of the package name is the **namespace** for the WPS process.
+   For this example,
+   create a package named ``org.geoserver.wps.gs`` inside the *src/main/java* directory
+   structure. The namespace for the new WPS process is ``gs``::
+   
+   [hello_wps]% mkdir -p src/main/java/org/geoserver/wps/gs
 
 
-#. Create the Java class that will expose your custom WPS process
 
-   Create a Java class called HelloWPS.java inside the previous package:
+#. Create the Java class that implements the custom WPS process.
+
+   Create a Java class called ``HelloWPS.java`` inside the created package:
 
   .. code-block:: java
  
+     package org.geoserver.wps.gs;
  
      import org.geotools.process.factory.DescribeParameter;
      import org.geotools.process.factory.DescribeProcess;
@@ -139,18 +148,18 @@ Create the process class
      }
 
 
-Register process with GeoServer
--------------------------------
+Register the process in GeoServer
+---------------------------------
 
-GeoServer uses the `Spring Framework <http://www.springsource.org/spring-framework/>`_ to manage instantiation of its different components. We are going to 
-use the same mechanism to make this service discoverable by telling GeoServer to include its functionality
-when it starts. 
+GeoServer uses the `Spring Framework <http://www.springsource.org/spring-framework/>`_ to manage instantiation of components.  
+This mechanism is used to register the process with GeoServer when it starts, 
+which will make it discoverable via the WPS service interface. 
 
-#. Create the directory ``src/main/resources`` under the root of the new module::
+#. Create a directory ``src/main/resources`` under the root of the new module::
 
    [hello_wps]% mkdir -p src/main/resources
 
-   The project should have the following directory structure::
+   The project should now have the following directory structure::
 
      hello_wps/
       + pom.xml
@@ -172,41 +181,46 @@ when it starts.
         </beans>
 
 
-Build, deploy and test
-----------------------
+Build and Deploy
+----------------
 
-In order to build your custom process, run the following command from the root of your project:
+To build the custom process, run the following command from the root of the project:
 
   .. code-block:: console
  
      mvn clean install
 
-This will clean previous runs, compile your code, and create a JAR file in the target directory.
-The JAR file name is controlled by the name and version given to the project upon creation
-(hello_wps-2.2-SNAPSHOT.jar in this example).
+This cleans the build area, compiles the code, and creates a JAR file in the ``target`` directory.
+The JAR file name is determined by the name and version given to the project in the ``pom.xml`` file.
+(for this example it is ``hello_wps-2.2-SNAPSHOT.jar``).
 
 
-To deploy your module, copy this JAR file inside the ``/WEB-INF/lib`` directory of GeoServer and then restart it.
+To deploy the process module, copy this JAR file into the ``/WEB-INF/lib`` directory of GeoServer and then restart the instance.
 
-  .. note:: For alternative deployment options (i.e. running from source), see the *Trying it out* 
-     	    section inside :ref:`ows_services_implementing`
+.. note:: 
+   
+   For alternative deployment options (i.e. running from source), see the *Trying it out* 
+   section inside :ref:`ows_services_implementing`
 
 
-Once GeoServer is running again, you can verify that the new process was deployed successfully by running
-the WPS Request Builder. The WPS Request Builder is a utility that can run tests of existing WPS processes
-through the UI. You can access this utility by navigating to the WPS Request Builder inside the Demos
+Test
+----
+
+You can verify that the new process was deployed successfully by using
+the **WPS Request Builder**. The WPS Request Builder is a utility that allows invoking WPS processes
+through the GeoServer UI. Access this utility by navigating to the *WPS Request Builder* in the *Demos*
 section of the GeoServer Web Admin Interface.
 
+In the WPS Request Builder select the process called ``gs:helloWPS`` from the **Choose process** dropdown.
+The request builder displays an interface which allows calling the process, based on the
+parameters and outputs described in the capabilities of the process
+(which are defined by the process class annotations). 
 
-Once in the WPS request builder, select the process called gs:helloWPS from the **Choose process** dropdown.
-The request builder will generate the necessary interface to be able to test the process, based on the
-parameters and expected outputs described in the capabilities of the process. 
-
-The following image show an example of the WPS Request Builder running the helloWPS process, enter the 
-desired parameter and click on **Execute process** to run it. A window with the expected result should appear.
+The following image shows the WPS Request Builder running the ``gs:helloWPS`` process.
+Enter the desired parameter and click on **Execute process** to run it. A window with the expected result should appear.
 
   .. figure:: img/helloWPS.png
 
-     *WPS Request Builder*
+     *WPS Request Builder, showing gs:HelloWPS process parameters*
 
 

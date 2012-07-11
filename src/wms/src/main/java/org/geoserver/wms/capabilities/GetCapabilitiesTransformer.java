@@ -70,6 +70,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
@@ -390,10 +391,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
                 element("Format", link.getType());
 
+                String content = ResponseUtils.proxifyMetadataLink(link, request.getBaseUrl());
+
                 AttributesImpl orAtts = new AttributesImpl();
                 orAtts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 orAtts.addAttribute(XLINK_NS, "xlink:type", "xlink:type", "", "simple");
-                orAtts.addAttribute("", "xlink:href", "xlink:href", "", link.getContent());
+                orAtts.addAttribute("", "xlink:href", "xlink:href", "", content);
                 element("OnlineResource", null, orAtts);
 
                 end("MetadataURL");

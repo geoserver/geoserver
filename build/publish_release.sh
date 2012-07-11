@@ -53,9 +53,9 @@ set -e
 # deploy the release to maven repo
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
-   mvn deploy -DskipTests	
+   mvn deploy -P allExtensions -DskipTests	
 else
-   echo "Skipping mvn deploy -DskipTests"
+   echo "Skipping mvn deploy -P allExtensions -DskipTests"
 fi
 
 popd > /dev/null

@@ -390,10 +390,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
                 element("Format", link.getType());
 
+                String content = wmsConfig.proxifyMetadataLink(link, request.getBaseUrl());
+
                 AttributesImpl orAtts = new AttributesImpl();
                 orAtts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 orAtts.addAttribute(XLINK_NS, "xlink:type", "xlink:type", "", "simple");
-                orAtts.addAttribute("", "xlink:href", "xlink:href", "", link.getContent());
+                orAtts.addAttribute("", "xlink:href", "xlink:href", "", content);
                 element("OnlineResource", null, orAtts);
 
                 end("MetadataURL");

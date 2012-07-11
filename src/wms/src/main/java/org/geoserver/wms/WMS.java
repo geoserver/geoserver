@@ -1162,41 +1162,6 @@ public class WMS implements ApplicationContextAware {
         return result;
     }
 
-    /**
-     * Profixies a metadata link url interpreting a localhost url as a back reference to the server.
-     * <p>
-     * If <tt>link</tt> is not a localhost url it is left untouched.
-     * </p>
-     */
-    public String proxifyMetadataLink(MetadataLinkInfo link, String baseURL) {
-        String content = link.getContent();
-        try {
-            URL url = new URL(content);
-            try {
-                if ("localhost".equals(url.getHost())) {
-                    Map<String, String> kvp = null;
-                    if (url.getFile() != null && !"".equals(url.getFile())) {
-                        kvp = KvpUtils.parseQueryString(url.getFile());
-                    }
-
-                    content = buildURL(baseURL, url.getPath(), kvp, URLType.RESOURCE);
-                    
-                    // check to see if the new url has a different path
-                    URL newUrl = new URL (content);
-                    if (!url.getPath().equals(newUrl.getPath())) {
-                        content = content.replaceFirst(newUrl.getPath(), url.getPath());
-                    }
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
-                        "Unable to create proper back referece for metadata url: "
-                                + content, e);
-            }
-        } catch (MalformedURLException e) {
-        }
-        return content;
-    }
-
     public static WMS get() {
         return GeoServerExtensions.bean(WMS.class);
     }

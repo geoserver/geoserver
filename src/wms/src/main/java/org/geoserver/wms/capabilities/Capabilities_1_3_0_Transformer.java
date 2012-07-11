@@ -69,6 +69,7 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
@@ -402,27 +403,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 element("Format", link.getType());
 
-                // check for "localhost" and turn it into a proper back reference
-                String content = link.getContent();
-                try {
-                    URL url = new URL(content);
-                    try {
-                        if ("localhost".equals(url.getHost())) {
-                            Map<String, String> kvp = null;
-                            if (url.getQuery() != null && !"".equals(url.getQuery())) {
-                                kvp = KvpUtils.parseQueryString(url.getQuery());
-                            }
-
-                            content = buildURL(request.getBaseUrl(), url.getPath(), kvp,
-                                    URLType.RESOURCE);
-                        }
-                    } catch (Exception e) {
-                        LOGGER.log(Level.WARNING,
-                                "Unable to create proper back referece for metadata url: "
-                                        + content, e);
-                    }
-                } catch (MalformedURLException e) {
-                }
+                String content = ResponseUtils.proxifyMetadataLink(link, request.getBaseUrl());
 
                 AttributesImpl orAtts = attributes("xlink:type", "simple", "xlink:href", content);
                 element("OnlineResource", null, orAtts);

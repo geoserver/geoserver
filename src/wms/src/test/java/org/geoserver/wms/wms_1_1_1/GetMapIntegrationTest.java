@@ -136,7 +136,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         URL style = MockData.class.getResource("raster.sld");
         String styleName = "raster";
         dataDirectory.addStyle(styleName, style);
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX), 
+        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX), 
                 GetMapIntegrationTest.class.getResource("mosaic_holes.zip"), null, "raster");
         
         // add a raster style with translucent color map

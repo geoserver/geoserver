@@ -494,7 +494,7 @@ public class MockData implements TestData {
         //addCoverage(GTOPO_DEM, TestData.class.getResource("W020N90/W020N90.manifest"),
         //        "dem", styleName);
         
-        addCoverage(USA_WORLDIMG, TestData.class.getResource("usa.zip"), null, styleName);
+        addCoverageFromZip(USA_WORLDIMG, TestData.class.getResource("usa.zip"), PNG, styleName);
     }
     
     /**
@@ -593,38 +593,60 @@ public class MockData implements TestData {
      * @param coverage
      */
     public void addCoverage(QName name, URL coverage, String extension, String styleName) throws Exception {
+        if (extension == null)
+            throw new IllegalArgumentException("Use addCoverageFromZip instead of passing NULL");
+        
         File directory = new File(data, name.getPrefix());
         if ( !directory.exists() ) {
             directory.mkdir();    
         }
         
         // create the coverage file
-        File f = new File(directory, name.getLocalPart() + (extension != null ? "." + extension : ""));
-        if (extension == null) {
-            f.mkdir();
+        File f = new File(directory, name.getLocalPart() + "." + extension);
+        
+        IOUtils.copy( coverage.openStream(), f );
+        
+        addCoverageFromPath(name, f, "file:" + name.getPrefix() + "/" + name.getLocalPart() + "." + extension, styleName);
+    }
+    
+    public void addCoverageFromZip(QName name, URL coverage, String extension, String styleName) throws Exception {
+        File directory = new File(data, name.getPrefix());
+        if (!directory.exists()) {
+            directory.mkdir();
         }
         
-        // copy over the contents
-        if (!f.isDirectory())
-            IOUtils.copy( coverage.openStream(), f );
-        else {
-            // assuming compressed file
-            final File compressedFile = new File(f, name.getLocalPart() + ".zip");
-            IOUtils.copy( coverage.openStream(), compressedFile );
-            IOUtils.decompress(compressedFile, f);
-            final File srcDir = new File(f, name.getLocalPart());
-            srcDir.mkdir();
-            FileUtils.copyDirectory(srcDir, f, true);
+        File f = new File(directory, name.getLocalPart());
+        f.mkdir();
+        
+        File compressedFile = new File(f, name.getLocalPart() + ".zip");
+        IOUtils.copy(coverage.openStream(), compressedFile);
+        IOUtils.decompress(compressedFile,  f);
+        final File srcDir = new File(f, name.getLocalPart());
+        srcDir.mkdir();
+        FileUtils.copyDirectory(srcDir,  f, true);
+        
+        if (extension != null) {
+            File coverageFile = new File(srcDir, name.getLocalPart() + "." + extension);
+            addCoverageFromPath(name, coverageFile,
+                    "file:" + name.getPrefix() + "/" + name.getLocalPart() + "/" + name.getLocalPart() + "." + extension,
+                    styleName);
+        } else {
+            addCoverageFromPath(name, f,
+                    "file:" + name.getPrefix() + "/" + name.getLocalPart(),
+                    styleName);
         }
-        coverageInfo(name, f, styleName);
+    }
+    
+    private void addCoverageFromPath(QName name, File coverage, String relpath, String styleName) throws Exception {
+        coverageInfo(name, coverage, styleName);
 
         // setup the meta information to be written in the catalog 
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(f);
+        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(coverage);
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
         Map params = new HashMap();
         params.put(CatalogWriter.COVERAGE_TYPE_KEY, format.getName());
-        params.put(CatalogWriter.COVERAGE_URL_KEY, "file:" + name.getPrefix() + "/" + name.getLocalPart() + (extension != null ? "." + extension : ""));
+        params.put(CatalogWriter.COVERAGE_URL_KEY, relpath);
         coverageStores.put(name.getLocalPart(), params);
     }
     

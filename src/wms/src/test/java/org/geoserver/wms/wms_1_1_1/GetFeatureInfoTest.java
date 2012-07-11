@@ -87,11 +87,11 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 null);
         
         // this also adds the raster style
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
         
         // add a raster with a a custom projection
-        dataDirectory.addCoverage(CUSTOM, GetFeatureInfoTest.class.getResource("custom.zip"), null, "raster");
+        dataDirectory.addCoverageFromZip(CUSTOM, GetFeatureInfoTest.class.getResource("custom.zip"), null, "raster");
     }
     
     /**

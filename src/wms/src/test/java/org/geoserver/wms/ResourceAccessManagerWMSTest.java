@@ -102,7 +102,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // add a mosaic as well
         URL style = MockData.class.getResource("raster.sld");
         dataDirectory.addStyle("raster", style);
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
                 MockData.class.getResource("raster-filter-test.zip"), null, "raster");
 
         

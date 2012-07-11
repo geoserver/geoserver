@@ -42,7 +42,7 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         URL style = getClass().getResource("../temperature.sld");
         String styleName = "temperature";
         dataDirectory.addStyle(styleName, style);
-        dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
+        dataDirectory.addCoverageFromZip(WATTEMP, TestData.class.getResource("watertemp.zip"),
                         null, styleName);
     }
 

@@ -18,20 +18,18 @@ GeoServer development environment. This guide assumes that all the necessary
 Check out source code
 ---------------------
 
-Check out the source code from the subversion repository. Choose ``trunk`` for
-the latest development, or a stable branch for
-versions less likely to change often.
+Clone the GeoServer git repository::
 
-Either::
+   git clone git://github.com/geoserver/geoserver.git geoserver
 
-   svn co https://svn.codehaus.org/geoserver/trunk geoserver-trunk
+The default branch of the repository is the ``master`` branch is the current unstable 
+development branch. To switch to a stable branch::
 
-Or (stable ``2.1.x`` branch)::
-
-   svn co https://svn.codehaus.org/geoserver/branches/2.1.x geoserver-2.1.x
+   cd geoserver
+   git checkout 2.2.x
 
 In this example we will pretend that you checked the source out into a directory
-called ``geoserver``, but a more descriptive name is recommended.
+called ``geoserver``.
 
 
 Build with Maven

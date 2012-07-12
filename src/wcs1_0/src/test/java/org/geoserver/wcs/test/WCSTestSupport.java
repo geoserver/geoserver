@@ -83,7 +83,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         super.populateDataDirectory(dataDirectory);
         
         // add a raster mosaic with time and elevation
-        dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
+        dataDirectory.addCoverageFromZip(WATTEMP, TestData.class.getResource("watertemp.zip"),
                         null, "raster");
     }
 

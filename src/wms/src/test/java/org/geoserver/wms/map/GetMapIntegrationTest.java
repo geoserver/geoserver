@@ -42,10 +42,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         dataDirectory.addCoverage(new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX),
                 GetMapIntegrationTest.class.getResource("paletted.tif"), "tif", "raster");
         // a filterable mosaic
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
                 MockData.class.getResource("raster-filter-test.zip"), null, "raster");
         // a 4 bits world image
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
+        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
                 MockData.class.getResource("fourbits.zip"), null, "raster");
     }
     

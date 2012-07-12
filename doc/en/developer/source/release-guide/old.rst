@@ -1,8 +1,12 @@
-.. _release_guide:
+.. _release_guide_old:
 
-Release Guide
-=============
+Release Guide (Deprecated)
+=========================
 
+.. warning::
+
+   This release guide is deprecated and only kept currently for reference resources. See the :ref:`official release guide <release_guide>` for current practices.
+   
 This guide details the process of performing a GeoServer release.   
 
 Before you start

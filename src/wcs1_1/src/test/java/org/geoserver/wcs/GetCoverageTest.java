@@ -55,7 +55,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         super.populateDataDirectory(dataDirectory);
         
         // this also adds the raster style
-        dataDirectory.addCoverage(MOSAIC, 
+        dataDirectory.addCoverageFromZip(MOSAIC, 
                 MockData.class.getResource("raster-filter-test.zip"), null, "raster");
     }
 

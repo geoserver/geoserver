@@ -54,6 +54,13 @@ set -e
 pushd src > /dev/null
 if [ -z $SKIP_DEPLOY ]; then
    mvn deploy -P allExtensions -DskipTests	
+
+   # deploy released community modules
+   pushd community > /dev/null
+   set +e
+   mvn deploy -P communityRelease -DskipTests
+   set -e
+   popd > /dev/null
 else
    echo "Skipping mvn deploy -P allExtensions -DskipTests"
 fi

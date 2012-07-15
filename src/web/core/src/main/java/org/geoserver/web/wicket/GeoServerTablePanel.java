@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -36,6 +37,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
@@ -54,7 +57,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
     // filter form components
-    TextField filter;
+    TextField<String> filter;
 
     // table components
     DataView dataView;
@@ -74,6 +77,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     CheckBox selectAll;
     
     AjaxButton hiddenSubmit;
+    
+    private String requestURL;
     
     boolean sortable = true;
     
@@ -127,7 +132,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         };
         filterForm.setOutputMarkupId(true);
         add(filterForm);
-        filterForm.add(filter = new TextField("filter", new Model()));
+        filterForm.add(filter = new TextField<String>("filter", new Model<String>()));
         filter.add(new SimpleAttributeModifier("title", String.valueOf(new ResourceModel(
                 "GeoServerTablePanel.search", "Search").getObject())));
         filterForm.add(hiddenSubmit = hiddenSubmit());
@@ -222,6 +227,19 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         navigatorTop.setOutputMarkupId(true);
         add(navigatorBottom = new Pager("navigatorBottom"));
         navigatorBottom.setOutputMarkupId(true);
+        
+        // determine what url was requested
+        WebRequest webRequest = getWebRequest();
+        requestURL = webRequest.getURL();
+        
+        String defaultFilter = getCachedFilter();
+        
+        // only filter if we have to
+        if (defaultFilter != null && !"".equals(defaultFilter)) {
+            filter.getModel().setObject(defaultFilter);
+            
+            updateFilter();
+        }
     }
     
     /**
@@ -408,7 +426,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
-                updateFilter(target, filter.getDefaultModelObjectAsString());
+                updateFilter();
+                
+                target.addComponent(listContainer);
+                target.addComponent(navigatorTop);
+                target.addComponent(navigatorBottom);
             }
 
         };
@@ -462,7 +484,10 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Parses the keywords and sets them into the data provider, forces update of the components
      * that need to as a result of the different filtering
      */
-    private void updateFilter(AjaxRequestTarget target, String flatKeywords) {
+    private void updateFilter() {
+        String flatKeywords = filter.getDefaultModelObjectAsString();
+        cacheFilter(flatKeywords);
+
         if ("".equals(flatKeywords)) {
             dataProvider.setKeywords(null);
             filter.setModelObject("");
@@ -472,13 +497,10 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             dataProvider.setKeywords(keywords);
             dataView.setCurrentPage(0);
         }
+        pagerDelegate.updateMatched();
         navigatorTop.updateMatched();
         navigatorBottom.updateMatched();
         setSelection(false);
-
-        target.addComponent(listContainer);
-        target.addComponent(navigatorTop);
-        target.addComponent(navigatorBottom);
     }
     
     /**
@@ -688,7 +710,33 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             dataView.setItemsPerPage(DEFAULT_ITEMS_PER_PAGE);
         }
     }
-    
-    
-    
+
+    private void cacheFilter(String filter) {
+        GeoServerSession geoServerSession = getGeoServerSession();
+        
+        if (geoServerSession != null) {
+            geoServerSession.cacheValue(requestURL, filter);
+        }
+    }
+
+    private String getCachedFilter() {
+        GeoServerSession geoServerSession = getGeoServerSession();
+        
+        if (geoServerSession != null) {
+            return geoServerSession.getCachedValue(requestURL);
+        }
+        
+        return null;
+    }
+
+    private GeoServerSession getGeoServerSession() {
+        Session session = getSession();
+        
+        if (session instanceof GeoServerSession) {
+            return (GeoServerSession) session;
+        }
+        
+        return null;
+    }
+
 }

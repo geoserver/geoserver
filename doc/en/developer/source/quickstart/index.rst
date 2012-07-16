@@ -20,17 +20,23 @@ Check out source code
 
 Clone the GeoServer git repository::
 
-   git clone git://github.com/geoserver/geoserver.git geoserver
+To list the available branches.::
 
-The default branch of the repository is the ``master`` branch is the current unstable 
-development branch. To switch to a stable branch::
+  % git branch
+     2.1.x
+     2.2.x
+   * master
 
-   cd geoserver
-   git checkout 2.2.x
+Choose ``master`` for the latest development.::
 
-In this example we will pretend that you checked the source out into a directory
-called ``geoserver``.
+  % git checkout master
+   
+Or chose a stable branch for versions less likely to change often::
 
+  % git checkout 2.2.x
+
+In this example we will pretend that your source code is in a directory
+called ``geoserver``, but a more descriptive name is recommended.
 
 Build with Maven
 ----------------

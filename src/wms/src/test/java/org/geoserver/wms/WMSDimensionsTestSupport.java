@@ -1,9 +1,5 @@
 package org.geoserver.wms;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.Raster;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Collections;
@@ -28,6 +24,9 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
     protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    
+    protected static final String UNITS = "foot";
+    protected static final String UNIT_SYMBOL = "ft";
 
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
@@ -51,7 +50,7 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         super.setUpInternal();
         
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
         WMSInfo wms = getGeoServer().getService(WMSInfo.class);
@@ -69,7 +68,8 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
     
-    protected void setupVectorDimension(String featureTypeName, String metadata, String attribute, DimensionPresentation presentation, Double resolution) {
+    protected void setupVectorDimension(String featureTypeName, String metadata, String attribute, 
+            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -78,15 +78,19 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         if(resolution != null) {
             di.setResolution(new BigDecimal(resolution));
         }
+        di.setUnits(units);
+        di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
     }
 
-    protected void setupVectorDimension(String metadata, String attribute, DimensionPresentation presentation, Double resolution) {
-        setupVectorDimension("TimeElevation", metadata, attribute, presentation, resolution);
+    protected void setupVectorDimension(String metadata, String attribute, 
+            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
+        setupVectorDimension("TimeElevation", metadata, attribute, presentation, resolution, units, unitSymbol);
     }
     
-    protected void setupRasterDimension(String metadata, DimensionPresentation presentation, Double resolution) {
+    protected void setupRasterDimension(String metadata, DimensionPresentation presentation, 
+            Double resolution, String units, String unitSymbol) {
         CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -94,6 +98,8 @@ public class WMSDimensionsTestSupport extends WMSTestSupport {
         if(resolution != null) {
             di.setResolution(new BigDecimal(resolution));
         }
+        di.setUnits(units);
+        di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
     }

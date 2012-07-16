@@ -22,7 +22,6 @@ import org.opengis.util.ProgressListener;
  * @author Justin Deoliveira, The Open Planning Project
  * @uml.dependency supplier="org.geoserver.catalog.CoverageResource"
  */
-@SuppressWarnings("deprecation")
 public interface CoverageInfo extends ResourceInfo {
 
     /**

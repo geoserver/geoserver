@@ -18,10 +18,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     public static final String KEY = "jai.info";
     
     private static final long serialVersionUID = 7121137497699361776L;
-    
-    transient JAI jai;
-    transient TileCache tileCache;
-    
+
     boolean allowInterpolation;
     
     public static final boolean DEFAULT_Recycling = false;
@@ -160,19 +157,25 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     }
     
     public JAI getJAI() {
-        return jai;
+        return JAI.getDefaultInstance();
     }
     
     public void setJAI( JAI jai ) {
-        this.jai = jai;
+        // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
+        // get a non singleton one, so does this method make sense at all? In any case, this class
+        // is meant to be serializable, hence the change in getJAI() to return the singleton
+        // directly and avoid NPE's
     }
     
     public TileCache getTileCache() {
-        return tileCache;
+        return getJAI().getTileCache();
     }
     
     public void setTileCache( TileCache tileCache ) {
-        this.tileCache = tileCache;
+        // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
+        // get a non singleton one, so does this method make sense at all? In any case, this class
+        // is meant to be serializable, hence the change in getTileCache() to return the singleton
+        // directly and avoid NPE's
     }
 
     public boolean isAllowNativeMosaic() {

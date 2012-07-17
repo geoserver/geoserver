@@ -1,12 +1,15 @@
 package org.geoserver.catalog;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.impl.AbstractCatalogFacade;
 import org.geoserver.catalog.impl.DefaultCatalogFacade;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 /**
  * Data access facade for the catalog.
@@ -16,12 +19,11 @@ import org.geoserver.catalog.impl.DefaultCatalogFacade;
  */
 public interface CatalogFacade {
 
-    static WorkspaceInfo ANY_WORKSPACE = DefaultCatalogFacade.ANY_WORKSPACE;
+    static WorkspaceInfo ANY_WORKSPACE = AbstractCatalogFacade._ANY_WORKSPACE;
     
-    static NamespaceInfo ANY_NAMESPACE = DefaultCatalogFacade.ANY_NAMESPACE;
-
-    static WorkspaceInfo NO_WORKSPACE = DefaultCatalogFacade.NO_WORKSPACE;
-
+    static NamespaceInfo ANY_NAMESPACE = AbstractCatalogFacade._ANY_NAMESPACE;
+    
+    static WorkspaceInfo NO_WORKSPACE = AbstractCatalogFacade._NO_WORKSPACE;
     /**
      * The containing catalog.
      */
@@ -756,4 +758,23 @@ public interface CatalogFacade {
      * Pushes the data stored by this dao into another dao.
      */
     void syncTo(CatalogFacade other);
+    
+    /**
+     * @return the number of catalog objects of the requested type that match the given filter
+     */
+    public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter);
+
+    /**
+     * @return {@code true} if {@link #list} can sort objects of the given type by the given
+     *         property name, {@code false} otherwise
+     */
+    public boolean canSort(Class<? extends CatalogInfo> type, String propertyName);
+
+    /**
+     * @return an iterator over the catalog objects of the requested type that match the given
+     *         filter
+     */
+    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
+            final Filter filter, @Nullable Integer offset, @Nullable Integer count,
+            @Nullable SortBy sortOrder);
 }

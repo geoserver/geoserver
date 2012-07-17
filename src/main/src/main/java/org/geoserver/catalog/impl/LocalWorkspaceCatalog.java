@@ -9,15 +9,22 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.LocalWorkspaceCatalogFilter;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+
+import com.google.common.base.Function;
 
 /**
  * Catalog decorator handling cases when a {@link LocalWorkspace} is set.
@@ -283,5 +290,45 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         }
 
     }
+    
+    @Override
+    public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
+        return delegate.count(of, filter);
+    }
+
+    @Override
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
+            throws IllegalArgumentException {
+        return wrap(delegate.get(type, filter), type);
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
+        return list(of, filter, (Integer) null, (Integer) null, (SortBy) null);
+    }
+
+    /**
+     * Returns a decorating iterator over the one returned by the delegate that wraps every object
+     * it returns, if possible.
+     * 
+     * @see #wrap(Object, Class)
+     * @see org.geoserver.catalog.Catalog#list(java.lang.Class, org.geoserver.catalog.Predicate,
+     *      java.lang.Integer, java.lang.Integer, org.geoserver.catalog.OrderBy)
+     */
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
+            final Filter filter, final Integer offset, final Integer count, final SortBy sortBy) {
+
+        CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
+        Function<T, T> wrappingFunction = new Function<T, T>() {
+
+            final Class<T> type = of;
+
+            @Override
+            public T apply(T catalogObject) {
+                return wrap(catalogObject, type);
+            }
+        };
+        return CloseableIteratorAdapter.transform(iterator, wrappingFunction);
+    }
 }
-;

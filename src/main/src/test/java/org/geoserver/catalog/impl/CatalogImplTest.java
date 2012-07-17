@@ -1,11 +1,20 @@
 package org.geoserver.catalog.impl;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.asc;
+import static org.geoserver.catalog.Predicates.contains;
+import static org.geoserver.catalog.Predicates.desc;
+import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.or;
+
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import junit.framework.TestCase;
@@ -13,6 +22,7 @@ import junit.framework.TestCase;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -22,6 +32,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -32,6 +43,14 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.opengis.filter.Filter;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.opengis.filter.sort.SortBy;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class CatalogImplTest extends TestCase {
 
@@ -1469,7 +1488,7 @@ public class CatalogImplTest extends TestCase {
         assertEquals( 2, catalog.getStores(WMSStoreInfo.class).size() );
     }
     
-    private static final int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 500;
+    protected int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 500;
     private static final int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT = 10;
     
     public void testGetLayerByIdWithConcurrentAdd() throws Exception {
@@ -1736,5 +1755,335 @@ public class CatalogImplTest extends TestCase {
         }
         
     };
+
+    public void testGet() {
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.getKeywords().add(new Keyword("kw1_ft1"));
+        ft1.getKeywords().add(new Keyword("kw2_ft1"));
+        ft1.getKeywords().add(new Keyword("repeatedKw"));
+
+        FeatureTypeInfo ft2 = newFeatureType("ft2", ds);
+        ft2.getKeywords().add(new Keyword("kw1_ft2"));
+        ft2.getKeywords().add(new Keyword("kw2_ft2"));
+        ft2.getKeywords().add(new Keyword("repeatedKw"));
+
+        catalog.add(ft1);
+        catalog.add(ft2);
+
+        StyleInfo s1, s2, s3;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        catalog.add(s2 = newStyle("s2", "s2Filename"));
+        catalog.add(s3 = newStyle("s3", "s3Filename"));
+
+        LayerInfo l1 = newLayer(ft1, s1, s2, s3);
+        LayerInfo l2 = newLayer(ft2, s2, s1, s3);
+        catalog.add(l1);
+        catalog.add(l2);
+
+        Filter filter = acceptAll();
+        try {
+            catalog.get(null, filter);
+            fail("Expected precondition validation exception");
+        } catch (RuntimeException nullCheck) {
+            assertTrue(true);
+        }
+        try {
+            catalog.get(FeatureTypeInfo.class, null);
+            fail("Expected precondition validation exception");
+        } catch (RuntimeException nullCheck) {
+            assertTrue(true);
+        }
+
+        try {
+            catalog.get(FeatureTypeInfo.class, filter);
+            fail("Expected IAE on multiple results");
+        } catch (IllegalArgumentException multipleResults) {
+            assertTrue(true);
+        }
+
+        filter = equal("id", ft1.getId());
+        FeatureTypeInfo featureTypeInfo = catalog.get(FeatureTypeInfo.class, filter);
+        assertEquals(ft1.getId(), featureTypeInfo.getId());
+
+        filter = equal("name", ft2.getName());
+        assertEquals(ft2.getName(), catalog.get(ResourceInfo.class, filter).getName());
+
+        filter = equal("keywords[1].value", ft1.getKeywords().get(0).getValue());
+        assertEquals(ft1.getName(), catalog.get(ResourceInfo.class, filter).getName());
+
+        filter = equal("keywords[2]", ft2.getKeywords().get(1));
+        assertEquals(ft2.getName(), catalog.get(FeatureTypeInfo.class, filter).getName());
+
+        filter = equal("keywords[3].value", "repeatedKw");
+        try {
+            catalog.get(FeatureTypeInfo.class, filter).getName();
+            fail("Expected IAE on multiple results");
+        } catch (IllegalArgumentException multipleResults) {
+            assertTrue(true);
+        }
+
+        filter = equal("defaultStyle.filename", "s1Filename");
+        assertEquals(l1.getId(), catalog.get(LayerInfo.class, filter).getId());
+
+        filter = equal("defaultStyle.name", s2.getName());
+        assertEquals(l2.getId(), catalog.get(LayerInfo.class, filter).getId());
+        // Waiting for fix of MultiCompareFilterImpl.evaluate for Sets
+        // filter = equal("styles", l2.getStyles(), MatchAction.ALL);
+        // assertEquals(l2.getId(), catalog.get(LayerInfo.class, filter).getId());
+
+        filter = equal("styles.id", s2.getId(), MatchAction.ONE);
+        assertEquals(l1.getId(), catalog.get(LayerInfo.class, filter).getId());
+
+        filter = equal("styles.id", s3.getId(), MatchAction.ANY);// s3 is shared by l1 and l2
+        try {
+            catalog.get(LayerInfo.class, filter);
+            fail("Expected IAE on multiple results");
+        } catch (IllegalArgumentException multipleResults) {
+            assertTrue(true);
+        }
+    }
+
+    public void testListPredicate() {
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1, ft2, ft3;
+
+        catalog.add(ft1 = newFeatureType("ft1", ds));
+        catalog.add(ft2 = newFeatureType("ft2", ds));
+        catalog.add(ft3 = newFeatureType("ft3", ds));
+        ft1 = catalog.getFeatureType(ft1.getId());
+        ft2 = catalog.getFeatureType(ft2.getId());
+        ft3 = catalog.getFeatureType(ft3.getId());
+
+        Filter filter = acceptAll();
+        Set<? extends CatalogInfo> expected;
+        Set<? extends CatalogInfo> actual;
+
+        expected = Sets.newHashSet(ft1, ft2, ft3);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(3, actual.size());
+        assertEquals(expected, actual);
+
+        filter = contains("name", "t");
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertTrue(expected.equals(actual));
+        assertEquals(expected, actual);
+
+        filter = or(contains("name", "t2"), contains("name", "t1"));
+        expected = Sets.newHashSet(ft1, ft2);
+        actual = Sets.newHashSet(catalog.list(FeatureTypeInfo.class, filter));
+        assertEquals(expected, actual);
+
+        StyleInfo s1, s2, s3, s4, s5, s6;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        catalog.add(s2 = newStyle("s2", "s2Filename"));
+        catalog.add(s3 = newStyle("s3", "s3Filename"));
+        catalog.add(s4 = newStyle("s4", "s4Filename"));
+        catalog.add(s5 = newStyle("s5", "s5Filename"));
+        catalog.add(s6 = newStyle("s6", "s6Filename"));
+
+        LayerInfo l1, l2, l3;
+        catalog.add(l1 = newLayer(ft1, s1));
+        catalog.add(l2 = newLayer(ft2, s2, s3, s4));
+        catalog.add(l3 = newLayer(ft3, s3, s5, s6));
+
+        filter = contains("styles.name", "s6");
+        expected = Sets.newHashSet(l3);
+        actual = Sets.newHashSet(catalog.list(LayerInfo.class, filter));
+        assertEquals(expected, actual);
+
+        filter = equal("defaultStyle.name", "s1");
+        expected = Sets.newHashSet(l1);
+        actual = Sets.newHashSet(catalog.list(LayerInfo.class, filter));
+        assertEquals(expected, actual);
+
+        filter = or(contains("styles.name", "s6"), equal("defaultStyle.name", "s1"));
+        expected = Sets.newHashSet(l1, l3);
+        actual = Sets.newHashSet(catalog.list(LayerInfo.class, filter));
+        assertEquals(expected, actual);
+
+        filter = acceptAll();
+        ArrayList<LayerInfo> naturalOrder = Lists.newArrayList(catalog
+                .list(LayerInfo.class, filter));
+        assertEquals(3, naturalOrder.size());
+
+        int offset = 0, limit = 2;
+        assertEquals(naturalOrder.subList(0, 2),
+                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
+
+        offset = 1;
+        assertEquals(naturalOrder.subList(1, 3),
+                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
+
+        limit = 1;
+        assertEquals(naturalOrder.subList(1, 2),
+                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
+    }
+
+    public void testOrderBy() {
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        FeatureTypeInfo ft2 = newFeatureType("ft2", ds);
+        FeatureTypeInfo ft3 = newFeatureType("ft3", ds);
+
+        ft2.getKeywords().add(new Keyword("keyword1"));
+        ft2.getKeywords().add(new Keyword("keyword2"));
+
+        catalog.add(ft1);
+        catalog.add(ft2);
+        catalog.add(ft3);
+
+        StyleInfo s1, s2, s3, s4, s5, s6;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        catalog.add(s2 = newStyle("s2", "s2Filename"));
+        catalog.add(s3 = newStyle("s3", "s3Filename"));
+        catalog.add(s4 = newStyle("s4", "s4Filename"));
+        catalog.add(s5 = newStyle("s5", "s5Filename"));
+        catalog.add(s6 = newStyle("s6", "s6Filename"));
+
+        LayerInfo l1 = newLayer(ft1, s1);
+        LayerInfo l2 = newLayer(ft2, s1, s3, s4);
+        LayerInfo l3 = newLayer(ft3, s2, s5, s6);
+        catalog.add(l1);
+        catalog.add(l2);
+        catalog.add(l3);
+
+        assertEquals(3, catalog.getLayers().size());
+
+        Filter filter;
+        SortBy sortOrder;
+        List<LayerInfo> expected;
+
+        filter = acceptAll();
+        sortOrder = asc("resource.name");
+        expected = Lists.newArrayList(l1, l2, l3);
+
+        testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
+
+        sortOrder = desc("resource.name");
+        expected = Lists.newArrayList(l3, l2, l1);
+
+        testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
+
+        sortOrder = asc("defaultStyle.name");
+        expected = Lists.newArrayList(l1, l2, l3);
+        testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
+        sortOrder = desc("defaultStyle.name");
+        expected = Lists.newArrayList(l3, l2, l1);
+
+        testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
+
+        expected = Lists.newArrayList(l2, l1);
+        testOrderBy(LayerInfo.class, filter, 1, null, sortOrder, expected);
+
+        expected = Lists.newArrayList(l2);
+        testOrderBy(LayerInfo.class, filter, 1, 1, sortOrder, expected);
+        sortOrder = asc("defaultStyle.name");
+        expected = Lists.newArrayList(l2, l3);
+        testOrderBy(LayerInfo.class, filter, 1, 10, sortOrder, expected);
+
+        filter = equal("styles.name", s3.getName());
+        expected = Lists.newArrayList(l2);
+        testOrderBy(LayerInfo.class, filter, 0, 10, sortOrder, expected);
+    }
+
+    private <T extends CatalogInfo> void testOrderBy(Class<T> clazz, Filter filter, Integer offset,
+            Integer limit, SortBy sortOrder, List<T> expected) {
+
+        CatalogPropertyAccessor pe = new CatalogPropertyAccessor();
+
+        List<Object> props = new ArrayList<Object>();
+        List<Object> actual = new ArrayList<Object>();
+        String sortProperty = sortOrder.getPropertyName().getPropertyName();
+        for (T info : expected) {
+            Object pval = pe.getProperty(info, sortProperty);
+            props.add(pval);
+        }
+
+        CloseableIterator<T> it = catalog.list(clazz, filter, offset, limit, sortOrder);
+        try {
+            while (it.hasNext()) {
+                Object property = pe.getProperty(it.next(), sortProperty);
+                actual.add(property);
+            }
+        } finally {
+            it.close();
+        }
+
+        assertEquals(props, actual);
+    }
+
+    public void testFullTextSearch() {
+        ft.setDescription("FeatureType description");
+        ft.setAbstract("GeoServer OpenSource GIS");
+        cv.setDescription("Coverage description");
+        cv.setAbstract("GeoServer uses GeoTools");
+
+        l.setResource(ft);
+
+        addLayer();
+        catalog.add(cs);
+        catalog.add(cv);
+
+        LayerInfo l2 = newLayer(cv, s);
+        catalog.add(l2);
+
+        Filter filter = Predicates.fullTextSearch("Description");
+        assertEquals(newHashSet(ft, cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("opensource");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.fullTextSearch("geotools");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+    }
+
+    private <T> Set<T> asSet(CloseableIterator<T> list) {
+        ImmutableSet<T> set;
+        try {
+            set = ImmutableSet.copyOf(list);
+        } finally {
+            list.close();
+        }
+        return set;
+    }
+
+    protected LayerInfo newLayer(ResourceInfo resource, StyleInfo defStyle,
+            StyleInfo... extraStyles) {
+        LayerInfo l2 = catalog.getFactory().createLayer();
+        l2.setResource(resource);
+        l2.setDefaultStyle(defStyle);
+        if (extraStyles != null) {
+            for (StyleInfo es : extraStyles) {
+                l2.getStyles().add(es);
+            }
+        }
+        return l2;
+    }
+
+    protected StyleInfo newStyle(String name, String fileName) {
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName(name);
+        s2.setFilename(fileName);
+        return s2;
+    }
+
+    protected FeatureTypeInfo newFeatureType(String name, DataStoreInfo ds) {
+        FeatureTypeInfo ft2 = catalog.getFactory().createFeatureType();
+        ft2.setNamespace(ns);
+        ft2.setName(name);
+        ft2.setStore(ds);
+        return ft2;
+    }
 
 }

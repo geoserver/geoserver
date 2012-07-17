@@ -10,3 +10,4 @@ This section provides an overview of how WPS services work in GeoServer.
 
    design-guide/
    implementing/
+   implement-rendertrans/

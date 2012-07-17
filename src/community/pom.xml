@@ -209,5 +209,11 @@
         <module>csw</module>
       </modules>
     </profile>
+    <profile>
+      <id>jdbcconfig</id>
+      <modules>
+        <module>jdbcconfig</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

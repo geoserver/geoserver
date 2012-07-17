@@ -1,8 +1,0 @@
-<user>
- <name>geoserver</name>
- <roles>
-  <name>user</name>
- </roles>
- <password>geoserver</password>
- <email></email>
-</user>

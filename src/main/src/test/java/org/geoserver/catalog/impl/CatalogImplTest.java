@@ -54,7 +54,9 @@ public class CatalogImplTest extends TestCase {
         CatalogFactory factory = catalog.getFactory();
         
         ns = factory.createNamespace();
-        ns.setPrefix( "nsPrefix" );
+        //ns prefix has to match workspace name, until we break that relationship
+        //ns.setPrefix( "nsPrefix" );
+        ns.setPrefix( "wsName" );
         ns.setURI( "nsURI" );
         
         ws = factory.createWorkspace();
@@ -289,8 +291,8 @@ public class CatalogImplTest extends TestCase {
         ns2.setURI( "ns2URI");
         
         NamespaceInfo ns3 = catalog.getNamespaceByPrefix(ns.getPrefix());
-        assertEquals( "nsPrefix", ns3.getPrefix() );
-        assertEquals( "nsURI", ns3.getURI() );
+        assertEquals( ns.getPrefix(), ns3.getPrefix() );
+        assertEquals( ns.getURI(), ns3.getURI() );
         
         catalog.save( ns2 );
         //ns3 = catalog.getNamespaceByPrefix(ns.getPrefix());
@@ -993,8 +995,14 @@ public class CatalogImplTest extends TestCase {
         //
         l2.setDefaultStyle( s );
         
-        catalog.add( l2 );
-        assertEquals( 2, catalog.getLayers().size() );
+        try {
+            catalog.add(l2);
+            fail("Adding a second layer for the same resource should throw exception, layer name is tied to resource name and would end up with two layers named the same or a broken catalog");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("already exists"));
+        }
+        
+        assertEquals( 1, catalog.getLayers().size() );
     }
     
     public void testGetLayerById() {
@@ -1378,11 +1386,13 @@ public class CatalogImplTest extends TestCase {
         ResourceInfo r = l.getResource();
         assertTrue( r instanceof Proxy );
         
+        String oldName = ft.getName();
         r.setName( "changed");
-        catalog.save( l );
+        catalog.save( r );
         
-        // l = catalog.getLayerByName( "layerName");
-        l = catalog.getLayerByName(ft.getName());
+        assertNull(catalog.getLayerByName(oldName));
+        l = catalog.getLayerByName(r.getName());
+        assertNotNull(l);
         assertEquals( "changed", l.getResource().getName() );
     }
     
@@ -1471,7 +1481,6 @@ public class CatalogImplTest extends TestCase {
 
         LayerInfo layer = catalog.getFactory().createLayer();
         layer.setResource(ft);
-        layer.setName("LAYER");
         catalog.add(layer);
         String id = layer.getId();
         
@@ -1572,7 +1581,9 @@ public class CatalogImplTest extends TestCase {
         catalog.add(ws2);
 
         NamespaceInfo ns2 = factory.createNamespace();
+        //namespace prefix shall match workspace name, until we decide it cannot
         ns2.setPrefix("ns2");
+        //ns2.setPrefix(ws2.getName());
         ns2.setURI("http://ns2");
         catalog.add(ns2);
         
@@ -1707,9 +1718,19 @@ public class CatalogImplTest extends TestCase {
         protected void runInternal() throws Exception {
             CatalogFactory factory = catalog.getFactory();
             for (int i = 0; i < GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT; i++) {
+                // GR: Adding a new feature type info too, we can't really add multiple layers per
+                // feature type yet. Setting the name of the layer changes the name of the resource,
+                // then all previous layers for that resource get screwed
+                String name = "LAYER-" + i + "-" + idx;
+                FeatureTypeInfo resource = factory.createFeatureType();
+                resource.setName(name);
+                resource.setNamespace(ns);
+                resource.setStore(ds);
+                catalog.add(resource);
+                
                 LayerInfo layer = factory.createLayer();
-                layer.setResource(ft);
-                layer.setName("LAYER-" + i + "-" + idx);
+                layer.setResource(resource);
+                layer.setName(name);
                 catalog.add(layer);
             }
         }

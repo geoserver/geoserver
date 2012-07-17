@@ -54,6 +54,7 @@ import org.geotools.feature.FeatureTypes;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.FeatureTypeConstraint;
+import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.NamedStyle;
 import org.geotools.styling.RemoteOWS;
@@ -1098,6 +1099,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             // symbolizer?
             return;
         }
+        // if a rendering transform is present don't check the attributes, since they may be changed
+        if (hasTransformation(style)) 
+            return;  
 
         // extract attributes used in the style
         StyleAttributeExtractor sae = new StyleAttributeExtractor();
@@ -1122,7 +1126,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
         // check all attributes required by the style are available
         for (PropertyName attName : styleAttributes) {
-        
             if ( attName.evaluate(type) == null ) {
                 throw new ServiceException(
                         "The requested Style can not be used with this layer.  The style specifies "
@@ -1132,6 +1135,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         }
     }
 
+    /**
+     * Tests whether a style contains a Rendering Transformation.
+     * 
+     * @param style the style to check
+     * @return true if the style contains a rendering transformation
+     */
+    private static boolean hasTransformation(Style style)
+    {
+        for (FeatureTypeStyle fs : style.featureTypeStyles()) {
+            if (fs.getTransformation() != null) 
+                return true;
+        }
+        return false;
+    }
     /**
      * Method to initialize a user layer which contains inline features.
      * 

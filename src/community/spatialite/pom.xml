@@ -75,11 +75,6 @@
       <artifactId>gt-jdbc-spatialite</artifactId>
       <version>${gt.version}</version>
    </dependency>
-   <dependency>
-     <groupId>org.xerial</groupId>
-     <artifactId>spatialite-lib-all</artifactId>
-     <version>1.0</version>
-   </dependency>
   </dependencies>
 
  <build>

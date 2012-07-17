@@ -3,38 +3,74 @@
 SpatiaLite
 ==========
 
-.. note:: GeoServer does not come built-in with support for SpatiaLite; it must be installed through an extension. Furthermore it requires that additional native libraries be available on the system. Proceed to :ref:`spatialite_install` for installation details.
-
 `SpatiaLite <http://http://www.gaia-gis.it/spatialite/>`_ is the spatial 
 extension of the popular `SQLite <http://www.sqlite.org>`_ embedded relational 
 database.
 
-.. _spatialite_install:
+.. note:: GeoServer does not come built-in with support for SpatiaLite; it must be installed through an extension. Furthermore it requires that additional native libraries be available on the system. Proceed to :ref:`spatialite_install` for installation details.
+
+SpatiaLite version
+------------------
+
+The GeoServer SpatiaLite extension includes its own versions of SQLite (3.7.2) and SpatiaLite (2.4.0) and 
+therefore these libraries need not be installed on the system in order to use the extension. However this 
+internal version of SpatiaLite is compiled against the `PROJ <proj.osgeo.org>`_ and 
+`GEOS <http://geos.osgeo.org>`_   libraries so they must be installed on the system in order for the 
+extension to function. See :ref:`nativelibs` for more details.
+
+Supported platforms
+-------------------
+
+This extension is supported for Windows, Linux, and Mac OS X. Both 32-bit and 64-bit platforms are supported.
+For Mac OS X only Intel based machines are supported (ie. not PowerPC).
+ 
+ .. _spatialite_install:
 
 Installing the SpatiaLite extension
 -----------------------------------
 
 #. Download the SpatiaLite extension from the `nightly GeoServer community module builds <http://gridlock.opengeo.org/geoserver/trunk/community-latest/>`_.
 
-   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance.
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
-Notes about shared libraries
-----------------------------
+#. Ensure the native library dependencies are satisfied.
+
+.. _nativelibs:
+
+Native Libraries
+----------------
 
 The version of SpatiaLite included in the extension is compiled against the 
 `GEOS <http://geos.osgeo.org>`_ and `PROJ <proj.osgeo.org>`_ libraries so they 
 must be installed on the system. If the libraries are not installed on the 
-system the extension will cease to function.
-
-If the libraries are not installed on your system in a "default" location you 
-must set the ``LD_LIBRARY_PATH`` (or equivalent) environment variable in order 
-to load them at runtime.
+system the extension will not functionand remain disabled.
 
 .. note::
-  On Windows systems it is easiest to place the GEOS and PROJ dll's in the 
-  ``C:\WINDOWS\system32`` directory.
+
+   Pre-compiled libraries are available for the following platforms and can be 
+   found `here <http://docs.geotools.org/latest/userguide/library/jdbc/spatiallite.html#native-libraries>`_.
+
+In general if the libraries are installed in a "default" location then they 
+should be picked up by java with no problem. However some systems will require
+further configuration that differs based on operating system.
+
+Windows
+^^^^^^^
+
+The DLL's must be copied into the ``C:\WINDOWS\system32`` directory.
+
+Linux
+^^^^^
+
+If the libraries are not installed in a default search location like ``/usr/lib`` 
+then the ``LD_LIBRARY_PATH`` environment variable must be set and visible to Java.
+
+Mac OS X
+^^^^^^^^
+
+Same as Linux except that the ``DYLD_LIBRARY_PATH`` environment variable is used.
 
 Adding a SpatiaLite database
 ----------------------------

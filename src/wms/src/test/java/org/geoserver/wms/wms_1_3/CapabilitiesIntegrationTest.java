@@ -388,7 +388,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         // Test transforming localhost to proxyBaseUrl
         GeoServerInfo global = getGeoServer().getGlobal();
         String proxyBaseUrl = global.getSettings().getProxyBaseUrl();
-        mdlink.setContent("http://localhost:8080/metadata");
+        mdlink.setContent("/metadata");
         getCatalog().save(resource);
         
         doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
@@ -396,10 +396,17 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         
         // Test KVP in URL
         String query = "key=value";
-        mdlink.setContent("http://localhost:8080/metadata?" + query);
+        mdlink.setContent("/metadata?" + query);
         getCatalog().save(resource);
         
         doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
         assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?" + query, xpath, doc);
+
+        mdlink.setContent("http://localhost/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("http://localhost/metadata?" + query, xpath, doc);
+        
     }
 }

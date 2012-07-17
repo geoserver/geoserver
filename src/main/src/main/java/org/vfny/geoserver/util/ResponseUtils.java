@@ -9,6 +9,8 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
@@ -48,28 +50,23 @@ public final class ResponseUtils {
     public static String proxifyMetadataLink(MetadataLinkInfo link, String baseURL) {
         String content = link.getContent();
         try {
-            URL url = new URL(content);
+            URI uri = new URI(content);
             try {
-                if ("localhost".equals(url.getHost())) {
+                if (uri.getHost() == null) {
+                    //interpret no host as backreference to server
                     Map<String, String> kvp = null;
-                    if (url.getFile() != null && !"".equals(url.getFile())) {
-                        kvp = KvpUtils.parseQueryString(url.getFile());
+                    if (uri.getQuery() != null && !"".equals(uri.getQuery())) {
+                        kvp = KvpUtils.parseQueryString("?" + uri.getQuery());
                     }
 
-                    content = buildURL(baseURL, url.getPath(), kvp, URLType.RESOURCE);
-                    
-                    // check to see if the new url has a different path
-                    URL newUrl = new URL (content);
-                    if (!url.getPath().equals(newUrl.getPath())) {
-                        content = content.replaceFirst(newUrl.getPath(), url.getPath());
-                    }
+                    content = buildURL(baseURL, uri.getPath(), kvp, URLType.RESOURCE);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING,
                         "Unable to create proper back referece for metadata url: "
                                 + content, e);
             }
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
         }
         return content;
     }

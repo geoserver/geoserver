@@ -48,4 +48,11 @@
     <property name="descriptionKey" value="ReprojectPage.description"/>
     <property name="componentClass" value="org.geoserver.web.demo.ReprojectPage"/>
   </bean>
+
+  <bean id="CatalogStresser" class="org.geoserver.web.ToolLinkInfo">
+    <property name="id" value="CatalogStressTester" />
+    <property name="titleKey" value="CatalogStressTester.title" />
+    <property name="descriptionKey" value="CatalogStressTester.description" />
+    <property name="componentClass" value="org.geoserver.web.catalogstresstool.CatalogStressTester" />
+  </bean>
 </beans>

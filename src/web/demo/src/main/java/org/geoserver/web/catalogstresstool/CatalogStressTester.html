@@ -1,0 +1,44 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+  <form wicket:id="form">
+  <ul>
+   <li>
+    <fieldset>
+      <ul>
+        <li>
+          <label>Workspace and Namesapce</label>
+          <select wicket:id="workspace" style="width: 260px;"></select>
+        </li>
+        <li>
+          <label>Store</label>
+          <select wicket:id="store" style="width: 260px;"></select>
+        </li>
+        <li>
+          <label>Resource and Layer</label>
+          <select wicket:id="resourceAndLayer" style="width: 260px;"></select>
+        </li>
+        <li>
+          <label># of times to duplicate the selected CatalogInfo</label>
+          <input type="text" class="text" wicket:id="duplicateCount" style="width: 260px;"/>
+        </li>
+        <li>
+          <label>Sufix to append to the resource name (plus the count)</label>
+          <input type="text" class="text" wicket:id="sufix" style="width: 260px;"/>
+        </li>
+      </ul>
+    </fieldset>
+   </li>
+   <li>
+    <div class="button-group selfclear">
+       <a href="#" wicket:id="submit">Start</a>
+       <a href="#" wicket:id="cancel">Cancel</a>
+       <span wicket:id="progress">progress</span>
+    </div>
+   </li>
+  </ul>
+  </form>
+</wicket:extend>
+</body>
+</html>

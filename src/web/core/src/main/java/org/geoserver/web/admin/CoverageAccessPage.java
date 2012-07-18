@@ -58,8 +58,7 @@ public class CoverageAccessPage extends ServerAdminPage {
                 final TextField corePoolField = (TextField) corePoolComponent;
                 final String mp = maxPoolField.getValue();
                 final String cp = corePoolField.getValue();
-                if (!(mp == null || cp == null || mp.trim().isEmpty() || cp.trim()
-                        .isEmpty())) {
+                if (!(mp == null || cp == null || mp.trim().length() == 0 || cp.trim().length() == 0)) {
                     try {
                         maxPool = Integer.valueOf(mp);
                     } catch (NumberFormatException nfe) {

@@ -10,7 +10,7 @@
     <metadataLink>
       <type>application/xml</type>
       <metadataType>FGDC</metadataType>
-      <content>http://localhost/www/MapNeatline.xml</content>
+      <content>/www/MapNeatline.xml</content>
     </metadataLink>
   </metadataLinks>
   <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 

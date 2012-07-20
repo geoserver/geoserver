@@ -171,7 +171,7 @@ strategy in place for dealing with file line endings. In general git is pretty g
 dealing this without explicit configuration but to be safe developers should set the 
 ``core.autocrlf`` setting to "input"::
 
-    % git config --global core.autocrfl input
+    % git config --global core.autocrlf input
 
 The value "input" essentially tells git to respect whatever line ending form is present
 in the git repository.
@@ -241,7 +241,7 @@ stage the changes in one step.
 
 At any time you can run ``git status`` to check what files have been changed in the working area
 and what has been staged for commit. It also shows the current branch, which is useful when 
-switching frequently between branches .
+switching frequently between branches.
   
 Pushing changes to canonical
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -88,26 +88,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
         }
     };
 
-    static final Property<TileLayer> SEED_LINK = new AbstractProperty<TileLayer>("") {
-        private static final long serialVersionUID = 247933970378482802L;
-
-        @Override
-        public Object getPropertyValue(TileLayer item) {
-            return item.getName();
-        }
-
-        @Override
-        public boolean isSearchable() {
-            return false;
-        }
-
-        @Override
-        public Comparator<TileLayer> getComparator() {
-            return null;
-        }
-    };
-
-    static final Property<TileLayer> TRUNCATE_LINK = new AbstractProperty<TileLayer>("") {
+    static final Property<TileLayer> ACTIONS = new AbstractProperty<TileLayer>("actions") {
         private static final long serialVersionUID = 247933970378482802L;
 
         @Override
@@ -127,9 +108,8 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     };
 
     @SuppressWarnings("unchecked")
-    static final List<Property<TileLayer>> PROPERTIES = Collections
-            .unmodifiableList(Arrays.asList(TYPE, NAME, QUOTA_LIMIT, QUOTA_USAGE, ENABLED,
-                    PREVIEW_LINKS, SEED_LINK, TRUNCATE_LINK));
+    static final List<Property<TileLayer>> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
+            TYPE, NAME, QUOTA_LIMIT, QUOTA_USAGE, ENABLED, PREVIEW_LINKS, ACTIONS));
 
     /**
      * @see org.geoserver.web.wicket.GeoServerDataProvider#getItems()

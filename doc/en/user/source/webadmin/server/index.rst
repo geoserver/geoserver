@@ -12,4 +12,5 @@ The Server section of the :ref:`web_admin` provides access to GeoServer environm
    contact
    globalsettings
    geowebcache
+   coverageaccess
    JAI

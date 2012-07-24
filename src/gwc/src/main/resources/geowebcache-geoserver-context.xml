@@ -3,9 +3,16 @@
 <beans>
   <bean id="GWCGeoServerConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerConfigurationProvider">
     <description>
-      XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC
+      XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC configuration storage
     </description>
   </bean>
+  <bean id="GWCGeoServerRESTConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerRESTConfigurationProvider">
+    <description>
+      XmlConfiguration contributor to set up XStream with GeoServer provided configuration objects for GWC's REST API
+    </description>
+    <constructor-arg ref="catalog"/>
+  </bean>
+  
   <bean id="GeoSeverTileLayerCatalog" class="org.geoserver.gwc.layer.DefaultTileLayerCatalog">
     <constructor-arg ref="resourceLoader" />
     <constructor-arg ref="gwcXmlConfig" />

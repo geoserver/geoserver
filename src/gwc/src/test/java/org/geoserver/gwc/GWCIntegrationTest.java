@@ -62,7 +62,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         request = buildGetMap(true, layerName, "EPSG:4326", null);
         response = getAsServletResponse(request);
 
-        assertEquals(200, response.getErrorCode());
+        assertEquals(200, response.getStatusCode());
         assertEquals("image/png", response.getContentType());
         assertNull(response.getHeader("geowebcache-tile-index"));
 
@@ -71,8 +71,25 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
 
         assertEquals(200, response.getErrorCode());
         assertEquals("image/png", response.getContentType());
-        assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
     }
+    
+    public void testDirectWMSIntegrationResponseHeaders() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+
+        String request = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatusCode());
+        assertEquals("image/png", response.getContentType());
+        assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
+        assertEquals("-180.0,-90.0,0.0,90.0", response.getHeader("geowebcache-tile-bounds"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-gridset"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-crs"));
+    }
+    
 
     public void testReloadConfiguration() throws Exception {
         String path = "/gwc/rest/reload";

@@ -5,6 +5,7 @@
 package org.geoserver.gwc.wms;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 import static org.geowebcache.conveyor.Conveyor.CacheResult.MISS;
 
 import java.io.ByteArrayOutputStream;
@@ -29,8 +30,11 @@ import org.geoserver.wms.map.RawMap;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSubset;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
+import org.geowebcache.layer.TileLayer;
 
 /**
  * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to serve cached tiles
@@ -60,20 +64,12 @@ public class CachingWebMapService implements MethodInterceptor {
             return (WebMap) invocation.proceed();
         }
 
-        final Method method = invocation.getMethod();
-        checkArgument(method.getDeclaringClass().equals(WebMapService.class));
-        checkArgument("getMap".equals(method.getName()));
-
-        final Object[] arguments = invocation.getArguments();
-
-        checkArgument(arguments.length == 1);
-        checkArgument(arguments[0] instanceof GetMapRequest);
-
-        final GetMapRequest request = (GetMapRequest) arguments[0];
+        final GetMapRequest request = getRequest(invocation);
         boolean tiled = request.isTiled();
         if (!tiled) {
             return (WebMap) invocation.proceed();
         }
+
         final StringBuilder requestMistmatchTarget = new StringBuilder();
         ConveyorTile cachedTile = gwc.dispatch(request, requestMistmatchTarget);
 
@@ -84,7 +80,9 @@ public class CachingWebMapService implements MethodInterceptor {
                     requestMistmatchTarget.toString());
             return dynamicResult;
         }
-
+        checkState(cachedTile.getTileLayer() != null);
+        final TileLayer layer = cachedTile.getTileLayer();
+        
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("GetMap request intercepted, serving cached content: " + request);
         }
@@ -119,13 +117,36 @@ public class CachingWebMapService implements MethodInterceptor {
         map.setResponseHeader("Cache-Control", "no-cache");
         map.setResponseHeader("ETag", etag);
 
+        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension());
+        
+        long[] tileIndex = cachedTile.getTileIndex();
         CacheResult cacheResult = cachedTile.getCacheResult();
+        GridSubset gridSubset = layer.getGridSubset(cachedTile.getGridSetId());
+        BoundingBox tileBounds = gridSubset.boundsFromIndex(tileIndex);
+
         String cacheResultHeader = cacheResult == null ? "UNKNOWN" : cacheResult.toString();
         map.setResponseHeader("geowebcache-cache-result", cacheResultHeader);
-        map.setResponseHeader("geowebcache-tile-index", Arrays.toString(cachedTile.getTileIndex()));
-        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension());
+        map.setResponseHeader("geowebcache-tile-index", Arrays.toString(tileIndex));
+        map.setResponseHeader("geowebcache-tile-bounds", tileBounds.toString());
+        map.setResponseHeader("geowebcache-gridset", gridSubset.getName());
+        map.setResponseHeader("geowebcache-crs", gridSubset.getSRS().toString());
+        
         return map;
 
+    }
+
+    private GetMapRequest getRequest(MethodInvocation invocation) {
+        final Method method = invocation.getMethod();
+        checkArgument(method.getDeclaringClass().equals(WebMapService.class));
+        checkArgument("getMap".equals(method.getName()));
+
+        final Object[] arguments = invocation.getArguments();
+
+        checkArgument(arguments.length == 1);
+        checkArgument(arguments[0] instanceof GetMapRequest);
+
+        final GetMapRequest request = (GetMapRequest) arguments[0];
+        return request;
     }
 
     private String toHexString(byte[] hash) {
@@ -142,5 +163,4 @@ public class CachingWebMapService implements MethodInterceptor {
         }
         return sb.toString();
     }
-
 }

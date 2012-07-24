@@ -72,7 +72,8 @@ public class CachingOptionsPanel extends Panel {
                 nonDefaultStylesModel);
         configs.add(cacheNonDefaultStyles);
 
-        List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                14, 16, 16, 17, 18, 19, 20);
         IModel<Integer> metaTilingXModel = new PropertyModel<Integer>(gwcConfigModel, "metaTilingX");
         DropDownChoice<Integer> metaTilingX = new DropDownChoice<Integer>("metaTilingX",
                 metaTilingXModel, metaTilingChoices);
@@ -86,13 +87,15 @@ public class CachingOptionsPanel extends Panel {
         configs.add(metaTilingY);
 
         IModel<Integer> gutterModel = new PropertyModel<Integer>(gwcConfigModel, "gutter");
-        List<Integer> gutterChoices = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50);
+        List<Integer> gutterChoices = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50,
+                100);
         DropDownChoice<Integer> gutterChoice = new DropDownChoice<Integer>("gutter", gutterModel,
                 gutterChoices);
         configs.add(gutterChoice);
 
         final List<String> formats = Arrays.asList("image/png", "image/png8", "image/jpeg",
                 "image/gif");
+
         {
             IModel<List<String>> vectorFormatsModel = new PropertyModel<List<String>>(
                     gwcConfigModel, "defaultVectorCacheFormats");

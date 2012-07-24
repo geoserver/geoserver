@@ -5,9 +5,6 @@
 package org.geoserver.gwc.web;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,10 +16,9 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.model.util.MapModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -34,8 +30,6 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(GWCSettingsPage.class);
 
-    private IModel<Map<String, Serializable>> formModel;
-
     public GWCSettingsPage() {
         setHeaderPanel(headerPanel());
 
@@ -43,21 +37,15 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         // use a dettached copy of gwc config to support the tabbed pane
         final GWCConfig gwcConfig = gwc.getConfig().clone();
 
-        Map<String, Serializable> formData = new HashMap<String, Serializable>();
-        formData.put("gwcConfig", gwcConfig);
-        formModel = new MapModel<String, Serializable>(formData);
+        IModel<GWCConfig> formModel = new Model<GWCConfig>(gwcConfig);
 
-        final Form<Map<String, Serializable>> form;
-        form = new Form<Map<String, Serializable>>("form", formModel);
+        final Form<GWCConfig> form = new Form<GWCConfig>("form", formModel);
         add(form);
 
-        final IModel<GWCConfig> gwcConfigModel = new PropertyModel<GWCConfig>(formModel,
-                "gwcConfig");
-
         final GWCServicesPanel gwcServicesPanel = new GWCServicesPanel("gwcServicesPanel",
-                gwcConfigModel);
+                formModel);
         final CachingOptionsPanel defaultCachingOptionsPanel = new CachingOptionsPanel(
-                "cachingOptionsPanel", gwcConfigModel);
+                "cachingOptionsPanel", formModel);
 
         form.add(gwcServicesPanel);
         form.add(defaultCachingOptionsPanel);
@@ -68,9 +56,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             @Override
             public void onSubmit() {
                 GWC gwc = GWC.get();
-                final IModel formModel = form.getModel();
-                final IModel<GWCConfig> gwcConfigModel = new PropertyModel<GWCConfig>(formModel,
-                        "gwcConfig");
+                final IModel<GWCConfig> gwcConfigModel = form.getModel();
                 GWCConfig gwcConfig = gwcConfigModel.getObject();
                 try {
                     gwc.saveConfig(gwcConfig);
@@ -87,7 +73,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, @SuppressWarnings("rawtypes") Form form) {
                 doReturn();
             }
 

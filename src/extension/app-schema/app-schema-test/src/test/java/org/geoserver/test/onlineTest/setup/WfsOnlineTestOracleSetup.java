@@ -62,10 +62,10 @@ public class WfsOnlineTestOracleSetup extends AbstractReferenceDataSetup {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitOracleSQLScript(script);
         for (String sql : sqls) {
-            System.out.println(sql);
+            LOGGER.debug(sql);
             if (sql.startsWith("CALL")) {
                 String formattedSP = "{" + sql + "}";
-                System.out.println(formattedSP);
+                LOGGER.debug(formattedSP);
                 this.runOracleStoreProcedure(formattedSP);
                 continue;
             }

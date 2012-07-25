@@ -39,7 +39,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
      */
     public static final String ONLINE_TEST_PROFILE = "onlineTestProfile";
 
-    private Logger LOGGER = Logger.getLogger(AbstractReferenceDataSetup.class);   
+    protected Logger LOGGER = Logger.getLogger(AbstractReferenceDataSetup.class);   
     
     /**
      * A static map which tracks which fixture files can not be found. This prevents continually

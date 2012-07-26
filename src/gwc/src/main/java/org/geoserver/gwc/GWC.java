@@ -537,12 +537,16 @@ public class GWC implements DisposableBean, InitializingBean {
             return null;
         }
 
+        if (!tld.layerExists(layerName)) {
+            requestMistmatchTarget.append("not a tile layer");
+            return null;
+        }
+
         final TileLayer tileLayer;
         try {
             tileLayer = this.tld.getTileLayer(layerName);
         } catch (GeoWebCacheException e) {
-            requestMistmatchTarget.append("not a tile layer");
-            return null;
+            throw new RuntimeException(e);
         }
         if (!tileLayer.isEnabled()) {
             requestMistmatchTarget.append("tile layer disabled");

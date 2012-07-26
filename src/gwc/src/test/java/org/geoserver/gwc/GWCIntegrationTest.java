@@ -91,6 +91,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
 
         assertEquals(200, response.getStatusCode());
         assertEquals("image/png", response.getContentType());
+        assertEquals(layerName, response.getHeader("geowebcache-layer"));
         assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
         assertEquals("-180.0,-90.0,0.0,90.0", response.getHeader("geowebcache-tile-bounds"));
         assertEquals("EPSG:4326", response.getHeader("geowebcache-gridset"));
@@ -136,6 +137,60 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         httpReq.setHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getErrorCode());
+    }
+
+    public void testDirectWMSIntegrationWithVirtualServices() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(BASIC_POLYGONS);
+        final String localName = BASIC_POLYGONS.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+        assertNotNull(tileLayer);
+        boolean directWMSIntegrationEndpoint = true;
+        String request = MockData.CITE_PREFIX
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatusCode());
+        assertEquals("image/png", response.getContentType());
+        assertEquals(qualifiedName, response.getHeader("geowebcache-layer"));
+    }
+
+    public void testDirectWMSIntegrationWithVirtualServicesHiddenLayer() throws Exception {
+        /*
+         * Nothing special needs to be done at the GWC integration level for this to work. The hard
+         * work should already be done by WMSWorkspaceQualifier so that when the request hits GWC
+         * the layer name is already qualified
+         */
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(BASIC_POLYGONS);
+        final String localName = BASIC_POLYGONS.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+        assertNotNull(tileLayer);
+        boolean directWMSIntegrationEndpoint = true;
+        String request = MockData.CDF_PREFIX // asking /geoserver/cdf/wms? for cite:BasicPolygons
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatusCode());
+
+        assertTrue(response.getContentType(),
+                response.getContentType().startsWith("application/vnd.ogc.se_xml"));
+
+        assertTrue(response.getOutputStreamContent(),
+                response.getOutputStreamContent()
+                        .contains("Could not find layer cdf:BasicPolygons"));
     }
 
     public void testReloadConfiguration() throws Exception {
@@ -212,6 +267,13 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
 
         final GWC gwc = GWC.get();
         final TileLayer tileLayer = gwc.getTileLayerByName(layerName);
+        return buildGetMap(directWMSIntegrationEndpoint, layerName, gridsetId, styles, tileLayer);
+    }
+
+    private String buildGetMap(final boolean directWMSIntegrationEndpoint,
+            final String queryLayerName, final String gridsetId, String styles,
+            final TileLayer tileLayer) {
+
         final GridSubset gridSubset = tileLayer.getGridSubset(gridsetId);
 
         long[] coverage = gridSubset.getCoverage(0);
@@ -222,7 +284,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
 
         StringBuilder sb = new StringBuilder(endpoint);
         sb.append("?service=WMS&request=GetMap&version=1.1.1&format=image/png");
-        sb.append("&layers=").append(layerName);
+        sb.append("&layers=").append(queryLayerName);
         sb.append("&srs=").append(gridSubset.getSRS());
         sb.append("&width=").append(gridSubset.getGridSet().getTileWidth());
         sb.append("&height=").append(gridSubset.getGridSet().getTileHeight());

@@ -65,7 +65,7 @@ public class CachingWebMapService implements MethodInterceptor {
      */
     public WebMap invoke(MethodInvocation invocation) throws Throwable {
         GWCConfig config = gwc.getConfig();
-        if (!(config.isWMSCEnabled() && config.isDirectWMSIntegrationEnabled())) {
+        if (!config.isDirectWMSIntegrationEnabled()) {
             return (WebMap) invocation.proceed();
         }
 
@@ -122,7 +122,7 @@ public class CachingWebMapService implements MethodInterceptor {
         map.setResponseHeader("Cache-Control", "no-cache");
         map.setResponseHeader("ETag", etag);
 
-        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension());
+        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension(), false);
 
         final long tileTimeStamp = cachedTile.getTSCreated();
         final String ifModSinceHeader = request.getHttpRequestHeader("If-Modified-Since");
@@ -159,6 +159,7 @@ public class CachingWebMapService implements MethodInterceptor {
         BoundingBox tileBounds = gridSubset.boundsFromIndex(tileIndex);
 
         String cacheResultHeader = cacheResult == null ? "UNKNOWN" : cacheResult.toString();
+        map.setResponseHeader("geowebcache-layer", layer.getName());
         map.setResponseHeader("geowebcache-cache-result", cacheResultHeader);
         map.setResponseHeader("geowebcache-tile-index", Arrays.toString(tileIndex));
         map.setResponseHeader("geowebcache-tile-bounds", tileBounds.toString());

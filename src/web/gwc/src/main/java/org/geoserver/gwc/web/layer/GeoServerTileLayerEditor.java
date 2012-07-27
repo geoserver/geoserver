@@ -128,8 +128,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     /**
      * @param id
      * @param layerModel
-     * @param tileLayerModel
-     *            must be a {@link GeoServerTileLayerInfoModel}
+     * @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel}
      */
     public GeoServerTileLayerEditor(final String id,
             final IModel<? extends CatalogInfo> layerModel,
@@ -202,7 +201,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         enabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
         configs.add(enabled);
 
-        List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                14, 15, 16, 17, 18, 19, 20);
         IModel<Integer> metaTilingXModel = new PropertyModel<Integer>(getModel(), "metaTilingX");
         metaTilingX = new DropDownChoice<Integer>("metaTilingX", metaTilingXModel,
                 metaTilingChoices);
@@ -214,7 +214,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(metaTilingY);
 
         IModel<Integer> gutterModel = new PropertyModel<Integer>(getModel(), "gutter");
-        List<Integer> gutterChoices = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50);
+        List<Integer> gutterChoices = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50,
+                100);
         gutter = new DropDownChoice<Integer>("gutter", gutterModel, gutterChoices);
         configs.add(gutter);
 

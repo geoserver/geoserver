@@ -66,7 +66,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    ResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    ResourceReference layerIcon = (ResourceReference) property
+                            .getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {

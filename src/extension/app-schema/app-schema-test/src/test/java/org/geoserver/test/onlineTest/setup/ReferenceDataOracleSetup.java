@@ -62,11 +62,9 @@ public class ReferenceDataOracleSetup extends AbstractReferenceDataSetup {
     protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitOracleSQLScript(script);
-        for (String sql : sqls) {
-            System.out.println(sql);
+        for (String sql : sqls) {           
             if (sql.startsWith("CALL")) {
-                String formattedSP = "{" + sql + "}";
-                System.out.println(formattedSP);
+                String formattedSP = "{" + sql + "}";              
                 this.runOracleStoreProcedure(formattedSP);
                 continue;
             }

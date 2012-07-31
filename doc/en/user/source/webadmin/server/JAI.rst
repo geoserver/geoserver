@@ -31,9 +31,6 @@ Sets the global JAI Tile Scheduler thread priorities.  Values range from 1 (Min)
 **Tile Recycling:**
 Enable/Disable JAI Cache Tile Recycling.  If checked, Tile Recycling allows JAI to re-use already loaded tiles, with vital capability for performances. 
 
-**Image I/O Caching:**
-Enables/disable Image I/O Caching. When checked, indicates that raw tiles read from disk should be cached. 
-
 **Native Acceleration:**
 In order to improve the computation speed of image processing applications, the JAI comes with both Java Code and native code for many platform.  If the Java Virtual Machine (JVM) finds the native code, then that will be used.  If the native code is not available, the Java code will be used.  Thus, the JAI package is able to provide optimized implementations for different platforms that can take advantage of each platform's capabilities.     
 

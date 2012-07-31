@@ -6,9 +6,12 @@ package org.geoserver.gwc.wms;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import junit.framework.Test;
 
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.gwc.GWC;
 import org.geoserver.test.GeoServerTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -31,6 +34,9 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
     }
 
     public void testCapabilitiesContributedInternalDTD() throws Exception {
+
+        GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
+
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
         DocumentType doctype = dom.getDoctype();
         assertNotNull(doctype);
@@ -43,6 +49,21 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
                 systemId);
 
         String internalSubset = doctype.getInternalSubset();
+        assertTrue(internalSubset == null || !internalSubset.contains("TileSet"));
+
+        GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+        dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        doctype = dom.getDoctype();
+        assertNotNull(doctype);
+        assertEquals("WMT_MS_Capabilities", doctype.getName());
+        systemId = doctype.getSystemId();
+
+        assertEquals(
+                "../wms/src/test/resources/geoserver/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd",
+                systemId);
+
+        internalSubset = doctype.getInternalSubset();
+
         assertNotNull(internalSubset);
         assertTrue(internalSubset,
                 internalSubset.trim().startsWith("<!ELEMENT VendorSpecificCapabilities"));
@@ -64,10 +85,18 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         final int numFormats = 2; // png, jpeg
         final int numTileSets = numLayers * numCRSs * numFormats;
 
-        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
-        // print(dom);
-
         String tileSetPath = "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";
+
+        GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+
+        assertXpathNotExists(tileSetPath, dom);
+
+        GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+        dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+
+        assertXpathExists(tileSetPath, dom);
+
         assertXpathEvaluatesTo(String.valueOf(numTileSets), "count(" + tileSetPath + ")", dom);
 
         assertXpathExists(tileSetPath + "[1]/SRS", dom);
@@ -80,4 +109,18 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         assertXpathExists(tileSetPath + "[1]/Styles", dom);
     }
 
+    public void testLocalWorkspaceIntegration() throws Exception {
+
+        final String tileSetPath = "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";
+        final String localName = MockData.BASIC_POLYGONS.getLocalPart();
+        final String qualifiedName = super.getLayerId(MockData.BASIC_POLYGONS);
+
+        Document dom;
+
+        dom = dom(get("wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        assertXpathExists(tileSetPath + "/Layers[text() = '" + qualifiedName + "']", dom);
+
+        dom = dom(get("cite/wms?request=getCapabilities&version=1.1.1&tiled=true"), false);
+        assertXpathExists(tileSetPath + "/Layers[text() = '" + localName + "']", dom);
+    }
 }

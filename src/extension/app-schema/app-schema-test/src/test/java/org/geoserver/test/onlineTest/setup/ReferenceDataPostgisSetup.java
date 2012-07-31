@@ -40,8 +40,7 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
     protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitPostgisSQLScript(script);
-        for (String sql : sqls) {
-            System.out.println(sql);
+        for (String sql : sqls) {           
             this.run(sql);
         }
         this.setDataVersion(this.scriptVersion);

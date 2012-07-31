@@ -1,4 +1,0 @@
-<session id="wfs-1.0.0" sourcesId="OGC_WFS_1.0.0_@DATE@">
-<suite>{http://www.opengis.net/wfs}main_wfs</suite>
-<description>wfs-1.0.0</description>
-</session>

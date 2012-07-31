@@ -869,7 +869,7 @@ public class GWCTest extends TestCase {
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(tileLayerInfo, "ELEVATION", true);
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(tileLayerInfo, "TIME", true);
         tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
-        
+
         GetMapRequest request = new GetMapRequest();
         @SuppressWarnings("unchecked")
         Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
@@ -884,8 +884,8 @@ public class GWCTest extends TestCase {
         assertTrue(cachingPossible);
         assertEquals(0, target.length());
         request.setElevation(Collections.emptyList());
-        
-        request.setTime(Arrays.asList((Object)null));
+
+        request.setTime(Arrays.asList((Object) null));
         cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
         assertTrue(cachingPossible);
         assertEquals(0, target.length());
@@ -964,6 +964,7 @@ public class GWCTest extends TestCase {
             throws Exception {
 
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
+        when(tld.layerExists(eq(layerName))).thenReturn(true);
         when(tld.getTileLayer(eq(layerName))).thenReturn(tileLayer);
         when(tileLayer.getName()).thenReturn(layerName);
         when(tileLayer.isEnabled()).thenReturn(true);

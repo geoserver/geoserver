@@ -4,13 +4,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.geoserver.gwc.web.layer.CachedLayerProvider.ACTIONS;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.ENABLED;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.NAME;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.PREVIEW_LINKS;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.QUOTA_LIMIT;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.QUOTA_USAGE;
-import static org.geoserver.gwc.web.layer.CachedLayerProvider.SEED_LINK;
-import static org.geoserver.gwc.web.layer.CachedLayerProvider.TRUNCATE_LINK;
 import static org.geoserver.gwc.web.layer.CachedLayerProvider.TYPE;
 
 import java.util.ArrayList;
@@ -78,7 +77,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
                     ResourceReference layerIcon;
                     TileLayer layer = (TileLayer) itemModel.getObject();
-                    layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    layerIcon = (ResourceReference) property.getPropertyValue(layer);
                     f.add(new Image("layerIcon", layerIcon));
                     return f;
                 } else if (property == NAME) {
@@ -103,11 +102,10 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     return f;
                 } else if (property == PREVIEW_LINKS) {
                     return previewLinks(id, itemModel);
-                } else if (property == SEED_LINK) {
-                    return seedLink(id, itemModel);
-                } else if (property == TRUNCATE_LINK) {
-                    return truncateLink(id, itemModel);
+                } else if (property == ACTIONS) {
+                    return actionsLinks(id, itemModel);
                 }
+
                 throw new IllegalArgumentException("Don't know a property named "
                         + property.getName());
             }
@@ -163,15 +161,15 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         return link;
     }
 
-    private Component seedLink(String id, IModel<TileLayer> tileLayerNameModel) {
+    private Component actionsLinks(String id, IModel<TileLayer> tileLayerNameModel) {
         final String name = tileLayerNameModel.getObject().getName();
         final String href = "../gwc/rest/seed/" + name;
 
         // openlayers preview
-        Fragment f = new Fragment(id, "seedLinkFragment", CachedLayersPage.this);
+        Fragment f = new Fragment(id, "actionsFragment", CachedLayersPage.this);
         f.add(new ExternalLink("seedLink", href, new ResourceModel("CachedLayersPage.seed")
                 .getObject()));
-
+        f.add(truncateLink("truncateLink", tileLayerNameModel));
         return f;
 
     }

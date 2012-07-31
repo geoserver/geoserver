@@ -187,7 +187,7 @@ This means they have the same value for all rendered features.
 When the symbols to be displayed vary depending on feature attributes this restriction leads to very verbose styling, as a separate ``Rule`` and ``Symbolizer`` must be used for each different symbol.
 
 GeoServer improves this by allowing CQL expressions to be embedded inside the content of both ``WellKnownName`` and ``OnlineResource/@xlink:href``.
-When the name of the symbols to be used can be derived from the feature attribute values, this provides much more compact styling. 
+When the names of the symbols can be derived from the feature attribute values, this provides much more compact styling. 
 CQL expressions can be embedded in a ``WellKnownName`` string or an ``href`` URL by using the syntax::
 	
   ${<cql expression>}
@@ -195,7 +195,8 @@ CQL expressions can be embedded in a ``WellKnownName`` string or an ``href`` URL
 .. note:: 
 
   Currently ``xlink:href`` strings must be valid URLs *before* expression expansion is performed.
-  This means that the URL string cannot be completely provided by an expression.
+  This means that the URL cannot be completely provided by an expression.
+  The ``href`` string must explicitly include at least the prefix ``http://``
 
   
 The simplest form of expression is a single attribute name, such as ``${STATE_ABBR}``.

@@ -40,7 +40,6 @@ public class WfsOnlineTestPostgisSetup extends AbstractReferenceDataSetup {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitPostgisSQLScript(script);
         for (String sql : sqls) {
-            System.out.println(sql);
             this.run(sql);
         }
         this.setDataVersion(this.scriptVersion);

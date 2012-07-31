@@ -6,4 +6,10 @@
     <constructor-arg index="0" ref="geoServer"/>
   </bean>
   
+  <!-- spatialite datastore initializer -->
+  <bean id="spatialiteDataStoreFactoryInitializer" 
+    class="org.geoserver.spatialite.SpatiaLiteDataStoreFactoryInitializer">
+    <property name="resourceLoader" ref="resourceLoader"/>
+  </bean>
+
 </beans>

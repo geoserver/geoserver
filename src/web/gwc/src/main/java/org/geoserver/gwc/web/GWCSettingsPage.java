@@ -5,9 +5,6 @@
 package org.geoserver.gwc.web;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,86 +16,47 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.model.util.MapModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
-import org.geoserver.gwc.web.diskquota.DiskQuotaConfigPanel;
-import org.geoserver.gwc.web.gridset.GridSetsPage;
-import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.diskquota.DiskQuotaConfig;
-import org.geowebcache.diskquota.storage.StorageUnit;
 
 public class GWCSettingsPage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(GWCSettingsPage.class);
 
-    private IModel<Map<String, Serializable>> formModel;
-
     public GWCSettingsPage() {
         setHeaderPanel(headerPanel());
 
-        GWC gwc = getGWC();
-
-        final boolean diskQuotaModuleDisabled = gwc.getDiskQuotaConfig() == null;
-
-        // use a dettached copy of dq config to support the tabbed pane
-        final DiskQuotaConfig diskQuotaConfig;
-        if (diskQuotaModuleDisabled) {
-            diskQuotaConfig = new DiskQuotaConfig();// fake
-            diskQuotaConfig.setDefaults();
-        } else {
-            diskQuotaConfig = gwc.getDiskQuotaConfig().clone();
-        }
+        GWC gwc = GWC.get();
         // use a dettached copy of gwc config to support the tabbed pane
         final GWCConfig gwcConfig = gwc.getConfig().clone();
 
-        Map<String, Serializable> formData = new HashMap<String, Serializable>();
-        formData.put("diskQuotaConfig", diskQuotaConfig);
-        formData.put("gwcConfig", gwcConfig);
-        formModel = new MapModel<String, Serializable>(formData);
+        IModel<GWCConfig> formModel = new Model<GWCConfig>(gwcConfig);
 
-        final Form<Map<String, Serializable>> form;
-        form = new Form<Map<String, Serializable>>("form", formModel);
+        final Form<GWCConfig> form = new Form<GWCConfig>("form", formModel);
         add(form);
 
-        final IModel<GWCConfig> gwcConfigModel = new PropertyModel<GWCConfig>(formModel,
-                "gwcConfig");
-
-        final IModel<DiskQuotaConfig> diskQuotaModel = new PropertyModel<DiskQuotaConfig>(
-                formModel, "diskQuotaConfig");
-
         final GWCServicesPanel gwcServicesPanel = new GWCServicesPanel("gwcServicesPanel",
-                gwcConfigModel);
+                formModel);
         final CachingOptionsPanel defaultCachingOptionsPanel = new CachingOptionsPanel(
-                "cachingOptionsPanel", gwcConfigModel);
-
-        final DiskQuotaConfigPanel diskQuotaConfigPanel = new DiskQuotaConfigPanel(
-                "diskQuotaPanel", diskQuotaModel);
-        if (diskQuotaModuleDisabled) {
-            diskQuotaConfigPanel.setVisible(false);
-        }
+                "cachingOptionsPanel", formModel);
 
         form.add(gwcServicesPanel);
         form.add(defaultCachingOptionsPanel);
-        form.add(diskQuotaConfigPanel);
 
         form.add(new Button("submit") {
             private static final long serialVersionUID = 1L;
 
             @Override
             public void onSubmit() {
-                GWC gwc = getGWC();
-                final IModel formModel = form.getModel();
-                final IModel<GWCConfig> gwcConfigModel = new PropertyModel<GWCConfig>(formModel,
-                        "gwcConfig");
+                GWC gwc = GWC.get();
+                final IModel<GWCConfig> gwcConfigModel = form.getModel();
                 GWCConfig gwcConfig = gwcConfigModel.getObject();
                 try {
                     gwc.saveConfig(gwcConfig);
@@ -108,27 +66,6 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
                     return;
                 }
 
-                if (!diskQuotaModuleDisabled) {
-                    StorageUnit chosenUnit = diskQuotaConfigPanel.getStorageUnit();
-                    // REVISIT: it seems Wicket is sending back a plain string instead of a
-                    String chosenQuotaStr = String.valueOf(diskQuotaConfigPanel.getQuotaValue());
-                    Double chosenQuota;
-                    try {
-                        chosenQuota = Double.valueOf(chosenQuotaStr);
-                    } catch (NumberFormatException e) {
-                        form.error(chosenQuotaStr + " is not a valid floating point number");// TODO:
-                        // localize
-                        return;
-                    }
-                    if (chosenQuota.doubleValue() <= 0D) {
-                        form.error("Quota has to be > 0");
-                        return;
-                    }
-                    DiskQuotaConfig dqConfig = diskQuotaModel.getObject();
-                    dqConfig.getGlobalQuota().setValue(chosenQuota.doubleValue(), chosenUnit);
-                    gwc.saveDiskQuotaConfig(dqConfig);
-                }
-
                 doReturn();
             }
         });
@@ -136,7 +73,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, @SuppressWarnings("rawtypes") Form form) {
                 doReturn();
             }
 
@@ -154,24 +91,8 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         }
     }
 
-    private GWC getGWC() {
-        final GWC gwc = (GWC) getGeoServerApplication().getBean("gwcFacade");
-        return gwc;
-    }
-
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
-
-        // the manage GridSets button
-        header.add(new ImageAjaxLink("gridSets", GWCIconFactory.GRIDSET, "  Administer  GridSets") {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                setResponsePage(GridSetsPage.class);
-            }
-        });
-
         return header;
     }
 

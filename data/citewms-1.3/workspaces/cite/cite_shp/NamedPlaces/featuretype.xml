@@ -10,7 +10,7 @@
     <metadataLink>
       <type>application/xml</type>
       <metadataType>FGDC</metadataType>
-      <content>http://localhost/www/NamedPlaces.xml</content>
+      <content>/www/NamedPlaces.xml</content>
     </metadataLink>
   </metadataLinks>
   <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 

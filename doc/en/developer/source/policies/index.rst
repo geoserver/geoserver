@@ -7,6 +7,7 @@ Policies and Procedures
    :maxdepth: 1
 
    comitting.rst
+   patches.rst
    code-review.rst
    community-process.rst
    gsip.rst

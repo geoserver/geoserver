@@ -30,7 +30,7 @@ import org.opengis.feature.type.Name;
 import org.geotools.feature.Types;
 
 public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWfsTest {
-
+    private boolean printDoc=false;
     public DataReferenceWfsOnlineTest() throws Exception {
         super();
         // TODO Auto-generated constructor stub
@@ -52,7 +52,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
-        LOGGER.info("WFS =GetCapabilities response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS =GetCapabilities response:\n" + prettyString(doc));
+        }
 
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
         assertXpathCount(6, "//wfs:FeatureType", doc);
@@ -89,8 +91,10 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
          * gsml:MappedFeature
          */
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
-        LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
-                + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
+                    + prettyString(doc));
+        }
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         // check target name space is encoded and is correct
         assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_URI, "//@targetNamespace", doc);
@@ -133,8 +137,11 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         doc = null;
         System.gc();
         doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:Contact,gsml:MappedFeature");
-        LOGGER.info("WFS DescribeFeatureType, typename=gsml:Contact,gsml:MappedFeature response:\n"
-                + prettyString(doc));
+        if (printDoc) {
+            LOGGER
+                    .info("WFS DescribeFeatureType, typename=gsml:Contact,gsml:MappedFeature response:\n"
+                            + prettyString(doc));
+        }
         testConsistantSchema(doc);
         // TODO without any type specified, gsml:Content om namespace not imported.
         doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0");
@@ -166,7 +173,10 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     public void testMapping() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gsml.geologicunit.16777549126932776,gsml.geologicunit.167775491110573732,gsml.geologicunit.16777549126930540";
         Document doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n"
+                            + prettyString(doc));
+        }
         this.checkSchemaLocation(doc);
         // test if_then_else along with Inline mapping,includedTypes, MappingName, eg,
         // if_then_else(isNull(density_value02),'Density_Value02_is_Null','Density_Value02_Not_Null'
@@ -211,7 +221,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         // test that non-feature type should return nothing/exception
         doc = getAsDOM("wfs?request=GetFeature&typename=gsml:ConstituentPart");
-        LOGGER.info("WFS GetFeature&typename=gsml:ConstituentPart response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:ConstituentPart response:\n" + prettyString(doc));
+        }
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
     }
 
@@ -556,7 +568,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gsml.geologicunit.16777549126932776,gsml.geologicunit.167775491110573732,gsml.geologicunit.16777549126930540";
         Document doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        }
 
         checkSchemaLocation(doc);
 
@@ -575,8 +589,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gsml.geologicunit.16777549126932776,gsml.geologicunit.167775491110573732,gsml.geologicunit.16777549126930540";
         doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
-
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        }
         checkSchemaLocation(doc);
 
         assertXpathEvaluatesTo("3", "/wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -601,8 +616,10 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     public void testMinOccur0() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:ShearDisplacementStructure&featureid=gsml.sheardisplacementstructure.46220,gsml.sheardisplacementstructure.46216";
         Document doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:ShearDisplacementStructure response:\n"
-                + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:ShearDisplacementStructure response:\n"
+                    + prettyString(doc));
+        }
 
         assertXpathEvaluatesTo(
                 "E",
@@ -625,8 +642,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     public void testReprojection() {
         String path = "wfs?request=GetFeature&version=1.1.0&srsName=urn:x-ogc:def:crs:EPSG:4283&typename=gsml:MappedFeature&featureid=gsml.mappedfeature.191922";
         Document doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
-
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
+        }
         assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4283",
                 "//gsml:MappedFeature/gsml:shape/gml:MultiSurface/@srsName", doc);
         assertXpathEvaluatesTo("2",
@@ -647,8 +665,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         path = "wfs?request=GetFeature&version=1.1.0&srsName=EPSG:4283&typename=gsml:MappedFeature&featureid=gsml.mappedfeature.191922";
 
         doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
-
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
+        }
         assertXpathEvaluatesTo("http://www.opengis.net/gml/srs/epsg.xml#4283",
                 "//gsml:MappedFeature/gsml:shape/gml:MultiSurface/@srsName", doc);
         assertXpathEvaluatesTo("2",
@@ -720,7 +739,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </wfs:Query> " //
                 + "</wfs:GetFeature>";
         Document doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         checkGU16777549126932776(doc);
     }
@@ -747,7 +768,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "</wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         checkGU16777549126932776(doc);
     }
@@ -771,7 +794,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "            </ogc:PropertyIsEqualTo>" + "        </ogc:Filter>"
                 + "    </wfs:Query> " + "</wfs:GetFeature>";
         Document doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
@@ -799,7 +824,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </wfs:Query> " + "</wfs:GetFeature>";
 
         doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
         // there should be 9:
         // - mf1/gu.25699
@@ -848,7 +875,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "</wfs:GetFeature>";
         //
         doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("6", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(6, "//gsml:GeologicUnit", doc);
@@ -893,7 +922,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </wfs:Query> " //
                 + "</wfs:GetFeature>";
         Document doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         checkGU16777549126930540(doc);
 
@@ -925,7 +956,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </wfs:Query> " //
                 + "</wfs:GetFeature>";
         Document doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathCount(6, "//gsml:GeologicUnit", doc);
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.167775491107848330']",
                 doc);
@@ -967,7 +1000,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </wfs:Query> " //
                 + "</wfs:GetFeature>";
         doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathCount(17, "//gsml:GeologicUnit", doc);
 
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.167775491107838594']",
@@ -1016,7 +1051,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </ogc:Filter>" + "</wfs:Query> " + "</wfs:GetFeature>";
         //
         Document doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
 
         assertXpathEvaluatesTo(
                 "900.0",
@@ -1035,7 +1072,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     public void testResultHitsWithFilter() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:Contact&resultType=hits";
         Document doc = getAsDOM(path);
-        LOGGER.info(prettyString(doc));
+        if (printDoc) {
+            LOGGER.info(prettyString(doc));
+        }
 
         assertXpathEvaluatesTo("5", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         // test filter with maxFeature
@@ -1059,7 +1098,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </ogc:Filter>" + "</wfs:Query> " + "</wfs:GetFeature>";
         //
         doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberOfFeatures", doc);
 
         // test filter without maxfeature
@@ -1083,7 +1124,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 + "    </ogc:Filter>" + "</wfs:Query> " + "</wfs:GetFeature>";
         //
         doc = postAsDOM("wfs", xml);
-        LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+        }
         assertXpathEvaluatesTo("5", "/wfs:FeatureCollection/@numberOfFeatures", doc);
     }
 
@@ -1091,7 +1134,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:GeologicUnit&featureid=gsml.geologicunit.16777549126930540,gsml.geologicunit.167775491107838881,gsml.geologicunit.16777549126931275,gsml.geologicunit.167775491233249211,gsml.geologicunit.1677754911513318041,gsml.geologicunit.167775491107843155,gsml.geologicunit.16777549126932958,gsml.geologicunit.16777549126932676,gsml.geologicunit.16777549126932776,gsml.geologicunit.167775491110573732,gsml.geologicunit.1677754911513320744";
         validateGet(path);
         Document doc = getAsDOM(path);
-        LOGGER.info(prettyString(doc));
+        if (printDoc) {
+            LOGGER.info(prettyString(doc));
+        }
         // test number of features
         assertXpathEvaluatesTo("11", "//wfs:FeatureCollection/@numberOfFeatures", doc);
         // tests geologicHistory
@@ -1286,7 +1331,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:Contact&featureid=gsml.contact.46233,gsml.contact.46235";
         validateGet(path);
         Document doc = getAsDOM(path);
-        LOGGER.info(prettyString(doc));
+        if (printDoc) {
+            LOGGER.info(prettyString(doc));
+        }
 
         assertXpathEvaluatesTo("2", "//wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(153,
@@ -1342,7 +1389,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:ShearDisplacementStructure&featureid=gsml.sheardisplacementstructure.46179,gsml.sheardisplacementstructure.46181,gsml.sheardisplacementstructure.46188,gsml.sheardisplacementstructure.46199,gsml.sheardisplacementstructure.46216";
         validateGet(path);
         Document doc = getAsDOM(path);
-        LOGGER.info(prettyString(doc));
+        if (printDoc) {
+            LOGGER.info(prettyString(doc));
+        }
         assertXpathEvaluatesTo("5", "//wfs:FeatureCollection/@numberOfFeatures", doc);
 
         assertXpathCount(
@@ -1501,7 +1550,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&featureid=gsml.mappedfeature.195201,gsml.mappedfeature.192654,gsml.mappedfeature.191921,gsml.mappedfeature.179239,gsml.mappedfeature.185969,gsml.mappedfeature.186037,gsml.mappedfeature.185817,gsml.mappedfeature.185911,gsml.mappedfeature.178855,gsml.mappedfeature.185608";
         validateGet(path);
         Document doc = getAsDOM(path);
-        LOGGER.info(prettyString(doc));
+        if (printDoc) {
+            LOGGER.info(prettyString(doc));
+        }
         assertXpathEvaluatesTo("10", "//wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(10, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo(
@@ -1631,7 +1682,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                         + "</wfs:GetFeature>";
              validate(xml);
              Document doc = postAsDOM("wfs", xml);
-             LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+             if (printDoc) {
+                 LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+             }
              
              assertXpathCount(3, "//gsml:GeologicUnit", doc);
              assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.167775491107843155']", doc);
@@ -1667,7 +1720,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                          + "</wfs:GetFeature>";
               validate(xml);
               doc = postAsDOM("wfs", xml);
-              LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+              if (printDoc) {
+                  LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+              }
               
               assertXpathCount(0, "//gsml:GeologicUnit", doc);
               
@@ -1701,7 +1756,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                          + "</wfs:GetFeature>";
               validate(xml);
               doc = postAsDOM("wfs", xml);
-              LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+              if (printDoc) {
+                  LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+              }
               
               assertXpathCount(1, "//gsml:GeologicUnit", doc);
               assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126942588']", doc);
@@ -1735,7 +1792,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                           + "</wfs:GetFeature>";
                validate(xml);
                doc = postAsDOM("wfs", xml);
-               LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+               if (printDoc) {
+                   LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
+               }
                
                assertXpathCount(0, "//gsml:GeologicUnit", doc);           
         }
@@ -1745,7 +1804,9 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
       
         String path = "wfs?request=GetFeature&srsName=urn:x-ogc:def:crs:EPSG:4326&version=1.1.0&typeName=gsml:GeologicUnit&featureid=gsml.geologicunit.16777549126930540";
         Document doc = getAsDOM(path);
-        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        if (printDoc) {
+            LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        }
         
         assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
                 "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126930540']/gsml:occurrence/gsml:MappedFeature[@gml:id='gsml.mappedfeature.191322']/gsml:shape/gml:MultiSurface/@srsName", doc);

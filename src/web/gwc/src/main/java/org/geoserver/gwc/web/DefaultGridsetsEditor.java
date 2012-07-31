@@ -52,6 +52,9 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
         public DefaultGridSetsTable(String id, GridSetTableProvider provider) {
             super(id, provider, false);
+            setOutputMarkupId(true);
+            setPageable(false);
+            setFilterable(false);
         }
 
         @Override
@@ -114,8 +117,6 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         };
 
         defaultGridsetsTable = new DefaultGridSetsTable("table", provider);
-        defaultGridsetsTable.setOutputMarkupId(true);
-        defaultGridsetsTable.setPageable(false);
         add(defaultGridsetsTable);
 
         IModel<List<String>> availableModel = new LoadableDetachableModel<List<String>>() {

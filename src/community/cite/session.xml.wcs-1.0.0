@@ -1,5 +1,0 @@
-<session id="wcs-1.0.0" sourcesId="OGC_WCS_1.0.0_@DATE@">
-  <suite>{http://www.opengis.net/wcs}main_wcs1-0-0</suite>
-  <description>wcs-1.0.0</description>
-</session>
-

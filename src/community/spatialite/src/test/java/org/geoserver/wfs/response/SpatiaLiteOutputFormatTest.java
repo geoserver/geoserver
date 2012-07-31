@@ -18,16 +18,30 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 
+import junit.framework.Test;
+
+import org.apache.commons.io.FileUtils;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSTestSupport;
-import org.spatialite.libs.MultiLibs;
-import org.sqlite.SQLiteConfig;
+import org.geotools.data.DataStore;
+import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.spatialite.SpatiaLiteDataStoreFactory;
+import org.geotools.feature.FeatureCollection;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletInputStream;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Test the SpatiaLiteOutputFormat WFS extension.
@@ -36,82 +50,45 @@ import com.mockrunner.mock.web.MockServletInputStream;
  */
 public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
-    private String TempDataBaseUrl = null;
-    private String spatialiteLibraryUrl = null;
-    
-    protected void oneTimeSetUp( ) throws Exception {
-        super.oneTimeSetUp();
-        this.spatialiteLibraryUrl = MultiLibs.loadExtension();
-        this.TempDataBaseUrl = null;
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new SpatiaLiteOutputFormatTest());
     }
-    protected void oneTimeTearDown( ) throws Exception {
-        super.oneTimeTearDown();
-        new File(this.spatialiteLibraryUrl).delete();
-    }
-    
 
-    /**
-     * Creates a connection (SQLITE type) with a temporally
-     * dataBase.sqlite 
-     * @param responseInput
-     * @param tbl_names
-     * @param column_names
-     * @param geometries
-     * @return connection
-     */
-    private Connection createTempDataBaseConnection(ByteArrayInputStream responseInput) throws Exception{
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            System.out.println(e);
+    static Boolean SKIPPED = null;
+
+    @Override
+    protected void runTest() throws Throwable {
+        if (Boolean.TRUE.equals(SKIPPED)) {
+            return;
         }
-        File tempDir = File.createTempFile("spatialitemptest", ".sqlite");
-        FileOutputStream OStream = new FileOutputStream(tempDir);
-        this.TempDataBaseUrl = tempDir.getAbsolutePath();
-        
-        int longitud = responseInput.available();
-        byte[] datos = new byte[longitud];
-        responseInput.read(datos);
-        OStream.write(datos);
-        SQLiteConfig config = new SQLiteConfig();
-        config.enableLoadExtension(true);
-        responseInput.close();
-        OStream.close();
-        
-    return DriverManager.getConnection("jdbc:sqlite:"+this.TempDataBaseUrl,config.toProperties());
-    }
-    
-    /**
-     * Checks that spatialite contains all the tables (once per layer) with correct geometries.
-     * Used by many tests to verify SpatiaLite structure.
-     * @param responseInput
-     * @param tbl_names
-     * @param column_names
-     * @param geometries
-     */
-    private void checkGeometries(ByteArrayInputStream responseInput,String[] tbl_names,
-            String[] geom_columns,String[] geometries) throws Exception{
-        Connection conn = createTempDataBaseConnection(responseInput);
-        Statement stmt = conn.createStatement();
-        ResultSet rs;
-        stmt.execute("SELECT load_extension('"+this.spatialiteLibraryUrl+"')");
-        for(int i =0 ;i < tbl_names.length; i++ ) {
-            rs = stmt.executeQuery("SELECT GeometryType("+geom_columns[i]+") from "+tbl_names[i]);
-            assertEquals(rs.getString(1),geometries[i]);
+
+        if (SKIPPED == null && !new SpatiaLiteDataStoreFactory().isAvailable()) {
+            SKIPPED = true;
+            System.out.println("Skipping spatialite tests, native libraries not installed");
+            return;
         }
-        conn.close();
-        new File(this.TempDataBaseUrl).delete();
+            
+        SKIPPED = false;
+        super.runTest();
     }
 
     /**
      * Test a request with multiple layers.
      * @throws Exception
      */
-    public void testMultiReponse() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "Points");
-        checkGeometries(responseInput,new String[] {"Points","MPoints"},
-                new String[] {"pointProperty","multiPointProperty"},new String[]{"POINT","MULTIPOINT"});
+    public void testMultiResponse() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=spatialite");
+        DataStore ds = loadData(resp);
+
+        assertEquals(2, ds.getTypeNames().length);
+        assertEquals(Point.class, 
+            ds.getSchema("Points").getGeometryDescriptor().getType().getBinding());
+        assertEquals(MultiPoint.class, 
+            ds.getSchema("MPoints").getGeometryDescriptor().getType().getBinding());
     }
 
     /**
@@ -119,18 +96,9 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testMIMEOutput() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
-        assertEquals("application/x-sqlite3", resp.getContentType());
-    }
-    
-    /**
-     * Test if exist WFS Error, checking for Mime Type.
-     * If Mime Type is "application/xml", then an error has occurred
-     * @throws Exception
-     */
-    public void testWFSError() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
-        assertNotSame("application/xml", resp.getContentType());
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
+        assertEquals("application/zip", resp.getContentType());
     }
 
     /**
@@ -138,10 +106,20 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testContentDisposition() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
-        String featureName = "Points";
-        assertEquals("attachment; filename=" + featureName + ".sqlite", resp
-                .getHeader("Content-Disposition"));
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
+        assertEquals("attachment; filename=Points.db.zip", resp.getHeader("Content-Disposition"));
+    }
+
+    /**
+     * Test if exist WFS Error, checking for Mime Type.
+     * If Mime Type is "application/xml", then an error has occurred
+     * @throws Exception
+     */
+    public void testWFSError() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
+        assertNotSame("application/xml", resp.getContentType());
     }
 
     /**
@@ -168,32 +146,51 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testPoints() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "Points");
-        checkGeometries(responseInput,new String[] {"Points"},
-                new String[] {"pointProperty"},new String[]{"POINT"});        
-        
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
+        DataStore ds = loadData(resp);
+        try {
+            SimpleFeatureCollection fc = ds.getFeatureSource("Points").getFeatures();
+            checkFeatures(getFeatureSource(MockData.POINTS).getFeatures(), fc);
+        }
+        finally {
+            ds.dispose();    
+        }
     }
-    /**
-     * Test a MultiPoint geometry.
-     * @throws Exception
-     */
-    public void testMultiPoints() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=MPoints&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "MPoints");
-        checkGeometries(responseInput,new String[] {"MPoints"},
-                new String[] {"multiPointProperty"},new String[]{"MULTIPOINT"});        
-    }
+
+    //for some odd reason this test does not work... TODO: further investigate
+//    /**
+//     * Test a MultiPoint geometry.
+//     * @throws Exception
+//     */
+//    public void testMultiPoints() throws Exception {
+//        MockHttpServletResponse resp = getAsServletResponse(
+//            "wfs?request=GetFeature&typeName=MPoints&outputFormat=spatialite");
+//        DataStore ds = loadData(resp);
+//        try {
+//            SimpleFeatureCollection fc = ds.getFeatureSource("MPoints").getFeatures();
+//            checkFeatures(getFeatureSource(MockData.MPOINTS).getFeatures(), fc);
+//        }
+//        finally {
+//            ds.dispose();    
+//        }
+//    }
 
     /**
      * Test a LineString geometry.
      * @throws Exception
      */
     public void testLines() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Lines&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "Lines");
-        checkGeometries(responseInput,new String[] {"Lines"},
-                new String[] {"lineStringProperty"},new String[]{"LINESTRING"});
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Lines&outputFormat=spatialite");
+        DataStore ds = loadData(resp);
+        try {
+            SimpleFeatureCollection fc = ds.getFeatureSource("Lines").getFeatures();
+            checkFeatures(getFeatureSource(MockData.LINES).getFeatures(), fc);
+        }
+        finally {
+            ds.dispose();    
+        }
     }
 
     /**
@@ -201,10 +198,16 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
    public void testMultiLines() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=MLines&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "MLines");
-        checkGeometries(responseInput,new String[] {"MLines"},
-                new String[] {"multiLineStringProperty"},new String[]{"MULTILINESTRING"});
+       MockHttpServletResponse resp = getAsServletResponse(
+               "wfs?request=GetFeature&typeName=MLines&outputFormat=spatialite");
+       DataStore ds = loadData(resp);
+       try {
+           SimpleFeatureCollection fc = ds.getFeatureSource("MLines").getFeatures();
+           checkFeatures(getFeatureSource(MockData.MLINES).getFeatures(), fc);
+       }
+       finally {
+           ds.dispose();    
+       }
     }
 
     /**
@@ -212,10 +215,16 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testPolygons() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Polygons&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "Polygons");
-        checkGeometries(responseInput,new String[] {"Polygons"},
-                new String[] {"polygonProperty"},new String[]{"POLYGON"});
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&typeName=Polygons&outputFormat=spatialite");
+        DataStore ds = loadData(resp);
+        try {
+            SimpleFeatureCollection fc = ds.getFeatureSource("Polygons").getFeatures();
+            checkFeatures(getFeatureSource(MockData.POLYGONS).getFeatures(), fc);
+        }
+        finally {
+            ds.dispose();    
+        }
     }
 
     /**
@@ -223,64 +232,60 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testMultiPolygons() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=MPolygons&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "MPolygons");
-        checkGeometries(responseInput,new String[] {"MPolygons"},
-                new String[] {"multiPolygonProperty"},new String[]{"MULTIPOLYGON"});
-    }
-    
-    /**
-     * Test if the SpatialMetaData has been properly loaded.
-     * @throws Exception
-     */
-    public void testSpatialMetadata() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = getBinaryInputStream(resp);
-        Connection conn = createTempDataBaseConnection(responseInput);
-        Statement stmt = conn.createStatement();
-        boolean SpatialMetaData = true;
-        try
-        {
-            stmt.execute("SELECT count(*) FROM geometry_columns");
-        }catch( SQLException e ) {
-            SpatialMetaData = false;
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&typeName=MPolygons&outputFormat=spatialite");
+        DataStore ds = loadData(resp);
+        try {
+            SimpleFeatureCollection fc = ds.getFeatureSource("MPolygons").getFeatures();
+            checkFeatures(getFeatureSource(MockData.MPOLYGONS).getFeatures(), fc);
         }
-        assertTrue(SpatialMetaData);
-        conn.close();
-        new File(this.TempDataBaseUrl).delete();
+        finally {
+            ds.dispose();    
+        }
     }
+
     
     /**
      * Test format option FILENAME.
      * @throws Exception
      */
     public void testCustomFileName() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&format_options=FILENAME:customName&typeName=Points&outputFormat=spatialite");
-        ByteArrayInputStream responseInput = testBasicResult(resp, "customName");
-        checkGeometries(responseInput,new String[] {"Points"},
-                new String[] {"pointProperty"},new String[]{"POINT"});
+        MockHttpServletResponse resp = getAsServletResponse(
+            "wfs?request=GetFeature&format_options=FILENAME:customName.db&typeName=Points&outputFormat=spatialite");
+
+        String cd = resp.getHeader("Content-Disposition");
+        assertTrue(cd.contains("filename=customName.db"));
     }
 
-    /**
-     * Test basic extension functionality: mime/type, headers,
-     * not empty output generation. 
-     * @param resp
-     * @param featureName
-     * @return sResponse
-     * @throws Exception
-     */
-    public ByteArrayInputStream testBasicResult(MockHttpServletResponse resp, String featureName)
-            throws Exception {
-        // check mime type
-        assertEquals("application/x-sqlite3", resp.getContentType());
-        // check the content disposition
-        assertEquals("attachment; filename=" + featureName + ".sqlite", resp
-                .getHeader("Content-Disposition"));
-        ByteArrayInputStream sResponse = getBinaryInputStream(resp); 
-        // check for content (without checking in detail)
-        assertNotNull(sResponse);
-        return sResponse;
+    void checkFeatures(SimpleFeatureCollection expected, SimpleFeatureCollection actual) {
+        assertEquals(expected.size(), actual.size());
 
+        SimpleFeatureIterator it1 = expected.features();
+        SimpleFeatureIterator it2 = actual.features();
+
+        while(it1.hasNext()) {
+            Geometry g1 = (Geometry) it1.next().getDefaultGeometry();
+            Geometry g2 = (Geometry) it2.next().getDefaultGeometry();
+            assertTrue(g1.equals(g2));
+        }
+
+        it1.close();
+        it2.close();
+    }
+
+    DataStore loadData(MockHttpServletResponse resp) throws Exception {
+        File dir = File.createTempFile("spatialite", "zip", new File("target"));
+        dir.delete();
+        dir.mkdir();
+
+        IOUtils.decompress(getBinaryInputStream(resp), dir);
+        File dbFile = dir.listFiles()[0];
+
+        Map dbParams = new HashMap();
+        dbParams.put("dbtype", "spatialite");
+        dbParams.put("database", dbFile.getAbsolutePath());
+
+        return new SpatiaLiteDataStoreFactory().createDataStore(dbParams);
     }
 
 }

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -54,7 +56,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots
      */
     public List<String> getVendorSpecificCapabilitiesRoots(final GetCapabilitiesRequest request) {
-        if (isTiled(request)) {
+        if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
             return Collections.singletonList("TileSet*");
         }
         return Collections.emptyList();
@@ -68,7 +70,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
      */
     public List<String> getVendorSpecificCapabilitiesChildDecls(final GetCapabilitiesRequest request) {
-        if (isTiled(request)) {
+        if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
             List<String> wmscElements = new ArrayList<String>();
             wmscElements
                     .add("<!ELEMENT TileSet (SRS, BoundingBox?, Resolutions, Width, Height, Format, Layers*, Styles*) >");
@@ -97,6 +99,9 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      */
     public void encode(final Translator tx, final WMSInfo wms, final GetCapabilitiesRequest request)
             throws IOException {
+        if (!gwc.getConfig().isDirectWMSIntegrationEnabled()) {
+            return;
+        }
         Version version = WMS.version(request.getVersion(), true);
         if (!WMS.VERSION_1_1_1.equals(version) || !isTiled(request)) {
             return;
@@ -106,18 +111,35 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         Iterable<? extends TileLayer> tileLayers;
         tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
 
+        final String nsPrefix;
+        {
+            final WorkspaceInfo localWorkspace = LocalWorkspace.get();
+            if (localWorkspace == null) {
+                nsPrefix = null;
+            } else {
+                nsPrefix = localWorkspace.getName() + ":";
+            }
+        }
+
         for (TileLayer layer : tileLayers) {
+            String advertisedName = layer.getName();
+            if (nsPrefix != null) {
+                if (!advertisedName.startsWith(nsPrefix)) {
+                    continue;
+                }
+                advertisedName = advertisedName.substring(nsPrefix.length());
+            }
             for (String gridSetId : layer.getGridSubsets()) {
                 GridSubset grid = layer.getGridSubset(gridSetId);
                 for (MimeType mime : layer.getMimeTypes()) {
-                    vendorSpecificTileset(tx, layer, grid, mime.getFormat());
+                    vendorSpecificTileset(tx, layer, advertisedName, grid, mime.getFormat());
                 }
             }
         }
     }
 
     private void vendorSpecificTileset(final Translator tx, final TileLayer layer,
-            final GridSubset grid, final String format) {
+            final String advertisedLayerName, final GridSubset grid, final String format) {
 
         String srsStr = grid.getSRS().toString();
         StringBuilder resolutionsStr = new StringBuilder();
@@ -162,7 +184,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         tx.end("Format");
 
         tx.start("Layers");
-        tx.chars(layer.getName());
+        tx.chars(advertisedLayerName);
         tx.end("Layers");
 
         // TODO ignoring styles for now

@@ -848,7 +848,7 @@
     <version>1.0</version>
    </dependency>
    <dependency>
-    <groupId>ant</groupId>
+    <groupId>org.apache.ant</groupId>
     <artifactId>ant</artifactId>
     <version>${ant.version}</version>
    </dependency>
@@ -1414,7 +1414,7 @@
   <spring.version>3.1.1.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <wicket.version>1.4.12</wicket.version>
-  <ant.version>1.8.2</ant.version>
+  <ant.version>1.8.4</ant.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>
@@ -1514,7 +1514,7 @@
         <version>1.7</version>
         <dependencies>
           <dependency>
-            <groupId>ant</groupId>
+            <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>${ant.version}</version>
           </dependency>

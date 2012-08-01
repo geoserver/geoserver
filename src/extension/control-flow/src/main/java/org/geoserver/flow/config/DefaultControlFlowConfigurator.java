@@ -57,6 +57,8 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
         for (Object okey : p.keySet()) {
             String key = ((String) okey).trim();
             String value = (String) p.get(okey);
+            LOGGER.info("Loading control-flow configuration: " + key + "=" + value);
+
             String[] keys = key.trim().split("\\s*\\.\\s*");
 
             int queueSize = 0;

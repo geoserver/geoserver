@@ -5,6 +5,7 @@
 
 package org.geoserver.flow.controller;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,11 @@ import org.geotools.util.logging.Logging;
  */
 
 public class IpFlowController extends QueueController {
+    
+    /**
+     * Thread local holding the current request queue id TODO: consider having a user map in {@link Request} instead
+     */
+    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
 
     /**
      * A flow controller that throttles concurrent requests made from the same ip (any ip)
@@ -32,6 +38,17 @@ public class IpFlowController extends QueueController {
 
     public IpFlowController(int queueSize) {
         this.queueSize = queueSize;
+    }
+    
+    @Override
+    public void requestComplete(Request request) {
+        String queueId = QUEUE_ID.get();
+        QUEUE_ID.remove();
+        if(queueId != null) {
+            BlockingQueue<Request> queue = queues.get(queueId);
+            if (queue != null)
+                queue.remove(request);
+        }
     }
 
     @Override

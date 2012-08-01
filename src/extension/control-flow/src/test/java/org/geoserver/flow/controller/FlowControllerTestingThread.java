@@ -6,7 +6,7 @@ import org.geoserver.ows.Request;
 public class FlowControllerTestingThread extends Thread {
     enum ThreadState {STARTED, TIMED_OUT, PROCESSING, COMPLETE}; 
     
-    FlowController controller;
+    FlowController[] controllers;
     boolean proceed;
     Request request;
     long timeout;
@@ -15,21 +15,23 @@ public class FlowControllerTestingThread extends Thread {
     Throwable error;
     
     
-    public FlowControllerTestingThread(FlowController controller, Request request, long timeout, long processingDelay) {
-        this.controller = controller;
+    public FlowControllerTestingThread(Request request, long timeout, long processingDelay, FlowController... controllers) {
+        this.controllers = controllers;
         this.request = request;
         this.timeout = timeout;
         this.processingDelay = processingDelay;
     }
-
+    
     @Override
     public void run() {
         state = ThreadState.STARTED;
         try {
             System.out.println(this + " calling requestIncoming");
-            if(!controller.requestIncoming(request, timeout)) {
-                state = ThreadState.TIMED_OUT;
-                return;
+            for (FlowController controller : controllers) {
+                if(!controller.requestIncoming(request, timeout)) {
+                    state = ThreadState.TIMED_OUT;
+                    return;
+                }
             }
         } catch(Throwable t) {
             this.error = t;
@@ -47,7 +49,9 @@ public class FlowControllerTestingThread extends Thread {
         
         try {
             System.out.println(this + " calling requestComplete");
-            controller.requestComplete(request);
+            for (FlowController controller : controllers) {
+                controller.requestComplete(request);
+            }
         } catch(Throwable t) {
             this.error = t;
         }

@@ -1546,7 +1546,7 @@
                   <filter token="gt.version" value="${gt.version}"/>
                   <filter token="gt.revision" value="${gt.Git-Revision}"/>
                   <filter token="gwc.version" value="${gwc.version}"/>
-                  <filter token="gwc.revision" value="${gwc.Git-Revision}"/>
+                  <filter token="gwc.revision" value="${gwc.Implementation-Version}"/>
                   <filter token="build.hudsonId" value="${build.hudsonId}"/>
                 </filterset>
                </copy>

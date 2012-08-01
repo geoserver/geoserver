@@ -46,9 +46,11 @@ public abstract class QueueController implements FlowController {
     public void requestComplete(Request request) {
         String queueId = QUEUE_ID.get();
         QUEUE_ID.remove();
-        BlockingQueue<Request> queue = queues.get(queueId);
-        if (queue != null)
-            queue.remove(request);
+        if(queueId != null) {
+            BlockingQueue<Request> queue = queues.get(queueId);
+            if (queue != null)
+                queue.remove(request);
+        }
     }
 
     @Override

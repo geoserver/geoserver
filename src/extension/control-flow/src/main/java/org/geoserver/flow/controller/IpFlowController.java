@@ -39,8 +39,7 @@ public class IpFlowController extends QueueController {
     public IpFlowController(int queueSize) {
         this.queueSize = queueSize;
     }
-    
-    @Override
+
     public void requestComplete(Request request) {
         String queueId = QUEUE_ID.get();
         QUEUE_ID.remove();

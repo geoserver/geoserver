@@ -79,7 +79,6 @@ public class UserFlowController extends QueueController {
         this.maxAge = maxAge;
     }
     
-    @Override
     public void requestComplete(Request request) {
         String queueId = QUEUE_ID.get();
         QUEUE_ID.remove();

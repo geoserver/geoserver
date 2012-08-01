@@ -62,6 +62,16 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
             }
             // clean up the thread local
             REQUEST_CONTROLLERS.remove();
+            
+            // provide some info
+            if(LOGGER.isLoggable(Level.INFO)) {
+                if(controllers.size() > 0) {
+                    LOGGER.info("Running requests: " + runningRequests.get() 
+                            + ", processing through flow controllers: " + blockedRequests.get());
+                } else {
+                    LOGGER.info("Control flow installed, but no rules configured in controlflow.properties");
+                }
+            }
         } 
         SENTINEL.stop();
     }
@@ -93,16 +103,6 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
             } finally {
                 blockedRequests.decrementAndGet();
                 runningRequests.incrementAndGet();
-                
-                // provide some info
-                if(LOGGER.isLoggable(Level.INFO)) {
-                    if(controllers.size() > 0) {
-                        LOGGER.info("Running requests: " + runningRequests.get() 
-                                + ", processing through flow controllers: " + blockedRequests.get());
-                    } else {
-                        LOGGER.info("Control flow installed, but no rules configured in controlflow.properties");
-                    }
-                }
             }
         }
         return operation;

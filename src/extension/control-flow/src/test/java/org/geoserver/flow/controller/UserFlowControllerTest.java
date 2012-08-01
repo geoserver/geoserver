@@ -16,8 +16,8 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         UserFlowController controller = new UserFlowController(1);
         
         Request firstRequest = buildRequest(null);
-        FlowControllerTestingThread tSample = new FlowControllerTestingThread(controller, firstRequest,
-                0, 0);
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest, 0,
+                0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
         
@@ -26,10 +26,10 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         
         // make three testing threads that will "process" forever, and will use the cookie to identify themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(controller, buildRequest(cookieValue),
-                0, Long.MAX_VALUE);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(controller, buildRequest(cookieValue),
-                0, Long.MAX_VALUE);
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(cookieValue), 0,
+                Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(cookieValue), 0,
+                Long.MAX_VALUE, controller);
         try {
             // start threads making sure every one of them managed to block somewhere before 
             // starting the next one

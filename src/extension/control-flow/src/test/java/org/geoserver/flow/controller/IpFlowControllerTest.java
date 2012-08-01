@@ -15,8 +15,8 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         IpFlowController controller = new IpFlowController(1);
         String ipAddress = "127.0.0.1";
         Request firstRequest = buildRequest(ipAddress, "");
-        FlowControllerTestingThread tSample = new FlowControllerTestingThread(controller,
-                firstRequest, 0, 0);
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest,
+                0, 0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -26,10 +26,10 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         // make three testing threads that will "process" forever, and will use the ip to identify themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(controller, buildRequest(
-                ip, ""), 0, Long.MAX_VALUE);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(controller, buildRequest(
-                ip, ""), 0, Long.MAX_VALUE);
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(
+                ip, ""), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(
+                ip, ""), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -58,6 +58,59 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         }
 
     }
+    
+    public void testUserAndIPAddressFlowControl() {
+        // an ip based flow controller that will allow just one request at a time
+        IpFlowController ipController = new IpFlowController(1);
+        UserFlowController userController = new UserFlowController(1);
+        String ipAddress = "127.0.0.1";
+        Request firstRequest = buildRequest(ipAddress, "");
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest,
+                0, 0, userController, ipController);
+        tSample.start();
+        waitTerminated(tSample, MAX_WAIT);
+
+        assertEquals(ThreadState.COMPLETE, tSample.state);
+
+        String ip = firstRequest.getHttpRequest().getRemoteAddr();
+
+        // make three testing threads that will "process" forever, and will use the ip to identify themselves
+        // as the same client, until we interrupt them
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(
+                ip, ""), 0, Long.MAX_VALUE, ipController);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(
+                ip, ""), 0, Long.MAX_VALUE, ipController);
+
+        try {
+            // start threads making sure every one of them managed to block somewhere before
+            // starting the next one
+            t1.start();
+            waitBlocked(t1, MAX_WAIT);
+            t2.start();
+            waitBlocked(t2, MAX_WAIT);
+
+            assertEquals(ThreadState.PROCESSING, t1.state);
+            assertEquals(ThreadState.STARTED, t2.state);
+
+            // let t1 go and wait until its termination. This should allow t2 to go
+            t1.interrupt();
+            waitTerminated(t1, MAX_WAIT);
+
+            assertEquals(ThreadState.COMPLETE, t1.state);
+            assertEquals(ThreadState.PROCESSING, t2.state);
+
+            t2.interrupt();
+            waitTerminated(t2, MAX_WAIT);
+            assertEquals(ThreadState.COMPLETE, t2.state);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            waitAndKill(t1, MAX_WAIT);
+            waitAndKill(t2, MAX_WAIT);
+        }
+
+    }
+
 
     // Test 2 remote addresses that are reported as the same, but have gone through a proxy. These two should not queue up
     public void testConcurrentProxiedIPAddresses() {
@@ -68,10 +121,10 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(controller, buildRequest(
-                ip, "192.168.1.2"), 0, Long.MAX_VALUE);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(controller, buildRequest(
-                ip, "192.168.1.3"), 0, Long.MAX_VALUE);
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(
+                ip, "192.168.1.2"), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(
+                ip, "192.168.1.3"), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before

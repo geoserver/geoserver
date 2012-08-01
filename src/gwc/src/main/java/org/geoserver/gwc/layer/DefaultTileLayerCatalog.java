@@ -288,7 +288,9 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     }
 
     private GeoServerTileLayerInfoImpl depersist(final File file) throws IOException {
-        LOGGER.info("Depersisting GeoServerTileLayerInfo from " + file.getAbsolutePath());
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Depersisting GeoServerTileLayerInfo from " + file.getAbsolutePath());
+        }
         GeoServerTileLayerInfoImpl info;
         Reader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         try {

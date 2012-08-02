@@ -13,6 +13,7 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
 .. toctree::
    :maxdepth: 2
 
+   controlflow/index
    excel
    geosearch
    imagemap

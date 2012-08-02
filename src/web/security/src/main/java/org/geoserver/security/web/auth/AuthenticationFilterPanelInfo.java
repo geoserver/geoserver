@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import org.geoserver.security.config.SecurityAuthFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.web.SecurityNamedServicePanelInfo;
 
@@ -14,7 +15,7 @@ import org.geoserver.security.web.SecurityNamedServicePanelInfo;
  *
  */
 public class AuthenticationFilterPanelInfo 
-    <C extends SecurityFilterConfig, T extends AuthenticationFilterPanel<C>>
+    <C extends SecurityAuthFilterConfig, T extends AuthenticationFilterPanel<C>>
     extends SecurityNamedServicePanelInfo<C,T>{
 
 }

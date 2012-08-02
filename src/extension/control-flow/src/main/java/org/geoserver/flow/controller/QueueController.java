@@ -21,12 +21,6 @@ import org.geoserver.ows.Request;
  */
 
 public abstract class QueueController implements FlowController {
-
-    /**
-     * Thread local holding the current request queue id TODO: consider having a user map in {@link Request} instead
-     */
-    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
-
     /**
      * The size of each queue
      */
@@ -40,15 +34,6 @@ public abstract class QueueController implements FlowController {
     @Override
     public boolean requestIncoming(Request request, long timeout) {
         return false;
-    }
-
-    @Override
-    public void requestComplete(Request request) {
-        String queueId = QUEUE_ID.get();
-        QUEUE_ID.remove();
-        BlockingQueue<Request> queue = queues.get(queueId);
-        if (queue != null)
-            queue.remove(request);
     }
 
     @Override

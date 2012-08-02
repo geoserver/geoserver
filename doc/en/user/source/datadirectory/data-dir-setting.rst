@@ -3,21 +3,21 @@
 Setting the Data Directory
 ==========================
 
-Setting up a GeoServer data directory is dependent on the type of GeoServer installation. Follow the instructions below specific to the target platform. 
+Setting the location of the GeoServer data directory is dependent on the type of GeoServer installation. Follow the instructions below specific to the target platform. 
+
+.. note::
+  
+   If the location of the GeoServer data directory is not set explicitly, the directory ``data_dir`` under the root of the GeoServer installation is used.
+
 
 Windows
 -------
 
 On Windows platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable. 
+The method of setting this variable depends on the Windows version.
 
-.. note::
-  
-   When the ``GEOSERVER_DATA_DIR`` environment variable is not set, the directory ``data_dir`` under the root of the GeoServer installation is used.
-
-To set the ``GEOSERVER_DATA_DIR``:
-
-
-On **Windows XP** systems:
+Windows XP
+^^^^^^^^^^
 
 #. From the Desktop or Start Menu right-click the ``My Computer`` icon and select ``Properties``. 
 
@@ -29,7 +29,10 @@ On **Windows XP** systems:
       :align: center
 
 
-On **Windows Vista** systems:
+Windows Vista
+^^^^^^^^^^^^^
+
+  To be documented.
 
 
 Linux
@@ -39,27 +42,33 @@ On Linux platforms the location of the GeoServer data directory is controlled by
 
     % export GEOSERVER_DATA_DIR=/var/lib/geoserver_data
 
-Place the command in the ``.bash_profile`` or ``.bashrc`` file (again assuming a bash shell). Ensure that this done for the user GeoServer will be run by.
+Place the command in the ``.bash_profile`` or ``.bashrc`` file (again assuming a bash shell). Ensure that this done for the user running GeoServer.
 
 
 Mac OS X
 --------
 
-If running the binary version of GeoServer on Mac OS X then the data directory is set in the exact same way as linux. 
+Binary Install
+^^^^^^^^^^^^^^
 
-If using the Mac OS X binary, then set the GEOSERVER_DATA_DIR environment variable to the file location.  See 
-`this page <http://developer.apple.com/mac/library/qa/qa2001/qa1067.html>`_ for details on how to set an environment variable in Mac OS X
+For the binary install of GeoServer on Mac OS X, the data directory is set in the same way as for Linux. 
+
+Mac OS X Install
+^^^^^^^^^^^^^^^^
+
+For the Mac OS X install, set the ``GEOSERVER_DATA_DIR`` environment variable to the desired directory location. 
+See `this page <http://developer.apple.com/mac/library/qa/qa2001/qa1067.html>`_ for details on how to set an environment variable in Mac OS X
 
 
 Web Archive
 -----------
 
-When running GeoServer inside of a servlet container the data directory can be specified in a number of ways. The *recommended* method is to set a *servlet context parameter*. An alternative is to set a Java System Property.
+When running a GeoServer WAR inside a servlet container the data directory can be specified in a number of ways. The recommended method is to set a **servlet context parameter**. An alternative is to set a **Java system property**.
 
 Servlet context parameter
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Servlet context parameter's are specified in the ``WEB-INF/web.xml`` file for the GeoServer application::
+To specify the data directory using a servlet context parameter, create the following ``<context-param>`` element in the ``WEB-INF/web.xml`` file for the GeoServer application::
 
    <web-app>
      ...
@@ -73,24 +82,24 @@ Servlet context parameter's are specified in the ``WEB-INF/web.xml`` file for th
 Java system property
 ^^^^^^^^^^^^^^^^^^^^
 
-Depending on the servlet container used it is also possible to specify the data directory location with a Java System Property. This method can be useful during upgrades, as it prevents the need to set the data directory on every single upgrade.
+It is also possible to specify the data directory location with a Java system property. This method can be useful during upgrades, as it avoids the need to set the data directory after every upgrade.
 
 .. warning::
 
-   Using a system property will typically set the property for all applications running in the servlet container, not just GeoServer.
+   Using a Java system property will typically set the property for all applications running in the servlet container, not just GeoServer.
 
-Setting the Java System Property is dependent on the servlet container. 
+The method of setting the Java system property is dependent on the servlet container:
 
-In **Tomcat**:
+For **Tomcat**:
 
 Edit the file ``bin/setclasspath.sh`` under the root of the Tomcat installation. Specify the ``GEOSERVER_DATA_DIR`` system property by setting the ``CATALINA_OPTS`` variable::
 
    CATALINA_OPTS="-DGEOSERVER_DATA_DIR=/var/lib/geoserver_data"
 
 
-In **Glassfish**:
+For **Glassfish**:
 
-Edit the file ``domains/<<domain>>/config/domain.xml`` under the root of the Glassfish installation, where ``<<domain>>`` refers to the domain that the GeoServer web application is deployed under. Add a ``<jvm-options>`` inside of the ``<java-config>`` element::
+Edit the file ``domains/<<domain>>/config/domain.xml`` under the root of the Glassfish installation, where ``<<domain>>`` refers to the domain that the GeoServer web application is deployed under. Add a ``<jvm-options>`` element inside the ``<java-config>`` element::
 
    ...
    <java-config>

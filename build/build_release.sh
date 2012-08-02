@@ -115,6 +115,17 @@ fi
 # checkout the branch to release from
 git checkout $branch
 
+# ensure the specified revision actually on this branch
+if [ $rev != "HEAD" ]; then
+  set +e
+  git log | grep $rev
+  if [ $? != 0 ]; then
+     echo "Revision $rev not a revision on branch $branch"
+     exit -1
+  fi
+  set -e
+fi
+
 # create a release branch
 git checkout -b rel_$tag $rev
 

@@ -107,3 +107,12 @@ function get_jira_id() {
     echo $jira_id
   fi
 }
+
+# init_git <user> <emai>
+# sets up git config for user/email 
+function init_git() {
+  # setup the author, for some reason I can;t for the life of me get to this
+  # to work properly from a script using the --author option to git commit
+  git config user.name $1
+  git config user.email $2
+}

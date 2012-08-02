@@ -4,10 +4,12 @@
 set -e
 
 function usage() {
-  echo "$0 [options] <tag> <branch>"
+  echo "$0 [options] <tag> <branch> <user> <email>"
   echo
   echo " tag : Release tag (eg: 2.1.4, 2.2-beta1, ...)"
   echo " branch: Release branch (eg, 2.1.x, 2.2.x)" 
+  echo " user:  Git username"
+  echo " email: Git email"
   echo 
   echo "Environment variables:"
   echo " SKIP_DEPLOY : Skips deploy to maven repository"
@@ -15,13 +17,15 @@ function usage() {
   echo " SKIP_PUSH : Skips pushing changes to release branch and tag"
 }
 
-if [ -z $2 ]; then
+if [ -z $4 ]; then
   usage
   exit
 fi
 
 tag=$1
 branch=$2
+git_user=$3
+git_email=$4
 
 # load properties + functions
 . "$( cd "$( dirname "$0" )" && pwd )"/properties
@@ -37,6 +41,8 @@ if [ `is_primary_branch_num $tag` == "1" ]; then
 fi
 
 pushd .. > /dev/null
+
+init_git $git_user $git_email
 
 # switch to the release branch
 git checkout rel_$tag
@@ -85,7 +91,7 @@ popd > /dev/null
 # merge the tag release branch into main release branch and tag it
 git checkout rel_$branch
 if [ -z $SKIP_MERGE_AND_TAG ]; then
-  git merge -m "Merging rel_$tag into rel_$branch" rel_$tag
+  git merge -Xtheirs -m "Merging rel_$tag into rel_$branch" rel_$tag
   git tag $tag
 else
   echo "Skipping git merge -m "Merging rel_$tag into rel_$branch" rel_$tag"

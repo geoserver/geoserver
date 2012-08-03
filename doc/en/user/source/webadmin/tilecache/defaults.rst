@@ -1,59 +1,141 @@
-.. _webadmin_gwc:
+.. _webadmin_tilecaching_defaults:
 
-GeoWebCache Settings
-====================
+Caching defaults
+================
 
-The GeoWebCache Settings page in the Server menu in the :ref:`web_admin` shows some configuration options for GeoWebCache, a tile server that comes embedded by default inside GeoServer.  For more information about this embedded version, please see the section on :ref:`geowebcache`.
+The Caching Defaults page shows the global configuration options for the tile caching functionality in GeoServer, an embedded GeoWebCache.
 
-.. figure:: img/gwcsettings.png
+.. note:: For more information about this embedded version, please see the section on :ref:`geowebcache`.
+
+GWC Provided Services
+---------------------
+
+GeoWebCache provides additional endpoints for OGC services to the standard GeoServer endpoints.  For example, the GeoServer WMS endpoint is available at::
+
+  http://GEOSERVER_URL/wms?...
+
+whereas the GeoWebCache WMS endpoint is::
+
+  http://GEOSERVER_URL/gwc/service/wms?...
+
+.. figure:: img/defaults_services.png
    :align: center
 
-Enable direct WMS integration
------------------------------
+   *Provided services*
 
-GeoWebCache acts as a proxy between GeoServer and map client.  By default, GeoWebCache has a separate endpoint from the GeoServer WMS.  (See the section on :ref:`gwc_using` for more details.)
+The following settings describe the different services that can be enabled with GeoWebCache.
 
-Enabling direct WMS integration allows WMS requests served through GeoServer to be cached as if they were received and processed by GeoWebCache.  This yields the flexibility of a WMS with the speed of a tile server.  See the section on :ref:`gwc_using` for more details about this feature.
+Enable direct integration with GeoServer WMS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Disk quota
-----------
+Direct integration allows WMS requests served through GeoServer to be cached as if they were received and processed by GeoWebCache.  This gives all the advantages of using a tile server while still employing the more-flexible GeoServer WMS as a fallback.  See the section on :ref:`gwc_using` for more details about this feature.
 
-This section manages the disk usage for tiles saved with GeoWebCache.
+When this setting is enabled, tile caching will be enabled for all standard WMS requests that contain the ``tiled=true`` parameter and conform to all required parameters.
 
-By default, disk usage with GeoWebCache is unbounded, regardless of integration with the GeoServer WMS, so every tile served from GeoWebCache will be stored in the cache directory (typically the :file:`gwc` directory inside the data directory).  When direct WMS integration is enabled but disk quotas not enabled, every tile that is served through both the GeoServer WMS and GeoWebCache will be stored in the cache directory, which could cause disk capacity issues.  Setting a disk quota allows disk usage to be constrained.
+This setting is disabled by default.  When enabling this option, it is a good idea to also turn on :ref:`webadmin_tilecaching_diskquotas` as well, to prevent unbounded growth of the stored tiles.
 
-.. list-table::
-   :widths: 30 15 55
-   :header-rows: 1
+Enable WMS-C Service
+~~~~~~~~~~~~~~~~~~~~
 
-   * - Option
-     - Default value
-     - Description
-   * - :guilabel:`Enable Disk Quota limits`
-     - Off
-     - Turns on the disk quota.  When disabled, the cache directory will grow unbounded.  When enabled, the disk quota will be set according to the options below.
-   * - :guilabel:`Compute cache usage based on a disk block size of`
-     - 4096 bytes
-     - This field should be set equal to the disk block size of the storage medium where the cache is located.
-   * - :guilabel:`Check if the cache disk quota is exceeded every`
-     - 10 seconds
-     - Time interval at which the cache is polled.  Smaller values (more frequent polling) will slightly increase disk activity, but larger values (less frequent polling) might cause the disk quota to be temporarily exceeded.
-   * - :guilabel:`Set maximum tile cache size`
-     - 100 MiB (Mebibytes)
-     - The maximum size for the cache.  When this value is exceeded and the cache is polled, tiles will be removed according to the policy choice listed below.  Note that the unit options are **mebibytes** (approx. 1.05MB), **gibibytes** (approx. 1.07GB), and **tebibytes** (approx. 1.10TB).
-   * - :guilabel:`When forcing disk quota limits, remove first tiles that are`
-     - Least Frequently Used
-     - Sets the policy for tile removal when the disk quota is exceeded.  Options are **Least Frequently Used** (removes tiles based on how often the tile was accessed) or **Least Recently Used** (removes tiles based on date of last access).
+Enables the Cached Web Map Service (WMS-C) service.  When this setting is enabled, GeoWebCache will respond to its own WMS-C endpoint::
 
-.. note:: See the `GeoWebCache documentation <http://geowebcache.org/docs>`_ for more about disk quotas.
+  http://GEOSERVER_URL/gwc/service/wms?SERVICE=WMS&VERSION=1.1.1&TILED=true&...
 
-When finished making changes, click :guilabel:`Submit`.
+When the service is disabled, calls to the capabilities document will return a ``Service is disabled`` message.
 
-This section also shows how much disk space is being used compared to the disk quota size, as well as the last time (if any) the quota was reached.
+Enable TMS Service
+~~~~~~~~~~~~~~~~~~
+
+Enables the Tiled Map Service (TMS) endpoint in GeoWebCache.  When this setting is enabled, GeoWebCache will respond to its own TMS endpoint::
+
+  http://GEOSERVER/URL/gwc/service/tms/1.0.0
+
+When the service is disabled, calls to the capabilities document will return a ``Service is disabled`` message.
+
+Enable WMTS Service
+~~~~~~~~~~~~~~~~~~~
+
+Enables the Web Map Tiled Service (WMTS) endpoint in GeoWebCache.  When this setting is enabled, GeoWebCache will respond to its own WMTS endpoint::
+
+  http://GEOSERVER/URL/gwc/service/wmts?...
+
+When the service is disabled, calls to the capabilities document will return a ``Service is disabled`` message.
 
 
-Links
------
+Default Caching Options for GeoServer Layers
+--------------------------------------------
 
-This page contains links to the embedded GWC homepage (containing runtime statistics and status updates) and :ref:`gwc_demo` where you can view all layers known to GeoWebCache and reload configuration.
+This section allows for the configuration of the various defaults and other global options for the tile cache in GeoServer.
 
+.. figure:: img/defaults_options.png
+   :align: center
+
+   *Default caching options*
+
+Automatically configure a GeoWebCache layer for each new layer or layer group
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This setting affects how layers in GeoServer are handled via the embedded GeoWebCache.  When this setting is enabled, an entry in the GeoWebCache layer listing will be created whenever a new layer or layer group is published in GeoServer.  Use this setting to keep the GeoWebCache catalog in sync.  (This is enabled by default.)
+
+Automatically cache non-default styles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, only requests using the default style for a given layer will be cached.  When this setting is enabled, all requests for a given layer, even those that use a non-standard style will be cached.  Disabling this may be useful in situations where disk space is an issue, or when only one default style is important.
+
+Default metatile size
+~~~~~~~~~~~~~~~~~~~~~
+
+A metatile is several tiles combined into a larger one.  This larger metatile is generated and then sliced up before being served back (and cached) as standard tiles.  The advantage of using metatiling is in situations where a label or geometry lies on a boundary of a tile, which might get cut off or altered.  With metatiling, these tile edge issues are greatly reduced.
+
+The disadvantage of metatiling is that each WMS rendered tile is much larger, causing a possible performance penalty.  Also, at much large sizes, memory consumption can be an issue.
+
+The size of the default metatile can be adjusted here.  By default, GeoServer sets a metatile size of **4x4**, which strikes a balance between performance, memory usage, and rendering accuracy.
+
+Default gutter size
+~~~~~~~~~~~~~~~~~~~
+
+The gutter size sets the amount of extra space (in pixels) used when generating a tile.  Use this in conjunction with metatiles in order to reduce problems with labels and features not being rendered incorrectly due to being on a tile boundary.
+
+Default Cache Formats
+~~~~~~~~~~~~~~~~~~~~~
+
+This setting determines the default image formats that can be cached when tiled requests are made.  There are four image formats that can be used when saving tiles:
+
+* PNG (24-bit PNG)
+* PNG8 (8-bit PNG)
+* JPEG
+* GIF
+
+The default settings are subdivided into vector layers, raster layers, and layer groups.  You may select any of the above four formats for each of the three types of layers.  Any requests that fall outside of these layer/format combinations will not be cached if sent through GeoServer, and will return an error if sent to the GeoWebCache endpoints.
+
+These defaults can be overwritten on a per-layer basis when :ref:`editing the layer properties <webadmin_layers>`.
+
+.. figure:: img/defaults_formats.png
+   :align: center
+
+   *Default image formats*
+
+
+
+Default Cached Gridsets
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This section shows the gridsets that will be automatically configured for cached layers.  While there are a few pre-configured gridsets available by default, there are only two gridsets enabled by default.  These correspond to the most common and universal cases:
+
+* EPSG:4326 (geographic) with 22 maximum zoom levels and 256x256 pixel tiles
+* EPSG:900913 (spherical Mercator) with 31 maximum zoom levels and 256x256 pixel tiles.
+
+.. figure:: img/defaults_gridsets.png
+   :align: center
+
+   *Default gridsets*
+
+
+To add a pre-existing grid set, select it from the :guilabel:`Add default grid set` drop down menu, and click the Add icon (green circle with plus sign).
+
+.. figure:: img/addexistinggridset.png
+   :align: center
+
+   *Adding an existing gridset to the list of defaults*
+
+These definitions are explored in more detail on the :ref:`webadmin_tilecaching_gridsets` page.

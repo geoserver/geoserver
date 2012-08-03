@@ -1,14 +1,21 @@
-.. _webadmin_tilecache:
+.. _webadmin_tilecaching:
 
-Tile Cache
-==========
+Tile Caching
+============
 
-This section of the :ref:`web_admin` allows for setting of the tile caching options for GeoServer.  GeoServer uses GeoWebCache to provide direct and integrated tile caching.
+This section of the :ref:`web_admin` allows for setting of the tile caching options for GeoServer.  GeoServer uses GeoWebCache to provide direct and integrated tile caching, and can dramatically increase your server's responsiveness and reliability.
 
 For more information on GeoServer's integrated tile cache, please see the section on :ref:`geowebcache`.
 
+The pages in this menu can be accessed on the left side of the screen under the heading :guilabel:`Tile Caching`.
+
+.. figure:: img/menu.png
+   :align: center
+
+   *Tile Caching menu*
+
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    layers
    defaults

@@ -8,7 +8,6 @@ import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.ELEVATI
 import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN;
 import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.HAS_TIME_DOMAIN;
 import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.TIME_DOMAIN;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +15,6 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 
@@ -180,6 +178,22 @@ public class ReaderDimensionsAccessor {
         }
     }
 
-    
+    /**
+     * True if the reader has a dimension with the given name
+     */
+    public boolean hasDomain(String name) {
+        return "true".equalsIgnoreCase(reader.getMetadataValue("HAS_" + name + "_DOMAIN"));
+    }
 
+    /**
+     * Returns the full set of values for the given dimension
+     */
+    public TreeSet<Object> getDomain(String name) {
+        String[] values = reader.getMetadataValue(name + "_DOMAIN").split(",");
+        TreeSet<Object> valueSet = new TreeSet<Object>();
+        for (String val : values) {
+            valueSet.add(val);
+        }
+        return valueSet;
+    }
 }

@@ -10,7 +10,7 @@ GeoWebCache integration with GeoServer WMS
 
 GeoWebCache (as of GeoServer 2.1.0) is transparently integrated with the GeoServer WMS, and so requires no special endpoint or custom URL in order to be used.  In this way one can have the simplicity of a standard WMS endpoint with the performance of a tiled client.
 
-This direct integration is turned off by default.  It can be enabled by going to the :ref:`webadmin_gwc` page in the :ref:`web_admin`.
+This direct integration is turned off by default.  It can be enabled by going to the :ref:`webadmin_tilecaching` page in the :ref:`web_admin`.
 
 When this feature is enabled, GeoServer WMS will cache and retrieve tiles from GeoWebCache (via a GetMap request) **only if the following conditions apply**:
 
@@ -50,7 +50,7 @@ As soon as tiles are requested through GeoWebCache, GeoWebCache automatically st
 Disk quota
 ----------
 
-GeoWebCache has a built-in disk quota feature to prevent disk space from growing unbounded.  Disk quotas are turned off by default, but can be configured on the :ref:`webadmin_gwc` page in the :ref:`web_admin`.  You can set the maximum size of the cache directory, poll interval, and what policy of tile removal to use when the quota is exceeded.  Tiles can be removed based on usage ("Least Frequently Used" or LFU) or timestamp ("Least Recently Used" or LRU).
+GeoWebCache has a built-in disk quota feature to prevent disk space from growing unbounded.  Disk quotas are turned off by default, but can be configured on the :ref:`webadmin_tilecaching` page in the :ref:`web_admin`.  You can set the maximum size of the cache directory, poll interval, and what policy of tile removal to use when the quota is exceeded.  Tiles can be removed based on usage ("Least Frequently Used" or LFU) or timestamp ("Least Recently Used" or LRU).
 
 Integration with external mapping sites
 ---------------------------------------

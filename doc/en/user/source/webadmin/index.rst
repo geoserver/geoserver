@@ -8,10 +8,11 @@ The Web Administration Interface is a web-based tool for configuring all aspects
 .. toctree::
    :maxdepth: 2
 
-   basics.rst
-   layerpreview/index
+   basics
    server/index
+   layerpreview/index
    data/index
    services/index
+   tilecache/index
    security/index
    demos/index

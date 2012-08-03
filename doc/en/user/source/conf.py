@@ -25,7 +25,7 @@ import sys, os, string
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.todo']
 
-todo_include_todos = True
+#todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 #templates_path = ['../../theme/_templates']
@@ -39,7 +39,7 @@ master_doc = 'index'
 # General substitutions.
 project = u'GeoServer'
 manual = u'User Manual'
-copyright = u'2011 GeoServer'
+copyright = u'GeoServer'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

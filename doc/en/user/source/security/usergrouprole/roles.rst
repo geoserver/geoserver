@@ -14,6 +14,11 @@ GeoServer roles support inheritance; a child role inherits all the access grante
 Key/value pairs are implementation-specific and may be set by the :ref:`role service <sec_rolesystem_roleservices>` that the user or group 
 originates from. For example, a role service that assigns roles based on employee organization may wish to associate additional information with the role such as Department.
 
-The default role in GeoServer is ``ROLE_ADMINISTRATOR``, which gives access to all operations and resources.
+Geoserver has some system roles, the names of these roles are reserved and it is not allowed to add roles with a reserved name.
 
-.. warning:: JUSTIN-TODO: LIST OTHER PSEUDOROLES?
+* ``ROLE_ADMINISTRATOR`` gives access to all operations and resources.
+* ``ROLE_GROUP_ADMIN`` is a special role for administrating user groups.
+* ``ROLE_AUTHENTICATED`` is assigned to every user authenticating successfully.
+* ``ROLE_ANONYMOUS`` is assigned if anonymous authentication is enabled and user does not log in.
+
+

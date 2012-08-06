@@ -123,7 +123,7 @@ public class RasterLayerLegendHelper {
         height = request.getHeight();
         if (width <= 0 || height <= 0)
             throw new IllegalArgumentException(
-                    "Invalid widht and or height for the GetLegendGraphicRequest");
+                    "Invalid width and or height for the GetLegendGraphicRequest");
 
         final Symbolizer[] symbolizers = applicableRules[0].getSymbolizers();
         if (symbolizers == null || symbolizers.length != 1 | symbolizers[0] == null)

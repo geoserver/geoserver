@@ -5,7 +5,7 @@ Gridsets
 
 A gridset is a definition that specifies a spatial reference system, bounding box (extent), a list of zoom levels (resolutions or scale denominators), and tile dimensions.  Tile requests must conform to the gridset matrix, otherwise caching will not occur.
 
-This page allows you to edit existing saved gridsets or create new ones.  There are only two coordinate reference systems (CRS) available in the default gridsets (EPSG:4326, EPSG:900913), so a new gridset will need to be created to support an additional CRS.  Another reason to create a new gridset would be to set a different tile size, or different number of zoom levels.
+This page allows you to edit existing saved gridsets or create new ones.  There are five preconfuigred gridsets, all in one of two coordinate reference systems: EPSG:4326 and EPSG:900913.  For additional CRS support, new gridsets can be created.  Another reason to create a new gridset would be to set a different tile size or different number of zoom levels.
 
 .. figure:: img/gridsets.png
    :align: center

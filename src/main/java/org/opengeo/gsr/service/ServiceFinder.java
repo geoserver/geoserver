@@ -23,11 +23,12 @@ public class ServiceFinder extends AbstractCatalogFinder {
         this.wms = wms;
         this.dispatcher = dispatcher;
     }
-    
+
     public Resource findTarget(Request request, Response response) {
         Resource resource = null;
+
         try {
-            throw new Exception ("Not implemented yet");
+            throw new Exception("Not implemented yet");
         } catch (Exception e) {
             response.setEntity("NOT IMPLEMENTED", MediaType.TEXT_HTML);
             resource = new Resource(getContext(), request, response);

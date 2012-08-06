@@ -87,7 +87,9 @@ Default metatile size
 
 A metatile is several tiles combined into a larger one.  This larger metatile is generated and then sliced up before being served back (and cached) as standard tiles.  The advantage of using metatiling is in situations where a label or geometry lies on a boundary of a tile, which might get cut off or altered.  With metatiling, these tile edge issues are greatly reduced.
 
-The disadvantage of metatiling is that each WMS rendered tile is much larger, causing a possible performance penalty.  Also, at much large sizes, memory consumption can be an issue.
+Moreover, with metatiling, the overall time it takes to seed the cache is reduced in most cases, when compared with rendering a full map with single tiles.  In fact, using larger metatiling factors is a good way to reduce the time spent in seeding the cache. 
+
+The disadvantage of metatiling is that at large sizes, memory consumption can be an issue.
 
 The size of the default metatile can be adjusted here.  By default, GeoServer sets a metatile size of **4x4**, which strikes a balance between performance, memory usage, and rendering accuracy.
 

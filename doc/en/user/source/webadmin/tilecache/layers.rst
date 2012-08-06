@@ -8,6 +8,8 @@ This page shows a listing of all of the layers known to the integrated GeoWebCac
 .. figure:: img/tilelayers.png
    :align: center
 
+.. note:: There is also a link to the `GeoWebCache standalone demo page <webadmin_tilecaching_demopage>`.
+
 Layer information
 -----------------
 
@@ -49,7 +51,7 @@ Will remove all saved tiles from the cache.  Operation is identical to a full tr
 Add or remove cached layers
 ---------------------------
 
-The list of layers displayed on this page is typically the same or similar as the full list of layers known to GeoServer.  However, however it may not be desirable to have every layer published in GeoServer also have a cached layer component.  In this case, simply check the box next to the layer to remove, and click on :guilabel:`Remove selected cached layers`.  The layer will be removed from GeoWebCache, and the disk cache for this layer will be entirely removed.
+The list of layers displayed on this page is typically the same or similar as the full list of layers known to GeoServer.  However, it may not be desirable to have every layer published in GeoServer also have a cached layer component.  In this case, simply check the box next to the layer to remove, and click on :guilabel:`Remove selected cached layers`.  The layer will be removed from GeoWebCache, and the disk cache for this layer will be entirely removed.
 
 .. warning:: The deletion of the tile cache is not undoable.
 

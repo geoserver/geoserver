@@ -18,6 +18,7 @@ The pages in this menu can be accessed on the left side of the screen under the 
    :maxdepth: 2
 
    layers
+   demopage
    defaults
    gridsets
    diskquotas

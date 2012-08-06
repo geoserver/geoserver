@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd"
+    default-autowire="byName">
+
+    <bean id="serviceFinder" class="org.opengeo.gsr.service.ServiceFinder">
+        <constructor-arg ref="geoServer" />
+        <constructor-arg ref="wms"></constructor-arg>
+        <constructor-arg ref="dispatcher"></constructor-arg>
+    </bean>
+
+    <bean id="gsrDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+          <props>
+              <prop key="gsr">restWrapper</prop>
+              <prop key="/gsr/**">restWrapper</prop>
+          </props>
+        </property>
+    </bean>
+
+    <bean id="restMapping" class="org.geoserver.rest.RESTMapping">
+        <property name="routes">
+            <map>
+                <entry>
+                    <key>
+                        <value>/services?{params}</value>
+                    </key>
+                    <value>serviceFinder</value>
+                </entry>
+            </map>
+    </property>
+    </bean>
+
+</beans>

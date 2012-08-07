@@ -5,6 +5,7 @@ Using GeoWebCache
 
 .. note:: For an more in-depth discussion of using GeoWebCache, please see the `GeoWebCache documentation <http://geowebcache.org/docs/>`_.
 
+.. _gwc_directwms:
 
 Direct integration with GeoServer WMS
 -------------------------------------
@@ -61,6 +62,8 @@ With direct WMS integration, the following parameter filters are supported for G
 
 If a request is made using any of the above parameters, the request will be passed to GeoServer, unless a parameter filter has been set up, in which case GeoWebCache will process the request.
 
+
+.. _gwc_endpoint:
 
 GeoWebCache endpoint URL
 ------------------------

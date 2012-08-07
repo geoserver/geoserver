@@ -119,7 +119,7 @@ The following outlines the steps to be taken in order to add a new community mod
              </profile>
            </profiles>
 
-   #. Edit ``web/pom.xml`` and add the following inside of the ``<profiles>``
+   #. Edit ``web/app/pom.xml`` and add the following inside of the ``<profiles>``
       element:
 
       .. code-block:: xml
@@ -250,7 +250,7 @@ Process
               <module>myCommunityModule</module>
             </modules>
 
-     #. Edit ``web/pom.xml`` and move the dependency on the community module 
+     #. Edit ``web/app/pom.xml`` and move the dependency on the community module 
         into the main dependencies section of the pom. Then remove the profile
 
    *Extensions*

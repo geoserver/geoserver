@@ -23,7 +23,7 @@ Set the following performance settings in the Java virtual machine (JVM) for you
      - Increases the lifetime of "soft references" in GeoServer.  GeoServer uses soft references to cache datastore references and other similar requests.  Making them live longer will increase the effectiveness of the cache.
    * - ``-XX:MaxPermSize=128m``
      - Increases the maximum size of permanent generation (or "permgen") allocated to GeoServer to 128MB.  Permgen is the heap portion where the class bytecode is stored.  GeoServer uses lots of classes, and it may exhaust that space quickly, leading to out of memory errors.  This is especially important if you're deploying GeoServer along with other applications in the same container, or if you need to deploy multiple GeoServer instances inside the same container.
-   * - ``-XX:XX:+UseParallelGC``
+   * - ``-XX:+UseParallelGC``
      - Enables the throughput garbage collector.
 
 For more information about JVM configuration, see the article `Performance tuning garbage collection in Java <http://www.petefreitag.com/articles/gctuning/>`_.

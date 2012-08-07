@@ -183,7 +183,7 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
                 fieldsToCalculate.add("latlonbbox");
             }
         } else {
-            fieldsToCalculate = Arrays.asList(calculate.toLowerCase().split("'"));
+            fieldsToCalculate = Arrays.asList(calculate.toLowerCase().split(","));
         }
         
         if (fieldsToCalculate.contains("nativebbox")) {

@@ -4,12 +4,9 @@
  */
 package org.geoserver.wcs.response;
 
-import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -179,21 +176,35 @@ public class DescribeCoverageTransformer extends TransformerBase {
         private void handleMetadataLinks(List<MetadataLinkInfo> links, String linkType) {
         	for (MetadataLinkInfo mdl : links) {
         		if (mdl != null) {
-                    AttributesImpl attributes = new AttributesImpl();
-
-                    if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
-                        attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-                    }
-
-                    if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                        attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
-                    }
-
-                    if (attributes.getLength() > 0) {
-                        element("ows:Metadata", null, attributes);
-                    }
+                    handleMetadataLink(mdl, linkType);
                 }
 			}
+        }
+
+        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
+            AttributesImpl attributes = new AttributesImpl();
+
+            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+                attributes.addAttribute("", "about", "about", "", mdl.getAbout());
+            }
+            
+            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
+                        .getMetadataType());
+            }
+
+            if ((linkType != null) && (linkType != "")) {
+                attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
+            }
+
+            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+                attributes.addAttribute("", "xlink:href", "xlink:href", 
+                        "", mdl.getContent());
+            }
+
+            if (attributes.getLength() > 0) {
+                element("ows:Metadata", null, attributes);
+            }
         }
 
         // TODO: find a way to share this with the capabilities transfomer

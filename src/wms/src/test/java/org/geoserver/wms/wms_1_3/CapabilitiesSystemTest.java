@@ -81,7 +81,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
         XMLUnit.setXpathNamespaceContext(ctx);
 
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
         LayerInfo layer = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
@@ -115,7 +115,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
                     String systemId, String baseURI) {
                 if(namespaceURI.equals("http://www.w3.org/1999/xlink")) {
                     try {
-                        URL xlink = getClass().getResource("/schemas/xlink/1.0.0/xlinks.xsd");
+                        URL xlink = getClass().getResource("/schemas/xlink/1999/xlink.xsd");
                         systemId = xlink.toURI().toASCIIString();
                         DOMInputImpl input = new DOMInputImpl(publicId, systemId, null);
                         return input;

@@ -21,10 +21,13 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
@@ -63,7 +66,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         super.oneTimeSetUp();
 
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
     }
 
@@ -303,7 +306,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("__fax", cinfo + "wms:ContactFacsimileTelephone", doc);
         assertXpathEvaluatesTo("e@mail", cinfo + "wms:ContactElectronicMailAddress", doc);
     }
-
+    
     public void testQueryable() throws Exception {
         LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
         lines.setQueryable(true);
@@ -349,10 +352,61 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("baz", xpath, doc);
 
     }
+    
     public void testBoundingBoxCRS84() throws Exception {
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
         assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']", doc);
         assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer//wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']", doc);
+    }
+    
+    public void testMetadataLinks() throws Exception {
+        String layerName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
+        
+        LayerInfo layer = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        MetadataLinkInfo mdlink = getCatalog().getFactory().createMetadataLink();
+        mdlink.setMetadataType("FGDC");
+        mdlink.setContent("http://geoserver.org");
+        mdlink.setType("text/xml");
+        ResourceInfo resource = layer.getResource();
+        resource.getMetadataLinks().add(mdlink);
+        getCatalog().save(resource);
+        
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        String xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/wms:Format";
+        assertXpathEvaluatesTo("text/xml", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/@type";
+        assertXpathEvaluatesTo("FGDC", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/wms:OnlineResource/@xlink:type";
+        assertXpathEvaluatesTo("simple", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/wms:OnlineResource/@xlink:href";
+        assertXpathEvaluatesTo("http://geoserver.org", xpath, doc);
+        
+        // Test transforming localhost to proxyBaseUrl
+        GeoServerInfo global = getGeoServer().getGlobal();
+        String proxyBaseUrl = global.getSettings().getProxyBaseUrl();
+        mdlink.setContent("/metadata");
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata", xpath, doc);
+        
+        // Test KVP in URL
+        String query = "key=value";
+        mdlink.setContent("/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?" + query, xpath, doc);
+
+        mdlink.setContent("http://localhost/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("http://localhost/metadata?" + query, xpath, doc);
+        
     }
 }

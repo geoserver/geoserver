@@ -1,9 +1,7 @@
 package org.geoserver.wcs;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.data.test.MockData.ROTATED_CAD;
-import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.geoserver.data.test.MockData.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +10,11 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.TestData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -258,5 +257,23 @@ public class DescribeCoverageTest extends WCSTestSupport {
         dom = getAsDOM(
             "wcs?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers="+TASMANIA_DEM.getLocalPart());
         assertEquals("wcs:CoverageDescriptions", dom.getDocumentElement().getNodeName());
+    }
+    
+    public void testMetadataLink() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+        
+        Document dom = getAsDOM("wcs?request=DescribeCoverage&service=WCS&version=1.1.1&identifiers=" + TASMANIA_DEM.getLocalPart());
+        // print(dom);
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        String xpathBase = "//wcs:CoverageDescription/ows:Metadata";
+        assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
+        assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase + "/@xlink:href", dom);
     }
 }

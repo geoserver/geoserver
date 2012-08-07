@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +56,6 @@ import org.opengis.parameter.Parameter;
 import org.vfny.geoserver.global.FeatureTypeInfoTitleComparator;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.helpers.NamespaceSupport;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -1770,9 +1768,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     "xmlns:fes", FES_URI, "xmlns:xlink", XLINK.NAMESPACE,
                     "xmlns:xs", XS.NAMESPACE,
                     "xsi:schemaLocation", WFS20_URI + " " +
-                        (wfs.isCanonicalSchemaLocation()?
-                                org.geoserver.wfs.xml.v1_1_0.WFS.CANONICAL_SCHEMA_LOCATION:
-                                    (buildSchemaURL(request.getBaseUrl(), "wfs/2.0/wfs.xsd")))
+                        (wfs.isCanonicalSchemaLocation()
+                                ? org.geotools.wfs.v2_0.WFS.CANONICAL_SCHEMA_LOCATION
+                                : (buildSchemaURL(request.getBaseUrl(), "wfs/2.0/wfs.xsd")))
                 });
 
                 registerNamespaces(attributes);

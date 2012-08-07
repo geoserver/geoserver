@@ -57,7 +57,7 @@ import org.geoserver.security.xml.XMLUserGroupServiceTest;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 
-public class AbstractSecurityWicketTestSupport extends GeoServerWicketTestSupport {
+public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketTestSupport {
     
     
     public String getRoleServiceName() {

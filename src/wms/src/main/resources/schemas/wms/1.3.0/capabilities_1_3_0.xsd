@@ -7,7 +7,7 @@
 		To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
 	-->
 
-	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
 	<!-- ********************************************************************* -->
 	<!-- **  The Top-Level Element.                                         ** -->
 	<!-- ********************************************************************* -->
@@ -86,7 +86,7 @@
       </documentation>
 		</annotation>
 		<complexType>
-			<attributeGroup ref="xlink:simpleLink"/>
+			<attributeGroup ref="xlink:simpleAttrs"/>
 		</complexType>
 	</element>
 	<element name="Format" type="string">

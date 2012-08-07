@@ -16,4 +16,5 @@ This section will discuss the version of GeoWebCache embedded in GeoServer.  For
    config
    demopage
    seeding
+   rest/index
    troubleshooting

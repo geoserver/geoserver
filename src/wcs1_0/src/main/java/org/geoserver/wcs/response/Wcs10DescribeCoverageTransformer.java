@@ -210,7 +210,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         private void handleCoverageOffering(CoverageInfo ci) throws Exception {
             start("wcs:CoverageOffering");
             for (MetadataLinkInfo mdl : ci.getMetadataLinks())
-                handleMetadataLink(mdl);
+                handleMetadataLink(mdl, "simple");
             element("wcs:description", ci.getDescription());
             element("wcs:name", ci.getPrefixedName());
             element("wcs:label", ci.getTitle());
@@ -226,29 +226,29 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("wcs:CoverageOffering");
         }
 
-        /**
-         * DOCUMENT ME!
-         * 
-         * @param metadataLink
-         */
-        private void handleMetadataLink(MetadataLinkInfo mdl) {
-            if (mdl != null) {
-                AttributesImpl attributes = new AttributesImpl();
+        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
+            AttributesImpl attributes = new AttributesImpl();
 
-                if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
-                    attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-                }
+            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+                attributes.addAttribute("", "about", "about", "", mdl.getAbout());
+            }
+            
+            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
+                        .getMetadataType());
+            }
 
-                if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
-                    attributes.addAttribute("", "metadataType", "metadataType", "", mdl
-                            .getMetadataType());
-                }
+            if ((linkType != null) && (linkType != "")) {
+                attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
+            }
 
-                if (attributes.getLength() > 0) {
-                    element("wcs:metadataLink", mdl.getContent(), attributes);
-                } else {
-                    element("wcs:metadataLink", mdl.getContent());
-                }
+            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+                attributes.addAttribute("", "xlink:href", "xlink:href", 
+                        "", mdl.getContent());
+            }
+
+            if (attributes.getLength() > 0) {
+                element("wcs:metadataLink", null, attributes);
             }
         }
 

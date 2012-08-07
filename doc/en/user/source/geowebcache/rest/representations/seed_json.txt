@@ -1,0 +1,12 @@
+{"seedRequest":{
+	"name":"topp:states",
+	"bounds":{"coords":{ "double":["-124.0","22.0","66.0","72.0"]}},
+	"srs":{"number":4326},
+	"zoomStart":1,
+	"zoomStop":12,
+	"format":"image\/png",
+	"type":"seed",
+        "threadCount":4
+	}
+}}
+

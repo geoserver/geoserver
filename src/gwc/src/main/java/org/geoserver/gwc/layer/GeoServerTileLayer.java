@@ -610,6 +610,7 @@ public class GeoServerTileLayer extends TileLayer {
             setTileIndexHeader(tile);
         }
 
+        tile.setTileLayer(this);
         return tile;
     }
 

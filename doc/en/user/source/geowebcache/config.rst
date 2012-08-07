@@ -17,17 +17,16 @@ GeoWebCache has a full integrated web-based configuration.  See the :ref:`webadm
 Determining tiled layers
 ------------------------
 
-In versions of GeoServer priori to 2.2.0, the GeoWebCache integration was done in a such way that every GeoServer layer and layer group was forced to have an associated GeoWebCache tile layer.  In addition, every such tile layer was forcedly published in the EPSG:900913 and EPSG:4326 gridsets with PNG and JPEG output formats.
+In versions of GeoServer prior to 2.2.0, the GeoWebCache integration was done in a such way that every GeoServer layer and layer group was forced to have an associated GeoWebCache tile layer.  In addition, every such tile layer was forcedly published in the EPSG:900913 and EPSG:4326 gridsets with PNG and JPEG output formats.
 
 Now, it is possible to selectively turn caching on or off for any layer served through GeoServer.  This setting can be done on the :ref:`webadmin_tilecaching_layers` section in the :ref:`web_admin`. 
 
 Configuration files
 -------------------
 
+It is possible to configure most aspects of cached layers through the :ref:`webadmin_tilecaching` section in the :ref:`web_admin` or the :ref:`gwc_rest`.  
 
-It is possible to configure most aspects of cached layers through the :ref:`webadmin_tilecaching` section in the :ref:`web_admin`.  
-
-GeoWebCache keeps the configuration for each GeoServer tiled layer separately, inside the :file:`<data_dir>/gwc-layers/` directory.  There is one XML file for each tile layer.  These files contain a different syntax from the ``<wmsLayer>`` syntax in the standalone version and are *not* meant to be edited by hand. Instead you can configure tile layers on the :ref:`webadmin_tilecaching_layers` page.
+GeoWebCache keeps the configuration for each GeoServer tiled layer separately, inside the :file:`<data_dir>/gwc-layers/` directory.  There is one XML file for each tile layer.  These files contain a different syntax from the ``<wmsLayer>`` syntax in the standalone version and are *not* meant to be edited by hand. Instead you can configure tile layers on the :ref:`webadmin_tilecaching_layers` page or through the :ref:`gwc_rest`.
 
 Configuration for the defined gridsets still is saved in :file:`<data_dir>/gwc/geowebcache.xml`` so that the integrated GeoWebCache can continue to serve externally-defined tile layers from WMS services outside GeoServer.
 

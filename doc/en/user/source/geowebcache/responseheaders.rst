@@ -3,7 +3,7 @@
 HTTP Response Headers
 =====================
 
-The GeoWebCache integrated with GeoServer employs special information stored in the header of responses.  These headers are only available with direct calls to the :ref:`GeoWebCache endpoint <gwc_endpoint>`, and not with :ref:`direct WMS integration <gwc_directwms>`.
+The GeoWebCache integrated with GeoServer employs special information stored in the header of responses.  These headers are available either with direct calls to the :ref:`GeoWebCache endpoint <gwc_endpoint>` or with :ref:`direct WMS integration <gwc_directwms>`.
 
 Custom response headers
 -----------------------

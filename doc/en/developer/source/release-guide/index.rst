@@ -224,6 +224,16 @@ GeoServer Blog
 
 #. Do not publish the post. Instead present it to the GeoServer outreach 
    team for review, and they will publish it.
+   
+.. note:: GeoServer wiki has to be updated as well.
+      
+#. Go to http://geoserver.org/display/GEOS/Download :
+
+	* Click on Add Page on the right.
+	* Copy the wiki source from an existing page and update the reference link to your released artifact.  
+	* Edit the page location to correctly reflect where the page should reside.
+
+#. Finally, update the wiki link on http://geoserver.org/display/GEOS/Latest to your new page.
 
 SlashGeo
 ^^^^^^^^

@@ -33,12 +33,16 @@ public class JAIInitializer implements GeoServerInitializer {
                     List<String> propertyNames, List<Object> oldValues,
                     List<Object> newValues) {
                 
-                initJAI( global.getJAI() );
+                if (propertyNames.contains("jAI")) {//TODO: check why the propertyname is reported as jAI instead of JAI
+                    // Make sure to proceed with JAI init
+                    // only in case the global change involved that section
+                    initJAI(global.getJAI() );
+                }
             }
             
             @Override
             public void handlePostGlobalChange(GeoServerInfo global) {
-                initJAI(global.getJAI());
+                // No need to handle that change too
             }
         });
     }

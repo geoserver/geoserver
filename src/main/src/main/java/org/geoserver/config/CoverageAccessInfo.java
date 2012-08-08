@@ -4,6 +4,7 @@
  */
 package org.geoserver.config;
 
+import java.io.Serializable;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
@@ -13,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author Daniele Romagnoli, GeoSolutions
  *
  */
-public interface CoverageAccessInfo {
+public interface CoverageAccessInfo extends Cloneable, Serializable{
 
     public enum QueueType {
         UNBOUNDED, DIRECT
@@ -60,5 +61,5 @@ public interface CoverageAccessInfo {
     void setImageIOCacheThreshold(long threshold);
     long getImageIOCacheThreshold();
     
-    
+    public CoverageAccessInfo clone();
 }

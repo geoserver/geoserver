@@ -28,7 +28,7 @@ The following are necessary to perform a GeoServer release:
 #. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
 #. Build access to `Hudson <http://hudson.opengeo.org/hudson>`_
 #. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
-#. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`_
+#. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
 
 Versions and revisions
@@ -38,19 +38,44 @@ When performing a release we don't require a "code freeze" in which no developer
 
 To obtain the GeoServer and Geotools revisions that have passed the `CITE test <http://hudson.opengeo.org/hudson/view/cite/>`_, navigate to the latest Hudson run of the CITE test  and view it's console output and select to view its full log. For example::
 	
-	 http://hudson.opengeo.org/hudson/view/cite/job/cite-wfs-1.1-master/526/consoleFull
+	 http://hudson.opengeo.org/hudson/view/cite/job/cite-wfs-1.1/813/consoleFull
 	
 Perform a search on the log for 'Git revision' and you should obtain the following.::
 
-	version = 2.3-SNAPSHOT
-	Git revision = 68cbe445ca378e0dd04405870ef95c852189c1b0
-	Git branch = 68cbe445ca378e0dd04405870ef95c852189c1b0
-	build date = 08-Jul-2012 03:36
-	geotools version = 9-SNAPSHOT
-	geotools revision = 9517eebf412ce5cda354e7945672293c37cddcc4
+	version = 2.2-SNAPSHOT
+	Git revision = 4ea8d3fdcdbb130892a03f27ab086068b95a3b01
+	Git branch = 4ea8d3fdcdbb130892a03f27ab086068b95a3b01
+	build date = 03-Aug-2012 03:39
+	geotools version = 8-SNAPSHOT
+	geotools revision = 73e8d0746a4527e46a46e5e8bc778ca92ca89130
+	
+Since we don't make any release from master, ensure you select the right CITE test that passed to obtain the right revision.	
 
-Since most GeoServer releases require an official GeoTools release the GEoTools revision is usually not needed. But if performing a beta release it is
+Since most GeoServer releases require an official GeoTools release the GeoTools revision is usually not needed. But if performing a beta release it is
 allowed to release directly from a specific GeoTools revision. 
+
+Release in JIRA
+---------------
+
+Run the `geoserver-release-jira <http://hudson.opengeo.org/hudson/job/geoserver-release-jira/>`_ job in Hudson. The job takes the following parameters:
+
+**VERSION**
+
+  The version to release, same as in the previous section. This version must match a version in JIRA.
+
+**NEXT_VERSION**
+
+  The next version in the series. All unresolved issues currently fils against ``VERSION`` will be transitioned to this version.
+
+**JIRA_USER** 
+
+  A JIRA user name that has release privileges. This user  will be used to perform the release in JIRA, via the SOAP api.
+
+**JIRA_PASSWD**
+
+  The password for the ``JIRA_USER``.
+     
+This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`_ and verify that the version has actually been released.
 
 Build the Release
 -----------------
@@ -103,30 +128,6 @@ Test the Artifacts
 Download and try out some of the artifacts from the above location and do a 
 quick smoke test that there are no issues. Engage other developers to help 
 test on the developer list.
-
-Release in JIRA
----------------
-
-Run the `geoserver-release-jira <http://hudson.opengeo.org/hudson/job/geoserver-release-jira/>`_ job in Hudson. The job takes the following parameters:
-
-**VERSION**
-
-  The version to release, same as in the previous section. This version must match a version in JIRA.
-
-**NEXT_VERSION**
-
-  The next version in the series. All unresolved issues currently fils against ``VERSION`` will be transitioned to this version.
-
-**JIRA_USER** 
-
-  A JIRA user name that has release privileges. This user  will be used to perform the release in JIRA, via the SOAP api.
-
-**JIRA_PASSWD**
-
-  The password for the ``JIRA_USER``.
-     
-This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`_ and verify that the version has actually been released.
-
  
 Publish the Release
 -------------------

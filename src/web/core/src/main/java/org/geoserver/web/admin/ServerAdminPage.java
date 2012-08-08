@@ -9,7 +9,10 @@ import java.util.List;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.config.CoverageAccessInfo;
+import org.geoserver.config.JAIInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -38,22 +41,37 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         };
     }
 
-    public IModel getJAIModel(){
-        return new LoadableDetachableModel(){
-            public Object load() {
-                return getGeoServerApplication()
-                    .getGeoServer().getGlobal().getJAI();
-            }
-        };
-    }
     
-    public IModel getCoverageAccessModel(){
-        return new LoadableDetachableModel(){
-            public Object load() {
-                return getGeoServerApplication()
-                    .getGeoServer().getGlobal().getCoverageAccess();
-            }
-        };
+    public IModel<JAIInfo> getJAIModel(){
+        // Notes setup on top of an explanation provided by Gabriel Roldan for
+        // his patch which fixes the modificationProxy unable to detect changes
+        // --------------------------------------------------------------------
+        // with this change, we will edit a clone of the original JAIInfo.
+        // By this way, the modification proxy will count it as a change.
+        // The previous code wasn't working as expected.
+        // the reason is that the model used to edit JAIInfo is a
+        // LoadableDetachableModel, so when the edit page does gobal.setJAI, it
+        // is actually setting the same object reference, and hence the
+        // modificationproxy does not count it as a change.
+
+        JAIInfo currJaiInfo = getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
+        return new Model<JAIInfo>(currJaiInfo);
+    }
+ 
+    public IModel<CoverageAccessInfo> getCoverageAccessModel(){
+        // Notes setup on top of an explanation provided by Gabriel Roldan for
+        // his patch which fixes the modificationProxy unable to detect changes
+        // --------------------------------------------------------------------
+        // with this change, we will edit a clone of the original Info.
+        // By this way, the modification proxy will count it as a change.
+        // The previous code wasn't working as expected.
+        // the reason is that the model used to edit the page is a
+        // LoadableDetachableModel, so when the edit page does gobal.setJAI, it
+        // is actually setting the same object reference, and hence the
+        // modificationProxy does not count it as a change.
+
+        CoverageAccessInfo currCoverageAccessInfo = getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
+        return new Model<CoverageAccessInfo>(currCoverageAccessInfo);
     }
 
     public IModel getContactInfoModel(){

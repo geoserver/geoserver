@@ -21,7 +21,7 @@ import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.CoverageAccessInfo.QueueType;
 import org.geoserver.config.GeoServer;
-import org.geoserver.web.GeoServerHomePage;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
@@ -85,6 +85,10 @@ public class CoverageAccessPage extends ServerAdminPage {
 
     public CoverageAccessPage(){
         final IModel geoServerModel = getGeoServerModel();
+        
+        // this invokation will trigger a clone of the CoverageAccessInfo,
+        // which will allow the modification proxy seeing changes on the
+        // CoverageAccess page with respect to the original CoverageAccessInfo object
         final IModel coverageModel = getCoverageAccessModel();
 
         // form and submit
@@ -115,8 +119,9 @@ public class CoverageAccessPage extends ServerAdminPage {
             @Override
             public void onSubmit() {
                 GeoServer gs = (GeoServer) geoServerModel.getObject();
-                gs.getGlobal().setCoverageAccess( (CoverageAccessInfo)coverageModel.getObject() );
-                gs.save( gs.getGlobal() ); 
+                GeoServerInfo global = gs.getGlobal();
+                global.setCoverageAccess( (CoverageAccessInfo)coverageModel.getObject() );
+                gs.save(global);
                 doReturn();
             }
         };

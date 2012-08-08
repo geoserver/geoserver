@@ -4,10 +4,10 @@
  */
 package org.geoserver.config;
 
+import java.io.Serializable;
+
 import javax.media.jai.JAI;
 import javax.media.jai.TileCache;
-
-import com.sun.media.jai.util.SunTileCache;
 
 /**
  * Java Advanced Imaging configuration.
@@ -15,7 +15,7 @@ import com.sun.media.jai.util.SunTileCache;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public interface JAIInfo {
+public interface JAIInfo extends Cloneable, Serializable{
 
     /**
      * Flag controlling image interpolation.
@@ -92,4 +92,6 @@ public interface JAIInfo {
      */
     TileCache getTileCache();
     void setTileCache(TileCache tileCache);
+
+    public JAIInfo clone();
 }

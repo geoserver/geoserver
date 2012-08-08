@@ -46,6 +46,7 @@ import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
@@ -313,7 +314,7 @@ public class WPSRequestBuilderPanel extends Panel {
     List<String> buildProcessList() {
         List<String> result = new ArrayList<String>();
 
-        for (ProcessFactory pf : Processors.getProcessFactories()) {
+        for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
             for (Name name : pf.getNames()) {
                 result.add(name.getURI());
             }

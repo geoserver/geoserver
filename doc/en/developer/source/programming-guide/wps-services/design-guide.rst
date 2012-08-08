@@ -60,6 +60,51 @@ is made so that parameters are actually xs:Any, so bot
 
 The code providing the description of the various processes also scans the available ``ProcessParameterIO`` implementations so that each parameter can be matched with all formats in which it can be represented.
 
+Filtering processes
+-------------------
+
+By default GeoServer will publish every process found in SPI or registered in the Spring context.
+
+The ``org.geoserver.wps.process.ProcessFilter`` interface can be implemented to exert some control
+over how the processes are getting published. The interface looks as follow:
+
+.. code-block:: java
+
+	public interface ProcessFilter {
+	    ProcessFactory filterFactory(ProcessFactory pf);
+	}
+	
+An implementation of ProcessFilter can decide to return null to the ``filterFactory`` call in order
+to have all the processes inside such factory be hidden from the user, or to wrap the factory so
+that some of its functionality is changed. By wrapping a factory the following could be achieved:
+
+* Selectively hide some process
+* Change the process metadata, such as its title and description, and eventually add more translations
+  of the process metadata
+* Hide some of the process inputs and outputs, eventually defaulting them to a constant value
+* Exert control over the process inputs, eventually refusing to run the process under certain circumstances 
+
+For the common case of mere process selection a base class is provided, ``org.geoserver.wps.process.ProcessSelector``,
+where the subclasses only have to double check if a certain process, specified by ``Name`` is allowed
+to be exposed or not.
+
+The GoeServer code base sports by default two implementation of a ``ProcessFilter``:
+
+* ``org.geoserver.wps.ProecssBlaclistSelector``, which hides all the processes having an input or
+  an output that the available ``ProcessParameterIO`` classes cannot handle
+* ``org.geoserver.wps.DisabledProcessSelector``, which hides all the processes that the administrator
+  disabled in the WPS Admin page in the administration console 
+
+Once the ProcessFilter is coded it can be activated by declaring it in the Spring application context, 
+for example the ``ProcessSelector`` subclass that controls which processes can be exposed based on
+the WPS admin panel configuration is registered in ``applicationContext.xml`` as follows:
+
+.. code-block:: java
+
+    <!-- The default process filters -->
+    <bean id="blackListFilter" class="org.geoserver.wps.ProcessBlacklistSelector"/>
+    <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>
+
 Implementation level
 --------------------
 

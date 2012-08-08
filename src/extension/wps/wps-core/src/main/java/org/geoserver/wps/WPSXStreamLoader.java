@@ -12,8 +12,17 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
+import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.feature.NameImpl;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Version;
+import org.opengis.feature.type.Name;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
 /**
  * Service loader for the Web Processing Service
@@ -44,7 +53,11 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
-        xp.getXStream().alias( "wps", WPSInfo.class, WPSInfoImpl.class );
+        XStream xs = xp.getXStream();
+        xs.alias("wps", WPSInfo.class, WPSInfoImpl.class);
+        xs.alias("processGroupInfo", ProcessGroupInfoImpl.class);
+        xs.alias("name", NameImpl.class);
+        xs.registerConverter(new NameConverter());
     }
     
     @Override
@@ -72,6 +85,40 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             // timeout has not yet been specified. Use default
             ((WPSInfoImpl)service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
+        if(service.getProcessGroups() == null) {
+            ((WPSInfoImpl)service).setProcessFactories( new ArrayList() );
+        }
         return service;
+    }
+    
+    /**
+     * Converter for {@link Name} 
+     *
+     */
+    public static class NameConverter extends AbstractSingleValueConverter {
+
+        @Override
+        public boolean canConvert(Class type) {
+            return Name.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public String toString(Object obj) {
+            Name name = (Name) obj;
+            return name.getNamespaceURI() + ":" + name.getLocalPart();
+        }
+        
+        @Override
+        public Object fromString(String str) {
+            int idx =  str.indexOf(":");
+            if(idx == -1) {
+                return new NameImpl(str);
+            } else {
+                String prefix = str.substring(0, idx);
+                String local = str.substring(idx + 1);
+                return new NameImpl(prefix, local);
+            }
+        }
+        
     }
 }

@@ -5,7 +5,6 @@
 
 package org.geoserver.wps;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -31,11 +30,11 @@ import net.opengis.wps10.WPSCapabilitiesType;
 import net.opengis.wps10.Wps10Factory;
 
 import org.eclipse.emf.common.util.ECollections;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
@@ -52,8 +51,6 @@ public class GetCapabilities {
     ApplicationContext context;
 
     static final Logger LOGGER = Logging.getLogger(GetCapabilities.class);
-
-    private static Set<Name> PROCESS_BLACKLIST = Collections.EMPTY_SET;
 
     public GetCapabilities(WPSInfo wps, ApplicationContext context) {
         this.wps = wps;
@@ -144,17 +141,15 @@ public class GetCapabilities {
         caps.setProcessOfferings(po);
 
         // gather the process list
-        for (ProcessFactory pf : Processors.getProcessFactories()) {
+        for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
             for (Name name : pf.getNames()) {
-                if (!getProcessBlacklist().contains(name)) {
-                    ProcessBriefType p = wpsf.createProcessBriefType();
-                    p.setProcessVersion(pf.getVersion(name));
-                    po.getProcess().add(p);
+                ProcessBriefType p = wpsf.createProcessBriefType();
+                p.setProcessVersion(pf.getVersion(name));
+                po.getProcess().add(p);
 
-                    p.setIdentifier(Ows11Util.code(name));
-                    p.setTitle(Ows11Util.languageString(pf.getTitle(name)));
-                    p.setAbstract(Ows11Util.languageString(pf.getDescription(name)));
-                }
+                p.setIdentifier(Ows11Util.code(name));
+                p.setTitle(Ows11Util.languageString(pf.getTitle(name)));
+                p.setAbstract(Ows11Util.languageString(pf.getDescription(name)));
             }
         }
         // sort it
@@ -185,62 +180,7 @@ public class GetCapabilities {
         // Version detection and alternative invocation if being implemented.
     }
 
-    /**
-     * Checks if our WPS can really handle this process inputs and outputs
-     * 
-     * @param pf
-     * @param name
-     * @return
-     */
-    Set<Name> getProcessBlacklist() {
-        synchronized (PROCESS_BLACKLIST) {
-            if (PROCESS_BLACKLIST == Collections.EMPTY_SET) {
-
-                Set<Name> blacklist = new HashSet<Name>();
-
-                for (ProcessFactory pf : Processors.getProcessFactories()) {
-                    int count = 0;
-                    for (Name name : pf.getNames()) {
-                        try {
-                            // check inputs
-                            for (Parameter<?> p : pf.getParameterInfo(name).values()) {
-                                List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(p, context);
-                                if (ppios.isEmpty()) {
-                                    LOGGER.log(Level.INFO, "Blacklisting process " + name.getURI()
-                                            + " as the input " + p.key + " of type " + p.type
-                                            + " cannot be handled");
-                                    blacklist.add(name);
-                                }
-                            }
     
-                            // check outputs
-                            for (Parameter<?> p : pf.getResultInfo(name, null).values()) {
-                                List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(p, context);
-                                if (ppios.isEmpty()) {
-                                    LOGGER.log(Level.INFO, "Blacklisting process " + name.getURI()
-                                            + " as the output " + p.key + " of type " + p.type
-                                            + " cannot be handled");
-                                    blacklist.add(name);
-                                }
-                            }
-                        } catch(Throwable t) {
-                            blacklist.add(name);
-                        }
-                        
-                        if(!blacklist.contains(name)) {
-                            count++;
-                        }
-                    }
-                    LOGGER.info("Found " + count + " bindable processes in " + pf.getTitle());
-                }
-                
-
-                PROCESS_BLACKLIST = blacklist;
-            }
-        }
-
-        return PROCESS_BLACKLIST;
-    }
 
     ResponsiblePartySubsetType responsibleParty(SettingsInfo settings, Ows11Factory f) {
         ResponsiblePartySubsetType rp = f.createResponsiblePartySubsetType();

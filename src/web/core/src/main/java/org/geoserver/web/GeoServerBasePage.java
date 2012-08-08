@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -31,6 +29,8 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.geoserver.catalog.Catalog;
@@ -38,6 +38,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 /**
  * Base class for web pages in GeoServer web application.
@@ -194,9 +196,34 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 new ResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
         
         add(new WebMarkupContainer(HEADER_PANEL));
+        
+        
+        // allow the subclasses to initialize before getTitle/getDescription are called
+        add(new Label("title", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                return getTitle();
+            }
+        }));
+        add(new Label("description", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                return getDescription();
+            }
+        }));
     }
 	
-	/**
+	protected String getTitle() {
+        return new ParamResourceModel("title", this).getString();
+    }
+	
+	protected String getDescription() {
+	    return new ParamResourceModel("description", this).getString();
+    }
+
+    /**
 	 * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found
 	 * @return
 	 */

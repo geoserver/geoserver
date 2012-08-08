@@ -5,8 +5,15 @@
 
 package org.geoserver.wps;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geotools.process.ProcessFactory;
+import org.geotools.process.Processors;
 
 /**
  * WPS information implementation
@@ -58,6 +65,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      * Maximum number of asynchronous requests running in parallel
      */
     Integer maxAsynchronousProcesses = DEFAULT_MAX_ASYNCH;
+    
+    List<ProcessGroupInfo> processFactories = new ArrayList<ProcessGroupInfo>();
 
 
     /**
@@ -152,6 +161,53 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses) {
         this.maxAsynchronousProcesses = maxAsynchronousProcesses;
     }
+
+    @Override
+    public synchronized List<ProcessGroupInfo> getProcessGroups() {
+        if(processFactories == null) {
+            processFactories = new ArrayList<ProcessGroupInfo>();
+            
+            // here we build a full list of process factories infos, covering all available
+            // factories: this makes sure the available factories are availablefrom both
+            // GUI and REST configuration
+            
+            // get the full list of factories
+            List<ProcessFactory> factories = new ArrayList<ProcessFactory>(Processors.getProcessFactories());
+            
+            // ensure there is a stable order across invocations, JDK and so on
+            Collections.sort(factories, new Comparator<ProcessFactory>() {
+
+                @Override
+                public int compare(ProcessFactory o1, ProcessFactory o2) {
+                    if(o1 == null) {
+                        return o2 == null ? 0 : -1;
+                    } else if(o2 == null) {
+                        return 1;
+                    } else {
+                        return o1.getClass().getName().compareTo(o2.getClass().getName());
+                    }
+                }
+                
+            });
+            
+            // build the result, adding the ProcessFactoryInfo as necessary for the factories
+            // that do not already have a configuration
+            for (final ProcessFactory pf : factories) {
+                ProcessGroupInfo pfi = new ProcessGroupInfoImpl();
+                pfi.setEnabled(true);
+                pfi.setFactoryClass(pf.getClass());
+                
+                processFactories.add(pfi);
+            }
+        }
+        
+        return processFactories;
+    }
+
+    public void setProcessFactories(List<ProcessGroupInfo> processFactories) {
+        this.processFactories = processFactories;
+    }
+    
     
     
 }

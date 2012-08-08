@@ -18,9 +18,9 @@ import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.feature.type.Name;
 
 /**
@@ -84,7 +84,7 @@ public class ExecuteRequest {
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
         // get the input descriptors
         Name processName = Ows11Util.name(request.getIdentifier());
-        ProcessFactory pf = Processors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
         if(pf == null) {
             throw new WPSException("Unknown process " + processName);
         }

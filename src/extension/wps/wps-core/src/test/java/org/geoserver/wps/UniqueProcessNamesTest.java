@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.feature.type.Name;
 
 /**
@@ -28,7 +28,7 @@ public class UniqueProcessNamesTest extends GeoServerTestSupport {
         List<String> procs = new ArrayList<String>();
         Set<String> uniqueProcs = new HashSet<String>();
 
-        for (ProcessFactory pf : Processors.getProcessFactories()) {
+        for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
             for (Name name : pf.getNames()) {
                 String procName = name.getURI();
                 procs.add(procName);

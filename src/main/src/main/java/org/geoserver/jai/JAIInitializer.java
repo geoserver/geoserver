@@ -10,7 +10,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.JAIInfo;
-import org.geotools.image.io.ImageIOExt;
 import org.geotools.image.jai.Registry;
 
 import com.sun.media.jai.util.SunTileCache;
@@ -35,18 +34,21 @@ public class JAIInitializer implements GeoServerInitializer {
                     List<String> propertyNames, List<Object> oldValues,
                     List<Object> newValues) {
                 
-                initJAI( global.getJAI() );
+                if (propertyNames.contains("jAI")) {//TODO: check why the propertyname is reported as jAI instead of JAI
+                    // Make sure to proceed with JAI init
+                    // only in case the global change involved that section
+                    initJAI(global.getJAI() );
+                }
             }
             
             @Override
             public void handlePostGlobalChange(GeoServerInfo global) {
-                initJAI(global.getJAI());
+                // No need to handle that change too
             }
         });
     }
 
     void initJAI(JAIInfo jai) {
-        
         JAI jaiDef = JAI.getDefaultInstance();
         jai.setJAI( jaiDef );
         

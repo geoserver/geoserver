@@ -40,10 +40,6 @@ import org.w3c.dom.Element;
  */
 public class DescribeLayerTransformerTest extends TestCase {
 
-    private static final String TEST_NS_PREFIX = "geos";
-
-    private static final String TEST_NAMESPACE = "http//www.geoserver.org/test";
-
     /**
      * A request for the tests to fill up with the test spficic parameters. setUp creates it whit a
      * mocked up catalog
@@ -77,9 +73,10 @@ public class DescribeLayerTransformerTest extends TestCase {
         GeoServerImpl geoServerImpl = new GeoServerImpl();
         catalog = new CatalogImpl();
         geoServerImpl.setCatalog(catalog);
+        
         NamespaceInfoImpl ns = new NamespaceInfoImpl();
-        ns.setPrefix(TEST_NS_PREFIX);
-        ns.setURI(TEST_NAMESPACE);
+        ns.setPrefix("fakeWs");
+        ns.setURI("http://fakews.org");
 
         WorkspaceInfoImpl workspace = new WorkspaceInfoImpl();
         workspace.setId("fakeWs");
@@ -100,8 +97,8 @@ public class DescribeLayerTransformerTest extends TestCase {
         vectorLayerInfo.setId("states");
         vectorLayerInfo.setName("states");
 
-        catalog.add(ns);
         catalog.add(workspace);
+        catalog.add(ns);
         catalog.add(dataStoreInfo);
         catalog.add(featureTypeInfo);
         catalog.add(vectorLayerInfo);
@@ -197,7 +194,7 @@ public class DescribeLayerTransformerTest extends TestCase {
 
         final String layerDescPath = "/WMS_DescribeLayerResponse/LayerDescription";
         assertXpathExists(layerDescPath, dom);
-        assertXpathEvaluatesTo("geos:states", layerDescPath + "/@name", dom);
+        assertXpathEvaluatesTo("fakeWs:states", layerDescPath + "/@name", dom);
 
         final String expectedWfsAtt = serverBaseUrl + "/wfs/WfsDispatcher?";
         assertXpathExists(layerDescPath + "/@wfs", dom);
@@ -210,7 +207,7 @@ public class DescribeLayerTransformerTest extends TestCase {
         assertXpathEvaluatesTo("WFS", layerDescPath + "/@owsType", dom);
 
         assertXpathExists(layerDescPath + "/Query", dom);
-        assertXpathEvaluatesTo("geos:states", layerDescPath + "/Query/@typeName", dom);
+        assertXpathEvaluatesTo("fakeWs:states", layerDescPath + "/Query/@typeName", dom);
     }
 
     public void testSingleRasterLayer() throws Exception {
@@ -225,7 +222,7 @@ public class DescribeLayerTransformerTest extends TestCase {
 
         final String layerDescPath = "/WMS_DescribeLayerResponse/LayerDescription";
         assertXpathExists(layerDescPath, dom);
-        assertXpathEvaluatesTo("geos:fakeCoverage", layerDescPath + "/@name", dom);
+        assertXpathEvaluatesTo("fakeWs:fakeCoverage", layerDescPath + "/@name", dom);
 
         // no wfs attribute for a coverage layer
         assertXpathEvaluatesTo("", layerDescPath + "/@wfs", dom);
@@ -238,7 +235,7 @@ public class DescribeLayerTransformerTest extends TestCase {
         assertXpathEvaluatesTo("WCS", layerDescPath + "/@owsType", dom);
 
         assertXpathExists(layerDescPath + "/Query", dom);
-        assertXpathEvaluatesTo("geos:fakeCoverage", layerDescPath + "/Query/@typeName", dom);
+        assertXpathEvaluatesTo("fakeWs:fakeCoverage", layerDescPath + "/Query/@typeName", dom);
     }
 
     public void testMultipleLayers() throws Exception {
@@ -255,7 +252,7 @@ public class DescribeLayerTransformerTest extends TestCase {
 
         assertXpathExists(layerDescPath1, dom);
         assertXpathExists(layerDescPath2, dom);
-        assertXpathEvaluatesTo("geos:states", layerDescPath1 + "/@name", dom);
-        assertXpathEvaluatesTo("geos:fakeCoverage", layerDescPath2 + "/@name", dom);
+        assertXpathEvaluatesTo("fakeWs:states", layerDescPath1 + "/@name", dom);
+        assertXpathEvaluatesTo("fakeWs:fakeCoverage", layerDescPath2 + "/@name", dom);
     }
 }

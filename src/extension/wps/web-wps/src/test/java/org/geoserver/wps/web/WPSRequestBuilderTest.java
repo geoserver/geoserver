@@ -48,7 +48,7 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:requestBuilder:process", "JTS:area");
         Label label = (Label) tester
                 .getComponentFromLastRenderedPage("form:requestBuilder:descriptionContainer:processDescription");
-        assertTrue(label.getDefaultModelObjectAsString().contains("geometry area"));
+        assertTrue(label.getDefaultModelObjectAsString().contains("area"));
 
         tester.assertComponent(
                 "form:requestBuilder:inputContainer:inputs:0:paramValue:editor:mime",

@@ -22,6 +22,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -39,6 +40,7 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
@@ -68,38 +70,52 @@ public class WPSRequestBuilderPanel extends Panel {
 
     private Component feedback;
 
+    private WebMarkupContainer descriptionContainer;
+
+    private WebMarkupContainer inputContainer;
+
+    private WebMarkupContainer outputContainer;
+
+    private ListView<InputParameterValues> inputView;
+
+    private ListView<OutputParameter> outputView;
+
+    /**
+     * Creates a panel to display a process and its parameters.
+     * Invoked with one of:
+     * <ul>
+     * <li>an empty executeRequest, which displays only the process dropdown
+     * <li<an executeRequest with the processName set, which displays the process and parameters
+     * </ul>
+     * 
+     * @param id id of the panel
+     * @param executeRequest execute request, possibly with processName set
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public WPSRequestBuilderPanel(String id, ExecuteRequest executeRequest) {
         super(id);
         setOutputMarkupId(true);
         this.execute = executeRequest;
-        boolean existingProcess = executeRequest.processName != null;
 
-        final DropDownChoice processChoice = new DropDownChoice("process", new PropertyModel(
+        final DropDownChoice<String> processChoice = new DropDownChoice<String>("process", new PropertyModel<String>(
                 execute, "processName"), buildProcessList());
         add(processChoice);
 
-        // contains the process description and the describe process link
-        final WebMarkupContainer descriptionContainer = new WebMarkupContainer(
+        descriptionContainer = new WebMarkupContainer(
                 "descriptionContainer");
-        descriptionContainer.setVisible(existingProcess);
+        descriptionContainer.setVisible(false);
         add(descriptionContainer);
 
         // the process description
         final Label descriptionLabel = new Label("processDescription", new PropertyModel(this,
                 "description"));
         descriptionContainer.add(descriptionLabel);
-        // if we're editing an existing process show the description
-        if (existingProcess) {
-            Name name = Ows11Util.name(execute.processName);
-            ProcessFactory pf = Processors.createProcessFactory(name);
-            description = pf.getDescription(name).toString(Locale.ENGLISH);
-        }
-
-        // the process inputs
-        final WebMarkupContainer inputContainer = new WebMarkupContainer("inputContainer");
-        inputContainer.setVisible(existingProcess);
+        // description value is set later in initProcessView()
+        
+        inputContainer = new WebMarkupContainer("inputContainer");
+        inputContainer.setVisible(false);
         add(inputContainer);
-        final ListView inputView = new ListView("inputs", new PropertyModel(execute, "inputs")) {
+        inputView = new ListView<InputParameterValues>("inputs", new PropertyModel(execute, "inputs")) {
 
             @Override
             protected void populateItem(ListItem item) {
@@ -128,7 +144,7 @@ public class WPSRequestBuilderPanel extends Panel {
                     Fragment f = new Fragment("paramValue", "literal", WPSRequestBuilderPanel.this);
                     FormComponent literal = new TextField("literalValue", property);
                     literal.setRequired(p.minOccurs > 0);
-                    literal.setLabel(new Model(p.key));
+                    literal.setLabel(new Model<String>(p.key));
                     f.add(literal);
                     item.add(f);
                 }
@@ -137,17 +153,16 @@ public class WPSRequestBuilderPanel extends Panel {
         inputView.setReuseItems(true);
         inputContainer.add(inputView);
 
-        // the process outputs
-        final WebMarkupContainer outputContainer = new WebMarkupContainer("outputContainer");
-        outputContainer.setVisible(existingProcess);
+        outputContainer = new WebMarkupContainer("outputContainer");
+        outputContainer.setVisible(false);
         add(outputContainer);
-        final ListView outputView = new ListView("outputs", new PropertyModel(execute, "outputs")) {
+        outputView = new ListView("outputs", new PropertyModel(execute, "outputs")) {
 
             @Override
             protected void populateItem(ListItem item) {
                 OutputParameter pv = (OutputParameter) item.getModelObject();
                 Parameter p = pv.getParameter();
-                item.add(new CheckBox("include", new PropertyModel(pv, "include")));
+                item.add(new CheckBox("include", new PropertyModel<Boolean>(pv, "include")));
                 item.add(new Label("param", buildParamSpec(p)));
                 item.add(new Label("paramDescription", p.description.toString(Locale.ENGLISH)));
                 if (pv.isComplex()) {
@@ -178,7 +193,7 @@ public class WPSRequestBuilderPanel extends Panel {
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
                 request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                return new DemoRequestResponse(new Model(request));
+                return new DemoRequestResponse(new Model<DemoRequest>(request));
             }
         });
 
@@ -189,7 +204,7 @@ public class WPSRequestBuilderPanel extends Panel {
             protected void onClick(AjaxRequestTarget target, Form form) {
                 processChoice.processInput();
                 if (execute.processName != null) {
-                    responseWindow.setDefaultModel(new Model(getDescribeXML(execute.processName)));
+                    responseWindow.setDefaultModel(new Model<String>(getDescribeXML(execute.processName)));
                     responseWindow.show(target);
                 }
             }
@@ -206,27 +221,40 @@ public class WPSRequestBuilderPanel extends Panel {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                Name name = Ows11Util.name(execute.processName);
-                ProcessFactory pf = Processors.createProcessFactory(name);
-                if (pf == null) {
-                    error("No such process: " + execute.processName);
-                    descriptionContainer.setVisible(false);
-                    inputContainer.setVisible(false);
-                    outputContainer.setVisible(false);
-                } else {
-                    description = pf.getDescription(name).toString(Locale.ENGLISH);
-                    execute.inputs = buildInputParameters(pf, name);
-                    execute.outputs = buildOutputParameters(pf, name);
-                    inputView.removeAll();
-                    outputView.removeAll();
-                    descriptionContainer.setVisible(true);
-                    inputContainer.setVisible(true);
-                    outputContainer.setVisible(true);
-                }
+                initProcessView();
                 target.addComponent(WPSRequestBuilderPanel.this);
+                
+                // ensure the parent page feedback panel gets refreshed to clear any existing err msg
+                // check for GeoServerBasePage, because parent page can also be a SubProcessBuilder
+                WebPage page = getWebPage();
+                if (page instanceof GeoServerBasePage) {
+                    target.addComponent(((GeoServerBasePage) page).getFeedbackPanel());
+                }
             }
         });
+        // handle process name submitted as request param
+        if (execute.processName != null)
+            initProcessView();
+    }
 
+    private void initProcessView() {
+        Name name = Ows11Util.name(execute.processName);
+        ProcessFactory pf = Processors.createProcessFactory(name);
+        if (pf == null) {
+            error("No such process: " + execute.processName);
+            descriptionContainer.setVisible(false);
+            inputContainer.setVisible(false);
+            outputContainer.setVisible(false);
+        } else {
+            description = pf.getDescription(name).toString(Locale.ENGLISH);
+            execute.inputs = buildInputParameters(pf, name);
+            execute.outputs = buildOutputParameters(pf, name);
+            inputView.removeAll();
+            outputView.removeAll();
+            descriptionContainer.setVisible(true);
+            inputContainer.setVisible(true);
+            outputContainer.setVisible(true);
+        }
     }
 
     protected String getDescribeXML(String processId) {
@@ -239,7 +267,7 @@ public class WPSRequestBuilderPanel extends Panel {
                 + "    <ows:Identifier>" + processId + "</ows:Identifier>\n" + "</DescribeProcess>";
     }
 
-    String buildParamSpec(Parameter p) {
+    String buildParamSpec(Parameter<?> p) {
         String spec = p.key;
         if (p.minOccurs > 0) {
             spec += "*";
@@ -313,5 +341,6 @@ public class WPSRequestBuilderPanel extends Panel {
     public Component getFeedbackPanel() {
         return feedback;
     }
+
 
 }

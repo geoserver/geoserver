@@ -21,4 +21,15 @@ public class CoverageUtilsTest extends TestCase {
         assertTrue(value instanceof Color);
         assertEquals(Color.WHITE, value);
     }
+    
+    public void testMaxTiles() {
+        ParameterDescriptor<Integer> pdescriptor = ImageMosaicFormat.MAX_ALLOWED_TILES;
+        ParameterValue<Integer> pvalue = pdescriptor.createValue();
+        String key = pdescriptor.getName().getCode();
+        Map values = Collections.singletonMap(key, "1");
+        Object value = CoverageUtils.getCvParamValue(key, pvalue, values);
+        assertTrue(value instanceof Integer);
+        assertEquals(new Integer(1), value);
+        
+    }
 }

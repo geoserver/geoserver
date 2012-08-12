@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
 import org.geoserver.security.auth.TestingAuthenticationCache;
@@ -20,7 +21,6 @@ import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
 import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
-import org.geoserver.security.impl.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;

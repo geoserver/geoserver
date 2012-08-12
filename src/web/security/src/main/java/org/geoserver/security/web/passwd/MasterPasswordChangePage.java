@@ -47,12 +47,17 @@ public class MasterPasswordChangePage extends AbstractSecurityPage {
             @Override
             public void onSubmit() {
                 Form f = getForm();
+                // @Justin, we cannot use getDefaultModelObjectAsString() because of special chars.
+                // example: The password "mcrmcr&1" is converted to "mcrmcr&amp;1".
                 String currPasswd = 
-                    f.get("currentPassword").getDefaultModelObjectAsString();
+                    //f.get("currentPassword").getDefaultModelObjectAsString();
+                    (String) f.get("currentPassword").getDefaultModelObject();    
                 String newPasswd = 
-                    f.get("newPassword").getDefaultModelObjectAsString();
+                    //f.get("newPassword").getDefaultModelObjectAsString();
+                    (String) f.get("newPassword").getDefaultModelObject();
                 String newPasswdConfirm = 
-                    f.get("newPasswordConfirm").getDefaultModelObjectAsString();
+                    // f.get("newPasswordConfirm").getDefaultModelObjectAsString();
+                    (String) f.get("newPasswordConfirm").getDefaultModelObject();
 
                 MasterPasswordConfig mpConfig = (MasterPasswordConfig) getForm().getModelObject();
                 try {

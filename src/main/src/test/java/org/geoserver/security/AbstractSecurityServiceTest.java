@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.security.impl;
+package org.geoserver.security;
 
 
 import java.io.File;
@@ -17,6 +17,9 @@ import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerEmptyPasswordEncoder;
 import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
@@ -584,6 +587,14 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
      */
     protected GeoServerEmptyPasswordEncoder getEmptyEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerEmptyPasswordEncoder.class);
+    }
+
+    /**
+     * Accessor for the geoserver master password.
+     * @return
+     */
+    protected String getMasterPassword() {
+        return new String(getSecurityManager().getMasterPassword());
     }
 
 }

@@ -155,7 +155,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();        
         
         request.addHeader("Authorization",  "Basic " + 
-                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":geoserver").getBytes())));
+                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":"+getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         ctx = (SecurityContext)request.getSession(true).getAttribute(
@@ -550,7 +550,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();        
         
-        headerValue=clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, "geoserver", request.getMethod());
+        headerValue=clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
         request.addHeader("Authorization",  headerValue);        
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
@@ -712,7 +712,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     
                 
         request.addHeader("Authorization",  "Basic " + 
-                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":geoserver").getBytes())));
+                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":"+getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         ctx = (SecurityContext)request.getSession(true).getAttribute(
@@ -873,7 +873,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
         request.setMethod("POST");
         request.setupAddParameter(config.getUsernameParameterName(), GeoServerUser.ROOT_USERNAME);
-        request.setupAddParameter(config.getPasswordParameterName(), "geoserver");
+        request.setupAddParameter(config.getPasswordParameterName(), getMasterPassword());
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         assertTrue(response.wasRedirectSent());
@@ -1040,7 +1040,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
         request.setMethod("POST");
         request.setupAddParameter(config.getUsernameParameterName(), GeoServerUser.ROOT_USERNAME);
-        request.setupAddParameter(config.getPasswordParameterName(), "geoserver");
+        request.setupAddParameter(config.getPasswordParameterName(), getMasterPassword());
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         assertTrue(response.wasRedirectSent());

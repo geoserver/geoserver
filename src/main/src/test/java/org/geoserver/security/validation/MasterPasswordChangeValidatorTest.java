@@ -2,15 +2,14 @@ package org.geoserver.security.validation;
 
 import java.net.URL;
 
-import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.impl.AbstractSecurityServiceTest;
+import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.password.MasterPasswordChangeRequest;
 import org.geoserver.security.password.MasterPasswordProviderException;
 import org.geoserver.security.password.URLMasterPasswordProvider;
 import org.geoserver.security.password.URLMasterPasswordProviderConfig;
 import org.geoserver.security.password.URLMasterPasswordProviderException;
 
-public class MasterPasswordChangeValidatorTest extends AbstractSecurityServiceTest {
+public class MasterPasswordChangeValidatorTest extends GeoServerSecurityTestSupport {
 
     MasterPasswordChangeValidator validator;
        
@@ -113,7 +112,7 @@ public class MasterPasswordChangeValidatorTest extends AbstractSecurityServiceTe
         MasterPasswordChangeRequest r = new MasterPasswordChangeRequest();
         
         checkCurrentPassword(r);
-        r.setCurrentPassword(GeoServerSecurityManager.MASTER_PASSWD_DEFAULT);
+        r.setCurrentPassword(getMasterPassword().toCharArray());
         
         checkConfirmationPassword(r);
         r.setConfirmPassword("abc".toCharArray());

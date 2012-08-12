@@ -7,6 +7,7 @@ package org.geoserver.security.impl;
 
 import junit.framework.Assert;
 
+import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;

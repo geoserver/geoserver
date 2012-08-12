@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import junit.framework.Assert;
 
+import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 

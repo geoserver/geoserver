@@ -6,7 +6,10 @@
 package org.geoserver.wps;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
@@ -15,6 +18,8 @@ import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.feature.NameImpl;
+import org.geotools.process.ProcessFactory;
+import org.geotools.process.Processors;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Version;
@@ -86,11 +91,50 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             ((WPSInfoImpl)service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
         if(service.getProcessGroups() == null) {
-            ((WPSInfoImpl)service).setProcessFactories( new ArrayList() );
+            ((WPSInfoImpl)service).setProcessFactories(lookupProcessGroups());
         }
         return service;
     }
-    
+
+    List<ProcessGroupInfo> lookupProcessGroups() {
+        List<ProcessGroupInfo> processFactories = new ArrayList<ProcessGroupInfo>();
+        
+        // here we build a full list of process factories infos, covering all available
+        // factories: this makes sure the available factories are availablefrom both
+        // GUI and REST configuration
+        
+        // get the full list of factories
+        List<ProcessFactory> factories = new ArrayList<ProcessFactory>(Processors.getProcessFactories());
+        
+        // ensure there is a stable order across invocations, JDK and so on
+        Collections.sort(factories, new Comparator<ProcessFactory>() {
+
+            @Override
+            public int compare(ProcessFactory o1, ProcessFactory o2) {
+                if(o1 == null) {
+                    return o2 == null ? 0 : -1;
+                } else if(o2 == null) {
+                    return 1;
+                } else {
+                    return o1.getClass().getName().compareTo(o2.getClass().getName());
+                }
+            }
+            
+        });
+        
+        // build the result, adding the ProcessFactoryInfo as necessary for the factories
+        // that do not already have a configuration
+        for (final ProcessFactory pf : factories) {
+            ProcessGroupInfo pfi = new ProcessGroupInfoImpl();
+            pfi.setEnabled(true);
+            pfi.setFactoryClass(pf.getClass());
+            
+            processFactories.add(pfi);
+        }
+        
+        return processFactories;
+    }
+
     /**
      * Converter for {@link Name} 
      *

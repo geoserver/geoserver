@@ -66,8 +66,10 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      */
     Integer maxAsynchronousProcesses = DEFAULT_MAX_ASYNCH;
 
-    List<ProcessGroupInfo> processFactories = new ArrayList<ProcessGroupInfo>();
-
+    /**
+     * List of process groups/factories.
+     */
+    List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
 
     /**
      * Returns the connection timeout (in seconds). It represents the timeout to be used 
@@ -164,13 +166,10 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
 
     @Override
     public List<ProcessGroupInfo> getProcessGroups() {
-        return processFactories;
+        return processGroups;
     }
 
-    public void setProcessFactories(List<ProcessGroupInfo> processFactories) {
-        this.processFactories = processFactories;
+    public void setProcessGroups(List<ProcessGroupInfo> processGroups) {
+        this.processGroups = processGroups;
     }
-    
-    
-    
 }

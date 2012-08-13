@@ -91,7 +91,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             ((WPSInfoImpl)service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
         if(service.getProcessGroups() == null) {
-            ((WPSInfoImpl)service).setProcessFactories(lookupProcessGroups());
+            ((WPSInfoImpl)service).setProcessGroups(lookupProcessGroups());
         }
         return service;
     }

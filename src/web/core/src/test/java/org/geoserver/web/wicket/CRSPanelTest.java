@@ -40,7 +40,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         ft.submit();
         
         CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage( "form:crs");
-        assertEquals( DefaultGeographicCRS.WGS84, crsPanel.getCRS() );
+        assertEquals( crs, crsPanel.getCRS() );
     }
     
     public void testPopupWindow() throws Exception {

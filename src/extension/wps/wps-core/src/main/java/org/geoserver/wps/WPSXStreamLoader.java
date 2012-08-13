@@ -52,7 +52,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         WPSInfoImpl wps = new WPSInfoImpl();
         wps.setId(getServiceId());
         wps.setGeoServer( gs );
-        
+        wps.setProcessGroups(lookupProcessGroups());
         return wps;
     }
     

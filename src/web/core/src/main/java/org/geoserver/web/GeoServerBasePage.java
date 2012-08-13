@@ -199,14 +199,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         
         
         // allow the subclasses to initialize before getTitle/getDescription are called
-        add(new Label("title", new LoadableDetachableModel<String>() {
+        add(new Label("gbpTitle", new LoadableDetachableModel<String>() {
 
             @Override
             protected String load() {
                 return getTitle();
             }
         }));
-        add(new Label("description", new LoadableDetachableModel<String>() {
+        add(new Label("gbpDescription", new LoadableDetachableModel<String>() {
 
             @Override
             protected String load() {

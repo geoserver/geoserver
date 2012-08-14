@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-    <bean id="wpsServiceLoader" class="org.geoserver.wps.WPSXStreamLoader">
+    <!-- depend on the process factory so we can properly initialize the WPSInfo object with the 
+        appropriate factory/group info-->
+    <bean id="wpsServiceLoader" class="org.geoserver.wps.WPSXStreamLoader" 
+        depends-on="geoserverProcessFactory">
         <constructor-arg ref="resourceLoader"/>
     </bean>
 
     <!-- TODO: remove this thing -->    
     <bean id="wpsServiceLegacyLoader" class="org.geoserver.wps.WPSLegacyLoader"/>
 
+    <bean id="wpsLifecycleHandler" class="org.geoserver.wps.WPSLifecycleHandler">
+      <constructor-arg ref="geoServer"></constructor-arg>
+    </bean>
+    
     <!-- Resource manager -->
     <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>
 

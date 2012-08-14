@@ -6,7 +6,10 @@
 package org.geoserver.wps;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
@@ -14,7 +17,10 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.wfs.WFSInfoImpl;
 import org.geotools.feature.NameImpl;
+import org.geotools.process.ProcessFactory;
+import org.geotools.process.Processors;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Version;
@@ -47,7 +53,6 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         WPSInfoImpl wps = new WPSInfoImpl();
         wps.setId(getServiceId());
         wps.setGeoServer( gs );
-        
         return wps;
     }
     
@@ -55,7 +60,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         XStream xs = xp.getXStream();
         xs.alias("wps", WPSInfo.class, WPSInfoImpl.class);
-        xs.alias("processGroupInfo", ProcessGroupInfoImpl.class);
+        xs.alias("processGroup", ProcessGroupInfoImpl.class);
         xs.alias("name", NameImpl.class);
         xs.registerConverter(new NameConverter());
     }
@@ -85,12 +90,15 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             // timeout has not yet been specified. Use default
             ((WPSInfoImpl)service).setConnectionTimeout(WPSInfoImpl.DEFAULT_CONNECTION_TIMEOUT);
         }
-        if(service.getProcessGroups() == null) {
-            ((WPSInfoImpl)service).setProcessFactories( new ArrayList() );
+        if (service.getProcessGroups() == null) {
+            ((WPSInfoImpl)service).setProcessGroups(new ArrayList());
         }
+
         return service;
     }
+
     
+
     /**
      * Converter for {@link Name} 
      *

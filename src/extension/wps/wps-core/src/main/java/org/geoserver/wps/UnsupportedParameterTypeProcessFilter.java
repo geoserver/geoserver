@@ -28,9 +28,9 @@ import org.springframework.context.ApplicationContextAware;
  * @author Andrea Aime - GeoSolutions
  *
  */
-public class ProcessBlacklistSelector extends ProcessSelector implements ApplicationContextAware {
+public class UnsupportedParameterTypeProcessFilter extends ProcessSelector implements ApplicationContextAware {
     
-    static final Logger LOGGER = Logging.getLogger(ProcessBlacklistSelector.class);
+    static final Logger LOGGER = Logging.getLogger(UnsupportedParameterTypeProcessFilter.class);
     
     private Set<Name> processBlacklist = new HashSet<Name>();
     

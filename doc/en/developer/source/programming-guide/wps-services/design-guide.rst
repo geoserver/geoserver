@@ -90,7 +90,7 @@ to be exposed or not.
 
 The GoeServer code base sports by default two implementation of a ``ProcessFilter``:
 
-* ``org.geoserver.wps.ProecssBlaclistSelector``, which hides all the processes having an input or
+* ``org.geoserver.wps.UnsupportedParameterTypeProcessFilter``, which hides all the processes having an input or
   an output that the available ``ProcessParameterIO`` classes cannot handle
 * ``org.geoserver.wps.DisabledProcessSelector``, which hides all the processes that the administrator
   disabled in the WPS Admin page in the administration console 
@@ -102,7 +102,7 @@ the WPS admin panel configuration is registered in ``applicationContext.xml`` as
 .. code-block:: java
 
     <!-- The default process filters -->
-    <bean id="blackListFilter" class="org.geoserver.wps.ProcessBlacklistSelector"/>
+    <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>
     <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>
 
 Implementation level

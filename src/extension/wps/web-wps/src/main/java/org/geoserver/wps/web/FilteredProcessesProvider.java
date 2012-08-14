@@ -2,6 +2,7 @@ package org.geoserver.wps.web;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class FilteredProcessesProvider extends
      * 
      * @author Andrea Aime - GeoSolutions
      */
-    static class FilteredProcess implements Serializable {
+    static class FilteredProcess implements Serializable, Comparable<FilteredProcess>{
 
         private Name name;
 
@@ -43,6 +44,17 @@ public class FilteredProcessesProvider extends
 
         public String getDescription() {
             return description;
+        }
+
+        @Override
+        public int compareTo(FilteredProcess other) {
+            if(name == null) {
+                return other.getName() == null ? 0 : -1;
+            } else if(other.getName() == null) {
+                return 1;
+            } else {
+                return name.getURI().compareTo(other.getName().getURI());
+            }
         }
 
     }
@@ -66,6 +78,7 @@ public class FilteredProcessesProvider extends
             FilteredProcess sp = new FilteredProcess(name, description);
             selectableProcesses.add(sp);
         }
+        Collections.sort(selectableProcesses);
     }
 
     @Override

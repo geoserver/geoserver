@@ -11,6 +11,10 @@
     <!-- TODO: remove this thing -->    
     <bean id="wpsServiceLegacyLoader" class="org.geoserver.wps.WPSLegacyLoader"/>
 
+    <bean id="wpsLifecycleHandler" class="org.geoserver.wps.WPSLifecycleHandler">
+      <constructor-arg ref="geoServer"></constructor-arg>
+    </bean>
+    
     <!-- Resource manager -->
     <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>
 

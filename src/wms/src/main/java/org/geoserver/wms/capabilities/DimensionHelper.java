@@ -5,15 +5,17 @@
 package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -28,6 +30,7 @@ import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.temporal.object.DefaultPeriodDuration;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -46,7 +49,7 @@ abstract class DimensionHelper {
     }
 
     Mode mode;
-	WMS wms;
+        WMS wms;
 
     public DimensionHelper(Mode mode, WMS wms) {
         this.mode = mode;
@@ -109,20 +112,41 @@ abstract class DimensionHelper {
      * @throws RuntimeException
      */
     void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException {
+        
         // do we have time and elevation?
         CoverageInfo cvInfo = (CoverageInfo) layer.getResource();
         if (cvInfo == null)
             throw new ServiceException("Unable to acquire coverage resource for layer: "
                     + layer.getName());
-        DimensionInfo timeInfo = cvInfo.getMetadata()
-                .get(ResourceInfo.TIME, DimensionInfo.class);
-        DimensionInfo elevInfo = cvInfo.getMetadata().get(ResourceInfo.ELEVATION,
-                DimensionInfo.class);
+
+        DimensionInfo timeInfo = null;
+        DimensionInfo elevInfo = null;
+        Map<String, DimensionInfo> customDimensions = null;
+        AbstractGridCoverage2DReader reader = null;
+        
+        for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {
+            String key = e.getKey();
+            Object value = e.getValue();
+            if (key.equals(ResourceInfo.TIME)) {
+                timeInfo = Converters.convert(value, DimensionInfo.class);
+            } else if (key.equals(ResourceInfo.ELEVATION)) {
+                elevInfo = Converters.convert(value, DimensionInfo.class);
+            } else if (value instanceof DimensionInfo) {
+                DimensionInfo dimInfo = (DimensionInfo)value;
+                if (dimInfo.isEnabled()) {
+                    if (customDimensions == null) {
+                        customDimensions = new HashMap<String, DimensionInfo>();
+                    }
+                    customDimensions.put(key, dimInfo);
+                }
+            }
+        }
         boolean hasTime = timeInfo != null && timeInfo.isEnabled();
         boolean hasElevation = elevInfo != null && elevInfo.isEnabled();
+        boolean hasCustomDimensions = customDimensions != null;
 
         // skip if nothing is configured
-        if (!hasTime && !hasElevation) {
+        if (!hasTime && !hasElevation && !hasCustomDimensions) {
             return;
         }
         
@@ -136,19 +160,25 @@ abstract class DimensionHelper {
             throw new ServiceException("Unable to acquire coverage store resource for layer: "
                     + layer.getName());
 
-        AbstractGridCoverage2DReader reader = null;
         try {
             reader = (AbstractGridCoverage2DReader) catalog.getResourcePool()
                     .getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
         } catch (Throwable t) {
-        	 LOGGER.log(Level.SEVERE, "Unable to acquire a reader for this coverage with format: "
-        			 + csinfo.getFormat().getName(), t);
+                 LOGGER.log(Level.SEVERE, "Unable to acquire a reader for this coverage with format: "
+                                 + csinfo.getFormat().getName(), t);
         }
         if (reader == null) {
             throw new ServiceException("Unable to acquire a reader for this coverage with format: "
                     + csinfo.getFormat().getName());
         }
         ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
+        
+        // Process only custom dimensions supported by the reader
+        if (hasCustomDimensions) {
+            for (String key : customDimensions.keySet()) {
+                if (!dimensions.hasDomain(key)) customDimensions.remove(key);
+            }
+        }
         
         if (mode == Mode.WMS11) {
             String elevUnits = hasElevation ? elevInfo.getUnits() : "";
@@ -166,6 +196,13 @@ abstract class DimensionHelper {
         if (hasElevation && dimensions.hasElevation()) {
             handleElevationDimensionRaster(elevInfo, dimensions);
         }
+        
+        // custom dimensions
+        if (hasCustomDimensions) {
+            for (String key : customDimensions.keySet()) {
+                handleCustomDimensionRaster(key, dimensions);
+            }
+        }
     }
 
     private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) {
@@ -182,6 +219,29 @@ abstract class DimensionHelper {
 
         writeTimeDimension(timeMetadata);
     }
+    
+    private void handleCustomDimensionRaster(String dimName, 
+            ReaderDimensionsAccessor dimAccessor) {
+        final TreeSet<Object> domain = dimAccessor.getDomain(dimName);
+        final String metadata;
+        final int count = domain == null ? 0 : domain.size();
+        if (count == 0) {
+            metadata = "";
+        } else if (count == 1) {
+            metadata = domain.first().toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (Object value : domain) {
+                sb.append(value.toString()).append(',');
+            }
+            metadata = sb.substring(0, sb.length() - 1);
+        }
+        if (dimName.regionMatches(true, 0, "dim_", 0, 4)) {
+            writeDimension(dimName.substring(4), metadata);
+        } else {
+            writeDimension(dimName, metadata);
+        }
+    }
 
     /**
      * Writes WMS 1.1.1 conforming dimensions (WMS 1.3 squashed dimensions and extent in the same tag instead)
@@ -190,7 +250,7 @@ abstract class DimensionHelper {
      * @param elevUnits - <tt>units</tt> attribute of the elevation dimension
      * @param elevUnitSymbol - <tt>unitSymbol</tt> attribute of the elevation dimension
      */
-    private void declareWMS11Dimensions(boolean hasTime, boolean hasElevation, String elevUnits, String elevUnitSymbol) {
+    private void declareWMS11Dimensions(boolean hasTime, boolean hasElevation, String elevUnits, String elevUnitSymbol, Map<String, DimensionInfo> customDimensions) {
         // we have to declare time and elevation before the extents
         if (hasTime) {
             AttributesImpl timeDim = new AttributesImpl();
@@ -201,6 +261,13 @@ abstract class DimensionHelper {
         if (hasElevation) {
             // same as WMS 1.3 except no values
             writeElevationDimensionElement(null, null, null, elevUnits, elevUnitSymbol);
+        }
+        if (customDimensions != null) {
+            for (String dim : customDimensions.keySet()) {
+                AttributesImpl custDim = new AttributesImpl();
+                custDim.addAttribute("", "name", "name", "", dim);
+                element("Dimension", null, custDim);
+            }
         }
     }
 
@@ -408,6 +475,16 @@ abstract class DimensionHelper {
         element("Dimension", elevationMetadata, elevDim);
     }
     
+    private void writeDimension(String name, String metadata) {
+        AttributesImpl dim = new AttributesImpl();
+        dim.addAttribute("", "name", "name", "", name);
+        if (mode == Mode.WMS11) {
+            element("Extent", metadata, dim);
+        } else {
+            element("Dimension", metadata, dim);
+        }
+    }
+
     static class ISO8601Formatter {
 
         private final GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));

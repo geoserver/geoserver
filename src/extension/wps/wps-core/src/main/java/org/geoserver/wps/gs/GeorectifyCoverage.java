@@ -60,7 +60,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Daniele Romagnoli, GeoSolutions SAS
  * @author Andrea Aime, GeoSolutions SAS
  */
-@DescribeProcess(title = "GeorectifyCoverage", description = "Process which allows to georectify a coverage through GCPs using gdal_warp")
+@DescribeProcess(title = "Georectify Coverage", description = "Georectifies a raster via Ground Control Points using gdal_warp")
 public class GeorectifyCoverage implements GSProcess {
 
     private final static Pattern GCP_PATTERN = Pattern
@@ -87,20 +87,20 @@ public class GeorectifyCoverage implements GSProcess {
     }
 
     @DescribeResults({
-        @DescribeResult(name = "result", description = "The GridCoverage2D coming from the georectification process", type=GridCoverage2D.class),
-        @DescribeResult(name = "path", description = "The server side path to the generated coverage", type=String.class)
+        @DescribeResult(name = "result", description = "Georectified raster", type=GridCoverage2D.class),
+        @DescribeResult(name = "path", description = "Pathname of the generated raster on the server", type=String.class)
     })
     public Map<String, Object> execute(
-            @DescribeParameter(name = "data", description = "The input raster to transform") GridCoverage2D coverage,
-            @DescribeParameter(name = "gcp", description = "The Ground Control Points list in the form ") String gcps,
-            @DescribeParameter(name = "bbox", description = "The destination bounding box", min = 0) Envelope bbox,
-            @DescribeParameter(name = "targetCRS", description = "The destination coordinate refence system") CoordinateReferenceSystem crs,
-            @DescribeParameter(name = "width", description = "The final image width", min = 0) Integer width,
-            @DescribeParameter(name = "height", description = "The final image height", min = 0) Integer height,
-            @DescribeParameter(name = "warpOrder", min = 0, description = "The order of the warping polynomial (optional)") Integer warpOrder,
-            @DescribeParameter(name = "transparent", min = 0, description = "Force the output image to have transparent background") Boolean transparent,
-            @DescribeParameter(name = "store", min = 0, description = "Don't remove the output file once done") Boolean store,
-            @DescribeParameter(name = "outputPath", min = 0, description = "Full path where the output file has to be stored") String outputPath)
+            @DescribeParameter(name = "data", description = "Input raster") GridCoverage2D coverage,
+            @DescribeParameter(name = "gcp", description = "List of Ground control points.  Points are specified as [x,y] or [x,y,z].") String gcps,
+            @DescribeParameter(name = "bbox", description = "Bounding box for output", min = 0) Envelope bbox,
+            @DescribeParameter(name = "targetCRS", description = "Coordinate reference system to use for the output raster") CoordinateReferenceSystem crs,
+            @DescribeParameter(name = "width", description = "Width of output raster in pixels", min = 0) Integer width,
+            @DescribeParameter(name = "height", description = "Height of output raster in pixels", min = 0) Integer height,
+            @DescribeParameter(name = "warpOrder", min = 0, description = "Order of the warping polynomial (1 to 3)") Integer warpOrder,
+            @DescribeParameter(name = "transparent", min = 0, description = "Force output to have transparent background") Boolean transparent,
+            @DescribeParameter(name = "store", min = 0, description = "Indicates whether to keep the output file after processing") Boolean store,
+            @DescribeParameter(name = "outputPath", min = 0, description = "Pathname where the output file is stored") String outputPath)
             throws IOException {
 
         GeoTiffReader reader = null;

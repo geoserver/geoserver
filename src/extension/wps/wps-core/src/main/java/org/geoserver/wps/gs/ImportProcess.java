@@ -48,7 +48,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Andrea Aime - OpenGeo
  * 
  */
-@DescribeProcess(title = "Catalog import", description = "Imports the provided feature collection into the catalog")
+@DescribeProcess(title = "Import to Catalog", description = "Imports a feature collection into the catalog")
 public class ImportProcess implements GSProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
@@ -59,15 +59,15 @@ public class ImportProcess implements GSProcess {
         this.catalog = catalog;
     }
 
-    @DescribeResult(name = "layerName", description = "The qualified name of the created layer (workspace:name)")
+    @DescribeResult(name = "layerName", description = "Name of the new featuretype, with workspace")
     public String execute(
-            @DescribeParameter(name = "features", description = "The features that will make up the new GeoServer layer") SimpleFeatureCollection features,
-            @DescribeParameter(name = "workspace", min = 0, description = "The target workspace (the default one will be used if omitted)") String workspace,
-            @DescribeParameter(name = "store", min = 0, description = "The target store (the workspace default one will be used if omitted)") String store,
-            @DescribeParameter(name = "name", min = 0, description = "The name of the layer to be created (if missing the name of the features contained in the collection will be used") String name,
-            @DescribeParameter(name = "srs", min = 0, description = "The target coordinate reference system (the feature collection one will be analyzed and used if possible)") CoordinateReferenceSystem srs,
-            @DescribeParameter(name = "srsHandling", min = 0, description = "The desired SRS handling, FORCE_DECLARED will be used if not specified") ProjectionPolicy srsHandling,
-            @DescribeParameter(name = "styleName", min = 0, description = "The name of the style to be used for the layer. If missing a default style will be chosen according to the type of geometries contained in the collection") String styleName)
+            @DescribeParameter(name = "features", description = "Input feature collection") SimpleFeatureCollection features,
+            @DescribeParameter(name = "workspace", min = 0, description = "Target workspace (default is the system default)") String workspace,
+            @DescribeParameter(name = "store", min = 0, description = "Target store (default is the workspace default)") String store,
+            @DescribeParameter(name = "name", min = 0, description = "Name of the new featuretype (default is the name of the features in the collection)") String name,
+            @DescribeParameter(name = "srs", min = 0, description = "Target coordinate reference system (default is based on source when possible)") CoordinateReferenceSystem srs,
+            @DescribeParameter(name = "srsHandling", min = 0, description = "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)") ProjectionPolicy srsHandling,
+            @DescribeParameter(name = "styleName", min = 0, description = "Name of the style to be associated with the layer (default is a standard geometry-specific style)") String styleName)
             throws ProcessException {
 
         // first off, decide what is the target store

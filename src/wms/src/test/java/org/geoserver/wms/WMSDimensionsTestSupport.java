@@ -23,7 +23,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 
-public class WMSDimensionsTestSupport extends WMSTestSupport {
+public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
 
     protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);

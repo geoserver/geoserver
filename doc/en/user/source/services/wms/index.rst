@@ -8,6 +8,7 @@ Web Map Service
 
    basics
    reference
+   time
    outputformats
    vendor
    configuration

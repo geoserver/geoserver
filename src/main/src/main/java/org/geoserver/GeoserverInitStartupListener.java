@@ -87,6 +87,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 .getSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER))) {
             Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
         }
+        Hints.putSystemDefault(Hints.LENIENT_DATUM_SHIFT, true);
         
         // setup the referencing tolerance to make it more tolerant to tiny differences
         // between projections (increases the chance of matching a random prj file content

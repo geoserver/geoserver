@@ -75,6 +75,8 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         // add two zoom levels
         tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
         tester.executeAjaxEvent("gridSetForm:addZoomLevel", "onclick");
+        
+        ft.select("tileMatrixSetEditor:container:useResolutionsOrScalesGroup", 0);
 
         // submit
         tester.executeAjaxEvent("gridSetForm:save", "onclick");
@@ -110,10 +112,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         Component computeBounds = tester
                 .getComponentFromLastRenderedPage("gridSetForm:computeBounds");
         assertTrue(computeBounds.isEnabled());
-
-        // hard to trigger an onclick event for a GeoServerAjaxSubmitLink, to invoking directly
-        page.computeBounds();
-        // print(page, true, true);
+        tester.clickLink(computeBounds.getPageRelativePath(), true);
 
         {
             BoundingBox expected = gridSetBroker.get("EPSG:900913").getOriginalExtent();
@@ -161,6 +160,8 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
         // submit
         Session.get().getFeedbackMessages().clear();
+        ft.setValue("name:border:paramValue", gridsetName);
+        ft.select("tileMatrixSetEditor:container:useResolutionsOrScalesGroup", 0);
         tester.executeAjaxEvent("gridSetForm:save", "onclick");
 
         tester.assertNoErrorMessage();

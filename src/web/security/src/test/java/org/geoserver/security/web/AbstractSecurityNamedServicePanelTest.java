@@ -200,6 +200,8 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             testPage.getWicketPath() + ":dialog:dialog");*/
 
         assertFalse(w.isShown());
+        Component removeLink = tester.getComponentFromLastRenderedPage(basePanelId + ":remove");
+        removeLink.setEnabled(true);
         tester.clickLink(basePanelId + ":remove", true);
         assertTrue(w.isShown());
         
@@ -236,6 +238,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             }
          }
         AjaxLink link = (AjaxLink) ((MarkupContainer)list.get(toClick)).get("link");
+        link.setEnabled(true);
         tester.executeAjaxEvent(link, "onclick");
 //        formTester.select("config.className", index);     
 //        tester.executeAjaxEvent(formTester.getForm().getPageRelativePath()+":config.className", "onchange");

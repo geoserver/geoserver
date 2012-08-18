@@ -71,10 +71,8 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage( new CRSPanelTestPage( crs ) );
         
-        TextField srs = (TextField) tester.getComponentFromLastRenderedPage( "form:crs:srs");
-        srs.setModelObject( "EPSG:3005");
-        
         FormTester ft = tester.newFormTester( "form");
+        ft.setValue("crs:srs", "EPSG:3005");
         ft.submit();
         
         CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage( "form:crs");

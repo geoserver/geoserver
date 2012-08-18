@@ -185,7 +185,7 @@ public class CRSPanel extends FormComponentPanel {
     
     @Override
     protected void convertInput() {
-        String srs = (String) srsTextField.getModelObject();
+        String srs = (String) srsTextField.getInput();
         CoordinateReferenceSystem crs = null;
         if ( srs != null && !"".equals(srs)) {
             if ( "UNKNOWN".equals( srs ) ) {
@@ -232,8 +232,7 @@ public class CRSPanel extends FormComponentPanel {
      * </p>
      */
     public CoordinateReferenceSystem getCRS() {
-        convertInput();
-        return (CoordinateReferenceSystem) getConvertedInput();
+        return (CoordinateReferenceSystem) getModelObject();
     }
     
     /*

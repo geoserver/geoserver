@@ -19,7 +19,7 @@ import javax.crypto.Cipher;
 import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.RequestCycle;
-import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.util.crypt.AbstractCrypt;
 import org.apache.wicket.util.crypt.ICrypt;
 import org.apache.wicket.util.crypt.ICryptFactory;
@@ -97,7 +97,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
     @Override
     public ICrypt newCrypt() {
         RequestCycle cycle = RequestCycle.get();
-        ServletWebRequest req = (ServletWebRequest)cycle.getRequest();
+        WebRequest req = (WebRequest) cycle.getRequest();
         HttpSession s = (HttpSession) req.getHttpServletRequest().getSession(false);
         if (s!=null) {
             return getEncrypterFromSession(s); 

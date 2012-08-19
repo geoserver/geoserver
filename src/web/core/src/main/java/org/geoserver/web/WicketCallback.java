@@ -7,6 +7,7 @@ package org.geoserver.web;
 import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
 import org.apache.wicket.RequestCycle;
+import org.apache.wicket.request.IRequestHandler;
 
 /**
  * Pluggable callback exposing the Wicket {@link RequestCycle} stages
@@ -36,7 +37,7 @@ public interface WicketCallback {
      * 
      * @param requestTarget
      */
-    void onRequestTargetSet(IRequestTarget requestTarget);
+    void onRequestTargetSet(IRequestHandler requestTarget);
 
     /**
      * Called when a runtime exception is thrown, just before the actual handling of the runtime
@@ -45,6 +46,6 @@ public interface WicketCallback {
      * @param page Any page context where the exception was thrown
      * @param e The exception
      */
-    void onRuntimeException(Page page, RuntimeException e);
+    void onRuntimeException(Page page, Exception e);
 
 }

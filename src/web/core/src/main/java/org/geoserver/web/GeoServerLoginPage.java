@@ -6,12 +6,12 @@ package org.geoserver.web;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * This is a simple login form shown when the user tries to access a secured page directly 
@@ -26,7 +26,7 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         }
         
         TextField field = new TextField("username");
-        HttpSession session = ((WebRequest) getRequest()).getHttpServletRequest().getSession();
+        HttpSession session = ((ServletWebRequest) getRequest()).getContainerRequest().getSession();
         String lastUserName = (String) session.getAttribute(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_LAST_USERNAME_KEY);
         field.setModel(new Model(lastUserName));
         add(field);

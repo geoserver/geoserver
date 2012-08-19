@@ -20,6 +20,7 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket</artifactId>
+      <type>pom</type> 
     </dependency>
     <dependency>
       <groupId>org.apache.wicket</groupId>
@@ -36,8 +37,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.wicketstuff</groupId>
-      <artifactId>htmlvalidator</artifactId>
+	  <groupId>org.wicketstuff.htmlvalidator</groupId>
+	  <artifactId>wicketstuff-htmlvalidator</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

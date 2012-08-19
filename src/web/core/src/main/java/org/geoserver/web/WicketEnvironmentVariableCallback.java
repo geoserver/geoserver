@@ -44,7 +44,7 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
         // nothing to do
     }
 
-    public void onRuntimeException(Page page, RuntimeException e) {
+    public void onRuntimeException(Page page, Exception e) {
         // nothing to do
     }
 

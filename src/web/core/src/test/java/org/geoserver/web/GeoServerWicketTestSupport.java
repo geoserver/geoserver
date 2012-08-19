@@ -47,6 +47,11 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     public GeoServerApplication getGeoServerApplication(){
         return GeoServerApplication.get();
     }
+    
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
 
     /**
      * Logs in as administrator.

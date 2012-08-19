@@ -2,6 +2,9 @@ package org.geoserver.web.wicket.property;
 
 import java.util.Iterator;
 
+import junit.framework.AssertionFailedError;
+
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListView;
@@ -54,14 +57,14 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         try {
             tester.assertComponent("form:props:container:list:3:remove",AjaxLink.class);
             fail();
-        } catch(Exception e) {}
+        } catch(AssertionFailedError e) {}
 
         ListView list = 
             (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
         assertNotNull(list);
 
         int i = 0;
-        for (Iterator<ListItem> it = list.iterator(); it.hasNext(); i++) {
+        for (Iterator<Component> it = list.iterator(); it.hasNext(); i++) {
             if ("baz".equals(it.next().get("key").getDefaultModelObjectAsString())) {
                 break;
             }

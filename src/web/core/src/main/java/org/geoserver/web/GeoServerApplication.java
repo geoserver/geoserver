@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.Application;
@@ -24,7 +25,6 @@ import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
-import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.IPageRequestHandler;
@@ -44,7 +44,6 @@ import org.geoserver.web.util.converters.StringBBoxConverter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
-import org.wicketstuff.htmlvalidator.HtmlValidationResponseFilter;
 
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this
@@ -174,14 +173,6 @@ public class GeoServerApplication extends SpringWebApplication {
         // getResourceSettings().addStringResourceLoader(new
         // ClassStringResourceLoader(this.getClass()));
 
-        // enable toggable XHTML validation
-        if (DEVELOPMENT.equals(getConfigurationType())) {
-            getMarkupSettings().setStripWicketTags(true);
-            HtmlValidationResponseFilter htmlvalidator = new GeoServerHTMLValidatorResponseFilter();
-            htmlvalidator.setIgnoreAutocomplete(true);
-            htmlvalidator.setIgnoreKnownWicketBugs(true);
-            getRequestCycleSettings().addResponseFilter(htmlvalidator);
-        }
         getDebugSettings().setAjaxDebugModeEnabled(false);
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
@@ -189,6 +180,10 @@ public class GeoServerApplication extends SpringWebApplication {
         
         // tap into the request cycle handling
         getRequestCycleListeners().add(new GeoServerRequestListener(getApplicationContext()));
+        
+        // setup the encrypted url encoder
+        IRequestMapper defaultMapper = getRootRequestMapper();
+        setRootRequestMapper(new GeoServerRequestMapper(defaultMapper, this));
     }
 
     @Override
@@ -301,6 +296,7 @@ public class GeoServerApplication extends SpringWebApplication {
                 // have wicket do its usual thing
                 return null;
             } else {
+                LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 return new RenderPageRequestHandler(new PageProvider(new GeoServerErrorPage(cause, ex)));
             }
         }

@@ -40,7 +40,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
     public GeoServerStringResourceLoader()
     {
     }
-
+    
     /**
      * Get the string resource for the given combination of class, key, locale and style. The
      * information is obtained from a resource bundle associated with the provided Class (or one of
@@ -57,9 +57,8 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
      *            {@link org.apache.wicket.Session})
      * @return The string resource value or null if resource not found
      */
-    public String loadStringResource(Class clazz, final String key, final Locale locale,
-        final String style)
-    {
+    public String loadStringResource(Class<?> clazz, String key, Locale locale, String style,
+            String variation) {
         // Load the properties associated with the path
         IPropertiesFactory propertiesFactory = Application.get().getResourceSettings()
             .getPropertiesFactory();
@@ -69,8 +68,8 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
         while (true)
         {
             // Iterator over all the combinations
-            ResourceNameIterator iter = new ResourceNameIterator(path, style, locale,
-                ",properties,xml");
+            ResourceNameIterator iter = new ResourceNameIterator(path, style, variation, locale,
+                ",properties,xml", false);
             while (iter.hasNext())
             {
                 String newPath = (String)iter.next();
@@ -111,7 +110,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
      * @see org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(org.apache.wicket.Component,
      *      java.lang.String)
      */
-    public String loadStringResource(final Component component, final String key)
+    public String loadStringResource(final Component component, final String key,  Locale locale, String style, String variation)
     {
         if (component == null)
         {
@@ -120,8 +119,6 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
 
         // The return value
         String string = null;
-        Locale locale = component.getLocale();
-        String style = component.getStyle();
 
         // The reason why we need to create that stack is because we need to
         // walk it downwards starting with Page down to the Component
@@ -134,14 +131,14 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
 
             // First, try the fully qualified resource name relative to the
             // component on the path from page down.
-            string = loadStringResource(clazz, key, locale, style);
+            string = loadStringResource(clazz, key, locale, style, variation);
         }
         
         // If not found, than check if a property with the 'key' provided by
         // the user can be found.
         if (string == null)
         {
-            string = loadStringResource(null, key, locale, style);
+            string = loadStringResource((Class) null, key, locale, style, variation);
         }
         
         return string;
@@ -205,4 +202,6 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
         return clazz.equals(Page.class) || clazz.equals(MarkupContainer.class) ||
             clazz.equals(Component.class);
     }
+
+    
 }

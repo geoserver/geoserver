@@ -43,6 +43,7 @@ public class NewDataPageTest extends GeoServerWicketTestSupport {
     public void testLoadWithNoWorkspaces() {
         tester.startPage(new NewDataPageWithFakeCatalog());
         tester.assertRenderedPage(NewDataPageWithFakeCatalog.class);
+        print(tester.getLastRenderedPage(), true, true);
 
         String expectedErrMsg = (String) new ResourceModel("NewDataPage.noWorkspacesErrorMessage")
                 .getObject();

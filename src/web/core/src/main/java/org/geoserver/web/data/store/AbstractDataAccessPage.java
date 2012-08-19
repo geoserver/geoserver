@@ -151,7 +151,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                target.addComponent(paramsForm);
+                target.add(paramsForm);
             }
 
             @Override
@@ -161,7 +161,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                     onSaveDataStore(dataStore, target);
                 } catch (IllegalArgumentException e) {
                     paramsForm.error(e.getMessage());
-                    target.addComponent(paramsForm);
+                    target.add(paramsForm);
                 }
             }
         });
@@ -251,7 +251,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                 if (namespacePanel != null) {
                     // update the GUI
                     namespacePanel.setDefaultModelObject(namespaceInfo);
-                    target.addComponent(namespacePanel.getFormComponent());
+                    target.add(namespacePanel.getFormComponent());
                 } else if(namespaceModel != null) {
                     // update the model directly
                     namespaceModel.setObject(namespaceInfo);

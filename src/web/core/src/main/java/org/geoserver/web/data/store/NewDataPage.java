@@ -65,7 +65,9 @@ public class NewDataPage extends GeoServerSecuredPage {
         final boolean thereAreWorkspaces = !getCatalog().getWorkspaces().isEmpty();
 
         if (!thereAreWorkspaces) {
-            super.error((String) new ResourceModel("NewDataPage.noWorkspacesErrorMessage")
+            // new in Wicket 1.5 -> in order for an error message raised during page creation
+            // to show we have to stick it into the session
+            getSession().error((String) new ResourceModel("NewDataPage.noWorkspacesErrorMessage")
                     .getObject());
         }
 

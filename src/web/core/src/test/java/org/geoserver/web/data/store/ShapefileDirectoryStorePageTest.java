@@ -4,7 +4,9 @@
  */
 package org.geoserver.web.data.store;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.file.File;
@@ -48,16 +50,20 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
 
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue("dataStoreForm:workspacePanel:border:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
+        
+        print(tester.getLastRenderedPage(), true, true);
 
         // configure the store
         FormTester ft = tester.newFormTester("dataStoreForm");
-        ft.setValue("dataStoreNamePanel:border:paramValue", "testStore");
-        ft.setValue("parametersPanel:url:border:paramValue", "file://" + new File("./target").getCanonicalPath());
-        ft.select("workspacePanel:border:paramValue", 2);
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
+        ft.setValue("parametersPanel:url:border:border_body:paramValue", "file://" + new File("./target").getCanonicalPath());
+        ft.select("workspacePanel:border:border_body:paramValue", 2);
         ft.submit();
-        tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:paramValue", "onchange");
+        tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:border_body:paramValue", "onchange");
         tester.executeAjaxEvent("dataStoreForm:save", "onclick");
+        
+        tester.assertErrorMessages();
         
         
         // get the workspace we have just configured in the GUI
@@ -67,7 +73,11 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
 
         // check it's the same
         StoreInfo store = getCatalog().getStoreByName("testStore", DataStoreInfo.class);
-        assertEquals(getCatalog().getNamespaceByPrefix(ws.getName()).getURI(), store.getConnectionParameters().get("namespace"));
+        assertNotNull(store);
+        String uri = getCatalog().getNamespaceByPrefix(ws.getName()).getURI();
+        Map<String, Serializable> connParams = store.getConnectionParameters();
+        Serializable storeNS = connParams.get("namespace");
+        assertEquals(uri, storeNS);
     }
 
    

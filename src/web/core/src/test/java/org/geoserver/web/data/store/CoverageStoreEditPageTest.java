@@ -35,14 +35,15 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     public void testLoad() {
         tester.assertRenderedPage(CoverageStoreEditPage.class);
         tester.assertNoErrorMessage();
+        print(tester.getLastRenderedPage(), true, true);
 
         tester.assertLabel("rasterStoreForm:storeType", "GeoTIFF");
-        tester.assertModelValue("rasterStoreForm:namePanel:border:paramValue", "BlueMarble");
+        tester.assertModelValue("rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
     }
 
     public void testChangeName() {
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", "BlueMarbleModified");
+        form.setValue("namePanel:border:border_body:paramValue", "BlueMarbleModified");
         form.submit();
         tester.clickLink("rasterStoreForm:save");
 
@@ -53,7 +54,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
     public void testNameRequired() {
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", null);
+        form.setValue("namePanel:border:border_body:paramValue", null);
         form.submit();
         tester.clickLink("rasterStoreForm:save");
 
@@ -70,12 +71,12 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
-        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:paramValue";
+        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:border_body:paramValue";
 
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.WCS_PREFIX));
 
         // select the fifth item in the drop down, which is the cdf workspace
-        formTester.select("workspacePanel:border:paramValue", 2);
+        formTester.select("workspacePanel:border:border_body:paramValue", 2);
 
         // weird on this test I need to both call form.submit() and also simulate clicking on the
         // ajax "save" link for the model to be updated. On a running geoserver instance it works ok
@@ -114,7 +115,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", "foo");
+        form.setValue("namePanel:border:border_body:paramValue", "foo");
         form.submit();
         tester.clickLink("rasterStoreForm:save");
         tester.assertNoErrorMessage();

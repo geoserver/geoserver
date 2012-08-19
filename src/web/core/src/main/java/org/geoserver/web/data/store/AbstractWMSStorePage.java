@@ -7,7 +7,6 @@ package org.geoserver.web.data.store;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -144,19 +143,18 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
-                form.process();
+                form.process(this);
                 WMSStoreInfo info = (WMSStoreInfo) form.getModelObject();
                 try {
                     onSave(info, target);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.addComponent(form);
+                    target.add(form);
                 }
             }
         };

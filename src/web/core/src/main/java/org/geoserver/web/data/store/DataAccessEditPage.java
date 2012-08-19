@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -44,8 +44,8 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
      * @param parameters
      */
     public DataAccessEditPage(PageParameters parameters) {
-        String wsName = parameters.getString(WS_NAME);
-        String storeName = parameters.getString(STORE_NAME);
+        String wsName = parameters.get(WS_NAME).toString();
+        String storeName = parameters.get(STORE_NAME).toString();
         DataStoreInfo dsi = getCatalog().getDataStoreByName(wsName, storeName);
         
         if(dsi == null) {

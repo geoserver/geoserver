@@ -11,10 +11,12 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
 
 /**
- * Helps edit a time period 
+ * Helps edit a time period
  * 
  * @author Andrea Aime - GeoSolutions
  */
@@ -82,7 +84,7 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
     private void updateFields() {
         final BigDecimal modelObject = getModelObject();
         long time;
-        if(modelObject != null) {
+        if (modelObject != null) {
             time = modelObject.longValue();
         } else {
             time = 0;
@@ -104,11 +106,10 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
 
     @Override
     protected void convertInput() {
-        visitChildren(TextField.class, new org.apache.wicket.Component.IVisitor() {
+        visitChildren(TextField.class, new IVisitor<Component, Void>() {
 
-            public Object component(Component component) {
+            public void component(Component component, IVisit<Void> visit) {
                 ((TextField) component).processInput();
-                return null;
             }
         });
 
@@ -122,11 +123,10 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, new Component.IVisitor() {
+        visitChildren(TextField.class, new IVisitor<Component, Void>() {
 
-            public Object component(Component component) {
+            public void component(Component component, IVisit<Void> visit) {
                 ((TextField) component).clearInput();
-                return CONTINUE_TRAVERSAL;
             }
         });
     }

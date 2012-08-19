@@ -12,6 +12,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -80,10 +82,9 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
    
     public PointPanel setReadOnly( final boolean readOnly ) {
-        visitChildren( TextField.class, new org.apache.wicket.Component.IVisitor() {
-            public Object component(Component component) {
+        visitChildren( TextField.class, new IVisitor<Component, Void>() {
+            public void component(Component component, IVisit<Void> visit) {
                 component.setEnabled( !readOnly );
-                return null;
             }
         });
 
@@ -92,11 +93,9 @@ public class PointPanel extends FormComponentPanel<Point> {
     
     @Override
     protected void convertInput() {
-        visitChildren( TextField.class, new org.apache.wicket.Component.IVisitor() {
-
-            public Object component(Component component) {
+        visitChildren( TextField.class, new IVisitor<Component, Void>() {
+            public void component(Component component, IVisit<Void> visit) {
                 ((TextField) component).processInput();
-                return null;
             }
         });
         
@@ -113,11 +112,9 @@ public class PointPanel extends FormComponentPanel<Point> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, new Component.IVisitor() {
-            
-            public Object component(Component component) {
+        visitChildren(TextField.class, new IVisitor<Component, Void>() {
+            public void component(Component component, IVisit<Void> visit) {
                 ((TextField) component).clearInput();
-                return CONTINUE_TRAVERSAL;
             }
         });
     }

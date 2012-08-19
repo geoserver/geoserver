@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.resource.PropertiesFactory.IPropertiesLoader;
+import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
@@ -345,7 +345,7 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                     }
                 }
             }
-            return Time.milliseconds(lastModified);
+            return Time.millis(lastModified);
         }
 
         /**
@@ -358,8 +358,8 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
         /**
          * @see org.apache.wicket.util.resource.IResourceStream#length()
          */
-        public long length() {
-            return contentLength;
+        public Bytes length() {
+            return Bytes.bytes(contentLength);
         }
 
         /**

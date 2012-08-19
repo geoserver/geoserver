@@ -5,11 +5,12 @@
 package org.geoserver.web.wicket;
 
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.resources.CompressedResourceReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 /**
  * A text field linked to some javascript bits that make it a color picker.
@@ -19,7 +20,7 @@ import org.apache.wicket.model.Model;
 @SuppressWarnings("serial")
 public class ColorPickerField extends TextField {
     
-    private static final CompressedResourceReference JSCOLOR_JS = new CompressedResourceReference(
+    private static final ResourceReference JSCOLOR_JS = new PackageResourceReference(
             ColorPickerField.class, "js/jscolor/jscolor.js");
 
     public ColorPickerField(String id) {
@@ -44,8 +45,12 @@ public class ColorPickerField extends TextField {
     }
     
     void init() {
-        add(HeaderContributor.forJavaScript(JSCOLOR_JS));
         add(new AttributeAppender("class", new Model("color {required:false}"), ","));
+    }
+    
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.renderJavaScriptReference(JSCOLOR_JS);
     }
     
 }

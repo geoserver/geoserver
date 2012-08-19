@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -21,17 +20,18 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerListPanel;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.StyleListPanel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Allows to edit the list of layers contained in a layer group
@@ -179,7 +179,7 @@ public class LayerGroupEntryPanel extends Panel {
     
     Component removeLink(String id, IModel itemModel) {
         final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 
@@ -240,7 +240,7 @@ public class LayerGroupEntryPanel extends Panel {
             this.entry = entry;
             
             if ( items.indexOf( entry ) > 0 ) {
-                ImageAjaxLink upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../../img/icons/silk/arrow_up.png") ) {
+                ImageAjaxLink upLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "../../img/icons/silk/arrow_up.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         int index = items.indexOf( PositionPanel.this.entry );
@@ -253,7 +253,7 @@ public class LayerGroupEntryPanel extends Panel {
                 add( upLink);
             }
             else {
-                ImageAjaxLink blankLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../../img/icons/blank.png") ) {
+                ImageAjaxLink blankLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "../../img/icons/blank.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                     }
@@ -263,7 +263,7 @@ public class LayerGroupEntryPanel extends Panel {
             }
             
             if ( items.indexOf( entry ) < items.size() - 1 ) {
-                ImageAjaxLink downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../../img/icons/silk/arrow_down.png") ) {
+                ImageAjaxLink downLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "../../img/icons/silk/arrow_down.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         int index = items.indexOf( PositionPanel.this.entry );
@@ -276,7 +276,7 @@ public class LayerGroupEntryPanel extends Panel {
                 add( downLink);
             }
             else {
-                ImageAjaxLink blankLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../../img/icons/blank.png") ) {
+                ImageAjaxLink blankLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "../../img/icons/blank.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         

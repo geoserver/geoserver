@@ -21,8 +21,10 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.PageExpiredException;
 import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.IPageRequestHandler;
@@ -232,16 +234,7 @@ public class GeoServerApplication extends SpringWebApplication {
         return locator;
     }
     
-//    class GeoServerRequestCycleProvider implements IRequestCycleProvider {
-//
-//        @Override
-//        public org.apache.wicket.request.cycle.RequestCycle get(RequestCycleContext context) {
-//            return new GeoServerRequestCycle(getApplicationContext(), context);
-//        }
-//        
-//    }
-
-    
+   
 //    static class RequestCycleProcessor extends WebRequestCycleProcessor {
 //        
 //        public IRequestTarget resolve(RequestCycle requestCycle,
@@ -319,56 +312,6 @@ public class GeoServerApplication extends SpringWebApplication {
             }
         }
     }
-    
-//    static class GeoServerRequestCycle extends org.apache.wicket.request.cycle.RequestCycle {
-//        private List<WicketCallback> callbacks;
-//
-//        public GeoServerRequestCycle(ApplicationContext app, RequestCycleContext ctx) {
-//            super(ctx);
-//            callbacks = GeoServerExtensions.extensions(WicketCallback.class);
-//        }
-//
-//        @Override
-//        protected void onBeginRequest() {
-//            for (WicketCallback callback : callbacks) {
-//                callback.onBeginRequest();
-//            }
-//        }
-//
-//        @Override
-//        public void onDetach() {
-//            for (WicketCallback callback : callbacks) {
-//                callback.onAfterTargetsDetached();
-//            }
-//        }
-//
-//        @Override
-//        protected void onEndRequest() {
-//            for (WicketCallback callback : callbacks) {
-//                callback.onEndRequest();
-//            }
-//        }
-//
-////        @Override
-////        public final Page onRuntimeException(final Page cause, final RuntimeException ex) {
-////            for (WicketCallback callback : callbacks) {
-////                callback.onRuntimeException(cause, ex);
-////            }
-////            if (ex instanceof PageExpiredException) {
-////                return super.onRuntimeException(cause, ex);
-////            } else {
-////                return new GeoServerErrorPage(cause, ex);
-////            }
-////        }
-////
-////        @Override
-////        protected void onRequestTargetSet(IRequestTarget requestTarget) {
-////            for (WicketCallback callback : callbacks) {
-////                callback.onRequestTargetSet(requestTarget);
-////            }
-////            super.onRequestTargetSet(requestTarget);
-////        }
-//    }
 
     private IConverterLocator buildConverterLocator() {
         ConverterLocator locator = new ConverterLocator();

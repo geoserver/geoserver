@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -24,6 +23,8 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.CatalogBuilder;
@@ -212,11 +213,10 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     private final void save() {
         onSubmit();
         this.extensionPanels.visitChildren(LayerGroupConfigurationPanel.class,
-                new IVisitor<LayerGroupConfigurationPanel>() {
+                new IVisitor<LayerGroupConfigurationPanel, Void>() {
                     @Override
-                    public Object component(LayerGroupConfigurationPanel extensionPanel) {
+                    public void component(LayerGroupConfigurationPanel extensionPanel,  final IVisit<Void> visit) {
                         extensionPanel.save();
-                        return CONTINUE_TRAVERSAL;
                     }
                 });
     }

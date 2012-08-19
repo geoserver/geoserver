@@ -36,6 +36,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
@@ -121,7 +123,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     "while (n.nodeName.toLowerCase() != 'form') { n = n.parentElement; }; " + 
                     "n.setAttribute('onsubmit', \"return document.getElementById('" + hiddenSubmit.getMarkupId()+ "').onclick();\");" + 
                  "}";
-                response.renderOnLoadJavascript(js);
+                response.renderOnLoadJavaScript(js);
             }
             
         };
@@ -410,6 +412,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form form) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
             }
+            
+            @Override
+            protected void onError(AjaxRequestTarget target, Form form) {
+                // nothing to do               
+            }
 
         };
     }
@@ -498,11 +505,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
     
     public void processInputs() {
-        this.visitChildren(FormComponent.class, new IVisitor() {
+        this.visitChildren(FormComponent.class, new IVisitor<Component, Void>() {
             
-            public Object component(Component component) {
+            public void component(Component component, IVisit<Void> visit) {
                 ((FormComponent) component).processInput();
-                return IVisitor.CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
+                visit.dontGoDeeper();
             }
         });
     }

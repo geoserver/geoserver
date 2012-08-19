@@ -12,16 +12,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -32,12 +28,17 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 /**
  * Base class for web pages in GeoServer web application.
@@ -77,39 +78,12 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
 	@SuppressWarnings("serial")
     public GeoServerBasePage() {
-        //add css and javascript header contributions
-	    ResourceReference faviconReference = null;
-        List<HeaderContribution> cssContribs = 
-            getGeoServerApplication().getBeansOfType(HeaderContribution.class);
-        for (HeaderContribution csscontrib : cssContribs) {
-            try {
-                if (csscontrib.appliesTo(this)) {
-                    ResourceReference ref = csscontrib.getCSS();
-                    if (ref != null) {
-                        add(HeaderContributor.forCss(ref));
-                    }
-                    
-                    ref = csscontrib.getJavaScript();
-                    if (ref != null) {
-                        add(HeaderContributor.forJavaScript(ref));
-                    }
-                    
-                    ref = csscontrib.getFavicon();
-                    if(ref != null) {
-                        faviconReference = ref;
-                    }
-                }
-            }
-            catch( Throwable t ) {
-                LOGGER.log(Level.WARNING, "Problem adding header contribution", t );
-            }
-        }
-        
         // favicon
+        ResourceReference faviconReference = getFaviconReference();
         if(faviconReference == null) {
-            faviconReference = new ResourceReference(GeoServerBasePage.class, "favicon.ico");
+            faviconReference = new PackageResourceReference(GeoServerBasePage.class, "favicon.ico");
         }
-        String faviconUrl = RequestCycle.get().urlFor(faviconReference).toString();
+        String faviconUrl = RequestCycle.get().urlFor(faviconReference, null).toString();
         add(new ExternalLink("faviconLink", faviconUrl, null));
 	    
 	    // page title
@@ -135,8 +109,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");
         add(devToolbar);
-        devToolbar.setVisible(Application.DEVELOPMENT.equalsIgnoreCase(
-                getApplication().getConfigurationType()));
+        devToolbar.setVisible(RuntimeConfigurationType.DEVELOPMENT.equals(getApplication().getConfigurationType()));
         
         final Map<Category,List<MenuPageInfo>> links = splitByCategory(
             filterByAuth(getGeoServerApplication().getBeansOfType(MenuPageInfo.class))
@@ -162,9 +135,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), (Component) null, null)));
                         Image image;
                         if(info.getIcon() != null) {
-                            image = new Image("link.icon", new ResourceReference(info.getComponentClass(), info.getIcon()));
+                            image = new Image("link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                         } else {
-                            image = new Image("link.icon", new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                            image = new Image("link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                         }
                         image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
                         link.add(image);
@@ -191,10 +164,45 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         
         // ajax feedback image
         add(new Image("ajaxFeedbackImage", 
-                new ResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
+                new PackageResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
         
         add(new WebMarkupContainer(HEADER_PANEL));
     }
+	
+    private ResourceReference getFaviconReference() {
+        List<HeaderContribution> cssContribs = getGeoServerApplication().getBeansOfType(
+                HeaderContribution.class);
+        for (HeaderContribution csscontrib : cssContribs) {
+            if (csscontrib.getFavicon() != null) {
+                return csscontrib.getFavicon();
+            }
+        }
+
+        return null;
+    }
+
+    public void renderHead(org.apache.wicket.markup.html.IHeaderResponse response) {
+	    List<HeaderContribution> cssContribs = 
+	            getGeoServerApplication().getBeansOfType(HeaderContribution.class);
+	        for (HeaderContribution csscontrib : cssContribs) {
+	            try {
+	                if (csscontrib.appliesTo(this)) {
+	                    ResourceReference ref = csscontrib.getCSS();
+	                    if (ref != null) {
+	                        response.renderCSSReference(ref);
+	                    }
+	                    
+	                    ref = csscontrib.getJavaScript();
+	                    if (ref != null) {
+	                        response.renderJavaScriptReference(ref);
+	                    }
+	                }
+	            }
+	            catch( Throwable t ) {
+	                LOGGER.log(Level.WARNING, "Problem adding header contribution", t );
+	            }
+	        }
+	};
 	
 	/**
 	 * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found
@@ -292,16 +300,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         }
         return result;
     }
-    @Override
-    protected void configureResponse() {
-        super.configureResponse();
-
-        // this is to avoid https://issues.apache.org/jira/browse/WICKET-923 in Firefox
-        final WebResponse response = getWebRequestCycle().getWebResponse();
-        response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
-    }
     
-   
    /**
     * Returns the id for the component used as a veil for the whole page while Wicket is processing
     * an ajax request, so it is impossible to trigger the same ajax action multiple times (think of

@@ -3,8 +3,8 @@ package org.geoserver.web;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
+import org.apache.wicket.request.IRequestHandler;
 import org.geotools.filter.function.EnvFunction;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +40,7 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
 
     }
 
-    public void onRequestTargetSet(IRequestTarget requestTarget) {
+    public void onRequestTargetSet(IRequestHandler requestTarget) {
         // nothing to do
     }
 

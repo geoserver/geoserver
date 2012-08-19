@@ -6,11 +6,12 @@ import java.util.Locale;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.springframework.security.core.GrantedAuthority;
@@ -99,9 +100,9 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     
     public void prefillForm(final FormTester tester) {
         Form form = tester.getForm();
-        form.visitChildren(new Component.IVisitor() {
+        form.visitChildren(new IVisitor<Component, Void>() {
             
-            public Object component(Component component) {
+            public void component(Component component, IVisit<Void> visit) {
                 if(component instanceof FormComponent) {
                     FormComponent fc = (FormComponent) component;
                     String name = fc.getInputName();
@@ -109,7 +110,6 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
                     
                     tester.setValue(name, value);
                 }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
             }
         });
     }
@@ -128,7 +128,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         return finder.candidate;
     }
     
-    class ComponentContentFinder implements Component.IVisitor {
+    class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;
         
@@ -137,12 +137,11 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         }
         
 
-        public Object component(Component component) {
+        public void component(Component component, IVisit<Void> visit) {
             if(content.equals(component.getDefaultModelObject())) {
                 this.candidate = component;
-                return Component.IVisitor.STOP_TRAVERSAL;
+                visit.stop();
             }
-            return Component.IVisitor.CONTINUE_TRAVERSAL;
         }
         
     }
@@ -153,6 +152,6 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
      */
     public static void initResourceSettings(WicketTester tester) {
         tester.getApplication().getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-        tester.getApplication().getResourceSettings().addStringResourceLoader(0, new GeoServerStringResourceLoader());
+        tester.getApplication().getResourceSettings().getStringResourceLoaders().add(0, new GeoServerStringResourceLoader());
     }
 }

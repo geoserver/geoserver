@@ -12,12 +12,9 @@ import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -38,6 +35,8 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.Catalog;
@@ -45,7 +44,6 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -87,7 +85,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * @param parameters
      */
     public WorkspaceEditPage(PageParameters parameters) {
-        String wsName = parameters.getString("name");
+        String wsName = parameters.get("name").toString();
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
         
         if(wsi == null) {
@@ -317,7 +315,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             settingsContainer.add(contactPanel);
 
             otherSettingsPanel = new WebMarkupContainer("otherSettings", 
-                new CompoundPropertyModel<GeoServerInfo>(set.model));
+                new CompoundPropertyModel<SettingsInfo>(set.model));
             otherSettingsPanel.setOutputMarkupId(true);
             otherSettingsPanel.setVisible(set.enabled);
             otherSettingsPanel.add(new CheckBox("verbose"));
@@ -467,10 +465,10 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     Image image;
                     if(info.getIcon() != null) {
                         image = new Image("link.icon", 
-                            new ResourceReference(info.getComponentClass(), info.getIcon()));
+                            new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                     } else {
                         image = new Image("link.icon", 
-                            new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
                     image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
                     link.add(image);

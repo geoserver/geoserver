@@ -7,7 +7,7 @@ package org.geoserver.web.data.layer;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;

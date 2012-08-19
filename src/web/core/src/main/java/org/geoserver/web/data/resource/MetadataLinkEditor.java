@@ -121,6 +121,11 @@ public class MetadataLinkEditor extends Panel {
                 
                 target.addComponent(container);
             }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // do nothing?
+            }
             
         };
         add(button);

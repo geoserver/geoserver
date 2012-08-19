@@ -4,21 +4,16 @@
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
-import static org.geoserver.web.data.layer.LayerProvider.NAME;
-import static org.geoserver.web.data.layer.LayerProvider.SRS;
-import static org.geoserver.web.data.layer.LayerProvider.STORE;
-import static org.geoserver.web.data.layer.LayerProvider.TYPE;
-import static org.geoserver.web.data.layer.LayerProvider.WORKSPACE;
+import static org.geoserver.web.data.layer.LayerProvider.*;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -32,10 +27,10 @@ import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Page listing all the available layers. Follows the usual filter/sort/page approach,

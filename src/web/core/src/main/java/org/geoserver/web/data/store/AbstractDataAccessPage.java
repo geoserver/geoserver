@@ -151,7 +151,6 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
                 target.addComponent(paramsForm);
             }
 

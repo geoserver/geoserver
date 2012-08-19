@@ -4,18 +4,16 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.geoserver.web.data.store.StoreProvider.ENABLED;
-import static org.geoserver.web.data.store.StoreProvider.NAME;
-import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
+import static org.geoserver.web.data.store.StoreProvider.*;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;

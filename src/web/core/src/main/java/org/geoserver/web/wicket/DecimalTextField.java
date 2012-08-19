@@ -62,7 +62,7 @@ public class DecimalTextField extends TextField<Double> {
     }
 
     @Override
-    public IConverter getConverter(Class<?> type) {
+    public <C> IConverter<C> getConverter(Class<C> type) {
         return decimalConverter;
     }
 }

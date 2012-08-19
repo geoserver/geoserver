@@ -102,7 +102,6 @@ public class PreviewFont implements Serializable {
         // create the image
         BufferedDynamicImageResource generatedImage = new BufferedDynamicImageResource("png");
         generatedImage.setImage(bi);
-        generatedImage.setCacheable(true);
 
         return generatedImage;
     }

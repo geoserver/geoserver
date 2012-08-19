@@ -9,7 +9,7 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
         tester.startPage(LayerPage.class);
         tester.assertRenderedPage(GeoServerLoginPage.class);
         // make sure the spring security emulation is properly setup
-        SavedRequest sr = (SavedRequest) tester.getServletSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
+        SavedRequest sr = (SavedRequest) tester.getSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
         assertNotNull(sr);
         assertTrue(sr.getRedirectUrl().endsWith("?wicket:bookmarkablePage=:org.geoserver.web.data.layer.LayerPage"));
                         

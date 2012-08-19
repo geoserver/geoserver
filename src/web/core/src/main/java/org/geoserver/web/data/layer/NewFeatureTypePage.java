@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -20,6 +18,8 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -27,10 +27,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -62,7 +62,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
     String storeId;
 
     public NewFeatureTypePage(PageParameters params) {
-        this(params.getString(WORKSPACE), params.getString(DATASTORE));
+        this(params.get(WORKSPACE).toString(), params.get(DATASTORE).toString());
     }
 
     public NewFeatureTypePage(String workspaceName, String storeName) {
@@ -261,7 +261,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
         if (attributesProvider.isFirst(attribute)) {
             upDown.add(new PlaceholderLink("up"));
         } else {
-            ImageAjaxLink upLink = new ImageAjaxLink("up", new ResourceReference(getClass(),
+            ImageAjaxLink upLink = new ImageAjaxLink("up", new PackageResourceReference(getClass(),
                     "../../img/icons/silk/arrow_up.png")) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
@@ -275,7 +275,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
         if (attributesProvider.isLast(attribute)) {
             upDown.add(new PlaceholderLink("down"));
         } else {
-            ImageAjaxLink downLink = new ImageAjaxLink("down", new ResourceReference(getClass(),
+            ImageAjaxLink downLink = new ImageAjaxLink("down", new PackageResourceReference(getClass(),
                     "../../img/icons/silk/arrow_down.png")) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
@@ -297,7 +297,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
     class PlaceholderLink extends ImageAjaxLink {
 
         public PlaceholderLink(String id) {
-            super(id, new ResourceReference(NewFeatureTypePage.class, "../../img/icons/blank.png"));
+            super(id, new PackageResourceReference(NewFeatureTypePage.class, "../../img/icons/blank.png"));
             setEnabled(false);
         }
 

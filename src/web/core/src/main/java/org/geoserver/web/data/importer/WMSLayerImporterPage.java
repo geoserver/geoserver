@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -20,6 +18,9 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -31,10 +32,10 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 public class WMSLayerImporterPage extends GeoServerSecuredPage {
 
@@ -49,7 +50,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
     @SuppressWarnings({ "serial", "unchecked", "rawtypes" })
     public WMSLayerImporterPage(PageParameters params) {
         
-        storeId = params.getString("storeId");
+        storeId = params.get("storeId").toString();
         
         WMSStoreInfo store = getCatalog().getStore(storeId, WMSStoreInfo.class);
 
@@ -154,6 +155,11 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
                 target.addComponent(form);
                 target.addComponent(feedbackPanel);
             }
+            
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // nothing to do?
+            }
 
         };
     }
@@ -190,6 +196,11 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
                 }
                 target.addComponent(form);
                 target.addComponent(feedbackPanel);
+            }
+            
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                
             }
         };
     }
@@ -290,15 +301,15 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         public Object getObject() {
             LayerResource resource = (LayerResource) layerResource.getObject();
             if(resource.getStatus() == LayerStatus.ERROR) {
-                return new ResourceReference(
+                return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/error.png");
             } else if(resource.getStatus() == LayerStatus.NEW) {
-                return new ResourceReference(
+                return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/add.png");
             } else if(resource.getStatus() == LayerStatus.NEWLY_PUBLISHED) {
                 return CatalogIconFactory.ENABLED_ICON;
             } else if(resource.getStatus() == LayerStatus.UPDATED) {
-                return new ResourceReference(
+                return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/pencil.png");
             } else if(resource.getStatus() == LayerStatus.PUBLISHED) {
                 return CatalogIconFactory.MAP_ICON;

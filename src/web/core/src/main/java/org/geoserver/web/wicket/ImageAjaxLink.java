@@ -4,13 +4,13 @@
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.resource.ResourceReference;
 
 /**
  * A panel which encapsulates a link containing a image and an optional label.

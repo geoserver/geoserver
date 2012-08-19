@@ -42,9 +42,9 @@ public class GeometryTextArea extends TextArea<Geometry> {
         super(id, model);
         setType(Geometry.class);
     }
-
+    
     @Override
-    public IConverter getConverter(Class<?> type) {
+    public <C> IConverter<C> getConverter(Class<C> type) {
         return new GeometryConverter();
     }
 

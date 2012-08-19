@@ -12,16 +12,18 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 /**
  * A XML editor based on CodeMirror
@@ -30,7 +32,7 @@ import org.apache.wicket.model.Model;
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
 
-    public static final ResourceReference REFERENCE = new ResourceReference(
+    public static final ResourceReference REFERENCE = new PackageResourceReference(
             CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
     
     private TextArea<String> editor;
@@ -85,8 +87,9 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         // we need to force CodeMirror to update the textarea contents (which it hid)
         // before submitting the form, otherwise the validation will use the old contents
         return new AjaxCallDecorator() {
+            
             @Override
-            public CharSequence decorateScript(CharSequence script) {
+            public CharSequence decorateScript(Component c, CharSequence script) {
                 // textarea.value = codemirrorinstance.getCode()
                 String id = getTextAreaMarkupId();
                 return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getCode();" + script;
@@ -94,14 +97,14 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         };
     }
     
-    class CodeMirrorBehavior extends AbstractBehavior {
-
+    class CodeMirrorBehavior extends Behavior {
+        
         @Override
-        public void renderHead(IHeaderResponse response) {
-            super.renderHead(response);
-            response.renderJavascriptReference(REFERENCE);
+        public void renderHead(Component c, IHeaderResponse response) {
+            super.renderHead(c, response);
+            response.renderJavaScriptReference(REFERENCE);
 
-            response.renderOnDomReadyJavascript(getInitJavascript());
+            response.renderOnDomReadyJavaScript(getInitJavascript());
         }
 
         private String getInitJavascript() {

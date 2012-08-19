@@ -2,26 +2,18 @@ package org.geoserver.web.admin;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.Component.IVisitor;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.security.AdminRequest;
@@ -38,10 +30,6 @@ import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.data.property.PropertyDataStoreFactory;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 
 public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
 

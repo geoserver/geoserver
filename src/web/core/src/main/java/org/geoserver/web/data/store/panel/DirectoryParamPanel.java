@@ -93,6 +93,11 @@ public class DirectoryParamPanel extends FileParamPanel {
                     }
                 });
             }
+            
+            @Override
+            protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+                // nothing to do
+            }
 
         };
         return link;

@@ -4,10 +4,9 @@
  */
 package org.geoserver.web;
 
-import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
-import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget;
-import org.apache.wicket.request.target.component.IPageRequestTarget;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.handler.IPageRequestHandler;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 
@@ -51,7 +50,7 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(IRequestTarget target) {
+    public void onRequestTargetSet(IRequestHandler target) {
         // we can have many of these calls per http call, avoid locking multiple times,
         // onEndRequest will be called just once
         LockType type = THREAD_LOCK.get();
@@ -60,19 +59,12 @@ public class WicketConfigurationLockCallback implements WicketCallback {
         }
 
         // setup a write lock for secured pages, a read one for the others
-        if (target instanceof IPageRequestTarget) {
-            IPageRequestTarget pt = (IPageRequestTarget) target;
-            Page page = pt.getPage();
-            if (page instanceof GeoServerSecuredPage) {
+        if (target instanceof IPageRequestHandler) {
+            IPageRequestHandler pt = (IPageRequestHandler) target;
+            if (GeoServerSecuredPage.class.isAssignableFrom(pt.getPageClass())) {
                 type = LockType.WRITE;
             }
-        } else if (target instanceof IBookmarkablePageRequestTarget) {
-            IBookmarkablePageRequestTarget bt = (IBookmarkablePageRequestTarget) target;
-
-            if (GeoServerSecuredPage.class.isAssignableFrom(bt.getPageClass())) {
-                type = LockType.WRITE;
-            }
-        }
+        } 
         if (type == null) {
             type = LockType.READ;
         }
@@ -83,7 +75,7 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    public void onRuntimeException(Page page, RuntimeException e) {
+    public void onRuntimeException(Page page, Exception e) {
         // nothing to do
     }
 

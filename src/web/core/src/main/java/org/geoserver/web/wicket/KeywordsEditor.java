@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import net.sf.cglib.core.Local;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -116,11 +114,17 @@ public class KeywordsEditor extends FormComponentPanel {
                 vocabTextField.setModelObject(null);
                 vocabTextField.modelChanged();
 
-                target.addComponent(newKeyword);
-                target.addComponent(langChoice);
-                target.addComponent(vocabTextField);
-                target.addComponent(choices);
+                target.add(newKeyword);
+                target.add(langChoice);
+                target.add(vocabTextField);
+                target.add(choices);
             }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // nothing to do                 
+            }
+
         };
         button.setDefaultFormProcessing(false);
         return button;
@@ -141,6 +145,12 @@ public class KeywordsEditor extends FormComponentPanel {
                 choices.modelChanged();
                 target.addComponent(choices);
             }
+            
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // nothing to do                 
+            }
+
         };
         // button.setDefaultFormProcessing(false);
         return button;

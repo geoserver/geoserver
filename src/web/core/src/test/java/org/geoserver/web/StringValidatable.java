@@ -3,34 +3,42 @@ package org.geoserver.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
 
 /**
  * Helper class to test validators that need to validate a String object
  */
-public class StringValidatable implements IValidatable {
+public class StringValidatable implements IValidatable<String> {
     List<IValidationError> errors = new ArrayList<IValidationError>();
+
     String value;
-    
+
     public StringValidatable(String value) {
         this.value = value;
     }
 
     public void error(IValidationError error) {
-        errors.add(error);            
+        errors.add(error);
     }
 
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
     public boolean isValid() {
         return errors.size() == 0;
     }
-    
+
     public List<IValidationError> getErrors() {
         return errors;
     }
-    
+
+    @Override
+    public IModel getModel() {
+        return new Model(value);
+    }
+
 }

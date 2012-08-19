@@ -4,10 +4,9 @@
  */
 package org.geoserver.web;
 
-import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 /**
  * Pluggable callback exposing the Wicket {@link RequestCycle} stages

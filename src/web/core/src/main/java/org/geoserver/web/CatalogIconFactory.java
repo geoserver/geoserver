@@ -10,16 +10,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccessFactory;
@@ -42,40 +43,40 @@ public class CatalogIconFactory implements Serializable {
     
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web");
 
-    public static final ResourceReference RASTER_ICON = new ResourceReference(
+    public static final ResourceReference RASTER_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/geosilk/raster.png");
 
-    public static final ResourceReference VECTOR_ICON = new ResourceReference(
+    public static final ResourceReference VECTOR_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/geosilk/vector.png");
     
-    public static final ResourceReference MAP_ICON = new ResourceReference(
+    public static final ResourceReference MAP_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/geosilk/map.png");
     
-    public static final ResourceReference MAP_STORE_ICON = new ResourceReference(
+    public static final ResourceReference MAP_STORE_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/geosilk/server_map.png");
     
-    public static final ResourceReference POINT_ICON = new ResourceReference(
+    public static final ResourceReference POINT_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/bullet_blue.png");
     
-    public static final ResourceReference LINE_ICON = new ResourceReference(
+    public static final ResourceReference LINE_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/line_blue.png");
     
-    public static final ResourceReference POLYGON_ICON = new ResourceReference(
+    public static final ResourceReference POLYGON_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/shape_square_blue.png");
     
-    public static final ResourceReference GEOMETRY_ICON = new ResourceReference(
+    public static final ResourceReference GEOMETRY_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/geosilk/vector.png");
 
-    public static final ResourceReference UNKNOWN_ICON = new ResourceReference(
+    public static final ResourceReference UNKNOWN_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final ResourceReference GROUP_ICON = new ResourceReference(
+    public static final ResourceReference GROUP_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/layers.png");
 
-    public static final ResourceReference DISABLED_ICON = new ResourceReference(
+    public static final ResourceReference DISABLED_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final ResourceReference ENABLED_ICON = new ResourceReference(
+    public static final ResourceReference ENABLED_ICON = new PackageResourceReference(
             GeoServerBasePage.class, "img/icons/silk/tick.png");
 
     static final CatalogIconFactory INSTANCE = new CatalogIconFactory();
@@ -219,7 +220,7 @@ public class CatalogIconFactory implements Serializable {
 
         for (DataStorePanelInfo panelInfo : infos) {
             if (factoryClass.equals(panelInfo.getFactoryClass())) {
-                return new ResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
+                return new PackageResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
             }
         }
 
@@ -227,24 +228,24 @@ public class CatalogIconFactory implements Serializable {
             // search for the declared default vector store icon
             for (DataStorePanelInfo panelInfo : infos) {
                 if ("defaultVector".equals(panelInfo.getId())) {
-                    return new ResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
+                    return new PackageResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
                 }
             }
 
             // fall back on generic vector icon otherwise
-            return new ResourceReference(GeoServerApplication.class,
+            return new PackageResourceReference(GeoServerApplication.class,
                     "img/icons/geosilk/database_vector.png");
 
         } else if (Format.class.isAssignableFrom(factoryClass)) {
             // search for the declared default coverage store icon
             for (DataStorePanelInfo panelInfo : infos) {
                 if ("defaultRaster".equals(panelInfo.getId())) {
-                    return new ResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
+                    return new PackageResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
                 }
             }
 
             // fall back on generic raster icon otherwise
-            return new ResourceReference(GeoServerApplication.class,
+            return new PackageResourceReference(GeoServerApplication.class,
                     "img/icons/geosilk/page_white_raster.png");
         }
         throw new IllegalArgumentException("Unrecognized store format class: " + factoryClass);

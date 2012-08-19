@@ -108,7 +108,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             @Override
             public void onSubmit(final AjaxRequestTarget target, Form form) {
                 // perform manual processing otherwise the component contents won't be updated
-                form.process();
+                form.process(this);
                 ResourceInfo resource = (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
                 try {
                     CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
@@ -126,6 +126,11 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 // disable the default processing or the link won't trigger
                 // when any validation fails
                 return false;
+            }
+            
+            @Override
+            protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+                                
             }
 
         };

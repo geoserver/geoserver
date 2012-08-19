@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -23,6 +22,8 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
@@ -199,7 +200,7 @@ public class NewDataPage extends GeoServerSecuredPage {
     
     private List<OtherStoreDescription> getOtherStores() {
         List<OtherStoreDescription> stores = new ArrayList<OtherStoreDescription>();
-        ResourceReference wmsIcon = new ResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
+        ResourceReference wmsIcon = new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/server_map.png");
         stores.add(new OtherStoreDescription("wms", wmsIcon, WMSStoreNewPage.class));
         
         return stores;

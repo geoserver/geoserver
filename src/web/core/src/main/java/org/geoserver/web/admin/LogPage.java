@@ -7,24 +7,26 @@ package org.geoserver.web.admin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.io.Streams;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.ResourceStreamResource;
+import org.apache.wicket.util.resource.AbstractResourceStream;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
@@ -36,6 +38,7 @@ import org.geoserver.web.GeoServerSecuredPage;
  * 
  * @author Andrea Aime - OpenGeo
  */
+@SuppressWarnings("serial")
 public class LogPage extends GeoServerSecuredPage {
     static final String LINES = "lines";
 
@@ -69,13 +72,14 @@ public class LogPage extends GeoServerSecuredPage {
         }
 
         try {
-            if (params.getKey(LINES) != null) {
-                if (params.getInt(LINES) > 0) {
-                    lines = params.getInt(LINES);
+            if (params.get(LINES) != null) {
+                int lpv = params.get(LINES).toInt();
+                if (lpv > 0) {
+                    lines = lpv;
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.getKey(LINES));
+            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", LINES);
         }
 
         form.add(new SubmitLink("refresh") {
@@ -94,43 +98,10 @@ public class LogPage extends GeoServerSecuredPage {
         logs.setOutputMarkupId(true);
         logs.setMarkupId("logs");
         add(logs);
-
-        add(new Link("download") {
-
-            @Override
-            public void onClick() {
-                RequestCycle.get().setRequestTarget(new IRequestTarget() {
-
-                    public void detach(RequestCycle requestCycle) {
-                    }
-
-                    public void respond(RequestCycle requestCycle) {
-
-                        InputStream is = null;
-                        try {
-                            is = new FileInputStream(logFile);
-
-                            WebResponse r = (WebResponse) requestCycle.getResponse();
-                            r.setAttachmentHeader("geoserver.log");
-                            r.setContentType("text/plain");
-                            Streams.copy(is, r.getOutputStream());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            if(is != null) {
-                                try {
-                                    is.close();
-                                } catch (IOException e) {
-                                }
-                            }
-                        }
-                    }
-
-                });
-
-            }
-        });
-
+        
+        ResourceReference logResource = new LogResourceReference();
+        CharSequence urlForLog = getRequestCycle().urlFor(logResource, null);
+        ExternalLink link = new ExternalLink("download", urlForLog.toString());
     }
 
     public class GSLogsModel extends LoadableDetachableModel {
@@ -170,5 +141,39 @@ public class LogPage extends GeoServerSecuredPage {
             }
         }
 
+    }
+    
+    class LogResourceReference extends ResourceReference {
+
+        public LogResourceReference() {
+            super(LogResourceReference.class, "GeoServerLogFile");
+        }
+
+        @Override
+        public IResource getResource() {
+            return new ResourceStreamResource(new LogFileResource());
+        }
+        
+    }
+    
+    class LogFileResource extends AbstractResourceStream {
+
+        @Override
+        public void close() throws IOException {
+            // nothing to do I belive?
+            
+        }
+
+        @Override
+        public InputStream getInputStream() throws ResourceStreamNotFoundException {
+            try {
+                return new FileInputStream(logFile);
+            } catch (FileNotFoundException e) {
+                throw new ResourceStreamNotFoundException(e);
+            }
+        }
+
+       
+        
     }
 }

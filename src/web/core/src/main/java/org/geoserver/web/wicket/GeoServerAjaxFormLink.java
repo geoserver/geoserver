@@ -1,9 +1,7 @@
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.geoserver.web.GeoServerBasePage;
@@ -40,6 +38,11 @@ public abstract class GeoServerAjaxFormLink extends AjaxSubmitLink {
         if(getPage() instanceof GeoServerBasePage) {
             target.addComponent(((GeoServerBasePage) getPage()).getFeedbackPanel());
         }
+    }
+    
+    @Override
+    protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+        // let subclasses override if needed        
     }
 
     protected abstract void onClick(AjaxRequestTarget target, Form form);

@@ -16,6 +16,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
@@ -48,8 +49,13 @@ public class WebUtils {
      * @return
      */
     public static String localize(String key, IModel model, Object... params) {
-        StringResourceModel rm = new StringResourceModel(key, null, model, params);
-        rm.setLocalizer(GeoServerApplication.get().getResourceSettings().getLocalizer());
+        StringResourceModel rm = new StringResourceModel(key, null, model, params) {
+            @Override
+            public Localizer getLocalizer() {
+                return GeoServerApplication.get().getResourceSettings().getLocalizer();
+            }
+        };
+        
         return rm.getString();
     }
 
@@ -71,7 +77,7 @@ public class WebUtils {
         return new FreemarkerResourceStream(c.getClass(), model);
     }
 
-    static class FreemarkerResourceStream implements IResourceStream {
+    static class FreemarkerResourceStream extends AbstractResourceStream {
 
         Class clazz;
 
@@ -120,10 +126,6 @@ public class WebUtils {
             cfg.setLocale(locale);
         }
 
-        public long length() {
-            return -1;
-        }
-
         public Time lastModifiedTime() {
             Object source;
             try {
@@ -144,6 +146,7 @@ public class WebUtils {
 
         public void close() throws IOException {
         }
+        
     }
 
 }

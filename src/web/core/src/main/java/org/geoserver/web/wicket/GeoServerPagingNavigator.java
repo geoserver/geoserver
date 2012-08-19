@@ -25,9 +25,10 @@ public class GeoServerPagingNavigator extends AjaxPagingNavigator {
     }
     
     @Override
-    protected PagingNavigation newNavigation(IPageable pageable, IPagingLabelProvider labelProvider) {
+    protected PagingNavigation newNavigation(String id, IPageable pageable,
+            IPagingLabelProvider labelProvider) {
         // make sure we don't have too many links, it gets quite busy in popups
-        PagingNavigation navigation = super.newNavigation(pageable, labelProvider);
+        PagingNavigation navigation = super.newNavigation(id, pageable, labelProvider);
         navigation.setViewSize(5);
         return navigation;
     }

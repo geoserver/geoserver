@@ -4,11 +4,10 @@
  */
 package org.geoserver.web;
 
-import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget;
-import org.apache.wicket.request.target.component.PageRequestTarget;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.handler.IPageClassRequestHandler;
 import org.geoserver.security.AdminRequest;
 
 /**
@@ -34,15 +33,12 @@ public class AdminRequestWicketCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(IRequestTarget requestTarget) {
+    public void onRequestTargetSet(IRequestHandler requestTarget) {
         //for non secured page requests we abort the admin request since they are meant to be 
         // accessible anonymously, so we don't consider this an admin request
         Class pageClass = null;
-        if (requestTarget instanceof PageRequestTarget) {
-            pageClass = ((PageRequestTarget) requestTarget).getPage().getPageClass();
-        }
-        if (requestTarget instanceof IBookmarkablePageRequestTarget) {
-            pageClass = ((IBookmarkablePageRequestTarget) requestTarget).getPageClass();
+        if (requestTarget instanceof IPageClassRequestHandler) {
+            pageClass = ((IPageClassRequestHandler) requestTarget).getPageClass();
         }
         if (requestTarget instanceof AjaxRequestTarget) {
             Page p = ((AjaxRequestTarget)requestTarget).getPage();
@@ -55,7 +51,7 @@ public class AdminRequestWicketCallback implements WicketCallback {
     }
 
     @Override
-    public void onRuntimeException(Page page, RuntimeException e) {
+    public void onRuntimeException(Page page, Exception e) {
     }
 
 }

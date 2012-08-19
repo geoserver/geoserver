@@ -113,6 +113,11 @@ public class FileParamPanel extends Panel implements ParamPanel {
                 dialog.setTitle(windowTitle);
                 dialog.show(target);
             }
+            
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // nothing to do 
+            }
 
         };
         return link;

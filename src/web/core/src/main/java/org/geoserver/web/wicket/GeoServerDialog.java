@@ -22,6 +22,8 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 
 /**
  * An abstract OK/cancel dialog, subclasses will have to provide the actual contents and behavior
@@ -275,13 +277,13 @@ public class GeoServerDialog extends Panel {
          * @param form
          */
         public void onError(final AjaxRequestTarget target, Form form) {
-            form.getPage().visitChildren(IFeedback.class, new IVisitor()
+            form.getPage().visitChildren(IFeedback.class, new IVisitor<Component, Void>()
             {
-                public Object component(Component component)
+                public void component(Component component, IVisit<Void> visit)
                 {
-                    if(component.getOutputMarkupId())
-                        target.addComponent(component);
-                    return IVisitor.CONTINUE_TRAVERSAL;
+                    if(component.getOutputMarkupId()) {
+                        target.add(component);
+                    }
                 }
 
             });

@@ -6,10 +6,10 @@ package org.geoserver.web;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -32,8 +32,9 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         add(field);
         
         try {
-            if(parameters.getBoolean("error"))
+            if(parameters.get("error").toBoolean()) {
                 error(new ParamResourceModel("error", this).getString());
+            }
         } catch(Exception e) {
             // ignore
         }

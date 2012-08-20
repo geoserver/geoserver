@@ -11,12 +11,17 @@ import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-
+/**
+ * 
+ * @author Niels Charlier : added 3D BBOX support
+ *
+ */
 public class BBoxKvpParser extends KvpParser {
     public BBoxKvpParser() {
         super("bbox", Envelope.class);
@@ -30,11 +35,16 @@ public class BBoxKvpParser extends KvpParser {
             throw new IllegalArgumentException("Requested bounding box contains wrong"
                 + "number of coordinates (should have " + "4): " + unparsed.size());
         }
+        
+        int countco = 4;
+        if (unparsed.size() == 6) { //3d-coordinates 
+        	countco = 6;        	
+        }
 
         //if it does, store them in an array of doubles
-        double[] bbox = new double[4];
+        double[] bbox = new double[countco];
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < countco; i++) {
             try {
                 bbox[i] = Double.parseDouble((String) unparsed.get(i));
             } catch (NumberFormatException e) {
@@ -46,8 +56,16 @@ public class BBoxKvpParser extends KvpParser {
         //ensure the values are sane
         double minx = bbox[0];
         double miny = bbox[1];
-        double maxx = bbox[2];
-        double maxy = bbox[3];
+        double minz=0, maxx=0, maxy=0, maxz=0;
+        if (countco == 6) {
+        	minz = bbox[2];
+        	maxx = bbox[3];
+        	maxy = bbox[4];
+        	maxz = bbox[5];
+        } else {
+        	maxx = bbox[2];
+        	maxy = bbox[3];     
+        }
         
         if (minx > maxx) {
             throw new ServiceException("illegal bbox, minX: " + minx + " is "
@@ -57,15 +75,20 @@ public class BBoxKvpParser extends KvpParser {
         if (miny > maxy) {
             throw new ServiceException("illegal bbox, minY: " + miny + " is "
                 + "greater than maxY: " + maxy);
-        }
+        }      
+        
+        if (minz > maxz) {
+            throw new ServiceException("illegal bbox, minZ: " + minz + " is "
+                + "greater than maxZ: " + maxz);
+        }  
 
         //check for crs
         CoordinateReferenceSystem crs = null;
 
-        if (unparsed.size() > 4) {
-            // merge back the CRS definition, in case it is an AUTO one
+        if (unparsed.size() > countco) {
+        	// merge back the CRS definition, in case it is an AUTO one
             StringBuilder sb = new StringBuilder();
-            for (int i = 4; i < unparsed.size(); i++) {
+            for (int i = countco; i < unparsed.size(); i++) {
                 sb.append(unparsed.get(i));
                 if(i < (unparsed.size() - 1)) {
                     sb.append(",");
@@ -75,7 +98,11 @@ public class BBoxKvpParser extends KvpParser {
         } else {
             //TODO: use the default crs of the system
         }
-
-        return new ReferencedEnvelope(minx,maxx,miny,maxy,crs);
+        
+        if (countco == 6) {
+        	return new ReferencedEnvelope3D(minx,maxx,miny,maxy,minz,maxz,crs);
+        } else {
+        	return new ReferencedEnvelope(minx,maxx,miny,maxy,crs);
+        }
     }
 }

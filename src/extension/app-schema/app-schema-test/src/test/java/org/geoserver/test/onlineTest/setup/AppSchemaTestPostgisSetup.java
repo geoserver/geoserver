@@ -24,6 +24,9 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.identity.FeatureId;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
+
 /**
  * Postgis data setup for app-schema-test with online mode.
  * 
@@ -175,7 +178,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 // TODO: should read the properties file header to see if they're more specific
                 buf.append("'GEOMETRY'").append(", ");
                 // TODO: how to work this out properly?
-                buf.append(2);
+                buf.append(geom.getType().getCoordinateReferenceSystem().getCoordinateSystem().getDimension());
                 buf.append(");\n");
             }
 
@@ -196,6 +199,11 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 int valueIndex = 0;
                 for (Property prop : properties) {
                     Object value = prop.getValue();
+                    if (value instanceof Geometry) {
+                    	//use wkt writer to convert geometry to string, so third dimension can be supported if present.
+                    	Geometry geom = (Geometry) value;
+                    	value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
+                    }
                     if (value == null || value.toString().equalsIgnoreCase("null")) {
                         values[valueIndex] = "null";
                     } else if (prop.getType() instanceof GeometryType) {

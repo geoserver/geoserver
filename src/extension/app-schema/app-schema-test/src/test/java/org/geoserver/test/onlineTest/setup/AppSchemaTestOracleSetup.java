@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
@@ -23,6 +24,9 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.identity.FeatureId;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Oracle data setup for app-schema-test with online mode.
@@ -104,6 +108,13 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      */
     private void createTables(Map<String, File> propertyFiles) throws IllegalAttributeException,
             NoSuchElementException, IOException {
+    	
+    	String parser = System.getProperty("wktparser");
+    	if (parser == null) {
+    		parser = "SDO_GEOMETRY"; //default wkt parser procedure, does not support 3D
+    		//alternative wkt parser can be passed on for 3d testing 
+    	}
+    	
         StringBuffer buf = new StringBuffer();
         StringBuffer spatialIndex = new StringBuffer();
         // drop table procedure I copied from Victor's Oracle_Data_ref_set.sql
@@ -162,8 +173,11 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                             .append(field)
                             .append(
                                     "',MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X',140.962,144.909,0.00001),")
-                            .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)),").append(
-                                    srid).append(")\n");
+                            .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)")
+                            .append( //support 3d index
+                            		((GeometryDescriptor) desc).getCoordinateReferenceSystem().getCoordinateSystem().getDimension() == 3 ?
+                            		", MDSYS.SDO_DIM_ELEMENT('Z',-100000, 100000, 1) )," : "),")
+                            .append(srid).append(")\n");
 
                     // ensure it's <= 30 characters to avoid Oracle exception
                     String indexName = (tableName.length() <= 26 ? tableName : tableName.substring(
@@ -219,11 +233,16 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 int valueIndex = 0;
                 for (Property prop : properties) {
                     Object value = prop.getValue();
+                    if (value instanceof Geometry) {
+                    	//use wkt writer to convert geometry to string, so third dimension can be supported if present.
+                    	Geometry geom = (Geometry) value;
+                    	value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
+                    }
                     if (value == null || value.toString().equalsIgnoreCase("null")) {
                         values[valueIndex] = "null";
                     } else if (prop.getType() instanceof GeometryType) {
-                        int srid = getSrid(((GeometryType) prop.getType()));                        
-                        StringBuffer geomValue = new StringBuffer("SDO_GEOMETRY('");
+                        int srid = getSrid(((GeometryType) prop.getType()));
+                        StringBuffer geomValue = new StringBuffer(parser + "('");
                         geomValue.append(value).append("'");
                         if (srid > -1) {
                             // attach srid

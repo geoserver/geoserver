@@ -110,6 +110,8 @@ public class MonitorFilter implements GeoServerFilter {
         data.setInternalHost(InternalHostname.get());
         data.setRemoteAddr(getRemoteAddr(req));
         data.setStatus(Status.RUNNING);
+        data.setReferer(getReferer(req));
+        
         
         if (SecurityContextHolder.getContext() != null 
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
@@ -186,6 +188,17 @@ public class MonitorFilter implements GeoServerFilter {
         } else {
             return req.getRemoteAddr();
         }
+    }
+    
+    String getReferer(HttpServletRequest req) {
+        String referer = req.getHeader("Referer");
+        
+        // "Referer" is in the HTTP spec, but "Referrer" is the correct English spelling.
+        // This falls back to the "correct" spelling if the specified one was not used.
+        if(referer==null)
+            referer = req.getHeader("Referrer");
+        
+        return referer;
     }
     
     static class PostProcessTask implements Runnable {

@@ -51,6 +51,8 @@
     <property column="ERROR_MESSAGE" name="errorMessage" length="1024"/>
     <property column="EXCEPTION_STACK_TRACE" name="error" type="Error"/>
     
+    <property column="REFERER" name="referer"/>
+    
     <list name="resources" table="REQUEST_RESOURCES">
       <key column="REQUEST_ID" not-null="true"/>
       <list-index column="IDX"/>

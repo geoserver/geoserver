@@ -142,8 +142,6 @@ Current PSC
  * Gabriel Roldan
  * Justin Deoliveira
  * Jody Garnett
- * Mark Leslie
- * Rob Atkinson
  * Simone Giannecchini
 
 PSC Voting procedure

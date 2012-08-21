@@ -27,7 +27,7 @@ public class MonitorFilterTest extends TestCase {
         
         MockFilterChain chain = new MockFilterChain();
        
-        HttpServletRequest req = request("GET", "/foo/bar", "12.34.56.78", null);
+        HttpServletRequest req = request("GET", "/foo/bar", "12.34.56.78", null, null);
         filter.doFilter(req, response(), chain);
       
         RequestData data = dao.getLast();
@@ -45,7 +45,7 @@ public class MonitorFilterTest extends TestCase {
         });
         
         
-        req = request("POST", "/bar/foo", "78.56.34.12", "baz");
+        req = request("POST", "/bar/foo", "78.56.34.12", "baz", null);
         filter.doFilter(req, response(), chain);
         
         data = dao.getLast();
@@ -58,7 +58,38 @@ public class MonitorFilterTest extends TestCase {
       
     }
     
-    MockHttpServletRequest request(String method, String path, String remoteAddr, String body ) {
+    public void testReferer() throws Exception {
+        DummyMonitorDAO dao = new DummyMonitorDAO();
+        
+        MonitorFilter filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
+        
+        MockFilterChain chain = new MockFilterChain();
+       
+        HttpServletRequest req = request("GET", "/foo/bar", "12.34.56.78", null, "http://testhost/testpath");
+        filter.doFilter(req, response(), chain);
+      
+        RequestData data = dao.getLast();
+        assertEquals("GET", data.getHttpMethod());
+        assertEquals("/foo/bar", data.getPath());
+        assertEquals("12.34.56.78", data.getRemoteAddr());
+        assertEquals("http://testhost/testpath", data.getReferer());
+
+        // "Referrer" was misspelled in the HTTP spec, check if it works with the "correct" 
+        // spelling. 
+        req = request("POST", "/bar/foo", "78.56.34.12", null, null);
+        ((MockHttpServletRequest)req).setHeader("Referrer", "http://testhost/testpath");
+        filter.doFilter(req, response(), chain);
+        
+        data = dao.getLast();
+        assertEquals("POST", data.getHttpMethod());
+        assertEquals("/bar/foo", data.getPath());
+        assertEquals("78.56.34.12", data.getRemoteAddr());
+        assertEquals("http://testhost/testpath", data.getReferer());
+
+      
+    }
+    
+    MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setMethod(method);
         req.setServerName("localhost");
@@ -66,7 +97,8 @@ public class MonitorFilterTest extends TestCase {
         req.setPathInfo(path.substring(path.indexOf('/', 1)));
         req.setRemoteAddr(remoteAddr);
         req.setBodyContent(body);
-        
+        if(referer!=null)
+            req.setHeader("Referer", referer);
         return req;
     }
     

@@ -205,6 +205,11 @@ public class RequestData implements Serializable {
      * The response status
      */
     int responseStatus;
+    
+    /**
+     *  The Referer of the HTTP request, if any
+     */
+    private String referer;
 
     public long getId() {
         return id;
@@ -497,6 +502,7 @@ public class RequestData implements Serializable {
         clone.setErrorMessage(errorMessage);
         clone.setError(error);
         clone.setResponseStatus(responseStatus);
+        clone.setReferer(referer);
      
         return clone;
     }
@@ -512,5 +518,13 @@ public class RequestData implements Serializable {
 
     public void setResponseStatus(int httpStatus) {
         this.responseStatus = httpStatus;
+    }
+    
+    public String getReferer() {
+        return referer;
+    }
+    
+    public void setReferer(String referer){
+        this.referer = referer;
     }
 }

@@ -16,10 +16,10 @@ Most of the relevant information about how to approach template writing is inclu
 Template Lookup
 ```````````````
 
-Geoserver looks up templates in three different places, allowing you for various level of customization. Given a templated output, a template name (``content.ftl``) and a feature type (``myFeatureType``), Geoserver will perform the following lookups:
+Geoserver looks up templates in three different places, allowing for various level of customization. For example given the ``content.ftl`` template used to generate WMS GetFeatureInfo content:
 
-* Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/myfeatureType/content.ftl`` to see if there is a type specific template
-* Look into ``GEOSERVER_DATA_DIR/templates/<workspace>/content.ftl`` to see if there is a workspace-specific template
+* Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/<featuretype>/content.ftl`` to see if there is a feature type specific template
+* Look into ``GEOSERVER_DATA_DIR/templates/<workspace>/content.ftl`` to see if there is a workspace specific template
 * Look into ``GEOSERVER_DATA_DIR/templates/content.ftl`` looking for a global override
 * Look into the GeoServer classpath and load the default template
 

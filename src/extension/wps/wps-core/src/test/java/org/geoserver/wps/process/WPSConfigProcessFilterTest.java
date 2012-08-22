@@ -16,7 +16,7 @@ import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
-import org.geotools.process.feature.gs.FeatureGSProcessFactory;
+import org.geotools.process.vector.VectorProcessFactory;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 
@@ -54,7 +54,7 @@ public class WPSConfigProcessFilterTest extends AbstractProcessFilterTest {
         
         // remove the feature gs factory
         ProcessGroupInfo gsGroup = new ProcessGroupInfoImpl();
-        gsGroup.setFactoryClass(FeatureGSProcessFactory.class);
+        gsGroup.setFactoryClass(VectorProcessFactory.class);
         gsGroup.setEnabled(false);
         pgs.add(gsGroup);
         

@@ -27,6 +27,9 @@ public class MonitorFilterTest extends TestCase {
     MonitorFilter filter;
     MockFilterChain chain;
     
+    static final int MAX_BODY_SIZE = 1024;
+    static final int LONG_BODY_SIZE = 2048;
+    
     @Before
     public void setUp() throws Exception {
         dao = new DummyMonitorDAO();
@@ -34,6 +37,15 @@ public class MonitorFilterTest extends TestCase {
         filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
         
         chain = new MockFilterChain();
+        
+        chain.setServlet(new HttpServlet() {
+            @Override
+            public void service(ServletRequest req, ServletResponse res) throws ServletException,
+                    IOException {
+                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                res.getOutputStream().write(new byte[0]);
+            }
+        });
     }
 
     @After
@@ -53,12 +65,12 @@ public class MonitorFilterTest extends TestCase {
         assertNull(data.getReferer());
     }
     
-    public void testSimple2() throws Exception {
+    public void testWithBody() throws Exception {
         chain.setServlet(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
-                req.getInputStream().read(new byte[10]);
+                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
                 res.getOutputStream().write("hello".getBytes());
             }
         });
@@ -74,7 +86,38 @@ public class MonitorFilterTest extends TestCase {
         assertNull(data.getReferer());
         
         assertEquals(new String(data.getBody()), "baz");
+        assertEquals(3, data.getBodyContentLength());
         assertEquals(5, data.getResponseLength());
+      
+    }
+    public void testWithLongBody() throws Exception {
+        chain.setServlet(new HttpServlet() {
+            @Override
+            public void service(ServletRequest req, ServletResponse res) throws ServletException,
+                    IOException {
+                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                res.getOutputStream().write("hello".getBytes());
+            }
+        });
+        
+        StringBuilder b = new StringBuilder();
+        
+        for (int i=0; i<MAX_BODY_SIZE; i++) {
+            b.append('b');
+        }
+        String wanted_body = b.toString();
+        for (int i=MAX_BODY_SIZE; i<LONG_BODY_SIZE; i++) {
+            b.append('b');
+        }
+        String given_body = b.toString();
+        
+        HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", given_body, null);
+        filter.doFilter(req, response(), chain);
+        
+        RequestData data = dao.getLast();
+        
+        assertEquals(wanted_body, new String(data.getBody())); // Should be trimmed to the maximum length
+        assertEquals(LONG_BODY_SIZE, data.getBodyContentLength()); // Should be the full length, not the trimmed one
       
     }
     
@@ -112,6 +155,9 @@ public class MonitorFilterTest extends TestCase {
         req.setServletPath(path.substring(0, path.indexOf('/', 1)));
         req.setPathInfo(path.substring(path.indexOf('/', 1)));
         req.setRemoteAddr(remoteAddr);
+        if(body==null) body=""; // MockHttpServletRequest#getInputStream doesn't like null bodies 
+                                // and throws NullPointerException. It should probably do something useful like return an empty stream or throw
+                                // IOException.
         req.setBodyContent(body);
         if(referer!=null)
             req.setHeader("Referer", referer);

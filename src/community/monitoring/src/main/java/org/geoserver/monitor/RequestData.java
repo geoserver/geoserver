@@ -251,6 +251,12 @@ public class RequestData implements Serializable {
         this.queryString = queryString;
     }
 
+    /**
+     * The body of the HTTP request
+     * 
+     * May be trimmed to a maximum length.  If so, check getBodyContentLength for the length of the
+     * untrimmed body.
+     */
     public byte[] getBody() {
         return body;
     }

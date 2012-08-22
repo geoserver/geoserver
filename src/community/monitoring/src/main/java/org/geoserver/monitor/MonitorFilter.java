@@ -7,6 +7,7 @@ package org.geoserver.monitor;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -32,6 +33,8 @@ import org.springframework.security.userdetails.User;
 
 public class MonitorFilter implements GeoServerFilter {
 
+    static final int MAX_BODY_SIZE=1024;
+    
     static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
     
     Monitor monitor;
@@ -135,7 +138,10 @@ public class MonitorFilter implements GeoServerFilter {
         }
         
         data = monitor.current();
-        data.setBody(((MonitorServletRequest)request).getBodyContent());
+        
+        request.getInputStream(); // FIXME: here for debugging purposes
+        
+        data.setBody(getBody((MonitorServletRequest) request));
         data.setBodyContentLength(((MonitorServletRequest)request).getBytesRead());
         data.setResponseContentType(response.getContentType());
         data.setResponseLength(((MonitorServletResponse)response).getContentLength());
@@ -195,6 +201,19 @@ public class MonitorFilter implements GeoServerFilter {
             referer = req.getHeader("Referrer");
         
         return referer;
+    }
+    
+    // Get the body and trim to the maximum allowable size if necessary
+    byte[] getBody(HttpServletRequest req) {
+        try {
+            byte[] body=((MonitorServletRequest)req).getBodyContent();
+            if(body!=null && body.length>MAX_BODY_SIZE)
+                body=Arrays.copyOfRange(body, 0, MAX_BODY_SIZE);
+            return body;
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Could not read request body", ex);
+            return null;
+        }
     }
     
     static class PostProcessTask implements Runnable {

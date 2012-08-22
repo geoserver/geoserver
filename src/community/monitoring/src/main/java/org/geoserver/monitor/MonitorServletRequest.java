@@ -22,25 +22,25 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         this.maxSize = maxSize;
     }
 
-    public byte[] getBodyContent() {
-        if (input == null) {
-            return null;
-        }
-        return input.getData();
+    public byte[] getBodyContent() throws IOException {
+        MonitorInputStream stream = getInputStream();
+        return stream.getData();
     }
 
-    public long getBytesRead() {
-        if (input == null) {
-            return -1;
+    public long getBytesRead(){
+        try {
+            MonitorInputStream stream = getInputStream();
+            return stream.getBytesRead();
+        } catch (IOException ex) {
+            return 0;
         }
-
-        return input.getBytesRead();
     }
 
     @Override
     public MonitorInputStream getInputStream() throws IOException {
         if (input == null) {
-            input = new MonitorInputStream(super.getInputStream(), maxSize);
+            ServletInputStream delegateTo = super.getInputStream();
+            input = new MonitorInputStream(delegateTo, maxSize);
         }
         return input;
     }

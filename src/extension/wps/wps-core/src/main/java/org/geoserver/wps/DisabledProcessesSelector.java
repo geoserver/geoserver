@@ -20,6 +20,13 @@ public class DisabledProcessesSelector extends ProcessSelector implements GeoSer
 
     Set<Name> disabledProcesses = new HashSet<Name>();
 
+    public DisabledProcessesSelector() {
+    }
+
+    public DisabledProcessesSelector(Set<Name> disabled) {
+        this.disabledProcesses.addAll(disabled);
+    }
+
     @Override
     protected boolean allowProcess(Name processName) {
         return !disabledProcesses.contains(processName);

@@ -4,7 +4,7 @@
     <!-- depend on the process factory so we can properly initialize the WPSInfo object with the 
         appropriate factory/group info-->
     <bean id="wpsServiceLoader" class="org.geoserver.wps.WPSXStreamLoader" 
-        depends-on="geoserverProcessFactory">
+        depends-on="geoserverProcessFactory, deprecatedProcessFactory">
         <constructor-arg ref="resourceLoader"/>
     </bean>
 
@@ -166,36 +166,21 @@
     
     <!-- Register the GeoServer factory and processes -->
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">
-      <constructor-arg index="0" value="GeoServer custom processes"/>
+      <constructor-arg index="0" value="GeoServer specific processes"/>
       <constructor-arg index="1" value="gs"/>
       <constructor-arg index="2" value="org.geotools.process.gs.GSProcess"/>
     </bean>
     <bean id="importProcess" class="org.geoserver.wps.gs.ImportProcess">
       <constructor-arg index="0" ref="catalog"/>
     </bean>
-    <bean id="reprojectGeometryProcess" class="org.geotools.process.geometry.gs.ReprojectGeometry"/>
+
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
-    <bean id="rasterAsPointCollectionProcess" class="org.geotools.process.raster.gs.RasterAsPointCollectionProcess"/>
-    <bean id="contourProcess" class="org.geotools.process.raster.gs.ContourProcess"/>
-    <bean id="polygonExtractionProcess" class="org.geotools.process.raster.gs.PolygonExtractionProcess"/>
-    <bean id="cropCoverageProcess" class="org.geotools.process.raster.gs.CropCoverage" />
-    <bean id="scaleCoverageProcess" class="org.geotools.process.raster.gs.ScaleCoverage" />
-    <bean id="styleCoverageProcess" class="org.geotools.process.raster.gs.StyleCoverage" />
-    <bean id="areaGridProcess" class="org.geotools.process.raster.gs.AreaGridProcess" />
+
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsStorageCleaner"></constructor-arg>
     </bean>
-    <bean id="rasterZonalStatistics" class="org.geotools.process.raster.gs.RasterZonalStatistics" />
-    <bean id="rangeLookupProcess" class="org.geotools.process.raster.gs.RangeLookupProcess" />
-    <bean id="addCoveragesProcess" class="org.geotools.process.raster.gs.AddCoveragesProcess" />
     
-    <bean id="multiplyCoveragesProcess" class="org.geotools.process.raster.gs.MultiplyCoveragesProcess" />
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
-    
-    <bean id="barnesSurfaceProcess" class="org.geotools.process.raster.surface.BarnesSurfaceProcess" />
-    <bean id="heatmapProcess" class="org.geotools.process.raster.surface.HeatmapProcess" />
-    <bean id="pointStackerProcess" class="org.geotools.process.feature.gs.PointStackerProcess" />
-    
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">
     	<property name="config" ref="georectifyConfiguration" /> 
       <property name="resourceManager" ref="wpsResourceManager" />
@@ -205,6 +190,12 @@
       <constructor-arg index="0" ref="catalog"/>
     </bean>
     
+    <!--
+    Factory for deprecated processes 
+    -->
+    <bean id="deprecatedProcessFactory" class="org.geoserver.wps.DeprecatedProcessFactory">
+    </bean>
+
     <!-- 
        ==================================================================
        Deal with temporary files

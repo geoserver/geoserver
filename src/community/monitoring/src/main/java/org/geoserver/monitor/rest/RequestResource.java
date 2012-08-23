@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -379,17 +381,26 @@ public class RequestResource extends ReflectiveResource {
         
         void writeRequest(RequestData data, BufferedWriter w) throws IOException {
             StringBuffer sb = new StringBuffer();
+            // If whitespace, CR, LF, double quote, or comma occur, quote and escape
+            Pattern escapeRequired = Pattern.compile("[\\,\r\\n\\s\"]");
             for (String fld : fields) {
                 Object val = OwsUtils.get(data, fld);
                 if (val instanceof Date) {
                     val = DateUtil.serializeDateTime((Date)val);
                 }
                 if (val != null) {
-                    val = val.toString().replaceAll(",", " ").replaceAll("\n", " ");
+                    //val = val.toString().replaceAll(",", " ").replaceAll("\n", " ");
+                    String string = val.toString();
+                    Matcher match = escapeRequired.matcher(string);
+                    if(match.find()){
+                        string=string.replaceAll("\"", "\"\"");// Double all double quotes to escape
+                        string=String.format("\"%s\"", string);// wrap in double quotes
+                    }
+                    val=string;
                 }
                 sb.append(val).append(",");
             }
-            sb.setLength(sb.length()-1);
+            sb.setLength(sb.length()-1); // Remove trailing comma
             sb.append("\n");
             w.write(sb.toString());
         }

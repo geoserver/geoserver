@@ -204,7 +204,7 @@ public class RequestData implements Serializable {
     /**
      * The response status
      */
-    int responseStatus;
+    Integer responseStatus;
     
     /**
      *  The Referer of the HTTP request, if any
@@ -518,11 +518,11 @@ public class RequestData implements Serializable {
         return "Request (" + String.valueOf(id) + ")";
     }
 
-    public int getResponseStatus() {
+    public Integer getResponseStatus() {
         return responseStatus;
     }
 
-    public void setResponseStatus(int httpStatus) {
+    public void setResponseStatus(Integer httpStatus) {
         this.responseStatus = httpStatus;
     }
     

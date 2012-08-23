@@ -6,12 +6,56 @@ Monitor HTTP API
 The monitor extension provides an API for retrieving request information via a
 simple set of HTTP calls.
 
+Examples
+--------
+
+All requests as HTML 
+^^^^^^^^^^^^^^^^^^^^
+
 The most simple of all calls would be to retrieve information about all requests::
 
   GET http://localhost:8080/geoserver/rest/monitor/requests.html
 
-This would return an HTML document containing information about 
-all requests. The general structure of a query for a set of requests is::
+All requests as CSV
+^^^^^^^^^^^^^^^^^^^
+Request information can be returned in CSV format, for easier post-processing::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests.csv
+
+Request bodies containing newlines are handled with quoted text.  If your CSV reader doesn't handle quoted newlines, it will not work correctly.
+
+All requests as PKZip
+^^^^^^^^^^^^^^^^^^^^^
+A PKZip archive containing the CSV file above, with all the request bodies and errors as separate files::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests.zip
+
+All requests as MS Excel
+^^^^^^^^^^^^^^^^^^^^^^^^
+A Microsoft Excel spreadsheet containing the same information as the CSV file::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests.xls
+
+
+Requests during a time period
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Requests can be filtered by date and time range::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20&to=2010-07-20
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20T2:00:00&to=2010-06-20T16:00:00
+
+Request set paging
+^^^^^^^^^^^^^^^^^^
+Large result sets can be paged over multiple queries::
+  
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=100
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=200
+  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=300
+  
+Single request
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+An individual request can be retrieved by specifying its ID::
 
   GET http://<host>:<port>/geoserver/rest/monitor/requests.<format>
 
@@ -24,17 +68,24 @@ A query for a single request has the structure::
 
   GET http://<host>:<port>/geoserver/rest/monitor/requests/<id>.<format>
 
-Where ``id`` is the numeric identifier of a single request and ``format`` 
-is as described above.
+where ``id`` is the numeric identifier of a single request,
+and ``format`` specifies the representation of the returned result as one of:
+
+* ``html`` - an HTML table.
+* ``csv`` - a Comma Separated Values table.
+* ``zip`` - PKZip archive containing CSV as above, plus plain text of errors and request body.
+* ``xls`` - Microsoft Excel spreadsheet.
 
 .. note::
 
    An alternative to specifying the returned representation with the 
    ``format`` extension is to use the http ``Accept`` header and specify 
-   one of the MIME types:
-
-     * text/html
-     * application/csv
+   the MIME type as one of:
+   
+    * ``text/html``
+    * ``application/csv``
+    * ``application/zip``
+    * ``application/vnd.ms-excel``
 
    See the `HTTP specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_
    for more information about the ``Accept`` header.
@@ -135,43 +186,8 @@ Specifies which attribute of a request to sort by.
    * - order=<attribute>[;<ASC|DESC>]
      - requests.html?order=path
    * - 
-     - requests.html?order=startTime:DESC
+     - requests.html?order=startTime;DESC
    * - 
-     - requests.html?order=totalTime:ASC
+     - requests.html?order=totalTime;ASC
 
-
-Examples
---------
-
-All requests as HTML 
-^^^^^^^^^^^^^^^^^^^^
-
-::  
- 
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html
-
-All requests as CSV
-^^^^^^^^^^^^^^^^^^^
-
-::
-
-  GET http://localhost:8080/geoserver/rest/monitor/requests.csv
-
-Requests over a time period
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-::
-  
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?from=2010-06-20&to2010-07-20
-
-Requests paged over multiple queries
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-::
-  
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=100
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=200
-  GET http://localhost:8080/geoserver/rest/monitor/requests.html?count=100&offset=300
-  
 

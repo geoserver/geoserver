@@ -11,7 +11,6 @@ import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.Style;
-import org.geotools.util.DateRange;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -140,12 +138,12 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(PaletteManager.safePalette, request.getPalette());
         assertEquals(Arrays.asList(4.0), request.getElevation());
 
-        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        cal.clear();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.set(2006, 1, 27, 22, 8, 12);
         List<Object> times = request.getTime();
         assertEquals(1, request.getTime().size());
-        assertEquals(cal.getTime(), ((DateRange)times.get(0)).getMinValue());
+        assertEquals(cal.getTime().toString(), times.get(0).toString());
     }
 
     public void testDefaultStyle() throws Exception {

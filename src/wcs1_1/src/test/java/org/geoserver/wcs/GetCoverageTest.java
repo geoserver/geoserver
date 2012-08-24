@@ -65,8 +65,8 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                 MockData.class.getResource("raster-filter-test.zip"), null, "raster");
         
         // add a data source that cannot restrict spatial data on its own
-        dataDirectory.addCoverage(RAIN, 
-                MockData.class.getResource("rain.zip"), null, "raster");
+        dataDirectory.addCoverageFromZip(RAIN, 
+                MockData.class.getResource("rain.zip"), "asc", "raster");
     }
 
     public void testKvpBasic() throws Exception {

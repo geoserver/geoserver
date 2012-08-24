@@ -44,6 +44,7 @@ public class MonitorConfig implements ApplicationContextAware {
         props = new Properties();
         props.put("mode", "history");
         props.put("sync", "async");
+        props.put("maxBodySize", "1024");
     }
     
     public MonitorConfig(GeoServerResourceLoader loader) throws IOException {
@@ -65,7 +66,7 @@ public class MonitorConfig implements ApplicationContextAware {
     }
     
     public long getMaxBodySize() {
-        return Long.parseLong(props.getProperty("maxBodySize", String.valueOf(8 * 1024)));
+        return Long.parseLong(props.getProperty("maxBodySize", String.valueOf(1024)));
     }
     
     public boolean isEnabled() {

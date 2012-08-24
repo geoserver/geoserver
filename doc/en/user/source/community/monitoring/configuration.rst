@@ -96,6 +96,7 @@ and ``hibernate.properties`` to::
    database=POSTGRESQL
    hibernate.show_sql=false
 
+The maximum size of the request body that is logged is set in the ``monitor.properties`` and ``mappings.hbm.xml`` files. If the setting in ``monitor.properties`` is higher than that in ``mappings.hbm.xml`` any long requests will fail to be logged entirely.  You can set it to be unbounded if your database supports it.
    
 Request Filters
 ---------------

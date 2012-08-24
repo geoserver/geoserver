@@ -113,7 +113,7 @@ public class MonitorFilter implements GeoServerFilter {
         data.setInternalHost(InternalHostname.get());
         data.setRemoteAddr(getRemoteAddr(req));
         data.setStatus(Status.RUNNING);
-        data.setReferer(getReferer(req));
+        data.setHttpReferer(getHttpReferer(req));
         
         
         if (SecurityContextHolder.getContext() != null 
@@ -196,7 +196,7 @@ public class MonitorFilter implements GeoServerFilter {
         }
     }
     
-    String getReferer(HttpServletRequest req) {
+    String getHttpReferer(HttpServletRequest req) {
         String referer = req.getHeader("Referer");
         
         // "Referer" is in the HTTP spec, but "Referrer" is the correct English spelling.

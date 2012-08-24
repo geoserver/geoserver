@@ -1,0 +1,105 @@
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
+package org.opengeo.gsr.service;
+
+import java.util.List;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+/**
+ * 
+ * @author Juan Marin, OpenGeo
+ * 
+ */
+
+@XStreamAlias(value = "")
+public class CatalogService extends AbstractService {
+
+    private String name;
+
+    private ServiceType serviceType;
+
+    private String specVersion;
+
+    private String productName;
+
+    private String currentVersion;
+
+    @XStreamImplicit(itemFieldName = "folders")
+    private List<String> folders;
+
+    @XStreamImplicit(itemFieldName = "services")
+    private List<AbstractService> services;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    public String getSpecVersion() {
+        return specVersion;
+    }
+
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getCurrentVersion() {
+        return currentVersion;
+    }
+
+    public void setCurrentVersion(String currentVersion) {
+        this.currentVersion = currentVersion;
+    }
+
+    public List<String> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<String> folders) {
+        this.folders = folders;
+    }
+
+    public List<AbstractService> getServices() {
+        return services;
+    }
+
+    public void setServices(List<AbstractService> services) {
+        this.services = services;
+    }
+
+    public CatalogService(String name, String specVersion, String productName,
+            String currentVersion, List<String> folders, List<AbstractService> services) {
+        this.name = name;
+        this.serviceType = ServiceType.CatalogServer;
+        this.specVersion = specVersion;
+        this.productName = productName;
+        this.currentVersion = currentVersion;
+        this.folders = folders;
+        this.services = services;
+    }
+
+}

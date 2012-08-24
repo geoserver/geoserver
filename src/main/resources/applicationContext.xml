@@ -29,7 +29,7 @@
             <map>
                 <entry>
                     <key>
-                        <value>/services?{params}</value>
+                        <value>/services?f={format}</value>
                     </key>
                     <value>serviceFinder</value>
                 </entry>

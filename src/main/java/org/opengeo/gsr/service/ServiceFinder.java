@@ -12,11 +12,17 @@ import org.geoserver.catalog.rest.AbstractCatalogFinder;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
+import org.opengeo.gsr.resource.CatalogResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Resource;
 
+/**
+ * 
+ * @author Juan Marin, OpenGeo
+ *
+ */
 public class ServiceFinder extends AbstractCatalogFinder {
 
     private GeoServer geoServer;
@@ -38,18 +44,21 @@ public class ServiceFinder extends AbstractCatalogFinder {
         try {
             Map<String, Object> attributes = request.getAttributes();
             String serviceType = "CatalogServer";
-            if (attributes.get("serviceType") != null) {
-                serviceType = attributes.get("serviceType").toString();
-            }
-            String operation = "";
-            String params = attributes.get("params").toString();
-            Map<String, String> paramsMap = getParamsMap(params);
-            String format = paramsMap.get("f");
-            if (attributes.get("operation") != null) {
-                operation = attributes.get("operation").toString();
-            }
+            String format = getAttribute(request, "format");
+            // if (attributes.get("serviceType") != null) {
+            // serviceType = attributes.get("serviceType").toString();
+            // }
+            // String operation = "";
+            // String params = attributes.get("params").toString();
+            // Map<String, String> paramsMap = getParamsMap(params);
+            // String format = paramsMap.get("f");
+            // if (attributes.get("operation") != null) {
+            // operation = attributes.get("operation").toString();
+            // }
             switch (ServiceType.valueOf(serviceType)) {
             case CatalogServer:
+                resource = new CatalogResource(null, request, response, CatalogService.class,
+                        geoServer);
                 break;
             case MapServer:
                 break;

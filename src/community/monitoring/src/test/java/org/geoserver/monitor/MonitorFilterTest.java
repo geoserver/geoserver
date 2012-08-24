@@ -62,7 +62,7 @@ public class MonitorFilterTest extends TestCase {
         assertEquals("GET", data.getHttpMethod());
         assertEquals("/foo/bar", data.getPath());
         assertEquals("12.34.56.78", data.getRemoteAddr());
-        assertNull(data.getReferer());
+        assertNull(data.getHttpReferer());
     }
     
     public void testWithBody() throws Exception {
@@ -83,7 +83,7 @@ public class MonitorFilterTest extends TestCase {
         assertEquals("POST", data.getHttpMethod());
         assertEquals("/bar/foo", data.getPath());
         assertEquals("78.56.34.12", data.getRemoteAddr());
-        assertNull(data.getReferer());
+        assertNull(data.getHttpReferer());
         
         assertEquals(new String(data.getBody()), "baz");
         assertEquals(3, data.getBodyContentLength());
@@ -129,7 +129,7 @@ public class MonitorFilterTest extends TestCase {
         assertEquals("GET", data.getHttpMethod());
         assertEquals("/foo/bar", data.getPath());
         assertEquals("12.34.56.78", data.getRemoteAddr());
-        assertEquals("http://testhost/testpath", data.getReferer());
+        assertEquals("http://testhost/testpath", data.getHttpReferer());
       
     }
     public void testReferrer() throws Exception {
@@ -143,7 +143,7 @@ public class MonitorFilterTest extends TestCase {
         assertEquals("POST", data.getHttpMethod());
         assertEquals("/bar/foo", data.getPath());
         assertEquals("78.56.34.12", data.getRemoteAddr());
-        assertEquals("http://testhost/testpath", data.getReferer());
+        assertEquals("http://testhost/testpath", data.getHttpReferer());
 
       
     }

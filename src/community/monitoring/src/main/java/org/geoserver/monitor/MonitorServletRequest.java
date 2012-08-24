@@ -13,6 +13,11 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 public class MonitorServletRequest extends HttpServletRequestWrapper {
 
+    /**
+     * Don't restrict the maximum length of a request body.
+     */
+    public static final long BODY_SIZE_UNBOUNDED = -1;
+    
     MonitorInputStream input;
 
     long maxSize;
@@ -93,7 +98,8 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
                 buffer.write((byte) b);
             }
 
-            nbytes += 1;
+            
+            if(b>=0) nbytes += 1; // Increment byte count unless EoF marker
             return b;
         }
 

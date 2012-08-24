@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>		
+	<artifactId>community</artifactId>
+	<version>2.3-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.csw</groupId>
+  <artifactId>csw-core</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+  <name>Catalog Services for the Web core module</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>2.3-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.geotools.ogc</groupId>
+        <artifactId>net.opengis.csw</artifactId>
+        <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.geotools.xsd</groupId>
+        <artifactId>gt-xsd-csw</artifactId>
+        <version>${gt.version}</version>
+    </dependency>
+
+    <!-- test dependencies -->
+    <dependency>
+       <groupId>xmlunit</groupId>
+       <artifactId>xmlunit</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>com.mockrunner</groupId>
+       <artifactId>mockrunner</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.geoserver</groupId>
+       <artifactId>main</artifactId>
+       <version>${gs.version}</version>
+       <classifier>tests</classifier>
+       <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>

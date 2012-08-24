@@ -142,9 +142,6 @@
 	        <version>${ant.version}</version>
 	    </dependency>
         
-        
-        
-        
         <!-- test dependencies -->
         <dependency>
           <groupId>xmlunit</groupId>

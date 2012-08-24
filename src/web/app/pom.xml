@@ -736,6 +736,16 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>csw</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>csw-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 
 </project>

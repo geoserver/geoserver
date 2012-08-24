@@ -203,5 +203,11 @@
         <module>authkey</module>
       </modules>
     </profile>
+    <profile>      
+      <id>csw</id>
+      <modules>
+        <module>csw</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -33,6 +33,12 @@
                     </key>
                     <value>serviceFinder</value>
                 </entry>
+                <entry>
+                    <key>
+                        <value>/services/{workspace}?f={format}</value>
+                    </key>
+                    <value>serviceFinder</value>
+                </entry>
             </map>
     </property>
     </bean>

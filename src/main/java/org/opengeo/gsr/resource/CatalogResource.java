@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.AbstractCatalogResource;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -37,10 +38,13 @@ public class CatalogResource extends GeoServicesResource {
 
     private String callback;
 
+    private String workspace;
+
     public CatalogResource(Context context, Request request, Response response, Class clazz,
             GeoServer geoServer) {
         super(context, request, response, clazz, geoServer);
         this.formatValue = getAttribute("format");
+        this.workspace = getAttribute("workspace");
         this.callback = getRequest().getResourceRef().getQueryAsForm().getFirstValue("callback");
     }
 
@@ -55,19 +59,33 @@ public class CatalogResource extends GeoServicesResource {
                         "Output format not supported", details));
             }
             List<AbstractService> services = new ArrayList<AbstractService>();
+            List<String> folders = new ArrayList<String>();
+            List<LayerGroupInfo> layerGroupsInfo = null;
+            WorkspaceInfo workspaceInfo = catalog.getFacade().getWorkspaceByName(workspace);
+            if (workspaceInfo != null) {
+                layerGroupsInfo = catalog.getFacade().getLayerGroupsByWorkspace(workspaceInfo);
+                for (LayerGroupInfo layerGroupInfo : layerGroupsInfo) {
+                    MapService mapService = new MapService(layerGroupInfo.getName());
+                    services.add(mapService);
+                }
+                return new CatalogService("services", "1.0", "OpenGeo Suite", "10.1", folders,
+                        services);
+            }
             GeometryService geometryService = new GeometryService("Geometry");
-            List<LayerGroupInfo> layerGroupsInfo = catalog.getFacade().getLayerGroups();
+            layerGroupsInfo = catalog.getFacade().getLayerGroups();
             for (LayerGroupInfo layerGroupInfo : layerGroupsInfo) {
-                MapService mapService = new MapService(layerGroupInfo.getName());
-                services.add(mapService);
+                if (layerGroupInfo.getWorkspace() == null) {
+                    MapService mapService = new MapService(layerGroupInfo.getName());
+                    services.add(mapService);
+                } else {
+                    String folder = layerGroupInfo.getWorkspace().getName();
+                    folders.add(folder);
+                }
             }
             services.add(geometryService);
-            List<String> folders = new ArrayList<String>();
-            // TODO: List virtual services
-            CatalogService catalogService = new CatalogService("services", "1.0", "OpenGeo Suite",
+            return new CatalogService("services", "1.0", "OpenGeo Suite",
                     "10.1", folders, services);
             // TODO: handle JSONP callback
-            return catalogService;
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();
             details.add(e.getMessage());

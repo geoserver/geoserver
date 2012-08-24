@@ -37,7 +37,6 @@ import org.geotools.util.logging.Logging;
 
 public class MonitorFilter implements GeoServerFilter {
 
-    static final int MAX_BODY_SIZE=1024;
     
     static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
     
@@ -143,7 +142,6 @@ public class MonitorFilter implements GeoServerFilter {
         
         data = monitor.current();
         
-        request.getInputStream(); // FIXME: here for debugging purposes
         
         data.setBody(getBody((MonitorServletRequest) request));
         data.setBodyContentLength(((MonitorServletRequest)request).getBytesRead());
@@ -209,10 +207,11 @@ public class MonitorFilter implements GeoServerFilter {
     
     // Get the body and trim to the maximum allowable size if necessary
     byte[] getBody(HttpServletRequest req) {
+        long maxBodyLength = monitor.config.getMaxBodySize();
         try {
-            byte[] body=((MonitorServletRequest)req).getBodyContent();
-            if(body!=null && body.length>MAX_BODY_SIZE)
-                body=Arrays.copyOfRange(body, 0, MAX_BODY_SIZE);
+            byte[] body=((MonitorServletRequest)req).getBodyContent(); // TODO: trimming at this point may now be redundant
+            if(body!=null && maxBodyLength!=MonitorServletRequest.BODY_SIZE_UNBOUNDED && body.length>maxBodyLength)
+                body=Arrays.copyOfRange(body, 0, (int) maxBodyLength);
             return body;
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "Could not read request body", ex);

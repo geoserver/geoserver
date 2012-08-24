@@ -209,9 +209,9 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             double[] elevations = null;
             
             // grab the grid to world transformation
-            MathTransform gridToCRS = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
-            double pixelSizeX = 1;
-            double pixelSizeY = 1;
+            MathTransform gridToCRS = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
+            double pixelSizeX;
+            double pixelSizeY;
             if (gridCRS != null) {
                 Double[] origin = (Double[]) gridCRS.getGridOrigin();
                 Double[] offsets = (Double[]) gridCRS.getGridOffsets();
@@ -293,6 +293,10 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 pixelSizeX = Math.abs(tx.getScaleX());
                 pixelSizeY = Math.abs(tx.getScaleY());
                 gridToCRS = new AffineTransform2D(tx);
+            } else {
+                AffineTransform2D at = (AffineTransform2D) gridToCRS;
+                pixelSizeX = Math.abs(at.getScaleX());
+                pixelSizeY = Math.abs(at.getScaleY());
             }
             
             //
@@ -326,7 +330,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             intersectionEnvelopeInSourceCRS.intersect(originalEnvelope);
             
             
-            final GridGeometry2D requestedGridGeometry = new GridGeometry2D(PixelInCell.CELL_CORNER, gridToCRS, intersectionEnvelopeInSourceCRS, null);
+            final GridGeometry2D requestedGridGeometry = new GridGeometry2D(PixelInCell.CELL_CENTER, gridToCRS, intersectionEnvelopeInSourceCRS, null);
 
             final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
             GeneralParameterValue[] readParameters = CoverageUtils.getParameters(readParametersDescriptor, meta.getParameters());
@@ -521,7 +525,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 final GridCoverage2D reprojectedCoverage = WCSUtils.resample(
                 		bandSelectedCoverage,
                         nativeCRS, targetCRS, destinationGridGeometry,interpolation);
-    
+                
                 return new GridCoverage[] { reprojectedCoverage };
             } else {
                 return new GridCoverage[] { bandSelectedCoverage };

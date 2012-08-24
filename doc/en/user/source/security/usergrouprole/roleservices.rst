@@ -56,7 +56,7 @@ JDBC role service
 
 The JDBC role service persists the role database via JDBC.  It represents the role database with multiple tables.  The following shows the database schema:
 
-.. list-table:: Table: users
+.. list-table:: Table: roles
    :widths: 15 15 15 15 
    :header-rows: 1
 

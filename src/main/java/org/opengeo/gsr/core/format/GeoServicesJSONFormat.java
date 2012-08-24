@@ -21,20 +21,20 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
 /**
  * 
  * @author Juan Marin, OpenGeo
- *
+ * 
  */
 public class GeoServicesJSONFormat extends ReflectiveJSONFormat {
 
     XStream xStream;
-    
+
     public XStream getXStream() {
         return xStream;
-    } 
-    
+    }
+
     public void setXStream(XStream xStream) {
         this.xStream = xStream;
     }
-    
+
     public GeoServicesJSONFormat() {
         super();
         XStream xstream = new XStream(new JsonHierarchicalStreamDriver() {
@@ -46,7 +46,7 @@ public class GeoServicesJSONFormat extends ReflectiveJSONFormat {
         xstream.omitField(CatalogService.class, "serviceType");
         xstream.omitField(CatalogService.class, "specVersion");
         xstream.omitField(CatalogService.class, "productName");
-        
+
         this.xStream = xstream;
     }
 
@@ -54,13 +54,10 @@ public class GeoServicesJSONFormat extends ReflectiveJSONFormat {
     protected Object read(InputStream input) throws IOException {
         return xStream.fromXML(input);
     }
-    
+
     @Override
     protected void write(Object data, OutputStream output) throws IOException {
         xStream.toXML(data, output);
     }
 
 }
-
-
-

@@ -12,6 +12,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.xml.Configuration;
@@ -60,6 +61,7 @@ public class WfsXmlReader extends XmlRequestReader {
         WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
         
         Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
+        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
         
         WFSXmlUtils.checkValidationErrors(parser, this);
         

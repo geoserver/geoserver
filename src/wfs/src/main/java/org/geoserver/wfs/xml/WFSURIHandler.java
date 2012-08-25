@@ -30,6 +30,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.wfs.DescribeFeatureType;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.WFSInfo.Version;
 import org.geoserver.wfs.kvp.DescribeFeatureTypeKvpRequestReader;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
 import org.geoserver.wfs.xml.v1_1_0.XmlSchemaEncoder;
@@ -93,7 +94,8 @@ public class WFSURIHandler extends URIHandlerImpl {
             if (q != null && !"".equals(q.trim())) {
                 KvpMap kv = parseQueryString(q);
 
-                if ("DescribeFeatureType".equalsIgnoreCase((String)kv.get("REQUEST"))) {
+                if ("DescribeFeatureType".equalsIgnoreCase((String)kv.get("REQUEST")) || 
+                        (uri.path().endsWith("DescribeFeatureType"))) {
                    return true;
                 }
             }
@@ -140,7 +142,10 @@ public class WFSURIHandler extends URIHandlerImpl {
             KvpMap kv = parseQueryString(uri.query());
 
             //dispatch the correct describe feature type reader
-            WFSInfo.Version ver = WFSInfo.Version.negotiate((String)kv.get("VERSION")); 
+            WFSInfo.Version ver = WFSInfo.Version.negotiate((String)kv.get("VERSION"));
+            if(ver == null) {
+                ver = WFSInfo.Version.latest();
+            }
             DescribeFeatureTypeKvpRequestReader dftReqReader = null;
             switch(ver) {
             case V_10:

@@ -7,6 +7,8 @@ A **role service** is a source of information for roles. It provides the followi
 
 * List of roles
 * Calculation of role assignments for a given user
+* Mapping of a role to the system role ``ROLE_ADMINISTRATOR``
+* Mapping of a role to the system role ``ROLE_GROUP_ADMIN``
 
 When a user/group service loads information about a user or a group, it delegates to the role service to determine which 
 roles should be assigned to the user or group.  Unlike :ref:`sec_rolesystem_usergroupservices`, there is only a single role service active at any given time.
@@ -15,6 +17,29 @@ GeoServer comes by default with support for two types of role services:
 
 * XML - *(Default)* role service persisted as XML
 * JDBC - Role service persisted in a database via JDBC
+
+
+.. _sec_rolesystem_mapping:
+
+Mapping roles to system roles
+-----------------------------
+
+For assigning the system role ``ROLE_ADMINISTRATOR`` to a user or to a group, it is necessary to add a role with a different name and to map this role to ``ROLE_ADMINISTRATOR``. The same holds true for the system role ``ROLE_GROUP_ADMIN``. The mapping is stored in the ``config.xml`` file of the service.
+
+.. code-block:: xml
+
+	<roleService>
+	  <id>471ed59f:13915c479bc:-7ffc</id>
+	  <name>default</name>
+	  <className>org.geoserver.security.xml.XMLRoleService</className>
+	  <fileName>roles.xml</fileName>
+	  <checkInterval>10000</checkInterval>
+	  <validating>true</validating>
+	  <adminRoleName>ADMIN</adminRoleName>
+	  <groupAdminRoleName>GROUP_ADMIN</groupAdminRoleName>
+	</roleService>
+
+In this example, a user or a group having the role ``ADMIN`` has also the system role ``ROLE_ADMINISTRATOR``. Again, the same holds true for ``GROUP_ADMIN`` and ``ROLE_GROUP_ADMIN``.
 
 
 .. _sec_rolesystem_rolexml:
@@ -28,23 +53,26 @@ This service represents the user database as XML corresponding to this :download
 named :file:`roles.xml` and is located inside the GeoServer data directory at a path of ``security/role/<name>/roles.xml``, where
 ``<name>`` is the name of the role service.
 
+The service is configured to map the local role ``ADMIN`` to the system role ``ROLE_ADMINISTRATOR``. Additionally, ``GROUP_ADMIN`` is mapped to ``ROLE_GROUP_ADMIN``. The mapping is stored the ``config.xml`` of each role service, 
+
 The following is the contents of ``roles.xml`` that ships with the default GeoServer configuration:
 
 .. code-block:: xml
 
    <roleRegistry version="1.0" xmlns="http://www.geoserver.org/security/roles">
      <roleList>
-       <role id="ROLE_ADMINISTRATOR"/>
+       <role id="ADMIN"/>
+       <role id="GROUP_ADMIN"/>
      </roleList>
      <userList>
        <userRoles username="admin">
-         <roleRef roleID="ROLE_ADMINISTRATOR"/>
+         <roleRef roleID="ADMIN"/>
        </userRoles>
      </userList>
      <groupList/>
    </roleRegistry>
 
-This configuration contains a single role named ``ROLE_ADMINISTRATOR`` and assigns the role to the ``admin`` user.
+This configuration contains two roles named ``ADMIN`` and ``GROUP_ADMIN``.  The role ``ADMIN`` is assigned to the ``admin`` user. Since the ``ADMIN`` role is mapped to the system role ``ROLE_ADMINISTRATOR`` the role calculation assigns both roles to the ``admin`` user.
 
 Read more on :ref:`configuring a role service <webadmin_sec_roleservices>` in the :ref:`web_admin`.
 
@@ -138,8 +166,8 @@ The default GeoServer security configuration would be represented with the follo
 
    * - name
      - parent
-   * - ``ROLE_ADMINISTRATOR``
-     - ``NULL``
+   * - *Empty*
+     - *Empty*
 
 
 .. list-table:: Table: role_props
@@ -159,8 +187,8 @@ The default GeoServer security configuration would be represented with the follo
 
    * - username
      - rolename
-   * - ``admin``
-     - ``ROLE_ADMINISTRATOR``
+   * - *Empty*
+     - *Empty*
 
 .. list-table:: Table: group_roles
    :widths: 15 15 

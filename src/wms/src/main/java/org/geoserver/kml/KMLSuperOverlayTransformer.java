@@ -382,6 +382,15 @@ public class KMLSuperOverlayTransformer extends KMLTransformerBase {
         }
 
         void encodeNetworkLink(Envelope box, String name, Layer layer) {
+            // check if we are going to get any feature from this layer
+            try {
+                if(!shouldDrawVectorLayer(layer, box)) {
+                    return;
+                }
+            } catch(HttpErrorCodeException e ) {
+                // fine, it means there was no data.... sigh...
+                return;
+            }
             start("NetworkLink");
             element("name", name);
 

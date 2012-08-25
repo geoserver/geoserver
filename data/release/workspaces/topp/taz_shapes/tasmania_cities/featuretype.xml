@@ -20,10 +20,10 @@
   AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
   <srs>EPSG:4326</srs>
   <nativeBoundingBox>
-    <minx>147.2910004483</minx>
-    <maxx>147.2910004483</maxx>
-    <miny>-42.851001816890005</miny>
-    <maxy>-42.851001816890005</maxy>
+    <minx>145.19754</minx>
+    <maxx>148.27298000000002</maxx>
+    <miny>-43.423512</miny>
+    <maxy>-40.852802</maxy>
     <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>

@@ -118,7 +118,7 @@ goto run
   cd %GEOSERVER_HOME%
   echo Please wait while loading GeoServer...
   echo.
-  "%RUN_JAVA%" -DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar
+  "%RUN_JAVA%" "%JAVA_OPTS%" -DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar
   cd bin
 goto end
 

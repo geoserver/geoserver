@@ -26,11 +26,11 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.feature.type.Name;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -51,7 +51,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
         
         // grab the process, we need it to parse the data inputs
         Name processName = Ows11Util.name(execute.getIdentifier());
-        ProcessFactory pf = Processors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
         }

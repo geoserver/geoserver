@@ -16,11 +16,11 @@ import java.util.logging.Logger;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
@@ -93,7 +93,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
             Map<String, Object> inputs) throws ProcessException {
         // straight execution, no thread pooling, we're already running in the parent process thread
         ProcessListener listener = new ProcessListener(new ExecutionStatus(processName, executionId, ProcessState.RUNNING, 0));
-        ProcessFactory pf = Processors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
         }
@@ -203,7 +203,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
             status.setPhase(ProcessState.RUNNING);
             ProcessListener listener = status.listener;
             Name processName = status.getProcessName();
-            ProcessFactory pf = Processors.createProcessFactory(processName);
+            ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
             if (pf == null) {
                 throw new WPSException("No such process: " + processName);
             }

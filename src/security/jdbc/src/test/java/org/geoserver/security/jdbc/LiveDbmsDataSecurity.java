@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.data.test.LiveDbmsData;
 import org.geoserver.data.util.IOUtils;
-import org.geoserver.security.impl.AbstractSecurityServiceTest;
+import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.Util;
 
 public class LiveDbmsDataSecurity extends LiveDbmsData {

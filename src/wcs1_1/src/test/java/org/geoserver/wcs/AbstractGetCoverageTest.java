@@ -1,15 +1,9 @@
 package org.geoserver.wcs;
 
-import static org.geoserver.data.test.MockData.*;
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.*;
-
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletResponse;
-
-import junit.framework.Test;
 import net.opengis.wcs11.GetCoverageType;
 
 import org.geoserver.config.GeoServer;
@@ -17,11 +11,7 @@ import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.referencing.CRS;
 import org.opengis.coverage.grid.GridCoverage;
-import org.vfny.geoserver.wcs.WcsException;
-import org.w3c.dom.Document;
 
 public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 

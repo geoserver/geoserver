@@ -806,9 +806,10 @@ public class GetMapRequest extends WMSRequest {
         return httpRequestHeaders == null ? null : httpRequestHeaders.get(headerName);
     }
 
+    @SuppressWarnings("unchecked")
     public void putHttpRequestHeader(String headerName, String value) {
         if (httpRequestHeaders == null) {
-            httpRequestHeaders = new HashMap<String, String>();
+            httpRequestHeaders = new CaseInsensitiveMap(new HashMap<String, String>());
         }
         httpRequestHeaders.put(headerName, value);
     }

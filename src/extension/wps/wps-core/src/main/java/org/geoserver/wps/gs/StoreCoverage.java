@@ -28,7 +28,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author Andrea Aime - GeoSolutions
  * @author ETj <etj at geo-solutions.it>
  */
-@DescribeProcess(title = "storeCoverage", description = "Applies a raster symbolizer to the coverage")
+@DescribeProcess(title = "Store Coverage", description = "Stores a raster on the server.")
 public class StoreCoverage implements GSProcess {
 
     private final static GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
@@ -49,9 +49,9 @@ public class StoreCoverage implements GSProcess {
         this.storage = storage;
     }
 
-    @DescribeResult(name = "coverageLocation", description = "The URL that can be used to retrieve the coverage")
+    @DescribeResult(name = "coverageLocation", description = "URL at which raster can be accessed")
     public URL execute(
-            @DescribeParameter(name = "coverage", description = "The raster to be styled") GridCoverage2D coverage)
+            @DescribeParameter(name = "coverage", description = "Input raster") GridCoverage2D coverage)
             throws IOException {
         final File file = File.createTempFile(coverage.getName().toString(), ".tif", storage.getStorage());
 

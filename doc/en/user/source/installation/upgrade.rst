@@ -20,6 +20,53 @@ subsystem. The changes focus mostly on authentication and user management. On
 upgrade GeoServer will update configuration in the ``security`` directory. The 
 specific changes are described :ref:`here <migrating_data_directory_22x>`.
 
+Obtaining a master password
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting with Geoserver 2.2 a master password is needed. This password is used to log in as ``root`` user and to protect the Geoserver key store.
+
+During the upgrade process, Geoserver tries to find a proper master password. The following rules apply
+
+  * The default admin password ``geoserver`` is not allowed.
+  * The minimal length of the password is 8 characters.
+
+The algorithm for finding  a password:
+
+#. Look for an existing user called ``admin``. If there is such a user and the password obeys the rules above, use it.
+
+#. Look for a user having the role ``ROLE_ADMINISTRATOR``. If there is such a user and the password obeys the rules above, use it.
+
+#. Generate a random password with 8 characters of length
+
+The algorithm stores a file ``masterpw.info`` into the ``security`` directory. If an existing password of a user is used, the content of this file is like
+
+::
+
+	This file was created at 2012/08/11 15:57:52
+
+	Master password is identical to the password of user: admin
+	
+	Test the master password by logging in as user "root"
+
+	This file should be removed after reading !!!.
+
+
+If a master password was generated, the content is like
+
+::
+
+
+	This file was created at 2012/08/11 15:57:52
+
+	The generated master password is: pw?"9bWL
+
+	Test the master password by logging in as user "root"
+
+	This file should be removed after reading !!!.
+
+After reading this file, remember the master password and remove this file. 
+
+
 RESTconfig security and administrative access
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

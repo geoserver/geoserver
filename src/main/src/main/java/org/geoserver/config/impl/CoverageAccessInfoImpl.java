@@ -122,5 +122,11 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
         return true;
     }
     
-    
+    public CoverageAccessInfoImpl clone() {
+        try {
+            return (CoverageAccessInfoImpl) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

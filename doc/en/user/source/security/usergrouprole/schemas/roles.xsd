@@ -2,18 +2,35 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.geoserver.org/security/roles" xmlns:gsr="http://www.geoserver.org/security/roles" elementFormDefault="qualified">
 
 
-    <element name="roleRegistry" type="gsr:RoleRegistryType"></element>
+    <element name="roleRegistry" type="gsr:RoleRegistryType">
+        <key name="RoleKey">
+    		<selector xpath="gsr:roleList/gsr:role"/>
+    		<field xpath="@id"/>
+    	</key>
+    	<keyref name="ParentKey" refer="gsr:RoleKey">
+    		<selector xpath="gsr:roleList/gsr:role"/>
+    		<field xpath="@parentID"/>
+    	</keyref>
+    	<keyref name="UserRoleKey" refer="gsr:RoleKey">
+    		<selector xpath="gsr:userList/gsr:userRoles/gsr:roleRef"/>
+    		<field xpath="@roleID"/>
+    	</keyref>        	    
+    	<keyref name="GroupRoleKey" refer="gsr:RoleKey">
+    		<selector xpath="gsr:groupList/gsr:groupRoles/gsr:roleRef"/>
+    		<field xpath="@roleID"/>
+    	</keyref>        	        	        	    
+    </element>
     
     <complexType name="RoleType">
        	<sequence>
     		<element name="property" type="gsr:RolePropertyType" minOccurs="0" maxOccurs="unbounded"/> 
     	</sequence>    	    
-    	<attribute name="id" type="ID" use="required"></attribute>
-    	<attribute name="parentID" type="IDREF" use="optional"></attribute>
+    	<attribute name="id" type="string" use="required"></attribute>
+    	<attribute name="parentID" type="string" use="optional"></attribute>
     </complexType>
     
     <complexType name="RoleRefType">
-    	<attribute name="roleID" type="IDREF" use="required"></attribute>
+    	<attribute name="roleID" type="string" use="required"></attribute>
     </complexType>
     
     

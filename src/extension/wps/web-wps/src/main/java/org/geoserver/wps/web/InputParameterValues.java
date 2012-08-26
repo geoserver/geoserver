@@ -15,6 +15,7 @@ import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.CoordinateReferenceSystemPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.Parameter;
 import org.geotools.feature.FeatureCollection;
@@ -124,7 +125,7 @@ class InputParameterValues implements Serializable {
     }
 
     ProcessFactory getProcessFactory() {
-        return Processors.createProcessFactory(processName);
+        return GeoServerProcessors.createProcessFactory(processName);
     }
 
     Parameter<?> getParameter() {

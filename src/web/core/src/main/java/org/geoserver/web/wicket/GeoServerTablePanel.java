@@ -682,10 +682,12 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             navigatorTop.setVisible(false);
             navigatorBottom.setVisible(false);
             dataView.setItemsPerPage(Integer.MAX_VALUE);
+            selection = new boolean[getDataProvider().getItems().size()];
         } else {
             navigatorTop.setVisible(true);
             navigatorBottom.setVisible(true);
             dataView.setItemsPerPage(DEFAULT_ITEMS_PER_PAGE);
+            selection = new boolean[DEFAULT_ITEMS_PER_PAGE];
         }
     }
     

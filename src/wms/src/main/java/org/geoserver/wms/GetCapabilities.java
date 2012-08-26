@@ -55,7 +55,7 @@ public class GetCapabilities {
         long geoUS = wms.getUpdateSequence();
         if (reqUS > geoUS) {
             throw new ServiceException(
-                    "Client supplied an updateSequence that is greater than the current sever updateSequence",
+                    "Client supplied an updateSequence that is greater than the current server updateSequence",
                     "InvalidUpdateSequence");
         }
         if (reqUS == geoUS) {

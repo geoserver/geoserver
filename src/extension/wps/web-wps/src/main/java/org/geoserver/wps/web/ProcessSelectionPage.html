@@ -1,0 +1,18 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+  <form wicket:id="form">
+	<div wicket:id="selectionTable"></div>
+	
+	<wicket:fragment wicket:id="enabledFragment">
+        <input type="checkbox" wicket:id="enabled"/>
+    </wicket:fragment>
+     
+     <div class="button-group selfclear"><a href="#" wicket:id="apply"><wicket:message
+        key="apply">Apply</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
+        key="cancel">Cancel</wicket:message></a>
+     </div>
+  </form>
+</wicket:extend>
+</body>
+</html>

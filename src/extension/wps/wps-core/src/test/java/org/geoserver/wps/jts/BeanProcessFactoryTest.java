@@ -8,6 +8,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.FactoryIteratorProvider;
@@ -18,7 +19,6 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.geotools.process.factory.AnnotatedBeanProcessFactory;
 import org.geotools.process.feature.gs.BoundsProcess;
 import org.geotools.process.feature.gs.NearestProcess;
@@ -120,11 +120,11 @@ public class BeanProcessFactoryTest extends TestCase {
 
 	public void testSPI() throws Exception {
 		NameImpl boundsName = new NameImpl("bean", "Bounds");
-		ProcessFactory factory = Processors.createProcessFactory(boundsName);
+		ProcessFactory factory = GeoServerProcessors.createProcessFactory(boundsName);
 		assertNotNull(factory);
 		assertTrue(factory instanceof BeanProcessFactory);
 
-		org.geotools.process.Process buffer = Processors
+		org.geotools.process.Process buffer = GeoServerProcessors
 				.createProcess(boundsName);
 		assertNotNull(buffer);
 	}

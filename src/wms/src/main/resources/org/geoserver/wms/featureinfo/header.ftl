@@ -32,7 +32,6 @@ like td, tr, and so on.
 		text-align:left;
 		font-size:100%;
 		font-weight:bold;
-		text-transform:uppercase;
 		padding:.2em .2em;
 	}
   </style>

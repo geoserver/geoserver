@@ -5,6 +5,8 @@
 
 package org.geoserver.wps;
 
+import java.util.List;
+
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
 
@@ -73,5 +75,12 @@ public interface WPSInfo extends ServiceInfo {
      * @param maxAsynchronousProcesses
      */
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses);
+    
+    /**
+     * Retrieves the process groups configurations
+     * 
+     * @return
+     */
+    public List<ProcessGroupInfo> getProcessGroups();
 
 }

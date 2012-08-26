@@ -5,9 +5,11 @@ set -e
 #set -x
 
 function usage() {
-  echo "$0 [options] <tag>"
+  echo "$0 [options] <tag> <user> <email>"
   echo
-  echo " tag : Release tag (eg: 2.1.4, 2.2-beta1, ...)"
+  echo " tag :  Release tag (eg: 2.1.4, 2.2-beta1, ...)"
+  echo " user:  Git username"
+  echo " email: Git email"
   echo
   echo "Options:"
   echo " -h          : Print usage"
@@ -15,8 +17,6 @@ function usage() {
   echo " -r <rev>    : Revision to release (eg: 12345)"
   echo " -g <ver>    : GeoTools version/revision (eg: 2.7.4, trunk:12345)"
   echo " -w <ver>    : GeoWebCache version/revision (eg: 1.3-RC1, stable:abcd)"
-  echo " -u <user>   : git username"
-  echo " -e <passwd> : git email"
   echo
   echo "Environment variables:"
   echo " SKIP_BUILD : Skips main release build"
@@ -26,7 +26,7 @@ function usage() {
 }
 
 # parse options
-while getopts "hb:r:g:w:u:e:" opt; do
+while getopts "hb:r:g:w:" opt; do
   case $opt in
     h)
       usage
@@ -44,12 +44,6 @@ while getopts "hb:r:g:w:u:e:" opt; do
     w)
       gwc_ver=$OPTARG
       ;;
-    u)
-      git_user=$OPTARG
-      ;;
-    e)
-      git_email=$OPTARG
-      ;;
     \?)
       usage
       exit 1
@@ -64,9 +58,11 @@ done
 # clear options to parse main arguments
 shift $(( OPTIND -1 ))
 tag=$1
+git_user=$2
+git_email=$3
 
 # sanity check
-if [ -z $tag ] || [ ! -z $2 ]; then
+if [ -z $tag ] || [ -z $git_user ] || [ -z $git_email ] || [ ! -z $4 ]; then
   usage
   exit 1
 fi
@@ -118,6 +114,17 @@ fi
 
 # checkout the branch to release from
 git checkout $branch
+
+# ensure the specified revision actually on this branch
+if [ $rev != "HEAD" ]; then
+  set +e
+  git log | grep $rev
+  if [ $? != 0 ]; then
+     echo "Revision $rev not a revision on branch $branch"
+     exit -1
+  fi
+  set -e
+fi
 
 # create a release branch
 git checkout -b rel_$tag $rev
@@ -361,17 +368,10 @@ fi
 # git commit changes on the release branch
 pushd .. > /dev/null
 
-# setup the author, for some reason I can;t for the life of me get to this
-# to work properly from a script using the --author option to git commit
-git config --unset user.name
-git config --unset user.email
-if [ ! -z $git_user ] && [ ! -z $git_email ]; then
-  git config user.name $git_user
-  git config user.email $git_email
-fi
+init_git $git_user $git_email
 
 git add . 
-git commit $git_opts -m "updating version numbers and release notes for $tag" .
+git commit -m "updating version numbers and release notes for $tag" .
 popd > /dev/null
 
 popd > /dev/null

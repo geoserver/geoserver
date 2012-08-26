@@ -1,13 +1,37 @@
 .. _gwc_config:
 
-GeoWebCache Configuration
-=========================
+Configuration
+=============
 
 GeoWebCache is automatically configured to be used with GeoServer with the most common options, with **no setup required**.  All communication between GeoServer and GeoWebCache happens by passing messages inside the JVM.
 
-By default, all layers served by GeoServer will be known to GeoWebCache.  See the :ref:`gwc_demo` page to test the configuration.
+By default, all layers served by GeoServer will be known to GeoWebCache.  See the :ref:`webadmin_tilecaching_layers` page to test the configuration.
 
-.. note::  The ``GEOSERVER_WMS_URL`` parameter in :file:`web.xml`, used in earlier versions of GeoServer, is deprecated and should not be used.
+.. note:: Configuration of the integrated GeoWebCache changed significantly as of version 2.2.0.
+
+Integrated user interface
+-------------------------
+
+GeoWebCache has a full integrated web-based configuration.  See the :ref:`webadmin_tilecaching` section in the :ref:`web_admin`.
+
+Determining tiled layers
+------------------------
+
+In versions of GeoServer prior to 2.2.0, the GeoWebCache integration was done in a such way that every GeoServer layer and layer group was forced to have an associated GeoWebCache tile layer.  In addition, every such tile layer was forcedly published in the EPSG:900913 and EPSG:4326 gridsets with PNG and JPEG output formats.
+
+Now, it is possible to selectively turn caching on or off for any layer served through GeoServer.  This setting can be done on the :ref:`webadmin_tilecaching_layers` section in the :ref:`web_admin`. 
+
+Configuration files
+-------------------
+
+It is possible to configure most aspects of cached layers through the :ref:`webadmin_tilecaching` section in the :ref:`web_admin` or the :ref:`gwc_rest`.  
+
+GeoWebCache keeps the configuration for each GeoServer tiled layer separately, inside the :file:`<data_dir>/gwc-layers/` directory.  There is one XML file for each tile layer.  These files contain a different syntax from the ``<wmsLayer>`` syntax in the standalone version and are *not* meant to be edited by hand. Instead you can configure tile layers on the :ref:`webadmin_tilecaching_layers` page or through the :ref:`gwc_rest`.
+
+Configuration for the defined gridsets still is saved in :file:`<data_dir>/gwc/geowebcache.xml`` so that the integrated GeoWebCache can continue to serve externally-defined tile layers from WMS services outside GeoServer.
+
+If upgrading from a version prior to 2.2.0, a migration process is run which creates a tile layer configuration for all the available layers and layer groups in GeoServer with the old defaults.  From that point on, you should configure the tile layers on the :ref:`webadmin_tilecaching_layers` page.
+
 
 Changing the cache directory
 ----------------------------
@@ -25,13 +49,9 @@ Change the path inside ``<param-value>`` to the desired cache path (such as :fil
 
 .. note:: Make sure GeoServer has write access in this directory.
 
-Custom configuration
---------------------
-
-If you need to access more features than the automatic configuration offers, you can create a custom configuration file.  Inside the GeoWebCache cache directory (see above), create a file named :file:`geowebcache.xml`.  Please refer to the `GeoWebCache documentation <http://geowebcache.org/docs>`_ for how to customize this file.  Restart GeoServer for the changes to take effect.  You may also wish to check the logfiles after starting GeoServer to verify that this file has been successfully read.
-
 GeoWebCache with multiple GeoServer instances
 ---------------------------------------------
 
 For stability reasons, it is not recommended to use the embedded GeoWebCache with multiple GeoServer instances.  If you want configure GeoWebCache as a front-end for multiple instances of GeoServer, we recommend using the `standalone GeoWebCache <http://geowebcache.org>`_.
+
 

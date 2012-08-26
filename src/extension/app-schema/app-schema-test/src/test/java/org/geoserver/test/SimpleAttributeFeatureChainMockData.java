@@ -18,7 +18,8 @@ public class SimpleAttributeFeatureChainMockData extends AbstractAppSchemaMockDa
      */
     public void addContent() {
         addFeatureType(GSML_PREFIX, "MappedFeature", "SimpleAttributeFeatureChainTest.xml",
-                "MappedFeatureWithNestedName.properties", "MappedFeatureNameOne.properties",
-                "MappedFeatureNameTwo.properties");
+                "MappedFeatureNameOne.properties", "MappedFeatureNameTwo.properties",
+                "MappedFeatureWithNestedName.properties", "MappedFeaturePoints.properties",
+                "MappedFeaturePolygons.properties");
     }
 }

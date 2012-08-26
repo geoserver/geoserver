@@ -11,13 +11,12 @@ import net.opengis.wps10.DescribeProcessType;
 
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.xml.v1_0.OWS;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.transmute.ComplexTransmuter;
 import org.geoserver.wps.transmute.LiteralTransmuter;
 import org.geoserver.wps.transmute.Transmuter;
 import org.geotools.data.Parameter;
-import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.type.Name;
@@ -107,7 +106,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                     return;
                 }
 
-                ProcessFactory pf = Processors.createProcessFactory(identifier);
+                ProcessFactory pf = GeoServerProcessors.createProcessFactory(identifier);
 
                 if (null == pf) {
                     throw new WPSException("Invalid identifier", "InvalidParameterValue");
@@ -135,7 +134,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
             }
 
             private void processDescriptionAll() {
-                for (ProcessFactory pf : Processors.getProcessFactories()) {
+                for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
                     for (Name processName : pf.getNames()) {
                         if (false == this.dataTransformer.isTransmutable(pf, processName)) {
                             continue;

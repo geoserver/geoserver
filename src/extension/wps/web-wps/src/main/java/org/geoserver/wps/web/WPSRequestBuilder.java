@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -27,35 +28,54 @@ import org.geoserver.web.demo.PlainCodePage;
 
 /**
  * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side
- * effect also showing what capabilities and describe process would provide)
+ * effect also showing what capabilities and describe process would provide).
+ * 
+ * Parameters:
+ * <ul>
+ * <li><b>name=</b>procName - display the page showing given process
+ * </ul>
  * 
  * @author Andrea Aime - OpenGeo
+ * @author Martin Davis - OpenGeo
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "rawtypes"})
 public class WPSRequestBuilder extends GeoServerBasePage {
 
-	ModalWindow responseWindow;
-	WPSRequestBuilderPanel builder;
+    public static final String PARAM_NAME = "name";
 
-	public WPSRequestBuilder() {
-		// the form
-		Form form = new Form("form");
-		add(form);
-		
-		// the actual request builder component
-		builder = new WPSRequestBuilderPanel("requestBuilder", new ExecuteRequest());
-		form.add(builder);
+    ModalWindow responseWindow;
+    WPSRequestBuilderPanel builder;
 
-		// the xml popup window
-		final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
-		add(xmlWindow);
-		xmlWindow.setPageCreator(new ModalWindow.PageCreator() {
+    public WPSRequestBuilder(PageParameters parameters) {
+        this(parameters.getString(PARAM_NAME));
+    }
 
-			public Page createPage() {
-				return new PlainCodePage(xmlWindow, responseWindow,
-						getRequestXML());
-			}
-		});
+    public WPSRequestBuilder() {
+        this((String) null);
+    }
+    
+    public WPSRequestBuilder(String procName) 
+    {
+        // the form
+        Form form = new Form("form");
+        add(form);
+
+        // the actual request builder component
+        ExecuteRequest execRequest = new ExecuteRequest();
+        if (procName != null) execRequest.processName = procName;
+        
+        builder = new WPSRequestBuilderPanel("requestBuilder", execRequest);
+        form.add(builder);
+
+        // the xml popup window
+        final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
+        add(xmlWindow);
+        xmlWindow.setPageCreator(new ModalWindow.PageCreator() {
+
+            public Page createPage() {
+                return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
+            }
+        });
 		
 		// the output response window
         responseWindow = new ModalWindow("responseWindow");
@@ -65,6 +85,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
 
+            @SuppressWarnings("unchecked")
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
                 HttpServletRequest http = ((WebRequest) WPSRequestBuilder.this.getRequest())
@@ -79,6 +100,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
         form.add(new AjaxSubmitLink("execute") {
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
                 responseWindow.setDefaultModel(new Model(getRequestXML()));

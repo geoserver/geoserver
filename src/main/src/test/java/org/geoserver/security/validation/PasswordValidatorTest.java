@@ -8,8 +8,8 @@ import static org.geoserver.security.validation.PasswordPolicyException.NO_LOWER
 import static org.geoserver.security.validation.PasswordPolicyException.NO_UPPERCASE;
 import static org.geoserver.security.validation.PasswordPolicyException.RESERVED_PREFIX_$1;
 
+import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.config.PasswordPolicyConfig;
-import org.geoserver.security.impl.AbstractSecurityServiceTest;
 
 public class PasswordValidatorTest extends AbstractSecurityServiceTest {
 

@@ -34,7 +34,8 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
     public void testMasterPasswordChange() throws Exception {
         // keytool -storepasswd -new geoserver1 -storepass geoserver -storetype jceks -keystore geoserver.jks
         
-        assertEquals(new String(MASTER_PASSWD_DEFAULT), getMasterPassword());
+        
+        String masterPWAsString = getMasterPassword();
         MasterPasswordConfig config = getSecurityManager().getMasterPasswordConfig();
         
         URLMasterPasswordProviderConfig mpConfig = (URLMasterPasswordProviderConfig) 
@@ -62,7 +63,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         config = getSecurityManager().getMasterPasswordConfig();
         config.setProviderName(mpConfig.getName());
         getSecurityManager().saveMasterPasswordConfig(
-            config, MASTER_PASSWD_DEFAULT, "geoserver1".toCharArray(), "geoserver1".toCharArray());
+            config, masterPWAsString.toCharArray(), "geoserver1".toCharArray(), "geoserver1".toCharArray());
         assertEquals("geoserver1", getMasterPassword());
         
         getSecurityManager().getKeyStoreProvider().getConfigPasswordKey();
@@ -108,22 +109,22 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
     }
 
     public void testRootLoginAfterMasterPasswdChange() throws Exception {
-        assertEquals(new String(MASTER_PASSWD_DEFAULT), getMasterPassword());
+        String masterPWAsString = getMasterPassword();
 
         GeoServerRootAuthenticationProvider authProvider = new GeoServerRootAuthenticationProvider();
         authProvider.setSecurityManager(getSecurityManager());
 
-        Authentication auth = new UsernamePasswordAuthenticationToken("root", "geoserver");
+        Authentication auth = new UsernamePasswordAuthenticationToken("root", masterPWAsString);
         auth = authProvider.authenticate(auth);
         assertTrue(auth.isAuthenticated());
 
         MasterPasswordConfig config = getSecurityManager().getMasterPasswordConfig();
 
-        getSecurityManager().saveMasterPasswordConfig(config, MASTER_PASSWD_DEFAULT, 
+        getSecurityManager().saveMasterPasswordConfig(config, masterPWAsString.toCharArray(), 
             "geoserver1".toCharArray(), "geoserver1".toCharArray());
         assertEquals("geoserver1", getMasterPassword());
 
-        auth = new UsernamePasswordAuthenticationToken("root", "geoserver");
+        auth = new UsernamePasswordAuthenticationToken("root", masterPWAsString);
         assertNull(authProvider.authenticate(auth));
         assertFalse(auth.isAuthenticated());
 

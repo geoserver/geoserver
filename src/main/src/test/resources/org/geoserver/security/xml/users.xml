@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<userregistry version="1.0" xmlns="http://www.geoserver.org/security/users" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geoserver.org/security /home/christian/gs-trunk/src/main/src/main/resources/org/geoserver/security/xml/users.xsd ">
+<userRegistry version="1.0" xmlns="http://www.geoserver.org/security/users" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geoserver.org/security/users /home/christian/git/geoserver/src/main/src/main/resources/org/geoserver/security/xml/users.xsd ">
 
   <users>
   	<user name="admin" password="geoserver"/>
@@ -9,6 +9,8 @@
   		<property name="tel">12-34-38</property>  		
   	</user>
     <user name="disableduser" password="" enabled="false"/>
+    <user name="3abc" password="" enabled="false"/>
+    <user name="mc@nvoe.at" password="" enabled="false"/>         
   </users>
   
   <groups>
@@ -22,7 +24,5 @@
     <group name="disabledgroup" enabled="false">
       <member username="disableduser"/>
     </group>
-    
-  </groups>
-  
-</userregistry>
+  </groups>  
+</userRegistry>

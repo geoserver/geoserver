@@ -173,7 +173,7 @@ public class DescribeLayerTransformer extends TransformerBase {
                     layerAtts.addAttribute("", "owsType", "owsType", "", owsType);
                 }
 
-                layerAtts.setAttribute(0, "", "name", "name", "", layer.getName());
+                layerAtts.setAttribute(0, "", "name", "name", "", layer.getLayerInfo().prefixedName());
                 start("LayerDescription", layerAtts);
 
                 queryAtts.setAttribute(0, "", "typeName", "typeName", "", layer.getName());

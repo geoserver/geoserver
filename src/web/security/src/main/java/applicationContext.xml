@@ -104,7 +104,7 @@
     <bean id="rememberMeAuthPanelInfo" class="org.geoserver.security.web.auth.RememberMeAuthFilterPanelInfo">
         <property name="id" value="security.rememberMeAuthFilter" />
         <property name="shortTitleKey" value="RememberMeAuthFilterPanel.short"/>
-        <property name="titleKey" value="RememberMedAuthFilterPanel.title"/>
+        <property name="titleKey" value="RememberMeAuthFilterPanel.title"/>
         <property name="descriptionKey" value="RememberMeAuthFilterPanel.description"/>
     </bean>
     <bean id="formAuthPanelInfo" class="org.geoserver.security.web.auth.FormAuthFilterPanelInfo">

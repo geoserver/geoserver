@@ -1,6 +1,7 @@
 package org.geoserver.flow.controller;
 
 import java.rmi.server.UID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,11 @@ public class UserFlowController extends QueueController {
     static String COOKIE_NAME = "GS_FLOW_CONTROL";
 
     static String COOKIE_PREFIX = "GS_CFLOW_";
-
+    
+    /**
+     * Thread local holding the current request queue id TODO: consider having a user map in {@link Request} instead
+     */
+    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
     
     /**
      * Last time we've performed a queue cleanup
@@ -72,6 +77,17 @@ public class UserFlowController extends QueueController {
         this.queueSize = queueSize;
         this.maxQueues = maxQueues;
         this.maxAge = maxAge;
+    }
+    
+    @Override
+    public void requestComplete(Request request) {
+        String queueId = QUEUE_ID.get();
+        QUEUE_ID.remove();
+        if(queueId != null) {
+            BlockingQueue<Request> queue = queues.get(queueId);
+            if (queue != null)
+                queue.remove(request);
+        }
     }
 
     public boolean requestIncoming(Request request, long timeout) {

@@ -38,9 +38,9 @@ import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
@@ -101,8 +101,8 @@ public class DescribeProcess {
     
     void processDescription( CodeType id, ProcessDescriptionsType pds ) {
         Name name = Ows11Util.name(id);
-        ProcessFactory pf = Processors.createProcessFactory(name);
-        if ( pf == null ) {
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(name);
+        if ( pf == null || pf.create(name) == null) {
             throw new WPSException( "No such process: " + id.getValue() );
         }
         

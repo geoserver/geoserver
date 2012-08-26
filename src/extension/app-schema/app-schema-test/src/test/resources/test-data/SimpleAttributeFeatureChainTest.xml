@@ -88,6 +88,56 @@
                        <value>strConcat('some:uri:', getID())</value>
                    </ClientProperty>
                 </AttributeMapping>
+                <AttributeMapping>                    
+                    <!-- Test polymorphic geometry -->
+                    <targetAttribute>gsml:shape</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>ID</OCQL>
+                        <linkElement>POINT_ATT</linkElement>
+                        <linkField>FEATURE_LINK</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>                    
+                    <!-- Test polymorphic geometry -->
+                    <targetAttribute>gsml:shape</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>ID</OCQL>
+                        <linkElement>POLYGON_ATT</linkElement>
+                        <linkField>FEATURE_LINK</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>POINT_ATT</mappingName>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>MappedFeaturePoints</sourceType>
+            <targetElement>gml:_Geometry</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gml:_Geometry</targetAttribute>
+                    <sourceExpression><OCQL>GEOM</OCQL></sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <targetAttribute>FEATURE_LINK</targetAttribute>
+                   <sourceExpression><OCQL>MF_ID</OCQL></sourceExpression>
+                </AttributeMapping>
+            </attributeMappings>
+        </FeatureTypeMapping>
+        <FeatureTypeMapping>
+            <mappingName>POLYGON_ATT</mappingName>
+            <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
+            <sourceType>MappedFeaturePolygons</sourceType>
+            <targetElement>gml:_Geometry</targetElement>
+            <attributeMappings>
+                <AttributeMapping>
+                    <targetAttribute>gml:_Geometry</targetAttribute>
+                    <sourceExpression><OCQL>GEOM</OCQL></sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
+                   <targetAttribute>FEATURE_LINK</targetAttribute>
+                   <sourceExpression><OCQL>MF_ID</OCQL></sourceExpression>
+                </AttributeMapping>
             </attributeMappings>
         </FeatureTypeMapping>
         <FeatureTypeMapping>
@@ -103,7 +153,7 @@
                     <ClientProperty>
                         <name>codeSpace</name>
                         <value>CODESPACE</value>
-                    </ClientProperty>                    
+                    </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>
                    <targetAttribute>FEATURE_LINK</targetAttribute>

@@ -100,6 +100,7 @@ In order to restore the GeoServer 2.1 configuration:
        geoserver.jceks
        masterpw.xml
        masterpw.digest
+       masterpw.info
        auth/
        filter/
        masterpw/

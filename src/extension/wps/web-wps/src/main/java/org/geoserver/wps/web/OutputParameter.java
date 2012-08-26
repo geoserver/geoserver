@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.opengis.feature.type.Name;
 
 /**
@@ -64,7 +64,7 @@ class OutputParameter implements Serializable {
     }
 
     ProcessFactory getProcessFactory() {
-        return Processors.createProcessFactory(processName);
+        return GeoServerProcessors.createProcessFactory(processName);
     }
 
     Parameter<?> getParameter() {

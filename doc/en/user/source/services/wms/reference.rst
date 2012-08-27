@@ -293,8 +293,13 @@ The supported formats are:
      - Works for both Simple and Complex Features (see :ref:`app-schema.complex-features`)
    * - HTML
      - ``info_format=text/html``
-     - Uses HTML templates that are defined on the server.  See :ref:`tutorials_getfeatureinfo` for information on how to template HTML output. 
-
+     - Uses HTML templates that are defined on the server. See :ref:`tutorials_getfeatureinfo` for information on how to template HTML output. 
+   * - JSON
+     - ``info_format=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``info_format=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
 
 GeoServer provides a number of useful vendor-specific parameters
 for this operation, including ``buffer``, ``cql_filter``, ``filter`` and ``propertyName``.
@@ -322,6 +327,81 @@ An example request for feature information in HTML format is:
    &y=145
    &exceptions=application%2Fvnd.ogc.se_xml
 
+An example request for feature information in JSONP format is:
+
+.. code-block:: xml
+
+   http://localhost:8080/geoserver/wms?
+   &INFO_FORMAT=text/javascript
+   &REQUEST=GetFeatureInfo
+   &EXCEPTIONS=application/vnd.ogc.se_xml
+   &SERVICE=WMS
+   &VERSION=1.1.1
+   &WIDTH=970&HEIGHT=485&X=486&Y=165&BBOX=-180,-90,180,90
+   &LAYERS=COUNTRYPROFILES:grp_administrative_map
+   &QUERY_LAYERS=COUNTRYPROFILES:grp_administrative_map
+   &TYPENAME=COUNTRYPROFILES:grp_administrative_map
+   &format_options=callback:getLayerFeatures
+
+The result will be:
+
+.. code-block:: xml
+   
+   getLayerFeatures({
+   "type":"FeatureCollection",
+   "features":[
+      {
+         "type":"Feature",
+         "id":"dt_gaul_geom.fid-138e3070879",
+         "geometry":{
+            "type":"MultiPolygon",
+            "coordinates":[
+               [
+                  [
+                     [
+                        XXXXXXXXXX,
+                        XXXXXXXXXX
+                     ],
+                     ...
+                     [
+                        XXXXXXXXXX,
+                        XXXXXXXXXX
+                     ]
+                  ]
+               ]
+            ]
+         },
+         "geometry_name":"at_geom",
+         "properties":{
+            "bk_gaul":X,
+            "at_admlevel":0,
+            "at_iso3":"XXX",
+            "ia_name":"XXXX",
+            "at_gaul_l0":X,
+            "bbox":[
+               XXXX,
+               XXXX,
+               XXXX,
+               XXXX
+            ]
+         }
+      }
+   ],
+   "crs":{
+      "type":"EPSG",
+      "properties":{
+         "code":"4326"
+      }
+   },
+   "bbox":[
+      XXXX,
+      XXXX,
+      XXXX,
+      XXXX
+   ]
+   })
+
+
 .. _wms_describelayer:
 
 DescribeLayer
@@ -330,6 +410,78 @@ DescribeLayer
 The **DescribeLayer** operation is used primarily by clients that understand SLD-based WMS.  
 In order to make an SLD one needs to know the structure of the data.  
 WMS and WFS both have operations to do this, so the **DescribeLayer** operation just routes the client to the appropriate service.
+
+
+Geoserver supports a number of output formats for the ``GetFeatureInfo`` response.
+Server-styled HTML is the most commonly-used format. 
+For maximum control and customisation the client should use GML3 and style the raw data itself.
+The supported formats are:
+
+.. list-table::
+   :widths: 15 35 50
+   
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - TEXT
+     - ``info_format=text/xml``
+     - Same as default.
+   * - GML 2
+     - ``info_format=application/vnd.ogc.wms_xml``
+     - The default format.
+   * - JSONP
+     - ``info_format=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``info_format=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...)
+       See :ref:`wms_vendor_parameters` to change the callback name.
+     
+
+An example request in XML (default) format on a layer is:
+
+.. code-block:: xml
+
+   http://localhost:8080/geoserver/topp/wms?service=WMS
+   &version=1.1.0
+   &request=DescribeLayer
+   &layers=topp:coverage
+   &styles=&bbox=-180.0,-89.9999640000003,179.999999998561,90.0000359992799
+   &width=660&height=330&srs=EPSG:4326
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE WMS_DescribeLayerResponse SYSTEM "http://localhost:8080/geoserver/schemas/wms/1.1.1/WMS_DescribeLayerResponse.dtd">
+   <WMS_DescribeLayerResponse version="1.1.1">
+      <LayerDescription name="topp:coverage" owsURL="http://localhost:8080/geoserver/topp/wcs?" owsType="WCS">
+         <Query typeName="topp:coverage"/>
+      </LayerDescription>
+   </WMS_DescribeLayerResponse>
+
+An example request for feature description in JSONP format on a layer group is:
+
+.. code-block:: xml
+
+   http://localhost:8080/geoserver/wms?service=WMS
+   &version=1.1.1
+   &request=DescribeLayer
+   &layers=topp:group
+   &outputFormat=text/javascript
+   &format_options=callback:DescribeLayer
+
+
+The result will be:
+
+.. code-block:: xml
+
+   DescribeLayer({"WMS_DescribeLayerResponse": {
+      "version": "1.1.1",
+      "LayerDescription": { "name": "topp:coverage", "owsURL": "http://localhost:8080/geoserver/wcs?", "owsType": "WCS" },
+      "LayerDescription": { "name": "topp:features", "owsURL": "http://localhost:8080/geoserver/wfs/WfsDispatcher?", "owsType": "WFS" }
+   }})
+
+
 
 
 .. _wms_getlegendgraphic:

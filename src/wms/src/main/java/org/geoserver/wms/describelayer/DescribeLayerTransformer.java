@@ -18,7 +18,6 @@ import javax.xml.transform.TransformerException;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geotools.util.Version;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;

@@ -346,6 +346,10 @@ public class RequestResource extends ReflectiveResource {
 
         Monitor monitor;
         String[] fields;
+        
+        // Regexp matching problematic characters which trigger quoted text mode.
+        static Pattern escapeRequired = Pattern.compile("[\\,\\s\"]");
+        
         protected CSVFormat(String[] fields, Monitor monitor) {
             super(new MediaType("application/csv"));
             
@@ -381,24 +385,26 @@ public class RequestResource extends ReflectiveResource {
         
         void writeRequest(RequestData data, BufferedWriter w) throws IOException {
             StringBuffer sb = new StringBuffer();
-            // If whitespace, CR, LF, double quote, or comma occur, quote and escape
-            Pattern escapeRequired = Pattern.compile("[\\,\r\\n\\s\"]");
+            
             for (String fld : fields) {
                 Object val = OwsUtils.get(data, fld);
                 if (val instanceof Date) {
                     val = DateUtil.serializeDateTime((Date)val);
                 }
                 if (val != null) {
-                    //val = val.toString().replaceAll(",", " ").replaceAll("\n", " ");
                     String string = val.toString();
                     Matcher match = escapeRequired.matcher(string);
-                    if(match.find()){
+                    if(match.find()){ // may need escaping, so escape
                         string=string.replaceAll("\"", "\"\"");// Double all double quotes to escape
-                        string=String.format("\"%s\"", string);// wrap in double quotes
+                        sb.append("\"");
+                        sb.append(string);
+                        sb.append("\"");
                     }
-                    val=string;
+                    else { // No need for escaping
+                        sb.append(string);
+                    }
                 }
-                sb.append(val).append(",");
+                sb.append(",");
             }
             sb.setLength(sb.length()-1); // Remove trailing comma
             sb.append("\n");

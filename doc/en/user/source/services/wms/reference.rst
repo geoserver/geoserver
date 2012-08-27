@@ -269,7 +269,25 @@ The standard parameters for the GetFeatureInfo operation are:
    * - ``exceptions``
      - No
      - Format in which to report exceptions.
-       The only valid value is ``application/vnd.ogc.se_xml``, which is the default.
+       The default value is ``application/vnd.ogc.se_xml``.
+
+The supported values for exceptions are:
+
+.. list-table::
+   :widths: 15 35 50
+   
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - XML
+     - ``EXCEPTIONS=application/vnd.ogc.se_xml``
+     - Xml output. (The default format)
+   * - JSON
+     - ``EXCEPTIONS=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``EXCEPTIONS=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
 
 Geoserver supports a number of output formats for the ``GetFeatureInfo`` response.
 Server-styled HTML is the most commonly-used format. 
@@ -411,8 +429,50 @@ The **DescribeLayer** operation is used primarily by clients that understand SLD
 In order to make an SLD one needs to know the structure of the data.  
 WMS and WFS both have operations to do this, so the **DescribeLayer** operation just routes the client to the appropriate service.
 
+The standard parameters for the GetFeatureInfo operation are:
 
-Geoserver supports a number of output formats for the ``GetFeatureInfo`` response.
+.. list-table::
+   :widths: 20 10 70
+   
+   * - **Parameter**
+     - **Required?**
+     - **Description**
+   * - ``service``
+     - Yes
+     - Service name. Value is ``WMS``.
+   * - ``version``
+     - Yes
+     - Service version. Value is ``1.1.1``.
+   * - ``request``
+     - Yes
+     - Operation name. Value is ``DescribeLayer``.
+   * - ``layers``
+     - Yes
+     - See :ref:`wms_getmap`
+   * - ``exceptions``
+     - No
+     - Format in which to report exceptions.
+       The default value is ``application/vnd.ogc.se_xml``.
+
+The supported values for exceptions are:
+
+.. list-table::
+   :widths: 15 35 50
+   
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - XML
+     - ``EXCEPTIONS=application/vnd.ogc.se_xml``
+     - Xml output. (The default format)
+   * - JSON
+     - ``EXCEPTIONS=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``EXCEPTIONS=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
+
+Geoserver supports a number of output formats for the ``DescribeLayer`` response.
 Server-styled HTML is the most commonly-used format. 
 For maximum control and customisation the client should use GML3 and style the raw data itself.
 The supported formats are:
@@ -424,18 +484,17 @@ The supported formats are:
      - **Syntax**
      - **Notes**
    * - TEXT
-     - ``info_format=text/xml``
+     - ``output_format=text/xml``
      - Same as default.
    * - GML 2
-     - ``info_format=application/vnd.ogc.wms_xml``
+     - ``output_format=application/vnd.ogc.wms_xml``
      - The default format.
    * - JSONP
-     - ``info_format=application/json``
+     - ``output_format=application/json``
      - Simple Json representation.
    * - JSONP
-     - ``info_format=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...)
-       See :ref:`wms_vendor_parameters` to change the callback name.
+     - ``output_format=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
      
 
 An example request in XML (default) format on a layer is:
@@ -443,11 +502,9 @@ An example request in XML (default) format on a layer is:
 .. code-block:: xml
 
    http://localhost:8080/geoserver/topp/wms?service=WMS
-   &version=1.1.0
+   &version=1.1.1
    &request=DescribeLayer
    &layers=topp:coverage
-   &styles=&bbox=-180.0,-89.9999640000003,179.999999998561,90.0000359992799
-   &width=660&height=330&srs=EPSG:4326
 
 .. code-block:: xml
 

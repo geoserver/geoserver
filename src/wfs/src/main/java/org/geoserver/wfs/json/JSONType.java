@@ -10,8 +10,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import javax.activation.MimeType;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONException;
 
@@ -123,7 +125,49 @@ public enum JSONType {
         }
     }
 	
-    public static void writeJsonpException(ServiceException exception, Request request, OutputStream out, String charset, boolean verbose)
+	
+	public static void handleJsonException(Logger LOGGER, ServiceException exception, Request request, String charset, boolean verbose, boolean isJsonp) {
+    	
+    	final HttpServletResponse response = request.getHttpResponse();
+    	response.setContentType(JSONType.jsonp);
+        // TODO: server encoding options?
+        response.setCharacterEncoding(charset);
+        
+        ServletOutputStream os = null;
+    	try {
+    		os=response.getOutputStream();
+    		if (isJsonp) {
+    			// jsonp
+    			JSONType.writeJsonpException(exception,request,os,charset,verbose);
+    		} else {
+    			// json
+    			OutputStreamWriter outWriter = null;
+    			try {
+    				outWriter = new OutputStreamWriter(os, charset);
+    				JSONType.writeJsonException(exception, request, outWriter, verbose);
+    			} finally {
+    				if (outWriter != null) {
+    	    			try {
+    	    				outWriter.flush();
+    	    			} catch (IOException ioe){}
+    					IOUtils.closeQuietly(outWriter);
+    				}
+    			}
+
+    		}
+    	} catch (Exception e){
+    		LOGGER.warning(e.getLocalizedMessage());
+    	} finally {
+    		if (os!=null){
+    			try {
+    				os.flush();
+    			} catch (IOException ioe){}
+    			IOUtils.closeQuietly(os);
+    		}
+    	}
+    }
+	
+    private static void writeJsonpException(ServiceException exception, Request request, OutputStream out, String charset, boolean verbose)
 			throws IOException {
 		
 		OutputStreamWriter outWriter = new OutputStreamWriter(out, charset);
@@ -142,7 +186,7 @@ public enum JSONType {
 		IOUtils.closeQuietly(outWriter);
 	}
     
-    public static void writeJsonException(ServiceException exception, Request request, OutputStreamWriter outWriter, boolean verbose) throws IOException {
+    private static void writeJsonException(ServiceException exception, Request request, OutputStreamWriter outWriter, boolean verbose) throws IOException {
 		try {
 			final JsonWriter jsonWriter = new JsonWriter(outWriter);
 			
@@ -158,10 +202,15 @@ public enum JSONType {
 			            OwsUtils.dumpExceptionMessages(exception, sb, false);
 
 			            if (verbose) {
-			                ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
-			                exception.printStackTrace(new PrintStream(stackTrace));        
-			                sb.append("\nDetails:\n");
-			                sb.append(new String(stackTrace.toByteArray()));
+			            	ByteArrayOutputStream stackTrace=null;
+			            	try {
+				                stackTrace = new ByteArrayOutputStream();
+				                exception.printStackTrace(new PrintStream(stackTrace));        
+				                sb.append("\nDetails:\n");
+				                sb.append(new String(stackTrace.toByteArray()));
+			            	} finally {
+			            		IOUtils.closeQuietly(stackTrace);
+			            	}
 			            }
 			            jsonWriter.setValue(sb.toString());
 			        }

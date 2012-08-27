@@ -11,7 +11,7 @@ import org.geoserver.wfs.WFSTestSupport;
 public class GeoJsonDescribeTest extends WFSTestSupport {
 
     public void testDescribePrimitiveGeoFeatureJSON() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat=application/json&typeName="
+        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.json+"&typeName="
                 + getLayerId(MockData.PRIMITIVEGEOFEATURE));
         testOutput(output);
     }
@@ -59,18 +59,18 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
     }
 
     public void testDescribePrimitiveGeoFeatureJSONP() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat=text/javascript&typeName="
+        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.jsonp+"&typeName="
                 + getLayerId(MockData.PRIMITIVEGEOFEATURE));
 
         // removing specific parts
         output = output.substring(0, output.length() - 2);
-        output = output.substring(GeoJsonDescribeOutputFormat.CALLBACK_FUNCTION.length() + 1,
+        output = output.substring(JSONType.CALLBACK_FUNCTION.length() + 1,
                 output.length());
         testOutput(output);
     }
     
     public void testDescribePrimitiveGeoFeatureJSONPCustom() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat=text/javascript&typeName="
+        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.jsonp+"&typeName="
                 + getLayerId(MockData.PRIMITIVEGEOFEATURE) + "&format_options=callback:custom");
 
         // removing specific parts

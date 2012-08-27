@@ -28,7 +28,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author Daniele Romagnoli, GeoSolutions SAS
  * @author Andrea Aime, GeoSolutions SAS
  */
-@DescribeProcess(title = "GetFullCoverage", description = "Returns a full coverage from the catalog, in its native form")
+@DescribeProcess(title = "GetFullCoverage", description = "Returns a raster from the catalog, with optional filtering")
 public class GetFullCoverage implements GSProcess {
 
     private Catalog catalog;
@@ -37,10 +37,10 @@ public class GetFullCoverage implements GSProcess {
         this.catalog = catalog;
     }
 
-    @DescribeResult(name = "result", description = "The grid coverage", type = GridCoverage2D.class)
+    @DescribeResult(name = "result", description = "Output raster", type = GridCoverage2D.class)
     public GridCoverage2D execute(
-            @DescribeParameter(name = "name", description = "The grid coverage name, possibly fully qualified (workspace:name)") String name,
-            @DescribeParameter(name = "filter", description = "An eventual filter over the data", min = 0) Filter filter)
+            @DescribeParameter(name = "name", description = "Name of raster, optionally fully qualified (workspace:name)") String name,
+            @DescribeParameter(name = "filter", description = "Filter to use on the raster data", min = 0) Filter filter)
             throws IOException {
         CoverageInfo ci = catalog.getCoverageByName(name);
         if (ci == null) {

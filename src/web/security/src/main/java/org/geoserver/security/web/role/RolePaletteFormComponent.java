@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
@@ -52,6 +54,12 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
 
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
         final String roleServiceName = roleService.getName();
+        
+        if (choicesModel instanceof RuleRolesModel)
+            add(new Label("roles", new StringResourceModel("roles",this,null)));
+        else
+            add(new Label("roles", new StringResourceModel("rolesFromActiveService",
+                    this,null,new Object[] {roleServiceName})));
         
         add(new SubmitLink("addRole") {
             @Override

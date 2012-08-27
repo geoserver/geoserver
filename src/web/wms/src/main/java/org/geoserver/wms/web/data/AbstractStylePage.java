@@ -67,6 +67,7 @@ import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 import org.opengis.metadata.citation.OnLineResource;
+import org.xml.sax.SAXParseException;
 
 /**
  * Base page for creating/editing styles
@@ -219,7 +220,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     form.info( "No validation errors.");
                 } else {
                     for( Exception e : errors ) {
-                        form.error( e );
+                        form.error( sldErrorWithLineNo(e) );
                     }    
                 }        
             }
@@ -229,6 +230,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 return editor.getSaveDecorator();
             };
         };
+    }
+    
+    private static String sldErrorWithLineNo(Exception e) {
+        if (e instanceof SAXParseException) {
+            SAXParseException se = (SAXParseException) e;
+            return "line " + se.getLineNumber() + ": " + e.getLocalizedMessage();
+        }
+        return e.getLocalizedMessage();
     }
     
     List<Exception> validateSLD() {

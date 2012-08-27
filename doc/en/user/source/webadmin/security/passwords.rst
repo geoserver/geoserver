@@ -7,6 +7,8 @@ This page sets the various options related to :ref:`sec_passwd`, the :ref:`sec_m
 
 .. note:: Passwords for users are changed in the Users dialogs accessed from the :ref:`webadmin_sec_ugr` page.
 
+.. _webadmin_sec_masterpasswordprovider:
+
 Active master password provider
 -------------------------------
 

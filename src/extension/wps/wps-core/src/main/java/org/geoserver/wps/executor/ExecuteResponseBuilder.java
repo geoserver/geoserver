@@ -55,10 +55,10 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.ppio.XMLPPIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.geotools.util.Converters;
 import org.geotools.xml.EMFUtils;
 import org.opengis.feature.type.Name;
@@ -113,7 +113,7 @@ public class ExecuteResponseBuilder {
 
         // process
         Name processName = helper.getProcessName();
-        ProcessFactory pf = Processors.createProcessFactory(processName);
+        ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
         final ProcessBriefType process = f.createProcessBriefType();
         response.setProcess(process);
         // damn blasted EMF changes the state of request if we set its identifier on

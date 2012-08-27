@@ -5,8 +5,15 @@
 
 package org.geoserver.wps;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geotools.process.ProcessFactory;
+import org.geotools.process.Processors;
 
 /**
  * WPS information implementation
@@ -59,6 +66,10 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      */
     Integer maxAsynchronousProcesses = DEFAULT_MAX_ASYNCH;
 
+    /**
+     * List of process groups/factories.
+     */
+    List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
 
     /**
      * Returns the connection timeout (in seconds). It represents the timeout to be used 
@@ -152,6 +163,13 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses) {
         this.maxAsynchronousProcesses = maxAsynchronousProcesses;
     }
-    
-    
+
+    @Override
+    public List<ProcessGroupInfo> getProcessGroups() {
+        return processGroups;
+    }
+
+    public void setProcessGroups(List<ProcessGroupInfo> processGroups) {
+        this.processGroups = processGroups;
+    }
 }

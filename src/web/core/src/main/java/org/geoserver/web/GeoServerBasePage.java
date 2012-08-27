@@ -27,6 +27,8 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
@@ -167,6 +169,27 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 new PackageResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
         
         add(new WebMarkupContainer(HEADER_PANEL));
+        
+        
+        // allow the subclasses to initialize before getTitle/getDescription are called
+        add(new Label("gbpTitle", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                return getTitle();
+            }
+        }));
+        add(new Label("gbpDescription", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                return getDescription();
+            }
+        }));
+    }
+	
+	protected String getTitle() {
+        return new ParamResourceModel("title", this).getString();
     }
 	
     private ResourceReference getFaviconReference() {
@@ -204,7 +227,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 	        }
 	};
 	
-	/**
+	protected String getDescription() {
+	    return new ParamResourceModel("description", this).getString();
+    }
+
+    /**
 	 * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found
 	 * @return
 	 */

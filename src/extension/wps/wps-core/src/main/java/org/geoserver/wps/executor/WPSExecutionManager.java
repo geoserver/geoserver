@@ -25,12 +25,12 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.springframework.beans.BeansException;
@@ -264,7 +264,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
         }
         
         boolean hasComplexOutputs() {
-            ProcessFactory pf = Processors.createProcessFactory(request.getProcessName());
+            ProcessFactory pf = GeoServerProcessors.createProcessFactory(request.getProcessName());
             Map<String, Parameter<?>> resultInfo = pf.getResultInfo(request.getProcessName(), inputs);
             for (Parameter<?> param : resultInfo.values()) {
                 List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(param, applicationContext);

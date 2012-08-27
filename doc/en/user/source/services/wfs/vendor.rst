@@ -7,6 +7,11 @@ WFS vendor parameters are non-standard request parameters
 that are defined by an implementation to provide enhanced capabilities. 
 GeoServer supports a variety of vendor-specific WFS parameters.
 
+Callback
+--------
+
+In WFS 
+
 CQL filters
 -----------
 
@@ -25,6 +30,18 @@ Using ECQL the filter is::
 
    cql_filter=INTERSECT(the_geom,%20POINT%20(-74.817265%2040.5296504))
 
+
+format_options
+--------------
+
+The ``format_options`` is a container for parameters that are format-specific. 
+The syntax is::
+  
+    format_options=param1:value1;param2:value2;...
+    
+The supported format options are:
+
+* ``callback``: specifies the callback function name for the jsonp response format (default is ``paddingOutput``).
 
 Reprojection
 ------------

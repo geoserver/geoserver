@@ -62,7 +62,7 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public abstract class WMSTestSupport extends GeoServerTestSupport {
 
-    private static final String NATURE_GROUP = "nature";
+    protected static final String NATURE_GROUP = "nature";
 
     protected static final int SHOW_TIMEOUT = 2000;
 

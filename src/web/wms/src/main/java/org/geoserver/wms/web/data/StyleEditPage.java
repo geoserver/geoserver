@@ -8,14 +8,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -30,8 +31,8 @@ public class StyleEditPage extends AbstractStylePage {
     public static final String WORKSPACE = "workspace";
 
     public StyleEditPage(PageParameters parameters) {
-        String name = parameters.getString(NAME);
-        String workspace = parameters.getString(WORKSPACE);
+        String name = parameters.get(NAME).toOptionalString();
+        String workspace = parameters.get(WORKSPACE).toOptionalString();
 
         StyleInfo si = workspace != null ? getCatalog().getStyleByName(workspace, name) : 
             getCatalog().getStyleByName(name);
@@ -55,12 +56,12 @@ public class StyleEditPage extends AbstractStylePage {
 
                 editor.add(new AttributeAppender("class", new Model("disabled"), " "));
                 get("validate").add(new AttributeAppender("style", new Model("display:none;"), " "));
-                add(new AbstractBehavior() {
+                add(new Behavior() {
                     @Override
-                    public void renderHead(IHeaderResponse response) {
-                        response.renderOnLoadJavascript(
-                            "document.getElementById('mainFormSubmit').style.display = 'none';");
-                        response.renderOnLoadJavascript(
+                    public void renderHead(Component comp, IHeaderResponse response) {
+                    	response.renderOnDomReadyJavaScript(
+                    			"document.getElementById('mainFormSubmit').style.display = 'none';");
+                        response.renderOnDomReadyJavaScript(
                             "document.getElementById('uploadFormSubmit').style.display = 'none';");
                     }
                 });
@@ -77,7 +78,7 @@ public class StyleEditPage extends AbstractStylePage {
         super(style);
         uploadForm.setVisible(false);
     }
-
+    
     @Override
     protected void onStyleFormSubmit() {
         // write out the file and save name modifications

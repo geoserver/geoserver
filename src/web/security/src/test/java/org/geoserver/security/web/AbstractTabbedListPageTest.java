@@ -6,7 +6,6 @@ import java.util.Iterator;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
@@ -69,8 +68,8 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
         
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(getItemsPath());
         
-        @SuppressWarnings("unchecked")
-        Iterator<MarkupContainer> it = (Iterator<MarkupContainer>) listView.iterator();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Iterator<MarkupContainer> it = (Iterator) listView.iterator();
         
         while (it.hasNext()) {
             MarkupContainer m = it.next();

@@ -5,10 +5,10 @@ import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
@@ -139,7 +139,9 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
     public void testStyleEditPageGlobal() throws Exception {
         loginAsCite();
     
-        tester.startPage(StyleEditPage.class, new PageParameters(StyleEditPage.NAME+"=point"));
+        PageParameters parameters = new PageParameters();
+        parameters.add(StyleEditPage.NAME, "point");
+        tester.startPage(StyleEditPage.class, parameters);
         tester.assertRenderedPage(StyleEditPage.class);
 
         //assert all form components disabled except for cancel

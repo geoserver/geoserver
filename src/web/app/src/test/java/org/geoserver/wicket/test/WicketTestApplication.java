@@ -4,6 +4,8 @@
  */
 package org.geoserver.wicket.test;
 
+import java.util.Arrays;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -44,13 +46,14 @@ public class WicketTestApplication extends WebApplication
         protected void init() {
             //JD: override some resource settings to allow for custom i18n lookups
             getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-            getResourceSettings().addStringResourceLoader(new GeoServerStringResourceLoader());
-            getResourceSettings().addStringResourceLoader(new ComponentStringResourceLoader());
-            getResourceSettings().addStringResourceLoader(new ClassStringResourceLoader(this.getClass()));
+            getResourceSettings().getStringResourceLoaders().addAll(Arrays.asList(
+               new GeoServerStringResourceLoader(),
+               new ComponentStringResourceLoader(),
+               new ClassStringResourceLoader(this.getClass())));
 
-            getResourceSettings().setPropertiesFactory(new PropertiesFactory(this) {
+            getResourceSettings().setPropertiesFactory(new PropertiesFactory(getResourceSettings()) {
                 @Override
-                public Properties load(Class clazz, String path) {
+                public Properties load(Class<?> clazz, String path) {
                     if ( clazz == WicketTestApplication.class && path.startsWith(wtapath)) {
                         String newPath = path.replace( wtapath, gsapath );
                         return super.load( GeoServerApplication.class, newPath );

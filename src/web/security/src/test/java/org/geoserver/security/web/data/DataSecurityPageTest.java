@@ -4,12 +4,13 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Component.IVisitor;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.RadioChoice;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.data.test.MockData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DataAccessRule;
@@ -92,12 +93,13 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
 
         form.select("catalogMode", 1);
 
-        form.getForm().visitChildren(RadioChoice.class, new IVisitor() {
-            public Object component(final Component component) {
-                if (component.getId().equals("catalogMode")) {
-                    ((RadioChoice) component).onSelectionChanged();
+        form.getForm().visitChildren(RadioChoice.class, new IVisitor<RadioChoice<?>, Void>() {
+
+			@Override
+			public void component(final RadioChoice<?> choice, final IVisit<Void> traversal) {
+                if (choice.getId().equals("catalogMode")) {
+                    choice.onSelectionChanged();
                 }
-                return CONTINUE_TRAVERSAL;
             }
         });
 

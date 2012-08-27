@@ -45,9 +45,10 @@ class LegendGraphicAjaxUpdater implements Serializable {
         if (styleInfo != null) {
             String style = styleInfo.getName();
             url += style;
-            image.add(new AttributeModifier("src", new Model(url)));
+            image.setVisible(true);
+            image.setDefaultModelObject(url);
             if (target != null) {
-                target.addComponent(image);
+                target.add(image);
             }
         }
     }

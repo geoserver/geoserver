@@ -18,9 +18,8 @@ import java.util.Locale;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -51,7 +50,6 @@ import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
-import org.geoserver.security.validation.PasswordPolicyException;
 import org.geoserver.security.xml.XMLRoleServiceTest;
 import org.geoserver.security.xml.XMLUserGroupServiceTest;
 import org.geoserver.web.GeoServerApplication;
@@ -77,7 +75,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
 
     @Override
     protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList(Arrays.asList(super.getSpringContextLocations()));
+        List<String> list = new ArrayList<String>(Arrays.asList(super.getSpringContextLocations()));
         list.add("classpath*:/applicationTestContext.xml");
         return list.toArray(new String[list.size()]);
     }
@@ -196,7 +194,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
     }
     
     public void executeModalWindowClosedCallback(ModalWindow modalWindow) {
-        for (IBehavior behavior : modalWindow.getBehaviors()) {
+        for (Behavior behavior : modalWindow.getBehaviors()) {
           if (behavior instanceof AbstractDefaultAjaxBehavior) {
             String name = behavior.getClass().getSimpleName();
             if (name.startsWith("WindowClosedBehavior")) {
@@ -207,7 +205,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
       }
 
       public void executeModalWindowCloseButtonCallback(ModalWindow modalWindow) {
-        for (IBehavior behavior : modalWindow.getBehaviors()) {
+        for (Behavior behavior : modalWindow.getBehaviors()) {
           if (behavior instanceof AbstractDefaultAjaxBehavior) {
             String name = behavior.getClass().getSimpleName();
             

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -119,8 +120,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
             @Override
             protected void populateItem(final ListItem<LayerIdentifierInfo> item) {
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class", item.getIndex() % 2 == 0 ? "even"
-                        : "odd"));
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                 IModel<String> authModel = new PropertyModel<String>(item.getModel(), "authority");
 
@@ -162,7 +162,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                         list.remove(index);
                         identifiers.setModelObject(list);
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
 
                 };
@@ -191,9 +191,13 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                 list.add(newIdentifier);
                 identifiers.setModelObject(list);
                 updateLinksVisibility();
-                target.addComponent(LayerIdentifierListEditor.this);
+                target.add(LayerIdentifierListEditor.this);
             }
 
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO: Implement
+			}
         };
         add(button);
     }

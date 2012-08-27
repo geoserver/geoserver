@@ -18,18 +18,18 @@ public class URLMasterPasswordProviderPanel
         super(id, model);
 
         add(new HelpLink("urlHelp", this).setDialog(dialog));
-        add(new TextField("uRL", URL.class) {
+        add(new TextField<URL>("uRL", URL.class) {
             @Override
-            public IConverter getConverter(Class<?> type) {
-                return new IConverter() {
+            public <T> IConverter<T> getConverter(Class<T> type) {
+                return new IConverter<T>() {
                     @Override
                     public String convertToString(Object value, Locale locale) {
                         return ((URL)value).toExternalForm();
                     }
                     @Override
-                    public Object convertToObject(String value, Locale locale) {
+                    public T convertToObject(String value, Locale locale) {
                         try {
-                            return new URL(value);
+                            return (T) new URL(value);
                         } catch (MalformedURLException e) {
                             throw new RuntimeException(e);
                         }

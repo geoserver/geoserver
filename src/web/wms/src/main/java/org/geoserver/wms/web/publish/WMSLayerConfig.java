@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -52,11 +52,13 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);
 
-        final Image defStyleImg = new Image("defaultStyleLegendGraphic");
+        final Image defStyleImg = new Image("defaultStyleLegendGraphic", ".");
+        defStyleImg.setVisible(false);
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
 
-        String wmsURL = getRequest().getRelativePathPrefixToContextRoot();
+        String wmsURL = getRequest().getPrefixToContextPath();
+        
         //append the workspace
         String wsName = null;
         if (resource.getStore() != null && resource.getStore().getWorkspace() != null) {
@@ -103,7 +105,7 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         styleContainer.add(extraStyles);
         
         TextField renderingBuffer = new TextField("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);
-        renderingBuffer.add(NumberValidator.minimum(0));
+        renderingBuffer.add(new MinimumValidator<Integer>(0));
         styleContainer.add(renderingBuffer);
         
         add(new TextField("wmsPath", new PropertyModel(layerModel, "path")));

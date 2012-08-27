@@ -6,9 +6,9 @@ import java.util.Iterator;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -63,7 +63,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
         
         @SuppressWarnings("unchecked")
-        Iterator<MarkupContainer> it = (Iterator<MarkupContainer>) listView.iterator();
+        Iterator<MarkupContainer> it = (Iterator) listView.iterator();
         
         while (it.hasNext()) {
             MarkupContainer m = it.next();

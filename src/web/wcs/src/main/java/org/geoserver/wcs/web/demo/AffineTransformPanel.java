@@ -6,13 +6,14 @@ package org.geoserver.wcs.web.demo;
 
 import java.awt.geom.AffineTransform;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisitor;
+import org.apache.wicket.util.visit.IVisit;
 
 /**
  * A form component for a {@link AffineTransform} object.
@@ -86,10 +87,10 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
     }
    
     public AffineTransformPanel setReadOnly( final boolean readOnly ) {
-        visitChildren( TextField.class, new org.apache.wicket.Component.IVisitor() {
-            public Object component(Component component) {
-                component.setEnabled( !readOnly );
-                return null;
+        visitChildren( TextField.class, new IVisitor<TextField<?>, Void>() {
+        	@Override
+            public void component(TextField<?> field, IVisit<Void> traversal) {
+                field.setEnabled( !readOnly );
             }
         });
 
@@ -98,11 +99,10 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
     
     @Override
     protected void convertInput() {
-        visitChildren( TextField.class, new org.apache.wicket.Component.IVisitor() {
+        visitChildren( TextField.class, new IVisitor<TextField<?>, Void>() {
 
-            public Object component(Component component) {
-                ((TextField) component).processInput();
-                return null;
+            public void component(TextField<?> component, IVisit<Void> traversal) {
+                component.processInput();
             }
         });
         
@@ -122,11 +122,11 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, new Component.IVisitor() {
+        visitChildren(TextField.class, new IVisitor<TextField<?>, Void>() {
             
-            public Object component(Component component) {
-                ((TextField) component).clearInput();
-                return CONTINUE_TRAVERSAL;
+        	@Override
+            public void component(TextField<?> component, IVisit<Void> traversal) {
+                component.clearInput();
             }
         });
     }

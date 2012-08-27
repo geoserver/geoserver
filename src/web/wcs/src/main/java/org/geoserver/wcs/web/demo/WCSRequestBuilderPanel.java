@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.URLMangler.URLType;
@@ -138,7 +138,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     g2w.setModelObject(null);
                     g2w.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
             }
         });
 
@@ -167,7 +167,7 @@ public class WCSRequestBuilderPanel extends Panel {
                 gc.targetCRS = ri.getCoordinateReferenceSystem();
                 gc.sourceGridRange = null;
                 describeLink.setEnabled(true);
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
             }
         });
 
@@ -205,8 +205,8 @@ public class WCSRequestBuilderPanel extends Panel {
 
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WCSRequestBuilderPanel.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = ((ServletWebRequest) WCSRequestBuilderPanel.this.getRequest())
+                        .getContainerRequest();
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
@@ -298,7 +298,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     g2w.setModelObject(null);
                     g2w.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
                 
             }
         });
@@ -337,7 +337,7 @@ public class WCSRequestBuilderPanel extends Panel {
                     sourceGridRange.setModelObject(null);
                     sourceGridRange.setVisible(false);
                 }
-                target.addComponent(WCSRequestBuilderPanel.this);
+                target.add(WCSRequestBuilderPanel.this);
                 
             }
 
@@ -416,15 +416,15 @@ public class WCSRequestBuilderPanel extends Panel {
         }
     }
     
-    class TargetLayoutRenderer implements IChoiceRenderer {
+    class TargetLayoutRenderer implements IChoiceRenderer<TargetLayout> {
 
-        public Object getDisplayValue(Object object) {
-            final String name = ((TargetLayout) object).name();
+        public Object getDisplayValue(TargetLayout object) {
+            final String name = object.name();
             return new StringResourceModel("tl." + name, WCSRequestBuilderPanel.this, null).getString();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((TargetLayout) object).name();
+        public String getIdValue(TargetLayout object, int index) {
+            return object.name();
         }
     }
 

@@ -12,6 +12,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisitor;
+import org.apache.wicket.util.visit.IVisit;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -67,10 +69,9 @@ public class GridPanel extends FormComponentPanel {
     }
    
     public GridPanel setReadOnly( final boolean readOnly ) {
-        visitChildren( TextField.class, new org.apache.wicket.Component.IVisitor() {
-            public Object component(Component component) {
+        visitChildren( TextField.class, new IVisitor<TextField<?>, Void>() {
+            public void component(TextField<?> component, IVisit<Void> traversal) {
                 component.setEnabled( !readOnly );
-                return null;
             }
         });
 
@@ -79,11 +80,11 @@ public class GridPanel extends FormComponentPanel {
     
     @Override
     protected void convertInput() {
-        visitChildren( TextField.class, new org.apache.wicket.Component.IVisitor() {
+        visitChildren( TextField.class, new IVisitor<TextField<?>, Void>() {
 
-            public Object component(Component component) {
-                ((TextField) component).processInput();
-                return null;
+        	@Override
+            public void component(TextField<?> component, IVisit<Void> traversal) {
+                component.processInput();
             }
         });
         
@@ -102,11 +103,11 @@ public class GridPanel extends FormComponentPanel {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, new Component.IVisitor() {
+        visitChildren(TextField.class, new IVisitor<TextField<?>, Void>() {
             
-            public Object component(Component component) {
-                ((TextField) component).clearInput();
-                return CONTINUE_TRAVERSAL;
+        	@Override
+            public void component(TextField<?> component, IVisit<Void> traversal) {
+                component.clearInput();
             }
         });
     }

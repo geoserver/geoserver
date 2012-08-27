@@ -6,7 +6,6 @@ package org.geoserver.wcs.web;
 
 import java.util.Arrays;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -14,6 +13,7 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;

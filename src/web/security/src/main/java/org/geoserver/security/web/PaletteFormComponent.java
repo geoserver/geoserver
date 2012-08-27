@@ -6,14 +6,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.IBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.security.impl.GeoServerUserGroup;
 
 public class PaletteFormComponent<T> extends FormComponentPanel {
 
@@ -25,7 +24,7 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
     /**
      * list of behaviors to add, staged before the palette recorder component is created
      */
-    List<IBehavior> toAdd = new ArrayList();
+    List<Behavior> toAdd = new ArrayList();
 
     public PaletteFormComponent(String id, IModel<List<T>> model, IModel<Collection<T>> choicesModel, 
             ChoiceRenderer<T> renderer) {
@@ -37,7 +36,7 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
                 Recorder<T> rec = super.newRecorderComponent();
 
                 //add any behaviors that need to be added
-                rec.add(toAdd.toArray(new IBehavior[toAdd.size()]));
+                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
                 toAdd.clear();
                 return rec;
             }
@@ -46,7 +45,7 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
     }
 
     @Override
-    public Component add(IBehavior... behaviors) {
+    public Component add(Behavior... behaviors) {
         if (palette.getRecorderComponent() == null) {
             //stage for them for later
             toAdd.addAll(Arrays.asList(behaviors));

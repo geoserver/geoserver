@@ -17,7 +17,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.web.demo.GetCoverageRequest.Version;
@@ -63,15 +63,14 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         // the output response window
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
 
             public Page createPage() {
                 DemoRequest request = new DemoRequest(null);
-                HttpServletRequest http = ((WebRequest) WCSRequestBuilder.this.getRequest())
-                        .getHttpServletRequest();
+                HttpServletRequest http = ((ServletWebRequest) WCSRequestBuilder.this.getRequest())
+                        .getContainerRequest();
                 String url = ResponseUtils.buildURL(ResponseUtils.baseURL(http), "ows", Collections
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
@@ -90,8 +89,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.addComponent(builder.getFeedbackPanel());
+                target.add(builder.getFeedbackPanel());
             }
         });
 

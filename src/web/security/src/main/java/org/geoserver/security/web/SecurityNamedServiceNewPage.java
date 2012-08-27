@@ -20,6 +20,8 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.security.GeoServerSecurityService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.web.GeoServerApplication;
@@ -38,7 +40,9 @@ public class SecurityNamedServiceNewPage
     <S extends GeoServerSecurityService, T extends SecurityNamedServiceConfig>  
     extends SecurityNamedServicePage<T> {
 
-    Form form;
+	private static final long serialVersionUID = 8560988476742955823L;
+	
+	Form form;
     WebMarkupContainer panelContainer;
 
     public SecurityNamedServiceNewPage(Class<S> serviceClass) {
@@ -116,7 +120,7 @@ public class SecurityNamedServiceNewPage
         panelContainer.add(panel);
 
         if (target != null) {
-            target.addComponent(panelContainer);
+            target.add(panelContainer);
         }
     }
 
@@ -152,28 +156,32 @@ public class SecurityNamedServiceNewPage
         }
 
         protected AjaxLink<T> newLink(String id, IModel<T> model) {
-            return (AjaxLink<T>) new AjaxLink<T>(id, model) {
+        	return new AjaxLink<T>(id, model) {
+				private static final long serialVersionUID = -2169140560724571389L;
+				
+				{ setOutputMarkupId(true); }
+				
                 @Override
                 public void onClick(final AjaxRequestTarget target) {
                     //set all links enabled
-                    AjaxLinkGroup.this.visitChildren(AjaxLink.class, new IVisitor<AjaxLink<T>>() {
-                        @Override
-                        public Object component(AjaxLink<T> component) {
+                    AjaxLinkGroup.this.visitChildren(AjaxLink.class, new IVisitor<AjaxLink<T>, Void>() {
+						@Override
+						public void component(final AjaxLink<T> component, final IVisit<Void> traversal) {
                             component.setEnabled(true);
-                            target.addComponent(component);
-                            return CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
-                        }
+                            target.add(component);
+                            traversal.dontGoDeeper();
+						}
                     });
+                    
                     //set this link disabled
                     setEnabled(false);
 
                     //update
-                    //target.addComponent(AjaxLinkGroup.this.getParent());
-                    target.addComponent(this);
+                    target.add(this);
 
                     AjaxLinkGroup.this.onClick(this, target);
                 }
-            }.setOutputMarkupId(true);
+            };
         }
 
         protected abstract void onClick(AjaxLink<T> link, AjaxRequestTarget target);

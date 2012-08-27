@@ -3,10 +3,10 @@ package org.geoserver.wms.web.publish;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -73,8 +73,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
             @Override
             protected void populateItem(final ListItem<AuthorityURLInfo> item) {
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class", item.getIndex() % 2 == 0 ? "even"
-                        : "odd"));
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                 // Authority name
                 TextField<String> authName;
@@ -110,7 +109,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         list.remove(index);
                         authorityURLs.setModelObject(list);
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
 
                 };
@@ -139,8 +138,14 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                 authorityURLs.setModelObject(list);
                 AuthorityURLListEditor.this.convertInput();
                 updateLinksVisibility();
-                target.addComponent(container);
+                target.add(container);
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+				
+			}
 
         };
         add(button);

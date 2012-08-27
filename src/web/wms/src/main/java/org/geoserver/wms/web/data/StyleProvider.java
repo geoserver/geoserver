@@ -7,6 +7,7 @@ package org.geoserver.wms.web.data;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.data.style.StyleDetachableModel;
@@ -27,7 +28,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
     public StyleProvider() {
-        setSort(NAME.getName(), true);
+        setSort(NAME.getName(), SortOrder.ASCENDING);
     }
     
     @Override

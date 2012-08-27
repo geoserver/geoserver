@@ -200,7 +200,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 StyleInfo s = (StyleInfo) form.getModelObject();
                 if (s.getName() == null || "".equals(s.getName().trim())) {
                     // set it
-                    nameTextField.setModelValue(ResponseUtils.stripExtension(upload
+                    nameTextField.setModelObject(ResponseUtils.stripExtension(upload
                             .getClientFileName()));
                     nameTextField.modelChanged();
                 }
@@ -255,7 +255,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         return new AjaxSubmitLink("copy") {
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 // we need to force validation or the value won't be converted
                 styles.processInput();
                 StyleInfo style = (StyleInfo) styles.getConvertedInput();
@@ -293,6 +293,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 return false;
             }
 
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+			}
         };
     }
 

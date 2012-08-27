@@ -16,7 +16,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -59,46 +59,49 @@ public class AttributionLayerConfigPanel extends LayerConfigurationPanel{
         logo.setOutputMarkupId(true);
         add(logo);
 
-        final TextField type = new TextField("wms.attribution.type",
-            new PropertyModel(model, "attribution.logoType")
+        final TextField<String> type = new TextField<String>("wms.attribution.type",
+            new PropertyModel<String>(model, "attribution.logoType")
         );
         type.setOutputMarkupId(true);
         add(type);
 
-        final TextField height = new TextField("wms.attribution.height", 
-            new PropertyModel(model, "attribution.logoHeight"),
+        final TextField<Integer> height = new TextField<Integer>("wms.attribution.height", 
+            new PropertyModel<Integer>(model, "attribution.logoHeight"),
             Integer.class
         );
-        height.add(NumberValidator.minimum(0));
+        height.add(new MinimumValidator<Integer>(0));
         height.setOutputMarkupId(true);
         add(height);
 
-        final TextField width = new TextField("wms.attribution.width",
-            new PropertyModel(model, "attribution.logoWidth"),
+        final TextField<Integer> width = new TextField<Integer>("wms.attribution.width",
+            new PropertyModel<Integer>(model, "attribution.logoWidth"),
             Integer.class
         );
-        width.add(NumberValidator.minimum(0));
+        width.add(new MinimumValidator<Integer>(0));
         width.setOutputMarkupId(true);
         add(width);
 
         add(new AjaxSubmitLink("verifyImage") {
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 if (logo.getDefaultModelObjectAsString() != null) {
                     try { 
                         URL url = new URL(logo.getDefaultModelObjectAsString());
                         URLConnection conn = url.openConnection();
-                        type.getModel().setObject(conn.getContentType());
+                        type.setModelObject(conn.getContentType());
                         BufferedImage image = ImageIO.read(conn.getInputStream());
-                        height.setModelValue("" + image.getHeight());
-                        width.setModelValue("" + image.getWidth());
+                        height.setModelObject(image.getHeight());
+                        width.setModelObject(image.getWidth());
                     } catch (Exception e) {
                     }
                 }
-
-                target.addComponent(type);
-                target.addComponent(height);
-                target.addComponent(width);
+                
+                target.add(type, height, width);
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO: add form validation component to page.
+			}
         });
     }
 }

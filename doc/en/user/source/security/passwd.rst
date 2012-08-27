@@ -101,8 +101,12 @@ GeoServer contains the ability to set a **master password** that serves two purp
 * Protect access to the :ref:`keystore <sec_passwd_keystore>`
 * Protect access to the GeoServer :ref:`sec_root`
 
-By default, the master password is set to ``geoserver``, though for obvious reasons it is strongly recommended that the master password be 
-changed **immediately** following any GeoServer installation.
+By default, the master password is generated and stored in a file named ``security/masterpw.info`` using plain text. In case of an upgrade from an existing GeoServer data directory (versions 2.1.x and lower), the algorithm tries to figure out a password of a user having the role ``ROLE_ADMINISTRATOR``. If such a password is found and the password length is 8 characters at minimum, GeoServer uses this password as master password. Again, the name of the chosen user is found in ``security/masterpw.info``. 
+
+.. warning:: The file ``security/masterpw.info`` is a security risk. The administrator should read this file and verify the master password doing a GeoServer login as ``root`` user. On success, this file should be removed.
+
+The master password can be changed as described in :ref:`webadmin_sec_masterpasswordprovider`.
+
 
 .. warning:: JUSTIN-TODO: EXPLAIN MASTER PASSWORD PROVIDER
 

@@ -40,6 +40,12 @@ public class CatalogResource extends GeoServicesResource {
 
     private String workspace;
 
+    private final String productName = "OpenGeo Suite";
+
+    private final String specVersion = "1.0";
+
+    private final String currentVersion = "10.1";
+
     public CatalogResource(Context context, Request request, Response response, Class clazz,
             GeoServer geoServer) {
         super(context, request, response, clazz, geoServer);
@@ -68,8 +74,9 @@ public class CatalogResource extends GeoServicesResource {
                     MapService mapService = new MapService(layerGroupInfo.getName());
                     services.add(mapService);
                 }
-                return new CatalogService("services", "1.0", "OpenGeo Suite", "10.1", folders,
-                        services);
+                // TODO: get Suite version number at runtime
+                return new CatalogService("services", specVersion, productName, currentVersion,
+                        folders, services);
             }
             GeometryService geometryService = new GeometryService("Geometry");
             layerGroupsInfo = catalog.getFacade().getLayerGroups();
@@ -83,8 +90,8 @@ public class CatalogResource extends GeoServicesResource {
                 }
             }
             services.add(geometryService);
-            return new CatalogService("services", "1.0", "OpenGeo Suite",
-                    "10.1", folders, services);
+            return new CatalogService("services", specVersion, productName, currentVersion,
+                    folders, services);
             // TODO: handle JSONP callback
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();

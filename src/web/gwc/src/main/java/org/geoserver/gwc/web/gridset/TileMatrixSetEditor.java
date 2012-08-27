@@ -149,13 +149,12 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
             protected void onUpdate(AjaxRequestTarget target) {
                 resolutionsOrScales.processInput();
                 final boolean useResolutions = resolutionsOrScales.getModelObject().booleanValue();
-                Iterator<? extends ListItem<Grid>> iterator = grids.iterator();
-                while (iterator.hasNext()) {
-                    ListItem<Grid> next = iterator.next();
+                for (Component comp : grids) {
+                	ListItem<Grid> next = (ListItem<Grid>) comp; 
                     next.get("resolution").setEnabled(useResolutions);
                     next.get("scale").setEnabled(!useResolutions);
                 }
-                target.addComponent(table);
+                target.add(table);
             }
         });
 

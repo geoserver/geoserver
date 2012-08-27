@@ -2,9 +2,9 @@ package org.geoserver.web.demo;
 
 import java.io.Serializable;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -80,6 +80,9 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
     }
     
     public void testPageParams() {
+    	PageParameters params = new PageParameters();
+    	params.add("fromSRS", "EPSG:4326");
+    	params.add("toSRS", "EPSG:32632");
         tester.startPage(ReprojectPage.class, new PageParameters("fromSRS=EPSG:4326,toSRS=EPSG:32632"));
         String source = tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();
         String target = tester.getComponentFromLastRenderedPage("form:targetCRS:srs").getDefaultModelObjectAsString();

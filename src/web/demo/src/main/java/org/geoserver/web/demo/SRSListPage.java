@@ -4,8 +4,8 @@
  */
 package org.geoserver.web.demo;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.SRSListPanel;
 
@@ -24,8 +24,9 @@ public class SRSListPage extends GeoServerBasePage {
 
             @Override
             protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
-                setResponsePage(SRSDescriptionPage.class, new PageParameters("code=EPSG:"
-                        + epsgCode));
+            	PageParameters params = new PageParameters();
+            	params.add("code", "EPSG:" + epsgCode);
+                setResponsePage(SRSDescriptionPage.class, params);
             }
         };
     }

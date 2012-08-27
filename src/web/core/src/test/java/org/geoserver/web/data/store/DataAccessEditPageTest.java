@@ -61,7 +61,12 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         // missing click link , the validation triggers before it
 
         tester.assertRenderedPage(DataAccessEditPage.class);
-        tester.assertErrorMessages(new String[] { "Field 'Workspace' is required.", "Field 'Data Source Name' is required." });
+        // PRIOR TO Wicket 5 update this tested for the workspace field to fail 
+        // validation.  AFAICT the test datastore is actually in a workspace,
+        // so I think it's correct for only the 'Data Source Name' field to
+        // fail validation here.
+        // - David Winslow
+        tester.assertErrorMessages(new String[] { "Field 'Data Source Name' is required." });
     }
 
     /**

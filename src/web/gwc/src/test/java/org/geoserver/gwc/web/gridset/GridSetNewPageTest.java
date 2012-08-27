@@ -7,7 +7,6 @@ package org.geoserver.gwc.web.gridset;
 import junit.framework.Test;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -15,6 +14,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -26,8 +26,6 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
-
-import com.google.common.collect.ImmutableMap;
 
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
@@ -61,7 +59,8 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
     public void testCreateFromTemplate() {
 
-        PageParameters params = new PageParameters(ImmutableMap.of("template", "EPSG:4326"));
+        PageParameters params = new PageParameters();
+        params.add("template", "EPSG:4326");
         GridSetNewPage page = new GridSetNewPage(params);
 
         tester.startPage(page);

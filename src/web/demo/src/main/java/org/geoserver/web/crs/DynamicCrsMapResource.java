@@ -1,18 +1,12 @@
 package org.geoserver.web.crs;
 
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Locale;
 
 import javax.imageio.ImageIO;
 
-import org.apache.wicket.markup.html.WebResource;
-import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.value.ValueMap;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.DynamicImageResource;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -31,7 +25,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  * @author Gabriel Roldan
  */
-public class DynamicCrsMapResource extends WebResource {
+public class DynamicCrsMapResource extends DynamicImageResource {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,14 +34,13 @@ public class DynamicCrsMapResource extends WebResource {
     public DynamicCrsMapResource(CoordinateReferenceSystem crs) {
         this.crs = crs;
     }
-
+    
     @Override
-    public IResourceStream getResourceStream() {
-
-        ValueMap parameters = getParameters();
-        int width = parameters.getInt("WIDTH", 400);
-        int height = parameters.getInt("HEIGHT", 200);
-        String bboxStr = parameters.getString("BBOX");
+    protected byte[] getImageData(Attributes attributes) {
+        PageParameters parameters = attributes.getParameters();
+        int width = parameters.get("WIDTH").toInt(400);
+        int height = parameters.get("HEIGHT").toInt(200);
+        String bboxStr = parameters.get("BBOX").toString();
 
         ByteArrayOutputStream output = null;
         if (bboxStr != null) {
@@ -64,9 +57,7 @@ public class DynamicCrsMapResource extends WebResource {
             }
         }
 
-        final byte[] byteArray = output == null ? null : output.toByteArray();
-
-        return new ByteArrayResourceStream(byteArray);
+        return output == null ? null : output.toByteArray();
     }
 
     private Envelope parseEnvelope(String bboxStr) {
@@ -76,45 +67,5 @@ public class DynamicCrsMapResource extends WebResource {
         double maxx = Double.valueOf(split[2]);
         double maxy = Double.valueOf(split[3]);
         return new Envelope(minx, maxx, miny, maxy);
-    }
-
-    private static class ByteArrayResourceStream implements IResourceStream {
-
-        private static final long serialVersionUID = 1L;
-
-        private final byte[] content;
-
-        public ByteArrayResourceStream(final byte[] content) {
-            this.content = content;
-        }
-
-        public void setLocale(Locale arg0) {
-        }
-
-        public long length() {
-            return content == null? 0 : content.length;
-        }
-
-        public Locale getLocale() {
-            return null;
-        }
-
-        public InputStream getInputStream() throws ResourceStreamNotFoundException {
-            if (content == null) {
-                throw new ResourceStreamNotFoundException();
-            }
-            return new ByteArrayInputStream(content);
-        }
-
-        public String getContentType() {
-            return "image/png";
-        }
-
-        public void close() throws IOException {
-        }
-
-        public org.apache.wicket.util.time.Time lastModifiedTime() {
-            return null;
-        }
     }
 }

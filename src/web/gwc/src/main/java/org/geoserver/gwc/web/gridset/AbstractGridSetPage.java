@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.measure.unit.Unit;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -24,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
@@ -43,7 +43,9 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
-    protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
+	private static final long serialVersionUID = 2977633539319630433L;
+
+	protected static final Logger LOGGER = Logging.getLogger(AbstractGridSetPage.class);
 
     /**
      * Name of the page parameter that determines which gridset to edit
@@ -89,8 +91,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             gridSetName = null;
             templateName = null;
         } else {
-            gridSetName = parameters.getString(GRIDSET_NAME);
-            templateName = parameters.getString(GRIDSET_TEMPLATE_NAME);
+            gridSetName = parameters.get(GRIDSET_NAME).toOptionalString();
+            templateName = parameters.get(GRIDSET_TEMPLATE_NAME).toOptionalString();
         }
 
         GridSetInfo gridsetInfo;
@@ -135,7 +137,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         });
         tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("onblur") {
@@ -143,7 +145,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         });
 
@@ -153,7 +155,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 addZoomLevel(target);
-                target.addComponent(tileMatrixSetEditor);
+                target.add(tileMatrixSetEditor);
             }
         };
 
@@ -173,7 +175,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             FeedbackPanel feedback = (FeedbackPanel) form.get("feedback");
             if (feedback != null) {
                 feedback.error(message);
-                target.addComponent(feedback);
+                target.add(feedback);
             } else {
                 form.error(message);
             }
@@ -194,8 +196,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 computeBounds();
-                target.addComponent(bounds);
-                target.addComponent(tileMatrixSetEditor);
+                target.add(bounds, tileMatrixSetEditor);
             }
         };
         return link;
@@ -237,14 +238,14 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        target.addComponent(AbstractGridSetPage.this.tileMatrixSetEditor);
+                        target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
 
                     @SuppressWarnings("unchecked")
                     @Override
                     protected void onError(AjaxRequestTarget target) {
                         UpdatingEnvelopePanel.this.setModelObject(null);
-                        target.addComponent(AbstractGridSetPage.this.tileMatrixSetEditor);
+                        target.add(AbstractGridSetPage.this.tileMatrixSetEditor);
                     }
                 }
 
@@ -329,9 +330,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
                         wktLabel.setDefaultModelObject(null);
                         wktLink.setEnabled(false);
                     }
-                    target.addComponent(wktLink);
-                    target.addComponent(units);
-                    target.addComponent(metersPerUnit);
+                    target.add(wktLink, units, metersPerUnit);
                 }
             });
         }
@@ -346,15 +345,13 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
                     String srs = "EPSG:" + epsgCode;
                     srsTextField.setModelObject(srs);
-                    target.addComponent(srsTextField);
 
                     CoordinateReferenceSystem crs = fromSRS(srs);
                     wktLabel.setDefaultModelObject(crs.getName().toString());
                     wktLink.setEnabled(true);
-                    target.addComponent(wktLink);
+                    
                     updateUnits(crs);
-                    target.addComponent(units);
-                    target.addComponent(metersPerUnit);
+                    target.add(srsTextField, wktLink, units, metersPerUnit);
                 }
             };
             srsList.setCompactMode(true);
@@ -432,8 +429,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
 
             @Override

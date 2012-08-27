@@ -5,23 +5,30 @@
 package org.geoserver.gwc.web.diskquota;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.SharedResourceReference;
 
-public class StatusBar extends Panel {
+public class StatusBar extends Panel implements IHeaderContributor {
 
     private static final long serialVersionUID = 1L;
+        
+    @Override
+    public void renderHead(IHeaderResponse response) {
+    	super.renderHead(response);
+    	response.renderCSSReference(new SharedResourceReference(StatusBar.class, "statusbar.css"));
+    }
 
     @SuppressWarnings("deprecation")
     public StatusBar(final String id, final IModel<Number> limitModel,
             final IModel<Number> progressModel, final IModel<String> progressMessageModel) {
         super(id);
         setOutputMarkupId(true);
-        add(HeaderContributor.forCss(StatusBar.class, "statusbar.css"));
 
         WebMarkupContainer usageBar = new WebMarkupContainer("statusBarProgress");
         WebMarkupContainer excessBar = new WebMarkupContainer("statusBarExcess");
@@ -43,12 +50,12 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        usageBar.add(new AttributeModifier("style", true, new Model<String>("width: "
+        usageBar.add(AttributeModifier.replace("style", new Model<String>("width: "
                 + usedPercentage + "px; left: 5px; border-left: inherit;")));
 
         String redStyle = "width: " + excessPercentage + "px; left: " + (5 + usedPercentage)
                 + "px;";
-        excessBar.add(new AttributeModifier("style", true, new Model<String>(redStyle)));
+        excessBar.add(AttributeModifier.replace("style", new Model<String>(redStyle)));
 
         add(usageBar);
         add(excessBar);

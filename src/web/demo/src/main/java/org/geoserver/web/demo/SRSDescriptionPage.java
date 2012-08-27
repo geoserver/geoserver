@@ -3,8 +3,7 @@ package org.geoserver.web.demo;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
@@ -23,7 +22,9 @@ import org.opengis.util.InternationalString;
 
 public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderContributor {
 
-    private String jsSrs;
+	private static final long serialVersionUID = -6617811806453709347L;
+
+	private String jsSrs;
 
     private String jsBbox;
 
@@ -36,17 +37,16 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
      */
     public void renderHead(IHeaderResponse headerResponse) {
         String onLoadJsCall = "initMap('" + jsSrs + "', " + jsBbox + ", " + jsMaxResolution + ")";
-        headerResponse.renderOnLoadJavascript(onLoadJsCall);
+        headerResponse.renderOnDomReadyJavaScript(onLoadJsCall);
+        headerResponse.renderCSSReference("openlayers/theme/default/style.css");
+        headerResponse.renderJavaScriptReference("openlayers/OpenLayers.js");
     }
 
     public SRSDescriptionPage(PageParameters params) {
 
         // this two contributions should be relative to the root of the webbapp's context path
-        add(HeaderContributor.forCss("openlayers/theme/default/style.css"));
-        add(HeaderContributor.forJavaScript("openlayers/OpenLayers.js"));
-
         final Locale locale = getLocale();
-        final String code = params.getString("code");
+        final String code = params.get("code").toOptionalString();
         add(new Label("code", code));
         String name = "";
         try {

@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -32,7 +33,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
@@ -150,9 +151,9 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
                 final String baseUrl;
                 {
-                    WebRequest request = (WebRequest) DemoRequestsPage.this.getRequest();
+                    ServletWebRequest request = (ServletWebRequest) DemoRequestsPage.this.getRequest();
                     HttpServletRequest httpServletRequest;
-                    httpServletRequest = ((WebRequest) request).getHttpServletRequest();
+                    httpServletRequest = request.getContainerRequest();
                     baseUrl = ResponseUtils.baseURL(httpServletRequest);
                 }
                 try {
@@ -214,7 +215,13 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
+        responseWindow.setPageCreator(new ModalWindow.PageCreator() {
+			@Override
+			public Page createPage() {
+				return new DemoRequestResponse(requestModel);
+			}
+		});
+        
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
@@ -226,23 +233,29 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         demoRequestsForm.add(new AjaxSubmitLink("submit", demoRequestsForm) {
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form testWfsPostForm) {
-                responseWindow.show(target);
-            }
-
-            @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
                 // we need to force EditArea to update the textarea contents (which it hides)
                 // before submitting the form, otherwise the contents won't be the ones the user
                 // edited
                 return new AjaxCallDecorator() {
-                    @Override
-                    public CharSequence decorateScript(CharSequence script) {
-                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();"
-                                + script;
-                    }
+                	@Override
+                	public CharSequence decorateScript(Component c, CharSequence script) {
+                		return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();"
+                				+ script;
+                	}
                 };
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				responseWindow.show(target);
+			}
 
         });
     }

@@ -6,7 +6,8 @@ package org.geoserver.gwc.web;
 
 import java.io.Serializable;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.CatalogIconFactory;
@@ -20,25 +21,25 @@ import org.geowebcache.layer.wms.WMSLayer;
 @SuppressWarnings("serial")
 public class GWCIconFactory implements Serializable {
 
-    public static final ResourceReference UNKNOWN_ICON = new ResourceReference(
+    public static final ResourceReference UNKNOWN_ICON = new SharedResourceReference(
             GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final ResourceReference DISABLED_ICON = new ResourceReference(
+    public static final ResourceReference DISABLED_ICON = new SharedResourceReference(
             GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final ResourceReference ENABLED_ICON = new ResourceReference(
+    public static final ResourceReference ENABLED_ICON = new SharedResourceReference(
             GeoServerBasePage.class, "img/icons/silk/tick.png");
 
-    public static final ResourceReference ADD_ICON = new ResourceReference(GeoServerBasePage.class,
+    public static final ResourceReference ADD_ICON = new SharedResourceReference(GeoServerBasePage.class,
             "img/icons/silk/add.png");
 
-    public static final ResourceReference DELETE_ICON = new ResourceReference(
+    public static final ResourceReference DELETE_ICON = new SharedResourceReference(
             GeoServerBasePage.class, "img/icons/silk/delete.png");
 
-    public static final ResourceReference GRIDSET = new ResourceReference(GWCSettingsPage.class,
+    public static final ResourceReference GRIDSET = new SharedResourceReference(GWCSettingsPage.class,
             "gridset.png");
 
-    public static final ResourceReference GWC = new ResourceReference(GWCSettingsPage.class,
+    public static final ResourceReference GWC = new SharedResourceReference(GWCSettingsPage.class,
             "geowebcache-16.png");
 
     private GWCIconFactory() {

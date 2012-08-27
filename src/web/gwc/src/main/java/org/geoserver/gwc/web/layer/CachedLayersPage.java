@@ -21,7 +21,6 @@ import java.util.TreeSet;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -36,6 +35,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.web.GWCIconFactory;
@@ -55,7 +55,9 @@ import org.geowebcache.mime.MimeType;
  * @see GWC#removeTileLayers(List)
  */
 public class CachedLayersPage extends GeoServerSecuredPage {
-    private CachedLayerProvider provider = new CachedLayerProvider();
+	private static final long serialVersionUID = -6795610175856538774L;
+
+	private CachedLayerProvider provider = new CachedLayerProvider();
 
     private GeoServerTablePanel<TileLayer> table;
 
@@ -113,7 +115,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }
 
         };
@@ -225,7 +227,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClose(final AjaxRequestTarget target) {
-                        target.addComponent(table);
+                        target.add(table);
                     }
                 });
             }
@@ -262,7 +264,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 // build option with text and value
                 Label format = new Label(String.valueOf(i++), label);
                 String value = "gridSet=" + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", true, new Model<String>(value)));
+                format.add(AttributeModifier.replace("value", new Model<String>(value)));
                 previewLinks.add(format);
             }
         }
@@ -358,8 +360,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         setEnabled(false);
-                        target.addComponent(CachedLayerSelectionRemovalLink.this);
-                        target.addComponent(table);
+                        target.add(CachedLayerSelectionRemovalLink.this, table);
                     }
                 }
             });

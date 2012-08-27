@@ -28,10 +28,6 @@ import org.restlet.data.Status;
  */
 public class CatalogResource extends GeoServicesResource {
 
-    /**
-     * logger
-     */
-
     protected Class clazz;
 
     private String formatValue;

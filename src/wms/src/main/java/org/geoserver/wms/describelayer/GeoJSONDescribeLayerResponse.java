@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import net.sf.json.JSONException;
+import net.sf.json.xml.JSONTypes;
+
+import org.apache.commons.io.IOUtils;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.ServiceException;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;

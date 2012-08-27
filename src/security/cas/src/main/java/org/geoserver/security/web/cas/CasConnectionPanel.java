@@ -70,6 +70,12 @@ public class CasConnectionPanel<T extends CasAuthenticationProperties> extends F
                     target.addComponent(feedbackPanel);
                 }
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+				
+			}
         }.setDefaultFormProcessing(false));
         
         add(new AjaxSubmitLink("casServiceTest") {
@@ -87,6 +93,12 @@ public class CasConnectionPanel<T extends CasAuthenticationProperties> extends F
                     target.addComponent(feedbackPanel);
                 }
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+				
+			}
         }.setDefaultFormProcessing(false));
         
         
@@ -105,6 +117,11 @@ public class CasConnectionPanel<T extends CasAuthenticationProperties> extends F
                     target.addComponent(feedbackPanel);
                 }
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+			}
         }.setDefaultFormProcessing(false));
 
 

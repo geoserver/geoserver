@@ -59,6 +59,12 @@ public class CasAuthFilterPanel
                     target.addComponent(connectionPanel.getFeedbackPanel());
                 }
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+				
+			}
         }.setDefaultFormProcessing(false));
 
         

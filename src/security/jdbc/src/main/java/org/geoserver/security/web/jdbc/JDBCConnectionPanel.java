@@ -82,6 +82,12 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
                     target.addComponent(feedbackPanel);
                 }
             }
+
+			@Override
+			protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+				// TODO Auto-generated method stub
+				
+			}
         }.setDefaultFormProcessing(false));
 
         add(feedbackPanel = new FeedbackPanel("feedback"));

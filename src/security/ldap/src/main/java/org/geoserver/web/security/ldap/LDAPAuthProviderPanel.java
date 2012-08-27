@@ -191,6 +191,11 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                     }
                     
                 }
+
+				@Override
+				protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+					// TODO Auto-generated method stub
+				}
                 
             }.setDefaultFormProcessing(false));
         }

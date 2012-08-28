@@ -72,7 +72,7 @@ public class WfsXmlReader extends XmlRequestReader {
         }
         //set validation based on strict or not
         parser.setValidating(strict.booleanValue());
-        parser.getURIHandlers().add(new WFSURIHandler(geoServer));
+        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
 
         //parse
         Object parsed = parser.parse(reader); 

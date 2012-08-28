@@ -30,3 +30,8 @@ Suse
 :download:`Download the init script <scripts/geoserver_suse>`
 
 
+Starting GeoServer in Tomcat
+----------------------------
+
+:download:`Download the init script <scripts/geoserver_tomcat>`
+

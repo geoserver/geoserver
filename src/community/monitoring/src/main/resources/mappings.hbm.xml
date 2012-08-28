@@ -57,7 +57,7 @@
     
     <property column="RESPONSE_STATUS" name="responseStatus" />
     
-    <property column="HTTP_REFERER" name="httpReferer"/>
+    <property column="HTTP_REFERER" name="httpReferer" length="4096"/>
     
     <list name="resources" table="REQUEST_RESOURCES">
       <key column="REQUEST_ID" not-null="true"/>

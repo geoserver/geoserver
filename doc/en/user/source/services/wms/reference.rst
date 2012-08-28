@@ -199,6 +199,13 @@ An example request for a PNG map image using default styling is:
    &height=330
    &format=image%2Fpng
 
+Time
+....
+
+As of GeoServer 2.2.0, GeoServer supports a TIME attribute for WMS GetMap requests as described in version 1.3 of the WMS specification.
+This parameter allows filtering a dataset by temporal slices as well as spatial tiles for rendering.
+See :doc:`/services/wms/time` for information on its use.
+
 
 .. _wms_getfeatureinfo:
 

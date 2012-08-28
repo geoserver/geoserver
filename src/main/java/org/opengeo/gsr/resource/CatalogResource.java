@@ -63,16 +63,18 @@ public class CatalogResource extends GeoServicesResource {
             List<AbstractService> services = new ArrayList<AbstractService>();
             List<String> folders = new ArrayList<String>();
             List<LayerGroupInfo> layerGroupsInfo = null;
-            WorkspaceInfo workspaceInfo = catalog.getFacade().getWorkspaceByName(workspace);
-            if (workspaceInfo != null) {
-                layerGroupsInfo = catalog.getFacade().getLayerGroupsByWorkspace(workspaceInfo);
-                for (LayerGroupInfo layerGroupInfo : layerGroupsInfo) {
-                    MapService mapService = new MapService(layerGroupInfo.getName());
-                    services.add(mapService);
+            if (workspace != null) {
+                WorkspaceInfo workspaceInfo = catalog.getFacade().getWorkspaceByName(workspace);
+                if (workspaceInfo != null) {
+                    layerGroupsInfo = catalog.getFacade().getLayerGroupsByWorkspace(workspaceInfo);
+                    for (LayerGroupInfo layerGroupInfo : layerGroupsInfo) {
+                        MapService mapService = new MapService(layerGroupInfo.getName());
+                        services.add(mapService);
+                    }
+                    // TODO: get Suite version number at runtime
+                    return new CatalogService("services", specVersion, productName, currentVersion,
+                            folders, services);
                 }
-                // TODO: get Suite version number at runtime
-                return new CatalogService("services", specVersion, productName, currentVersion,
-                        folders, services);
             }
             GeometryService geometryService = new GeometryService("Geometry");
             layerGroupsInfo = catalog.getFacade().getLayerGroups();

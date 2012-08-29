@@ -1,11 +1,11 @@
 package org.opengeo.gsr.resource;
 
-import org.geoserver.catalog.CatalogFactory;
-import org.geoserver.catalog.LayerGroupInfo;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
+import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.LayerGroupInfo;
 
 public class CatalogResourceTest extends ResourceTest {
 
@@ -16,8 +16,8 @@ public class CatalogResourceTest extends ResourceTest {
             JSONObject jsonObject = (JSONObject) json;
             JSONObject error = (JSONObject) jsonObject.get("error");
             assertTrue(error instanceof JSONObject);
-            String code = (String) error.get("code");
-            assertEquals("400", code);
+            int code = (Integer) error.get("code");
+            assertEquals(400, code);
             String message = (String) error.get("message");
             assertEquals("Output format not supported", message);
             JSONArray details = (JSONArray) error.get("details");

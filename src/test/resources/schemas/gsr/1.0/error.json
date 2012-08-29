@@ -1,0 +1,26 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	"id": "http://schemas.opengis.net/gsr/1.0/error.json",
+	
+	"title":"error description",
+	"type":"object",
+	"properties":{
+		"code":{
+			"title":"error code according to HTTP",
+			"type":"integer",
+			"required":true},
+		"message":{
+			"title":"error message",
+			"type":"string"},
+		"description":{
+			"title":"alias of 'meassage'",
+			"type":"string"},
+		"details":{
+			"title":"error details",
+			"type":"array",
+			"items":{
+				"title":"error detail",
+				"type":"string"}
+		}
+	}
+}

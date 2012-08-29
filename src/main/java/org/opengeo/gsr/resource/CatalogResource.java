@@ -61,8 +61,8 @@ public class CatalogResource extends GeoServicesResource {
                 List<String> details = new ArrayList<String>();
                 details.add("Format " + formatValue + " is not supported");
                 return new ServiceException(new ServiceError(
-                        (String.valueOf(Status.CLIENT_ERROR_BAD_REQUEST.getCode())),
-                        "Output format not supported", details));
+                        (Status.CLIENT_ERROR_BAD_REQUEST.getCode()), "Output format not supported",
+                        details));
             }
             List<AbstractService> services = new ArrayList<AbstractService>();
             List<String> folders = new ArrayList<String>();
@@ -98,8 +98,7 @@ public class CatalogResource extends GeoServicesResource {
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();
             details.add(e.getMessage());
-            return new ServiceException(new ServiceError(
-                    (String.valueOf(Status.SERVER_ERROR_INTERNAL.getCode())),
+            return new ServiceException(new ServiceError((Status.SERVER_ERROR_INTERNAL.getCode()),
                     "Internal Server Error", details));
         }
     }

@@ -18,18 +18,18 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("error")
 public class ServiceError {
 
-    private String code;
+    private int code;
 
     private String message;
 
     @XStreamImplicit(itemFieldName = "details")
     private List<String> details;
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
@@ -49,7 +49,7 @@ public class ServiceError {
         this.details = details;
     }
 
-    public ServiceError(String code, String message, List<String> details) {
+    public ServiceError(int code, String message, List<String> details) {
         this.code = code;
         this.message = message;
         this.details = details;

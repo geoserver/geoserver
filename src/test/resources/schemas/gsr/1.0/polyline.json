@@ -1,0 +1,26 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	
+	"title":"polyline",
+	"type":"object",
+	"extends":{
+		"$ref":"geometry.json"
+	},
+	"properties":{
+		"paths":{
+			"title":"paths",
+			"type":"array",
+ 			"required":true,
+			"items":{
+ 				"title":"path",
+ 				"type":"array",
+ 				"items":{
+ 					"title":"direct position [x,y]",
+ 					"type":"array",
+ 					"items":{
+ 						"title":"ordinate",
+ 						"type":"number"}}}}, 
+		"spatialReference":{
+			"$ref" : "spatialreference.json"}
+	}
+}

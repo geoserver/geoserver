@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import org.geoserver.rest.format.ReflectiveJSONFormat;
+import org.opengeo.gsr.core.geometry.Geometry;
+import org.opengeo.gsr.core.geometry.Point;
 import org.opengeo.gsr.service.CatalogService;
 
 import com.thoughtworks.xstream.XStream;
@@ -46,6 +48,8 @@ public class GeoServicesJSONFormat extends ReflectiveJSONFormat {
         xstream.omitField(CatalogService.class, "serviceType");
         xstream.omitField(CatalogService.class, "specVersion");
         xstream.omitField(CatalogService.class, "productName");
+        
+        xstream.omitField(Point.class, "geometryType");
 
         this.xStream = xstream;
     }

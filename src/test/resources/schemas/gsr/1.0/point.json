@@ -1,0 +1,22 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	
+	
+	"title":"point",
+	"type":"object",
+	"extends":{
+		"$ref":"geometry.json"
+	},
+	"properties":{
+		"x":{
+			"title":"x",
+			"type":"number",
+ 			"required":true},
+		"y":{
+			"title":"y",
+			"type":"number",
+ 			"required":true},
+		"spatialReference":{
+			"$ref" : "spatialreference.json"}
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	
+	"title":"exception",
+	"type":"object",
+	
+	"properties":{
+		"error":{
+			"$ref":"error.json"
+		}
+	}
+}

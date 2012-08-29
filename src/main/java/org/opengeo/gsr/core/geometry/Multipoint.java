@@ -11,15 +11,15 @@ package org.opengeo.gsr.core.geometry;
  */
 public class Multipoint extends Geometry {
 
-    private double[] points;
+    private double[][] points;
 
     private SpatialReference spatialReference;
 
-    public double[] getPoints() {
+    public double[][] getPoints() {
         return points;
     }
 
-    public void setPoints(double[] points) {
+    public void setPoints(double[][] points) {
         this.points = points;
     }
 
@@ -31,10 +31,10 @@ public class Multipoint extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Multipoint(double[] coords, SpatialReference spatialReference) {
+    public Multipoint(double[][] coords, SpatialReference spatialReference) {
         this.points = coords;
         this.spatialReference = spatialReference;
-        this.geometryType = GeometryType.MULTIPOINT;
+        this.geometryType = GeometryType.GeometryMultiPoint;
     }
 
 }

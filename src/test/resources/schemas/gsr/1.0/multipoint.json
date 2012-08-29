@@ -1,0 +1,26 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	
+	"title":"multi point",
+	"type":"object",
+	"extends":{
+		"$ref":"geometry.json"
+	},
+	"properties":{
+		"points":{
+			"title":"points",
+	 		"required":true,
+			"type":"array",
+			"items":{
+				"title":"direct position [x,y]",
+ 				"type":"array",
+ 				"items":{
+ 					"title":"ordinate",
+ 					"type":"number"
+ 				}
+ 			}
+ 		},
+		"spatialReference":{
+			"$ref" : "spatialreference.json"}
+	}
+}

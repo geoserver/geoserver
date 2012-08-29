@@ -105,6 +105,11 @@
       <version>1.9.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kitchen-eel</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>0.5.4</version>
+    </dependency>
   </dependencies>
 
   <build>

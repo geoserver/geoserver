@@ -11,8 +11,8 @@ package org.opengeo.gsr.core.geometry;
  */
 public enum GeometryType {
 
-    POINT("GeometryPoint"), MULTIPOINT("GeometryMultiPoint"), POLYLINE("GeometryPolyline"), POLYGON(
-            "GeometryPolygon"), ENVELOPE("GeometryEnvelope");
+    GeometryPoint("GeometryPoint"), GeometryMultiPoint("GeometryMultiPoint"), GeometryPolyline("GeometryPolyline"), GeometryPolygon(
+            "GeometryPolygon"), GeometryEnvelope("GeometryEnvelope");
     private String geometryType;
 
     public String getGeometryType() {

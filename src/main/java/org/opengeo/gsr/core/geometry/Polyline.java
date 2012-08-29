@@ -11,15 +11,15 @@ package org.opengeo.gsr.core.geometry;
  */
 public class Polyline extends Geometry {
 
-    private double[][] paths;
+    private double[][][] paths;
 
     private SpatialReference spatialReference;
 
-    public double[][] getPaths() {
+    public double[][][] getPaths() {
         return paths;
     }
 
-    public void setPaths(double[][] paths) {
+    public void setPaths(double[][][] paths) {
         this.paths = paths;
     }
 
@@ -31,9 +31,9 @@ public class Polyline extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Polyline(double[][] paths, SpatialReference spatialRef) {
+    public Polyline(double[][][] paths, SpatialReference spatialRef) {
         this.paths = paths;
         this.spatialReference = spatialRef;
-        this.geometryType = GeometryType.POLYLINE;
+        this.geometryType = GeometryType.GeometryPolyline;
     }
 }

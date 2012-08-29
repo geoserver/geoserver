@@ -4,12 +4,14 @@
  */
 package org.opengeo.gsr.core.geometry;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Juan Marin - OpenGeo
  *
  */
-public abstract class Geometry {
+public abstract class Geometry implements Serializable {
 
     protected GeometryType geometryType;
 

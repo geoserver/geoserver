@@ -1,0 +1,16 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	"id": "http://schemas.opengis.net/gsr/1.0/spatialreference.json",
+	
+	"title":"spatial reference",
+	"type":"object",
+	
+	"properties":{
+		"wkid":{
+			"title":"well-known identifier",
+			"type":"integer"},
+		"wkt":{
+			"title":"well-known text",
+			"type":"string"}
+	}
+}

@@ -23,7 +23,9 @@ public class GeometryArrayTest {
         coords[1] = coord2;
         coords[2] = coord3;
         coords[3] = coord1;
-        Polygon polygon = new Polygon(coords, spatialRef);
+        double[][][] rings = new double[1][4][2];
+        rings[0] = coords;
+        Polygon polygon = new Polygon(rings, spatialRef);
         Geometry[] geometries1 = new Geometry[2];
         geometries1[0] = point1;
         geometries1[1] = point2;
@@ -31,9 +33,9 @@ public class GeometryArrayTest {
         geometries2[0] = point1;
         geometries2[1] = point2;
         geometries2[2] = polygon;
-        GeometryArray geometryArray1 = new GeometryArray(GeometryType.POINT, geometries1,
+        GeometryArray geometryArray1 = new GeometryArray(GeometryType.GeometryPoint, geometries1,
                 spatialRef);
-        GeometryArray geometryArray2 = new GeometryArray(GeometryType.POINT, geometries2,
+        GeometryArray geometryArray2 = new GeometryArray(GeometryType.GeometryPoint, geometries2,
                 spatialRef);
 
         assertEquals(true, geometryArray1.isValidGeometryTypes());

@@ -13,6 +13,11 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 public class MonitorServletRequest extends HttpServletRequestWrapper {
 
+    /**
+     * Don't restrict the maximum length of a request body.
+     */
+    public static final long BODY_SIZE_UNBOUNDED = -1;
+    
     MonitorInputStream input;
 
     long maxSize;
@@ -22,25 +27,25 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         this.maxSize = maxSize;
     }
 
-    public byte[] getBodyContent() {
-        if (input == null) {
-            return null;
-        }
-        return input.getData();
+    public byte[] getBodyContent() throws IOException {
+        MonitorInputStream stream = getInputStream();
+        return stream.getData();
     }
 
-    public long getBytesRead() {
-        if (input == null) {
-            return -1;
+    public long getBytesRead(){
+        try {
+            MonitorInputStream stream = getInputStream();
+            return stream.getBytesRead();
+        } catch (IOException ex) {
+            return 0;
         }
-
-        return input.getBytesRead();
     }
 
     @Override
     public MonitorInputStream getInputStream() throws IOException {
         if (input == null) {
-            input = new MonitorInputStream(super.getInputStream(), maxSize);
+            ServletInputStream delegateTo = super.getInputStream();
+            input = new MonitorInputStream(delegateTo, maxSize);
         }
         return input;
     }
@@ -93,7 +98,8 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
                 buffer.write((byte) b);
             }
 
-            nbytes += 1;
+            
+            if(b>=0) nbytes += 1; // Increment byte count unless EoF marker
             return b;
         }
 

@@ -69,18 +69,34 @@ Monitor Database
 
 By default monitored request data is stored in an embedded H2 database located
 in the ``monitoring`` directory. This can be changed by editing the 
-``db.properties`` file::
+``db.properties`` and ``hibernate.properties`` file::
 
    # default configuration is for h2 
    driver=org.h2.Driver
    url=jdbc:h2:file:${GEOSERVER_DATA_DIR}/monitoring/monitoring
 
-For example to store request data in an external PostgreSQL database::
+For example to store request data in an external PostgreSQL database, set ``db.properties`` to::
 
    driver=org.postgresql.Driver 
    url=jdbc:postgresql://192.168.1.124:5432/monitoring
    username=bob
    password=foobar
+
+and ``hibernate.properties`` to::
+
+   hibernate.use_sql_comments=true
+   databasePlatform=org.hibernate.dialect.PostgreSQLDialect
+   generateDdl=true
+   hibernate.format_sql=true
+   showSql=false
+   hibernate.generate_statistics=true
+   hibernate.session_factory_name=SessionFactory
+   hibernate.hbm2ddl.auto=update
+   hibernate.bytecode.use_reflection_optimizer=true
+   database=POSTGRESQL
+   hibernate.show_sql=false
+
+The maximum size of the request body that is logged is set in the ``monitor.properties`` and ``mappings.hbm.xml`` files. If the setting in ``monitor.properties`` is higher than that in ``mappings.hbm.xml`` any long requests will fail to be logged entirely.  You can set it to be unbounded if your database supports it.
    
 Request Filters
 ---------------

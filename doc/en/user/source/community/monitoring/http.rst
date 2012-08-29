@@ -25,6 +25,21 @@ Request information can be returned in CSV format, for easier post-processing::
 
   GET http://localhost:8080/geoserver/rest/monitor/requests.csv
 
+Request bodies containing newlines are handled with quoted text.  If your CSV reader doesn't handle quoted newlines, it will not work correctly.
+
+All requests as PKZip
+^^^^^^^^^^^^^^^^^^^^^
+A PKZip archive containing the CSV file above, with all the request bodies and errors as separate files::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests.zip
+
+All requests as MS Excel
+^^^^^^^^^^^^^^^^^^^^^^^^
+A Microsoft Excel spreadsheet containing the same information as the CSV file::
+
+  GET http://localhost:8080/geoserver/rest/monitor/requests.xls
+
+
 Requests during a time period
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Requests can be filtered by date and time range::
@@ -66,6 +81,8 @@ and ``format`` specifies the representation of the returned result as one of:
 
 * ``html`` - an HTML table.
 * ``csv`` - a Comma Separated Values table.
+* ``zip`` - PKZip archive containing CSV as above, plus plain text of errors and request body.
+* ``xls`` - Microsoft Excel spreadsheet.
 
 .. note::
 
@@ -75,6 +92,8 @@ and ``format`` specifies the representation of the returned result as one of:
    
     * ``text/html``
     * ``application/csv``
+    * ``application/zip``
+    * ``application/vnd.ms-excel``
 
    See the `HTTP specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_
    for more information about the ``Accept`` header.
@@ -187,9 +206,9 @@ Specifies which request attribute to sort by, and optionally specifies the sort 
    * - ``order=<attribute>[;<ASC|DESC>]``
      - requests.html?order=path
    * - 
-     - requests.html?order=startTime:DESC
+     - requests.html?order=startTime;DESC
    * - 
-     - requests.html?order=totalTime:ASC
+     - requests.html?order=totalTime;ASC
 
 
 

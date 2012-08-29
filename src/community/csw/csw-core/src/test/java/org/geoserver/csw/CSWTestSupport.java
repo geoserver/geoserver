@@ -11,7 +11,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geotools.csw.CSW;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.csw.DC;
@@ -23,7 +23,7 @@ import org.geotools.xml.Parser;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
-public abstract class CSWTestSupport extends GeoServerTestSupport {
+public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
 
     protected void setUpInternal() throws Exception {
         // init xmlunit

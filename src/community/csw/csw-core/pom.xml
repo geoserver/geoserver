@@ -13,7 +13,6 @@
   <groupId>org.geoserver.csw</groupId>
   <artifactId>csw-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
   <name>Catalog Services for the Web core module</name>
 
   <dependencies>

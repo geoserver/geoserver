@@ -4,16 +4,11 @@
  */
 package org.geoserver.wfs.kvp;
 
-import java.util.Collection;
-
 import net.opengis.ows10.AcceptVersionsType;
 import net.opengis.ows10.Ows10Factory;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.ows.KvpParser;
-import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wfs.WFSInfo;
-import org.geotools.xml.EMFUtils;
 
 
 /**
@@ -23,20 +18,11 @@ import org.geotools.xml.EMFUtils;
  * @author Justin Deoliveira, The Open Planning Project
  *
  */
-public class AcceptVersionsKvpParser extends KvpParser {
+public class AcceptVersionsKvpParser extends org.geoserver.ows.kvp.AcceptVersionsKvpParser {
+    
     public AcceptVersionsKvpParser() {
-        this(AcceptVersionsType.class);
-    }
-
-    public AcceptVersionsKvpParser(Class clazz) {
-        super("acceptversions", clazz);
+        super(AcceptVersionsType.class);
         setVersion(WFSInfo.Version.V_11.getVersion());
-    }
-
-    public Object parse(String value) throws Exception {
-        EObject acceptVersions = createObject();
-        ((Collection)EMFUtils.get(acceptVersions, "version")).addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
-        return acceptVersions;
     }
 
     protected EObject createObject() {

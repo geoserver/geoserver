@@ -48,5 +48,12 @@
         <constructor-arg ref="geoServer" />
     </bean>
     
-
+    
+    <!-- KVP parsers -->
+    <bean id="cswAcceptFormatsKvpParser" class="org.geoserver.csw.kvp.AcceptFormatsKvpParser"/>
+    <bean id="cswAcceptVersionsKvpParser" class="org.geoserver.csw.kvp.AcceptVersionsKvpParser"/>
+    <bean id="cswSectionsKvpParser" class="org.geoserver.csw.kvp.SectionsKvpParser"/>
+    
+    <!-- KVP readers -->
+    <bean id="cswGetCapabilitesKvpRequestReader" class="org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader"/>
 </beans>

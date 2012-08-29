@@ -2,10 +2,10 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wcs.kvp;
+package org.geoserver.csw.kvp;
 
-import net.opengis.ows11.Ows11Factory;
-import net.opengis.ows11.SectionsType;
+import net.opengis.ows10.Ows10Factory;
+import net.opengis.ows10.SectionsType;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -18,11 +18,12 @@ public class SectionsKvpParser extends org.geoserver.ows.kvp.SectionsKvpParser {
 
     public SectionsKvpParser() {
         super(SectionsType.class);
+        setService("csw");
     }
 
     @Override
     protected EObject createObject() {
-        return Ows11Factory.eINSTANCE.createSectionsType();
+        return Ows10Factory.eINSTANCE.createSectionsType();
     }
 
 }

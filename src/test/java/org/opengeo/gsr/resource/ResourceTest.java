@@ -27,6 +27,7 @@ public class ResourceTest extends CatalogRESTTestSupport {
 
     @Override
     public void setUpInternal() throws Exception {
+        baseURL = "/gsr/services/";
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();
 
@@ -55,7 +56,27 @@ public class ResourceTest extends CatalogRESTTestSupport {
         layer1.setResource(ft1);
         layer1.setName("layer1");
         
+        FeatureTypeInfo ft2 = catalogFactory.createFeatureType();
+        ft2.setEnabled(true);
+        ft2.setName("ftName2");
+        ft2.setAbstract("ftAbstract2");
+        ft2.setDescription("ftDescription2");
+        ft2.setStore(ds);
+        ft2.setNamespace(ns);
+        
+        LayerInfo layer2 = catalogFactory.createLayer();
+        layer2.setResource(ft2);
+        layer2.setName("layer2");
+        
+        LayerGroupInfo layerGroup1 = catalogFactory.createLayerGroup();
+        layerGroup1.setName("layerGroup1");
+        layerGroup1.getLayers().add(layer1);
+        layerGroup1.getLayers().add(layer2);
+        
         catalog.add(layer1);
+        catalog.add(layer2);
+        catalog.add(layerGroup1);
+        
 
     }
 
@@ -77,8 +98,8 @@ public class ResourceTest extends CatalogRESTTestSupport {
     }
 
     public void testCatalogResponse() throws Exception {
-        // JSON json = getAsJSON(baseURL = "f=json");
-        // assertTrue(json instanceof JSONObject);
+        JSON json = getAsJSON(baseURL + "?f=json");
+        assertTrue(json instanceof JSONObject);
         // JSONObject jsonObject = (JSONObject) json;
         // print(jsonObject);
     }

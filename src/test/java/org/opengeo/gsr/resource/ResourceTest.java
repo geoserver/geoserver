@@ -90,7 +90,7 @@ public class ResourceTest extends CatalogRESTTestSupport {
             String code = (String) error.get("code");
             assertEquals("400", code);
             String message = (String) error.get("message");
-            assertEquals("Bad Request", message);
+            assertEquals("Output format not supported", message);
             JSONArray details = (JSONArray) error.get("details");
             assertTrue(details instanceof JSONArray);
             assertEquals("Format xxx is not supported", details.getString(0));
@@ -100,7 +100,13 @@ public class ResourceTest extends CatalogRESTTestSupport {
     public void testCatalogResponse() throws Exception {
         JSON json = getAsJSON(baseURL + "?f=json");
         assertTrue(json instanceof JSONObject);
-        // JSONObject jsonObject = (JSONObject) json;
-        // print(jsonObject);
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray services = (JSONArray) jsonObject.get("services");
+        JSONObject mapService = services.getJSONObject(0);
+        assertEquals("layerGroup1", mapService.get("name"));
+        assertEquals("MapServer", mapService.get("type"));
+        JSONObject geometryService = services.getJSONObject(1);
+        assertEquals("Geometry", geometryService.get("name"));
+        assertEquals("GeometryServer", geometryService.get("type"));
     }
 }

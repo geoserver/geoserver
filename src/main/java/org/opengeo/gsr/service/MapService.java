@@ -13,7 +13,7 @@ public class MapService extends AbstractService {
 
     private String name;
     
-    private ServiceType serviceType;
+    private ServiceType type;
     
     public String getName() {
         return name;
@@ -23,17 +23,17 @@ public class MapService extends AbstractService {
         this.name = name;
     }
 
-    public ServiceType getServiceType() {
-        return serviceType;
+    public ServiceType getType() {
+        return type;
     }
 
-    public void setServiceType(ServiceType serviceType) {
-        this.serviceType = serviceType;
+    public void setType(ServiceType serviceType) {
+        this.type = serviceType;
     }
 
     public MapService(String name) {
         this.name = name;
-        serviceType = ServiceType.MapServer;
+        type = ServiceType.MapServer;
     }
 
 }

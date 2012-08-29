@@ -760,7 +760,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 LayerInfo layer = layers.next();
                 ResourceInfo resource = layer.getResource();
                 layerBbox = resource.getLatLonBoundingBox();
-                latlonBbox.expandToInclude(layerBbox);
+                if (layerBbox != null) {
+                    latlonBbox.expandToInclude(layerBbox);    
+                }
+
                 //short cut for the case where we already reached the whole world bounds
                 if(latlonBbox.contains(world)){
                     break;
@@ -793,15 +796,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     nestedLayers.add(layer);
                     continue;
                 }
-                
-                try {
-                    handleLayer(layer);
-                } catch (Exception e) {
-                    // report what layer we failed on to help the admin locate and fix it
-                    throw new ServiceException(
-                            "Error occurred trying to write out metadata for layer: "
-                                    + layer.getName(), e);
-                }
+
+                doHandleLayer(layer);
             }
             
             //handle nested layers
@@ -825,20 +821,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 // no sense in exposing a geometryless layer through wms...
                 boolean wmsExposable = isExposable(layer);
                 if (wmsExposable) {
-                    try {
-                        mark();
-                        handleLayer(layer);
-                        commit();
-                    } catch (Exception e) {
-                        // report what layer we failed on to help the admin locate and fix it
-                        if (skipping) {
-                            reset();
-                        } else { 
-                            throw new ServiceException(
-                                "Error occurred trying to write out metadata for layer: " + 
-                                layer.getName(), e);
-                        }
-                    }
+                    doHandleLayer(layer);
                 }
             }
 
@@ -848,6 +831,23 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("Title", childLayerTree.getName());
                 handleLayerTree(childLayerTree);
                 end("Layer");
+            }
+        }
+
+        private void doHandleLayer(LayerInfo layer) {
+            try {
+                mark();
+                handleLayer(layer);
+                commit();
+            } catch (Exception e) {
+                // report what layer we failed on to help the admin locate and fix it
+                if (skipping) {
+                    reset();
+                } else { 
+                    throw new ServiceException(
+                        "Error occurred trying to write out metadata for layer: " + 
+                        layer.getName(), e);
+                }
             }
         }
 

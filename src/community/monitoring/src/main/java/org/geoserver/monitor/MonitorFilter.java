@@ -7,7 +7,6 @@ package org.geoserver.monitor;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -206,8 +205,11 @@ public class MonitorFilter implements GeoServerFilter {
         long maxBodyLength = monitor.config.getMaxBodySize();
         try {
             byte[] body=((MonitorServletRequest)req).getBodyContent(); // TODO: trimming at this point may now be redundant
-            if(body!=null && maxBodyLength!=MonitorServletRequest.BODY_SIZE_UNBOUNDED && body.length>maxBodyLength)
-                body=Arrays.copyOfRange(body, 0, (int) maxBodyLength);
+            if(body!=null && maxBodyLength!=MonitorServletRequest.BODY_SIZE_UNBOUNDED && body.length>maxBodyLength) {
+                byte[] tmp = body;
+                body = new byte[(int)maxBodyLength];
+                System.arraycopy(tmp, 0, body, 0, body.length);
+            }
             return body;
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "Could not read request body", ex);

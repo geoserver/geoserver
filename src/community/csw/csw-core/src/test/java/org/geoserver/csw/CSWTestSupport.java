@@ -1,5 +1,9 @@
 package org.geoserver.csw;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
@@ -79,6 +84,31 @@ public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
             }
             fail("Document did not validate.");
         }
+    }
+    
+    /**
+     * Loads the specified resource into a string
+     * @param resourceLocation
+     * @return
+     */
+    protected String getResourceAsString(String resourceLocation) throws IOException {
+        InputStream is = null; 
+        try {
+            is = getClass().getResourceAsStream(resourceLocation);
+            return IOUtils.toString(is);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+    
+    /**
+     * Loads the specified resource into a reader
+     * @param resourceLocation
+     * @return
+     */
+    protected Reader getResourceAsReader(String resourceLocation) throws IOException {
+        InputStream is = getClass().getResourceAsStream(resourceLocation);
+        return new InputStreamReader(is);
     }
 
 }

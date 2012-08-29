@@ -71,7 +71,7 @@ Installing native JAI manually
 
 You can install the native JAI manually if you encounter problems using the above installers, or if you wish to install the native JAI for more than one JDK/JRE.
 
-Please refer to the `GeoTools page on JAI installation <http://docs.geotools.org/latest/userguide/advanced/build/install/jdk.html#java-extensions-optional>`_ for details.
+Please refer to the `GeoTools page on JAI installation <http://docs.geotools.org/latest/userguide/build/install/jdk.html#java-extensions-optional>`_ for details.
 
  
 GeoServer cleanup

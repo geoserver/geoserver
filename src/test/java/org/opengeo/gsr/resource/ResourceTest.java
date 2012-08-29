@@ -1,9 +1,5 @@
 package org.opengeo.gsr.resource;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
@@ -16,7 +12,7 @@ import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 
 public class ResourceTest extends CatalogRESTTestSupport {
 
-    private Catalog catalog;
+    protected Catalog catalog;
 
     protected String baseURL;
 

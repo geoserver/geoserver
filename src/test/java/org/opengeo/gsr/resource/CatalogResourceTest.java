@@ -1,5 +1,8 @@
 package org.opengeo.gsr.resource;
 
+import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.catalog.LayerGroupInfo;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -23,6 +26,10 @@ public class CatalogResourceTest extends ResourceTest {
         }
     }
 
+    /**
+     * A.1.1 catalog/request, catalog/parameters
+     * @throws Exception
+     */
     public void testCatalogResponse() throws Exception {
         JSON json = getAsJSON(baseURL + "?f=json");
         assertTrue(json instanceof JSONObject);
@@ -34,5 +41,24 @@ public class CatalogResourceTest extends ResourceTest {
         JSONObject geometryService = services.getJSONObject(1);
         assertEquals("Geometry", geometryService.get("name"));
         assertEquals("GeometryServer", geometryService.get("type"));
+    }
+
+    // TODO: Set up ResourceTest to include Virtual Services and test that folders contain those virtual services
+    // and that they validate as Catalog endpoints
+
+    /**
+     * A.1.2 catalog/uniqueServiceNames
+     */
+    public void testUniqueServiceNames() {
+        boolean thrown = false;
+        try {
+            CatalogFactory catalogFactory = catalog.getFactory();
+            LayerGroupInfo layerGroup = catalogFactory.createLayerGroup();
+            layerGroup.setName(catalog.getLayerGroups().get(0).getName());
+            catalog.add(layerGroup);
+        } catch (IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
     }
 }

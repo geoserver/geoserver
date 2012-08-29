@@ -1,32 +1,38 @@
-//package org.opengeo.gsr.resource;
-//
-//import net.sf.json.JSON;
-//import net.sf.json.JSONArray;
-//import net.sf.json.JSONObject;
-//
-//import org.opengeo.gsr.service.ServiceType;
-//
-//public class CatalogResourceTest extends ResourceTest {
-//
-//    
-//    public void testGetCatalogRootURI() throws Exception {
-//        JSON json = getAsJSON("/gsr/services/?f=json");
-//        assertTrue(json instanceof JSONObject);
-//        JSONObject jsonObject = (JSONObject) json;
-//        assertEquals("1.0", jsonObject.get("specVersion"));
-//        assertEquals("OpenGeo Suite Enterprise Edition", jsonObject.get("productName"));
-//        assertEquals("2.4.4", jsonObject.get("currentVersion"));
-//        assertEquals(ServiceType.CatalogServer.toString(), jsonObject.get("type"));
-//        JSONArray folders = (JSONArray) jsonObject.get("folders");
-//        assertEquals(0, folders.size());
-//        JSONArray services = (JSONArray) jsonObject.get("services");
-//        assertEquals(1, services.size());
-//    }
-//    
-////    @Override
-////    public void testServiceException() throws Exception {
-////        String baseURL = "/gsr/services/";
-////        this.baseURL = baseURL;
-////        super.testServiceException();
-////    }
-//}
+package org.opengeo.gsr.resource;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+public class CatalogResourceTest extends ResourceTest {
+
+    public void testServiceException() throws Exception {
+        if (baseURL != null) {
+            JSON json = getAsJSON(baseURL + "?f=xxx");
+            assertTrue(json instanceof JSONObject);
+            JSONObject jsonObject = (JSONObject) json;
+            JSONObject error = (JSONObject) jsonObject.get("error");
+            assertTrue(error instanceof JSONObject);
+            String code = (String) error.get("code");
+            assertEquals("400", code);
+            String message = (String) error.get("message");
+            assertEquals("Output format not supported", message);
+            JSONArray details = (JSONArray) error.get("details");
+            assertTrue(details instanceof JSONArray);
+            assertEquals("Format xxx is not supported", details.getString(0));
+        }
+    }
+
+    public void testCatalogResponse() throws Exception {
+        JSON json = getAsJSON(baseURL + "?f=json");
+        assertTrue(json instanceof JSONObject);
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray services = (JSONArray) jsonObject.get("services");
+        JSONObject mapService = services.getJSONObject(0);
+        assertEquals("layerGroup1", mapService.get("name"));
+        assertEquals("MapServer", mapService.get("type"));
+        JSONObject geometryService = services.getJSONObject(1);
+        assertEquals("Geometry", geometryService.get("name"));
+        assertEquals("GeometryServer", geometryService.get("type"));
+    }
+}

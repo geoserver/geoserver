@@ -21,7 +21,7 @@ public class CatalogService extends AbstractService {
 
     private String name;
 
-    private ServiceType serviceType;
+    private ServiceType type;
 
     private String specVersion;
 
@@ -43,12 +43,12 @@ public class CatalogService extends AbstractService {
         this.name = name;
     }
 
-    public ServiceType getServiceType() {
-        return serviceType;
+    public ServiceType getType() {
+        return type;
     }
 
-    public void setServiceType(ServiceType serviceType) {
-        this.serviceType = serviceType;
+    public void setType(ServiceType serviceType) {
+        this.type = serviceType;
     }
 
     public String getSpecVersion() {
@@ -94,7 +94,7 @@ public class CatalogService extends AbstractService {
     public CatalogService(String name, String specVersion, String productName,
             String currentVersion, List<String> folders, List<AbstractService> services) {
         this.name = name;
-        this.serviceType = ServiceType.CatalogServer;
+        this.type = ServiceType.CatalogServer;
         this.specVersion = specVersion;
         this.productName = productName;
         this.currentVersion = currentVersion;

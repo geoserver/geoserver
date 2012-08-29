@@ -35,7 +35,19 @@
                 </entry>
                 <entry>
                     <key>
+                        <value>/services/?f={format}</value>
+                    </key>
+                    <value>serviceFinder</value>
+                </entry>
+                <entry>
+                    <key>
                         <value>/services/{workspace}?f={format}</value>
+                    </key>
+                    <value>serviceFinder</value>
+                </entry>
+                <entry>
+                    <key>
+                        <value>/services/{workspace}/?f={format}</value>
                     </key>
                     <value>serviceFinder</value>
                 </entry>

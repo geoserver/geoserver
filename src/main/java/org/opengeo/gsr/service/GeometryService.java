@@ -6,9 +6,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class GeometryService extends AbstractService {
 
     private String name;
-    
-    private ServiceType serviceType;
-    
+
+    private ServiceType type;
+
     public String getName() {
         return name;
     }
@@ -17,17 +17,16 @@ public class GeometryService extends AbstractService {
         this.name = name;
     }
 
-    public ServiceType getServiceType() {
-        return serviceType;
+    public ServiceType getType() {
+        return type;
     }
 
-    public void setServiceType(ServiceType serviceType) {
-        this.serviceType = serviceType;
+    public void setType(ServiceType serviceType) {
+        this.type = serviceType;
     }
 
-    
     public GeometryService(String name) {
         this.name = name;
-        this.serviceType = ServiceType.GeometryServer;
+        this.type = ServiceType.GeometryServer;
     }
 }

@@ -1,4 +1,4 @@
-package org.geoserver.wfs.kvp;
+package org.geoserver.ows.kvp;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -8,6 +8,8 @@ import javax.xml.XMLConstants;
 
 import junit.framework.TestCase;
 
+import org.geoserver.ows.kvp.NamespaceKvpParser;
+import org.geoserver.platform.ServiceException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class NamespaceKvpParserTest extends TestCase {
@@ -30,23 +32,28 @@ public class NamespaceKvpParserTest extends TestCase {
         try {
             parser.parse("xmlns[bad=format]");
             fail("Expected IAE");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
+        } catch (ServiceException e) {
+            assertProperServiceException(e);
         }
 
         try {
             parser.parse("xmlns(bad=http://format]");
             fail("Expected IAE");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
+        } catch (ServiceException e) {
+            assertProperServiceException(e);
         }
 
         try {
             parser.parse("bad=http://format");
             fail("Expected IAE");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
+        } catch (ServiceException e) {
+            assertProperServiceException(e);
         }
+    }
+
+    void assertProperServiceException(ServiceException e) {
+        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+        assertEquals(parser.getKey(), e.getLocator());
     }
 
     public void testSingle() throws Exception {

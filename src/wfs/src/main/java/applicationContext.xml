@@ -293,25 +293,25 @@
     <constructor-arg value="aliases"/>
     <constructor-arg value="java.lang.String"/>
   </bean>
-  <bean id="getFeatureNamespaceKvpParser" class="org.geoserver.wfs.kvp.NamespaceKvpParser">
+  <bean id="getFeatureNamespaceKvpParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
     <constructor-arg value="namespace"/>
     <property name="service"><value>WFS</value></property>
     <property name="version"><value>1.1.0</value></property>
     <property name="request"><value>GetFeature</value></property>
   </bean>
-  <bean id="getFeature20NamespaceKvpParser" class="org.geoserver.wfs.kvp.NamespaceKvpParser">
+  <bean id="getFeature20NamespaceKvpParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
     <constructor-arg value="namespace"/>
     <property name="service"><value>WFS</value></property>
     <property name="version"><value>2.0.0</value></property>
     <property name="request"><value>GetFeature</value></property>
   </bean>
-  <bean id="dftNamespaceKvpParser" class="org.geoserver.wfs.kvp.NamespaceKvpParser">
+  <bean id="dftNamespaceKvpParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
     <constructor-arg value="namespace"/>
     <property name="service"><value>WFS</value></property>
     <property name="version"><value>1.1.0</value></property>
     <property name="request"><value>DescribeFeatureType</value></property>
   </bean>
-  <bean id="dft20NamespaceKvpParser" class="org.geoserver.wfs.kvp.NamespaceKvpParser">
+  <bean id="dft20NamespaceKvpParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
     <constructor-arg value="namespace"/>
     <property name="service"><value>WFS</value></property>
     <property name="version"><value>2.0.0</value></property>

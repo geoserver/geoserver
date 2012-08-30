@@ -39,7 +39,7 @@ public class DefaultCatalogService implements CatalogService {
     }
 
     @Override
-    public FeatureType[] describeRecords(DescribeRecordType request) throws ServiceException {
+    public FeatureType[] describeRecord(DescribeRecordType request) throws ServiceException {
         // TODO Auto-generated method stub
         return null;
     }

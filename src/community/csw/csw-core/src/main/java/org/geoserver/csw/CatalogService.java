@@ -33,7 +33,7 @@ public interface CatalogService {
     /**
      * Returns the type of records managed by this catalog
      */
-    FeatureType[] describeRecords(DescribeRecordType request) throws ServiceException;
+    FeatureType[] describeRecord(DescribeRecordType request) throws ServiceException;
 
     /**
      * Returns the records matching the specified request

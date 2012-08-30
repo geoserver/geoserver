@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.geoserver.wfs.kvp;
+package org.geoserver.ows.kvp;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +12,7 @@ import javax.xml.XMLConstants;
 
 import org.geoserver.ows.FlatKvpParser;
 import org.geoserver.ows.KvpParser;
+import org.geoserver.platform.ServiceException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -46,8 +47,8 @@ public class NamespaceKvpParser extends KvpParser {
         for (String decl : decls) {
             decl = decl.trim();
             if (!decl.startsWith("xmlns(") || !decl.endsWith(")")) {
-                throw new IllegalArgumentException("Illegal namespace declaration, "
-                        + "should be of the form xmlns(<prefix>=<ns uri>): " + decl);
+                throw new ServiceException("Illegal namespace declaration, "
+                        + "should be of the form xmlns(<prefix>=<ns uri>): " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
             }
             decl = decl.substring("xmlns(".length());
             decl = decl.substring(0, decl.length() - 1);
@@ -59,14 +60,14 @@ public class NamespaceKvpParser extends KvpParser {
                 prefix = parts[0];
                 uri = parts[1];
             } else {
-                throw new IllegalArgumentException("Illegal namespace declaration, "
-                        + "should be of the form prefix=<namespace uri>: " + decl);
+                throw new ServiceException("Illegal namespace declaration, "
+                        + "should be of the form prefix=<namespace uri>: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
             }
 
             try {
                 new URI(uri);
             } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("Illegal namespace declaration: " + decl);
+                throw new ServiceException("Illegal namespace declaration: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
             }
             ctx.declarePrefix(prefix, uri);
         }

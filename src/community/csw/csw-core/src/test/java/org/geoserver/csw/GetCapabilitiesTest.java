@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Test;
 import net.opengis.ows10.GetCapabilitiesType;
 
 import org.eclipse.emf.common.util.EList;
@@ -14,6 +15,13 @@ import org.geotools.csw.CSWConfiguration;
 import org.xml.sax.SAXParseException;
 
 public class GetCapabilitiesTest extends CSWTestSupport {
+    
+    /**
+     * This is a READ ONLY TEST so we can use one time setup
+     */
+    public static Test suite() {
+        return new OneTimeTestSetup(new GetCapabilitiesTest());
+    }
 
     public void testKVPReader() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
@@ -59,7 +67,6 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         // create a schema invalid request
         String capRequest = getResourceAsString("GetCapabilities.xml");
         capRequest = capRequest.replace("ows:Sections", "ows:foo");
-        System.out.println(capRequest);
         try {
             CSWXmlReader reader = new CSWXmlReader("GetCapabilities", "2.0.2", new CSWConfiguration());
             reader.read(null, new StringReader(capRequest), (Map) null);

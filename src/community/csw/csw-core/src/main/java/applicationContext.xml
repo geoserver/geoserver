@@ -56,11 +56,29 @@
     <bean id="cswNamespaceParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
        <constructor-arg value="namespace"/>
     </bean>
+    <bean id="cswStartPositionParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+       <constructor-arg value="startPosition"/>
+    </bean>
+    <bean id="cswMaxRecordsParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+       <constructor-arg value="maxRecords"/>
+    </bean>
+    <bean id="cswHopCountParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+       <constructor-arg value="hopCount"/>
+    </bean>
+    <bean id="cswResultTypeParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+       <constructor-arg value="resultType"/>
+       <constructor-arg value="net.opengis.cat.csw20.ResultType"/>
+    </bean>
+    <bean id="cswElementSetTypeParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+       <constructor-arg value="elementSetName"/>
+       <constructor-arg value="net.opengis.cat.csw20.ElementSetType"/>
+    </bean>
     
     <!-- KVP readers -->
     <bean id="cswGetCapabilitesKvpRequestReader" class="org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader"/>
     <bean id="cswDescribeRecordKvpRequestReader" class="org.geoserver.csw.kvp.DescribeRecordKvpRequestReader"/>
     <bean id="cswGetDomainKvpRequestReader" class="org.geoserver.csw.kvp.GetDomainKvpRequestReader"/>
+    <bean id="cswGetRecordsKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordsKvpRequestReader"/>
     
     <!-- XML Configuration -->
     <bean id="cswXmlConfiguration-2.0.2"
@@ -91,4 +109,11 @@
         <constructor-arg index="1" value="2.0.2" />
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
     </bean>
+    <bean id="cswGetRecordsXmlReader-2.0.2"
+        class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
+        <constructor-arg index="0" value="GetRecords" />
+        <constructor-arg index="1" value="2.0.2" />
+        <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+    </bean>
+    
 </beans>

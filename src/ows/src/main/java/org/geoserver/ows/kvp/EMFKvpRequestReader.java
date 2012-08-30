@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.ServiceException;
 import org.geotools.xml.EMFUtils;
 
 
@@ -85,12 +86,18 @@ public class EMFKvpRequestReader extends KvpRequestReader {
             }
             
             if (EMFUtils.has(eObject, property)) {
-                //check for a collection
-                if ( EMFUtils.isCollection(eObject, property) ) {
-                    EMFUtils.add(eObject, property, value);
-                }
-                else {
-                    EMFUtils.set(eObject, property, value);    
+                try {
+                    //check for a collection
+                    if ( EMFUtils.isCollection(eObject, property) ) {
+                        EMFUtils.add(eObject, property, value);
+                    }
+                    else {
+                        EMFUtils.set(eObject, property, value);    
+                    }
+                } catch(Exception ex) {
+                    throw new ServiceException("Failed to set property " + property 
+                            + " in request object using value " + value 
+                            + (value != null ? " of type " + value.getClass() : ""), ex);
                 }
             }
         }

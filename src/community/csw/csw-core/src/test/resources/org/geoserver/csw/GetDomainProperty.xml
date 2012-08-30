@@ -7,5 +7,5 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2
                        ../../../csw/2.0.2/CSW-discovery.xsd">
-   <PropertyName>foo</PropertyName>
+   <PropertyName>dc:title</PropertyName>
 </GetDomain>

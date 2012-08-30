@@ -1,6 +1,5 @@
 package org.geoserver.csw;
 
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,13 +7,10 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Test;
 import net.opengis.cat.csw20.DescribeRecordType;
-import net.opengis.ows10.GetCapabilitiesType;
 
 import org.geoserver.csw.kvp.DescribeRecordKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
-import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
-import org.xml.sax.SAXParseException;
 
 public class DescribeRecordTest extends CSWTestSupport {
 

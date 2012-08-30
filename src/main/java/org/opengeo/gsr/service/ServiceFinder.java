@@ -21,7 +21,7 @@ import org.restlet.resource.Resource;
 /**
  * 
  * @author Juan Marin, OpenGeo
- *
+ * 
  */
 public class ServiceFinder extends AbstractCatalogFinder {
 
@@ -40,25 +40,25 @@ public class ServiceFinder extends AbstractCatalogFinder {
 
     public Resource findTarget(Request request, Response response) {
         Resource resource = null;
-
+        String callback = null;
         try {
             Map<String, Object> attributes = request.getAttributes();
             String serviceType = "CatalogServer";
-            String format = getAttribute(request, "format");
-            // if (attributes.get("serviceType") != null) {
-            // serviceType = attributes.get("serviceType").toString();
-            // }
-            // String operation = "";
-            // String params = attributes.get("params").toString();
-            // Map<String, String> paramsMap = getParamsMap(params);
-            // String format = paramsMap.get("f");
-            // if (attributes.get("operation") != null) {
-            // operation = attributes.get("operation").toString();
-            // }
+            if (attributes.get("serviceType") != null) {
+                serviceType = attributes.get("serviceType").toString();
+            }
+            String operation = "";
+            String params = attributes.get("params").toString();
+            Map<String, String> paramsMap = getParamsMap(params);
+            String format = paramsMap.get("f");
+            callback = paramsMap.get("callback");
+            if (attributes.get("operation") != null) {
+                operation = attributes.get("operation").toString();
+            }
             switch (ServiceType.valueOf(serviceType)) {
             case CatalogServer:
                 resource = new CatalogResource(null, request, response, CatalogService.class,
-                        geoServer);
+                        geoServer, callback);
                 break;
             case MapServer:
                 break;

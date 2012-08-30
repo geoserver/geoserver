@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * @author Juan Marin, OpenGeo
  * 
  */
-public class GeoServicesJSONFormat extends ReflectiveJSONFormat {
+public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
 
     XStream xStream;
 
@@ -37,7 +37,7 @@ public class GeoServicesJSONFormat extends ReflectiveJSONFormat {
         this.xStream = xStream;
     }
 
-    public GeoServicesJSONFormat() {
+    public GeoServicesJsonFormat() {
         super();
         XStream xstream = new XStream(new JsonHierarchicalStreamDriver() {
             public HierarchicalStreamWriter createWriter(Writer writer) {

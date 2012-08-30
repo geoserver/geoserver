@@ -14,6 +14,10 @@
         <constructor-arg ref="dispatcher"></constructor-arg>
     </bean>
 
+    <bean id="jsonpFilter" class="org.opengeo.gsr.service.JsonpFilter">
+        <property name="next" ref="serviceFinder"></property>
+    </bean>
+
     <bean id="gsrDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="alwaysUseFullPath" value="true"/>
         <property name="mappings">
@@ -29,27 +33,27 @@
             <map>
                 <entry>
                     <key>
-                        <value>/services?f={format}</value>
+                        <value>/services?{params}</value>
                     </key>
-                    <value>serviceFinder</value>
+                    <value>jsonpFilter</value>
                 </entry>
                 <entry>
                     <key>
-                        <value>/services/?f={format}</value>
+                        <value>/services/?{params}</value>
                     </key>
-                    <value>serviceFinder</value>
+                    <value>jsonpFilter</value>
                 </entry>
                 <entry>
                     <key>
-                        <value>/services/{workspace}?f={format}</value>
+                        <value>/services/{workspace}?{params}</value>
                     </key>
-                    <value>serviceFinder</value>
+                    <value>jsonpFilter</value>
                 </entry>
                 <entry>
                     <key>
-                        <value>/services/{workspace}/?f={format}</value>
+                        <value>/services/{workspace}/{params}</value>
                     </key>
-                    <value>serviceFinder</value>
+                    <value>jsonpFilter</value>
                 </entry>
             </map>
     </property>

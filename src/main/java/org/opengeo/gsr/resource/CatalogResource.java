@@ -21,9 +21,11 @@ import org.opengeo.gsr.service.CatalogService;
 import org.opengeo.gsr.service.GeometryService;
 import org.opengeo.gsr.service.MapService;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * 
@@ -47,11 +49,11 @@ public class CatalogResource extends GeoServicesResource {
     private final String currentVersion = "10.1";
 
     public CatalogResource(Context context, Request request, Response response, Class clazz,
-            GeoServer geoServer) {
+            GeoServer geoServer, String callback) {
         super(context, request, response, clazz, geoServer);
-        this.formatValue = getAttribute("format");
+        this.formatValue = getRequest().getResourceRef().getQueryAsForm().getFirstValue("f");
         this.workspace = getAttribute("workspace");
-        this.callback = getRequest().getResourceRef().getQueryAsForm().getFirstValue("callback");
+        this.callback = callback;
     }
 
     @Override
@@ -102,4 +104,5 @@ public class CatalogResource extends GeoServicesResource {
                     "Internal Server Error", details));
         }
     }
+
 }

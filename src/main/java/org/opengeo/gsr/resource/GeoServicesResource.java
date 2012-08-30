@@ -11,13 +11,10 @@ import org.geoserver.catalog.rest.AbstractCatalogResource;
 import org.geoserver.config.GeoServer;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.ReflectiveJSONFormat;
-import org.opengeo.gsr.core.format.GeoServicesJSONFormat;
-import org.opengeo.gsr.service.CatalogService;
+import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * 
@@ -26,6 +23,7 @@ import com.thoughtworks.xstream.XStream;
  */
 public class GeoServicesResource extends AbstractCatalogResource {
 
+    private String callback;
 
     public GeoServicesResource(Context context, Request request, Response response, Class clazz,
             GeoServer geoServer) {
@@ -46,9 +44,8 @@ public class GeoServicesResource extends AbstractCatalogResource {
 
     @Override
     protected ReflectiveJSONFormat createJSONFormat(Request request, Response response) {
-        GeoServicesJSONFormat format = new GeoServicesJSONFormat();
+        GeoServicesJsonFormat format = new GeoServicesJsonFormat();
         configureXStream(format.getXStream());
         return format;
     }
-
 }

@@ -6,11 +6,10 @@ package org.opengeo.gsr.core.geometry;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-
 /**
  * 
  * @author Juan Marin - OpenGeo
- *
+ * 
  */
 
 @XStreamAlias(value = "")

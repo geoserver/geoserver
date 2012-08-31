@@ -7,13 +7,9 @@ package org.opengeo.gsr.resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.rest.AbstractCatalogResource;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.rest.format.DataFormat;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.exception.ServiceException;
 import org.opengeo.gsr.service.AbstractService;
@@ -21,11 +17,9 @@ import org.opengeo.gsr.service.CatalogService;
 import org.opengeo.gsr.service.GeometryService;
 import org.opengeo.gsr.service.MapService;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.StringRepresentation;
 
 /**
  * 
@@ -38,8 +32,6 @@ public class CatalogResource extends GeoServicesResource {
 
     private String formatValue;
 
-    private String callback;
-
     private String workspace;
 
     private final String productName = "OpenGeo Suite";
@@ -49,11 +41,10 @@ public class CatalogResource extends GeoServicesResource {
     private final String currentVersion = "10.1";
 
     public CatalogResource(Context context, Request request, Response response, Class clazz,
-            GeoServer geoServer, String callback) {
+            GeoServer geoServer) {
         super(context, request, response, clazz, geoServer);
         this.formatValue = getRequest().getResourceRef().getQueryAsForm().getFirstValue("f");
         this.workspace = getAttribute("workspace");
-        this.callback = callback;
     }
 
     @Override
@@ -96,7 +87,6 @@ public class CatalogResource extends GeoServicesResource {
             services.add(geometryService);
             return new CatalogService("services", specVersion, productName, currentVersion,
                     folders, services);
-            // TODO: handle JSONP callback
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();
             details.add(e.getMessage());

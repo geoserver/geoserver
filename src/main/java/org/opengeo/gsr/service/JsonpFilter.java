@@ -23,10 +23,9 @@ import org.restlet.resource.StringRepresentation;
 /**
  * 
  * @author Juan Marin, OpenGeo
- *
+ * 
  */
 public class JsonpFilter extends Filter {
-
 
     @Override
     protected void afterHandle(Request request, Response response) {

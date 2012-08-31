@@ -4,7 +4,6 @@
  */
 package org.opengeo.gsr.service;
 
-
 /**
  * 
  * @author Juan Marin, OpenGeo
@@ -12,6 +11,5 @@ package org.opengeo.gsr.service;
  */
 
 public abstract class AbstractService {
-
 
 }

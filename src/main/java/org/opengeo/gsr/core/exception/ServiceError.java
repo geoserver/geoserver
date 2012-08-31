@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 /**
  * 
  * @author Juan Marin, OpenGeo
- *
+ * 
  */
 
 @XStreamAlias("error")

@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * 
  * @author Juan Marin - OpenGeo
- *
+ * 
  */
 public abstract class Geometry implements Serializable {
 

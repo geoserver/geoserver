@@ -23,8 +23,6 @@ import org.restlet.data.Response;
  */
 public class GeoServicesResource extends AbstractCatalogResource {
 
-    private String callback;
-
     public GeoServicesResource(Context context, Request request, Response response, Class clazz,
             GeoServer geoServer) {
         super(context, request, response, clazz, geoServer.getCatalog());

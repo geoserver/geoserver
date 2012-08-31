@@ -8,8 +8,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * 
- *  @author Juan Marin, OpenGeo
- *
+ * @author Juan Marin, OpenGeo
+ * 
  */
 
 @XStreamAlias("")

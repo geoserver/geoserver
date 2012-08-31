@@ -11,8 +11,10 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
         // make sure the spring security emulation is properly setup
         SavedRequest sr = (SavedRequest) tester.getSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
         assertNotNull(sr);
-        assertTrue(sr.getRedirectUrl().endsWith("?wicket:bookmarkablePage=:org.geoserver.web.data.layer.LayerPage"));
-                        
+        
+        // XXX: Do we need to go back to the old query-string-based bookmarkable pages?
+        // assertTrue(sr.getRedirectUrl(), sr.getRedirectUrl().endsWith("?wicket:bookmarkablePage=:org.geoserver.web.data.layer.LayerPage"));
+        assertTrue(sr.getRedirectUrl(), sr.getRedirectUrl().endsWith("/servlet/wicket/bookmarkable/org.geoserver.web.data.layer.LayerPage"));
     }
 
     public void testSecuredPageAllowsAccessWhenLoggedIn() {

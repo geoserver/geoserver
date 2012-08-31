@@ -30,6 +30,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.IPageRequestHandler;
 import org.apache.wicket.request.handler.PageProvider;
 import org.apache.wicket.request.handler.RenderPageRequestHandler;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.geoserver.catalog.Catalog;
@@ -313,6 +314,10 @@ public class GeoServerApplication extends SpringWebApplication {
         ConverterLocator locator = new ConverterLocator();
 
         return locator;
+    }
+    
+    public String getSessionAttributePrefix(WebRequest request, String filterName) {
+        return "";
     }
     
     

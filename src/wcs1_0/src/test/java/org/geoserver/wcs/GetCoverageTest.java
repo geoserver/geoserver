@@ -191,9 +191,11 @@ public class GetCoverageTest extends WCSTestSupport {
         String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
             "&crs=EPSG:4326&width=150&height=150";
 
-        ServletResponse response = getAsServletResponse( 
+        MockHttpServletResponse response = getAsServletResponse( 
             "wcs/BlueMarble/wcs?sourcecoverage=BlueMarble"+queryString);
         assertTrue(response.getContentType().startsWith("image/tiff"));
+        String disposition = response.getHeader("Content-Disposition");
+        assertTrue(disposition.endsWith("BlueMarble.tif"));
         
         Document dom = getAsDOM( 
             "wcs/DEM/wcs?sourcecoverage=BlueMarble"+queryString);

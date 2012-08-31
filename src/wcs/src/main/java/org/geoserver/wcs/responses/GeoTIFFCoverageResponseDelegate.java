@@ -2,12 +2,13 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.vfny.geoserver.wcs.responses.coverage;
+package org.geoserver.wcs.responses;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.geoserver.platform.ServiceException;
@@ -19,7 +20,6 @@ import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
 
 /**
  * Coverage writer for the geotiff format.
@@ -29,14 +29,7 @@ import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
  */
 public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff","image/tiff;subtype=\"geotiff\"","image/geotiff"));
-
-    /**
-     * 
-     * @uml.property name="sourceCoverage"
-     * @uml.associationEnd multiplicity="(0 1)"
-     */
-    private GridCoverage2D sourceCoverage;
+    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff;subtype=\"geotiff\"","image/geotiff"));
 
 	private static final GeoTiffFormat format = new GeoTiffFormat();
 
@@ -50,44 +43,18 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                 && (outputFormat.equalsIgnoreCase("geotiff") || FORMATS.contains(outputFormat.toLowerCase()));
     }
 
-    public void prepare(String outputFormat, GridCoverage2D coverage) throws IOException {
-        this.sourceCoverage = coverage;
-    }
-
-    public String getMimeFormatFor(String outputFormat) {
+    public String getMimeType(String outputFormat) {
         if (canProduce(outputFormat))
             return "image/tiff;subtype=\"geotiff\"";
         else
             return null;
     }
 
-    public String getContentType() {
-        return GEOTIFF_CONTENT_TYPE;
-    }
-
-    /**
-     * DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
-    public String getContentEncoding() {
-        return null;
-    }
-
-    /**
-     * DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
-    public String getContentDisposition() {
-        return "attachment;filename=" + this.sourceCoverage.getName() + ".tif";
-    }
-
-    public String getFileExtension() {
+    public String getFileExtension(String outputFormat) {
         return "tif";
     }
 
-    public void encode(OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D sourceCoverage, String outputFormat, OutputStream output) throws ServiceException, IOException {
         if (sourceCoverage == null) {
             throw new IllegalStateException("It seems prepare() has not been called"
                     + " or has not succeed");
@@ -105,20 +72,23 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
 
         // write down
         GeoTiffWriter writer = (GeoTiffWriter) format.getWriter(output);
-        try{
-        	if(writer!=null)
-        		writer.write(sourceCoverage, (GeneralParameterValue[]) writerParams.values().toArray(new GeneralParameterValue[1]));
-        }finally {
-        	try{
-        	if(writer!=null)
-        		writer.dispose();
-        	}catch (Throwable e) {
-				// eating exception
-			}
-            this.sourceCoverage.dispose(false);
-            this.sourceCoverage = null;
-		}
-
-
+        try {
+            if (writer != null)
+                writer.write(sourceCoverage, (GeneralParameterValue[]) writerParams.values()
+                        .toArray(new GeneralParameterValue[1]));
+        } finally {
+            try {
+                if (writer != null)
+                    writer.dispose();
+            } catch (Throwable e) {
+                // eating exception
+            }
+            sourceCoverage.dispose(false);
+        }
+    }
+    
+    @Override
+    public List<String> getOutputFormats() {
+        return Arrays.asList("image/tiff;subtype=\"geotiff\"");
     }
 }

@@ -2,20 +2,18 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.vfny.geoserver.wcs.responses.coverage;
+package org.geoserver.wcs.responses;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridWriter;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
 
 /**
  * DOCUMENT ME!
@@ -25,17 +23,8 @@ import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
  */
 public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList(
-            "application/arcgrid", "application/arcgrid;zipped=\"true\""));
-
-    /**
-     * 
-     * @uml.property name="sourceCoverage"
-     * @uml.associationEnd multiplicity="(0 1)"
-     */
-    private GridCoverage2D sourceCoverage;
-
-    private boolean compressOutput = false;
+    private static final List<String> FORMATS = Arrays.asList(
+            "application/arcgrid", "application/arcgrid;gzipped=\"true\"");
 
     public AscCoverageResponseDelegate() {
     }
@@ -43,29 +32,27 @@ public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
     public boolean canProduce(String outputFormat) {
         return outputFormat != null
                 && ("ArcGrid".equalsIgnoreCase(outputFormat)
-                        || "ArcGrid-GZIP".equalsIgnoreCase(outputFormat) || FORMATS
+                        || isOutputCompressed(outputFormat) || FORMATS
                         .contains(outputFormat.toLowerCase()));
     }
 
     public String getMimeFormatFor(String outputFormat) {
         if ("ArcGrid".equalsIgnoreCase(outputFormat))
             return "application/arcgrid";
-        else if ("ArcGrid-GZIP".equalsIgnoreCase(outputFormat))
-            return "application/arcgrid;zipped=\"true\"";
+        else if (isOutputCompressed(outputFormat))
+            return "application/arcgrid;gzipped=\"true\"";
         else if (FORMATS.contains(outputFormat))
             return outputFormat;
         else
             return null;
     }
 
-    public void prepare(String outputFormat, GridCoverage2D coverage) throws IOException {
-        this.compressOutput = "ArcGrid-GZIP".equalsIgnoreCase(outputFormat);
-        this.sourceCoverage = coverage;
+    public String getMimeType(String outputFormat) {
+        return isOutputCompressed(outputFormat) ? "application/x-gzip" : "text/plain";
     }
 
-    public String getContentType() {
-        // return gs.getMimeType();
-        return compressOutput ? "application/x-gzip" : "text/plain";
+    private boolean isOutputCompressed(String outputFormat) {
+        return "ArcGrid-GZIP".equalsIgnoreCase(outputFormat) || "application/arcgrid;gzipped=\"true\"".equals(outputFormat);
     }
 
     /**
@@ -78,21 +65,11 @@ public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
         return null;
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
-    public String getContentDisposition() {
-        return compressOutput ? ("attachment;filename=" + this.sourceCoverage.getName() + ".asc.gz")
-                : null;
+    public String getFileExtension(String outputFormat) {
+        return isOutputCompressed(outputFormat) ? "asc.gz" : "asc";
     }
 
-    public String getFileExtension() {
-        return compressOutput ? "asc.gz" : "asc";
-    }
-
-    public void encode(OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D sourceCoverage, String outputFormat, OutputStream output) throws ServiceException, IOException {
         if (sourceCoverage == null) {
             throw new IllegalStateException(new StringBuffer(
                     "It seems prepare() has not been called").append(" or has not succeed")
@@ -100,7 +77,7 @@ public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
         }
 
         GZIPOutputStream gzipOut = null;
-        if (compressOutput) {
+        if (isOutputCompressed(outputFormat)) {
             gzipOut = new GZIPOutputStream(output);
             output = gzipOut;
         }
@@ -126,8 +103,12 @@ public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
         	if(gzipOut!=null)
         		IOUtils.closeQuietly(gzipOut);
         	
-            this.sourceCoverage.dispose(false);
-            this.sourceCoverage = null;
+            sourceCoverage.dispose(false);
 		}
+    }
+
+    @Override
+    public List<String> getOutputFormats() {
+        return FORMATS;
     }
 }

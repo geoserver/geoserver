@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.vfny.geoserver.wcs.responses.coverage;
+package org.geoserver.wcs.responses;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
@@ -12,11 +12,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
 
 /**
  * A basic text based output format designed to ease debugging GetCoverage calls (and actually read
@@ -27,9 +27,7 @@ import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
  */
 public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("text/debug"));
-
-    private GridCoverage2D coverage;
+    private static final List<String> FORMATS = Arrays.asList("text/debug");
 
     public boolean canProduce(String outputFormat) {
         return outputFormat != null
@@ -37,19 +35,11 @@ public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
                         .toLowerCase()));
     }
 
-    public String getContentDisposition() {
-        return null;
-    }
-
-    public String getContentEncoding() {
-        return null;
-    }
-
-    public String getContentType() {
+    public String getMimeType(String outputFormat) {
         return "text/plain";
     }
 
-    public String getFileExtension() {
+    public String getFileExtension(String outputFormat) {
         return "txt";
     }
 
@@ -60,11 +50,7 @@ public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
             return null;
     }
 
-    public void prepare(String outputFormat, GridCoverage2D coverage) throws IOException {
-        this.coverage = coverage;
-    }
-
-    public void encode(OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D coverage, String outputFormat, OutputStream output) throws ServiceException, IOException {
         PrintStream ps = new PrintStream(output);
         ps.println("Grid bounds: " + coverage.getEnvelope());
         ps.println("Grid CRS: " + coverage.getCoordinateReferenceSystem());
@@ -92,6 +78,13 @@ public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
 
         }
         ps.flush();
+        
+        coverage.dispose(false);
+    }
+    
+    @Override
+    public List<String> getOutputFormats() {
+        return FORMATS;
     }
 
 }

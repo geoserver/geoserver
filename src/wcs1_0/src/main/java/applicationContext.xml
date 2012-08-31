@@ -6,6 +6,7 @@
   <!-- wcs service setup, with loggin as an interceptor -->
   <bean id="wcs100ServiceTarget" class="org.geoserver.wcs.DefaultWebCoverageService100">
     <constructor-arg ref="geoServer" />
+    <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>
   <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger">
     <constructor-arg type="java.lang.String" value="org.geoserver.wcs" />
@@ -110,6 +111,7 @@
   <bean id="wcs100GetCoverageResponse" 
 	class="org.geoserver.wcs.response.Wcs10GetCoverageResponse" singleton="false"> 
     <constructor-arg ref="catalog" />
+    <constructor-arg ref="coverageResponseDelegateFactory" />
   </bean>
   
   <bean id="workspaceQualifier" class="org.geoserver.wcs.WCS10WorkspaceQualifier">

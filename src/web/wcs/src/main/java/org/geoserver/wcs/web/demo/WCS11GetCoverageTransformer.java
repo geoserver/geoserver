@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
@@ -19,8 +21,6 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -36,8 +36,11 @@ class WCS11GetCoverageTransformer extends TransformerBase {
 
     private Catalog catalog;
 
-    public WCS11GetCoverageTransformer(Catalog catalog) {
+    private CoverageResponseDelegateFactory responseFactory;
+
+    public WCS11GetCoverageTransformer(Catalog catalog, CoverageResponseDelegateFactory responseFactory) {
         this.catalog = catalog;
+        this.responseFactory = responseFactory;
     }
 
     @Override
@@ -80,8 +83,8 @@ class WCS11GetCoverageTransformer extends TransformerBase {
 
         private void handleOutput(GetCoverageRequest request) {
             String format = request.outputFormat;
-            final CoverageResponseDelegate encoder = CoverageResponseDelegateFactory.encoderFor(format);
-            String mime = encoder.getMimeFormatFor(request.outputFormat);
+            final CoverageResponseDelegate encoder = responseFactory.encoderFor(format);
+            String mime = encoder.getMimeType(request.outputFormat);
             start("Output", attributes("store", "true", "format", mime));
             if (request.targetCRS != null) {
                 start("GridCRS");

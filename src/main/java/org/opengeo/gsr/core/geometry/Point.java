@@ -45,7 +45,7 @@ public class Point extends Geometry {
         this.x = x;
         this.y = y;
         this.spatialReference = spatialRef;
-        this.geometryType = GeometryType.GeometryPoint;
+        this.geometryType = GeometryType.POINT;
     }
 
 }

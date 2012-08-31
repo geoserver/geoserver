@@ -75,7 +75,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue("dataStoreForm:workspacePanel:border:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
 
         WorkspaceInfo anotherWs = getCatalog().getFactory().createWorkspace();
         anotherWs.setName("anotherWs");
@@ -85,7 +85,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         anotherWs = getCatalog().getDefaultWorkspace();
 
         startPage();
-        tester.assertModelValue("dataStoreForm:workspacePanel:border:paramValue", anotherWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", anotherWs);
 
     }
 
@@ -100,7 +100,6 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         NamespaceInfo defaultNs = getCatalog().getDefaultNamespace();
 
         tester.assertModelValue(namespacePath, defaultNs.getURI());
-
     }
 
     public void testDataStoreParametersAreCreated() {

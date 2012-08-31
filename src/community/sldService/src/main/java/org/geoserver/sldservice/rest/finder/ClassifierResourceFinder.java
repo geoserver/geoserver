@@ -20,18 +20,23 @@
 package org.geoserver.sldservice.rest.finder;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.rest.AbstractCatalogFinder;
 import org.geoserver.rest.RestletException;
 import org.geoserver.sldservice.rest.resource.ClassifierResource;
+import org.restlet.Finder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 
-public class ClassifierResourceFinder extends AbstractCatalogFinder {
+public class ClassifierResourceFinder extends Finder {
 
-    public ClassifierResourceFinder(Catalog catalog) {
-        super(catalog);
+    /**
+     * reference to the catalog
+     */
+    protected Catalog catalog;
+    
+    protected ClassifierResourceFinder(Catalog catalog) {
+        this.catalog = catalog;
     }
     
     @Override

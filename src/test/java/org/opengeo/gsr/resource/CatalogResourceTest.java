@@ -1,5 +1,6 @@
 package org.opengeo.gsr.resource;
 
+import static org.junit.Assert.assertTrue;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -43,6 +44,14 @@ public class CatalogResourceTest extends ResourceTest {
         assertEquals("GeometryServer", geometryService.get("type"));
     }
 
+    public void testCatalogResponseSchema() throws Exception {
+        JSON json = getAsJSON(baseURL + "?f=json");
+        assertTrue(json instanceof JSONObject);
+        String jsonString = json.toString();
+        System.out.println(jsonString);
+        assertTrue(validateJSON(jsonString, "gsr-cs/1.0/catalog.json"));
+    }
+    
     // TODO: Set up ResourceTest to include Virtual Services and test that folders contain those virtual services
     // and that they validate as Catalog endpoints
 
@@ -61,4 +70,6 @@ public class CatalogResourceTest extends ResourceTest {
         }
         assertTrue(thrown);
     }
+    
+    
 }

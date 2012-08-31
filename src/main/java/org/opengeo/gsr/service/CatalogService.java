@@ -26,7 +26,7 @@ public class CatalogService extends AbstractService {
 
     private String productName;
 
-    private String currentVersion;
+    private double currentVersion;
 
     @XStreamImplicit(itemFieldName = "folders")
     private List<String> folders;
@@ -66,11 +66,11 @@ public class CatalogService extends AbstractService {
         this.productName = productName;
     }
 
-    public String getCurrentVersion() {
+    public double getCurrentVersion() {
         return currentVersion;
     }
 
-    public void setCurrentVersion(String currentVersion) {
+    public void setCurrentVersion(double currentVersion) {
         this.currentVersion = currentVersion;
     }
 
@@ -91,7 +91,7 @@ public class CatalogService extends AbstractService {
     }
 
     public CatalogService(String name, String specVersion, String productName,
-            String currentVersion, List<String> folders, List<AbstractService> services) {
+            double currentVersion, List<String> folders, List<AbstractService> services) {
         this.name = name;
         this.type = ServiceType.CatalogServer;
         this.specVersion = specVersion;

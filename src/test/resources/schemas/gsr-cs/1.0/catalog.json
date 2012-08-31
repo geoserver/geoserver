@@ -1,0 +1,46 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	"id": "http://schemas.opengis.net/gsr-cs/1.0/catalog.json",
+	
+	"title":"catalog service resource",
+	"type":"object",
+	
+	"properties":{
+		"specVersion":{
+			"title":"specification version",
+			"type":"number",
+			"default":1.0},
+		"productName":{
+			"title":"name of the server software product",
+			"type":"string"},
+		"currentVersion":{
+			"title":"server software version",
+			"type":"number"},
+		"folders" :{
+			"title":"folders",
+			"type":"array",
+			"uniqueItems":true,
+			"items":{
+				"type":"string"
+			}},
+		"services" :{
+			"title":"services",
+			"type":"array",
+			"uniqueItems":true,
+			"items":{
+				"title":"service",
+				"type":"object",
+				 "properties":{
+					"name":{
+						"title":"service name",
+						"type":"string",
+						"required":true},
+					"type":{
+						"title":"service type",
+						"type":"string",
+						"required":true}
+				 }
+			}
+		}
+	}
+}

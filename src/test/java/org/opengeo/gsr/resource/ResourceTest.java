@@ -1,5 +1,7 @@
 package org.opengeo.gsr.resource;
 
+import java.io.File;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
@@ -9,6 +11,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.opengeo.gsr.validation.JSONValidator;
 
 public class ResourceTest extends CatalogRESTTestSupport {
 
@@ -71,5 +74,10 @@ public class ResourceTest extends CatalogRESTTestSupport {
 
     public void testConfig() {
         assertEquals("/gsr/services/", this.baseURL);
+    }
+    
+    protected boolean validateJSON(String json, String schemaPath) {
+        String workingDir = System.getProperty("user.dir") + "/src/test/resources/schemas/";
+        return JSONValidator.isValidSchema(json, new File(workingDir + schemaPath));
     }
 }

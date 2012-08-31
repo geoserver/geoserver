@@ -38,7 +38,7 @@ public class CatalogResource extends GeoServicesResource {
 
     private final String specVersion = "1.0";
 
-    private final String currentVersion = "10.1";
+    private final double currentVersion = 10.1;
 
     public CatalogResource(Context context, Request request, Response response, Class clazz,
             GeoServer geoServer) {

@@ -1,6 +1,10 @@
 package org.opengeo.gsr.core.geometry;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Test;
 import org.opengeo.gsr.validation.JSONSchemaUtils;
 
 /**
@@ -19,12 +23,14 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         mapper = new ObjectMapper();
     }
 
+    @Test
     public void testPointSchema() throws Exception {
         Point point = new Point(-77, 39.5, new SpatialReferenceWKID(4326));
         String json = mapper.writeValueAsString(point);
         assertTrue(validateJSON(json, "gsr/1.0/point.json"));
     }
 
+    @Test
     public void testMultipointSchema() throws Exception {
         SpatialReference spatialReference = new SpatialReferenceWKID(4326);
         double[] c1 = { -97.06138, 32.837 };
@@ -41,6 +47,7 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         assertTrue(validateJSON(json, "gsr/1.0/multipoint.json"));
     }
 
+    @Test
     public void testPolylineSchema() throws Exception {
         double[] c1 = { 0, 0 };
         double[] c2 = { 0, 1 };
@@ -67,6 +74,7 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         assertTrue(validateJSON(json, "gsr/1.0/polyline.json"));
     }
 
+    @Test
     public void testPolygonSchema() throws Exception {
         double[] c1 = { 0, 0 };
         double[] c2 = { 0, 1 };
@@ -97,6 +105,7 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         assertTrue(validateJSON(json, "gsr/1.0/polygon.json"));
     }
 
+    @Test
     public void testEnvelopeSchema() throws Exception {
         SpatialReference spatialReference = new SpatialReferenceWKID(4326);
         Envelope envelope = new Envelope(-77, 39.0, -78, 40.0, spatialReference);
@@ -104,6 +113,7 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         assertTrue(validateJSON(json, "gsr/1.0/envelope.json"));
     }
 
+    @Test
     public void testGeometryArraySchema() throws Exception {
         SpatialReference spatialReference = new SpatialReferenceWKID(4326);
         Point point = new Point(-77, 39.5, spatialReference);
@@ -117,12 +127,14 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         assertTrue(validateJSON(json, "gsr/1.0/geometries.json"));
     }
 
+    @Test
     public void testSpatialReferenceWKIDSchema() throws Exception {
         SpatialReference spatialReference = new SpatialReferenceWKID(4326);
         String json = mapper.writeValueAsString(spatialReference);
         assertTrue(validateJSON(json, "gsr/1.0/spatialreference.json"));
     }
 
+    @Test
     public void testWrongSchema() throws Exception {
         Point point = new Point(-77, 39.5, new SpatialReferenceWKID(4326));
         String json = mapper.writeValueAsString(point);

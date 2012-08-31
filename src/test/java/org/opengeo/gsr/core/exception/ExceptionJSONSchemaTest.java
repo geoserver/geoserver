@@ -1,9 +1,12 @@
 package org.opengeo.gsr.core.exception;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Test;
 import org.opengeo.gsr.validation.JSONSchemaUtils;
 
 public class ExceptionJSONSchemaTest extends JSONSchemaUtils {
@@ -14,6 +17,7 @@ public class ExceptionJSONSchemaTest extends JSONSchemaUtils {
         mapper = new ObjectMapper();
     }
 
+    @Test
     public void testServiceErrorJSONSchema() throws Exception {
         List<String> details = new ArrayList<String>();
         details.add("Bad request details");
@@ -21,7 +25,8 @@ public class ExceptionJSONSchemaTest extends JSONSchemaUtils {
         String json = mapper.writeValueAsString(error);
         assertTrue(validateJSON(json, "gsr/1.0/error.json"));
     }
-    
+
+    @Test
     public void testServiceExceptionJSONSchema() throws Exception {
         List<String> details = new ArrayList<String>();
         details.add("Bad request details");

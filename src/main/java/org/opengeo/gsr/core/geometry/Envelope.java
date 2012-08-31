@@ -68,7 +68,7 @@ public class Envelope extends Geometry {
         this.ymin = ymin;
         this.ymax = ymax;
         this.spatialReference = spatialReference;
-        this.geometryType = GeometryType.GeometryEnvelope;
+        this.geometryType = GeometryType.ENVELOPE;
     }
 
     public boolean isValid() {

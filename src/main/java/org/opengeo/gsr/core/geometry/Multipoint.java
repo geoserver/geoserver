@@ -34,7 +34,7 @@ public class Multipoint extends Geometry {
     public Multipoint(double[][] coords, SpatialReference spatialReference) {
         this.points = coords;
         this.spatialReference = spatialReference;
-        this.geometryType = GeometryType.GeometryMultiPoint;
+        this.geometryType = GeometryType.MULTIPOINT;
     }
 
 }

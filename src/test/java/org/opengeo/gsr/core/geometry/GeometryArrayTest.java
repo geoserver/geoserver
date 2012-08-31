@@ -33,9 +33,9 @@ public class GeometryArrayTest {
         geometries2[0] = point1;
         geometries2[1] = point2;
         geometries2[2] = polygon;
-        GeometryArray geometryArray1 = new GeometryArray(GeometryType.GeometryPoint, geometries1,
+        GeometryArray geometryArray1 = new GeometryArray(GeometryType.POINT, geometries1,
                 spatialRef);
-        GeometryArray geometryArray2 = new GeometryArray(GeometryType.GeometryPoint, geometries2,
+        GeometryArray geometryArray2 = new GeometryArray(GeometryType.POINT, geometries2,
                 spatialRef);
 
         assertEquals(true, geometryArray1.isValidGeometryTypes());

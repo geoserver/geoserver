@@ -7,13 +7,13 @@ package org.opengeo.gsr.core.geometry;
 /**
  * 
  * @author Juan Marin - OpenGeo
- *
+ * 
  */
 public enum GeometryType {
 
-    GeometryPoint("GeometryPoint"), GeometryMultiPoint("GeometryMultiPoint"), GeometryPolyline("GeometryPolyline"), GeometryPolygon(
-            "GeometryPolygon"), GeometryEnvelope("GeometryEnvelope");
-    private String geometryType;
+    POINT("GeometryPoint"), MULTIPOINT("GeometryMultiPoint"), POLYLINE("GeometryPolyline"), POLYGON(
+            "GeometryPolygon"), ENVELOPE("GeometryEnvelope");
+    private final String geometryType;
 
     public String getGeometryType() {
         return geometryType;

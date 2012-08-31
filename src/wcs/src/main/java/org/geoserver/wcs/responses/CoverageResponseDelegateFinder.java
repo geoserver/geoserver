@@ -22,27 +22,22 @@ import org.springframework.context.ApplicationContextAware;
  * @author Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-public class CoverageResponseDelegateFactory implements ApplicationContextAware {
+public class CoverageResponseDelegateFinder implements ApplicationContextAware {
     
     private ApplicationContext applicationContext;
     
-    private CoverageResponseDelegateFactory() {
+    private CoverageResponseDelegateFinder() {
     }
 
     /**
-     * Creates an encoder for a specific getfeature results output format
-     * 
-     * @param outputFormat
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
+     * Locates an encoder for a specific GetCoverage results output format
      */
     public CoverageResponseDelegate encoderFor(String outputFormat) {
 
         // lookup the encoders dynamically (the list returned might be subject to dynamic extension filters, so we don't cache it)
         List<CoverageResponseDelegate> delegates = GeoServerExtensions.extensions(CoverageResponseDelegate.class, applicationContext);
         for (CoverageResponseDelegate delegate : delegates) {
-            if (delegate.canProduce(outputFormat)) {
+            if (delegate.isAvailable() && delegate.canProduce(outputFormat)) {
                 try {
                     if (delegate != null) {
                         return delegate.getClass().newInstance();
@@ -74,7 +69,9 @@ public class CoverageResponseDelegateFactory implements ApplicationContextAware 
         Set<String> formats = new HashSet<String>();
         List<CoverageResponseDelegate> delegates = GeoServerExtensions.extensions(CoverageResponseDelegate.class, applicationContext);
         for (CoverageResponseDelegate delegate : delegates) {
-            formats.addAll(delegate.getOutputFormats());
+            if(delegate.isAvailable()) {
+                formats.addAll(delegate.getOutputFormats());
+            }
         }
         
         List<String> result = new ArrayList<String>(formats);

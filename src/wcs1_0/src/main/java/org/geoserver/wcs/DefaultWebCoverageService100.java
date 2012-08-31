@@ -49,7 +49,7 @@ import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.wcs.response.Wcs10CapsTransformer;
 import org.geoserver.wcs.response.Wcs10DescribeCoverageTransformer;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -89,7 +89,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
     private GeoServer geoServer;
 
-    private CoverageResponseDelegateFactory responseFactory;
+    private CoverageResponseDelegateFinder responseFactory;
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging
             .getLogger(DefaultWebCoverageService100.class);
@@ -98,7 +98,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
      * 
      * @param geoServer
      */
-    public DefaultWebCoverageService100(GeoServer geoServer, CoverageResponseDelegateFactory responseFactory) {
+    public DefaultWebCoverageService100(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;

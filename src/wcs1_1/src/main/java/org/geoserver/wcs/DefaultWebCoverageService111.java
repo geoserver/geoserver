@@ -46,7 +46,7 @@ import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.response.DescribeCoverageTransformer;
 import org.geoserver.wcs.response.WCSCapsTransformer;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -85,9 +85,9 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
 	private GeoServer geoServer;
 
-    private CoverageResponseDelegateFactory responseFactory;
+    private CoverageResponseDelegateFinder responseFactory;
 
-    public DefaultWebCoverageService111(GeoServer geoServer, CoverageResponseDelegateFactory responseFactory) {
+    public DefaultWebCoverageService111(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;

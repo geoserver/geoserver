@@ -24,7 +24,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.LinearTransform;
@@ -68,12 +68,12 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
     private Catalog catalog;
 
-    private CoverageResponseDelegateFactory responseFactory;
+    private CoverageResponseDelegateFinder responseFactory;
 
     /**
      * Creates a new WFSCapsTransformer object.
      */
-    public DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFactory responseFactory) {
+    public DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super();
         this.wcs = wcs;
         this.catalog = catalog;

@@ -111,4 +111,9 @@ public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
     public List<String> getOutputFormats() {
         return FORMATS;
     }
+    
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
 }

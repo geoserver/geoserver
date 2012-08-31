@@ -15,7 +15,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.Hints;
 import org.opengis.coverage.grid.GridCoverage;
@@ -47,9 +47,9 @@ public class Wcs10GetCoverageResponse extends Response {
 
     Catalog catalog;
 
-    private CoverageResponseDelegateFactory responseFactory;
+    private CoverageResponseDelegateFinder responseFactory;
 
-    public Wcs10GetCoverageResponse(Catalog catalog, CoverageResponseDelegateFactory responseFactory) {
+    public Wcs10GetCoverageResponse(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.catalog = catalog;
         this.responseFactory = responseFactory;

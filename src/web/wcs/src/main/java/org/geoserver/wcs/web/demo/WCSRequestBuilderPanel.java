@@ -33,7 +33,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs.web.demo.GetCoverageRequest.Version;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.demo.DemoRequest;
@@ -188,7 +188,7 @@ public class WCSRequestBuilderPanel extends Panel {
         buildGridPanel();
 
         // the format chooser
-        CoverageResponseDelegateFactory responseFactory = (CoverageResponseDelegateFactory) GeoServerApplication.get().getBean("coverageResponseDelegateFactory");
+        CoverageResponseDelegateFinder responseFactory = (CoverageResponseDelegateFinder) GeoServerApplication.get().getBean("coverageResponseDelegateFactory");
         formats = new DropDownChoice<String>("format", new PropertyModel(getCoverage, "outputFormat"), responseFactory.getOutputFormats());
         details.add(formats);
         

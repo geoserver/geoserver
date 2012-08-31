@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
@@ -36,9 +36,9 @@ class WCS11GetCoverageTransformer extends TransformerBase {
 
     private Catalog catalog;
 
-    private CoverageResponseDelegateFactory responseFactory;
+    private CoverageResponseDelegateFinder responseFactory;
 
-    public WCS11GetCoverageTransformer(Catalog catalog, CoverageResponseDelegateFactory responseFactory) {
+    public WCS11GetCoverageTransformer(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         this.catalog = catalog;
         this.responseFactory = responseFactory;
     }

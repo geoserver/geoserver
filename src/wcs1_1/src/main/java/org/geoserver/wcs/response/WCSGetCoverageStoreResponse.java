@@ -26,7 +26,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
@@ -41,9 +41,9 @@ public class WCSGetCoverageStoreResponse extends Response {
     
     GeoServer geoServer;
     Catalog catalog;
-    CoverageResponseDelegateFactory responseFactory;
+    CoverageResponseDelegateFinder responseFactory;
     
-    public WCSGetCoverageStoreResponse(GeoServer gs, CoverageResponseDelegateFactory responseFactory) {
+    public WCSGetCoverageStoreResponse(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.geoServer = gs;
         this.catalog = gs.getCatalog();

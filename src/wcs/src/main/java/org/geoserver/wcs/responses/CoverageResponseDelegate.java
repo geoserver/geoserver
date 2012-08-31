@@ -58,4 +58,10 @@ public interface CoverageResponseDelegate {
      */
     List<String> getOutputFormats();
     
+    /**
+     * True if the encoder is available, false otherwise (possibly due to missing libraries and the like)
+     * @return
+     */
+    boolean isAvailable();
+    
 }

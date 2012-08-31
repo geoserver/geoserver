@@ -91,4 +91,10 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
     public List<String> getOutputFormats() {
         return Arrays.asList("image/tiff;subtype=\"geotiff\"");
     }
+    
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
 }

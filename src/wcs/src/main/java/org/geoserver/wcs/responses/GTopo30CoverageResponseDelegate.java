@@ -80,4 +80,10 @@ public class GTopo30CoverageResponseDelegate implements CoverageResponseDelegate
 	public List<String> getOutputFormats() {
 	    return FORMATS;
 	}
+	
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
 }

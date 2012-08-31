@@ -24,7 +24,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.response.CoveragesHandler.CoveragesData;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFactory;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
@@ -35,9 +35,9 @@ public class WCSMultipartResponse extends Response {
 
     Catalog catalog;
 
-    CoverageResponseDelegateFactory responseFactory;
+    CoverageResponseDelegateFinder responseFactory;
 
-    public WCSMultipartResponse(Catalog catalog, CoverageResponseDelegateFactory responseFactory) {
+    public WCSMultipartResponse(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.catalog = catalog;
         this.multipart = new MimeMultipart();

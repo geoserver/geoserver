@@ -600,6 +600,18 @@
         <constructor-arg ref="geoServer"/>
     </bean>
     
+    <bean id="geojsonpDescribeOutput" 
+		class="org.geoserver.wfs.json.GeoJsonDescribeOutputFormat">
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg value="text/javascript"/>
+	</bean>
+	
+	<bean id="geojsonDescribeOutput" 
+		class="org.geoserver.wfs.json.GeoJsonDescribeOutputFormat">
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg value="application/json"/>
+	</bean>
+    
     <!-- workspace qualifier -->
     <bean id="wfsWorkspaceQualifier" class="org.geoserver.wfs.WFSWorkspaceQualifier">
         <constructor-arg ref="catalog"/>

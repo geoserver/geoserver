@@ -8,6 +8,7 @@ import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.ows.Response;
 import org.geoserver.sld.GetStylesRequest;
+import org.geoserver.wms.describelayer.DescribeLayerModel;
 import org.geotools.styling.StyledLayerDescriptor;
 
 /**
@@ -44,7 +45,7 @@ public interface WebMapService {
     /**
      * DescribeLayer operation.
      */
-    Object describeLayer(DescribeLayerRequest request);
+    DescribeLayerModel describeLayer(DescribeLayerRequest request);
 
     /**
      * GetFeatureInfo operation.

@@ -15,6 +15,7 @@ import net.opengis.cat.csw20.HarvestResponseType;
 import net.opengis.cat.csw20.HarvestType;
 import net.opengis.cat.csw20.TransactionType;
 
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.type.FeatureType;
@@ -48,7 +49,7 @@ public interface CatalogService {
     /**
      * Returns the list of possible values for the specified parameter/property
      */
-    Iterable<String> getDomain(GetDomainType request) throws ServiceException;
+    CloseableIterator<String> getDomain(GetDomainType request) throws ServiceException;
     
     /**
      * The optional GetRepositoryItem request, used for ebRIM but could be useful for

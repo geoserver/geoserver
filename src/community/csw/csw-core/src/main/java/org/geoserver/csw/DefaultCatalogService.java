@@ -14,6 +14,7 @@ import net.opengis.cat.csw20.HarvestResponseType;
 import net.opengis.cat.csw20.HarvestType;
 import net.opengis.cat.csw20.TransactionType;
 
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.FeatureCollection;
@@ -57,7 +58,7 @@ public class DefaultCatalogService implements CatalogService {
     }
 
     @Override
-    public Iterable<String> getDomain(GetDomainType request) throws ServiceException {
+    public CloseableIterator<String> getDomain(GetDomainType request) throws ServiceException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -44,6 +44,11 @@ class TypeNameResolver {
      * @throws Exception
      */
     List<QName> parseQNames(String typenameString, NamespaceSupport namespaces) throws Exception {
+        // avoid NPE, namespaces is not required
+        if(namespaces == null) {
+            namespaces = new NamespaceSupport();
+        }
+        
         List<String> typeNames = (List<String>) new FlatKvpParser("nullKey", String.class)
                 .parse(typenameString);
         List<QName> result = new ArrayList<QName>();

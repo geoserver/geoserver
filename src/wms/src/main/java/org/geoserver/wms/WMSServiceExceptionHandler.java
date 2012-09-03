@@ -123,18 +123,18 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             return;
         }
         boolean verbose=geoServer.getSettings().isVerboseExceptions();
-    	String charset=geoServer.getSettings().getCharset();
-        if (JSONType.isJsonMimeType(exceptions)){
-        	// use Json format
-        	JSONType.handleJsonException(LOGGER,exception, request,charset,verbose,false);
-        	return;
-        } else if (JSONType.isJsonpMimeType(exceptions)){
-        	// use JsonP format
-        	JSONType.handleJsonException(LOGGER,exception, request,charset,verbose,true);
-        	return;
+        String charset = geoServer.getSettings().getCharset();
+        if (JSONType.isJsonMimeType(exceptions)) {
+            // use Json format
+            JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, false);
+            return;
+        } else if (JSONType.isJsonpMimeType(exceptions)) {
+            // use JsonP format
+            JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, true);
+            return;
         } else if (isImageExceptionType(exceptions)) {
             // ok, it's image, then we have to build a text representing the
-	        // exception and lay it out in the image
+            // exception and lay it out in the image
             try {
                 width = (Integer) request.getKvp().get("WIDTH");
                 height = (Integer) request.getKvp().get("HEIGHT");
@@ -142,12 +142,13 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 bgcolor = (Color) request.getKvp().get("BGCOLOR");
                 transparent = (Boolean) request.getKvp().get("TRANSPARENT");
                 if (width > 0 && height > 0 && FORMATS.contains(format)){
-    		        handleImageException(exception, request, width, height, format, exceptions, bgcolor, transparent);
-    		        return;
-    	        } else {
-    	        	// use default
-    	            handleXmlException(exception, request);
-    	        }
+                    handleImageException(exception, request, width, height, format, exceptions,
+                            bgcolor, transparent);
+                    return;
+                } else {
+                    // use default
+                    handleXmlException(exception, request);
+                }
             } catch (Exception e) {
                 // width and height might be missing
             	// use default

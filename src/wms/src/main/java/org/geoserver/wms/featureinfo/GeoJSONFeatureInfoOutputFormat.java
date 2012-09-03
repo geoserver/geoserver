@@ -35,8 +35,8 @@ import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.opengis.feature.type.Name;
 
 /**
- * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo
- * request.
+ * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a
+ * GetFeatureInfo request.
  * 
  * <p>
  * This class does not deals directly with GML encoding. Instead, it works by taking the
@@ -46,7 +46,6 @@ import org.opengis.feature.type.Name;
  * </p>
  * 
  * @author Simone Giannecchini, GeoSolutions
- * @author Carlo Cancellieri
  */
 public class GeoJSONFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
@@ -57,10 +56,11 @@ public class GeoJSONFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * @param outputFormat
      * @throws Exception if outputFormat is not a valid json mime type
      */
-    public GeoJSONFeatureInfoOutputFormat(final WMS wms, final String outputFormat) throws Exception {
+    public GeoJSONFeatureInfoOutputFormat(final WMS wms, final String outputFormat)
+            throws Exception {
         super(outputFormat);
-        if (JSONType.getJSONType(outputFormat)==null)
-        	throw new Exception("Illegal json mime type");
+        if (JSONType.getJSONType(outputFormat) == null)
+            throw new Exception("Illegal json mime type");
         this.wms = wms;
     }
 
@@ -152,18 +152,18 @@ public class GeoJSONFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             Operation opDescriptor, GeoJSONOutputFormat format) throws IOException {
         format.write(features, out, opDescriptor);
     }
-    
+
     private String getCallbackFunction() {
-    	
+
         Request request = Dispatcher.REQUEST.get();
-        if(request == null) {
-        	return JSONType.CALLBACK_FUNCTION;
-        } else if(!(request.getKvp().get("FORMAT_OPTIONS") instanceof Map)) {
-        	return JSONType.CALLBACK_FUNCTION;
+        if (request == null) {
+            return JSONType.CALLBACK_FUNCTION;
+        } else if (!(request.getKvp().get("FORMAT_OPTIONS") instanceof Map)) {
+            return JSONType.CALLBACK_FUNCTION;
         }
-        
+
         return JSONType.getCallbackFunction(request.getKvp());
-        
+
     }
 
 }

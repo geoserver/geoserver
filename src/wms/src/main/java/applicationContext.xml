@@ -42,7 +42,6 @@
 	<bean id="wmsDescribeLayer"
 		class="org.geoserver.wms.DescribeLayer">
        <description>WMS DescribeLayer operation</description>
-<!--       <constructor-arg ref="wms"/> -->
 	</bean>
 		
 	<bean id="wmsGetFeatureInfo"
@@ -337,12 +336,6 @@
       class="org.geoserver.wms.capabilities.Capabilities_1_3_0_Response">
     </bean>
   
-<!-- 	<bean id="describeLayerResponse" -->
-<!-- 		class="org.geoserver.wms.describelayer.DescribeLayerResponse"> -->
-<!--       <constructor-arg ref="wms" /> -->
-<!--       <constructor-arg ref="wmsDescribeLayerXML"/> default output format -->
-<!--     </bean> -->
-    
     <bean id="wmsDescribeLayerGeoJSON" class="org.geoserver.wms.describelayer.GeoJSONDescribeLayerResponse">
       <constructor-arg ref="wms" />
       <constructor-arg value="application/json" />
@@ -354,13 +347,13 @@
     </bean>
     
     <!-- DescribeLayer output formats -->
-    <bean id="wmsDescribeLayerText" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
+    <bean id="wmsDescribeLayerXML" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
       <constructor-arg ref="wms" />
       <constructor-arg value="text/xml" />
     </bean>
     
     <!-- DescribeLayer output formats -->
-    <bean id="wmsDescribeLayerXML" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
+    <bean id="wmsDescribeLayerResponse" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
       <constructor-arg ref="wms" />
     </bean>
     

@@ -166,7 +166,7 @@ Create the new download page:
 * Click "select a page template to start from"
 * Choose the "Download" template
 * Fill in the version, release date (e.g., May 17th, 2012) and the jira version
-* Set the page title to the version being released (e.g. "2.2-RC3")
+* Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
 * Save and check all the links are working
 
 If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and make it include the newly created release page.

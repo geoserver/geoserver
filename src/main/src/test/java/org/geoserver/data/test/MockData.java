@@ -628,6 +628,47 @@ public class MockData implements TestData {
         coverageStores.put(name.getLocalPart(), params);
     }
     
+    public void addCoverageFromZip(QName name, URL coverage, String extension, String styleName) throws Exception {
+        File directory = new File(data, name.getPrefix());
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        
+        File f = new File(directory, name.getLocalPart());
+        f.mkdir();
+        
+        File compressedFile = new File(f, name.getLocalPart() + ".zip");
+        IOUtils.copy(coverage.openStream(), compressedFile);
+        IOUtils.decompress(compressedFile,  f);
+        final File srcDir = new File(f, name.getLocalPart());
+        srcDir.mkdir();
+        FileUtils.copyDirectory(srcDir,  f, true);
+        
+        if (extension != null) {
+            File coverageFile = new File(srcDir, name.getLocalPart() + "." + extension);
+            addCoverageFromPath(name, coverageFile,
+                    "file:" + name.getPrefix() + "/" + name.getLocalPart() + "/" + name.getLocalPart() + "." + extension,
+                    styleName);
+        } else {
+            addCoverageFromPath(name, f,
+                    "file:" + name.getPrefix() + "/" + name.getLocalPart(),
+                    styleName);
+        }
+    }
+    
+    private void addCoverageFromPath(QName name, File coverage, String relpath, String styleName) throws Exception {
+        coverageInfo(name, coverage, styleName);
+
+        // setup the meta information to be written in the catalog 
+        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(coverage);
+        namespaces.put(name.getPrefix(), name.getNamespaceURI());
+        coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
+        Map params = new HashMap();
+        params.put(CatalogWriter.COVERAGE_TYPE_KEY, format.getName());
+        params.put(CatalogWriter.COVERAGE_URL_KEY, relpath);
+        coverageStores.put(name.getLocalPart(), params);
+    }
+    
     /**
      * Disables the specificed datastore (it's still configured, but with enabled=false)
      * @param datastoreId

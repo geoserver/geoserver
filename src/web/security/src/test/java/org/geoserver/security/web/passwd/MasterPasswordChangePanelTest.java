@@ -30,7 +30,9 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
     }
     
     public void testPasswordViolatesPolicy() throws Exception {
-        ft.setValue("currentPassword", "geoserver");
+        String mpw = getMasterPassword();
+        System.out.println("testPasswordViolatesPolicy: "+mpw);
+        ft.setValue("currentPassword", mpw);
         ft.setValue("newPassword", "bar");
         ft.setValue("newPasswordConfirm", "bar");
         ft.submit("save");
@@ -38,7 +40,9 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
     }
     
     public void testPasswordChange() throws Exception {
-        ft.setValue("currentPassword", "geoserver");
+        String mpw = getMasterPassword();
+        System.out.println("testPasswordChange: "+mpw);
+        ft.setValue("currentPassword", mpw);
         ft.setValue("newPassword", "Foobar2012");
         ft.setValue("newPasswordConfirm", "Foobar2012");
         ft.submit("save");

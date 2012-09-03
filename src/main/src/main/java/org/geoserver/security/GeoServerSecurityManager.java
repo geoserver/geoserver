@@ -7,6 +7,7 @@ package org.geoserver.security;
 import static org.geoserver.data.util.IOUtils.xStreamPersist;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -14,13 +15,19 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.rmi.server.UID;
 import java.security.InvalidKeyException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -142,6 +149,7 @@ import org.springframework.security.core.userdetails.memory.UserAttribute;
 import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.vfny.geoserver.crs.GeoserverGridShiftLocator;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -165,8 +173,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     /** default config file name */
     public static final String CONFIG_FILENAME = "config.xml";
 
-    /** master password cpnfig file name */
+    /** master password config file name */
     public static final String MASTER_PASSWD_CONFIG_FILENAME = "masterpw.xml";
+    
+    /** master password info file name */
+    public static final String MASTER_PASSWD_INFO_FILENAME = "masterpw.info";
 
     /** master password digest file name */
     public static final String MASTER_PASSWD_DIGEST_FILENAME = "masterpw.digest";
@@ -283,6 +294,16 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextLoadedEvent) {
+            
+            try {
+                File masterPasswordInfo = new File(getSecurityRoot(), MASTER_PASSWD_INFO_FILENAME);
+                if (masterPasswordInfo.exists()) {
+                    LOGGER.warning(masterPasswordInfo.getCanonicalPath()+" is a security risk. Please read this file and remove it afterward");
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException(e1);
+            }
+
             // migrate from old security config
             try {
                 migrateIfNecessary();
@@ -1655,6 +1676,89 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
     }
 
+    
+   /**
+    * @return the master password used for the migration
+    * @throws Exception
+    */
+    char[] extractMasterPasswordForMigration(Properties props) throws Exception {
+                         
+                
+        Map<String,String> candidates = new HashMap<String,String>();
+        String defaultPasswordAsString = new String(MASTER_PASSWD_DEFAULT);
+        
+        if (props!=null) {
+            //load user.properties populate the services 
+            
+            UserAttributeEditor configAttribEd = new UserAttributeEditor();
+            
+            for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext();) {
+                String username = (String) iter.next();
+                
+                configAttribEd.setAsText(props.getProperty(username));
+                UserAttribute attr = (UserAttribute) configAttribEd.getValue();
+                if (attr == null) continue;
+
+                // The master password policy is not yet available, the default is to
+                // have a minimum of 8 chars --> all passwords shorter than 8 chars
+                // are no candidates
+                if (attr.getPassword()==null || attr.getPassword().length() <8 )
+                    continue;
+                
+                // The default password is not allowed
+                if (defaultPasswordAsString.equals(attr.getPassword()))
+                    continue;
+                
+                // the  user named "admin" having a non default password is the primary candiate                
+                if (GeoServerUser.ADMIN_USERNAME.equals(username))  {
+                    candidates.put(GeoServerUser.ADMIN_USERNAME,attr.getPassword());
+                    continue;
+                }
+
+                // other users having the amin role are secondary candidates
+                if (attr.getAuthorities().contains(GeoServerRole.ADMIN_ROLE)) {
+                    candidates.put(username,attr.getPassword());
+                }
+            }
+        }
+        
+        String username = GeoServerUser.ADMIN_USERNAME;
+        String masterPW=candidates.get(username);
+        if (masterPW==null && candidates.size()>0) {
+            username = candidates.keySet().iterator().next();
+            masterPW=candidates.get(username);
+        }
+        
+        String message = null;
+        
+        if (masterPW!=null) {
+            message="Master password is identical to the password of user: "+username;
+        } else {
+            masterPW = new String(getRandomPassworddProvider().getRandomPassword(8));
+            message="The generated master password is: "+masterPW;
+        }
+        
+        File info = new File(getSecurityRoot(),MASTER_PASSWD_INFO_FILENAME);
+        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(info)));
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");                
+        w.write("This file was created at "+dateFormat.format(new Date()));
+        w.newLine();
+        w.newLine();
+        w.write(message);
+        w.newLine();
+        w.newLine();
+        w.write("Test the master password by logging in as user \"root\"");
+        w.newLine();
+        w.newLine();
+        w.write("This file should be removed after reading !!!.");
+        w.newLine();
+        w.close();
+        
+        LOGGER.info("Information regarding the master password is in: "+ info.getCanonicalPath());
+        return masterPW.toCharArray();
+    }
+
+    
     /*
      * converts an old security configuration to the new
      */
@@ -1693,7 +1797,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             //save out the default master password
             MasterPasswordProvider mpProvider = 
                 loadMasterPasswordProvider(mpProviderConfig.getName());
-            mpProvider.setMasterPassword(MASTER_PASSWD_DEFAULT);
+            File propFile = new File(getSecurityRoot(), "users.properties");
+            Properties userprops=null;
+            if (propFile.exists())                  
+                userprops = Util.loadPropertyFile(propFile);            
+            mpProvider.setMasterPassword(extractMasterPasswordForMigration(userprops));
         }
 
         MasterPasswordConfig mpConfig = new MasterPasswordConfig();

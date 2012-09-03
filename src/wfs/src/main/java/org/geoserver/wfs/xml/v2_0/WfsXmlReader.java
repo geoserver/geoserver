@@ -15,6 +15,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
+import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.wfs.v2_0.WFS;
@@ -22,7 +23,7 @@ import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
 
 /**
- * Xml reader for wfs 1.0 xml requests.
+ * Xml reader for wfs 2.0 xml requests.
  * 
  * @author Justin Deoliveira, OpenGeo
  *
@@ -42,8 +43,7 @@ public class WfsXmlReader extends XmlRequestReader {
         WFSXmlUtils.initWfsConfiguration(config, gs, new FeatureTypeSchemaBuilder.GML32(gs));
         
         Parser parser = new Parser(config);
-        
-        
+        parser.getURIHandlers().add(0, new WFSURIHandler(gs));
         
         WFSInfo wfs = wfs();
         

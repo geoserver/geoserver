@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -43,7 +44,6 @@ import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
 import org.geoserver.security.filter.GeoServerCompositeFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
-import org.geoserver.security.impl.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.DigestAuthUtils;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;

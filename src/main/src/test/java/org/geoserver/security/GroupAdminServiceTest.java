@@ -3,7 +3,6 @@ package org.geoserver.security;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.geoserver.security.impl.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;

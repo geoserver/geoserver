@@ -33,16 +33,22 @@ import org.geotools.coverage.processing.operation.Resample;
 import org.geotools.coverage.processing.operation.SelectSampleDimension;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridGeometry;
+import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
+import org.opengis.geometry.Envelope;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.wcs.WcsException;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * 
@@ -57,6 +63,10 @@ public class WCSUtils {
     public static final String ELEVATION = "ELEVATION";
     
     public final static Hints LENIENT_HINT = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
+    
+    private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
+    
+    private static final Operation CROP = PROCESSOR.getOperation("CoverageCrop");
 
     private final static SelectSampleDimension bandSelectFactory = new SelectSampleDimension();
 
@@ -117,6 +127,28 @@ public class WCSUtils {
 
         return (GridCoverage2D) resampleFactory.doOperation(param, hints);
 
+    }
+    
+    /**
+     * Crops the coverage to the specified bounds
+     * 
+     * @param coverage
+     * @param bounds
+     * @return
+     */
+    public static GridCoverage2D crop(
+            final GridCoverage2D coverage,
+            final Envelope bounds) {
+        Polygon polygon = JTS.toGeometry(new ReferencedEnvelope(bounds));
+        Geometry roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
+
+        // perform the crops
+        final ParameterValueGroup param = CROP.getParameters();
+        param.parameter("Source").setValue(coverage);
+        param.parameter("Envelope").setValue(bounds);
+        param.parameter("ROI").setValue(roi);
+
+        return (GridCoverage2D) PROCESSOR.doOperation(param);
     }
 
     /**

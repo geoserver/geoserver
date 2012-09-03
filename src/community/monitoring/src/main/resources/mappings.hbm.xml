@@ -20,7 +20,11 @@
     <property column="CATEGORY" name="category" type="Category" index="REQ_CATEGORY_IDX"/>
     
     <property column="PATH" name="path"/>
+    
     <property column="BODY" name="body" length="1024"/>
+    <!-- Use this instead for an unbounded body field -->
+    <!-- <property column="BODY" name="body"/>-->
+    
     <property column="QUERY_STRING" name="queryString" length="4096"/>
     <property column="BODY_CONTENT_TYPE" name="bodyContentType"/>
     <property column="BODY_CONTENT_LENGTH" name="bodyContentLength"/>
@@ -50,6 +54,10 @@
     
     <property column="ERROR_MESSAGE" name="errorMessage" length="1024"/>
     <property column="EXCEPTION_STACK_TRACE" name="error" type="Error"/>
+    
+    <property column="RESPONSE_STATUS" name="responseStatus" />
+    
+    <property column="HTTP_REFERER" name="httpReferer" length="4096"/>
     
     <list name="resources" table="REQUEST_RESOURCES">
       <key column="REQUEST_ID" not-null="true"/>

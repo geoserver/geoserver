@@ -359,6 +359,7 @@ border-bottom: 0 none transparent;
 
 #content img {
 margin-bottom: 10px;
+max-width:99%;
 }
 
 #content .figure img {

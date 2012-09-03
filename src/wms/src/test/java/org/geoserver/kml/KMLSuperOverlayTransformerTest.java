@@ -87,7 +87,8 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
     }
 
     /**
-     * Verify that when a tile smaller than one hemisphere is requested, four subtiles are included in the result.
+     * Verify that when a tile smaller than one hemisphere is requested, then subtiles are included 
+     * in the result (but only the ones necessary for the data at hand)
      */
     public void testSubtileSuperOverlay() throws Exception {
         KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
@@ -102,10 +103,12 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
 
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
+        print(document);
 
         assertEquals("kml", document.getDocumentElement().getNodeName());
-        assertEquals(6, document.getElementsByTagName("Region").getLength());
-        assertEquals(5, document.getElementsByTagName("NetworkLink").getLength());
+        // only two regions, the root one and one network link (that's all we need)
+        assertEquals(2, document.getElementsByTagName("Region").getLength());
+        assertEquals(1, document.getElementsByTagName("NetworkLink").getLength());
         assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
     }
 

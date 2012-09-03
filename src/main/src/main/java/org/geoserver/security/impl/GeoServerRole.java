@@ -135,7 +135,7 @@ public class GeoServerRole  implements GrantedAuthority,  Comparable<GeoServerRo
 
         if (obj instanceof GrantedAuthority && getUserName()==null) {
             if (obj instanceof GeoServerRole ==false)
-                equalsWithoutUserName(obj);
+                return equalsWithoutUserName(obj);
         }
 
         if (obj instanceof GeoServerRole) {

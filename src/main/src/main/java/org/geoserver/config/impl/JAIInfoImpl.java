@@ -236,4 +236,12 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
             return false;
         return true;
     }
+    
+    public JAIInfoImpl clone() {
+        try {
+            return (JAIInfoImpl) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

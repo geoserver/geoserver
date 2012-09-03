@@ -7,13 +7,13 @@
   <parent>
     <groupId>org.geoserver</groupId>    
     <artifactId>web</artifactId>
-    <version>2.2-RC2</version>
+    <version>2.2-RC3</version>
   </parent>
 
   <groupId>org.geoserver.web</groupId>
   <artifactId>web-gwc</artifactId>
   <packaging>jar</packaging>
-  <version>2.2-RC2</version>
+  <version>2.2-RC3</version>
   <name>GWC UI Module</name>
   
   <dependencies>
@@ -54,6 +54,11 @@
        <groupId>com.mockrunner</groupId>
        <artifactId>mockrunner</artifactId>
        <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
     </dependency>
  </dependencies>
 

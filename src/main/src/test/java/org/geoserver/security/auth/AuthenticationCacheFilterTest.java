@@ -188,7 +188,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();        
         
         request.addHeader("Authorization",  "Basic " + 
-                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":geoserver").getBytes())));
+                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":"+getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         auth = getAuth(GeoServerUser.ROOT_USERNAME, "geoserver",null,null);
@@ -543,7 +543,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();        
         
-        headerValue=clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, "geoserver", request.getMethod());
+        headerValue=clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
         request.addHeader("Authorization",  headerValue);        
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
@@ -707,7 +707,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     
                 
         request.addHeader("Authorization",  "Basic " + 
-                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":geoserver").getBytes())));
+                new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":"+getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         auth = getAuth(testFilterName5, GeoServerUser.ROOT_USERNAME, null,null);        

@@ -1,12 +1,12 @@
 package org.geoserver.wcs;
 
-import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.geoserver.data.test.MockData.WORLD;
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
+import static org.geoserver.data.test.MockData.*;
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -19,14 +19,19 @@ import javax.xml.namespace.QName;
 import junit.framework.Test;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.geometry.Envelope;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 import org.w3c.dom.Document;
 
@@ -35,6 +40,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 public class GetCoverageTest extends AbstractGetCoverageTest {
 
     private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
+    private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
 
 
     /**
@@ -57,35 +63,11 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // this also adds the raster style
         dataDirectory.addCoverage(MOSAIC, 
                 MockData.class.getResource("raster-filter-test.zip"), null, "raster");
+        
+        // add a data source that cannot restrict spatial data on its own
+        dataDirectory.addCoverageFromZip(RAIN, 
+                MockData.class.getResource("rain.zip"), "asc", "raster");
     }
-
-    // public void testNullGridOrigin() throws Exception {
-    // String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + //
-    // "<wcs:GetCoverage service=\"WCS\" " + //
-    // "xmlns:ows=\"http://www.opengis.net/ows/1.1\"\r\n" + //
-    // "  xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\"\r\n" + //
-    // "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n" + //
-    // "  xsi:schemaLocation=\"http://www.opengis.net/wcs/1.1.1 " + //
-    // "schemas/wcs/1.1.1/wcsAll.xsd\"\r\n" + //
-    // "  version=\"1.1.1\" >\r\n" + //
-    // "  <ows:Identifier>wcs:BlueMarble</ows:Identifier>\r\n" + //
-    // "  <wcs:DomainSubset>\r\n" + //
-    // "    <ows:BoundingBox crs=\"urn:ogc:def:crs:EPSG:6.6:4326\">\r\n" + //
-    // "      <ows:LowerCorner>-90 -180</ows:LowerCorner>\r\n" + //
-    // "      <ows:UpperCorner>90 180</ows:UpperCorner>\r\n" + //
-    // "    </ows:BoundingBox>\r\n" + //
-    // "  </wcs:DomainSubset>\r\n" + //
-    // "  <wcs:Output format=\"image/tiff\">\r\n" + //
-    // "    <wcs:GridCRS>\r\n" + //
-    // "      <wcs:GridBaseCRS>urn:ogc:def:crs:EPSG:6.6:4326</wcs:GridBaseCRS>\r\n" + //
-    // "      <wcs:GridType>urn:ogc:def:method:WCS:1.1:2dSimpleGrid</wcs:GridType>\r\n" + //
-    // "      <wcs:GridOffsets>-1 2</wcs:GridOffsets>\r\n" + //
-    // "    </wcs:GridCRS>\r\n" + //
-    // "  </wcs:Output>\r\n" + //
-    // "</wcs:GetCoverage>";
-    //    
-    // executeGetCoverageXml(request);
-    // }
 
     public void testKvpBasic() throws Exception {
         Map<String, Object> raw = baseMap();
@@ -164,18 +146,36 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         }
     }
 
-    // public void testDefaultGridOrigin() throws Exception {
-    // Map<String, Object> raw = new HashMap<String, Object>();
-    // final String getLayerId = getLayerId(TASMANIA_BM);
-    // raw.put("identifier", getLayerId);
-    // raw.put("format", "image/geotiff");
-    // raw.put("BoundingBox", "-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326");
-    //	
-    // GridCoverage[] coverages = executeGetCoverageKvp(raw);
-    // AffineTransform2D tx = (AffineTransform2D) coverages[0].getGridGeometry().getGridToCRS();
-    // assertEquals(0.0, tx.getTranslateX());
-    // assertEquals(0.0, tx.getTranslateY());
-    // }
+    public void testDefaultGridOrigin() throws Exception {
+        Map<String, Object> raw = new HashMap<String, Object>(baseMap());
+        final String getLayerId = getLayerId(TASMANIA_BM);
+        raw.put("identifier", getLayerId);
+        raw.put("format", "image/geotiff");
+        // use a bbox larger than the source
+        raw.put("BoundingBox", "-45,146,-42,149,urn:ogc:def:crs:EPSG:6.6:4326");
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        AffineTransform2D tx = (AffineTransform2D) coverages[0].getGridGeometry().getGridToCRS();
+        // take into account the "pixel is area" convention
+        assertEquals(0.0, tx.getTranslateX() + tx.getScaleX() / 2, 1e-9);
+        assertEquals(0.0, tx.getTranslateY() + tx.getScaleY() / 2, 1e-9);
+    }
+    
+    public void testSpatialSubsetOnePixel() throws Exception {
+        Map<String, Object> raw = new HashMap<String, Object>(baseMap());
+        final String getLayerId = getLayerId(RAIN);
+        raw.put("identifier", getLayerId);
+        raw.put("format", "image/geotiff");
+        // this bbox is inside, and smaller than a single pixel
+        raw.put("BoundingBox", "-45,146,-42,149,urn:ogc:def:crs:EPSG:6.6:4326");
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        Envelope envelope = coverages[0].getEnvelope();
+        assertEquals(-45d, envelope.getMinimum(0));
+        assertEquals(-40d, envelope.getMaximum(0));
+        assertEquals(146d, envelope.getMinimum(1));
+        assertEquals(151d, envelope.getMaximum(1));
+    }
 
     public void testWrongGridOrigin() throws Exception {
         Map<String, Object> raw = baseMap();
@@ -191,6 +191,36 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
             assertEquals(InvalidParameterValue.name(), e.getCode());
             assertEquals("GridOrigin", e.getLocator());
         }
+    }
+    
+    public void testReproject() throws Exception {
+        // add the target code to the supported ones
+        Catalog catalog = getCatalog();
+        final String layerId = getLayerId(TASMANIA_BM);
+        CoverageInfo ci = catalog.getCoverageByName(layerId);
+        ci.getResponseSRS().add("EPSG:3857");
+        catalog.save(ci);
+        
+        // do the request
+        Map<String, Object> raw = baseMap();
+        raw.put("identifier", layerId);
+        raw.put("format", "image/geotiff");
+        raw.put("BoundingBox", "-80,-180,80,180,urn:ogc:def:crs:EPSG:6.6:4326");
+        raw.put("GridBaseCRS", "EPSG:3857");
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        
+        Envelope envelope = coverages[0].getEnvelope();
+        System.out.println(envelope);
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
+        assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
+        
+        ReferencedEnvelope nativeBounds = ci.getNativeBoundingBox();
+        ReferencedEnvelope expected = nativeBounds.transform(targetCRS, true);
+        
+        assertEquals(expected.getMinimum(0), envelope.getMinimum(0));
+        assertEquals(expected.getMaximum(0), envelope.getMaximum(0));
+        assertEquals(expected.getMinimum(1), envelope.getMinimum(1));
+        assertEquals(expected.getMaximum(1), envelope.getMaximum(1));
     }
 
     public void testWorkspaceQualified() throws Exception {
@@ -240,19 +270,19 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         CoverageInfo ci = getCatalog().getCoverageByName(TASMANIA_BM.getLocalPart());
         GridCoverage2D original = (GridCoverage2D) ci.getGridCoverage(null, null);
         
-        // the grid should be swapped, axis flipping...
+        // the grid should not be swapped since the target output is expressed in EPSG:XYWZ form
         GridEnvelope originalRange = original.getGridGeometry().getGridRange();
         GridEnvelope actualRange = result.getGridGeometry().getGridRange();
-        assertEquals(originalRange.getSpan(0), actualRange.getSpan(1));
-        assertEquals(originalRange.getSpan(1), actualRange.getSpan(0));
+        assertEquals(originalRange.getSpan(0), actualRange.getSpan(0));
+        assertEquals(originalRange.getSpan(1), actualRange.getSpan(1));
         
         // check also the geographic bounds
         Envelope2D originalEnv = original.getEnvelope2D();
         Envelope2D actualEnv = result.getEnvelope2D();
-        assertEquals(originalEnv.getMinX(), actualEnv.getMinY(), 1e-6);
-        assertEquals(originalEnv.getMinY(), actualEnv.getMinX(), 1e-6);
-        assertEquals(originalEnv.getMaxX(), actualEnv.getMaxY(), 1e-6);
-        assertEquals(originalEnv.getMaxY(), actualEnv.getMaxX(), 1e-6);
+        assertEquals(originalEnv.getMinX(), actualEnv.getMinX(), 1e-6);
+        assertEquals(originalEnv.getMinY(), actualEnv.getMinY(), 1e-6);
+        assertEquals(originalEnv.getMaxX(), actualEnv.getMaxX(), 1e-6);
+        assertEquals(originalEnv.getMaxY(), actualEnv.getMaxY(), 1e-6);
         
         // cleanup
         tiffFile.delete();

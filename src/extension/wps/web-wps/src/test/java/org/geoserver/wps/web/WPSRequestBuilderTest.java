@@ -2,6 +2,7 @@ package org.geoserver.wps.web;
 
 import java.util.List;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -9,6 +10,11 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wps.web.WPSRequestBuilder;
 
+/**
+ * 
+ * @author Martin Davis OpenGeo
+ *
+ */
 public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
 
     public void testJTSAreaWorkflow() throws Exception {
@@ -42,7 +48,7 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:requestBuilder:process", "JTS:area");
         Label label = (Label) tester
                 .getComponentFromLastRenderedPage("form:requestBuilder:descriptionContainer:processDescription");
-        assertTrue(label.getDefaultModelObjectAsString().contains("geometry area"));
+        assertTrue(label.getDefaultModelObjectAsString().contains("area"));
 
         tester.assertComponent(
                 "form:requestBuilder:inputContainer:inputs:0:paramValue:editor:mime",
@@ -68,4 +74,27 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         // contents,
         // as that requires a true browser to execute the request
     }
+    
+    /**
+     * Tests initializing page to specific process via name request parameter.
+     * 
+     * @throws Exception
+     */
+    public void testNameRequest() throws Exception {
+        login();
+        
+        // start the page
+        tester.startPage(new WPSRequestBuilder(new PageParameters("name=JTS:area")));
+        
+        tester.assertComponent("form:requestBuilder:process", DropDownChoice.class);
+        
+        // check process description
+        tester.assertModelValue("form:requestBuilder:process", "JTS:area");
+        
+        tester.assertComponent(
+                "form:requestBuilder:inputContainer:inputs:0:paramValue:editor:textarea",
+                TextArea.class);
+    }
+    
+
 }

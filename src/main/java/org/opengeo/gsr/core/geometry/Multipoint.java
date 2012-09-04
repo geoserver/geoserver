@@ -9,8 +9,18 @@ package org.opengeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  * 
  */
-public class Multipoint extends Geometry {
+public class Multipoint implements Geometry {
 
+    protected GeometryTypeEnum geometryType;
+
+    public GeometryTypeEnum getGeometryType() {
+        return geometryType;
+    }
+
+    public void setGeometryType(GeometryTypeEnum geometryType) {
+        this.geometryType = geometryType;
+    }
+    
     private double[][] points;
 
     private SpatialReference spatialReference;

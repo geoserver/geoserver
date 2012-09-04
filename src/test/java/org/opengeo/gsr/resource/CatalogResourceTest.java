@@ -1,6 +1,5 @@
 package org.opengeo.gsr.resource;
 
-import static org.junit.Assert.assertTrue;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

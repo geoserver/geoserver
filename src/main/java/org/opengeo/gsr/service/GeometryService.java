@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("GeometryService")
-public class GeometryService extends AbstractService {
+public class GeometryService implements AbstractService {
 
     private String name;
 

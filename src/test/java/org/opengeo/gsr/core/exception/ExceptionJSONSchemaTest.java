@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.opengeo.gsr.JsonSchemaTests;
+import org.opengeo.gsr.JsonSchemaTest;
 
-public class ExceptionJSONSchemaTest extends JsonSchemaTests {
+public class ExceptionJSONSchemaTest extends JsonSchemaTest {
 
     public ExceptionJSONSchemaTest() {
         super();

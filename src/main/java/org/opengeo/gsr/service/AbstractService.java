@@ -10,6 +10,6 @@ package org.opengeo.gsr.service;
  * 
  */
 
-public abstract class AbstractService {
+public interface AbstractService {
 
 }

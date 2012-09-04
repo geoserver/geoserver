@@ -16,7 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 
 @XStreamAlias(value = "")
-public class CatalogService extends AbstractService {
+public class CatalogService implements AbstractService {
 
     private String name;
 

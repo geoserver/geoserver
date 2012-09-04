@@ -4,7 +4,6 @@
  */
 package org.opengeo.gsr.core.geometry;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * 
@@ -12,8 +11,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 
-@XStreamAlias(value = "")
-public class SpatialReferenceWKID extends SpatialReference {
+public class SpatialReferenceWKID implements SpatialReference {
 
     private int wkid;
 

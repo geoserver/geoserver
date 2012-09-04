@@ -4,13 +4,25 @@
  */
 package org.opengeo.gsr.core.geometry;
 
+
 /**
  * 
  * @author Juan Marin - OpenGeo
  * 
  */
-public class Point extends Geometry {
 
+public class Point implements Geometry {
+
+    protected GeometryTypeEnum geometryType;
+
+    public GeometryTypeEnum getGeometryType() {
+        return geometryType;
+    }
+
+    public void setGeometryType(GeometryTypeEnum geometryType) {
+        this.geometryType = geometryType;
+    }
+    
     private double x;
 
     private double y;

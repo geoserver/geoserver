@@ -9,8 +9,18 @@ package org.opengeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  * 
  */
-public class Polygon extends Geometry {
+public class Polygon implements Geometry {
 
+    protected GeometryTypeEnum geometryType;
+
+    public GeometryTypeEnum getGeometryType() {
+        return geometryType;
+    }
+
+    public void setGeometryType(GeometryTypeEnum geometryType) {
+        this.geometryType = geometryType;
+    }
+    
     private double[][][] rings;
 
     private SpatialReference spatialReference;

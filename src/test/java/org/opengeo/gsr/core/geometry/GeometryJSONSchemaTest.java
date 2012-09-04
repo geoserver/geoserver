@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.opengeo.gsr.JsonSchemaTests;
+import org.opengeo.gsr.JsonSchemaTest;
 
 /**
  * JSON Schema validation class. Validation is possible with local files, with the following modifications: - All $ref elements need to point to a
@@ -14,7 +14,7 @@ import org.opengeo.gsr.JsonSchemaTests;
  * 
  */
 
-public class GeometryJSONSchemaTest extends JsonSchemaTests {
+public class GeometryJSONSchemaTest extends JsonSchemaTest {
 
 
     public GeometryJSONSchemaTest() {

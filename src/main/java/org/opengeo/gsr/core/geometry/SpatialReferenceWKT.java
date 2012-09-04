@@ -9,6 +9,6 @@ package org.opengeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  * 
  */
-public class SpatialReferenceWKT {
+public class SpatialReferenceWKT implements SpatialReference {
 
 }

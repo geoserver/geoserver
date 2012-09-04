@@ -13,7 +13,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 
 @XStreamAlias("")
-public class MapService extends AbstractService {
+public class MapService implements AbstractService {
 
     private String name;
 

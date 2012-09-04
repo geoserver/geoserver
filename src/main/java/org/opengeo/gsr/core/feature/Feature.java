@@ -19,7 +19,7 @@ public class Feature {
 
     private Geometry geometry;
 
-    @XStreamImplicit(itemFieldName = "attributes")
+    @XStreamImplicit
     private Map<String, Object> attributes;
 
     public Geometry getGeometry() {

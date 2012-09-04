@@ -36,6 +36,12 @@ public class JSONValidator {
             JsonNode jsonNode = JsonLoader.fromReader(reader);
             ValidationReport report = schema.validate(jsonNode);
             isValid = report.isSuccess();
+            if (!isValid) {
+                System.out.println("ERROR validating Json Schema in " + schemaFile);
+                for (String msg : report.getMessages()) {
+                    System.out.println(msg);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;

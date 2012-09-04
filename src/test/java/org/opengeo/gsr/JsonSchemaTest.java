@@ -7,19 +7,19 @@ import org.opengeo.gsr.validation.JSONValidator;
 
 import com.thoughtworks.xstream.XStream;
 
-public class JsonSchemaTests {
+public class JsonSchemaTest {
 
-    private static XStream xstream;
+    protected static XStream xstream;
 
-    public JsonSchemaTests() {
+    public JsonSchemaTest() {
         GeoServicesJsonFormat jsonFormat = new GeoServicesJsonFormat();
-        JsonSchemaTests.xstream = jsonFormat.getXStream();
+        JsonSchemaTest.xstream = jsonFormat.getXStream();
     }
 
     public static String getJson(Object obj) {
-        return xstream.toXML(obj);
+        return JsonSchemaTest.xstream.toXML(obj);
     }
-    
+
     protected boolean validateJSON(String json, String schemaPath) {
         String workingDir = System.getProperty("user.dir") + "/src/test/resources/schemas/";
         return JSONValidator.isValidSchema(json, new File(workingDir + schemaPath));

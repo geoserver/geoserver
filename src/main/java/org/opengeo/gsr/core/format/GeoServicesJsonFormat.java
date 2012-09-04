@@ -11,8 +11,11 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import org.geoserver.rest.format.ReflectiveJSONFormat;
+import org.opengeo.gsr.core.feature.FeatureConverter;
 import org.opengeo.gsr.core.feature.FieldTypeConverter;
+import org.opengeo.gsr.core.geometry.GeometryTypeConverter;
 import org.opengeo.gsr.core.geometry.Point;
+import org.opengeo.gsr.core.geometry.SpatialReferenceWKID;
 import org.opengeo.gsr.service.CatalogService;
 
 import com.thoughtworks.xstream.XStream;
@@ -39,19 +42,33 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
 
     public GeoServicesJsonFormat() {
         super();
+        configureXStream();
+    }
+
+    private void configureXStream() {
         XStream xstream = new XStream(new JsonHierarchicalStreamDriver() {
             public HierarchicalStreamWriter createWriter(Writer writer) {
                 return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
             }
         });
+
+        xstream.alias("", Point.class);
+        xstream.alias("", SpatialReferenceWKID.class);
+
+        // omit fields
         xstream.omitField(CatalogService.class, "name");
+        xstream.omitField(CatalogService.class, "type");
         xstream.omitField(CatalogService.class, "serviceType");
         xstream.omitField(CatalogService.class, "specVersion");
         xstream.omitField(CatalogService.class, "productName");
 
         xstream.omitField(Point.class, "geometryType");
-        
+        xstream.omitField(SpatialReferenceWKID.class, "geometryType");
+
+        // converters
         xstream.registerConverter(new FieldTypeConverter());
+        xstream.registerConverter(new GeometryTypeConverter());
+        // xstream.registerConverter(new FeatureConverter());
 
         this.xStream = xstream;
     }

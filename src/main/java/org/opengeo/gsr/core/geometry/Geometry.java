@@ -4,22 +4,22 @@
  */
 package org.opengeo.gsr.core.geometry;
 
-import java.io.Serializable;
-
 /**
  * 
  * @author Juan Marin - OpenGeo
  * 
  */
-public abstract class Geometry implements Serializable {
+public interface Geometry {
 
-    protected GeometryTypeEnum geometryType;
+    public GeometryTypeEnum getGeometryType();
 
-    public GeometryTypeEnum getGeometryType() {
-        return geometryType;
-    }
-
-    public void setGeometryType(GeometryTypeEnum geometryType) {
-        this.geometryType = geometryType;
-    }
+    // protected GeometryTypeEnum geometryType;
+    //
+    // public GeometryTypeEnum getGeometryType() {
+    // return geometryType;
+    // }
+    //
+    // public void setGeometryType(GeometryTypeEnum geometryType) {
+    // this.geometryType = geometryType;
+    // }
 }

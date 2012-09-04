@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import org.geoserver.rest.format.ReflectiveJSONFormat;
+import org.opengeo.gsr.core.feature.FieldTypeConverter;
 import org.opengeo.gsr.core.geometry.Point;
 import org.opengeo.gsr.service.CatalogService;
 
@@ -49,6 +50,8 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.omitField(CatalogService.class, "productName");
 
         xstream.omitField(Point.class, "geometryType");
+        
+        xstream.registerConverter(new FieldTypeConverter());
 
         this.xStream = xstream;
     }

@@ -97,6 +97,7 @@
       <groupId>org.kitchen-eel</groupId>
       <artifactId>json-schema-validator</artifactId>
       <version>0.5.4</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

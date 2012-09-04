@@ -9,8 +9,9 @@
 <beans>
   <!-- DXF Output Format -->
   <bean id="DXFOutputFormat" class="org.geoserver.wfs.response.DXFOutputFormat">
-  	<constructor-arg ref="geoServer"/>  	
+  	<constructor-arg ref="geoServer"/>
   </bean>
-  
- 
+  <bean id="DXFPPIO" class="org.geoserver.wps.ppio.DXFPPIO">
+  	  <!-- <constructor-arg ref="wpsResourceManager"/> -->
+  </bean>
 </beans>

@@ -36,6 +36,12 @@
        <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>	
+
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>wps-core</artifactId>
+	   <version>${project.version}</version>
+    </dependency>	
     
     <dependency>
       <groupId>org.geoserver</groupId>

@@ -175,7 +175,8 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                                     "',MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X',140.962,144.909,0.00001),")
                             .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)")
                             .append( //support 3d index
-                            		((GeometryDescriptor) desc).getCoordinateReferenceSystem().getCoordinateSystem().getDimension() == 3 ?
+                            		((GeometryDescriptor) desc).getCoordinateReferenceSystem() != null
+                            		&& ((GeometryDescriptor) desc).getCoordinateReferenceSystem().getCoordinateSystem().getDimension() == 3 ?
                             		", MDSYS.SDO_DIM_ELEMENT('Z',-100000, 100000, 1) )," : "),")
                             .append(srid).append(")\n");
 

@@ -11,17 +11,17 @@ package org.opengeo.gsr.core.geometry;
  */
 public class GeometryArray {
 
-    private GeometryType geometryType;
+    private GeometryTypeEnum geometryType;
 
     private Geometry[] geometries;
 
     private SpatialReference spatialReference;
 
-    public GeometryType getGeometryType() {
+    public GeometryTypeEnum getGeometryType() {
         return geometryType;
     }
 
-    public void setGeometryType(GeometryType geometryType) {
+    public void setGeometryType(GeometryTypeEnum geometryType) {
         this.geometryType = geometryType;
     }
 
@@ -41,7 +41,7 @@ public class GeometryArray {
         this.spatialReference = spatialReference;
     }
 
-    public GeometryArray(GeometryType geometryType, Geometry[] geometries,
+    public GeometryArray(GeometryTypeEnum geometryType, Geometry[] geometries,
             SpatialReference spatialReference) {
         this.geometryType = geometryType;
         this.geometries = geometries;
@@ -50,7 +50,7 @@ public class GeometryArray {
 
     public boolean isValidGeometryTypes() {
         if (this.geometries.length > 0) {
-            GeometryType geomType = this.geometries[0].getGeometryType();
+            GeometryTypeEnum geomType = this.geometries[0].getGeometryType();
             for (int i = 1; i < this.geometries.length; i++) {
                 if (!this.geometries[i].getGeometryType().equals(geomType)) {
                     return false;

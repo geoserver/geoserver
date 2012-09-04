@@ -121,7 +121,7 @@ public class GeometryJSONSchemaTest extends JSONSchemaUtils {
         Geometry[] geometries = new Geometry[2];
         geometries[0] = point;
         geometries[1] = point2;
-        GeometryArray array = new GeometryArray(GeometryType.POINT, geometries,
+        GeometryArray array = new GeometryArray(GeometryTypeEnum.POINT, geometries,
                 spatialReference);
         String json = mapper.writeValueAsString(array);
         assertTrue(validateJSON(json, "gsr/1.0/geometries.json"));

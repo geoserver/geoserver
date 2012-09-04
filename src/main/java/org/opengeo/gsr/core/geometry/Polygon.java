@@ -34,6 +34,6 @@ public class Polygon extends Geometry {
     public Polygon(double[][][] rings, SpatialReference spatialRef) {
         this.rings = rings;
         this.spatialReference = spatialRef;
-        this.geometryType = GeometryType.POLYGON;
+        this.geometryType = GeometryTypeEnum.POLYGON;
     }
 }

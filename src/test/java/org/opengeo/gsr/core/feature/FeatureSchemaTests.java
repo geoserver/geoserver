@@ -32,4 +32,27 @@ public class FeatureSchemaTests extends JSONSchemaUtils {
         String json = mapper.writeValueAsString(feature);
         assertTrue(validateJSON(json, "gsr/1.0/feature.json"));
     }
+
+    @Test
+    public void testFeatureIdSetJsonSchema() throws Exception {
+        String objectIdFieldName = "objectid";
+        int[] ids = {1,2,3,4,5,6,7};
+        FeatureIdSet fIdSet = new FeatureIdSet(objectIdFieldName, ids);
+        String json = mapper.writeValueAsString(fIdSet);
+        assertTrue(validateJSON(json, "gsr/1.0/featureIdSet.json"));
+    }
+    
+    @Test
+    public void testFieldJsonSchema() throws Exception {
+        Field field = new Field("magnitude", FieldTypeEnum.STRING, "Magnitude");
+        String json = mapper.writeValueAsString(field);
+        assertTrue(validateJSON(json, "gsr/1.0/field.json"));
+    }
+    
+    @Test
+    public void testStringFieldJsonSchema() throws Exception {
+        Field field = new StringField("name", FieldTypeEnum.STRING, "Name", 30);
+        String json = mapper.writeValueAsString(field);
+        assertTrue(validateJSON(json, "gsr/1.0/field.json"));
+    }
 }

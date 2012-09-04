@@ -1,0 +1,19 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	"id": "http://schemas.opengis.net/gsr/1.0/featureIdSet.json",
+
+	"title":"set of feature identifiers",
+	"type":"object",
+	
+	"properties":{ 
+		"objectIdFieldName":{
+			"title":"field with object identifier ",
+			"type":"string"},
+		"objectIds":{
+			"title":"list of object identifiers",
+			"type":"array",
+ 			"items":{
+				"title":"object identifier",
+				"type":"integer"}}
+}
+}

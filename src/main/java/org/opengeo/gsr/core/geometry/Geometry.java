@@ -13,13 +13,13 @@ import java.io.Serializable;
  */
 public abstract class Geometry implements Serializable {
 
-    protected GeometryType geometryType;
+    protected GeometryTypeEnum geometryType;
 
-    public GeometryType getGeometryType() {
+    public GeometryTypeEnum getGeometryType() {
         return geometryType;
     }
 
-    public void setGeometryType(GeometryType geometryType) {
+    public void setGeometryType(GeometryTypeEnum geometryType) {
         this.geometryType = geometryType;
     }
 }

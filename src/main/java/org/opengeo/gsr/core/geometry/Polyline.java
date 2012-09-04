@@ -34,6 +34,6 @@ public class Polyline extends Geometry {
     public Polyline(double[][][] paths, SpatialReference spatialRef) {
         this.paths = paths;
         this.spatialReference = spatialRef;
-        this.geometryType = GeometryType.POLYLINE;
+        this.geometryType = GeometryTypeEnum.POLYLINE;
     }
 }

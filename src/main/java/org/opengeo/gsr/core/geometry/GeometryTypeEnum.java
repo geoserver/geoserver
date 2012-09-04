@@ -9,7 +9,7 @@ package org.opengeo.gsr.core.geometry;
  * @author Juan Marin - OpenGeo
  * 
  */
-public enum GeometryType {
+public enum GeometryTypeEnum {
 
     POINT("GeometryPoint"), MULTIPOINT("GeometryMultiPoint"), POLYLINE("GeometryPolyline"), POLYGON(
             "GeometryPolygon"), ENVELOPE("GeometryEnvelope");
@@ -19,7 +19,7 @@ public enum GeometryType {
         return geometryType;
     }
 
-    private GeometryType(String geomType) {
+    private GeometryTypeEnum(String geomType) {
         this.geometryType = geomType;
     }
 

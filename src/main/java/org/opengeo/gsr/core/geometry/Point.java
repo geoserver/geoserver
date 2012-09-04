@@ -13,6 +13,10 @@ public class Point extends Geometry {
 
     private double x;
 
+    private double y;
+
+    private SpatialReference spatialReference;
+
     public double getX() {
         return x;
     }
@@ -28,10 +32,6 @@ public class Point extends Geometry {
     public void setY(double y) {
         this.y = y;
     }
-
-    private double y;
-
-    private SpatialReference spatialReference;
 
     public SpatialReference getSpatialReference() {
         return spatialReference;

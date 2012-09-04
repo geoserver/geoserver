@@ -1,0 +1,12 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "id":"http://schemas.opengis.net/gsr/1.0/attributes.json",
+
+	"title":"properties",
+	"type":["null","object"],
+	"patternProperties":{
+		"\\w*":{
+			"type":["null","string","number","boolean","array"]
+		}
+	}
+}

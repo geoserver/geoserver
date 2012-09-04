@@ -4,7 +4,6 @@
  */
 package org.opengeo.gsr.core.geometry;
 
-
 /**
  * 
  * @author Juan Marin - OpenGeo
@@ -22,7 +21,7 @@ public class Point implements Geometry {
     public void setGeometryType(GeometryTypeEnum geometryType) {
         this.geometryType = geometryType;
     }
-    
+
     private double x;
 
     private double y;
@@ -53,10 +52,10 @@ public class Point implements Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Point(double x, double y, SpatialReference spatialRef) {
+    public Point(double x, double y, SpatialReference spatialReferenceWKID) {
         this.x = x;
         this.y = y;
-        this.spatialReference = spatialRef;
+        this.spatialReference = spatialReferenceWKID;
         this.geometryType = GeometryTypeEnum.POINT;
     }
 

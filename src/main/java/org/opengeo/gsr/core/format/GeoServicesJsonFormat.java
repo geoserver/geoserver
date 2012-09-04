@@ -13,8 +13,10 @@ import java.io.Writer;
 import org.geoserver.rest.format.ReflectiveJSONFormat;
 import org.opengeo.gsr.core.feature.FeatureConverter;
 import org.opengeo.gsr.core.feature.FieldTypeConverter;
+import org.opengeo.gsr.core.geometry.Geometry;
 import org.opengeo.gsr.core.geometry.GeometryTypeConverter;
 import org.opengeo.gsr.core.geometry.Point;
+import org.opengeo.gsr.core.geometry.SpatialReference;
 import org.opengeo.gsr.core.geometry.SpatialReferenceWKID;
 import org.opengeo.gsr.service.CatalogService;
 
@@ -52,7 +54,9 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
             }
         });
 
+        xstream.alias("", Geometry.class);
         xstream.alias("", Point.class);
+        xstream.alias("", SpatialReference.class);
         xstream.alias("", SpatialReferenceWKID.class);
 
         // omit fields

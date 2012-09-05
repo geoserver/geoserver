@@ -1,0 +1,41 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   
+	"title":"range domain",
+	"type":"object",
+	"extends":{
+		"$ref":"domain.json"
+	},
+	"properties":{
+		"type":{
+			"title":"domain type",
+			"type":"string",
+			"required":true,
+			"enum":["codedValue"]
+		},
+		"name":{
+			"title":"domain name",
+			"type":"string",
+			"required":true
+		},
+		"codedValues":{
+			"title":"coded values",
+			"type":"array",
+			"required":true,
+			"minItems":1,
+			"items":{
+				"type":"object",
+				"properties":{
+					"name":{
+						"type":"string",
+						"required":true
+					},
+					"code":{
+						"type":["number","string"],
+						"required":true
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"range domain",
+	"type":"object",
+	"extends":{
+		"$ref":"domain.json"
+	},
+	"properties":{
+		"type":{
+			"title":"domain type",
+			"type":"string",
+			"required":true,
+			"enum":["range"]
+		},
+		"name":{
+			"title":"domain name",
+			"type":"string",
+			"required":true
+		},
+		"range":{
+			"title":"range (min, max)",
+			"type":"array",
+			"required":true,
+			"minItems":2,
+			"maxItems":2,
+			"items":{
+				"type":"number"
+			}
+		}
+	}
+}

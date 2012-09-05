@@ -1,0 +1,13 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "id":"http://schemas.opengis.net/gsr/1.0/domain.json",
+
+	"title":"domain",
+	"type":"object",
+	"properties":{
+		"type":{
+			"title":"domain type",
+			"type":"string"
+		}
+	}
+}

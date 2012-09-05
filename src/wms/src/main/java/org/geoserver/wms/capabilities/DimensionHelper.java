@@ -460,6 +460,11 @@ abstract class DimensionHelper {
         if (mode == Mode.WMS11) {
             element("Extent", metadata, dim);
         } else {
+            // For now add empty units attribute so that validation succeeds.
+            // Code to make this value configurable would conflict with the
+            // pending elevation units patch.
+            dim.addAttribute("", "units", "units", "", "");
+            
             element("Dimension", metadata, dim);
         }
     }

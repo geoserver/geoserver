@@ -4,11 +4,7 @@
  */
 package org.geoserver.wms;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +18,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -30,7 +25,6 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -41,8 +35,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -52,10 +44,8 @@ import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
@@ -64,18 +54,16 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.filter.Filters;
-import org.geotools.filter.SortByImpl;
-import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.Style;
-import org.geotools.util.*;
+import org.geotools.util.Converters;
+import org.geotools.util.Range;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
@@ -838,6 +826,22 @@ public class WMS implements ApplicationContextAware {
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
                     layerFilter, "FILTER", "Filter");
         }
+        
+        // custom dimensions
+        final Map<String, String> rawKvpMap = request.getRawKvp();
+        if (rawKvpMap != null) {
+            for (Map.Entry<String, String> kvp : rawKvpMap.entrySet()) {
+                final String name = kvp.getKey();
+                if (name.regionMatches(true, 0, "dim_", 0, 4) &&
+                        dimensions.hasDomain(name)) {
+                    final ArrayList<String> val = new ArrayList<String>(1);
+                    val.add(kvp.getValue());
+                    readParameters = CoverageUtils.mergeParameter(
+                            parameterDescriptors, readParameters, val, name);
+                }
+            }
+        }
+
         return readParameters;
     }
 

@@ -1,0 +1,14 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "id":"http://schemas.opengis.net/gsr/1.0/marker.json",
+
+	"title":"marker",
+	"type":"object",
+	"properties":{
+		"type":{
+			"title":"marker type",
+			"type":"string",
+			"required":true
+		}
+	}
+}

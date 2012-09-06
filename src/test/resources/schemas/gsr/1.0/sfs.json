@@ -1,0 +1,30 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   
+	"title":"simple fill symbol",
+	"type":"object",
+	"extends":{
+		"$ref":"marker.json"
+	},
+	"properties":{
+		"type":{
+			"title":"marker type",
+			"type":"string",
+			"required":true,
+			"enum":["SFS"]
+		},
+		"style":{
+			"title":"marker style",
+			"description":"value SHOULD be SFSBackwardDiagonal, SFSCross, SFSDiagonalCross, SFSForwardDiagonal, SFSHorizontal, SFSNull, SFSSolid, SFSVertical",
+			"type":"string",
+			"required":true
+		},
+		"color":{
+			"$ref":"color.json",
+			"required":true
+		},
+		"outline":{
+			"$ref":"sls.json"
+		}
+	}
+}

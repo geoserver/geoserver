@@ -2,7 +2,6 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.opengeo.gsr.core.format;
 
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import org.geoserver.rest.format.ReflectiveJSONFormat;
+import org.opengeo.gsr.core.feature.Attribute;
 import org.opengeo.gsr.core.feature.FeatureConverter;
 import org.opengeo.gsr.core.feature.FieldTypeConverter;
 import org.opengeo.gsr.core.geometry.Geometry;
@@ -18,6 +18,9 @@ import org.opengeo.gsr.core.geometry.GeometryTypeConverter;
 import org.opengeo.gsr.core.geometry.Point;
 import org.opengeo.gsr.core.geometry.SpatialReference;
 import org.opengeo.gsr.core.geometry.SpatialReferenceWKID;
+import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnumConverter;
+import org.opengeo.gsr.core.symbol.SimpleLineSymbolEnumConverter;
+import org.opengeo.gsr.core.symbol.SimpleMarkerSymbolEnumConverter;
 import org.opengeo.gsr.service.CatalogService;
 
 import com.thoughtworks.xstream.XStream;
@@ -54,10 +57,12 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
             }
         });
 
+        // alias
         xstream.alias("", Geometry.class);
         xstream.alias("", Point.class);
         xstream.alias("", SpatialReference.class);
         xstream.alias("", SpatialReferenceWKID.class);
+        xstream.alias("", Attribute.class);
 
         // omit fields
         xstream.omitField(CatalogService.class, "name");
@@ -73,6 +78,9 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.registerConverter(new FieldTypeConverter());
         xstream.registerConverter(new GeometryTypeConverter());
         // xstream.registerConverter(new FeatureConverter());
+        xstream.registerConverter(new SimpleMarkerSymbolEnumConverter());
+        xstream.registerConverter(new SimpleLineSymbolEnumConverter());
+        xstream.registerConverter(new SimpleFillSymbolEnumConverter());
 
         this.xStream = xstream;
     }

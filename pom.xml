@@ -63,6 +63,8 @@
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!--  Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

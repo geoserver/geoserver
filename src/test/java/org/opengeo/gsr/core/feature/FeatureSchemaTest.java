@@ -2,8 +2,8 @@ package org.opengeo.gsr.core.feature;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.opengeo.gsr.JsonSchemaTest;
@@ -20,11 +20,11 @@ public class FeatureSchemaTest extends JsonSchemaTest {
     @Test
     public void testFeatureJsonSchema() throws Exception {
         Geometry geometry = new Point(-118.5, 33.80, new SpatialReferenceWKID(4326));
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.put("OWNER", "Joe Smith");
-        attributes.put("VALUE", 94820.37);
-        attributes.put("APPROVED", true);
-        attributes.put("LASTUPDATE", 1227663551096L); // Date encoded as milliseconds since epoch
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        attributes.add(new Attribute("OWNER", "Joe Smith"));
+        attributes.add(new Attribute("VALUE", 94820.37));
+        attributes.add(new Attribute("APPROVED", true));
+        attributes.add(new Attribute("LASTUPDATE", 1227663551096L)); // Date encoded as milliseconds since epoch
         Feature feature = new Feature(geometry, attributes);
         String json = getJson(feature);
         System.out.println(json);

@@ -12,6 +12,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.xml.serializer.TreeWalker;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geoserver.wps.web.InputParameterValues.ParameterValue;
 import org.geotools.filter.v1_0.OGC;
@@ -43,6 +46,16 @@ import org.xml.sax.helpers.AttributesImpl;
 class WPSExecuteTransformer extends TransformerBase {
 
     static final Logger LOGGER = Logging.getLogger(WPSExecuteTransformer.class);
+
+    public WPSExecuteTransformer() {
+        this(null);
+    }
+
+    public WPSExecuteTransformer(Catalog catalog) {
+        this.catalog = catalog;
+    }
+
+    Catalog catalog;
 
     @Override
     public Translator createTranslator(ContentHandler handler) {
@@ -221,8 +234,21 @@ class WPSExecuteTransformer extends TransformerBase {
             start("wps:Reference", attributes("mimeType", value.mime, "xlink:href",
                     "http://geoserver/wfs", "method", "POST"));
             start("wps:Body");
-            start("wfs:GetFeature", attributes("service", "WFS", "version", "1.0.0",
-                    "outputFormat", "GML2"));
+
+            AttributesImpl atts = 
+                attributes("service", "WFS", "version", "1.0.0", "outputFormat", "GML2");
+
+            //if the layer name is qualfiied we should include a namespace mapping on the 
+            // GetFeature request
+            if (catalog != null && vector.layerName != null && vector.layerName.contains(":")) {
+                String prefix = vector.layerName.split(":")[0];
+                NamespaceInfo ns = catalog.getNamespaceByPrefix(prefix);
+                if (ns != null) {
+                    atts.addAttribute("", "", "xmlns:" + prefix, null, ns.getURI());
+                }
+            }
+
+            start("wfs:GetFeature", atts);
             if (vector.layerName == null) {
                 start("wfs:Query");
             } else {

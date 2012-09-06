@@ -136,7 +136,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
     String getRequestXML() {
         // turn the GUI request into an actual WPS request
-        WPSExecuteTransformer tx = new WPSExecuteTransformer();
+        WPSExecuteTransformer tx = new WPSExecuteTransformer(getCatalog());
         tx.setIndentation(2);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

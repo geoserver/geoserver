@@ -4,10 +4,6 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
-import org.geotools.feature.AttributeBuilder;
-import org.geotools.feature.ComplexFeatureBuilder;
-import org.geotools.feature.LenientFeatureFactoryImpl;
-import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -47,26 +43,14 @@ public class RecordsTest extends TestCase {
        </code>
      */
     public void testBuildCSWRecord() {
-        ComplexFeatureBuilder fb = new ComplexFeatureBuilder(CSWRecordTypes.RECORD);
-        AttributeBuilder ab = new AttributeBuilder(new LenientFeatureFactoryImpl());
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "identifier", "00180e67-b7cf-40a3-861d-b3a09337b195"));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "title", "Image2000 Product 1 (at1) Multispectral"));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "modified", "2004-10-04 00:00:00"));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "abstract", "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems."));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "type", "dataset"));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "subject", "imagery"));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "subject", "baseMaps"));
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME,
-                buildRecordElement(ab, "subject", "earthCover"));
-        
-        Feature f = fb.buildFeature(null);
+        CSWRecordBuilder rb = new CSWRecordBuilder();
+        rb.addElement("identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
+        rb.addElement("title", "Image2000 Product 1 (at1) Multispectral");
+        rb.addElement("modified", "2004-10-04 00:00:00");
+        rb.addElement("abstract", "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
+        rb.addElement("type", "dataset");
+        rb.addElement("subject", "imagery", "baseMaps", "earthCover");
+        Feature f = rb.build(null);
 
         assertRecordElement(f, "identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
         assertRecordElement(f, "title", "Image2000 Product 1 (at1) Multispectral");
@@ -77,7 +61,7 @@ public class RecordsTest extends TestCase {
     }
 
     private void assertRecordElement(Feature f, String elementName, Object... values) {
-        AttributeDescriptor identifierDescriptor = getDescriptor(elementName);
+        AttributeDescriptor identifierDescriptor = CSWRecordTypes.getDescriptor(elementName);
         Collection<Property> propertyList = f.getProperties(identifierDescriptor.getName());
         Property[] properties = (Property[]) propertyList.toArray(new Property[propertyList.size()]);
         assertEquals(properties.length, values.length);
@@ -89,18 +73,7 @@ public class RecordsTest extends TestCase {
         }
     }
 
-    private Attribute buildRecordElement(AttributeBuilder ab, String elementName, Object value) {
-        AttributeDescriptor descriptor = getDescriptor(elementName);
-        ab.setDescriptor(descriptor);
-        ab.add(null, value, CSWRecordTypes.SIMPLE_LITERAL_VALUE);
-        return ab.build();
-    }
+   
 
-    private AttributeDescriptor getDescriptor(String elementName) {
-        AttributeDescriptor identifierDescriptor = CSWRecordTypes.DC_DESCRIPTORS.get(elementName);
-        if (identifierDescriptor == null) {
-            identifierDescriptor = CSWRecordTypes.DCT_DESCRIPTORS.get(elementName);
-        }
-        return identifierDescriptor;
-    }
+  
 }

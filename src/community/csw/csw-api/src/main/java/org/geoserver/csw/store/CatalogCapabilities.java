@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw.store;
 
+
 /**
  * Represents the capabilities of a {@link CatalogStore}
  * 

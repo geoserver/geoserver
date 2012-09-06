@@ -25,7 +25,9 @@
   </dependencies>
 
   <modules>
+    <module>csw-api</module>
     <module>csw-core</module>
+    <module>csw-simple-store</module>
   </modules>
 
 </project>

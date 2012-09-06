@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.csw.records;
 
 import java.lang.reflect.Field;
@@ -28,24 +32,28 @@ import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Polygon;
 
+/**
+ * Container for FeatureType related constants useful in building CSW records
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class CSWRecordTypes {
 
     public static final ComplexType SIMPLE_LITERAL;
-    
+
     public static final Name SIMPLE_LITERAL_SCHEME;
-    
+
     public static final Name SIMPLE_LITERAL_VALUE;
-    
+
     public static final Map<String, AttributeDescriptor> DC_DESCRIPTORS;
 
     public static final Map<String, AttributeDescriptor> DCT_DESCRIPTORS;
 
     public static final AttributeDescriptor DC_ELEMENT;
-    
+
     public static Name DC_ELEMENT_NAME;
 
     public static final FeatureType RECORD;
-    
 
     static {
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
@@ -68,8 +76,8 @@ public class CSWRecordTypes {
             SIMPLE_LITERAL = builder.complex();
             SIMPLE_LITERAL_SCHEME = new NameImpl(DC.NAMESPACE, "scheme");
             SIMPLE_LITERAL_VALUE = new NameImpl(DC.NAMESPACE, "value");
-            
-            // create the DC_ELEMENT 
+
+            // create the DC_ELEMENT
             builder.setNamespaceURI(DC.NAMESPACE);
             builder.setName(DC.DCelement.getLocalPart());
             builder.setPropertyType(SIMPLE_LITERAL);
@@ -77,7 +85,7 @@ public class CSWRecordTypes {
             builder.setMaxOccurs(-1);
             DC_ELEMENT = builder.attributeDescriptor();
             DC_ELEMENT_NAME = new NameImpl(DC.NAMESPACE, DC.DCelement.getLocalPart());
-            
+
             // fill in the DC attribute descriptors
             DC_DESCRIPTORS = new HashMap<String, AttributeDescriptor>();
             fillSimpleLiteralDescriptors(builder, DC.class, DC_DESCRIPTORS,
@@ -85,7 +93,8 @@ public class CSWRecordTypes {
 
             // fill in the DCT attribute descriptors
             DCT_DESCRIPTORS = new HashMap<String, AttributeDescriptor>();
-            fillSimpleLiteralDescriptors(builder, DCT.class, DCT_DESCRIPTORS, new ArrayList<String>());
+            fillSimpleLiteralDescriptors(builder, DCT.class, DCT_DESCRIPTORS,
+                    new ArrayList<String>());
 
             // create the bbox representation
             builder.setNamespaceURI(OWS.NAMESPACE);
@@ -99,7 +108,7 @@ public class CSWRecordTypes {
             builder.setName("BoundingBox");
             builder.setPropertyType(bboxType);
             AttributeDescriptor bboxDescriptor = builder.attributeDescriptor();
-            
+
             // create the CSW record
             builder.setNamespaceURI(CSW.NAMESPACE);
             builder.setName(CSW.Record.getLocalPart());
@@ -110,6 +119,21 @@ public class CSWRecordTypes {
             throw new RuntimeException("Failed to create one of the attribute descriptors for "
                     + "the DC or DCT elements", e);
         }
+    }
+
+    /**
+     * Locates the AttributeDescriptor corresponding to the specified element name among the ones
+     * available in {@link CSWRecordTypes#DC_DESCRIPTORS} and {@link CSWRecordTypes#DCT_DESCRIPTORS} 
+     * 
+     * @param elementName
+     * @return
+     */
+    public static AttributeDescriptor getDescriptor(String elementName) {
+        AttributeDescriptor identifierDescriptor = CSWRecordTypes.DC_DESCRIPTORS.get(elementName);
+        if (identifierDescriptor == null) {
+            identifierDescriptor = CSWRecordTypes.DCT_DESCRIPTORS.get(elementName);
+        }
+        return identifierDescriptor;
     }
 
     private static void fillSimpleLiteralDescriptors(TypeBuilder builder, Class schemaClass,
@@ -143,11 +167,4 @@ public class CSWRecordTypes {
                 && Modifier.isFinal(modifier);
     }
 
-    public static void main(String[] args) {
-        System.out.println(SIMPLE_LITERAL);
-        System.out.println(DC_ELEMENT);
-        System.out.println(DC_DESCRIPTORS);
-        System.out.println(DCT_DESCRIPTORS);
-        System.out.println(RECORD);
-    }
 }

@@ -4,8 +4,6 @@
  */
 package org.opengeo.gsr.core.feature;
 
-import java.util.List;
-
 import org.opengeo.gsr.core.geometry.Geometry;
 
 /**
@@ -36,6 +34,7 @@ public class Feature {
     }
 
     public Feature(Geometry geometry, AttributeList attributes) {
+
         super();
         this.geometry = geometry;
         this.attributes = attributes;

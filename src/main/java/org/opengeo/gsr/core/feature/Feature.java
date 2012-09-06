@@ -15,7 +15,7 @@ public class Feature {
 
     private Geometry geometry;
 
-    private AttributeList attributes;
+    //private AttributeList attributes;
 
     public Geometry getGeometry() {
         return geometry;
@@ -25,18 +25,18 @@ public class Feature {
         this.geometry = geometry;
     }
 
-    public AttributeList getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(AttributeList attributes) {
-        this.attributes = attributes;
-    }
+//    public AttributeList getAttributes() {
+//        return attributes;
+//    }
+//
+//    public void setAttributes(AttributeList attributes) {
+//        this.attributes = attributes;
+//    }
 
     public Feature(Geometry geometry, AttributeList attributes) {
 
         super();
         this.geometry = geometry;
-        this.attributes = attributes;
+        //this.attributes = attributes;
     }
 }

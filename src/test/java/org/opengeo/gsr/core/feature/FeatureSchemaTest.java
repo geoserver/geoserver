@@ -29,7 +29,7 @@ public class FeatureSchemaTest extends JsonSchemaTest {
         Feature feature = new Feature(geometry, attributes);
         String json = getJson(feature);
         System.out.println(json);
-        //assertTrue(validateJSON(json, "gsr/1.0/feature.json"));
+        assertTrue(validateJSON(json, "gsr/1.0/feature.json"));
     }
 
     @Test

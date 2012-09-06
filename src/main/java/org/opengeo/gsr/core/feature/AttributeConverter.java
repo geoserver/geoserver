@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.opengeo.gsr.core.feature;
 
 import java.util.List;
@@ -8,6 +12,11 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+/**
+ * 
+ * @author Juan Marin, OpenGeo
+ * 
+ */
 public class AttributeConverter implements Converter {
 
     @Override

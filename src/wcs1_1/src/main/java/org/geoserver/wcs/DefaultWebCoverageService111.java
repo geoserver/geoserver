@@ -45,6 +45,8 @@ import org.geoserver.wcs.kvp.GridCS;
 import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.response.DescribeCoverageTransformer;
 import org.geoserver.wcs.response.WCSCapsTransformer;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -75,8 +77,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 
 public class DefaultWebCoverageService111 implements WebCoverageService111 {
     Logger LOGGER = Logging.getLogger(DefaultWebCoverageService111.class);
@@ -85,9 +85,12 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
 	private GeoServer geoServer;
 
-    public DefaultWebCoverageService111(GeoServer geoServer) {
+    private CoverageResponseDelegateFinder responseFactory;
+
+    public DefaultWebCoverageService111(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
+        this.responseFactory = responseFactory;
     }
     
     public WCSInfo getServiceInfo() {
@@ -120,7 +123,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         final String version = request.getVersion();
         if ("1.1.0".equals(version) || "1.1.1".equals(version)) {
             WCSInfo wcs = getServiceInfo();
-            DescribeCoverageTransformer describeTransformer = new DescribeCoverageTransformer(wcs, catalog);
+            DescribeCoverageTransformer describeTransformer = new DescribeCoverageTransformer(wcs, catalog, responseFactory);
             describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
             return describeTransformer;
         }
@@ -764,7 +767,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             if (sf.equalsIgnoreCase(format)) {
                 return sf;
             } else {
-                CoverageResponseDelegate delegate = CoverageResponseDelegateFactory.encoderFor(sf);
+                CoverageResponseDelegate delegate = responseFactory.encoderFor(sf);
                 if (delegate != null && delegate.canProduce(format))
                     return sf;
             }

@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  * @author Justin Deoliveira, The Open Planning Project
  *
  */
-public class AcceptFormatsKvpParser extends org.geoserver.wfs.kvp.AcceptFormatsKvpParser{
+public class AcceptFormatsKvpParser extends org.geoserver.ows.kvp.AcceptFormatsKvpParser {
     public AcceptFormatsKvpParser() {
         super(AcceptFormatsType.class);
         //make this parser the default

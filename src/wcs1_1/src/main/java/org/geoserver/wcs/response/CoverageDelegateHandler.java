@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
 
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-
 /**
  * A data handler for the fake "geoserver/coverageDelegate" mime type. Uses a
  * {@link CoverageResponseDelegate} to determine the actual mime type and to
@@ -21,7 +19,7 @@ import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
  * @author Andrea Aime - TOPP
  */
 public class CoverageDelegateHandler implements DataContentHandler {
-
+    
     public Object getContent(DataSource source) throws IOException {
         throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
@@ -36,8 +34,8 @@ public class CoverageDelegateHandler implements DataContentHandler {
     }
 
     public void writeTo(Object value, String mimeType, OutputStream os) throws IOException {
-        CoverageResponseDelegate delegate = (CoverageResponseDelegate) value;
-        delegate.encode(os);
+        CoverageEncoder encoder = (CoverageEncoder) value;
+        encoder.encode(os);
         os.flush();
     }
 

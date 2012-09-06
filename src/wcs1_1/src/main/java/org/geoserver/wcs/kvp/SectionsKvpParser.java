@@ -4,31 +4,25 @@
  */
 package org.geoserver.wcs.kvp;
 
-import java.util.List;
-
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.ows11.SectionsType;
 
-import org.geoserver.ows.KvpParser;
-import org.geoserver.ows.util.KvpUtils;
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * Parses the "sections" GetCapabilities kvp argument
+ * 
  * @author Andrea Aime - TOPP
  */
-public class SectionsKvpParser extends KvpParser {
+public class SectionsKvpParser extends org.geoserver.ows.kvp.SectionsKvpParser {
 
     public SectionsKvpParser() {
-        super("sections", SectionsType.class);
-        
+        super(SectionsType.class);
     }
 
     @Override
-    public Object parse(String value) throws Exception {
-        List<String> sectionNames = KvpUtils.readFlat(value);
-        SectionsType sections = Ows11Factory.eINSTANCE.createSectionsType();
-        sections.getSection().addAll(sectionNames);
-        return sections;
+    protected EObject createObject() {
+        return Ows11Factory.eINSTANCE.createSectionsType();
     }
 
 }

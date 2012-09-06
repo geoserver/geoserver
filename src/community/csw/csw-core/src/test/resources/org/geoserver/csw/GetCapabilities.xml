@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<GetCapabilities
+   xmlns="http://www.opengis.net/cat/csw/2.0.2"
+   xmlns:ows="http://www.opengis.net/ows"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/csw.xsd"
+   service="CSW">
+
+   <ows:AcceptVersions>
+      <ows:Version>2.0.2</ows:Version>
+      <ows:Version>2.0.0</ows:Version>
+      <ows:Version>0.7.2</ows:Version>
+   </ows:AcceptVersions>
+   <ows:Sections>
+     <ows:Section>OperationsMetadata</ows:Section>
+     <ows:Section>foo</ows:Section>
+   </ows:Sections>
+   <ows:AcceptFormats>
+      <ows:OutputFormat>application/xml</ows:OutputFormat>
+      <ows:OutputFormat>text/plain</ows:OutputFormat>
+   </ows:AcceptFormats>
+</GetCapabilities>

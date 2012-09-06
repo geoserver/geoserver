@@ -151,6 +151,9 @@ public class GeoServerImplTest extends TestCase {
     }
 
     public void testGetSettings() throws Exception {
+        GeoServerInfo global = geoServer.getFactory().createGlobal();
+        geoServer.setGlobal( global );
+
         SettingsInfo s = geoServer.getSettings();
         assertNotNull(s);
 
@@ -158,7 +161,8 @@ public class GeoServerImplTest extends TestCase {
        
         WorkspaceInfo ws = geoServer.getCatalog().getFactory().createWorkspace();
         ws.setName("acme");
-
+        geoServer.getCatalog().add(ws);
+        
         SettingsInfo t = geoServer.getFactory().createSettings();
         t.setNumDecimals(7);
         t.setWorkspace(ws);

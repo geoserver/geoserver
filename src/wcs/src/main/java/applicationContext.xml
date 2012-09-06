@@ -37,4 +37,12 @@
     
     <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
     
+    <!-- The coverage response delegates and their factory -->
+    <bean id="coverageResponseDelegateFactory" class="org.geoserver.wcs.responses.CoverageResponseDelegateFinder"/>
+    <bean id="ascCoverageResponseDelegate" class="org.geoserver.wcs.responses.AscCoverageResponseDelegate"/>
+    <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate"/>
+    <bean id="GTopo30CoverageResponseDelegate" class="org.geoserver.wcs.responses.GTopo30CoverageResponseDelegate"/>
+    <bean id="imgCoverageResponseDelegate" class="org.geoserver.wcs.responses.IMGCoverageResponseDelegate"/>
+    <bean id="debugCoverageResponseDelegate" class="org.geoserver.wcs.responses.DebugCoverageResponseDelegate"/>
+    
 </beans>

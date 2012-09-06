@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="cswServiceLoader" class="org.geoserver.csw.CSWXStreamLoader">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
+    
+    <bean id="cswLegacyServiceLoader" class="org.geoserver.csw.CSWLegacyLoader"/>
+
+    <bean id="cswLogger" class="org.geoserver.ows.util.EMFLogger">
+      <constructor-arg type="java.lang.String" value="org.geoserver.wps"/>
+    </bean>
+    
+    <bean id="cswService" class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+        <value>org.geoserver.csw.CatalogService</value>
+      </property>
+      <property name="interceptorNames">
+        <list>
+          <value>cswLogger</value>
+          <value>cswServiceTarget</value>
+        </list>
+      </property>
+    </bean>
+
+    <!-- Service Descriptor(s) -->
+    <bean id="cswService-2.0.2" 
+        class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="csw" />
+        <constructor-arg index="1" ref="cswService" />
+        <constructor-arg index="2" value="2.0.2" />
+        <constructor-arg index="3">
+		  <list>
+		    <value>GetCapabilities</value>
+		    <value>DescribeRecord</value>
+		    <value>GetRecords</value>
+            <value>GetRecordById</value>
+            <value>GetDomain</value>
+            <value>GetRepositoryItem</value>
+            <value>Harvest</value>
+            <value>Transaction</value>
+		  </list>
+		</constructor-arg>
+    </bean>
+    
+    <!-- CSW Service -->
+    <bean id="cswServiceTarget" class="org.geoserver.csw.DefaultCatalogService">
+        <constructor-arg ref="geoServer" />
+    </bean>
+    
+    
+    <!-- KVP parsers -->
+    <bean id="cswAcceptFormatsKvpParser" class="org.geoserver.csw.kvp.AcceptFormatsKvpParser"/>
+    <bean id="cswAcceptVersionsKvpParser" class="org.geoserver.csw.kvp.AcceptVersionsKvpParser"/>
+    <bean id="cswSectionsKvpParser" class="org.geoserver.csw.kvp.SectionsKvpParser"/>
+    <bean id="cswNamespaceParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
+       <constructor-arg value="namespace"/>
+    </bean>
+    <bean id="cswStartPositionParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+       <constructor-arg value="startPosition"/>
+    </bean>
+    <bean id="cswMaxRecordsParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+       <constructor-arg value="maxRecords"/>
+    </bean>
+    <bean id="cswHopCountParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+       <constructor-arg value="hopCount"/>
+    </bean>
+    <bean id="cswResultTypeParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+       <constructor-arg value="resultType"/>
+       <constructor-arg value="net.opengis.cat.csw20.ResultType"/>
+    </bean>
+    <bean id="cswElementSetTypeParser" class="org.geoserver.ows.kvp.EnumKvpParser">
+       <constructor-arg value="elementSetName"/>
+       <constructor-arg value="net.opengis.cat.csw20.ElementSetType"/>
+    </bean>
+    
+    <!-- KVP readers -->
+    <bean id="cswGetCapabilitesKvpRequestReader" class="org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader"/>
+    <bean id="cswDescribeRecordKvpRequestReader" class="org.geoserver.csw.kvp.DescribeRecordKvpRequestReader"/>
+    <bean id="cswGetDomainKvpRequestReader" class="org.geoserver.csw.kvp.GetDomainKvpRequestReader"/>
+    <bean id="cswGetRecordsKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordsKvpRequestReader"/>
+    
+    <!-- XML Configuration -->
+    <bean id="cswXmlConfiguration-2.0.2"
+        class="org.geotools.csw.CSWConfiguration" >
+    </bean>
+
+    <!-- XML Readers -->
+    <bean id="cswXmlReader-2.0.2"
+        class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader" abstract="true">
+        <constructor-arg ref="csw" />
+        <constructor-arg ref="cswXmlConfiguration-2.0.2" />
+    </bean>
+    <bean id="cswGetCapabilitiesXmlReader-2.0.2"
+        class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
+        <constructor-arg index="0" value="GetCapabilities" />
+        <constructor-arg index="1" value="2.0.2" />
+        <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+    </bean>
+    <bean id="cswDescribeRecordXmlReader-2.0.2"
+        class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
+        <constructor-arg index="0" value="DescribeRecord" />
+        <constructor-arg index="1" value="2.0.2" />
+        <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+    </bean>
+    <bean id="cswGetDomainXmlReader-2.0.2"
+        class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
+        <constructor-arg index="0" value="GetDomain" />
+        <constructor-arg index="1" value="2.0.2" />
+        <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+    </bean>
+    <bean id="cswGetRecordsXmlReader-2.0.2"
+        class="org.geoserver.csw.xml.v2_0_2.CSWXmlReader">
+        <constructor-arg index="0" value="GetRecords" />
+        <constructor-arg index="1" value="2.0.2" />
+        <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
+    </bean>
+    
+</beans>

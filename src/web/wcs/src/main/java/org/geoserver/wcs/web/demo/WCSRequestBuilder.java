@@ -20,6 +20,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs.web.demo.GetCoverageRequest.Version;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
@@ -122,7 +123,8 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         if (builder.getCoverage.version == Version.v1_0_0) {
             tx = new WCS10GetCoverageTransformer(getCatalog());
         } else {
-            tx = new WCS11GetCoverageTransformer(getCatalog());
+            CoverageResponseDelegateFinder responseFactory = (CoverageResponseDelegateFinder) getGeoServerApplication().getBean("coverageResponseDelegateFactory");
+            tx = new WCS11GetCoverageTransformer(getCatalog(), responseFactory);
         }
 
         try {

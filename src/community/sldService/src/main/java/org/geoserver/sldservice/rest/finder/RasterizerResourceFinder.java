@@ -20,9 +20,9 @@
 package org.geoserver.sldservice.rest.finder;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.rest.AbstractCatalogFinder;
 import org.geoserver.rest.RestletException;
 import org.geoserver.sldservice.rest.resource.RasterizerResource;
+import org.restlet.Finder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -32,10 +32,16 @@ import org.restlet.resource.Resource;
  * @author Alessio
  *
  */
-public class RasterizerResourceFinder extends AbstractCatalogFinder {
+public class RasterizerResourceFinder extends Finder {
 
-	public RasterizerResourceFinder(Catalog catalog) {
-        super(catalog);
+
+    /**
+    * reference to the catalog
+    */
+    protected Catalog catalog;
+
+    protected RasterizerResourceFinder( Catalog catalog ) {
+        this.catalog = catalog;
     }
     
     @Override

@@ -23,6 +23,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GridType;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.LinearTransform;
@@ -35,8 +37,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.Matrix;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -68,13 +68,16 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
     private Catalog catalog;
 
+    private CoverageResponseDelegateFinder responseFactory;
+
     /**
      * Creates a new WFSCapsTransformer object.
      */
-    public DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog) {
+    public DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super();
         this.wcs = wcs;
         this.catalog = catalog;
+        this.responseFactory = responseFactory;
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -384,9 +387,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
                 String format = (String) it.next();
                 // wcs 1.1 requires mime types, not format names
                 try  {
-                    CoverageResponseDelegate delegate = CoverageResponseDelegateFactory
-                            .encoderFor(format);
-                    String formatMime = delegate.getMimeFormatFor(format);
+                    CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
+                    String formatMime = delegate.getMimeType(format);
                     if(formatMime != null)
                         formats.add(formatMime);
                 } catch(Exception e) {

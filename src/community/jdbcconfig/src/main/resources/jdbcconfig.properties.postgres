@@ -1,0 +1,23 @@
+# This is a sample configuration file for running the GeoServer Catalog against a PostgreSQL database.
+# Adapt the url, user, password, and other configuration options to your set up and rename this
+# file as jdbcconfig.properties
+# Note the initialization DDL script for PostgreSQL must have been run before starting GeoServer.
+# The initialization script is located in the jdbcconfig_scripts directory, named initdb.postgres.sql
+# The importCatalog configuration option tells GeoServer whether to import the current catalog from the file system
+# to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
+# for the next start up to avoid trying to re-import the catalog configuration.
+importCatalog=true
+runInitScript=false
+initScript=${GEOSERVER_DATA_DIR}/jdbcconfig_scripts/initdb.postgres.sql
+driverClass=org.postgresql.Driver
+jdbcUrl=jdbc:postgresql://localhost:5432/gscatalog
+username=postgres
+password=
+idleConnectionTestPeriodInMinutes=1
+idleMaxAgeInMinutes=4
+maxConnectionsPerPartition=18
+minConnectionsPerPartition=6
+partitionCount=3
+acquireIncrement=3
+statementsCacheSize=50
+releaseHelperThreads=1

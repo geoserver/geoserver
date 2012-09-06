@@ -27,8 +27,11 @@ public class WorkspacesModel extends LoadableDetachableModel {
         return workspaces;
     }
     
-    class WorkspaceComparator implements Comparator<WorkspaceInfo> {
+    protected static class WorkspaceComparator implements Comparator<WorkspaceInfo> {
 
+        public WorkspaceComparator(){
+            //
+        }
         public int compare(WorkspaceInfo w1, WorkspaceInfo w2) {
             return w1.getName().compareToIgnoreCase(w2.getName());
         }

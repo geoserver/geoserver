@@ -4,17 +4,46 @@
  */
 package org.geoserver.web.data.layer;
 
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.or;
+import static org.geoserver.catalog.Predicates.sortBy;
+
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+
+import com.google.common.collect.Lists;
 
 /**
  * Provides a filtered, sorted view over the catalog layers.
+ * <p>
+ * <!-- Implementation detail: This class overrides the following methods in
+ * order to leverage the Catalog filtering and paging support:
+ * <ul>
+ * <li> {@link #size()}: in order to call {@link Catalog#count(Class, Filter)}
+ * with any filter criteria set on the page
+ * <li> {@link #fullSize()}: in order to call
+ * {@link Catalog#count(Class, Filter)} with {@link Predicates#acceptAll()}
+ * <li>{@link #iterator}: in order to ask the catalog for paged and sorted
+ * contents directly through
+ * {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)}
+ * <li> {@link #getItems()} throws an unsupported operation exception, as given
+ * the above it should not be called
+ * </ul>
+ * -->
+ * 
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
@@ -86,7 +115,10 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     @Override
     protected List<LayerInfo> getItems() {
-        return getCatalog().getLayers();
+        // forced to implement this method as its abstract in the super class
+        throw new UnsupportedOperationException(
+                "This method should not be being called! "
+                        + "We use the catalog streaming API");
     }
 
     @Override
@@ -101,5 +133,80 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     @Override
     protected Comparator<LayerInfo> getComparator(SortParam sort) {
         return super.getComparator(sort);
+    }
+
+    @Override
+    public int size() {
+        Filter filter = getFilter();
+        int count = getCatalog().count(LayerInfo.class, filter);
+        return count;
+    }
+
+    @Override
+    public int fullSize() {
+        Filter filter = Predicates.acceptAll();
+        int count = getCatalog().count(LayerInfo.class, filter);
+        return count;
+    }
+    
+    @Override
+    public Iterator<LayerInfo> iterator(final int first, final int count) {
+        Iterator<LayerInfo> iterator = filteredItems(first, count);
+        if (iterator instanceof CloseableIterator) {
+            // don't know how to force wicket to close the iterator, lets return
+            // a copy. Shouldn't be much overhead as we're paging
+            try {
+                return Lists.newArrayList(iterator).iterator();
+            } finally {
+                CloseableIteratorAdapter.close(iterator);
+            }
+        } else {
+            return iterator;
+        }
+    }
+
+    /**
+     * Returns the requested page of layer objects after applying any keyword
+     * filtering set on the page
+     */
+    private Iterator<LayerInfo> filteredItems(Integer first, Integer count) {
+        final Catalog catalog = getCatalog();
+
+        // global sorting
+        final SortParam sort = getSort();
+        final Property<LayerInfo> property = getProperty(sort);
+
+        SortBy sortOrder = null;
+        if (sort != null) {
+            if(property instanceof BeanProperty){
+                final String sortProperty = ((BeanProperty<LayerInfo>)property).getPropertyPath();
+                sortOrder = sortBy(sortProperty, sort.isAscending());
+            }else if(property == ENABLED){
+                sortOrder = sortBy("enabled", sort.isAscending());
+            }
+        }
+
+        final Filter filter = getFilter();
+        //our already filtered and closeable iterator
+        Iterator<LayerInfo> items = catalog.list(LayerInfo.class, filter, first, count, sortOrder);
+
+        return items;
+    }
+
+    private Filter getFilter() {
+        final String[] keywords = getKeywords();
+        Filter filter = acceptAll();
+        if (null != keywords) {
+            for (String keyword : keywords) {
+                Filter propContains = Predicates.fullTextSearch(keyword);
+                // chain the filters together
+                if (Filter.INCLUDE == filter) {
+                    filter = propContains;
+                } else {
+                    filter = or(filter, propContains);
+                }
+            }
+        }
+        return filter;
     }
 }

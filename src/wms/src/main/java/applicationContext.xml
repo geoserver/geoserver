@@ -42,7 +42,6 @@
 	<bean id="wmsDescribeLayer"
 		class="org.geoserver.wms.DescribeLayer">
        <description>WMS DescribeLayer operation</description>
-      <constructor-arg ref="wms"/>
 	</bean>
 		
 	<bean id="wmsGetFeatureInfo"
@@ -77,6 +76,16 @@
     
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
+    </bean>
+    
+    <bean id="wmsGetFeatureInfoGeoJSON" class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoOutputFormat">
+      <constructor-arg ref="wms" />
+      <constructor-arg value="application/json" />
+    </bean>   
+    
+    <bean id="wmsGetFeatureInfoGeoJSONP" class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoOutputFormat">
+      <constructor-arg ref="wms" />
+      <constructor-arg value="text/javascript" />
     </bean>
         
 	<!-- wms service + descriptor -->
@@ -327,9 +336,27 @@
       class="org.geoserver.wms.capabilities.Capabilities_1_3_0_Response">
     </bean>
   
-	<bean id="describeLayerResponse"
-		class="org.geoserver.wms.describelayer.DescribeLayerResponse">
-	</bean>
+    <bean id="wmsDescribeLayerGeoJSON" class="org.geoserver.wms.describelayer.GeoJSONDescribeLayerResponse">
+      <constructor-arg ref="wms" />
+      <constructor-arg value="application/json" />
+    </bean>   
+    
+    <bean id="wmsDescribeLayerGeoJSONP" class="org.geoserver.wms.describelayer.GeoJSONDescribeLayerResponse">
+      <constructor-arg ref="wms" />
+      <constructor-arg value="text/javascript" />
+    </bean>
+    
+    <!-- DescribeLayer output formats -->
+    <bean id="wmsDescribeLayerXML" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
+      <constructor-arg ref="wms" />
+      <constructor-arg value="text/xml" />
+    </bean>
+    
+    <!-- DescribeLayer output formats -->
+    <bean id="wmsDescribeLayerResponse" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
+      <constructor-arg ref="wms" />
+    </bean>
+    
 	<!--bean id="getMapResponse"
 		class="org.geoserver.wms.response.GetMapResponse">
 		<constructor-arg ref="wms"/>

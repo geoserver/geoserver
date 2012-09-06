@@ -23,11 +23,11 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.response.CoveragesHandler.CoveragesData;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 
 public class WCSMultipartResponse extends Response {
 
@@ -35,10 +35,13 @@ public class WCSMultipartResponse extends Response {
 
     Catalog catalog;
 
-    public WCSMultipartResponse(Catalog catalog) {
+    CoverageResponseDelegateFinder responseFactory;
+
+    public WCSMultipartResponse(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.catalog = catalog;
         this.multipart = new MimeMultipart();
+        this.responseFactory = responseFactory;
     }
 
     @Override
@@ -82,8 +85,7 @@ public class WCSMultipartResponse extends Response {
         // grab the delegate for coverage encoding
         GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = request.getOutput().getFormat();
-        CoverageResponseDelegate delegate = CoverageResponseDelegateFactory
-                .encoderFor(outputFormat);
+        CoverageResponseDelegate delegate = responseFactory.encoderFor(outputFormat);
         if (delegate == null)
             throw new WcsException("Could not find encoder for output format " + outputFormat);
 
@@ -105,10 +107,10 @@ public class WCSMultipartResponse extends Response {
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            delegate.prepare(outputFormat, coverage);
-            coveragePart.setDataHandler(new DataHandler(delegate, "geoserver/coverageDelegate"));
+            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat);
+            coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", "<theCoverage>");
-            coveragePart.setHeader("Content-Type", delegate.getContentType());
+            coveragePart.setHeader("Content-Type", delegate.getMimeType(outputFormat));
             coveragePart.setHeader("Content-Transfer-Encoding", "base64");
             multipart.addBodyPart(coveragePart);
 

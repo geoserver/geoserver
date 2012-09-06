@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -344,6 +346,10 @@ public class RequestResource extends ReflectiveResource {
 
         Monitor monitor;
         String[] fields;
+        
+        // Regexp matching problematic characters which trigger quoted text mode.
+        static Pattern escapeRequired = Pattern.compile("[\\,\\s\"]");
+        
         protected CSVFormat(String[] fields, Monitor monitor) {
             super(new MediaType("application/csv"));
             
@@ -379,17 +385,28 @@ public class RequestResource extends ReflectiveResource {
         
         void writeRequest(RequestData data, BufferedWriter w) throws IOException {
             StringBuffer sb = new StringBuffer();
+            
             for (String fld : fields) {
                 Object val = OwsUtils.get(data, fld);
                 if (val instanceof Date) {
                     val = DateUtil.serializeDateTime((Date)val);
                 }
                 if (val != null) {
-                    val = val.toString().replaceAll(",", " ").replaceAll("\n", " ");
+                    String string = val.toString();
+                    Matcher match = escapeRequired.matcher(string);
+                    if(match.find()){ // may need escaping, so escape
+                        string=string.replaceAll("\"", "\"\"");// Double all double quotes to escape
+                        sb.append("\"");
+                        sb.append(string);
+                        sb.append("\"");
+                    }
+                    else { // No need for escaping
+                        sb.append(string);
+                    }
                 }
-                sb.append(val).append(",");
+                sb.append(",");
             }
-            sb.setLength(sb.length()-1);
+            sb.setLength(sb.length()-1); // Remove trailing comma
             sb.append("\n");
             w.write(sb.toString());
         }

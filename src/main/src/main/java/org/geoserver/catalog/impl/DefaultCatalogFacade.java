@@ -1,41 +1,42 @@
 package org.geoserver.catalog.impl;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.CoverageDimensionInfo;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.ows.util.ClassProperties;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.util.OwsUtils;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Ordering;
 
 /**
  * Default catalog facade implementation in which all objects are stored in memory.
@@ -44,33 +45,8 @@ import org.geoserver.ows.util.OwsUtils;
  *
  * TODO: look for any exceptions, move them back to catlaog as they indicate logic
  */
-public class DefaultCatalogFacade implements CatalogFacade {
-    
-    public static WorkspaceInfo ANY_WORKSPACE = any(WorkspaceInfo.class);
-    
-    public static NamespaceInfo ANY_NAMESPACE = any(NamespaceInfo.class);
-    
-    public static WorkspaceInfo NO_WORKSPACE = any(WorkspaceInfo.class);
+public class DefaultCatalogFacade extends AbstractCatalogFacade implements CatalogFacade {
 
-    @SuppressWarnings("unchecked")
-    static <T extends CatalogInfo>  T any(Class<T> clazz) {
-        
-        Class proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz);
-        try {
-            return (T) proxyClass.getConstructor(
-                new Class[] { InvocationHandler.class }).newInstance(new Object[] {
-                    new InvocationHandler() {
-                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                            return null;
-                        }
-                    }
-                } );
-        }
-        catch( Exception e ) {
-            throw new RuntimeException( e );
-        }
-    }
-    
     /**
      * Contains the stores keyed by implementation class
      */
@@ -133,7 +109,7 @@ public class DefaultCatalogFacade implements CatalogFacade {
     }
     
     public Catalog getCatalog() {
-        return null;
+        return catalog;
     }
     
     //
@@ -919,41 +895,8 @@ public class DefaultCatalogFacade implements CatalogFacade {
         return ModificationProxy.createList(matches,StyleInfo.class);
     }
 
-    //
-    // Utilities
-    //
-    public static <T> T unwrap(T obj) {
-        return ModificationProxy.unwrap(obj);
-    }
-    
-    protected void saved(CatalogInfo object) {
-        //this object is a proxy
-        ModificationProxy h = 
-            (ModificationProxy) Proxy.getInvocationHandler(object);
-        
-        //get the real object
-        CatalogInfo real = (CatalogInfo) h.getProxyObject();
-        
-        //fire out what changed
-        List propertyNames = h.getPropertyNames();
-        List newValues = h.getNewValues();
-        List oldValues = h.getOldValues();
-        
-        //TODO: protect this original object, perhaps with another proxy 
-        catalog.fireModified( real, propertyNames, oldValues, newValues );
-        
-        //commit to the original object
-        h.commit();    
-        
-        //resolve to do a sync on the object
-        //syncIdWithName(real);
-        
-        //fire the post modify event
-        catalog.firePostModified( real );
-    }
-    
-    List lookup(Class clazz, MultiHashMap map) {
-        ArrayList result = new ArrayList();
+    <T> List<T> lookup(Class<T> clazz, MultiHashMap map) {
+        ArrayList<T> result = new ArrayList<T>();
         for (Iterator k = map.keySet().iterator(); k.hasNext();) {
             Class key = (Class) k.next();
             if (clazz.isAssignableFrom(key)) {
@@ -1044,109 +987,7 @@ public class DefaultCatalogFacade implements CatalogFacade {
             resolve(m);
         }
     }
-    
-    protected void resolve(WorkspaceInfo workspace) {
-        setId(workspace);
-    }
-    
-    protected void resolve(NamespaceInfo namespace) {
-        setId(namespace);
-    }
-    
-    protected void resolve(StoreInfo store) {
-        setId(store);
-        StoreInfoImpl s = (StoreInfoImpl) store;
-        
-        //resolve the workspace
-        WorkspaceInfo resolved = ResolvingProxy.resolve( catalog, s.getWorkspace());
-        if ( resolved != null ) {
-            resolved = unwrap(resolved);
-            s.setWorkspace( resolved );
-        }
-        else {
-            //this means the workspace has not yet been added to the catalog, keep the proxy around
-        }
-    }
 
-    protected void resolve(ResourceInfo resource) {
-        setId(resource);
-        ResourceInfoImpl r = (ResourceInfoImpl) resource;
-        
-        //resolve the store
-        StoreInfo store = ResolvingProxy.resolve( catalog, r.getStore() );
-        if ( store != null ) {
-            store = unwrap(store);
-            r.setStore(store);
-        }
-        
-        //resolve the namespace
-        NamespaceInfo namespace = ResolvingProxy.resolve( catalog, r.getNamespace() );
-        if (namespace != null) {
-            namespace = unwrap(namespace);
-            r.setNamespace(namespace);
-        }
-    }
-
-    protected void resolve(LayerInfo layer) {
-        setId(layer);
-        
-        ResourceInfo resource = ResolvingProxy.resolve(catalog, layer.getResource());
-        if (resource != null) {
-            resource = unwrap(resource);
-            layer.setResource(resource);
-        }
-        
-        StyleInfo style = ResolvingProxy.resolve(catalog, layer.getDefaultStyle());
-        if (style != null) {
-            style = unwrap(style);
-            layer.setDefaultStyle(style);
-        }
-        
-        LinkedHashSet<StyleInfo> styles = new LinkedHashSet();
-        for (StyleInfo s : layer.getStyles()) {
-            s = ResolvingProxy.resolve(catalog, s);
-            s = unwrap(s);
-            styles.add(s);
-        }
-        ((LayerInfoImpl)layer).setStyles(styles);
-    }
-    
-    protected void resolve(LayerGroupInfo layerGroup) {
-        setId(layerGroup);
-        
-        LayerGroupInfoImpl lg = (LayerGroupInfoImpl) layerGroup;
-        
-        for ( int i = 0; i < lg.getLayers().size(); i++ ) {
-            LayerInfo l = lg.getLayers().get( i );
-            LayerInfo resolved = unwrap(ResolvingProxy.resolve( catalog, l ));
-            lg.getLayers().set( i, resolved );
-        }
-        
-        for ( int i = 0; i < lg.getStyles().size(); i++ ) {
-            StyleInfo s = lg.getStyles().get( i );
-            if(s != null) {
-                StyleInfo resolved = unwrap(ResolvingProxy.resolve( catalog, s ));
-                lg.getStyles().set( i, resolved );
-            }
-        }
-        
-    }
-    
-    protected void resolve(StyleInfo style) {
-        setId(style);
-    }
-    
-    protected void resolve(MapInfo map) {
-        setId(map);
-    }
-    
-    protected void setId( Object o ) {
-        if ( OwsUtils.get( o, "id") == null ) {
-            String uid = new UID().toString();
-            OwsUtils.set( o, "id", o.getClass().getSimpleName() + "-"+uid );
-        }
-    }
-    
     public void syncTo(CatalogFacade dao) {
         if (dao instanceof DefaultCatalogFacade) {
             //do an optimized sync
@@ -1205,10 +1046,143 @@ public class DefaultCatalogFacade implements CatalogFacade {
             
             for (Map.Entry<String, DataStoreInfo> e : defaultStores.entrySet()) {
                 WorkspaceInfo ws = workspaces.get(e.getKey());
-                dao.setDefaultDataStore(ws, e.getValue());
+                if (null != ws) {
+                    dao.setDefaultDataStore(ws, e.getValue());
+                }
             }
         }
-        
-    }
-}
 
+    }
+
+    @Override
+    public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
+        return Iterables.size(iterable(of, filter, null));
+    }
+
+    /**
+     * This default implementation supports sorting against properties (could be nested) that are
+     * either of a primitive type or implement {@link Comparable}.
+     * 
+     * @param type the type of object to sort
+     * @param propertyName the property name of the objects of type {@code type} to sort by
+     * @see org.geoserver.catalog.CatalogFacade#canSort(java.lang.Class, java.lang.String)
+     */
+    @Override
+    public boolean canSort(final Class<? extends CatalogInfo> type, final String propertyName) {
+        final String[] path = propertyName.split("\\.");
+        Class<?> clazz = type;
+        for (int i = 0; i < path.length; i++) {
+            String property = path[i];
+            Method getter;
+            try {
+                getter = OwsUtils.getter(clazz, property, null);
+            } catch (RuntimeException e) {
+                return false;
+            }
+            clazz = getter.getReturnType();
+            if (i == path.length - 1) {
+                boolean primitive = clazz.isPrimitive();
+                boolean comparable = Comparable.class.isAssignableFrom(clazz);
+                boolean canSort = primitive || comparable;
+                return canSort;
+            }
+        }
+        throw new IllegalStateException("empty property name");
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
+            final Filter filter, @Nullable Integer offset, @Nullable Integer count,
+            @Nullable SortBy sortOrder) {
+
+        if (null != sortOrder && !canSort(of, sortOrder.getPropertyName().getPropertyName())) {
+            throw new IllegalArgumentException("Can't sort objects of type " + of.getName()
+                    + " by " + sortOrder.getPropertyName());
+        }
+
+        Iterable<T> iterable = iterable(of, filter, sortOrder);
+
+        if (offset != null && offset.intValue() > 0) {
+            iterable = Iterables.skip(iterable, offset.intValue());
+        }
+
+        if (count != null && count.intValue() >= 0) {
+            iterable = Iterables.limit(iterable, count.intValue());
+        }
+
+        Iterator<T> iterator = iterable.iterator();
+
+        return new CloseableIteratorAdapter<T>(iterator);
+    }
+
+    public <T extends CatalogInfo> Iterable<T> iterable(final Class<? super T> of,
+            final Filter filter, final SortBy sortBy) {
+        List<T> all;
+
+        T t = null;
+        if (NamespaceInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getNamespaces();
+        } else if (WorkspaceInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getWorkspaces();
+        } else if (StoreInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getStores(of);
+        } else if (ResourceInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getResources(of);
+        } else if (LayerInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getLayers();
+        } else if (LayerGroupInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getLayerGroups();
+        } else if (StyleInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getStyles();
+        } else if (MapInfo.class.isAssignableFrom(of)) {
+            all = (List<T>) getMaps();
+        } else {
+            throw new IllegalArgumentException("Unknown type: " + of);
+        }
+
+        if (null != sortBy) {
+            Ordering<Object> ordering = Ordering.from(comparator(sortBy));
+            if (SortOrder.DESCENDING.equals(sortBy.getSortOrder())) {
+                ordering = ordering.reverse();
+            }
+            all = ordering.sortedCopy(all);
+        }
+
+        if (Filter.INCLUDE.equals(filter)) {
+            return all;
+        }
+
+        com.google.common.base.Predicate<T> filterAdapter = new com.google.common.base.Predicate<T>() {
+
+            @Override
+            public boolean apply(T input) {
+                return filter.evaluate(input);
+            }
+        };
+
+        return Iterables.filter(all, filterAdapter);
+    }
+
+    private Comparator<Object> comparator(final SortBy sortOrder) {
+        return new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Object v1 = OwsUtils.get(o1, sortOrder.getPropertyName().getPropertyName());
+                Object v2 = OwsUtils.get(o2, sortOrder.getPropertyName().getPropertyName());
+                if (v1 == null) {
+                    if (v2 == null) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+                } else if (v2 == null) {
+                    return 1;
+                }
+                Comparable c1 = (Comparable) v1;
+                Comparable c2 = (Comparable) v2;
+                return c1.compareTo(c2);
+            }
+        };
+    }
+
+}

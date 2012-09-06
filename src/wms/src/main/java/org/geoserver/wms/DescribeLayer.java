@@ -4,38 +4,36 @@
  */
 package org.geoserver.wms;
 
-import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.describelayer.DescribeLayerTransformer;
+import org.geoserver.wms.describelayer.DescribeLayerModel;
+import org.geotools.data.ows.LayerDescription;
+import org.geotools.util.logging.Logging;
 
 /**
  * DescribeLayer WMS operation default implementation.
  * 
- * @author Gabriel Roldan
+ * @author carlo cancellieri
  */
 public class DescribeLayer {
 
-    private WMS wms;
-
-    public DescribeLayer(final WMS wms) {
-        this.wms = wms;
+private static final Logger LOGGER = Logging.getLogger(DescribeLayerModel.class);
+    
+    public DescribeLayer() {
+    	
     }
 
-    /**
-     * @see org.geoserver.wms.DescribeLayer#run(org.geoserver.wms.DescribeLayerRequest)
-     */
-    public DescribeLayerTransformer run(DescribeLayerRequest request) throws ServiceException {
-        String baseURL = request.getBaseUrl();
+	private final List<LayerDescription> layerDescriptions=new ArrayList<LayerDescription>();
 
-        DescribeLayerTransformer transformer;
-        transformer = new DescribeLayerTransformer(baseURL);
-        Charset encoding = wms.getCharSet();
-        transformer.setEncoding(encoding);
-        if (wms.getGeoServer().getSettings().isVerbose()) {
-            transformer.setIndentation(2);
-        }
-        return transformer;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static DescribeLayerModel run(final DescribeLayerRequest request) throws ServiceException {
+
+        return new DescribeLayerModel(request);
+
     }
+
 
 }

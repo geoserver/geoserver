@@ -178,7 +178,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 // TODO: should read the properties file header to see if they're more specific
                 buf.append("'GEOMETRY'").append(", ");
                 // TODO: how to work this out properly?
-                buf.append(geom.getType().getCoordinateReferenceSystem().getCoordinateSystem().getDimension());
+                buf.append(geom.getType().getCoordinateReferenceSystem()==null? 2: geom.getType().getCoordinateReferenceSystem().getCoordinateSystem().getDimension());
                 buf.append(");\n");
             }
 

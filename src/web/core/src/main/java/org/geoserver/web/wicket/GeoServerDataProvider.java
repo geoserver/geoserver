@@ -28,6 +28,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+
 /**
  * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider
  * it can perform keyword based filtering, enum the model properties used for display and sorting.
@@ -100,7 +103,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
     /**
      * @return a regex matcher for each search keyword
      */
-    private Matcher[] getMatchers() {
+    protected Matcher[] getMatchers() {
         if (matchers != null) {
             return matchers;
         }
@@ -176,6 +179,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
         return getApplication().getCatalog();
     }
 
+    /**
+     * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
+     */
+    @Override
     public Iterator<T> iterator(int first, int count) {
         List<T> items = getFilteredItems();
 
@@ -209,10 +216,13 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
             return new ArrayList<T>(items);
         }
     }
-
+    
     /**
      * Returns the size of the filtered item collection
+     * 
+     * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
      */
+    @Override
     public int size() {
         return getFilteredItems().size();
     }
@@ -292,30 +302,40 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @return
      */
     protected Comparator<T> getComparator(SortParam sort) {
+
+        Property<T> property = getProperty(sort);
+        if (property != null) {
+            Comparator<T> comparator = property.getComparator();
+            if (comparator != null) {
+                if (!sort.isAscending())
+                    return new ReverseComparator<T>(comparator);
+                else
+                    return comparator;
+            }
+        }
+        LOGGER.log(Level.WARNING,
+                "Could not find any comparator " + "for sort property " + sort);
+        return null;
+    }
+    
+    protected Property<T> getProperty(SortParam sort){
         if (sort == null || sort.getProperty() == null)
             return null;
 
         for (Property<T> property : getProperties()) {
             if (sort.getProperty().equals(property.getName())) {
-                Comparator<T> comparator = property.getComparator();
-                if (comparator != null) {
-                    if (!sort.isAscending())
-                        return new ReverseComparator<T>(comparator);
-                    else
-                        return comparator;
-                }
+                return property;
             }
         }
-        LOGGER.log(Level.WARNING, "Could not find any comparator " + "for sort property "
-                + sort.getProperty());
-
         return null;
     }
-    
     /**
      * This implementation uses the {@link #modelCache} to avoid recreating over and over
      * different models for the various items, this allows the grid panel to be editable
+     * 
+     * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
      */
+    @Override
     public final IModel model(Object object) {
         if(editable) {
             IModel result = modelCache.get((T) object);
@@ -456,6 +476,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
         public BeanProperty(String key, String propertyPath, boolean visible) {
             super(key, visible);
             this.propertyPath = propertyPath;
+        }
+        
+        public String getPropertyPath(){
+            return propertyPath;
         }
         
         /**

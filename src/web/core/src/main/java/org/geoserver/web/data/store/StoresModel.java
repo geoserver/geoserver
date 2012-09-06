@@ -21,7 +21,7 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
 
-    IModel workspace;
+    protected IModel workspace;
 
     public StoresModel(IModel workspaceModel) {
         this.workspace = workspaceModel;
@@ -44,7 +44,10 @@ public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
         }
     }
     
-    static class StoreNameComparator implements Comparator<StoreInfo> {
+    protected static class StoreNameComparator implements Comparator<StoreInfo> {
+        public StoreNameComparator() {
+        }
+
         public int compare(StoreInfo o1, StoreInfo o2) {
             return o1.getName().compareTo(o2.getName());
         }

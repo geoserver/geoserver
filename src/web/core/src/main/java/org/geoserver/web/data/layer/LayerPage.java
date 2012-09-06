@@ -120,7 +120,8 @@ public class LayerPage extends GeoServerSecuredPage {
         IModel storeModel = STORE.getModel(model);
         String wsName = (String) WORKSPACE.getModel(model).getObject();
         String storeName = (String) storeModel.getObject();
-        StoreInfo store = getCatalog().getStoreByName(wsName, storeName, StoreInfo.class);
+        LayerInfo layer = (LayerInfo) model.getObject();
+        StoreInfo store = layer.getResource().getStore();
         if(store instanceof DataStoreInfo) {
             return new SimpleBookmarkableLink(id, DataAccessEditPage.class, storeModel, 
                     DataAccessEditPage.STORE_NAME, storeName, 

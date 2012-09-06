@@ -1,26 +1,28 @@
 package org.geoserver.wps.web;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
 import junit.framework.TestCase;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.easymock.classextension.EasyMock;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geoserver.wps.web.InputParameterValues.ParameterValue;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.feature.NameImpl;
-import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
@@ -194,4 +196,35 @@ public class WPSExecuteTransformerTest extends TestCase {
             fail( "Document did not validate.");
         }
     }
+
+    public void testIncludeNamespaceMapping() throws Exception {
+        Name centroidName = new NameImpl("gs", "Centroid");
+        InputParameterValues inputValues = new InputParameterValues(centroidName, "features");
+        
+        VectorLayerConfiguration layer = new VectorLayerConfiguration();
+        layer.setLayerName("foo:myLayer");
+
+        ParameterValue features = inputValues.values.get(0);
+        features.setType(ParameterType.VECTOR_LAYER);
+        features.setValue(layer);
+
+        OutputParameter output = new OutputParameter(centroidName, "result");
+
+        ExecuteRequest execute = new ExecuteRequest(centroidName.getURI(), 
+            Arrays.asList(inputValues), Arrays.asList(output));
+
+        NamespaceInfo fooNs = EasyMock.createNiceMock(NamespaceInfo.class);
+        expect(fooNs.getURI()).andReturn("http://foo.org");
+        replay(fooNs);
+
+        Catalog cat = createNiceMock(Catalog.class);
+        expect(cat.getNamespaceByPrefix("foo")).andReturn(fooNs);
+        replay(cat);
+
+        WPSExecuteTransformer tx = new WPSExecuteTransformer(cat);
+        tx.setIndentation(2);
+        String xml = tx.transform(execute);
+        assertTrue(xml.contains("xmlns:foo=\"http://foo.org\""));
+    }
+    
 }

@@ -17,7 +17,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  * @author Juan Marin, OpenGeo
  * 
  */
-public class AttributeConverter implements Converter {
+public class AttributeListConverter implements Converter {
 
     @Override
     public boolean canConvert(Class clazz) {

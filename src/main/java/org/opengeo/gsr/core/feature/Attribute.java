@@ -10,11 +10,11 @@ package org.opengeo.gsr.core.feature;
  *
  * @param <T>
  */
-public class Attribute<T> {
+public class Attribute {
 
     private String name;
 
-    private T value;
+    private Object value;
 
     public String getName() {
         return name;
@@ -24,15 +24,15 @@ public class Attribute<T> {
         this.name = name;
     }
 
-    public T getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(T value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 
-    public Attribute(String name, T value) {
+    public Attribute(String name, Object value) {
         super();
         this.name = name;
         this.value = value;

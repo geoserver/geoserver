@@ -10,8 +10,8 @@ import java.io.StringReader;
 
 import org.eel.kitchen.jsonschema.main.JsonSchema;
 import org.eel.kitchen.jsonschema.main.JsonSchemaFactory;
-import org.eel.kitchen.jsonschema.main.SchemaContainer;
-import org.eel.kitchen.jsonschema.main.ValidationReport;
+import org.eel.kitchen.jsonschema.ref.SchemaContainer;
+import org.eel.kitchen.jsonschema.report.ValidationReport;
 import org.eel.kitchen.jsonschema.util.JsonLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,6 +25,7 @@ public class JSONValidator {
 
     public static boolean isValidSchema(String json, File schemaFile) {
         boolean isValid = false;
+        ValidationReport report = null;
         try {
             final String baseURI = "file:///" + schemaFile.getAbsolutePath();
             JsonSchemaFactory factory = new JsonSchemaFactory.Builder().setNamespace(baseURI)
@@ -34,7 +35,7 @@ public class JSONValidator {
             JsonSchema schema = factory.createSchema(schemaContainer);
             Reader reader = new StringReader(json);
             JsonNode jsonNode = JsonLoader.fromReader(reader);
-            ValidationReport report = schema.validate(jsonNode);
+            report = schema.validate(jsonNode);
             isValid = report.isSuccess();
             if (!isValid) {
                 System.out.println("ERROR validating Json Schema in " + schemaFile);
@@ -44,7 +45,7 @@ public class JSONValidator {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            report.getMessages().add(e.getMessage());
         }
         return isValid;
     }

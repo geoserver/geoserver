@@ -31,4 +31,5 @@ public class AttributeList {
     public void add(Attribute attribute) {
         attributes.add(attribute);
     }
+
 }

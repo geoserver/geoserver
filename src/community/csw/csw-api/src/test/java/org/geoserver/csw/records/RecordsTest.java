@@ -4,10 +4,15 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
+import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
+
+import com.vividsolutions.jts.geom.Polygon;
 
 public class RecordsTest extends TestCase {
 
@@ -50,6 +55,7 @@ public class RecordsTest extends TestCase {
         rb.addElement("abstract", "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
         rb.addElement("type", "dataset");
         rb.addElement("subject", "imagery", "baseMaps", "earthCover");
+        rb.addBoundingBox(new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
         Feature f = rb.build(null);
 
         assertRecordElement(f, "identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
@@ -58,6 +64,20 @@ public class RecordsTest extends TestCase {
         assertRecordElement(f, "abstract", "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
         assertRecordElement(f, "type", "dataset");
         assertRecordElement(f, "subject", "imagery", "baseMaps", "earthCover");
+        assertBBox(f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+    }
+
+    private void assertBBox(Feature f, ReferencedEnvelope... envelopes) {
+        Collection<Property> propertyList = f.getProperties(CSWRecordTypes.RECORD_BBOX_NAME);
+        Property[] properties = (Property[]) propertyList.toArray(new Property[propertyList.size()]);
+        assertEquals(properties.length, envelopes.length);
+        for (int i = 0; i < properties.length; i++) {
+            GeometryAttribute gat = (GeometryAttribute) properties[i];
+            assertEquals(CSWRecordTypes.RECORD_BBOX_DESCRIPTOR, gat.getDescriptor());
+            Polygon p = (Polygon) gat.getValue();
+            assertEquals(p.getEnvelopeInternal(), envelopes[i]);
+            assertEquals(DefaultGeographicCRS.WGS84, p.getUserData());
+        }
     }
 
     private void assertRecordElement(Feature f, String elementName, Object... values) {
@@ -69,7 +89,6 @@ public class RecordsTest extends TestCase {
             ComplexAttribute cad = (ComplexAttribute) properties[i];
             assertEquals(identifierDescriptor, cad.getDescriptor());
             assertEquals(values[i], cad.getProperty(CSWRecordTypes.SIMPLE_LITERAL_VALUE).getValue());
-
         }
     }
 

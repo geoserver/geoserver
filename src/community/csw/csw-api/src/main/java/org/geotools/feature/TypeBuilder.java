@@ -673,9 +673,16 @@ public class TypeBuilder {
      */
     public AttributeDescriptor attributeDescriptor() {
         // TODO: handle default value
-        AttributeDescriptor attribute = getTypeFactory().createAttributeDescriptor(
-                (AttributeType) propertyType, typeName(), getMinOccurs(), getMaxOccurs(),
-                isNillable(), null);
+        AttributeDescriptor attribute;
+        if(propertyType instanceof GeometryType) {
+            attribute = getTypeFactory().createGeometryDescriptor(
+                    (GeometryType) propertyType, typeName(), getMinOccurs(), getMaxOccurs(),
+                    isNillable(), null);
+        } else {
+            attribute = getTypeFactory().createAttributeDescriptor(
+                    (AttributeType) propertyType, typeName(), getMinOccurs(), getMaxOccurs(),
+                    isNillable(), null);
+        }
         reset();
         return attribute;
     }

@@ -51,7 +51,11 @@ public class CSWRecordTypes {
 
     public static final AttributeDescriptor DC_ELEMENT;
 
-    public static Name DC_ELEMENT_NAME;
+    public static final Name DC_ELEMENT_NAME;
+
+    public static final NameImpl RECORD_BBOX_NAME;
+
+    public static final AttributeDescriptor RECORD_BBOX_DESCRIPTOR;
 
     public static final FeatureType RECORD;
 
@@ -107,13 +111,14 @@ public class CSWRecordTypes {
             builder.setNamespaceURI(CSW.NAMESPACE);
             builder.setName("BoundingBox");
             builder.setPropertyType(bboxType);
-            AttributeDescriptor bboxDescriptor = builder.attributeDescriptor();
+            RECORD_BBOX_DESCRIPTOR = builder.attributeDescriptor();
+            RECORD_BBOX_NAME = new NameImpl(CSW.NAMESPACE, "BoundingBox");
 
             // create the CSW record
             builder.setNamespaceURI(CSW.NAMESPACE);
             builder.setName(CSW.Record.getLocalPart());
             builder.add(DC_ELEMENT);
-            builder.add(bboxDescriptor);
+            builder.add(RECORD_BBOX_DESCRIPTOR);
             RECORD = builder.feature();
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to create one of the attribute descriptors for "

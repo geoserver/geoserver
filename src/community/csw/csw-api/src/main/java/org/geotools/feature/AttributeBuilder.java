@@ -245,6 +245,10 @@ public class AttributeBuilder {
         getProperties().clear();
         return built;
     }
+    
+    public Attribute buildSimple(String id, Object value) {
+        return create(value, type, descriptor, id);
+    }
 
     /**
      * Resets the builder to its initial state, the same state it is in directly after being instantiated.

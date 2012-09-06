@@ -4,7 +4,6 @@
  */
 package org.opengeo.gsr.core.symbol;
 
-import org.geotools.data.Base64;
 
 /**
  * 

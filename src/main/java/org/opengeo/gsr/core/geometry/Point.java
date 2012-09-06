@@ -52,10 +52,10 @@ public class Point implements Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Point(double x, double y, SpatialReference spatialReferenceWKID) {
+    public Point(double x, double y, SpatialReference spatialReference) {
         this.x = x;
         this.y = y;
-        this.spatialReference = spatialReferenceWKID;
+        this.spatialReference = spatialReference;
         this.geometryType = GeometryTypeEnum.POINT;
     }
 

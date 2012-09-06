@@ -90,7 +90,6 @@ public class SymbolSchemaTest extends JsonSchemaTest {
         PictureFillSymbol pfs = new PictureFillSymbol(rawData, url.toString(), mimeType, color, 63,
                 63, 0, 0, 0, outline, 1, 1);
         String json = getJson(pfs);
-        System.out.println(json);
         assertTrue(validateJSON(json, "gsr/1.0/pfs.json"));
     }
 }

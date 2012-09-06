@@ -4,11 +4,9 @@
  */
 package org.opengeo.gsr.core.feature;
 
-import java.util.Map;
+import java.util.List;
 
 import org.opengeo.gsr.core.geometry.Geometry;
-
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * 
@@ -19,8 +17,7 @@ public class Feature {
 
     private Geometry geometry;
 
-    @XStreamImplicit
-    private Map<String, Object> attributes;
+    private AttributeList attributes;
 
     public Geometry getGeometry() {
         return geometry;
@@ -30,15 +27,15 @@ public class Feature {
         this.geometry = geometry;
     }
 
-    public Map<String, Object> getAttributes() {
+    public AttributeList getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, Object> attributes) {
+    public void setAttributes(AttributeList attributes) {
         this.attributes = attributes;
     }
 
-    public Feature(Geometry geometry, Map<String, Object> attributes) {
+    public Feature(Geometry geometry, AttributeList attributes) {
         super();
         this.geometry = geometry;
         this.attributes = attributes;

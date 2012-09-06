@@ -10,8 +10,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import org.geoserver.rest.format.ReflectiveJSONFormat;
-import org.opengeo.gsr.core.feature.Attribute;
-import org.opengeo.gsr.core.feature.FeatureConverter;
+import org.opengeo.gsr.core.feature.AttributeConverter;
 import org.opengeo.gsr.core.feature.FieldTypeConverter;
 import org.opengeo.gsr.core.geometry.Geometry;
 import org.opengeo.gsr.core.geometry.GeometryTypeConverter;
@@ -62,7 +61,6 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.alias("", Point.class);
         xstream.alias("", SpatialReference.class);
         xstream.alias("", SpatialReferenceWKID.class);
-        xstream.alias("", Attribute.class);
 
         // omit fields
         xstream.omitField(CatalogService.class, "name");
@@ -75,9 +73,9 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.omitField(SpatialReferenceWKID.class, "geometryType");
 
         // converters
+        xstream.registerConverter(new AttributeConverter());
         xstream.registerConverter(new FieldTypeConverter());
         xstream.registerConverter(new GeometryTypeConverter());
-        // xstream.registerConverter(new FeatureConverter());
         xstream.registerConverter(new SimpleMarkerSymbolEnumConverter());
         xstream.registerConverter(new SimpleLineSymbolEnumConverter());
         xstream.registerConverter(new SimpleFillSymbolEnumConverter());

@@ -1,15 +1,20 @@
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.opengeo.gsr.core.feature;
 
 /**
  * 
  * @author Juan Marin, OpenGeo
  *
+ * @param <T>
  */
-public class Attribute {
+public class Attribute<T> {
 
     private String name;
 
-    private Object value;
+    private T value;
 
     public String getName() {
         return name;
@@ -19,17 +24,18 @@ public class Attribute {
         this.name = name;
     }
 
-    public Object getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
-    public Attribute(String name, Object value) {
+    public Attribute(String name, T value) {
         super();
         this.name = name;
         this.value = value;
     }
+
 }

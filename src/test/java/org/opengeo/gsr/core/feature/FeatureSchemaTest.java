@@ -20,15 +20,16 @@ public class FeatureSchemaTest extends JsonSchemaTest {
     @Test
     public void testFeatureJsonSchema() throws Exception {
         Geometry geometry = new Point(-118.5, 33.80, new SpatialReferenceWKID(4326));
-        List<Attribute> attributes = new ArrayList<Attribute>();
-        attributes.add(new Attribute("OWNER", "Joe Smith"));
-        attributes.add(new Attribute("VALUE", 94820.37));
-        attributes.add(new Attribute("APPROVED", true));
-        attributes.add(new Attribute("LASTUPDATE", 1227663551096L)); // Date encoded as milliseconds since epoch
+        List<Attribute> attr = new ArrayList<Attribute>();
+        AttributeList attributes = new AttributeList(attr);
+        attributes.add(new Attribute<String>("OWNER", "Joe Smith"));
+        attributes.add(new Attribute<Double>("VALUE", 94820.37));
+        attributes.add(new Attribute<Boolean>("APPROVED", true));
+        attributes.add(new Attribute<Long>("LASTUPDATE", 1227663551096L)); // Date encoded as milliseconds since epoch
         Feature feature = new Feature(geometry, attributes);
         String json = getJson(feature);
         System.out.println(json);
-        //assertTrue(validateJSON(json, "gsr/1.0/feature.json"));
+        assertTrue(validateJSON(json, "gsr/1.0/feature.json"));
     }
 
     @Test

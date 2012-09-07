@@ -380,6 +380,21 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertTrue(ftInfo.getKeywords().contains(new Keyword("baz")));
     }
 
+    public void testSetupMetadataResourceInfoException() throws Exception {
+        FeatureTypeInfo ftInfo = createMock(FeatureTypeInfo.class);
+        expect(ftInfo.getTitle()).andReturn("foo");
+        expect(ftInfo.getDescription()).andReturn("foo");
+        expect(ftInfo.getKeywords()).andReturn(null);
+        replay(ftInfo);
+
+        FeatureSource fs = createMock(FeatureSource.class);
+        expect(fs.getInfo()).andThrow(new UnsupportedOperationException());
+        replay(fs);
+
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        cb.setupMetadata(ftInfo, fs);
+    }
+
     Name toName(QName qname) {
         return new NameImpl(qname.getNamespaceURI(), qname.getLocalPart());
     }

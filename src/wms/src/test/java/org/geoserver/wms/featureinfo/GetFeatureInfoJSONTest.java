@@ -12,6 +12,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
 public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
     /**
@@ -22,10 +24,19 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public void testSimpleJSONP() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format=text/javascript&request=GetFeatureInfo&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
-        String result = getAsString(request);
-        // System.out.println(result);
+                + "&request=GetFeatureInfo&layers=" + layer
+                + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10"+"&info_format="+JSONType.jsonp;
+        
+        
+        // JSONP
+        MockHttpServletResponse response = getAsServletResponse(request);
+        
+        // MimeType
+        assertEquals(JSONType.jsonp, response.getContentType());
+        
+        // Content
+        String result = response.getOutputStreamContent();
+
         assertNotNull(result);
 
         assertTrue(result.startsWith(JSONType.CALLBACK_FUNCTION));
@@ -51,10 +62,19 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public void testCustomJSONP() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format=text/javascript&request=GetFeatureInfo&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10&format_options=callback:custom";
-        String result = getAsString(request);
-        // System.out.println(result);
+                + "&request=GetFeatureInfo&layers=" + layer
+                + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10"
+                +"&info_format="+JSONType.jsonp
+                + "&format_options="+JSONType.CALLBACK_FUNCTION_KEY+":custom";
+        // JSONP
+        MockHttpServletResponse response = getAsServletResponse(request);
+        
+        // MimeType
+        assertEquals(JSONType.jsonp, response.getContentType());
+        
+        // Content
+        String result = response.getOutputStreamContent();
+
         assertNotNull(result);
 
         assertTrue(result.startsWith("custom("));
@@ -80,10 +100,19 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public void testSimpleJSON() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format=application/json&request=GetFeatureInfo&layers=" + layer
-                + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
-        String result = getAsString(request);
-        // System.out.println(result);
+                + "&request=GetFeatureInfo&layers=" + layer
+                + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10"
+                +"&info_format="+JSONType.json;
+        
+        // JSON
+        MockHttpServletResponse response = getAsServletResponse(request);
+        
+        // MimeType
+        assertEquals(JSONType.json, response.getContentType());
+        
+        // Content
+        String result = response.getOutputStreamContent();
+
         assertNotNull(result);
 
         JSONObject rootObject = JSONObject.fromObject(result);

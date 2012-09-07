@@ -37,11 +37,28 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         		"&version=1.1.0" +
         		"&request=DescribeFeatureType" +
         		"&typeName=foobar" +
-        		"&EXCEPTIONS="+JSONType.jsonp+"&format_options=callback:myMethod";
-        MockHttpServletResponse response = getAsServletResponse(path);
-        String content = response.getOutputStreamContent();
+        		"&format_options=callback:myMethod";
         
+        // JSONP
+        MockHttpServletResponse response = getAsServletResponse(path+"&EXCEPTIONS="+JSONType.jsonp);
+        
+        // MimeType
+        assertEquals(JSONType.jsonp, response.getContentType());
+        
+        // Content
+        String content = response.getOutputStreamContent();
         testJson(testJsonP(content));
+        
+        // JSON
+        response = getAsServletResponse(path+"&EXCEPTIONS="+JSONType.json);
+        
+        // MimeType
+        assertEquals(JSONType.json, response.getContentType());
+        
+        // Content        
+        content = response.getOutputStreamContent();
+        testJson(content);
+
     }
     
     /**

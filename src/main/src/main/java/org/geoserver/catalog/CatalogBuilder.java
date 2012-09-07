@@ -466,14 +466,23 @@ public class CatalogBuilder {
     public void setupMetadata(FeatureTypeInfo ftinfo, FeatureSource featureSource) 
         throws IOException {
 
-        org.geotools.data.ResourceInfo rinfo = featureSource.getInfo();
+        org.geotools.data.ResourceInfo rinfo = null;
+        try {
+            rinfo = featureSource.getInfo();
+        }
+        catch(Exception ignore) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Unable to get resource info from feature source", ignore);
+            }
+        }
+
         if (ftinfo.getTitle() == null) {
             ftinfo.setTitle(rinfo != null ? rinfo.getTitle() : ftinfo.getName());
         }
         if (rinfo != null && ftinfo.getDescription() == null) {
             ftinfo.setDescription(rinfo.getDescription());
         }
-        if (rinfo != null && ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty()) {
+        if (rinfo != null && (ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty())) {
             if (rinfo.getKeywords() != null) {
                 if (ftinfo.getKeywords() == null) {
                     ((FeatureTypeInfoImpl)ftinfo).setKeywords(new ArrayList());

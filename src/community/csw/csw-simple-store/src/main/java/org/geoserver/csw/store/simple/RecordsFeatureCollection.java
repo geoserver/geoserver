@@ -18,15 +18,17 @@ import org.opengis.filter.sort.SortBy;
 public class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
     File root;
+    int offset;
 
-    public RecordsFeatureCollection(File root) {
+    public RecordsFeatureCollection(File root, int offset) {
         super(CSWRecordTypes.RECORD);
         this.root = root;
+        this.offset = offset;
     }
 
     @Override
     protected Iterator<Feature> openIterator() {
-        return new SimpleRecordIterator(root);
+        return new SimpleRecordIterator(root, offset);
     }
 
     @Override

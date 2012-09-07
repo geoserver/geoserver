@@ -9,6 +9,8 @@ import org.geoserver.csw.store.CatalogCapabilities;
 import org.geoserver.csw.store.CatalogStore;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
+import org.geotools.data.store.FilteringFeatureCollection;
+import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -45,9 +47,23 @@ public class SimpleCatalogStore implements CatalogStore {
             throw new IOException(q.getNamespace() + ":" + q.getTypeName() + " is not a supported type");
         }
         
-        FeatureCollection records = new RecordsFeatureCollection(root);
+        int startIndex = 0;
+        if(q.getStartIndex() != null) {
+            startIndex = q.getStartIndex();
+        }
+        FeatureCollection records = new RecordsFeatureCollection(root, startIndex);
         
-        // TODO: handle filtering, attribute selection, paging, sorting
+        // filtering
+        if(q.getFilter() != Filter.INCLUDE) {
+            records = new FilteringFeatureCollection<FeatureType, Feature>(records, q.getFilter());
+        }
+        
+        // paging
+        if(q.getMaxFeatures() < Query.DEFAULT_MAX) {
+            records = new MaxFeaturesFeatureCollection<FeatureType, Feature>(records, q.getMaxFeatures());
+        }
+        
+        // TODO: attribute selection, paging, sorting
         
         return records;
     }

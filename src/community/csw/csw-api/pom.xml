@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>main</artifactId>
-      <version>2.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -30,6 +30,11 @@
     <dependency>
         <groupId>org.geotools.xsd</groupId>
         <artifactId>gt-xsd-csw</artifactId>
+        <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-app-schema</artifactId>
         <version>${gt.version}</version>
     </dependency>
   </dependencies>

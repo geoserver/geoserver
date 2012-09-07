@@ -35,21 +35,27 @@ class SimpleRecordIterator implements Iterator<Feature> {
     RecordType record;
     Parser parser;
     CSWRecordBuilder builder = new CSWRecordBuilder();
+    int offset;
 
-    public SimpleRecordIterator(File root) {
+    public SimpleRecordIterator(File root, int offset) {
         File[] fileArray = root.listFiles((FilenameFilter) new SuffixFileFilter(".xml", IOCase.INSENSITIVE));
         files = Arrays.asList(fileArray).iterator();
         parser = new Parser(new CSWConfiguration());
+        this.offset = offset;
     }
 
     @Override
     public boolean hasNext() {
-        while(record == null && files.hasNext()) {
+        while((record == null || offset > 0) && files.hasNext() ) {
             File file = files.next();
             InputStream is = null; 
             try {
                 is = new FileInputStream(file);
                 record = (RecordType) parser.parse(is);
+                if(offset > 0) {
+                    offset--;
+                    record = null;
+                }
             } catch(Exception e) {
                 LOGGER.log(Level.INFO, "Failed to parse the contents of " + file.getPath() + " as a CSW Record", e);
             } finally {

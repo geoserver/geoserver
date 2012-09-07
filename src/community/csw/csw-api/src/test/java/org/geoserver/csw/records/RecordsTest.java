@@ -6,13 +6,14 @@ import junit.framework.TestCase;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
-import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.geometry.MismatchedDimensionException;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class RecordsTest extends TestCase {
 
@@ -46,8 +47,10 @@ public class RecordsTest extends TestCase {
           </ows:WGS84BoundingBox>
         </Record>
        </code>
+     * @throws Exception 
+     * @throws MismatchedDimensionException 
      */
-    public void testBuildCSWRecord() {
+    public void testBuildCSWRecord() throws MismatchedDimensionException, Exception {
         CSWRecordBuilder rb = new CSWRecordBuilder();
         rb.addElement("identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
         rb.addElement("title", "Image2000 Product 1 (at1) Multispectral");
@@ -67,17 +70,24 @@ public class RecordsTest extends TestCase {
         assertBBox(f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
     }
 
-    private void assertBBox(Feature f, ReferencedEnvelope... envelopes) {
+    private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
         Collection<Property> propertyList = f.getProperties(CSWRecordTypes.RECORD_BBOX_NAME);
         Property[] properties = (Property[]) propertyList.toArray(new Property[propertyList.size()]);
         assertEquals(properties.length, envelopes.length);
+        ReferencedEnvelope total = null;
         for (int i = 0; i < properties.length; i++) {
-            GeometryAttribute gat = (GeometryAttribute) properties[i];
-            assertEquals(CSWRecordTypes.RECORD_BBOX_DESCRIPTOR, gat.getDescriptor());
-            Polygon p = (Polygon) gat.getValue();
-            assertEquals(p.getEnvelopeInternal(), envelopes[i]);
-            assertEquals(DefaultGeographicCRS.WGS84, p.getUserData());
+            Attribute at = (Attribute) properties[i];
+            assertEquals(envelopes[i], at.getValue());
+            ReferencedEnvelope re = envelopes[i].transform(DefaultGeographicCRS.WGS84, true);
+            if(total == null) {
+                total = re;
+            } else {
+                total.expandToInclude(re);
+            }
         }
+        
+        Geometry geometry = (Geometry) f.getDefaultGeometryProperty().getValue();
+        assertTrue(total.contains(geometry.getEnvelopeInternal()));
     }
 
     private void assertRecordElement(Feature f, String elementName, Object... values) {

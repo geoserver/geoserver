@@ -16,7 +16,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.identity.FeatureId;
 
-interface CatalogStore {
+public interface CatalogStore {
 
     /**
      * Returns the supported record types

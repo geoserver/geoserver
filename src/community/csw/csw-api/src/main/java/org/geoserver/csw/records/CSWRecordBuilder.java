@@ -4,18 +4,20 @@
  */
 package org.geoserver.csw.records;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.LenientFeatureFactoryImpl;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -28,6 +30,8 @@ public class CSWRecordBuilder {
     ComplexFeatureBuilder fb = new ComplexFeatureBuilder(CSWRecordTypes.RECORD);
 
     AttributeBuilder ab = new AttributeBuilder(new LenientFeatureFactoryImpl());
+
+    List<ReferencedEnvelope> boxes = new ArrayList<ReferencedEnvelope>();
 
     /**
      * Adds an element to the current record
@@ -45,22 +49,16 @@ public class CSWRecordBuilder {
             fb.append(CSWRecordTypes.DC_ELEMENT_NAME, element);
         }
     }
-    
+
     /**
-     * Adds a bounding box to the record. The envelope must be in WGS84 
+     * Adds a bounding box to the record. The envelope must be in WGS84
      * 
      * @param env
      */
     public void addBoundingBox(ReferencedEnvelope env) {
-        CoordinateReferenceSystem crs = env.getCoordinateReferenceSystem();
-        if(crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
-            throw new IllegalArgumentException("The envelope should be provided in WGS84");
-        }
-        
-        Polygon poly = JTS.toGeometry(env);
-        poly.setUserData(DefaultGeographicCRS.WGS84);
+        boxes.add(env);
         ab.setDescriptor(CSWRecordTypes.RECORD_BBOX_DESCRIPTOR);
-        Attribute element = ab.buildSimple(null, poly);
+        Attribute element = ab.buildSimple(null, env);
 
         fb.append(CSWRecordTypes.RECORD_BBOX_NAME, element);
     }
@@ -72,6 +70,34 @@ public class CSWRecordBuilder {
      * @return
      */
     public Feature build(String id) {
+        // gather all the bounding boxes in a single geometry
+        Geometry geom = null;
+        for (ReferencedEnvelope env : boxes) {
+            try {
+                env = env.transform(DefaultGeographicCRS.WGS84, true);
+
+                Polygon poly = JTS.toGeometry(env);
+                poly.setUserData(DefaultGeographicCRS.WGS84);
+                if (geom == null) {
+                    geom = poly;
+                } else {
+                    geom = geom.union(poly);
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException(
+                        "Failed to reproject one of the bounding boxes to WGS84, "
+                                + "this should never happen with valid coordinates", e);
+            }
+        }
+        if(geom instanceof Polygon) {
+            geom = geom.getFactory().createMultiPolygon(new Polygon[] {(Polygon) geom}); 
+        }
+
+        ab.setDescriptor(CSWRecordTypes.RECORD_GEOMETRY_DESCRIPTOR);
+        Attribute element = ab.buildSimple(null, geom);
+        fb.append(CSWRecordTypes.RECORD_GEOMETRY_NAME, element);
+
+        boxes.clear();
         return fb.buildFeature(id);
     }
 

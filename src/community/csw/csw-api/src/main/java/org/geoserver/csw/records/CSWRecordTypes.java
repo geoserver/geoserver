@@ -21,7 +21,8 @@ import org.geotools.csw.DCT;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
-import org.geotools.ows.OWS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
@@ -30,7 +31,7 @@ import org.opengis.feature.type.FeatureTypeFactory;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.MultiPolygon;
 
 /**
  * Container for FeatureType related constants useful in building CSW records
@@ -56,6 +57,11 @@ public class CSWRecordTypes {
     public static final NameImpl RECORD_BBOX_NAME;
 
     public static final AttributeDescriptor RECORD_BBOX_DESCRIPTOR;
+    
+    public static final NameImpl RECORD_GEOMETRY_NAME;
+
+    public static final AttributeDescriptor RECORD_GEOMETRY_DESCRIPTOR;
+
 
     public static final FeatureType RECORD;
 
@@ -100,12 +106,27 @@ public class CSWRecordTypes {
             fillSimpleLiteralDescriptors(builder, DCT.class, DCT_DESCRIPTORS,
                     new ArrayList<String>());
 
-            // create the bbox representation
-            builder.setNamespaceURI(OWS.NAMESPACE);
+            // create the geometry representation, used for the sake of in memory filtering 
+            // and spatial representation in a single CRS
+            builder.setNamespaceURI(CSW.NAMESPACE);
+            builder.setName("geometry");
+            builder.setBinding(MultiPolygon.class);
+            builder.crs(DefaultGeographicCRS.WGS84);
+            GeometryType geometryType = builder.geometry();
+            builder.setMinOccurs(0);
+            builder.setMaxOccurs(1);
+            builder.setNamespaceURI(CSW.NAMESPACE);
+            builder.setName("geometry");
+            builder.setPropertyType(geometryType);
+            RECORD_GEOMETRY_DESCRIPTOR = builder.attributeDescriptor();
+            RECORD_GEOMETRY_NAME = new NameImpl(CSW.NAMESPACE, "geometry");
+            builder.setDefaultGeometry(RECORD_GEOMETRY_NAME);
+            
+            // and now the actual bbox, as a ReferencedEnvelope with the native CRS
+            builder.setNamespaceURI(CSW.NAMESPACE);
             builder.setName("BoundingBoxType");
-            builder.setBinding(Polygon.class);
-            builder.crs("EPSG:4326");
-            GeometryType bboxType = builder.geometry();
+            builder.setBinding(ReferencedEnvelope.class);
+            AttributeType bboxType = builder.attribute();
             builder.setMinOccurs(0);
             builder.setMaxOccurs(-1);
             builder.setNamespaceURI(CSW.NAMESPACE);
@@ -119,6 +140,7 @@ public class CSWRecordTypes {
             builder.setName(CSW.Record.getLocalPart());
             builder.add(DC_ELEMENT);
             builder.add(RECORD_BBOX_DESCRIPTOR);
+            builder.add(RECORD_GEOMETRY_DESCRIPTOR);
             RECORD = builder.feature();
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to create one of the attribute descriptors for "

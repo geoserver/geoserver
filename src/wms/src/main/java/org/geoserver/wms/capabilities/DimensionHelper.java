@@ -6,9 +6,11 @@ package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.FieldPosition;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +79,9 @@ abstract class DimensionHelper {
         }
 
         if (mode == Mode.WMS11) {
-            declareWMS11Dimensions(hasTime, hasElevation);
+            String elevUnits = hasElevation ? elevInfo.getUnits() : "";
+            String elevUnitSymbol = hasElevation ? elevInfo.getUnitSymbol() : "";
+            declareWMS11Dimensions(hasTime, hasElevation, elevUnits, elevUnitSymbol);
         }
 
         // Time dimension
@@ -107,6 +111,9 @@ abstract class DimensionHelper {
     void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException {
         // do we have time and elevation?
         CoverageInfo cvInfo = (CoverageInfo) layer.getResource();
+        if (cvInfo == null)
+            throw new ServiceException("Unable to acquire coverage resource for layer: "
+                    + layer.getName());
         DimensionInfo timeInfo = cvInfo.getMetadata()
                 .get(ResourceInfo.TIME, DimensionInfo.class);
         DimensionInfo elevInfo = cvInfo.getMetadata().get(ResourceInfo.ELEVATION,
@@ -119,10 +126,6 @@ abstract class DimensionHelper {
             return;
         }
         
-        if (cvInfo == null)
-            throw new ServiceException("Unable to acquire coverage resource for layer: "
-                    + layer.getName());
-
         Catalog catalog = cvInfo.getCatalog();
         if (catalog == null)
             throw new ServiceException("Unable to acquire catalog resource for layer: "
@@ -148,7 +151,9 @@ abstract class DimensionHelper {
         ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
         
         if (mode == Mode.WMS11) {
-            declareWMS11Dimensions(hasTime, hasElevation);
+            String elevUnits = hasElevation ? elevInfo.getUnits() : "";
+            String elevUnitSymbol = hasElevation ? elevInfo.getUnitSymbol() : "";
+            declareWMS11Dimensions(hasTime, hasElevation, elevUnits, elevUnitSymbol);
         }
         
 
@@ -167,7 +172,8 @@ abstract class DimensionHelper {
         TreeSet<Double> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
 
-        writeElevationDimension(elevations, elevationMetadata);
+        writeElevationDimension(elevations, elevationMetadata, 
+                elevInfo.getUnits(), elevInfo.getUnitSymbol());
     }
 
     private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) {
@@ -179,10 +185,12 @@ abstract class DimensionHelper {
 
     /**
      * Writes WMS 1.1.1 conforming dimensions (WMS 1.3 squashed dimensions and extent in the same tag instead)
-     * @param hasTime
-     * @param hasElevation
+     * @param hasTime - <tt>true</tt> if the layer has the time dimension, <tt>false</tt> otherwise
+     * @param hasElevation - <tt>true</tt> if the layer has the elevation dimension, <tt>false</tt> otherwise
+     * @param elevUnits - <tt>units</tt> attribute of the elevation dimension
+     * @param elevUnitSymbol - <tt>unitSymbol</tt> attribute of the elevation dimension
      */
-    private void declareWMS11Dimensions(boolean hasTime, boolean hasElevation) {
+    private void declareWMS11Dimensions(boolean hasTime, boolean hasElevation, String elevUnits, String elevUnitSymbol) {
         // we have to declare time and elevation before the extents
         if (hasTime) {
             AttributesImpl timeDim = new AttributesImpl();
@@ -191,10 +199,8 @@ abstract class DimensionHelper {
             element("Dimension", null, timeDim);
         }
         if (hasElevation) {
-            AttributesImpl elevDim = new AttributesImpl();
-            elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "units", "units", "", "EPSG:5030");
-            element("Dimension", null, elevDim);
+            // same as WMS 1.3 except no values
+            writeElevationDimensionElement(null, null, null, elevUnits, elevUnitSymbol);
         }
     }
 
@@ -256,7 +262,7 @@ abstract class DimensionHelper {
     /**
      * Builds the proper presentation given the current
      * 
-     * @param resourceInfo
+     * @param dimension
      * @param values
      * @return
      */
@@ -322,8 +328,6 @@ abstract class DimensionHelper {
      * Writes out metadata for the time dimension
      * 
      * @param typeInfo
-     * @param source
-     * @param timeAttribute
      * @throws IOException
      */
     private void handleTimeDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
@@ -343,15 +347,17 @@ abstract class DimensionHelper {
     private void handleElevationDimensionVector(FeatureTypeInfo typeInfo) throws IOException {
         TreeSet<Double> elevations = wms.getFeatureTypeElevations(typeInfo);
         String elevationMetadata;
+        DimensionInfo di = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
+                DimensionInfo.class);
+        String units = di.getUnits();
+        String unitSymbol = di.getUnitSymbol();
         if (elevations != null && !elevations.isEmpty()) {
-            DimensionInfo di = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
-                    DimensionInfo.class);
             elevationMetadata = getZDomainRepresentation(di, elevations);
         } else {
             elevationMetadata = "";
         }
 
-        writeElevationDimension(elevations, elevationMetadata);
+        writeElevationDimension(elevations, elevationMetadata, units, unitSymbol);
     }
 
     private void writeTimeDimension(String timeMetadata) {
@@ -363,27 +369,45 @@ abstract class DimensionHelper {
         } else {
             timeDim.addAttribute("", "name", "name", "", "time");
             timeDim.addAttribute("", "default", "default", "", "current");
-            timeDim.addAttribute("", "units", "units", "", "ISO8601");
+            timeDim.addAttribute("", "units", "units", "", DimensionInfo.TIME_UNITS);
             element("Dimension", timeMetadata, timeDim);
         }
     }
 
-    private void writeElevationDimension(TreeSet<Double> elevations, final String elevationMetadata) {
-        AttributesImpl elevDim = new AttributesImpl();
+    private void writeElevationDimension(TreeSet<Double> elevations, final String elevationMetadata, 
+            final String units, final String unitSymbol) {
         Double defaultValue = elevations == null || elevations.isEmpty() ? 0 : elevations.first();
         if (mode == Mode.WMS11) {
+            AttributesImpl elevDim = new AttributesImpl();
             elevDim.addAttribute("", "name", "name", "", "elevation");
             elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
             element("Extent", elevationMetadata, elevDim);
         } else {
-            elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
-            elevDim.addAttribute("", "units", "units", "", "EPSG:5030");
-            elevDim.addAttribute("", "unitSymbol", "unitSymbol", "", "m");
-            element("Dimension", elevationMetadata, elevDim);
+            writeElevationDimensionElement(elevations, elevationMetadata, 
+                    defaultValue, units, unitSymbol);
         }
     }
-
+    
+    private void writeElevationDimensionElement(TreeSet<Double> elevations, final String elevationMetadata, 
+            final Double defaultValue, final String units, final String unitSymbol) {
+        AttributesImpl elevDim = new AttributesImpl();
+        String unitsNotNull = units;
+        String unitSymNotNull = (unitSymbol == null) ? "" : unitSymbol;
+        if (units == null) {
+            unitsNotNull = DimensionInfo.ELEVATION_UNITS;
+            unitSymNotNull = DimensionInfo.ELEVATION_UNIT_SYMBOL;
+        }
+        elevDim.addAttribute("", "name", "name", "", "elevation");
+        if (defaultValue != null) {
+            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
+        }
+        elevDim.addAttribute("", "units", "units", "", unitsNotNull);
+        if (!"".equals(unitsNotNull) && !"".equals(unitSymNotNull)) {
+            elevDim.addAttribute("", "unitSymbol", "unitSymbol", "", unitSymNotNull);
+        }
+        element("Dimension", elevationMetadata, elevDim);
+    }
+    
     static class ISO8601Formatter {
 
         private final GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
@@ -439,7 +463,6 @@ abstract class DimensionHelper {
             
             return buf;
         }
-        
         
     }
 }

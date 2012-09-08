@@ -18,7 +18,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -53,12 +52,16 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
 
     private DropDownChoice<DimensionPresentation> presentation;
 
+    private TextField<String> units;
+    
+    private TextField<String> unitSymbol;
+    
     private PeriodEditor resTime;
 
     private TextField<BigDecimal> resElevation;
     
     boolean time;
-
+    
     public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class type) {
         super(id, model);
 
@@ -111,32 +114,47 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         endAttribute.setRequired(false);
         attContainer.add(endAttribute);
 
-		// do we show it?
+        // do we show it?
         if(resource instanceof FeatureTypeInfo) { 
-	        if (attributes.isEmpty()) {
-	            disableDimension(type, configs, noAttributeMessage);
-	        } else {
-	            noAttributeMessage.setVisible(false);
-	        }
+            if (attributes.isEmpty()) {
+                disableDimension(type, configs, noAttributeMessage);
+            } else {
+                noAttributeMessage.setVisible(false);
+            }
         } else if(resource instanceof CoverageInfo) {
-        	attContainer.setVisible(false);
-        	attribute.setRequired(false);
-        	try {
-        		GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
-        		if(Number.class.isAssignableFrom(type)) {
-        			String elev = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN);
-        			if(!Boolean.parseBoolean(elev)) {
-        				disableDimension(type, configs, noAttributeMessage);
-        			}
-        		} else if(Date.class.isAssignableFrom(type)) {
-        			String time = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_TIME_DOMAIN);
-        			if(!Boolean.parseBoolean(time)) {
-        				disableDimension(type, configs, noAttributeMessage);
-        			}
-        		}
-        	} catch(IOException e) {
-        		throw new WicketRuntimeException(e);
-        	}
+            attContainer.setVisible(false);
+            attribute.setRequired(false);
+            try {
+                GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                if(Number.class.isAssignableFrom(type)) {
+                    String elev = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+                    if(!Boolean.parseBoolean(elev)) {
+                        disableDimension(type, configs, noAttributeMessage);
+                    }
+                } else if(Date.class.isAssignableFrom(type)) {
+                    String time = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_TIME_DOMAIN);
+                    if(!Boolean.parseBoolean(time)) {
+                        disableDimension(type, configs, noAttributeMessage);
+                    }
+                }
+            } catch(IOException e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
+        
+        // units block
+        final WebMarkupContainer unitsContainer = new WebMarkupContainer("unitsContainer");
+        configs.add(unitsContainer);
+        IModel<String> uModel = new PropertyModel<String>(model, "units");
+        units = new TextField<String>("units", uModel);
+        unitsContainer.add(units);
+        IModel<String> usModel = new PropertyModel<String>(model, "unitSymbol");
+        unitSymbol = new TextField<String>("unitSymbol", usModel);
+        unitsContainer.add(unitSymbol);
+        // set defaults for elevation if units have never been set
+        if ("elevation".equals(id) && uModel.getObject() == null) {
+            uModel.setObject(DimensionInfo.ELEVATION_UNITS);
+            usModel.setObject(DimensionInfo.ELEVATION_UNIT_SYMBOL);
         }
 
         // presentation/resolution block
@@ -148,7 +166,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 .setVisible(model.getObject().getPresentation() == DimensionPresentation.DISCRETE_INTERVAL);
         resolutions.setOutputMarkupId(true);
         resContainer.add(resolutions);
-
+        
         presentation = new DropDownChoice<DimensionPresentation>("presentation",
                 new PropertyModel<DimensionPresentation>(model, "presentation"),
                 PRESENTATION_MODES, new PresentationModeRenderer());
@@ -174,24 +192,25 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         if(time) {
             resElevation.setVisible(false);
             resTime.setRequired(true);
+            unitsContainer.setVisible(false);
         } else {
             resTime.setVisible(false);
             resElevation.setRequired(true);
         }
     }
 
-	private void disableDimension(Class type, final WebMarkupContainer configs,
-			Label noAttributeMessage) {
-		// no attributes of the required type, no party
-		enabled.setEnabled(false);
-		enabled.setModelObject(false);
-		configs.setVisible(false);
-		ParamResourceModel typeName = new ParamResourceModel("AttributeType."
-		        + type.getSimpleName(), null);
-		ParamResourceModel error = new ParamResourceModel("missingAttribute", this, typeName
-		        .getString());
-		noAttributeMessage.setDefaultModelObject(error.getString());
-	}
+    private void disableDimension(Class type, final WebMarkupContainer configs,
+            Label noAttributeMessage) {
+        // no attributes of the required type, no party
+        enabled.setEnabled(false);
+        enabled.setModelObject(false);
+        configs.setVisible(false);
+        ParamResourceModel typeName = new ParamResourceModel("AttributeType."
+                + type.getSimpleName(), null);
+        ParamResourceModel error = new ParamResourceModel("missingAttribute", this, typeName
+                .getString());
+        noAttributeMessage.setDefaultModelObject(error.getString());
+    }
 
     @Override
     public boolean processChildren() {
@@ -212,6 +231,16 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 endAttributeValue = null;
             }
             info.setEndAttribute(endAttributeValue);
+            units.processInput();
+            String unitsValue = units.getModelObject();
+            if ("time".equals(this.getId())) { // only one value is allowed for time units
+                unitsValue = DimensionInfo.TIME_UNITS;
+            } else if (unitsValue == null) { // allow blank units for any other dimension
+                unitsValue = "";
+            }
+            info.setUnits(unitsValue);
+            unitSymbol.processInput();
+            info.setUnitSymbol(unitSymbol.getModelObject());
             info.setPresentation(presentation.getModelObject());
             if (info.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
                 if(time) {
@@ -236,19 +265,19 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     List<String> getAttributesOfType(ResourceInfo resource, Class<?> type) {
         List<String> result = new ArrayList<String>();
 
-		if (resource instanceof FeatureTypeInfo) {
-			try {
-				FeatureTypeInfo ft = (FeatureTypeInfo) resource;
-				for (PropertyDescriptor pd : ft.getFeatureType()
-						.getDescriptors()) {
-					if (type.isAssignableFrom(pd.getType().getBinding())) {
-						result.add(pd.getName().getLocalPart());
-					}
-				}
-			} catch (IOException e) {
-				throw new WicketRuntimeException(e);
-			}
-		}
+        if (resource instanceof FeatureTypeInfo) {
+            try {
+                FeatureTypeInfo ft = (FeatureTypeInfo) resource;
+                for (PropertyDescriptor pd : ft.getFeatureType()
+                        .getDescriptors()) {
+                    if (type.isAssignableFrom(pd.getType().getBinding())) {
+                        result.add(pd.getName().getLocalPart());
+                    }
+                }
+            } catch (IOException e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
 
         return result;
     }

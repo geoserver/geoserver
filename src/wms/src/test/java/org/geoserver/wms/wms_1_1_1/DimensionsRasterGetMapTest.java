@@ -29,8 +29,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     }
 
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL, "image/png");
 
@@ -40,8 +40,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     }
     
     public void testElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&elevation=100", "image/png");
 
@@ -52,8 +52,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     }
     
     public void testTime() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
@@ -63,8 +63,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     }
     
     public void testTimeTwice() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
@@ -81,8 +81,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     }
     
     public void testTimeElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100", "image/png");
 

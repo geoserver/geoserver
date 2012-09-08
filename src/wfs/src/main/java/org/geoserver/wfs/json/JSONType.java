@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -27,8 +28,8 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
 /**
  * Enum to hold the MIME type for JSON and some useful related utils
  * <ul>
- * <li>application/json</li>
- * <li>text/javascript</li>
+ * <li>JSON: application/json</li>
+ * <li>JSONP: text/javascript</li>
  * </ul>
  * 
  * @author Carlo Cancellieri - GeoSolutions
@@ -134,11 +135,20 @@ public enum JSONType {
         }
     }
 
+    /**
+     * Handle Exception in JSON and JSONP format
+     * 
+     * @param LOGGER the logger to use (can be null)
+     * @param exception the exception to write to the response outputStream
+     * @param request the request generated the exception
+     * @param charset the desired charset
+     * @param verbose be verbose
+     * @param isJsonp switch writing json (false) or jsonp (true)
+     */
     public static void handleJsonException(Logger LOGGER, ServiceException exception,
             Request request, String charset, boolean verbose, boolean isJsonp) {
 
         final HttpServletResponse response = request.getHttpResponse();
-        response.setContentType(JSONType.jsonp);
         // TODO: server encoding options?
         response.setCharacterEncoding(charset);
 
@@ -147,12 +157,14 @@ public enum JSONType {
             os = response.getOutputStream();
             if (isJsonp) {
                 // jsonp
+                response.setContentType(JSONType.jsonp);
                 JSONType.writeJsonpException(exception, request, os, charset, verbose);
             } else {
                 // json
                 OutputStreamWriter outWriter = null;
                 try {
                     outWriter = new OutputStreamWriter(os, charset);
+                    response.setContentType(JSONType.json);
                     JSONType.writeJsonException(exception, request, outWriter, verbose);
                 } finally {
                     if (outWriter != null) {
@@ -166,7 +178,8 @@ public enum JSONType {
 
             }
         } catch (Exception e) {
-            LOGGER.warning(e.getLocalizedMessage());
+            if (LOGGER!=null && LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.warning(e.getLocalizedMessage());
         } finally {
             if (os != null) {
                 try {

@@ -23,12 +23,15 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.hibernate.AbstractHibFacade;
 import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxy;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -492,6 +495,20 @@ public class HibCatalogFacade extends AbstractHibFacade implements CatalogFacade
         return null;
     }
 
+    public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean canSort(Class<? extends CatalogInfo> type, String propertyName) {
+        return false;
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of,
+            Filter filter, Integer offset, Integer count, SortBy sortOrder) {
+        throw new UnsupportedOperationException();
+    }
     //
     // Utilities
     //

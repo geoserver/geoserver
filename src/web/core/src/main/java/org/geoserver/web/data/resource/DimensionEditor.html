@@ -1,36 +1,47 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head></head>
 <body>
-<wicket:panel>
+  <wicket:panel>
 
-      <ul>
-        <li>
-          <input type="checkbox" id="enabled" wicket:id="enabled"><wicket:message key="enabled">enabled</wicket:message></input>
-          &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em>
-        </li>
-        <li wicket:id="configContainer">
-         <ul wicket:id="configs">
-	          <li wicket:id="attributeContainer">
-	            <label for="attribute"><wicket:message key="attribute">attribute</wicket:message></label>
-	            <select id="attribute" wicket:id="attribute"></select>
-                <label for="endAttribute"><wicket:message key="endAttribute">endAttribute</wicket:message></label>
-	            <select id="endAttribute" wicket:id="endAttribute"></select>
-	          </li>            
-			      <li>
-			        <label><wicket:message key="presentation">presentation</wicket:message></label>
-			        <select id="presentation" wicket:id="presentation"></select>
-			      </li>
-			      <li wicket:id="resolutionContainer">
-			        <div wicket:id="resolutions">
-				        <label><wicket:message key="resolution">resolution</wicket:message></label>
-				        <input type="text" wicket:id="resElevation" class="field text"/>
-				        <div wicket:id="resTime"/>
-			        </div>
-			      </li>
-         </ul>
-        </li>
-   		</ul>
+    <ul>
+      <li><input type="checkbox" id="enabled" wicket:id="enabled">
+      <wicket:message key="enabled">enabled</wicket:message></input>
+        &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em></li>
+      <li wicket:id="configContainer">
+        <ul wicket:id="configs">
+          <li wicket:id="attributeContainer">
+            <label for="attribute">
+              <wicket:message key="attribute">attribute</wicket:message>
+            </label>
+            <select id="attribute" wicket:id="attribute"></select> 
+            <label for="endAttribute">
+              <wicket:message key="endAttribute">endAttribute</wicket:message>
+            </label>
+            <select id="endAttribute" wicket:id="endAttribute"></select>
+          </li>
+          <li wicket:id="unitsContainer">
+            <label for="units"><wicket:message key="units">units</wicket:message></label>
+            <input type="text" wicket:id="units" class="field text" />
+            <label for="unitSymbol">
+              <wicket:message key="unitSymbol">unitSymbol</wicket:message>
+            </label>
+            <input type="text" wicket:id="unitSymbol" class="field text" />
+          </li>
+          <li><label><wicket:message key="presentation">presentation</wicket:message></label>
+            <select id="presentation" wicket:id="presentation"></select>
+          </li>
+          <li wicket:id="resolutionContainer">
+            <div wicket:id="resolutions">
+              <label><wicket:message key="resolution">resolution</wicket:message></label>
+              <input type="text" wicket:id="resElevation"
+                class="field text" />
+              <div wicket:id="resTime" />
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
 
-</wicket:panel>
+  </wicket:panel>
 </body>
 </html>

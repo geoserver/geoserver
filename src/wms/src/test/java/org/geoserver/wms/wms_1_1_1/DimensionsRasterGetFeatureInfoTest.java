@@ -60,8 +60,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
     
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         // this one should be medium
         assertEquals(14.51, getFeatureAt(BASE_URL, 36, 31), EPS);
@@ -70,8 +70,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
     
     public void testElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         // this one should be the no-data
         String url = BASE_URL + "&elevation=100";
@@ -81,8 +81,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
     
     public void testTime() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z";
 
@@ -92,8 +92,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
     
     public void testTimeElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
         String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100";
         // this one should be the no-data

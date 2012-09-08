@@ -496,7 +496,7 @@ The supported formats are:
    * - GML 2
      - ``output_format=application/vnd.ogc.wms_xml``
      - The default format.
-   * - JSONP
+   * - JSON
      - ``output_format=application/json``
      - Simple Json representation.
    * - JSONP

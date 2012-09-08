@@ -141,7 +141,7 @@ public class GeoJSONFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
             format.write(features, out, opDescriptor);
 
             // postamble
-            outWriter.write(")");
+            outWriter.write(")\n");
             outWriter.flush();
         } finally {
             IOUtils.closeQuietly(outWriter);

@@ -11,19 +11,24 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.records.CSWRecordTypes;
+import org.geotools.csw.CSW;
+import org.geotools.csw.DC;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.SortByImpl;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
@@ -262,5 +267,16 @@ public class SimpleCatalogStoreTest extends TestCase {
         assertEquals("urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63", values.get(2));
     }
     
+    public void testGetDomain() throws IOException {
+        Name name = new NameImpl(DC.NAMESPACE, "type");
+        CloseableIterator<String> domain = store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), name);
+        assertTrue(domain.hasNext());
+        assertEquals("http://purl.org/dc/dcmitype/Dataset", domain.next());
+        assertEquals("http://purl.org/dc/dcmitype/Image", domain.next());
+        assertEquals("http://purl.org/dc/dcmitype/Service", domain.next());
+        assertEquals("http://purl.org/dc/dcmitype/Text", domain.next());
+        assertFalse(domain.hasNext());
+        domain.close();
+    }
     
 }

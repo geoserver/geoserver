@@ -24,6 +24,7 @@
         <!--prop key="configuration">deployment</prop -->
         <prop key="applicationClassName">org.geoserver.web.GeoServerApplication</prop>
         <prop key="applicationFactoryClassName">org.apache.wicket.spring.SpringWebApplicationFactory</prop>
+        <prop key="filterMappingUrlPattern">/web/*</prop>
       </props>
     </property>
   </bean>

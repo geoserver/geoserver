@@ -82,9 +82,8 @@ public class CustomDimensionsTest extends WMSTestSupport {
         print(dom);
         
         // check dimension has been declared
-        final String catalogDimName = DIMENSION_NAME.substring(4);
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);        
-        assertXpathEvaluatesTo(catalogDimName, "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(DIMENSION_NAME, "//wms:Layer/wms:Dimension/@name", dom);
         
         // check we have the dimension values
         assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//wms:Layer/wms:Dimension", dom);
@@ -96,7 +95,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
                 + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&VALIDATESCHEMA=true"
-                + "&" + DIMENSION_NAME + "=bad_dimension_value");
+                + "&DIM_" + DIMENSION_NAME + "=bad_dimension_value");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertTrue(isEmpty(image));
         
@@ -104,7 +103,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
                 + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&VALIDATESCHEMA=true"
-                + "&" + DIMENSION_NAME + "=CustomDimValueB");
+                + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
     }

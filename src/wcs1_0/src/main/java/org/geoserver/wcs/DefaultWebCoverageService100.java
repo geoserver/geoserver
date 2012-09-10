@@ -393,7 +393,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 for (int i = 0; i < asCount; i++) {
                     AxisSubsetType axis = (AxisSubsetType)axisSubset.get(i);
                     String axisName = axis.getName();
-                    if (axisName.regionMatches(true, 0, "dim_", 0, 4)) {
+                    if (!axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
                         Object dimInfo = meta.getMetadata().get(axisName);
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();

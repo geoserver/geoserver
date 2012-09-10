@@ -116,4 +116,6 @@
         <constructor-arg index="2" ref="cswXmlConfiguration-2.0.2" />
     </bean>
     
+    <!-- Responses -->
+    <bean id="cswDescribeRecordResponse-2.0.2" class="org.geoserver.csw.response.DescribeRecordResponse"/>
 </beans>

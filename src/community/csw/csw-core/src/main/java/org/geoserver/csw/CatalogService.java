@@ -62,7 +62,7 @@ public interface CatalogService {
      * 
      * @param request
      * @param response
-     * @throws WPSException
+     * @throws CSWException
      */
     HarvestResponseType harvest(HarvestType request) throws ServiceException;
     
@@ -71,7 +71,7 @@ public interface CatalogService {
      * 
      * @param request
      * @param response
-     * @throws WPSException
+     * @throws CSWException
      */
     HarvestResponseType transaction(TransactionType request) throws ServiceException;
 

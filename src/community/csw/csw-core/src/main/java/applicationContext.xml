@@ -82,7 +82,7 @@
     
     <!-- XML Configuration -->
     <bean id="cswXmlConfiguration-2.0.2"
-        class="org.geotools.csw.CSWConfiguration" >
+        class="org.geoserver.csw.xml.CSWConfiguration" >
     </bean>
 
     <!-- XML Readers -->
@@ -118,4 +118,11 @@
     
     <!-- Responses -->
     <bean id="cswDescribeRecordResponse-2.0.2" class="org.geoserver.csw.response.DescribeRecordResponse"/>
+    
+	<bean id="cswCapabilitiesResponse-2.0.2" class="org.geoserver.csw.response.CSWObjectEncodingResponse">
+      <constructor-arg index="0" value="net.opengis.cat.csw20.CapabilitiesType"/>
+      <constructor-arg index="1" value="Capabilities"/>
+      <constructor-arg index="2" value="org.geoserver.csw.xml.CSWConfiguration"/> 
+    </bean>
+    
 </beans>

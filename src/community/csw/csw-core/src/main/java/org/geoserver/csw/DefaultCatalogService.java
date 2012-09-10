@@ -40,18 +40,21 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class DefaultCatalogService implements CatalogService, ApplicationContextAware {
     
+    private CSWInfo csw;
     private GeoServer gs;
     private CatalogStore store;
 
+    protected ApplicationContext context;
+    
     public DefaultCatalogService(GeoServer gs) {
+        this.csw = gs.getService(CSWInfo.class);
         this.gs = gs;
     }
 
     @Override
     public CapabilitiesType getCapabilities(GetCapabilitiesType request) throws ServiceException {
         checkStore();
-        // TODO Auto-generated method stub
-        return null;
+        return new GetCapabilities(this.csw, context).run(request);
     }
 
     @Override

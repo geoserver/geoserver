@@ -25,7 +25,7 @@ import org.geotools.xml.Parser;
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWXmlReader extends XmlRequestReader {
-    public Logger LOGGER = Logging.getLogger("org.geoserver.wps");
+    public Logger LOGGER = Logging.getLogger("org.geoserver.csw");
 
     private CSWConfiguration configuration;
 

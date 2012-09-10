@@ -29,7 +29,7 @@ import org.opengis.parameter.ParameterDescriptor;
  */
 public final class CustomFormat extends AbstractGridFormat {
     
-    public static final String CUSTOM_DIMENSION_NAME = "DIM_MY_DIMENSION";
+    public static final String CUSTOM_DIMENSION_NAME = "MY_DIMENSION";
     private static final String TYPE_NAME = "org.geoserver.catalog.testreader.CustomFormat";
     
     @SuppressWarnings("rawtypes")

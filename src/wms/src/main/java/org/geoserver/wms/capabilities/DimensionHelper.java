@@ -236,11 +236,7 @@ abstract class DimensionHelper {
             }
             metadata = sb.substring(0, sb.length() - 1);
         }
-        if (dimName.regionMatches(true, 0, "dim_", 0, 4)) {
-            writeDimension(dimName.substring(4), metadata);
-        } else {
-            writeDimension(dimName, metadata);
-        }
+        writeDimension(dimName, metadata);
     }
 
     /**

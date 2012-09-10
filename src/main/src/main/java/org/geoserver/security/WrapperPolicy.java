@@ -10,7 +10,7 @@ import java.io.Serializable;
 /** 
  * The combination of access level granted and response policy (lists only possible cases)
  */
-public class WrapperPolicy implements Serializable {
+public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
     private static final long serialVersionUID = -7490634837165130290L;
     
     // TODO: turn these into private fields
@@ -74,5 +74,31 @@ public class WrapperPolicy implements Serializable {
     
     public boolean isReadWrite() {
         return level == AccessLevel.READ_ONLY && response == Response.CHALLENGE;
+    }
+
+    /**
+     * Sorts wrapper policies from more to less restrictive limits.
+     * <p>
+     * That is, first comparison order is {@link #getAccessLevel() getAccessLevel() ==}
+     * {@link AccessLevel#HIDDEN HIDDEN}/{@link AccessLevel#METADATA METADATA}/
+     * {@link AccessLevel#READ_ONLY READ_ONLY}/{@link AccessLevel#READ_WRITE READ_WRITE}.
+     * <p>
+     * Second comparison criteria is {@link AccessLimits#getMode() getLimits().getMode()}
+     * {@code == } {@link CatalogMode#HIDE HIDE}/ {@link CatalogMode#CHALLENGE CHALLENGE}/
+     * {@link CatalogMode#MIXED MIXED}/{@link #getLimits() getLimits() == null} (i.e. no limits)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(WrapperPolicy w) {
+        int levelComparison = getAccessLevel().compareTo(w.getAccessLevel());
+        if(levelComparison != 0){
+            return levelComparison;
+        }
+        CatalogMode myLimits = getLimits() == null ? null : getLimits().getMode();
+        CatalogMode theirLimits = w.getLimits() == null ? null : w.getLimits().getMode();
+        
+        return myLimits == null ? (theirLimits == null ? 0 : 1) : (theirLimits == null ? -1
+                : myLimits.compareTo(theirLimits));
     }
 }

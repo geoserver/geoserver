@@ -102,6 +102,53 @@ DescribeFeatureType
 
 The purpose of the **DescribeFeatureType** is to request information about an individual featuretype before requesting the actual data.  Specifically, **DescribeFeatureType** will request a list of features and attributes for the given featuretype, or list the featuretypes available.
 
+The **DescribeLayer** operation is used primarily by clients that understand SLD-based WMS.  
+In order to make an SLD one needs to know the structure of the data.  
+
+The standard parameters for the DescribeFeatureType operation are:
+
+.. list-table::
+   :widths: 20 10 70
+   
+   * - **Parameter**
+     - **Required?**
+     - **Description**
+   * - ``service``
+     - Yes
+     - Service name. Value is ``WFS``.
+   * - ``version``
+     - Yes
+     - Service version. Value is ``1.1.0``.
+   * - ``request``
+     - Yes
+     - Operation name. Value is ``DescribeFeatureType``.
+   * - ``typeName``
+     - Yes
+     - The name of the feature type to describe.
+   * - ``exceptions``
+     - No
+     - Format in which to report exceptions.
+       The default value is ``application/vnd.ogc.se_xml``.
+
+The supported values for exceptions are:
+
+.. list-table::
+   :widths: 15 35 50
+   
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - XML
+     - ``EXCEPTIONS=application/vnd.ogc.se_xml``
+     - Xml output. (The default format)
+   * - JSON
+     - ``EXCEPTIONS=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``EXCEPTIONS=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
+
+
 Let's say we want a list of featuretypes.  The appropriate GET request would be:
 
 .. code-block:: xml 

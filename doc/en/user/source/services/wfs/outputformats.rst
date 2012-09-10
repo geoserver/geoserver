@@ -25,8 +25,11 @@ where ``<format>`` is any of the following options:
      - ``outputFormat=shape-zip``
      - Created in a ZIP archive
    * - JSON
-     - ``outputFormat=json``
+     - ``outputFormat=application/json``
      - 
+   * - JSONP
+     - ``outputFormat=text/javascript``
+     - See :ref:`wfs_vendor_parameters` for callback option
    * - CSV
      - ``outputFormat=csv``
      - 

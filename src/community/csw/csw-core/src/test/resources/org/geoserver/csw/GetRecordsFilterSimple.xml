@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<GetRecords
+   service="CSW"
+   version="2.0.2"
+   maxRecords="5"
+   startPosition="1"
+   resultType="results"
+   outputFormat="application/xml"
+   outputSchema="http://www.opengis.net/cat/csw/2.0.2"
+   xmlns="http://www.opengis.net/cat/csw/2.0.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2
+                       ../../../csw/2.0.2/CSW-discovery.xsd">
+   <ResponseHandler>ftp://www.myserver.com/pub/MyQuery_Resp.xml</ResponseHandler>
+   <Query typeNames="Record">
+      <ElementSetName>brief</ElementSetName>
+      <Constraint version="1.1.0">
+         <ogc:Filter>
+            <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+               <ogc:PropertyName>AnyText</ogc:PropertyName>
+               <ogc:Literal>%polution%</ogc:Literal>
+            </ogc:PropertyIsLike>
+         </ogc:Filter>
+      </Constraint>
+   </Query>
+</GetRecords>

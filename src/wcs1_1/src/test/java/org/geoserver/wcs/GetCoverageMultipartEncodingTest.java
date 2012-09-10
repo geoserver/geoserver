@@ -16,10 +16,10 @@ import javax.mail.internet.MimeMessage;
 
 import junit.framework.Test;
 
+import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.vfny.geoserver.wcs.responses.coverage.GeoTIFFCoverageResponseDelegate;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;

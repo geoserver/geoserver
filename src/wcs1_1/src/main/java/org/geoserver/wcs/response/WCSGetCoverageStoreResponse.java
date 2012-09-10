@@ -25,12 +25,12 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.vfny.geoserver.wcs.WcsException;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 
 /**
  * Response object for the store=true path, that is, one that stores the coverage
@@ -41,11 +41,13 @@ public class WCSGetCoverageStoreResponse extends Response {
     
     GeoServer geoServer;
     Catalog catalog;
+    CoverageResponseDelegateFinder responseFactory;
     
-    public WCSGetCoverageStoreResponse(GeoServer gs) {
+    public WCSGetCoverageStoreResponse(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.geoServer = gs;
         this.catalog = gs.getCatalog();
+        this.responseFactory = responseFactory;
     }
 
     @Override
@@ -71,8 +73,7 @@ public class WCSGetCoverageStoreResponse extends Response {
         // grab the delegate for coverage encoding
         GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = request.getOutput().getFormat();
-        CoverageResponseDelegate delegate = CoverageResponseDelegateFactory
-                .encoderFor(outputFormat);
+        CoverageResponseDelegate delegate = responseFactory.encoderFor(outputFormat);
         if (delegate == null)
             throw new WcsException("Could not find encoder for output format " + outputFormat);
 
@@ -96,7 +97,7 @@ public class WCSGetCoverageStoreResponse extends Response {
         File coverageFile = null;
         while(true) {
             // TODO: find a way to get good extensions
-            coverageFile = new File(wcsStore, coverageInfo.getName().replace(':', '_') + "_" + System.nanoTime() + "." + delegate.getFileExtension());
+            coverageFile = new File(wcsStore, coverageInfo.getName().replace(':', '_') + "_" + System.nanoTime() + "." + delegate.getFileExtension(outputFormat));
             if(!coverageFile.exists())
                 break;
         }
@@ -105,8 +106,7 @@ public class WCSGetCoverageStoreResponse extends Response {
         OutputStream os = null;
         try {
             os = new BufferedOutputStream(new FileOutputStream(coverageFile));
-            delegate.prepare(outputFormat, coverage);
-            delegate.encode(os);
+            delegate.encode(coverage, outputFormat, os);
             os.flush();
         } finally {
             if(os != null) os.close();

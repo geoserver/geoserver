@@ -228,6 +228,8 @@ public class XStreamPersister {
      */
     Map<String, Class<?>> forwardBreifMap = new HashMap<String, Class<?>>();
     Map<Class<?>, String> backwardBreifMap = new HashMap<Class<?>, String>();
+
+    private Level forceLevel = LOGGER.getLevel() == null? Level.INFO : LOGGER.getLevel();
     
     /**
      * Constructs the persister and underlying xstream.
@@ -1283,7 +1285,7 @@ public class XStreamPersister {
     /**
      * Base class for all custom reflection based converters.
      */
-    class AbstractReflectionConverter extends ReflectionConverter {
+    protected class AbstractReflectionConverter extends ReflectionConverter {
         Class clazz;
 
         public AbstractReflectionConverter() {
@@ -1414,7 +1416,10 @@ public class XStreamPersister {
                 secMgr.getConfigPasswordEncryptionHelper().decode(store);
             }
 
-            LOGGER.info( "Loaded store '" +  store.getName() +  "', " + (store.isEnabled() ? "enabled" : "disabled") );
+            
+            if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+                LOGGER.info( "Loaded store '" +  store.getName() +  "', " + (store.isEnabled() ? "enabled" : "disabled") );
+            }
             return store;
         }
     }
@@ -1471,7 +1476,7 @@ public class XStreamPersister {
      * Converter for handling maps containing workspaces and namespaces.
      *
      */
-    static class SpaceMapConverter implements Converter {
+    class SpaceMapConverter implements Converter {
 
         String name;
         
@@ -1518,7 +1523,9 @@ public class XStreamPersister {
                    if ( def ) {
                        map.put( null, ns );
                    }
-                   LOGGER.info( "Loading namespace '" + ns.getPrefix() + "'" );
+                   if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+                       LOGGER.info( "Loading namespace '" + ns.getPrefix() + "'" );
+                   }
                }
                else {
                    WorkspaceInfoImpl ws = (WorkspaceInfoImpl) context.convertAnother( map, WorkspaceInfoImpl.class );
@@ -1526,7 +1533,9 @@ public class XStreamPersister {
                    if ( def ) {
                        map.put( null, ws );
                    }
-                   LOGGER.info( "Loading workspace '" + ws.getName() + "'" );
+                   if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+                       LOGGER.info( "Loading workspace '" + ws.getName() + "'" );
+                   }
                }
                
                reader.moveUp();
@@ -1557,7 +1566,9 @@ public class XStreamPersister {
             String type = obj instanceof CoverageInfo ? "coverage" : 
                 obj instanceof FeatureTypeInfo ? "feature type" : "resource";
             
-            LOGGER.info( "Loaded " + type + " '" + obj.getName() + "', " + enabled );
+            if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+                LOGGER.info( "Loaded " + type + " '" + obj.getName() + "', " + enabled );
+            }
             
             return obj;
         }
@@ -1937,5 +1948,9 @@ public class XStreamPersister {
             writer.endNode();
         }
 
+    }
+
+    public void setLoggingLevel(Level level) {
+        this.forceLevel = level;
     }
 }

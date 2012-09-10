@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class AcceptVersionsKvpParser extends org.geoserver.wfs.kvp.AcceptVersionsKvpParser {
+public class AcceptVersionsKvpParser extends org.geoserver.ows.kvp.AcceptVersionsKvpParser {
     public AcceptVersionsKvpParser() {
         super(AcceptVersionsType.class);
 

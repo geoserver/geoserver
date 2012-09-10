@@ -4,6 +4,9 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.catalog.Predicates.and;
+import static org.geoserver.catalog.Predicates.asc;
+import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
@@ -29,6 +32,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -37,9 +41,11 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
@@ -64,6 +70,8 @@ import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.type.Name;
 import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -602,24 +610,25 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         private void handleLayers() {
             start("Layer");
 
-            final List<LayerInfo> layers;
-
+            //ask for enabled and advertised to start with
+            Filter filter;
+            {
+                Filter enabled = equal("enabled", Boolean.TRUE);
+                Filter advertised = equal("advertised", Boolean.TRUE);
+                filter = and(enabled, advertised);
+            }
+            
             // filter the layers if a namespace filter has been set
             if (request.getNamespace() != null) {
-                final List<LayerInfo> allLayers = wmsConfig.getLayers();
-                layers = new ArrayList<LayerInfo>();
-
-                String namespace = wmsConfig.getNamespaceByPrefix(request.getNamespace());
-                for (LayerInfo layer : allLayers) {
-                    Name name = layer.getResource().getQualifiedName();
-                    if (name.getNamespaceURI().equals(namespace)) {
-                        layers.add(layer);
-                    }
-                }
-            } else {
-                layers = wmsConfig.getLayers();
+                //build a query predicate for the namespace prefix
+                final String nsPrefix = request.getNamespace();
+                final String nsProp = "resource.namespace.prefix";
+                Filter equals = equal(nsProp, nsPrefix);
+                filter = and(filter, equals);
             }
 
+            final Catalog catalog = wmsConfig.getCatalog();
+                        
             WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             element("Title", serviceInfo.getTitle());
             element("Abstract", serviceInfo.getAbstract());
@@ -631,7 +640,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             handleRootCrsList(srs);
 
-            handleRootBbox(layers);
+            CloseableIterator<LayerInfo> layers;
+            layers = catalog.list(LayerInfo.class, filter);
+            try{
+                handleRootBbox(layers);
+            }finally{
+                layers.close();
+            }
 
             // handle AuthorityURL
             handleAuthorityURL(serviceInfo.getAuthorityURLs());
@@ -640,18 +655,31 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             handleLayerIdentifiers(serviceInfo.getIdentifiers());
 
             // now encode each layer individually
-            LayerTree featuresLayerTree = new LayerTree(layers);
-            handleLayerTree(featuresLayerTree);
-
+            SortBy layerOrder = asc("name");
+            layers = catalog.list(LayerInfo.class, filter, null, null, layerOrder);
             try {
-                List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
-                handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
+                handleLayerTree(layers);
+            } finally {
+                layers.close();
+            }
+
+            CloseableIterator<LayerGroupInfo> layerGroups;
+            {
+                final Filter lgFilter = Predicates.acceptAll();
+                SortBy layerGroupOrder = asc("name");
+                layerGroups = catalog.list(LayerGroupInfo.class, lgFilter, null, null,
+                        layerGroupOrder);
+            }
+            try {
+                handleLayerGroups(layerGroups);
             } catch (FactoryException e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
             } catch (TransformException e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
+            }finally{
+                layerGroups.close();
             }
 
             end("Layer");
@@ -719,18 +747,27 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * @param ftypes
          *            the collection of FeatureTypeInfo and CoverageInfo objects to traverse
          */
-        private void handleRootBbox(Collection<LayerInfo> layers) {
+        private void handleRootBbox(Iterator<LayerInfo> layers) {
 
+            final Envelope world = new Envelope(-180, 180, -90, 90);
+            
             Envelope latlonBbox = new Envelope();
             Envelope layerBbox = null;
 
             LOGGER.finer("Collecting summarized latlonbbox and common SRS...");
 
-            for (LayerInfo layer : layers) {
+            while(layers.hasNext()) {
+                LayerInfo layer = layers.next();
                 ResourceInfo resource = layer.getResource();
                 layerBbox = resource.getLatLonBoundingBox();
-                if (layerBbox != null)
-                   latlonBbox.expandToInclude(layerBbox);
+                if (layerBbox != null) {
+                    latlonBbox.expandToInclude(layerBbox);    
+                }
+
+                //short cut for the case where we already reached the whole world bounds
+                if(latlonBbox.contains(world)){
+                    break;
+                }
             }
 
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -743,6 +780,30 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
+        private void handleLayerTree(final Iterator<LayerInfo> layers) {
+            // Build a LayerTree only for the layers that have a wms path set. Process the ones that
+            // don't first
+            LayerTree nestedLayers = new LayerTree();
+            
+            //handle non nested layers
+            while (layers.hasNext()) {
+                LayerInfo layer = layers.next();
+                if(!isExposable(layer)){
+                    continue;
+                }
+                final String path = layer.getPath();
+                if(path != null && path.length() > 0 && !"/".equals(path)){
+                    nestedLayers.add(layer);
+                    continue;
+                }
+
+                doHandleLayer(layer);
+            }
+            
+            //handle nested layers
+            handleLayerTree(nestedLayers);
+        }
+        
         /**
          * @param layerTree
          */
@@ -758,36 +819,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             for (LayerInfo layer : data) {
                 // no sense in exposing a geometryless layer through wms...
-                boolean wmsExposable = false;
-                if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
-                    wmsExposable = true;
-                } else {
-                    try {
-                        wmsExposable = layer.getType() == Type.VECTOR
-                                && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
-                                        .getGeometryDescriptor() != null;
-                    } catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
-                                + " the layer is geometryless", e);
-                    }
-                }
-
-                // ask for enabled() instead of isEnabled() to account for disabled resource/store
-                if (layer.enabled() && wmsExposable) {
-                    try {
-                        mark();
-                        handleLayer(layer);
-                        commit();
-                    } catch (Exception e) {
-                        // report what layer we failed on to help the admin locate and fix it
-                        if (skipping) {
-                            reset();
-                        } else { 
-                            throw new ServiceException(
-                                "Error occurred trying to write out metadata for layer: " + 
-                                layer.getName(), e);
-                        }
-                    }
+                boolean wmsExposable = isExposable(layer);
+                if (wmsExposable) {
+                    doHandleLayer(layer);
                 }
             }
 
@@ -798,6 +832,46 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 handleLayerTree(childLayerTree);
                 end("Layer");
             }
+        }
+
+        private void doHandleLayer(LayerInfo layer) {
+            try {
+                mark();
+                handleLayer(layer);
+                commit();
+            } catch (Exception e) {
+                // report what layer we failed on to help the admin locate and fix it
+                if (skipping) {
+                    reset();
+                } else { 
+                    throw new ServiceException(
+                        "Error occurred trying to write out metadata for layer: " + 
+                        layer.getName(), e);
+                }
+            }
+        }
+
+        private boolean isExposable(LayerInfo layer) {
+            // we filtered by the isEnabled property,but check for enabled() to account for the
+            // resource and store
+            if (!layer.enabled()) {
+                return false;
+            }
+
+            boolean wmsExposable = false;
+            if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
+                wmsExposable = true;
+            } else {
+                try {
+                    wmsExposable = layer.getType() == Type.VECTOR
+                            && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
+                                    .getGeometryDescriptor() != null;
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
+                            + " the layer is geometryless", e);
+                }
+            }
+            return wmsExposable;
         }
 
         /**
@@ -893,35 +967,32 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 Set<StyleInfo> styles = layer.getStyles();
 
-                for (StyleInfo styleInfo : styles) {
-                    try {
-                        ftStyle = styleInfo.getStyle();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                if(styles != null){
+                    for (StyleInfo styleInfo : styles) {
+                        try {
+                            ftStyle = styleInfo.getStyle();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        start("Style");
+                        element("Name", styleInfo.getName());
+                        element("Title", ftStyle.getTitle());
+                        element("Abstract", ftStyle.getAbstract());
+                        handleLegendURL(layer.getName(), null, styleInfo);
+                        end("Style");
                     }
-                    start("Style");
-                    element("Name", styleInfo.getName());
-                    element("Title", ftStyle.getTitle());
-                    element("Abstract", ftStyle.getAbstract());
-                    handleLegendURL(layer.getName(), null, styleInfo);
-                    end("Style");
                 }
             }
         }
         
-        protected void handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
+        protected void handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
-            if (layerGroups == null || layerGroups.size() == 0) {
+            if (layerGroups == null) {
                 return;
             }
 
-            Collections.sort(layerGroups, new Comparator<LayerGroupInfo>() {
-                public int compare(LayerGroupInfo o1, LayerGroupInfo o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
-
-            for (LayerGroupInfo layerGroup : layerGroups) {
+            while ( layerGroups.hasNext() ) {
+                LayerGroupInfo layerGroup = layerGroups.next();
                 String layerName = layerGroup.prefixedName();
 
                 AttributesImpl qatts = new AttributesImpl();

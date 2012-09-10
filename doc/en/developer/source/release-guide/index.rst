@@ -147,6 +147,30 @@ This job will rsync all the artifacts located at::
      http://gridlock.opengeo.org/geoserver/release/<RELEASE>
 
 to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. Set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
+
+Create the download page
+------------------------
+
+Get the JIRA version for this release:
+
+* Go to `JIRA <http://jira.codehaus.org/display/GEOS/>`_
+* Select "Change log"
+* Open the release notes for the version being released
+* The version will be in the url, e.g. ``http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=18700`` -> 18700
+
+Create the new download page:
+
+
+* Go to `GeoServer web site <http://geoserver.org/>`_ and make sure you are logged in.
+* Select the "New page" link in the menu
+* Click "select a page template to start from"
+* Choose the "Download" template
+* Fill in the version, release date (e.g., May 17th, 2012) and the jira version
+* Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
+* Save and check all the links are working
+
+If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and make it include the newly created release page.
+If you are instead releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and make it include the newly created release page.
    
 Announce the Release
 --------------------

@@ -3,8 +3,6 @@ package org.geoserver.web.admin;
 import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -16,7 +14,10 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
@@ -26,10 +27,10 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.LockingManager;
+import org.opengis.filter.Filter;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
 import com.sun.media.jai.util.CacheDiagnostics;
-import com.sun.media.jai.util.SunTileCache;
 
 public class StatusPage extends ServerAdminPage {
 
@@ -250,59 +251,71 @@ public class StatusPage extends ServerAdminPage {
     private synchronized int getLockCount() {
         int count = 0;
 
-        for (Iterator i = getDataStores().iterator(); i.hasNext();) {
-            DataStoreInfo meta = (DataStoreInfo) i.next();
-
-            if (!meta.isEnabled()) {
-                // Don't count locks from disabled datastores.
-                continue;
-            }
-
-            try {
-                DataAccess store = meta.getDataStore(null);
-                if(store instanceof DataStore) {
-                    LockingManager lockingManager = ((DataStore) store).getLockingManager();
-                    if (lockingManager != null){
-                        // we can't actually *count* locks right now?
-                        // count += lockingManager.getLockSet().size();
-                    }
+        CloseableIterator<DataStoreInfo> i = getDataStores();
+        try{
+            for (; i.hasNext();) {
+                DataStoreInfo meta = (DataStoreInfo) i.next();
+    
+                if (!meta.isEnabled()) {
+                    // Don't count locks from disabled datastores.
+                    continue;
                 }
-            } catch (IllegalStateException notAvailable) {
-                continue;
-            } catch (Throwable huh) {
-                continue;
+    
+                try {
+                    DataAccess store = meta.getDataStore(null);
+                    if(store instanceof DataStore) {
+                        LockingManager lockingManager = ((DataStore) store).getLockingManager();
+                        if (lockingManager != null){
+                            // we can't actually *count* locks right now?
+                            // count += lockingManager.getLockSet().size();
+                        }
+                    }
+                } catch (IllegalStateException notAvailable) {
+                    continue;
+                } catch (Throwable huh) {
+                    continue;
+                }
             }
+        } finally {
+            i.close();
         }
-
         return count;
     }
 
     private synchronized int getConnectionCount() {
         int count = 0;
 
-        for (Iterator i = getDataStores().iterator(); i.hasNext();) {
-            DataStoreInfo meta = (DataStoreInfo) i.next();
+        CloseableIterator<DataStoreInfo> i = getDataStores();
+        try{
+            for (; i.hasNext(); ) {
+                DataStoreInfo meta = i.next();
 
-            if (!meta.isEnabled()) {
-                // Don't count connections from disabled datastores.
-                continue;
+                if (!meta.isEnabled()) {
+                    // Don't count connections from disabled datastores.
+                    continue;
+                }
+
+                try {
+                    meta.getDataStore(null);
+                } catch (Throwable notAvailable) {
+                    // TODO: Logging.
+                    continue;
+                }
+
+                count += 1;
             }
-
-            try {
-                meta.getDataStore(null);
-            } catch (Throwable notAvailable) {
-                // TODO: Logging.
-                continue;
-            }
-
-            count += 1;
+        }finally{
+            i.close();
         }
 
         return count;
     }
 
-    private List<DataStoreInfo> getDataStores() {
-        return getGeoServer().getCatalog().getDataStores();
+    private CloseableIterator<DataStoreInfo> getDataStores() {
+        Catalog catalog = getGeoServer().getCatalog();
+        Filter filter = Predicates.acceptAll();
+        CloseableIterator<DataStoreInfo> stores = catalog.list(DataStoreInfo.class, filter);
+        return stores;
     }
 
 }

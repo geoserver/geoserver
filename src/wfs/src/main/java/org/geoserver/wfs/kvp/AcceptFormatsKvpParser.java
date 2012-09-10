@@ -4,18 +4,11 @@
  */
 package org.geoserver.wfs.kvp;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import net.opengis.ows10.AcceptFormatsType;
 import net.opengis.ows10.Ows10Factory;
 
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.ows.KvpParser;
-import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wfs.WFSInfo;
-import org.geotools.xml.EMFUtils;
 
 
 /**
@@ -25,26 +18,11 @@ import org.geotools.xml.EMFUtils;
  * @author Justin Deoliveira, The Open Planning Project
  *
  */
-public class AcceptFormatsKvpParser extends KvpParser {
+public class AcceptFormatsKvpParser extends org.geoserver.ows.kvp.AcceptFormatsKvpParser {
+
     public AcceptFormatsKvpParser() {
-        this(AcceptFormatsType.class);
-    }
-
-    public AcceptFormatsKvpParser(Class clazz) {
-        super("acceptFormats", clazz);
+        super(AcceptFormatsType.class);
         setVersion(WFSInfo.Version.V_11.getVersion());
-    }
-
-    public Object parse(String value) throws Exception {
-        List values = KvpUtils.readFlat(value);
-
-        EObject acceptFormats = createObject(); 
-
-        for (Iterator v = values.iterator(); v.hasNext();) {
-            ((Collection)EMFUtils.get(acceptFormats, "outputFormat")).add(v.next());
-        }
-
-        return acceptFormats;
     }
 
     protected EObject createObject() {

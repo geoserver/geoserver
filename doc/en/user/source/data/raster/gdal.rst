@@ -34,30 +34,46 @@ From GeoServer version 2.2.x, GDAL must be installed as an extension. To install
 
 #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
 
-Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) libraries must be installed through your host system's OS.  Once they are installed, GeoServer will be able to recognize GDAL data types. 
+Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) libraries must be installed through your host system's OS.  Once they are installed, GeoServer will be able to recognize GDAL data types. See bloe for more information.
 
 Installing GDAL native libraries
 ````````````````````````````````
+The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.5 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.5/>`_.
 
-#. Navigate to the `ImageI/O-Ext releases download page <http://java.net/projects/imageio-ext/downloads/directory/Releases/ImageIO-Ext>`_.
-#. Select the proper ImageI/O-Ext version (You can check the version you need by looking at the suffix of the jars extracted in the previous steps. As an instance, If the previously extracted GDAL extensions archive contains an imageio-ext-gdalframework-1.0.8.jar, you need to refer to the ImageIO-Ext 1.0.8 version).
+Browse to the native and then gdal directory for the `link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.5/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
 
-#. Click on the "GDAL CRS definitions" to download the gdal_data-x.X.X archive.
-#. Extract this archive on disk.
+  #. The CRS definitions
+  #. The native libraries matching the target operating system
+  
+Let's now install the CRS definitions.
 
-   .. note:: Make sure to set a GDAL_DATA environment variable to the folder where you have extracted this file.
+* Click on the "gdal_data173.zip" to download the CRS definitions archive.
+* Extract this archive on disk and place it in a proper directory on your system.
+* Create a GDAL_DATA environment variable to the folder where you have extracted this file. Make also sure that this directory is reachable and readable by the application server process's user.
 
-#. Click on  "GDAL NativeLibraries _REQUIRED_"
-#. Download and extract/install the correct version for your OS.
+We now have to install the native libraries.
 
-   .. note:: If you are on Windows, make sure that the GDAL DLL files are on your PATH. If you are on Linux, be sure to set the LD_LIBRARY_PATH environment variable to refer to the folder where the SOs are extracted.
+* Assuming you are on a 64 bits Linux Operating System, click on the "gdal1.7.3-linux64-base-gcc43.tar.gz" to download the native libraries archive.
+* Extract the archive on disk and place it in a proper directory on your system.
 
-Once these steps have been completed, restart GeoServer.  If done correctly, new data formats will be in the :guilabel:`Raster Data Sources` list when creating a new data store.
+   .. warning:: If you are on Windows, make sure that the GDAL DLL files are on your PATH. If you are on Linux, be sure to set the LD_LIBRARY_PATH environment variable to refer to the folder where the SOs are extracted.
+
+   .. note:: The native libraries contains the GDAL GDALinfo utility which can be used to test whether or not the libs are corrupted. This can be done by browsing to the directory where the libs have been extracted and performing a *gdalinfo* command with the *formats*  options that shows all the formats supported.
+
+Once these steps have been completed, restart GeoServer.  If all the steps have been performed  correctly, new data formats will be in the :guilabel:`Raster Data Sources` list when creating a new data store as shown here below.
 
 .. figure:: images/gdalcreate.png
    :align: center
 
    *GDAL image formats in the list of raster data stores*
+   
+
+If instead now new formats appear in the GUI and in the logs the following messages is shown:
+
+*it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
+WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
+
+that means that the installations failed for some reason.
    
 Note on running GeoServer as a Service on Windows
 -------------------------------------------------

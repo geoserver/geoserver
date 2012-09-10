@@ -26,8 +26,11 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 /**
  * Abstract class for catalog decorators. 
@@ -660,5 +663,27 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
 
     public void dispose() {
         delegate.dispose();
+    }
+
+    @Override
+    public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
+        return delegate.count(of, filter);
+    }
+
+    @Override
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
+            throws IllegalArgumentException {
+        return delegate.get(type, filter);
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
+        return delegate.list(of, filter);
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
+            Integer offset, Integer count, SortBy sortOrder) {
+        return delegate.list(of, filter, offset, count, sortOrder);
     }
 }

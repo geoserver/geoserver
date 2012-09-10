@@ -189,7 +189,7 @@ public class WMS implements ApplicationContextAware {
         this.geoserver = geoserver;
     }
 
-    private Catalog getCatalog() {
+    public Catalog getCatalog() {
         return geoserver.getCatalog();
     }
 

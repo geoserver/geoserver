@@ -48,6 +48,8 @@ import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.wcs.response.Wcs10CapsTransformer;
 import org.geoserver.wcs.response.Wcs10DescribeCoverageTransformer;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -75,8 +77,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.vfny.geoserver.wcs.responses.CoverageResponseDelegateFactory;
 
 /**
  * The Default WCS 1.0.0 Service implementation
@@ -89,6 +89,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
     private GeoServer geoServer;
 
+    private CoverageResponseDelegateFinder responseFactory;
+
     private static final Logger LOGGER = org.geotools.util.logging.Logging
             .getLogger(DefaultWebCoverageService100.class);
 
@@ -96,9 +98,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
      * 
      * @param geoServer
      */
-    public DefaultWebCoverageService100(GeoServer geoServer) {
+    public DefaultWebCoverageService100(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
+        this.responseFactory = responseFactory;
     }
 
     /**
@@ -756,7 +759,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
      * @param info
      * @param rangeSubset
      */
-    private static void checkOutput(CoverageInfo meta, OutputType output) {
+    private void checkOutput(CoverageInfo meta, OutputType output) {
         if (output == null)
             return;
 
@@ -788,14 +791,14 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
      * @param format
      * @return
      */
-    private static String getDeclaredFormat(List<String> supportedFormats, String format) {
+    private String getDeclaredFormat(List<String> supportedFormats, String format) {
         // supported formats may be setup using old style formats, first scan
         // the configured list
         for (String sf : supportedFormats) {
             if (sf.equalsIgnoreCase(format.trim())) {
                 return sf;
             } else {
-                CoverageResponseDelegate delegate = CoverageResponseDelegateFactory.encoderFor(sf);
+                CoverageResponseDelegate delegate = responseFactory.encoderFor(sf);
                 if (delegate != null && delegate.canProduce(format))
                     return sf;
             }

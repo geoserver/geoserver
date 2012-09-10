@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +37,7 @@ import org.geotools.util.logging.Logging;
 
 public class MonitorFilter implements GeoServerFilter {
 
+    
     static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
     
     Monitor monitor;
@@ -110,6 +112,8 @@ public class MonitorFilter implements GeoServerFilter {
         data.setInternalHost(InternalHostname.get());
         data.setRemoteAddr(getRemoteAddr(req));
         data.setStatus(Status.RUNNING);
+        data.setHttpReferer(getHttpReferer(req));
+        
         
         if (SecurityContextHolder.getContext() != null 
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
@@ -137,7 +141,9 @@ public class MonitorFilter implements GeoServerFilter {
         }
         
         data = monitor.current();
-        data.setBody(((MonitorServletRequest)request).getBodyContent());
+        
+        
+        data.setBody(getBody((MonitorServletRequest) request));
         data.setBodyContentLength(((MonitorServletRequest)request).getBytesRead());
         data.setResponseContentType(response.getContentType());
         data.setResponseLength(((MonitorServletResponse)response).getContentLength());
@@ -185,6 +191,31 @@ public class MonitorFilter implements GeoServerFilter {
             return ips[0];
         } else {
             return req.getRemoteAddr();
+        }
+    }
+    
+    String getHttpReferer(HttpServletRequest req) {
+        String referer = req.getHeader("Referer");
+        
+        // "Referer" is in the HTTP spec, but "Referrer" is the correct English spelling.
+        // This falls back to the "correct" spelling if the specified one was not used.
+        if(referer==null)
+            referer = req.getHeader("Referrer");
+        
+        return referer;
+    }
+    
+    // Get the body and trim to the maximum allowable size if necessary
+    byte[] getBody(HttpServletRequest req) {
+        long maxBodyLength = monitor.config.getMaxBodySize();
+        try {
+            byte[] body=((MonitorServletRequest)req).getBodyContent(); // TODO: trimming at this point may now be redundant
+            if(body!=null && maxBodyLength!=MonitorServletRequest.BODY_SIZE_UNBOUNDED && body.length>maxBodyLength)
+                body=Arrays.copyOfRange(body, 0, (int) maxBodyLength);
+            return body;
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Could not read request body", ex);
+            return null;
         }
     }
     

@@ -4,13 +4,11 @@
  */
 package org.geoserver.wcs.kvp;
 
-import java.util.List;
-
 import net.opengis.ows11.AcceptVersionsType;
 import net.opengis.ows11.Ows11Factory;
 
-import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.ows.util.RequestUtils;
+import org.eclipse.emf.ecore.EObject;
+import org.geotools.util.Version;
 
 /**
  * Parses the OWS 1.1 capabilities negotiation related AcceptVersion parameter
@@ -18,19 +16,18 @@ import org.geoserver.ows.util.RequestUtils;
  * @author Andrea Aime - TOPP
  * 
  */
-public class AcceptVersionsKvpParser extends WcsKvpParser {
+public class AcceptVersionsKvpParser extends org.geoserver.ows.kvp.AcceptVersionsKvpParser {
 
     public AcceptVersionsKvpParser() {
-        super("AcceptVersions", AcceptVersionsType.class);
+        super(AcceptVersionsType.class);
+        setService( "wcs" );
+        setVersion( new Version( "1.1.1" ) );
     }
 
-    public Object parse(String value) throws Exception {
-        List<String> versions = KvpUtils.readFlat(value);
-        for (String version : versions) {
-            RequestUtils.checkVersionNumber(version, "AcceptVersions");
-        }
-        AcceptVersionsType accepts = Ows11Factory.eINSTANCE.createAcceptVersionsType();
-        accepts.getVersion().addAll(versions);
-        return accepts;
+    @Override
+    protected EObject createObject() {
+        return Ows11Factory.eINSTANCE.createAcceptVersionsType();
     }
+
+   
 }

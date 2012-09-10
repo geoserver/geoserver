@@ -1,23 +1,31 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.csw.store.simple;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.geoserver.csw.records.CSWRecordTypes;
-import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
-public class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
+/**
+ * A feature collection reading record files from the specified directory
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
+class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
     File root;
+
     int offset;
 
     public RecordsFeatureCollection(File root, int offset) {
@@ -33,7 +41,8 @@ public class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureT
 
     @Override
     protected void closeIterator(Iterator<Feature> close) {
-        // nothing to do, the SimpleRecordIterator does not keep any reference to streams and the like
+        // nothing to do, the SimpleRecordIterator does not keep any reference to streams and the
+        // like
     }
 
     @Override
@@ -43,50 +52,9 @@ public class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureT
 
     @Override
     public FeatureCollection<FeatureType, Feature> sort(SortBy order) {
-        throw new UnsupportedOperationException("Sorting is not supported at the moment, sorry");
-    }
-
-    @Override
-    public int size() {
-        FeatureIterator<Feature> fi = null;
-        int count = 0;
-        try {
-            fi = features();
-            while (fi.hasNext()) {
-                fi.next();
-                count++;
-            }
-        } finally {
-            if (fi != null) {
-                fi.close();
-            }
-        }
-
-        return count;
-    }
-
-    @Override
-    public ReferencedEnvelope getBounds() {
-        FeatureIterator<Feature> fi = null;
-        ReferencedEnvelope bounds = null;
-        try {
-            fi = features();
-            while (fi.hasNext()) {
-                Feature f = fi.next();
-                ReferencedEnvelope re = ReferencedEnvelope.reference(f.getBounds());
-                if (bounds == null) {
-                    bounds = re;
-                } else {
-                    bounds.expandToInclude(re);
-                }
-            }
-        } finally {
-            if (fi != null) {
-                fi.close();
-            }
-        }
-
-        return bounds;
+        List<Feature> features = new ArrayList<Feature>();
+        MemoryFeatureCollection memory = new MemoryFeatureCollection(getSchema(), features);
+        return memory.sort(order);
     }
 
 }

@@ -49,6 +49,17 @@ public class CSWRecordBuilder {
             fb.append(CSWRecordTypes.DC_ELEMENT_NAME, element);
         }
     }
+    
+    public void addElementWithScheme(String name, String scheme, String value) {
+        AttributeDescriptor descriptor = CSWRecordTypes.getDescriptor(name);
+        ab.setDescriptor(descriptor);
+        ab.add(null, value, CSWRecordTypes.SIMPLE_LITERAL_VALUE);
+        ab.add(null, scheme, CSWRecordTypes.SIMPLE_LITERAL_SCHEME);
+        Attribute element = ab.build();
+
+        fb.append(CSWRecordTypes.DC_ELEMENT_NAME, element);
+    }
+
 
     /**
      * Adds a bounding box to the record. The envelope must be in WGS84

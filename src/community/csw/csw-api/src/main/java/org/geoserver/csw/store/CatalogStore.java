@@ -7,6 +7,7 @@ package org.geoserver.csw.store;
 import java.io.IOException;
 import java.util.List;
 
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
@@ -29,7 +30,7 @@ public interface CatalogStore {
      */
     FeatureCollection getRecords(Query q, Transaction t) throws IOException;
 
-    List<Object> getDomain(Name typeName, Name attributeName);
+    CloseableIterator<String> getDomain(Name typeName, Name attributeName) throws IOException;
 
     List<FeatureId> addRecord(Feature f, Transaction t) throws IOException;
 

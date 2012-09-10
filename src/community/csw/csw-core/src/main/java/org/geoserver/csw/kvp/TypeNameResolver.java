@@ -11,9 +11,12 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.csw.records.CSWRecordTypes;
 import org.geoserver.ows.FlatKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
+import org.geotools.csw.DC;
+import org.geotools.csw.DCT;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -22,16 +25,6 @@ import org.xml.sax.helpers.NamespaceSupport;
  * @author Andrea Aime - GeoSolutions
  */
 class TypeNameResolver {
-
-    static final Map<String, String> COMMON_PREFIXES = new HashMap<String, String>() {
-        {
-            put("csw", CSW.NAMESPACE);
-            put("rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
-            put("dc", "http://purl.org/dc/elements/1.1/");
-            put("dct", "http://purl.org/dc/terms/");
-            // TODO: add the ISO one too?
-        }
-    };
 
     /**
      * Parses the type names into a list of {@link QName}
@@ -72,7 +65,7 @@ class TypeNameResolver {
                 prefix = tn.substring(0, idx);
                 uri = namespaces.getURI(prefix);
                 if (uri == null) {
-                    uri = COMMON_PREFIXES.get(prefix);
+                    uri = CSWRecordTypes.NAMESPACES.getURI(prefix);
                     if (uri == null) {
                         throw new ServiceException("Type name " + tn
                                 + " has an unknown prefix, please qualify it using the "

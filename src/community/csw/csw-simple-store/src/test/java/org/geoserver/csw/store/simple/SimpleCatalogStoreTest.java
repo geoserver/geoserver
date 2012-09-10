@@ -2,43 +2,41 @@ package org.geoserver.csw.store.simple;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.geoserver.csw.records.CSWRecordTypes;
-import org.geotools.csw.CSW;
-import org.geotools.csw.DC;
-import org.geotools.csw.DCT;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.SortByImpl;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.xml.sax.helpers.NamespaceSupport;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 
 public class SimpleCatalogStoreTest extends TestCase {
     
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-    NamespaceSupport NSS = new NamespaceSupport();
 
     File root = new File("./src/test/resources/org/geoserver/csw/store/simple");
     SimpleCatalogStore store = new SimpleCatalogStore(root);
     
     protected void setUp() throws Exception {
-        NSS.declarePrefix("csw", CSW.NAMESPACE);
-        NSS.declarePrefix("dc", DC.NAMESPACE);
-        NSS.declarePrefix("dct", DCT.NAMESPACE);
-        
         Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true);
     }
 
@@ -100,14 +98,18 @@ public class SimpleCatalogStoreTest extends TestCase {
         ComplexAttribute ca = (ComplexAttribute) f.getProperty(name);
         return (String) ca.getProperty("value").getValue();
     }
+    
+    private String getSimpleLiteralScheme(Feature f, String name) {
+        ComplexAttribute ca = (ComplexAttribute) f.getProperty(name);
+        return (String) ca.getProperty("scheme").getValue();
+    }
 
     public void testElementValueFilter() throws IOException {
-        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", NSS), FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
+        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
         FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
-        assertEquals("http://purl.org/dc/dcmitype/Service", getSimpleLiteralValue(record, "type"));
         assertEquals("http://purl.org/dc/dcmitype/Service", getSimpleLiteralValue(record, "type"));
         assertEquals("Proin sit amet justo. In justo. Aenean adipiscing nulla id tellus.", getSimpleLiteralValue(record, "abstract"));
     }
@@ -118,6 +120,21 @@ public class SimpleCatalogStoreTest extends TestCase {
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
+    }
+    
+    public void testScheme() throws IOException {
+        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        assertEquals(1, records.size());
+        Feature record = (Feature) records.toArray()[0];
+        assertEquals("http://www.digest.org/2.1", getSimpleLiteralScheme(record, "subject"));
+    }
+    
+    public void testSpatialFilterWorld() throws IOException {
+        Filter filter = FF.bbox("", -180, -90, 180, 90, "EPSG:4326");
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        // there are only 3 records with a bbox
+        assertEquals(3, records.size());
     }
     
     public void testMaxFeatures() throws IOException {
@@ -146,6 +163,104 @@ public class SimpleCatalogStoreTest extends TestCase {
         queryPaged.setMaxFeatures(3);
         FeatureCollection pagedRecords = store.getRecords(queryPaged, Transaction.AUTO_COMMIT);
         assertEquals(2, pagedRecords.size());
-        
     }
+    
+    public void testSortAscend() throws IOException {
+        Query queryImage = new Query("Record");
+        queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
+        queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordTypes.NAMESPACES), SortOrder.ASCENDING)});
+        
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
+        // there are only 3 records with Image type
+        assertEquals(3, records.size());
+        
+        // check they were sorted
+        final List<String> values = collectElement(records, "title");
+        assertEquals(3, values.size());
+        assertEquals("Lorem ipsum", values.get(0));
+        assertEquals("Lorem ipsum dolor sit amet", values.get(1));
+        assertEquals("Vestibulum massa purus", values.get(2));
+    }
+    
+    public void testSortDescend() throws IOException {
+        Query queryImage = new Query("Record");
+        queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
+        queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordTypes.NAMESPACES), SortOrder.DESCENDING)});
+        
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
+        // there are only 3 records with Image type
+        assertEquals(3, records.size());
+        
+        // check they were sorted
+        final List<String> values = collectElement(records, "title");
+        assertEquals(3, values.size());
+        assertEquals("Vestibulum massa purus", values.get(0));
+        assertEquals("Lorem ipsum dolor sit amet", values.get(1));
+        assertEquals("Lorem ipsum", values.get(2));
+    }
+    
+    public void testSortNatural() throws IOException {
+        Query queryImage = new Query("Record");
+        queryImage.setSortBy(new SortBy[] {SortBy.NATURAL_ORDER});
+        
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
+        assertEquals(12, records.size());
+        
+        // check they were sorted
+        final List<String> values = collectElement(records, "identifier");
+        List<String> sorted = new ArrayList<String>(values);
+        Collections.sort(sorted);
+        assertEquals(sorted, values);
+    }
+
+    private List<String> collectElement(FeatureCollection records, final String property) throws IOException {
+        final List<String> values = new ArrayList<String>();
+        records.accepts(new FeatureVisitor() {
+            
+            @Override
+            public void visit(Feature feature) {
+                ComplexAttribute ca = (ComplexAttribute) feature.getProperty(property);
+                String value = (String) ca.getProperty("value").getValue();
+                values.add(value);
+                
+            }
+        }, null);
+        return values;
+    }
+    
+    public void testLimitAttributes() throws IOException {
+        Query query = new Query("Record");
+        Filter typeDataset = FF.equals(FF.property("dc:type/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Dataset"));
+        query.setFilter(typeDataset);
+        query.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:subject/dc:value", CSWRecordTypes.NAMESPACES), SortOrder.ASCENDING)});
+        // select some properties we did not use for filtering and sorting
+        query.setProperties(Arrays.asList(FF.property("dc:identifier", CSWRecordTypes.NAMESPACES)));
+        
+        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);    
+        assertEquals(3, records.size());
+        
+        // check the properties and collect their identifier
+        final List<String> values = new ArrayList<String>();
+        records.accepts(new FeatureVisitor() {
+            
+            @Override
+            public void visit(Feature feature) {
+                // has the id
+                ComplexAttribute id = (ComplexAttribute) feature.getProperty("identifier");
+                assertNotNull(id);
+                String value = (String) id.getProperty("value").getValue();
+                values.add(value);
+                
+                // only has the id
+                assertEquals(1, feature.getProperties().size());
+            }
+        }, null);
+        
+        // if they were actually sorted by subject, here is the expected identifier order
+        assertEquals("urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc", values.get(0));
+        assertEquals("urn:uuid:88247b56-4cbc-4df9-9860-db3f8042e357", values.get(1));
+        assertEquals("urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63", values.get(2));
+    }
+    
+    
 }

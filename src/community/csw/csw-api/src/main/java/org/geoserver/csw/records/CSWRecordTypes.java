@@ -21,7 +21,9 @@ import org.geotools.csw.DCT;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
+import org.geotools.filter.v1_0.OGC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.ows.OWS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
@@ -30,6 +32,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.FeatureTypeFactory;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
+import org.xml.sax.helpers.NamespaceSupport;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
@@ -39,6 +42,11 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWRecordTypes {
+
+    /**
+     * Contains the declarations of common namespaces and prefixes used in the CSW world
+     */
+    public static final NamespaceSupport NAMESPACES;
 
     public static final ComplexType SIMPLE_LITERAL;
 
@@ -66,6 +74,16 @@ public class CSWRecordTypes {
     public static final FeatureType RECORD;
 
     static {
+        // prepare the common namespace support
+        NAMESPACES = new NamespaceSupport();
+        NAMESPACES.declarePrefix("csw", CSW.NAMESPACE);
+        NAMESPACES.declarePrefix("rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+        NAMESPACES.declarePrefix("dc", DC.NAMESPACE);
+        NAMESPACES.declarePrefix("dct", DCT.NAMESPACE);
+        NAMESPACES.declarePrefix("ows", OWS.NAMESPACE);
+        NAMESPACES.declarePrefix("ogc", OGC.NAMESPACE);
+        
+        // prepare the CSW record related types
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
         TypeBuilder builder = new TypeBuilder(typeFactory);
 

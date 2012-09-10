@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.geoserver.platform.ServiceException;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 /**
  * The request object, a simple java bean that gathers all the information and data that is 
  * monitored per request.
@@ -210,6 +212,11 @@ public class RequestData implements Serializable {
      *  The Referer of the HTTP request, if any
      */
     private String httpReferer;
+    
+    /**
+     * A bounding box for the region the request covers if any (May be approximate)
+     */
+    private Envelope bbox;
 
     public long getId() {
         return id;
@@ -509,6 +516,7 @@ public class RequestData implements Serializable {
         clone.setError(error);
         clone.setResponseStatus(responseStatus);
         clone.setHttpReferer(httpReferer);
+        clone.setBbox(bbox);
      
         return clone;
     }
@@ -533,4 +541,14 @@ public class RequestData implements Serializable {
     public void setHttpReferer(String httpReferer){
         this.httpReferer = httpReferer;
     }
+
+    public Envelope getBbox() {
+        return bbox;
+    }
+
+    public void setBbox(Envelope bbox) {
+        this.bbox = bbox;
+    }
+    
+    
 }

@@ -264,6 +264,11 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 setResponsePage(ToolPage.class);
             }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // TODO Auto-generated method stub
+            }
         });
 
         startLink = new AjaxButton("submit", form) {
@@ -273,20 +278,22 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 progress.setDefaultModelObject("");
                 startLink.setVisible(false);
-                target.addComponent(startLink);
-                target.addComponent(progress);
+                target.add(startLink, progress);
                 try {
                     startCopy(target, form);
                 } catch (Exception e) {
                     form.error(e.getMessage());
-                    target.addComponent(form);
+                    target.add(form);
                 } finally {
                     startLink.setVisible(true);
-                    target.addComponent(startLink);
-                    target.addComponent(progress);
+                    target.add(startLink, progress);
                 }
             }
-
+            
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                // TODO Auto-generated method stub
+            }
         };
         form.add(startLink);
         startLink.setOutputMarkupId(true);

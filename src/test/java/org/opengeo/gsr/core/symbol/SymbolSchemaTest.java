@@ -92,4 +92,17 @@ public class SymbolSchemaTest extends JsonSchemaTest {
         String json = getJson(pfs);
         assertTrue(validateJSON(json, "gsr/1.0/pfs.json"));
     }
+
+    @Test
+    public void testTextSymbolJsonSchema() throws Exception {
+        int[] color = { 78, 78, 78, 255 };
+        int[] backgroundColor = null;
+        int[] borderLineColor = null;
+        Font font = new Font("Arial", 12, FontStyleEnum.NORMAL, FontWeightEnum.BOLD,
+                FontDecorationEnum.NONE);
+        TextSymbol textSymbol = new TextSymbol(0, 0, 0, color, backgroundColor, borderLineColor,
+                VerticalAlignmentEnum.BOTTOM, HorizontalAlignmentEnum.LEFT, false, font);
+        String json = getJson(textSymbol);
+        assertTrue(validateJSON(json,"gsr/1.0/ts.json"));
+    }
 }

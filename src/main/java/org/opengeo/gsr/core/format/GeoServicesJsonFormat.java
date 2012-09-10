@@ -17,9 +17,14 @@ import org.opengeo.gsr.core.geometry.GeometryTypeConverter;
 import org.opengeo.gsr.core.geometry.Point;
 import org.opengeo.gsr.core.geometry.SpatialReference;
 import org.opengeo.gsr.core.geometry.SpatialReferenceWKID;
+import org.opengeo.gsr.core.symbol.FontDecorationEnumConverter;
+import org.opengeo.gsr.core.symbol.FontStyleEnumConverter;
+import org.opengeo.gsr.core.symbol.FontWeightEnumConverter;
+import org.opengeo.gsr.core.symbol.HorizontalAlignmentEnumConverter;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnumConverter;
 import org.opengeo.gsr.core.symbol.SimpleLineSymbolEnumConverter;
 import org.opengeo.gsr.core.symbol.SimpleMarkerSymbolEnumConverter;
+import org.opengeo.gsr.core.symbol.VerticalAlignmentEnumConverter;
 import org.opengeo.gsr.service.CatalogService;
 
 import com.thoughtworks.xstream.XStream;
@@ -79,6 +84,11 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.registerConverter(new SimpleMarkerSymbolEnumConverter());
         xstream.registerConverter(new SimpleLineSymbolEnumConverter());
         xstream.registerConverter(new SimpleFillSymbolEnumConverter());
+        xstream.registerConverter(new VerticalAlignmentEnumConverter());
+        xstream.registerConverter(new HorizontalAlignmentEnumConverter());
+        xstream.registerConverter(new FontWeightEnumConverter());
+        xstream.registerConverter(new FontDecorationEnumConverter());
+        xstream.registerConverter(new FontStyleEnumConverter());
 
         this.xStream = xstream;
     }

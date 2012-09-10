@@ -1,0 +1,37 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "id":"http://schemas.opengis.net/gsr/1.0/font.json",
+
+	"title":"domain",
+	"type":"object",
+	"properties":{
+		"family":{
+			"title":"font family",
+			"type":"string",
+			"required":true
+		},
+		"size":{
+			"title":"font size",
+			"type":"number",
+			"required":true
+		},
+		"style":{
+			"title":"font style",
+			"description":"value SHOULD be italic, normal, oblique",
+			"type":"string",
+			"default":"normal"
+		},
+		"weight":{
+			"title":"font style",
+			"description":"value SHOULD be bold, border, lighter, normal",
+			"type":"string",
+			"default":"normal"
+		},
+		"decoration":{
+			"title":"font style",
+			"description":"value SHOULD be line-through, underline, none",
+			"type":"string",
+			"default":"none"
+		}
+	}
+}

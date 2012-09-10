@@ -1,0 +1,60 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   
+	"title":"text symbol",
+	"type":"object",
+	"extends":{
+		"$ref":"marker.json"
+	},
+	"properties":{
+		"type":{
+			"title":"marker type",
+			"type":"string",
+			"required":true,
+			"enum":["TS"]
+		},
+		"color":{
+			"$ref":"color.json"
+		},
+		"backgroundColor":{
+			"$ref":"color.json"
+		},
+		"borderLineColor":{
+			"$ref":"color.json"
+		},
+		"verticalAlignment":{
+			"title":"vertical alignment",
+			"description":"value should be baseline, top, middle, bottom",
+			"type":"string"
+		},
+		"horizontalAlignment":{
+			"title":"horizontal alignment",
+			"description":"value should be left, right, center, justify",
+			"type":"string"
+		},
+		"rightToLeft":{
+			"title":"right to left",
+			"type":"boolean"
+		},
+		"angle":{
+			"title":"angle",
+			"type":"number"
+		},
+		"xoffset":{
+			"title":"angle",
+			"type":"number"
+		},
+		"yoffset":{
+			"title":"angle",
+			"type":"number"
+		},
+		"kerning":{
+			"title":"kerning",
+			"type":"boolean"
+		},
+		"font":{
+			"title":"font",
+			"$ref":"font.json"
+		}
+	}
+}

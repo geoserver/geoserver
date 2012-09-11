@@ -1,0 +1,32 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"label",
+	"type":"object",
+	"properties":{
+		"labelPlacement":{
+			"title":"label placement",
+			"type":"string"
+		},
+		"labelExpression":{
+			"title":"label expression",
+			"type":"string"
+		},
+		"useCodedValues":{
+			"title":"use coded values",
+			"type":"boolean"
+		},
+		"symbol":{
+			"$ref":"ts.json"
+		},
+		"minScale":{
+			"title":"minimum scale",
+			"type":"number"
+		},
+		"maxScale":{
+			"title":"maximum scale",
+			"type":"number"
+		}
+	}
+}
+

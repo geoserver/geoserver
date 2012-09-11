@@ -21,6 +21,9 @@ import org.opengeo.gsr.core.symbol.FontDecorationEnumConverter;
 import org.opengeo.gsr.core.symbol.FontStyleEnumConverter;
 import org.opengeo.gsr.core.symbol.FontWeightEnumConverter;
 import org.opengeo.gsr.core.symbol.HorizontalAlignmentEnumConverter;
+import org.opengeo.gsr.core.symbol.LineLabelPlacementEnumConverter;
+import org.opengeo.gsr.core.symbol.PointLabelPlacementEnumConverter;
+import org.opengeo.gsr.core.symbol.PolygonLabelPlacementEnumConverter;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnumConverter;
 import org.opengeo.gsr.core.symbol.SimpleLineSymbolEnumConverter;
 import org.opengeo.gsr.core.symbol.SimpleMarkerSymbolEnumConverter;
@@ -89,6 +92,9 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.registerConverter(new FontWeightEnumConverter());
         xstream.registerConverter(new FontDecorationEnumConverter());
         xstream.registerConverter(new FontStyleEnumConverter());
+        xstream.registerConverter(new PointLabelPlacementEnumConverter());
+        xstream.registerConverter(new LineLabelPlacementEnumConverter());
+        xstream.registerConverter(new PolygonLabelPlacementEnumConverter());
 
         this.xStream = xstream;
     }

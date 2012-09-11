@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.geoserver.platform.ServiceException;
+import org.opengis.geometry.BoundingBox;
 
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * The request object, a simple java bean that gathers all the information and data that is 
@@ -216,7 +216,7 @@ public class RequestData implements Serializable {
     /**
      * A bounding box for the region the request covers if any (May be approximate)
      */
-    private Envelope bbox;
+    private BoundingBox bbox;
 
     public long getId() {
         return id;
@@ -542,11 +542,11 @@ public class RequestData implements Serializable {
         this.httpReferer = httpReferer;
     }
 
-    public Envelope getBbox() {
+    public BoundingBox getBbox() {
         return bbox;
     }
 
-    public void setBbox(Envelope bbox) {
+    public void setBbox(BoundingBox bbox) {
         this.bbox = bbox;
     }
     

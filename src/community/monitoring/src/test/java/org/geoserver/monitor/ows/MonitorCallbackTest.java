@@ -44,11 +44,16 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class MonitorCallbackTest {
 
@@ -152,9 +157,15 @@ public class MonitorCallbackTest {
         GetMapRequest gm = new GetMapRequest();
         
         gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
+        
+        Envelope env = new Envelope(100,200,300,4);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        gm.setBbox(env);
+        gm.setCrs(crs);
         callback.operationDispatched(new Request(), op("GetMap", "WMS", "1.1.1", gm));
         
         assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals(new ReferencedEnvelope(env,crs),data.getBbox());
     }
     
     @Test

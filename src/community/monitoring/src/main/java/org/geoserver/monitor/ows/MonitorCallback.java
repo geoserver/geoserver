@@ -30,6 +30,8 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 public class MonitorCallback implements DispatcherCallback {
 
     static List<RequestObjectHandler> HANDLERS = new ArrayList();
@@ -99,7 +101,7 @@ public class MonitorCallback implements DispatcherCallback {
         
         return operation;
     }
-
+    
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }

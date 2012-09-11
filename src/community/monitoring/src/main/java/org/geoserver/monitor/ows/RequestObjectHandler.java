@@ -7,6 +7,7 @@ package org.geoserver.monitor.ows;
 import java.util.List;
 
 import org.geoserver.monitor.RequestData;
+import org.opengis.geometry.BoundingBox;
 
 /**
  * Class that extracts information from an ows request.
@@ -36,7 +37,15 @@ public abstract class RequestObjectHandler {
     
     public void handle(Object request, RequestData data) {
         data.setResources(getLayers(request));
+        data.setBbox(getBBox(request));
     }
     
     protected abstract List<String> getLayers(Object request);
+    
+    /**
+     * Find a bounding box for the area covered by the request.
+     */
+    protected BoundingBox getBBox(Object request) {
+        return null;
+    }
 }

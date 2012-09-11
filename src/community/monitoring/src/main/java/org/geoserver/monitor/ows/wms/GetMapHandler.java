@@ -9,6 +9,12 @@ import java.util.List;
 
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.wms.GetMapRequest;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class GetMapHandler extends RequestObjectHandler {
 
@@ -31,4 +37,12 @@ public class GetMapHandler extends RequestObjectHandler {
         return layers;
     }
 
+    @Override
+    protected BoundingBox getBBox(Object request) {
+        GetMapRequest gmRequest = (GetMapRequest) request;
+        CoordinateReferenceSystem crs = gmRequest.getCrs();
+        Envelope env = gmRequest.getBbox();
+        BoundingBox bbox = new ReferencedEnvelope(env, crs);
+        return bbox;
+    }
 }

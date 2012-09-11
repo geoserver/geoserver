@@ -1,3 +1,5 @@
+.. _wms_time:
+
 Time Support in Geoserver WMS
 =============================
 

@@ -14,6 +14,10 @@ import javax.imageio.ImageIO;
 
 import org.junit.Test;
 import org.opengeo.gsr.JsonSchemaTest;
+import org.opengeo.gsr.core.font.Font;
+import org.opengeo.gsr.core.font.FontDecorationEnum;
+import org.opengeo.gsr.core.font.FontStyleEnum;
+import org.opengeo.gsr.core.font.FontWeightEnum;
 
 public class SymbolSchemaTest extends JsonSchemaTest {
 

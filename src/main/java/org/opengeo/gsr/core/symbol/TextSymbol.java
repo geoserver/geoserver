@@ -4,6 +4,8 @@
  */
 package org.opengeo.gsr.core.symbol;
 
+import org.opengeo.gsr.core.font.Font;
+
 /**
  * 
  * @author Juan Marin, OpenGeo

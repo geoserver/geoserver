@@ -1,4 +1,4 @@
-package org.opengeo.gsr.core.symbol;
+package org.opengeo.gsr.core.label;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,6 +7,20 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opengeo.gsr.JsonSchemaTest;
+import org.opengeo.gsr.core.font.Font;
+import org.opengeo.gsr.core.font.FontDecorationEnum;
+import org.opengeo.gsr.core.font.FontStyleEnum;
+import org.opengeo.gsr.core.font.FontWeightEnum;
+import org.opengeo.gsr.core.label.Label;
+import org.opengeo.gsr.core.label.LineLabel;
+import org.opengeo.gsr.core.label.LineLabelPlacementEnum;
+import org.opengeo.gsr.core.label.PointLabel;
+import org.opengeo.gsr.core.label.PointLabelPlacementEnum;
+import org.opengeo.gsr.core.label.PolygonLabel;
+import org.opengeo.gsr.core.label.PolygonLabelPlacementEnum;
+import org.opengeo.gsr.core.symbol.HorizontalAlignmentEnum;
+import org.opengeo.gsr.core.symbol.TextSymbol;
+import org.opengeo.gsr.core.symbol.VerticalAlignmentEnum;
 
 public class LabelSchemaTest extends JsonSchemaTest {
 

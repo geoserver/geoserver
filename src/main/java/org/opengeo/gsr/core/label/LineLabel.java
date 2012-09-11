@@ -2,26 +2,28 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.opengeo.gsr.core.symbol;
+package org.opengeo.gsr.core.label;
+
+import org.opengeo.gsr.core.symbol.TextSymbol;
 
 /**
  * 
  * @author Juan Marin, OpenGeo
  * 
  */
-public class PolygonLabel extends Label {
+public class LineLabel extends Label {
 
-    private PolygonLabelPlacementEnum placement;
+    private LineLabelPlacementEnum placement;
 
-    public PolygonLabelPlacementEnum getPlacement() {
+    public LineLabelPlacementEnum getPlacement() {
         return placement;
     }
 
-    public void setPlacement(PolygonLabelPlacementEnum placement) {
+    public void setPlacement(LineLabelPlacementEnum placement) {
         this.placement = placement;
     }
 
-    public PolygonLabel(PolygonLabelPlacementEnum placement, String labelExpression,
+    public LineLabel(LineLabelPlacementEnum placement, String labelExpression,
             boolean useCodedValues, TextSymbol symbol, int minScale, int maxScale) {
         super(labelExpression, useCodedValues, symbol, minScale, maxScale);
         this.placement = placement;

@@ -32,15 +32,18 @@ An example of a GetCapabilities request is::
 DescribeProcess
 ----------------
 
-The **DescribeProcess** operation requests a description of a WPS process supplied by the server.
+The **DescribeProcess** operation requests a description of a WPS process available through the service.
 
 The parameter ``identifier`` specifies the process to describe.  
 Multiple processes can be requested, separated by commas (for example, ``identifier=JTS:buffer,gs:Clip``).
 At least one process must be specified.
 
-The response is an XML document containing metadata about the requested processes.
-
 .. note:: As with all OGC parameters, the keys (``request``, ``version``, etc) are case-insensitive, and the values (``GetCapabilities``, ``JTS:buffer``, etc.) are case-sensitive.  GeoServer is generally more relaxed about case, but it is best to follow the specification.
+
+The response is an XML document containing metadata about each requested process, including the following:
+ 
+* Process name, title and abstract
+* For each input and output parameter: identifier, title, abstract, multiplicity, and supported datatype and format
 
 An example request for the process ``JTS:buffer`` is::
 
@@ -50,7 +53,7 @@ An example request for the process ``JTS:buffer`` is::
     request=DescribeProcess&
     identifier=JTS:buffer
 
-The response is an XML document containing the following information:
+The response XML document contains the following information:
 
 .. list-table:: 
    :widths: 20 80 
@@ -58,19 +61,23 @@ The response is an XML document containing the following information:
    * - **Title**
      - "Buffers a geometry using a certain distance"
    * - **Inputs**
-     - **distance**: "The distance (same unit of measure as the geometry)" *(double, mandatory)*
+     - **geom**: "The geometry to be buffered" *(geometry, mandatory)*
+     
+       **distance**: "The distance (same unit of measure as the geometry)" *(double, mandatory)*
 
        **quadrant segments**: "Number of quadrant segments. Use > 0 for round joins, 0 for flat joins, < 0 for mitred joins" *(integer, optional)*
 
-       **capstyle**: "The buffer cap style, round, flat, square" *(selection, optional)*
+       **capstyle**: "The buffer cap style, round, flat, square" *(literal value, optional)*
    * - **Output formats**
      - One of GML 3.1.1, GML 2.1.2, or WKT
+     
+     
 
 Execute
 -------
 
-The **Execute** operation makes a request to perform the process 
-with specified input values and output data items.
+The **Execute** operation is a request to perform the process 
+with specified input values and required output data items.
 The request may be made as either a GET URL, or a POST with an XML request document.
 Because the request has a complex structure, the POST form is more typically used.
 

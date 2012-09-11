@@ -63,7 +63,8 @@ Comparison Functions
      - Returns true if ``x`` > ``y``. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)
    * - in2, in3, in4, in5, in6, in7, in8, in9, in10
      - ``candidate``:Object, ``v1``:Object, ..., ``v9``:Object
-     - Returns true if ``candidate`` is equal to one of the ``v1``, ..., ``v9`` values. Use the appropriate function name depending on how many arguments you need to pass.
+     - Returns true if ``candidate`` is equal to one of the ``v1``, ..., ``v9`` values. 
+       Use the function name matching the number of arguments specified.
    * - isLike
      - ``string``:String, ``pattern``:String
      - Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the `Java Pattern class javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_
@@ -115,6 +116,11 @@ Feature functions
    * - PropertyExists
      - ``f``:Feature, ``propertyName``:String
      - Returns ``true`` if ``f`` has a property named ``propertyName``
+   * - property
+     - ``f``:Feature, ``propertyName``:String
+     - Returns the value of the property ``propertyName``.  
+       Allows property names to be computed or specified by 
+       :ref:`sld_variable_substitution`.
      
 Spatial Relationship Functions
 ------------------------------

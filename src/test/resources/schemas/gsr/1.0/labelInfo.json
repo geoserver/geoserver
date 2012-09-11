@@ -1,0 +1,9 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"label array",
+	"type":"array",
+	"items":{
+		"$ref":"label.json"
+	}
+}

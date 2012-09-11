@@ -11,12 +11,10 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.xsd.XSDSchema;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
-import org.geotools.xml.XSD;
 
 /**
  * A response designed to encode a specific object into XML
@@ -25,8 +23,8 @@ import org.geotools.xml.XSD;
  */
 public class XmlObjectEncodingResponse extends Response {
 
-    String elementName;
-    Class xmlConfiguration;
+    protected String elementName;
+    protected Class xmlConfiguration;
     
     public XmlObjectEncodingResponse(Class binding, String elementName, Class xmlConfiguration) {
         super( binding );
@@ -49,6 +47,7 @@ public class XmlObjectEncodingResponse extends Response {
             for (Map.Entry<String, String> entry : getSchemaLocations().entrySet()) {
                 e.setSchemaLocation(entry.getKey(), entry.getValue());
             }
+            configureEncoder(e, elementName, xmlConfiguration);
             
             e.encode( value, new QName( c.getXSD().getNamespaceURI(), elementName ), output );
         } 
@@ -57,6 +56,18 @@ public class XmlObjectEncodingResponse extends Response {
         }
     }
     
+    
+    /**
+     * Allows subclasses to further configure the encoder
+     * 
+     * @param encoder
+     * @param elementName2
+     * @param xmlConfiguration2
+     */
+    protected void configureEncoder(Encoder encoder, String elementName, Class xmlConfiguration) {
+        // nothing to do here, subclasses will do their own magic
+    }
+
     /**
      * Subclasses can override this method to return the necessary schema location declarations
      * @return

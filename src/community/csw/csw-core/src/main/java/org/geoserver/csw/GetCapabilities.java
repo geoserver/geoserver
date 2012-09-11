@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.Csw20Factory;
 import net.opengis.cat.csw20.GetCapabilitiesType;
-import net.opengis.fes20.Fes20Factory;
 import net.opengis.ows10.AddressType;
 import net.opengis.ows10.CodeType;
 import net.opengis.ows10.ContactType;
@@ -58,6 +57,7 @@ import org.springframework.context.ApplicationContext;
  * @author Alessio Fabiani - GeoSolutions
  * 
  */
+@SuppressWarnings("unchecked")
 public class GetCapabilities {
     static final Logger LOGGER = Logging.getLogger(GetCapabilities.class);
 
@@ -98,7 +98,6 @@ public class GetCapabilities {
         // encode the response
         Csw20Factory cswf = Csw20Factory.eINSTANCE;
         Ows10Factory owsf = Ows10Factory.eINSTANCE;
-        Fes20Factory fesf = Fes20Factory.eINSTANCE;
 
         CapabilitiesType caps = cswf.createCapabilitiesType();
         caps.setVersion("2.0.2");

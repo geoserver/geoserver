@@ -4,14 +4,6 @@
  */
 package org.geoserver.csw;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.DescribeRecordType;
 import net.opengis.cat.csw20.GetCapabilitiesType;
@@ -35,17 +27,19 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * The default CSW implementation
+ * 
  * @author Andrea Aime - GeoSolutions
- *
  */
 public class DefaultCatalogService implements CatalogService, ApplicationContextAware {
-    
+
     private CSWInfo csw;
+
     private GeoServer gs;
+
     private CatalogStore store;
 
     protected ApplicationContext context;
-    
+
     public DefaultCatalogService(GeoServer gs) {
         this.csw = gs.getService(CSWInfo.class);
         this.gs = gs;
@@ -61,36 +55,7 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     public FeatureType[] describeRecord(DescribeRecordType request) throws ServiceException {
         checkStore();
 
-        try {
-            if (request.getTypeName() == null || request.getTypeName().isEmpty()) {
-                // return all the ones we have
-                return store.getRecordSchemas();
-            } else {
-                List<FeatureType> result = new ArrayList<FeatureType>();
-                Set<QName> requested = new HashSet(request.getTypeName());
-                FeatureType[] schemas = store.getRecordSchemas();
-                for (FeatureType featureType : schemas) {
-                    // convert the feature type name to a QName and check if it was requested
-                    QName typeName = new QName(featureType.getName().getNamespaceURI(), featureType
-                            .getName().getLocalPart());
-                    if (requested.remove(typeName)) {
-                        result.add(featureType);
-                    }
-                }
-
-                // if we still have some elements it means we don't have some of the requested
-                // schemas
-                if (requested.size() != 0) {
-                    throw new ServiceException("Failed to find feature types: " + requested,
-                            ServiceException.INVALID_PARAMETER_VALUE, "typeName");
-                }
-
-                return (FeatureType[]) result.toArray(new FeatureType[result.size()]);
-            }
-        } catch (IOException e) {
-            throw new ServiceException("Failed to retrieve the feature type schemas",
-                    ServiceException.NO_APPLICABLE_CODE);
-        }
+        return new DescribeRecord(this.csw, store).run(request);
     }
 
     @Override
@@ -132,13 +97,14 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
         checkStore();
         throw new ServiceException("Transactions are not supported by this CSW service");
     }
-    
+
     /**
      * Checks we have a store to use
      */
     private void checkStore() {
-        if(store == null) {
-            throw new ServiceException("Catalog service could not find a CatalogStore implementation registered in the Spring application context", 
+        if (store == null) {
+            throw new ServiceException(
+                    "Catalog service could not find a CatalogStore implementation registered in the Spring application context",
                     ServiceException.NO_APPLICABLE_CODE);
         }
     }

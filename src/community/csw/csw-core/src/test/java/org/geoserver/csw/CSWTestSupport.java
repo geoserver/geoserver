@@ -25,6 +25,7 @@ import org.geotools.ows.v1_1.OWS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.geotools.xml.XSD;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
@@ -41,6 +42,8 @@ public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
         namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("xlink", XLINK.NAMESPACE);
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     };

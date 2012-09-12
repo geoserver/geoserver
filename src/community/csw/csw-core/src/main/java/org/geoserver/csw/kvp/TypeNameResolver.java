@@ -75,7 +75,12 @@ class TypeNameResolver {
                 }
             }
 
-            QName qname = new QName(uri, typeName, prefix);
+            QName qname = null;
+            if(prefix != null) {
+                qname = new QName(uri, typeName, prefix);
+            } else {
+                qname = new QName(uri, typeName);
+            }
             result.add(qname);
         }
 

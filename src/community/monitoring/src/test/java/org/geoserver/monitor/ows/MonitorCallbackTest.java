@@ -251,12 +251,26 @@ public class MonitorCallbackTest {
     public void testWCS11GetCoverage() throws Exception {
         net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
         
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        GeneralEnvelope env = new GeneralEnvelope(new double[]{-123.4, 48.2}, new double[]{-120.9, 50.1});
+        env.setCoordinateReferenceSystem(crs);
+        BoundingBox bbox = new ReferencedEnvelope(env);
+        net.opengis.ows11.BoundingBoxType wcsBbox = net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
+        wcsBbox.setLowerCorner(Arrays.asList(new double[]{-123.4, 48.2}));
+        wcsBbox.setUpperCorner(Arrays.asList(new double[]{-120.9, 50.1}));
+        wcsBbox.setCrs("urn:ogc:def:crs:OGC:1.3:CRS84");
+        net.opengis.wcs11.DomainSubsetType domainSubset = Wcs11Factory.eINSTANCE.createDomainSubsetType();
+        domainSubset.setBoundingBox(wcsBbox);
+        
+        gc.setDomainSubset(domainSubset);
+        
         CodeType c = Ows11Factory.eINSTANCE.createCodeType();
         c.setValue("acme:bar");
         gc.setIdentifier(c);
         
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.1.0", gc));
         assertEquals("acme:bar", data.getResources().get(0));
+        assertEquals(bbox, data.getBbox());
     }
     
     MapLayerInfo createMapLayer(String name, String ns) {

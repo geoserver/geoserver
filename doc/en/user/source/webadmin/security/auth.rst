@@ -3,12 +3,12 @@
 Authentication
 ==============
 
-This page allows for setting details of authentication, including authentication providers and the authentication chain.
+This page manages the authentication options, including authentication providers and the authentication chain.
 
 Anonymous authentication
 ------------------------
 
-GeoServer will by default allow anonymous access to the :ref:`web_admin`.  Without authentication, users will still be able to view the :ref:`layerpreview`, capabilities documents, and basic GeoServer details.  Disabling anonymous access by unchecking the :guilabel:`Allow anonymous authentication` checkbox, will disallow this.  Anonymous users navigating to the GeoServer page will be met with a HTTP 401 status code, which typically results in a browser-based request for credentials.
+By default, GeoServer will allow anonymous access to the :ref:`web_admin`. Without authentication, users will still be able to view the :ref:`layerpreview`, capabilities documents, and basic GeoServer details. Anonymous access can be disabled by clearing the :guilabel:`Allow anonymous authentication` check box. Anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
 
 .. note:: Read more about :ref:`sec_auth_webadmin`.
 
@@ -20,9 +20,9 @@ GeoServer will by default allow anonymous access to the :ref:`web_admin`.  Witho
 Authentication providers
 ------------------------
 
-This section allows for the adding, removing, and editing of :ref:`sec_auth_providers`.  The default authentication provider uses basic :ref:`username/password authentication <sec_auth_provider_userpasswd>`.  :ref:`JDBC <sec_auth_provider_jdbc>` and :ref:`LDAP <sec_auth_provider_ldap>` can also be used.
+This section manages the :ref:`sec_auth_providers` (adding, removing, and editing). The default authentication provider uses basic :ref:`username/password authentication <sec_auth_provider_userpasswd>`. :ref:`JDBC <sec_auth_provider_jdbc>` and :ref:`LDAP <sec_auth_provider_ldap>` authentication can also be used.
 
-Clicking on :guilabel:`Add new` will create a new provider.  Clicking on an existing provider will allow editing of that provider's parameters.
+Click :guilabel:`Add new` to create a new provider. Click an existing provider to edit its parameters.
 
 .. figure:: images/auth_providers.png
    :align: center
@@ -32,7 +32,7 @@ Clicking on :guilabel:`Add new` will create a new provider.  Clicking on an exis
 Username/password provider
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The default new authentication provider is that which utilizes a user/group service for authentication.
+The default new authentication provider uses a user/group service for authentication.
 
 .. figure:: images/auth_userpass.png
    :align: center
@@ -48,18 +48,17 @@ The default new authentication provider is that which utilizes a user/group serv
    * - Name
      - Name of the provider
    * - User Group Service
-     - Name of the user/group service associated with this provider.  Can be any one of the active user/group services.
+     - Name of the user/group service associated with this provider. Can be any one of the active user/group services.
 
 JDBC provider
 ~~~~~~~~~~~~~
 
-The following shows the configuration options for the JDBC authentication provider.
+The configuration options for the JDBC authentication provider are illustrated below.
 
 .. figure:: images/auth_jdbc.png
    :align: center
 
    *Configuring the JDBC authentication provider*
-
 
 
 .. list-table::
@@ -80,7 +79,7 @@ The following shows the configuration options for the JDBC authentication provid
 LDAP provider
 ~~~~~~~~~~~~~
 
-The following shows the configuration options for the LDAP authentication provider.  The default option is to use LDAP groups for role assignment, but there is an option to use a user/group service for role assignment.  Depending on whether this box is checked the menu itself will have different options.
+The following illustration shows the configuration options for the LDAP authentication provider. The default option is to use LDAP groups for role assignment, but there is also an option to use a user/group service for role assignment. Depending on whether this option is selected, the page itself will have different options.
 
 .. figure:: images/auth_ldap1.png
    :align: center
@@ -90,7 +89,7 @@ The following shows the configuration options for the LDAP authentication provid
 .. figure:: images/auth_ldap2.png
    :align: center
 
-   *Configuring the LDAP authentication provider using user/group service for role assignment*
+   *Configuring the LDAP authentication provider using user/group service for authentication*
 
 
 .. list-table::
@@ -106,24 +105,24 @@ The following shows the configuration options for the LDAP authentication provid
    * - TLS
      - Enables a STARTTLS connection. (See the section on :ref:`sec_auth_provider_ldap_secure`.)
    * - User DN pattern
-     - Search pattern to use to match the DN of the user in the LDAP database. The pattern should contain the placeholder ``{0}`` which is injected with the ``uid`` of the user.  Example: ``uid={0},ou=people``.  The root DN specified as port of the *Server URL* is automatically appended.
+     - Search pattern to use to match the DN of the user in the LDAP database. The pattern should contain the placeholder ``{0}`` which is injected with the ``uid`` of the user. Example: ``uid={0},ou=people``. The root DN specified as port of the *Server URL* is automatically appended.
    * - Use LDAP groups for authorization
-     - Specifies whether to use LDAP groups for role assignment. 
+     - Specifies whether to use LDAP groups for role assignment
    * - Group search base
-     - Relative name of the node in the tree to use as the base for LDAP groups. Example: ``ou=groups``.  The root DN specified as port of the *Server URL* is automatically appended.  Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
+     - Relative name of the node in the tree to use as the base for LDAP groups. Example: ``ou=groups``. The root DN specified as port of the *Server URL* is automatically appended. Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
    * - Group search filter
-     - Search pattern to use in order to locate the user's LDAP groups that the user is part of. The pattern may contain two placeholder values:
-       * ``{0}``, is the full DN of the user.  Example: ``uid=bob,ou=people,dc=acme,dc=com``.
-       * ``{1}``, is the ``uid`` portion of the full DN.  Example: ``bob``. 
+     - Search pattern for locating the LDAP groups a user belongs to. This may contain two placeholder values:
+       ``{0}``, the full DN of the user, for example ``uid=bob,ou=people,dc=acme,dc=com``
+       ``{1}``, the ``uid`` portion of the full DN, for example ``bob``.
        Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
    * - User Group Service
-     - The user/group service to use for role assignment.  Only applicable when the *Use LDAP groups for authorization* parameter is **unchecked**.
+     - The user/group service to use for role assignment. Only applicable when the *Use LDAP groups for authorization* parameter is **cleared**.
 
 
 Authentication chain
 --------------------
 
-This section sets the authentication chain.  Currently, only one default authentication chain is available.  (Read more about the default :ref:`sec_auth_chain`.)
+This section selects the authentication chain. Currently, only one default authentication chain is available. For further information about the default chain, please refer to :ref:`sec_auth_chain`.
 
 .. figure:: images/auth_chain.png
    :align: center

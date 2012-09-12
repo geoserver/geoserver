@@ -3,22 +3,21 @@
 Roles
 =====
 
-GeoServer **roles** are keys that are associated with the performing certain tasks or accessing particular resources.  Roles are assigned to users and groups in order to authorize them to perform the actions associated with the role. A role in GeoServer is made up of the following information:
+GeoServer **roles** are keys associated with performing certain tasks or accessing particular resources. Roles are assigned to users and groups, authorizing them to perform the actions associated with the role. A GeoServer role includes the following:
 
 * Role name
 * Parent role
 * Set of key/value pairs
 
-GeoServer roles support inheritance; a child role inherits all the access granted to the parent role. For example, consider a role named ``ROLE_SECRET`` and a role that extends from it named ``ROLE_VERY_SECRET``. In this case, ``ROLE_VERY_SECRET`` encompasses all of what ``ROLE_SECRET`` can access, but not vice versa.
+GeoServer roles support inheritance—a child role inherits all the access granted to the parent role. For example, suppose you have one role named ``ROLE_SECRET`` and another role, ``ROLE_VERY_SECRET``, that extends ``ROLE_SECRET``. ``ROLE_VERY_SECRET`` can access everything ``ROLE_SECRET`` can access, but not vice versa.
 
-Key/value pairs are implementation-specific and may be set by the :ref:`role service <sec_rolesystem_roleservices>` that the user or group 
-originates from. For example, a role service that assigns roles based on employee organization may wish to associate additional information with the role such as Department.
+Key/value pairs are implementation-specific and may be configured by the :ref:`role service <sec_rolesystem_roleservices>` the user or group belongs to. For example, a role service that assigns roles based on employee organization may wish to associate additional information with the role such as Department Name.
 
-Geoserver has some system roles, the names of these roles are reserved and it is not allowed to add roles with a reserved name.
+Geoserver has a number of system roles, the names of which are reserved. Adding a new GeoServer role with reserved name is not permitted.
 
-* ``ROLE_ADMINISTRATOR`` gives access to all operations and resources.
-* ``ROLE_GROUP_ADMIN`` is a special role for administrating user groups.
-* ``ROLE_AUTHENTICATED`` is assigned to every user authenticating successfully.
-* ``ROLE_ANONYMOUS`` is assigned if anonymous authentication is enabled and user does not log in.
+* ``ROLE_ADMINISTRATOR``—Provides access to all operations and resources
+* ``ROLE_GROUP_ADMIN``—Special role for administrating user groups
+* ``ROLE_AUTHENTICATED``—Assigned to every user authenticating successfully
+* ``ROLE_ANONYMOUS``—Assigned if anonymous authentication is enabled and user does not log on
 
 

@@ -3,7 +3,7 @@
 Contact Information
 ===================
 
-The Contact Information is used in the Capabilities document of the WMS server, and is publically accessible.  We recommend filling out this form with appropriate information, in order for people to contact you.
+The Contact Information is used in the Capabilities document of the WMS server, and is publicly accessible. Please complete this form with the relevant information.
 
 .. figure:: ../images/server_contact.png
    :align: center
@@ -21,25 +21,25 @@ Contact Information Fields
    * - Contact
      - Contact information for webmaster
    * - Organization
-     - The name of the organization with which the contact is affiliated. 
+     - Name of the organization with which the contact is affiliated 
    * - Position
-     - The position of the contact within their organization.
+     - Position of the contact within their organization
    * - Address Type
-     - The type of address specified, such as postal.
+     - Type of address specified, such as postal
    * - Address
-     - The actual street address.     
+     - Actual street address     
    * - City
-     - The city of the address. 
+     - City of the address
    * - State
-     - The state or province of the address.
+     - State or province of the address
    * - Zip code
-     - The postal code for the address.
+     - Postal code for the address
    * - Country
-     - The country of the address.      
+     - Country of the address     
    * - Telephone
-     - The contact phone number.      
+     - Contact phone number      
    * - Fax
-     - The contact Fax number.       
+     - Contact Fax number      
    * - Email
-     - The contact email address.       
+     - Contact email address      
       

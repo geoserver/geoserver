@@ -3,20 +3,19 @@
 Users and Groups
 ================
 
-A GeoServer **user** is defined similarly to most security systems.  The correct Java term is **principal**. A principal may be a human being, a software system, a computer and so on.  In this introduction, the term **user** is used. For each user the following information is maintained:
+The definition of a GeoServer **user** is similar to most security systems. Although the correct Java term is **principle**—a principle being a human being, computer, software system, and so on—the term **user** is adopted throughout the GeoServer documentation. For each user the following information is maintained:
 
 * User name
 * :ref:`Password <sec_passwd>` (optionally stored :ref:`encrypted <sec_passwd_encryption>`)
-* A flag indicating if the user is enabled (this is the default). A disabled user is not allowed to log in in the future. Existing log ins are not affected.
+* A flag indicating if the user is enabled (this is the default). A disabled user is prevented from logging on. Existing user sessions are not affected.
 * Set of key/value pairs
 
-Key/value pairs are implementation-specific and may be set by the :ref:`user/group service <sec_rolesystem_usergroupservices>` that the user or group 
-originates from. For example, a user/group service that maintains information about a user such as Name, Email address, etc., may wish to associate those data values with the user object.
+Key/value pairs are implementation-specific and may be configured by the :ref:`user/group service <sec_rolesystem_usergroupservices>` the user or group belongs to. For example, a user/group service that maintains information about a user such as Name, Email address, and so on, may wish to associate those attributes with the user object.
 
 A GeoServer **group** is simply a set of users. For each group the following information is maintained:
 
 * Group name
 * A flag indicating if the group is enabled (this is the default). A disabled group does not contribute to the role calculation for all users contained in this group.
-* List of users that are members of the group
+* List of users who belong to the group
 
 

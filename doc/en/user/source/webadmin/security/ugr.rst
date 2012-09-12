@@ -3,31 +3,31 @@
 Users, Groups, Roles
 ====================
 
-This section sets the configuration options of :ref:`sec_rolesystem_usergroupservices` and :ref:`sec_rolesystem_roleservices`.  In addition, users, groups, and roles themselves and can be added, edited, or removed.  There is a large amount of configuration that can be done from within this section and related pages.
+This section provides the configuration options for :ref:`sec_rolesystem_usergroupservices` and :ref:`sec_rolesystem_roleservices`. In addition, users, groups, and roles themselves and can be added, edited, or removed. A great deal of configuration can be accomplished in this section and related pages.
 
 .. _webadmin_sec_usergroupservices:
 
 User Group Services
 -------------------
 
-In this menu, user/group services can be added, removed, or edited.  By default, there is one user/group service in GeoServer, which is :ref:`XML-based <sec_rolesystem_usergroupxml>`.  It is encrypted with :ref:`Weak PBE <sec_passwd_encryption>` and uses the default :ref:`password policy <sec_passwd_policy>`.  It is also possible to have a user/group service based on :ref:`JDBC <sec_rolesystem_usergroupjdbc>`, with or without JNDI.
+In this menu, user/group services can be added, removed, or edited. By default, there is one user/group service in GeoServer, which is :ref:`XML-based <sec_rolesystem_usergroupxml>`. It is encrypted with :ref:`Weak PBE <sec_passwd_encryption>` and uses the default :ref:`password policy <sec_passwd_policy>`. It is also possible to have a user/group service based on :ref:`JDBC <sec_rolesystem_usergroupjdbc>`, with or without JNDI.
 
 .. figure:: images/ugr_usergroup.png
    :align: center
 
    *User/group services*
 
-Clicking on an existing user/group service will open it for editing, while clicking on the :guilabel:`Add new` link will configure a new user/group service.
+Clicking an existing user/group service will enable editing, while clicking the :guilabel:`Add new` link will configure a new user/group service.
 
 There are three tabs for configuration:  Settings, Users, and Groups.
 
-.. note:: When creating a new user/group service, the form that is filled out initially will later be found under the Settings tab. 
+.. note:: When creating a new user/group service, the form filled out initially can be found under the Settings tab. 
 
 
 Add new XML user/group service
 ------------------------------
 
-To add a new XML user/group service, click the :guilabel:`Add new` link.  XML is the default option.  The following figure shows the configuration options for an XML user/group service.
+To add a new XML user/group service, click the :guilabel:`Add new` link. XML is the default option. The following figure shows the configuration options for an XML user/group service.
 
 .. figure:: images/ugr_ugxmlsettings.png
    :align: center
@@ -43,21 +43,21 @@ To add a new XML user/group service, click the :guilabel:`Add new` link.  XML is
    * - Name
      - The name of the user/group service
    * - Password encryption
-     - Sets the type of :ref:`sec_passwd_encryption`.  Options are :guilabel:`Plain text`, :guilabel:`Weak PBE`, :guilabel:`Strong PBE`, and :guilabel:`Digest`.
+     - Sets the type of :ref:`sec_passwd_encryption`. Options are :guilabel:`Plain text`, :guilabel:`Weak PBE`, :guilabel:`Strong PBE`, and :guilabel:`Digest`.
    * - Password policy
-     - Sets the :ref:`password policy <sec_passwd_policy>`.  Options are any active password policies as set in the :ref:`webadmin_sec_passwd` section.
+     - Sets the :ref:`password policy <sec_passwd_policy>`. Options are any active password policies as set in the :ref:`webadmin_sec_passwd` section.
    * - XML filename
-     - Name of the file that will contain the user and group information.  Default is :file:`users.xml` in the ``security/usergroup/<name_of_usergroupservice>`` directory.
+     - Name of the file that will contain the user and group information. Default is :file:`users.xml` in the ``security/usergroup/<name_of_usergroupservice>`` directory.
    * - Enable schema validation
-     - If checked, forces schema validation to occur every time the XML file is read. This option is useful when editing the XML file by hand.
+     - If selected, forces schema validation to occur every time the XML file is read. This option is useful when editing the XML file by hand.
    * - File reload interval
-     - Defines the frequency (in milliseconds) in which GeoServer will check for changes to the XML file. If the file is found to have been modified, GeoServer will recreate the user/group database based on the current state of the file. This value is meant to be set in cases where the XML file contents might change "out of process" and not directly through the web admin interface.  The value is specified in milliseconds, while a value of 0 disables any checking of the file.
+     - Defines the frequency (in milliseconds) in which GeoServer will check for changes to the XML file. If the file is found to have been modified, GeoServer will recreate the user/group database based on the current state of the file. This value is meant to be set in cases where the XML file contents might change "out of process" and not directly through the web admin interface. The value is specified in milliseconds. A value of 0 disables any checking of the file.
 
 
 Add new JDBC user/group service
 -------------------------------
 
-To add a new XML user/group service, click the :guilabel:`Add new` link, and then the :guilabel:`JDBC` option at the top of the following form.  The following figure shows the configuration options for a JDBC user/group service.
+To add a new XML user/group service, click the :guilabel:`Add new` link, and then the :guilabel:`JDBC` option at the top of the following form. The following figure shows the configuration options for a JDBC user/group service.
 
 .. figure:: images/ugr_ugjdbcsettings.png
    :align: center
@@ -89,7 +89,7 @@ To add a new XML user/group service, click the :guilabel:`Add new` link, and the
    * - Create database tables
      - Specifies whether to create all the necessary tables in the underlying database
    * - Data Definition Language (DDL) file
-     - Specifies a custom DDL file to use for creating tables in the underlying database, for cases where the default DDL statements fail on the given database.  If left blank, internal defaults are used.
+     - Specifies a custom DDL file to use for creating tables in the underlying database, for cases where the default DDL statements fail on the given database. If left blank, internal defaults are used.
    * - Data Manipulation Language (DML) file
      - Specifies a custom DML file to use for accessing tables in the underlying database, for cases where the default DML statements fail on the given database. If left blank, internal defaults are used.
 
@@ -115,16 +115,16 @@ Edit user/group service
 
 Once the new user/group service is added (either XML or JDBC), clicking on it in the list of user/group services will allow additional options to be specified, such as the users and groups associated with the service.
 
-There are three tabs in the resulting menu: :guilabel:`Settings`, :guilabel:`Users`, and :guilabel:`Groups`.  The Settings tab is identical to that found when creating the user/group service, while the others are described below.
+There are three tabs in the resulting menu: :guilabel:`Settings`, :guilabel:`Users`, and :guilabel:`Groups`. The Settings tab is identical to that found when creating the user/group service, while the others are described below.
 
-The Users tab allows for the configuration of users in the user/group service.
+The Users tab provides options to configure users in the user/group service.
 
 .. figure:: images/ugr_ugusers.png
    :align: center
 
    *Users tab*
 
-Clicking on a username will allow its parameters to be changed, while clicking on the :guilabel:`Add new` link will create a new user.
+Clicking a username will allow its parameters to be changed, while clicking the :guilabel:`Add new` link will create a new user.
 
 .. _webadmin_sec_users:
 
@@ -145,25 +145,25 @@ Add user
    * - User name
      - The name of the user
    * - Enabled
-     - When checked, will enable the user to authenticate.
+     - When selected, will enable the user to authenticate
    * - Password
-     - The password for this user.  Existing passwords will be obscured when viewed.
+     - The password for this user. Existing passwords will be obscured when viewed.
    * - Confirm password
-     - In order to set or change the password, it is necessary to input it twice.
+     - To set or change the password enter the password twice.
    * - User properties
-     - Key/value pairs associated with the user.  Used for associating additional information with the user.
+     - Key/value pairs associated with the user. Used for associating additional information with the user.
    * - Group list
-     - Full list of groups, including list of groups to which the user is a member.  Membership can be toggled here via the arrow buttons.
+     - Full list of groups, including list of groups to which the user is a member. Membership can be toggled here via the arrow buttons.
    * - Add a new group
-     - Shortcut to adding a new group.  Also available in the Groups tab.
+     - Shortcut to adding a new group. Also available in the Groups tab.
    * - Role list
-     - Full list of roles, including a list of roles to which the user is associated.  Association can be toggled here via the arrow buttons.
+     - Full list of roles, including a list of roles to which the user is associated. Association can be toggled here via the arrow buttons.
    * - Add a new role
-     - Shortcut to adding a new role.
+     - Shortcut to adding a new role
    * - List of current roles for the user
-     - List of current roles associated with the user.  Each role can be clicked and will allow the role itself to be edited.
+     - List of current roles associated with the user. Click a role to enable editing.
 
-The Groups tab allows for the configuration of groups in this user/group service.  There are options to add and remove a group, with an additional option to remove a group and also the roles associated with that group.
+The Groups tab provides configuration options for groups in this user/group service. There are options to add and remove a group, with an additional option to remove a group and the roles associated with that group.
 
 .. figure:: images/ugr_uggroups.png
    :align: center
@@ -189,21 +189,21 @@ Add group
    * - Group name
      - The name of the group
    * - Enabled
-     - When checked, the group will be active.
+     - When selected the group will be active
    * - Role list
-     - Full list of roles, including a list of roles to which the group is associated.  Association can be toggled here via the arrow buttons.
+     - Full list of roles, including a list of roles to which the group is associated. Association can be toggled here via the arrow buttons.
    * - Add a new role
-     - Shortcut to adding a new role.
+     - Shortcut to adding a new role
 
 
-In this menu, user/group services can be added, removed, or edited.  By default, there is one user/group service in GeoServer, which is :ref:`XML-based <sec_rolesystem_usergroupxml>`.  It is encrypted with :ref:`Weak PBE <sec_passwd_encryption>` and uses the default :ref:`password policy <sec_passwd_policy>`.  It is also possible to have a user/group service based on :ref:`JDBC <sec_rolesystem_usergroupjdbc>` with or without JNDI.
+In this menu, user/group services can be added, removed, or edited. By default, there is one user/group service in GeoServer, which is :ref:`XML-based <sec_rolesystem_usergroupxml>`. It is encrypted with :ref:`Weak PBE <sec_passwd_encryption>` and uses the default :ref:`password policy <sec_passwd_policy>`. It is also possible to have a user/group service based on :ref:`JDBC <sec_rolesystem_usergroupjdbc>` with or without JNDI.
 
 .. _webadmin_sec_roleservices:
 
 Role services
 -------------
 
-In this menu, role services can be added, removed, or edited.  By default, the active role service in GeoServer is :ref:`XML-based <sec_rolesystem_rolexml>`, but it is also possible to have a role service based on :ref:`JDBC <sec_rolesystem_rolejdbc>`, with or without JNDI.
+In this menu, role services can be added, removed, or edited. By default, the active role service in GeoServer is :ref:`XML-based <sec_rolesystem_rolexml>`, but it is also possible to have a role service based on :ref:`JDBC <sec_rolesystem_rolejdbc>`, with or without JNDI.
 
 The Administrator role is called ``ROLE_ADMINISTRATOR``.
 
@@ -212,17 +212,17 @@ The Administrator role is called ``ROLE_ADMINISTRATOR``.
 
    *Role services*
 
-Clicking on an existing role service will open it for editing, while clicking on the :guilabel:`Add new` link will configure a new role service.
+Clicking an existing role service will open it for editing, while clicking the :guilabel:`Add new` link will configure a new role service.
 
 There are two pages for configuration:  Settings and Roles.
 
-.. note:: When creating a new role service, the form that is filled out initially will later be found under the Settings tab. 
+.. note:: When creating a new role service, the form filled out initially can be found under the Settings tab. 
 
 
 Add new XML role service
 ------------------------
 
-To add a new XML role service, click the :guilabel:`Add new` link.  XML is the default option.  The following figure shows the configuration options for an XML role service.
+To add a new XML role service, click the :guilabel:`Add new` link. XML is the default option. The following figure shows the configuration options for an XML role service.
 
 .. figure:: images/ugr_rolexmlsettings.png
    :align: center
@@ -238,16 +238,16 @@ To add a new XML role service, click the :guilabel:`Add new` link.  XML is the d
    * - Name
      - The name of the role service
    * - Administrator role
-     - The name of the role that performs the administrator functions.
+     - The name of the role that performs the administrator functions
    * - XML filename
-     - Name of the file that will contain the role information.  Default is :file:`roles.xml` in the ``security/role/<name_of_roleservice>`` directory.
+     - Name of the file that will contain the role information. Default is :file:`roles.xml` in the ``security/role/<name_of_roleservice>`` directory.
    * - File reload interval
-     - Defines the frequency (in milliseconds) in which GeoServer will check for changes to the XML file. If the file is found to have been modified, GeoServer will recreate the user/group database based on the current state of the file. This value is meant to be set in cases where the XML file contents might change "out of process" and not directly through the web admin interface.  The value is specified in milliseconds, while a value of 0 disables any checking of the file.
+     - Defines the frequency (in milliseconds) in which GeoServer will check for changes to the XML file. If the file is found to have been modified, GeoServer will recreate the user/group database based on the current state of the file. This value is meant to be set in cases where the XML file contents might change "out of process" and not directly through the web admin interface. The value is specified in milliseconds. A value of 0 disables any checking of the file.
 
 Add new JDBC role service
 -------------------------
 
-To add a new XML role service, click the :guilabel:`Add new` link, and then the :guilabel:`JDBC` option at the top of the following form.  The following figure shows the configuration options for a JDBC role service.
+To add a new XML role service, click the :guilabel:`Add new` link, and then the :guilabel:`JDBC` option at the top of the following form. The following figure shows the configuration options for a JDBC role service.
 
 .. figure:: images/ugr_rolejdbcsettings.png
    :align: center
@@ -277,7 +277,7 @@ To add a new XML role service, click the :guilabel:`Add new` link, and then the 
    * - Create database tables
      - Specifies whether to create all the necessary tables in the underlying database
    * - Data Definition Language (DDL) file
-     - Specifies a custom DDL file to use for creating tables in the underlying database, for cases where the default DDL statements fail on the given database.  If left blank, internal defaults are used.
+     - Specifies a custom DDL file to use for creating tables in the underlying database, for cases where the default DDL statements fail on the given database. If left blank, internal defaults are used.
    * - Data Manipulation Language (DML) file
      - Specifies a custom DML file to use for accessing tables in the underlying database, for cases where the default DML statements fail on the given database. If left blank, internal defaults are used.
 
@@ -301,16 +301,16 @@ In addition to the parameters listed above, the following additional parameter w
 Edit role service
 -----------------
 
-Once the new role service is added (either XML or JDBC), clicking on it in the list of role services will allow the additional options to be specified, such as the roles associated with the service.
+Once the new role service is added (either XML or JDBC), clicking it in the list of role services will allow the additional options to be specified, such as the roles associated with the service.
 
-There are two tabs in the resulting menu: :guilabel:`Settings` and :guilabel:`Roles`.  The Settings tab is identical to that found when creating the role service, while the Roles tab is described below.
+There are two tabs in the resulting menu: :guilabel:`Settings` and :guilabel:`Roles`. The Settings tab is identical to that found when creating the role service, while the Roles tab is described below.
 
 .. figure:: images/ugr_roleroles.png
    :align: center
 
    *Roles tab*
 
-Clicking on a role will allow its parameters to be changed, while clicking on the :guilabel:`Add new` link will create a new role.
+Clicking a role will allow its parameters to be changed, while clicking the :guilabel:`Add new` link will create a new role.
 
 .. _webadmin_sec_roles:
 
@@ -329,11 +329,11 @@ Add role
    * - Option
      - Description
    * - Role name
-     - The name of role.  Convention is uppercase, but is not required.
+     - The name of role. Convention is uppercase, but is not required.
    * - Parent roles
-     - The role that this role inherits.  See the section on :ref:`sec_rolesystem_roles` for more information on inheritance.
+     - The role that this role inherits. See the section on :ref:`sec_rolesystem_roles` for more information on inheritance.
    * - Role parameters
-     - Key/value pairs associated with the role.  Used for associating additional information with the role.
+     - Key/value pairs associated with the role. Used for associating additional information with the role.
 
 
 

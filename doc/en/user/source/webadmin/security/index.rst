@@ -3,7 +3,7 @@
 Security
 ========
 
-GeoServer has a robust :ref:`security subsystem <security>`, modeled on `Spring Security <http://static.springsource.org/spring-security/site/>`_.  Most of the features of this system is exposed graphically through the :ref:`web_admin`.  Read on to see how to configure GeoServer security.
+GeoServer has a robust :ref:`security subsystem <security>`, modeled on `Spring Security <http://static.springsource.org/spring-security/site/>`_.  Most of the security features are available through the :ref:`web_admin`. This section describes how to configure GeoServer security.
 
 .. toctree::
    :maxdepth: 2

@@ -38,7 +38,8 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
         encoder.setNamespaceAware(true);
         encoder.getNamespaces().declarePrefix("ows", OWS.NAMESPACE);
         encoder.getNamespaces().declarePrefix("ogc", OGC.NAMESPACE);
-        encoder.getNamespaces().declarePrefix("gml", GML.NAMESPACE);
+        encoder.getNamespaces().declarePrefix("gml", "http://www.opengis.net/gml");
+        encoder.getNamespaces().declarePrefix("gmd", "http://www.isotc211.org/2005/gmd");
         encoder.getNamespaces().declarePrefix("xlink", XLINK.NAMESPACE);
     }
 

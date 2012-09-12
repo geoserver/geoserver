@@ -29,7 +29,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
 public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
-
+    protected static final String BASEPATH = "ows";
+    
     protected void setUpInternal() throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();

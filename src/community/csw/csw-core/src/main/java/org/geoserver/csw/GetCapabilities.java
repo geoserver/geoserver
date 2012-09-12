@@ -4,8 +4,12 @@
  */
 package org.geoserver.csw;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -36,9 +40,14 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
+import org.geotools.filter.capability.FilterCapabilitiesImpl;
+import org.geotools.filter.capability.ScalarCapabilitiesImpl;
+import org.geotools.filter.capability.SpatialCapabiltiesImpl;
+import org.geotools.filter.capability.SpatialOperatorsImpl;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
-import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.capability.ArithmeticOperators;
 import org.opengis.filter.capability.ComparisonOperators;
 import org.opengis.filter.capability.FilterCapabilities;
@@ -141,11 +150,11 @@ public class GetCapabilities {
 
             final ContactInfo contact = csw.getGeoServer().getGlobal().getSettings().getContact();
 
-            sp.setProviderName(contact.getContactOrganization());
+            sp.setProviderName((contact.getContactOrganization() != null ? contact.getContactOrganization() : ""));
 
             OnlineResourceType providerSite = owsf.createOnlineResourceType();
             sp.setProviderSite(providerSite);
-            providerSite.setHref(csw.getOnlineResource());
+            providerSite.setHref((csw.getOnlineResource() != null ? csw.getOnlineResource() : ""));
 
             ResponsiblePartySubsetType serviceContact = owsf.createResponsiblePartySubsetType();
             sp.setServiceContact(serviceContact);
@@ -222,26 +231,11 @@ public class GetCapabilities {
 
         // Filter Capabilities
         if (sections == null || requestedSection("OperationsMetadata", sections)) {
-            final FilterFactory ffFactory = CommonFactoryFinder.getFilterFactory(null);
+            final FilterFactory2 ffFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
             // - Spatial Capabilities
-            GeometryOperand[] geometryOperands = new GeometryOperand[] { GeometryOperand.Envelope,
-                    GeometryOperand.Point, GeometryOperand.LineString, GeometryOperand.Polygon };
-            SpatialOperator[] spatialOperators = new SpatialOperator[] {
-                    ffFactory.spatialOperator("BBOX", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Equals", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Overlaps", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Disjoint", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Intersects", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Touches", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Crosses", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Within", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Contains", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("Beyond", new GeometryOperand[] {}),
-                    ffFactory.spatialOperator("DWithin", new GeometryOperand[] {}) };
-            SpatialOperators spatialOperands = ffFactory.spatialOperators(spatialOperators);
-            SpatialCapabilities spatialCapabilities = ffFactory.spatialCapabilities(
-                    geometryOperands, spatialOperands);
-
+            //SpatialCapabilities spatialCapabilities = ffFactory.spatialCapabilities(geometryOperands, spatialOperands);
+            SpatialCapabilities spatialCapabilities = new CSWSpatialCapabilities();
+                
             // - Scalar Capabilities
             Operator[] operators = new Operator[] { ffFactory.operator("EqualTo"),
                     ffFactory.operator("Like"), ffFactory.operator("LessThan"),
@@ -249,15 +243,22 @@ public class GetCapabilities {
                     ffFactory.operator("GreaterThanEqualTo"), ffFactory.operator("NotEqualTo"),
                     ffFactory.operator("Between"), ffFactory.operator("NullCheck") };
             ComparisonOperators comparisonOperators = ffFactory.comparisonOperators(operators);
-            ArithmeticOperators arithmeticOperators = null;
+            ArithmeticOperators arithmeticOperators = ffFactory.arithmeticOperators(true, null);
             ScalarCapabilities scalarCapabilities = ffFactory.scalarCapabilities(
                     comparisonOperators, arithmeticOperators, logicalOperators);
+            // - removing Arithmetic Operators...
+            ((ScalarCapabilitiesImpl)scalarCapabilities).setArithmeticOperators(null);
 
             // - Id Capabilities
             IdCapabilities id = ffFactory.idCapabilities(eid, fid);
 
-            FilterCapabilities filterCapabilities = ffFactory.capabilities(version,
+            FilterCapabilities filterCapabilities = ffFactory.capabilities("1.1.0",
                     scalarCapabilities, spatialCapabilities, id);
+            
+            ((FilterCapabilitiesImpl)filterCapabilities).setScalar(scalarCapabilities);
+            ((FilterCapabilitiesImpl)filterCapabilities).setSpatial(spatialCapabilities);
+            ((FilterCapabilitiesImpl)filterCapabilities).setId(id);
+            
             caps.setFilterCapabilities(filterCapabilities);
         }
 
@@ -631,3 +632,131 @@ public class GetCapabilities {
     }
 
 }
+
+class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
+    static final SpatialOperator[] spatialOperators = new SpatialOperator[] {
+        spatialOperator("BBOX"),
+        spatialOperator("Equals"),
+        spatialOperator("Overlaps"),
+        spatialOperator("Disjoint"),
+        spatialOperator("Intersects"),
+        spatialOperator("Touches"),
+        spatialOperator("Crosses"),
+        spatialOperator("Within"),
+        spatialOperator("Contains"),
+        spatialOperator("Beyond"),
+        spatialOperator("DWithin") };
+
+    static final GeometryOperand[] geometryOpertors = new GeometryOperand[] { 
+        GeometryOperand.get("http://www.opengis.net/gml", "Envelope"),
+        GeometryOperand.get("http://www.opengis.net/gml", "Point"), 
+        GeometryOperand.get("http://www.opengis.net/gml", "LineString"), 
+        GeometryOperand.get("http://www.opengis.net/gml", "Polygon") };
+    
+    SpatialOperators spatialOperands = new SpatialOperatorsImpl();
+    
+    List<GeometryOperand> geometryOperands = new LinkedList<GeometryOperand>();
+    
+    @Override
+    public Collection<GeometryOperand> getGeometryOperands() {
+        synchronized(geometryOperands)
+        {
+            if(geometryOperands == null || geometryOperands.isEmpty())
+            {
+                // - sorting Geometry Operands
+                for (GeometryOperand operator : geometryOpertors)
+                {
+                    geometryOperands.add(operator);
+                }
+                Collections.sort(geometryOperands, new Comparator<GeometryOperand>() {
+
+                    @Override
+                    public int compare(GeometryOperand o1, GeometryOperand o2) {
+                        if (o2.getLocalPart().contains("Envelope"))
+                        {
+                            return -1;
+                        }
+
+                        if (o2.getLocalPart().contains("Point"))
+                        {
+                            if (o1.getLocalPart().contains("Envelope"))
+                            {
+                                return -1;
+                            }
+                            else
+                            {
+                                return 1;
+                            }
+                        }
+
+                        if (o2.getLocalPart().contains("LineString"))
+                        {
+                            if (o1.getLocalPart().contains("Point"))
+                            {
+                                return -1;
+                            }
+                            else
+                            {
+                                return 1;
+                            }
+                        }
+                        
+                        if (o2.getLocalPart().contains("Polygon"))
+                        {
+                            if (o1.getLocalPart().contains("LineString"))
+                            {
+                                return -1;
+                            }
+                            else
+                            {
+                                return 1;
+                            }
+                        }
+                        
+                        return 0;
+                    }
+                });
+            }
+        }
+        
+        return geometryOperands;
+    }
+
+    @Override
+    public SpatialOperatorsImpl getSpatialOperators() {
+        synchronized(spatialOperands)
+        {
+            if (spatialOperands == null || spatialOperands.getOperators() == null || spatialOperands.getOperators().size() == 0)
+            {
+                spatialOperands = new SpatialOperatorsImpl();
+                
+                for (SpatialOperator operator : spatialOperators)
+                {
+                    if(((SpatialOperatorsImpl)spatialOperands).getOperators() == null)
+                    {
+                        ((SpatialOperatorsImpl)spatialOperands).setOperators(new HashSet<SpatialOperator>());
+                    }
+                    ((SpatialOperatorsImpl)spatialOperands).getOperators().add(operator);
+                }
+            }
+        }
+        
+        return (SpatialOperatorsImpl) spatialOperands;
+    }
+    
+    private static SpatialOperator spatialOperator(final String name) {
+        return new SpatialOperator() {
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public Collection<GeometryOperand> getGeometryOperands() {
+                return null;
+            }
+        };
+    }
+
+};

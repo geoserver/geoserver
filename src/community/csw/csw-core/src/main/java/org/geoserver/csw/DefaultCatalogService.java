@@ -54,7 +54,15 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     @Override
     public CapabilitiesType getCapabilities(GetCapabilitiesType request) throws ServiceException {
         checkStore();
-        return new GetCapabilities(this.csw, context).run(request);
+        CapabilitiesType caps = new GetCapabilities(this.csw, context).run(request);
+        
+        // check for decorator extensions
+        for(CapabilitiesDecorator decorator : GeoServerExtensions.extensions(CapabilitiesDecorator.class))
+        {
+            caps = decorator.decorate(caps, this.store);
+        }
+        
+        return caps;
     }
 
     @Override

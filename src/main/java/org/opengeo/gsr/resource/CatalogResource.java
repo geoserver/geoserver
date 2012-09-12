@@ -5,6 +5,8 @@
 package org.opengeo.gsr.resource;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.geoserver.catalog.LayerGroupInfo;
@@ -84,9 +86,10 @@ public class CatalogResource extends GeoServicesResource {
                     folders.add(folder);
                 }
             }
+            List<String> folderList = new ArrayList<String>(new HashSet<String>(folders));
             services.add(geometryService);
             return new CatalogService("services", specVersion, productName, currentVersion,
-                    folders, services);
+                    folderList, services);
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();
             details.add(e.getMessage());

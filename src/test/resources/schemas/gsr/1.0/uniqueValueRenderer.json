@@ -1,0 +1,60 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"simple renderer",
+	"extends":{
+		"$ref":"renderer.json"
+	},
+	"properties":{
+		"type":{
+			"title":"renderer type",
+			"type":"string",
+			"required":true,
+			"enum":["uniqueValue"]
+		},
+		"field1":{
+			"title":"name of first field",
+			"type":["null","string"]
+		},
+		"field2":{
+			"title":"name of second field",
+			"type":["null","string"]
+		},
+		"field3":{
+			"title":"name of third field",
+			"type":["null","string"]
+		},
+		"fieldDelimiter":{
+			"title":"field delimiter",
+			"type":"string"
+		},
+		"defaultSymbol":{
+			"$ref":"marker.json"
+		},
+		"defaultLabel":{
+			"title":"default label",
+			"type":"string"
+		},
+		"uniqueValueInfos":{
+			"title":"unique values",
+			"type":"array",
+			"items":{
+				"type":"object",
+				"properties":{
+					"value":{
+						"type":"string"
+					},
+					"label":{
+						"type":"string"
+					},
+					"description":{
+						"type":"string"
+					},
+					"symbol":{
+						"$ref":"marker.json"
+					}
+				}
+			}
+		}
+	}
+}

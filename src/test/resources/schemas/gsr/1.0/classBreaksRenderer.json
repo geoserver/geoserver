@@ -1,0 +1,45 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"class breaks renderer",
+	"extends":{
+		"$ref":"renderer.json"
+	},
+	"properties":{
+		"type":{
+			"title":"renderer type",
+			"type":"string",
+			"required":true,
+			"enum":["classBreaks"]
+		},
+		"field":{
+			"title":"name of field",
+			"type":"string",
+			"required":true
+		},
+		"minValue":{
+			"title":"minimum value",
+			"type":"number"
+		},
+		"classBreakInfos":{
+			"type":"array",
+			"items":{
+				"type":"object",
+				"properties":{
+					"classMaxValue":{
+						"type":"number"
+					},
+					"label":{
+						"type":"string"
+					},
+					"description":{
+						"type":"string"
+					},
+					"symbol":{
+						"$ref":"marker.json"
+					}
+				}
+			}
+		}
+	}
+}

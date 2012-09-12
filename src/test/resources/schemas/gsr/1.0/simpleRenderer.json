@@ -1,0 +1,27 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"simple renderer",
+	"extends":{
+		"$ref":"renderer.json"
+	},
+	"properties":{
+		"type":{
+			"title":"renderer type",
+			"type":"string",
+			"required":true,
+			"enum":["simple"]
+		},
+		"symbol":{
+			"$ref":"marker.json"
+		},
+		"label":{
+			"title":"label",
+			"type":"string"
+		},
+		"description":{
+			"title":"description",
+			"type":"string"
+		}
+	}
+}

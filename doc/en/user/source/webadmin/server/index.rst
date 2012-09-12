@@ -3,7 +3,7 @@
 Server
 ======
 
-The Server section of the :ref:`web_admin` provides access to GeoServer environment information.  It is a combination of diagnostic and configuration tools, and can be particularly useful for debugging.
+The Server section of the :ref:`web_admin` provides access to GeoServer configuration and diagnostic tools, which may be useful for debugging.
 
 .. toctree::
    :maxdepth: 2

@@ -3,7 +3,7 @@
 Passwords
 =========
 
-The subject of passwords is a central concept to any security system.  This section describes the way GeoServer handles passwords. 
+Passwords are a central aspect of any security system. This section describes how GeoServer handles passwords. 
 
 .. _sec_passwd_encryption:
 
@@ -12,33 +12,32 @@ Password encryption
 
 A GeoServer configuration stores two types of passwords:
 
-* Passwords for **user accounts** that are used to access GeoServer resources
+* Passwords for **user accounts** to access GeoServer resources
 * Passwords used internally for **accessing external services** such as databases and cascading OGC services
 
-As these passwords are typically stored on disk it is strongly recommended that they be encrypted and not stored in human-readable text. GeoServer security provides four schemes for encrypting passwords: **empty**, **plain text**, **Digest**, and **Password-based encryption (PBE)**.
+As these passwords are typically stored on disk it is strongly recommended that they be encrypted and not stored as human-readable text. GeoServer security provides four schemes for encrypting passwords: **empty**, **plain text**, **Digest**, and **Password-based encryption (PBE)**.
 
-The password encryption scheme is specified in the following places: a global setting that affects the encryption of passwords used for external resources, and for each :ref:`user/group service <sec_rolesystem_usergroupservices>`.  The encryption scheme for external resources has to be be :ref:`reversible <sec_passwd_reversible>`, while the user/group services can use any scheme.
+The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each :ref:`user/group service <sec_rolesystem_usergroupservices>`. The encryption scheme for external resources has to be be :ref:`reversible <sec_passwd_reversible>`, while the user/group services can use any scheme.
 
 Empty 
 ~~~~~
 
-The scheme is not reversible. Any password is encoded as an empty string, as a consequence it is not possible to recalculate the plain text password. This scheme is used for user/group services in combination with an authentication mechanism using a back end system. Examples are user name/password authentication against a LDAP server or a JDBC database. In these scenarios, storing passwords locally to Geoserver does not make sense.
+The scheme is not reversible. Any password is encoded as an empty string, and as a consequence it is not possible to recalculate the plain text password. This scheme is used for user/group services in combination with an authentication mechanism using a back end system. Examples are user name/password authentication against a LDAP server or a JDBC database. In these scenarios, storing passwords locally to Geoserver does not make sense.
 
 Plain text
 ~~~~~~~~~~
 
 .. note::  Prior to version 2.2.0, plain text encryption was the only available method used by GeoServer for storing passwords.
 
-Plain text passwords provide no encryption at all.  In this case, passwords are human-readable by anyone who has access to the file system.  For obvious reasons, this is not recommended for any but the most basic test server. A password ``mypassword`` is encoded as ``plain:mypassword``, the prefix uniquely describes the algorithm used for encoding/decoding.
+Plain text passwords provide no encryption at all. In this case, passwords are human-readable by anyone who has access to the file system. For obvious reasons, this is not recommended for any but the most basic test server. A password ``mypassword`` is encoded as ``plain:mypassword``, the prefix uniquely describing the algorithm used for encoding/decoding.
 
 Digest
 ~~~~~~
 
-Digest encryption is not reversible. It applies a SHA-256 `cryptographic hash function <http://en.wikipedia.org/wiki/Cryptographic_hash_function>`_ 
-to passwords 100000 times iteratively.  This scheme is "one-way" in that it is virtually impossible to reverse and obtain the original password from 
-its hashed representation.  Please see the section on :ref:`sec_passwd_reversible` for more information on reversibility.
+Digest encryption is not reversible. It applies, 100,000 times through an iterative process, a SHA-256 `cryptographic hash function <http://en.wikipedia.org/wiki/Cryptographic_hash_function>`_ 
+to passwords. This scheme is "one-way" in that it is virtually impossible to reverse and obtain the original password from its hashed representation. Please see the section on :ref:`sec_passwd_reversible` for more information on reversibility.
 
-In order to protect from well known attacks, a random value called a `salt <http://en.wikipedia.org/wiki/Salt_%28cryptography%29>`_ is added to the password when generating the key. For each digesting, a separate random salt is used. Digesting the same password twice results in different hashed representations.
+To protect from well known attacks, a random value called a `salt <http://en.wikipedia.org/wiki/Salt_%28cryptography%29>`_ is added to the password when generating the key. For each digesting, a separate random salt is used. Digesting the same password twice results in different hashed representations.
 
 As an example, the password ``geoserver`` is digested to ``digest1:YgaweuS60t+mJNobGlf9hzUC6g7gGTtPEu0TlnUxFlv0fYtBuTsQDzZcBM4AfZHd``.
 ``digest1`` indicates the usage of digesting. The hashed representation and the salt are base 64 encoded.
@@ -46,17 +45,17 @@ As an example, the password ``geoserver`` is digested to ``digest1:YgaweuS60t+mJ
 Password-based encryption
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`Password-based encryption <http://www.javamex.com/tutorials/cryptography/password_based_encryption.shtml>`_ (PBE) is an encryption scheme that normally employs a user-supplied password to generate an encryption key. This scheme is reversible. A random salt described in the previous chapter is used.
+`Password-based encryption <http://www.javamex.com/tutorials/cryptography/password_based_encryption.shtml>`_ (PBE) normally employs a user-supplied password to generate an encryption key. This scheme is reversible. A random salt described in the previous section is used.
 
-.. note:: The system never uses passwords specified by users because these passwords tend to be week. Passwords used for encryption are generated using a secure random generator and stored in the GeoServer key store. The number of possible passwords is 2^260 .
+.. note:: The system never uses passwords specified by users because these passwords tend to be weak. Passwords used for encryption are generated using a secure random generator and stored in the GeoServer key store. The number of possible passwords is 2^260 .
 
-GeoServer comes with support for two forms of PBE.  **Weak PBE** (the GeoServer default) uses a basic encryption method that is relatively easy to crack. The encryption key is derived from the password using `MD5 <http://en.wikipedia.org/wiki/Message_Digest_Algorithm_5>`_ 1000 times iteratively. The encryption algorithm itself is `DES <http://en.wikipedia.org/wiki/Data_Encryption_Standard>`_ (Data Encryption Standard). DES has an effective key length of 56 bits, this is not really a challenge for computer systems in these days.
+GeoServer supports two forms of PBE. **Weak PBE** (the GeoServer default) uses a basic encryption method that is relatively easy to crack. The encryption key is derived from the password using `MD5 <http://en.wikipedia.org/wiki/Message_Digest_Algorithm_5>`_ 1000 times iteratively. The encryption algorithm itself is `DES <http://en.wikipedia.org/wiki/Data_Encryption_Standard>`_ (Data Encryption Standard). DES has an effective key length of 56 bits, which is not really a challenge for computer systems in these days.
 
 
-**Strong PBE** uses a much stronger encryption method based on an `AES <http://en.wikipedia.org/wiki/Advanced_Encryption_Standard>`_ 256-bit algorithm with `CBC <http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation>`_. They key length is 256 bit and is derived using `SHA-256 <http://en.wikipedia.org/wiki/SHA-2>`_ instead of MD5. It is highly recommended to use Strong PBE.
+**Strong PBE** uses a much stronger encryption method based on an `AES <http://en.wikipedia.org/wiki/Advanced_Encryption_Standard>`_ 256-bit algorithm with `CBC <http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation>`_. The key length is 256 bit and is derived using `SHA-256 <http://en.wikipedia.org/wiki/SHA-2>`_ instead of MD5. Using Strong PBE is highly recommended.
 
 As an example, the password ``geoserver`` is encrypted to ``crypt1:KWhO7jrTz/Gi0oTQRKsVeCmWIZY5VZaD``. 
-``crypt1`` indicates the usage of Weak PBE. The prefix for Strong PBE is ``crypt2``. The ciphertext and the salt is base 64 encoded.
+``crypt1`` indicates the usage of Weak PBE. The prefix for Strong PBE is ``crypt2``. The ciphertext and the salt are base 64 encoded.
 
 .. _sec_passwd_encryption_policies:
 
@@ -73,19 +72,18 @@ As an example, the password ``geoserver`` is encrypted to ``crypt1:KWhO7jrTz/Gi0
 Reversible encryption
 ~~~~~~~~~~~~~~~~~~~~~
 
-Password encryption methods can be **reversible**, meaning that it is possible (and desired) to obtain the plain-text password from its encrypted version.  Reversible passwords are necessary for database connections or external OGC services such as :ref:`cascading WMS <data_external_wms>` and :ref:`cascading WFS <data_external_wfs>`, since GeoServer must be able to decode the encrypted password and pass it to the external service. Plain text and PBE passwords are reversible.  
+Password encryption methods can be **reversible**, meaning that it is possible (and desirable) to obtain the plain-text password from its encrypted version. Reversible passwords are necessary for database connections or external OGC services such as :ref:`cascading WMS <data_external_wms>` and :ref:`cascading WFS <data_external_wfs>`, since GeoServer must be able to decode the encrypted password and pass it to the external service. Plain text and PBE passwords are reversible. 
 
-Non-reversible passwords provide the highest level of security, and therefore should be used for user accounts and wherever else it is possible.  Using password digesting is highly recommended, the installation of the unrestricted policy files is not required.
+Non-reversible passwords provide the highest level of security, and therefore should be used for user accounts and wherever else possible. Using password digesting is highly recommended, the installation of the unrestricted policy files is not required.
 
 .. _sec_passwd_keystore:
 
 Secret keys and the keystore
 ----------------------------
 
-For a reversible password to provide a meaningful level of security, access to the password must be restricted in some way.  In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a typical Java *keystore*.  GeoServer uses its own keystore for this purpose named ``geoserver.jceks`` which is located in the ``security`` directory in the GeoServer data directory. This file is stored in the `JCEKS format rather than the default JKS <http://www.itworld.com/nl/java_sec/07202001>`_. JKS does not support storing shared keys.
+For a reversible password to provide a meaningful level of security, access to the password must be restricted in some way. In GeoServer, encrypting and decrypting passwords involves the generation of secret shared keys, stored in a typical Java *keystore*. GeoServer uses its own keystore for this purpose named ``geoserver.jceks`` which is located in the ``security`` directory in the GeoServer data directory. This file is stored in the `JCEKS format rather than the default JKS <http://www.itworld.com/nl/java_sec/07202001>`_. JKS does not support storing shared keys.
 
-The GeoServer keystore is password protected with a :ref:`sec_master_passwd`. It is possible to access the contents of the 
-keystore with external tools such as `keytool <http://docs.oracle.com/javase/6/docs/technotes/tools/solaris/keytool.html>`_. For example, this following command would prompt for the master password and list the contents of the keystore:
+The GeoServer keystore is password protected with a :ref:`sec_master_passwd`. It is possible to access the contents of the keystore with external tools such as `keytool <http://docs.oracle.com/javase/6/docs/technotes/tools/solaris/keytool.html>`_. For example, this following command would prompt for the master password and list the contents of the keystore:
 
 .. code-block:: bash
 
@@ -96,31 +94,26 @@ keystore with external tools such as `keytool <http://docs.oracle.com/javase/6/d
 Master password
 ---------------
 
-GeoServer contains the ability to set a **master password** that serves two purposes:
+It is also possible to set a **master password** for GeoServer. This password serves two purposes:
 
 * Protect access to the :ref:`keystore <sec_passwd_keystore>`
 * Protect access to the GeoServer :ref:`sec_root`
 
-By default, the master password is generated and stored in a file named ``security/masterpw.info`` using plain text. In case of an upgrade from an existing GeoServer data directory (versions 2.1.x and lower), the algorithm tries to figure out a password of a user having the role ``ROLE_ADMINISTRATOR``. If such a password is found and the password length is 8 characters at minimum, GeoServer uses this password as master password. Again, the name of the chosen user is found in ``security/masterpw.info``. 
+By default, the master password is generated and stored in a file named ``security/masterpw.info`` using plain text. When upgrading from an existing GeoServer data directory (versions 2.1.x and lower), the algorithm attempts to figure out the password of a user with the role ``ROLE_ADMINISTRATOR``. If such a password is found and the password length is 8 characters at minimum, GeoServer uses this password as master password. Again, the name of the chosen user is found in ``security/masterpw.info``. 
 
-.. warning:: The file ``security/masterpw.info`` is a security risk. The administrator should read this file and verify the master password doing a GeoServer login as ``root`` user. On success, this file should be removed.
+.. warning:: The file ``security/masterpw.info`` is a security risk. The administrator should read this file and verify the master password by logging on GeoServer as the ``root`` user. On success, this file should be removed.
 
-The master password can be changed as described in :ref:`webadmin_sec_masterpasswordprovider`.
+Refer to :ref:`webadmin_sec_masterpasswordprovider` for information on how to change the master password.
 
-
-.. warning:: JUSTIN-TODO: EXPLAIN MASTER PASSWORD PROVIDER
-
-.. warning:: SHOULD ADD THIS INFO TO GS IN PROD!
 
 .. _sec_passwd_policy:
 
 Password policies
 -----------------
 
-A password policy defines constraints on passwords such as password length, case, and required mix of character classes. Password
-policies are specified when adding :ref:`sec_rolesystem_usergroupservices` and used to constrain passwords when creating new users and when changing passwords of existing users.
+A password policy defines constraints on passwords such as password length, case, and required mix of character classes. Password policies are specified when adding :ref:`sec_rolesystem_usergroupservices` and are used to constrain passwords when creating new users and when changing passwords of existing users.
 
-Each user/group service uses a password policy to enforce these rules. The default GeoServer password policy implementation allows the following optional constraints:
+Each user/group service uses a password policy to enforce these rules. The default GeoServer password policy implementation supports the following optional constraints:
 
 * Passwords must contain at least one number
 * Passwords must contain at least one upper case letter

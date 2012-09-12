@@ -3,23 +3,22 @@
 Authentication chain
 ====================
 
-To understand how GeoServer authentication works it helps to understand the **authentication chain**.  The authentication chain processes a request and applies configured authentication mechanisms to it. Examples of authentication mechanisms include:
+Understanding the **authentication chain** helps explain how GeoServer authentication works. The authentication chain processes requests and applies certain authentication mechanisms. Examples of authentication mechanisms include:
 
-* **Username/password**, which performs authentication by looking up user information in an external user database
-* **Browser cookie** also known as "Remember Me", which performs authentication by recognizing previously sent browser cookies
-* **LDAP**, which performs authentication against an LDAP database
-* **Anonymous**, which essentially performs no authentication and allows a request to proceed without any credentials
+* **Username/password**—Performs authentication by looking up user information in an external user database
+* **Browser cookie**—Performs authentication by recognizing previously sent browser cookies (also known as "Remember Me")
+* **LDAP**—Performs authentication against an LDAP database
+* **Anonymous**—Essentially performs no authentication and allows a request to proceed without any credentials
 
-Multiple authentication mechanisms may be active within GeoServer at a given time.
-
-Consider the following figure that depicts the flow of a generic request.
+Multiple authentication mechanisms may be active within GeoServer at a given time. The following
+figure illustrates the flow of a generic request.
 
 .. figure:: images/auth_chain1.png
    :align: center
 
    *Flow of a request through the authentication system*
 
-Before dispatching a request to the appropriate service or handler, GeoServer first filters the request through the authentication chain. The request is passed to each mechanism in the chain in order, and each is given the chance to authenticate the request. If one of the mechanisms in the chain is able to successfully authenticate the request moves to normal processing, otherwise the request is not routed any further and an authorization error (usually a HTTP 401) is returned to the user.
+Before dispatching a request to the appropriate service or handler, GeoServer first filters the request through the authentication chain. The request is passed to each mechanism in the chain in order, and each is given the chance to authenticate the request. If one of the mechanisms in the chain is able to successfully authenticate, the request moves to normal processing. Otherwise the request is not routed any further and an authorization error (usually a HTTP 401) is returned to the user.
 
 Filter chain and provider chain
 -------------------------------
@@ -38,6 +37,6 @@ The filter chain performs a variety of tasks, including:
 * Performing session integration, detecting existing sessions and creating new sessions if necessary
 * Invoking the authentication provider chain to perform actual authentication
 
-The filter chain is actually processed twice, once before the request is handled, and then again after. 
+The filter chain is actually processed twice, before and after the request is handled. 
 
 The provider chain is concerned solely with performing the underlying authentication of a request. It is invoked by the filter chain when a filter determines that authentication is required.

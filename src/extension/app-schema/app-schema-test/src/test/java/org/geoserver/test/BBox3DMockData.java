@@ -14,13 +14,12 @@ package org.geoserver.test;
  */
 public class BBox3DMockData extends AbstractAppSchemaMockData {
 
-
     /**
      * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
      */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeature3D.xml",
+        add3DFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeature3D.xml",
                 "MappedFeature3D.properties", "ObservationMethod.xml", "ObservationMethod.properties");
     }
 }

@@ -73,46 +73,74 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
     private String sql;
     
     /**
-     * Factory method.
+     * Factory method with no 3D support.
      * 
      * @param propertyFiles
      *            Property file name and its parent directory map
      * @return This class instance.
      * @throws Exception
      */
-    public static AppSchemaTestOracleSetup getInstance(Map<String, File> propertyFiles) throws Exception {
-        return new AppSchemaTestOracleSetup(propertyFiles);
-    }
-
+	public static AppSchemaTestOracleSetup getInstance(
+			Map<String, File> propertyFiles) throws Exception {
+		return new AppSchemaTestOracleSetup(propertyFiles, false);
+	}
+	
     /**
-     * Ensure the app-schema properties file is loaded with the database parameters. Also create
-     * corresponding tables on the database based on data from properties files.
+     * Factory method with 3D enabled.
      * 
      * @param propertyFiles
-     *            Property file name and its feature type directory map
+     *            Property file name and its parent directory map
+     * @return This class instance.
      * @throws Exception
      */
-    public AppSchemaTestOracleSetup(Map<String, File> propertyFiles) throws Exception {
-        configureFixture();
-        createTables(propertyFiles);
-    }
+	public static AppSchemaTestOracleSetup get3DInstance(
+			Map<String, File> propertyFiles) throws Exception {
+		return new AppSchemaTestOracleSetup(propertyFiles, true);
+	}
+
+	/**
+	 * Ensure the app-schema properties file is loaded with the database
+	 * parameters. Also create corresponding tables on the database based on
+	 * data from properties files.
+	 * 
+	 * @param propertyFiles
+	 *            Property file name and its feature type directory map
+	 * @param is3D
+     *            True if this is a 3D test and needs a particular WKT parser 
+	 * @throws Exception
+	 */
+	public AppSchemaTestOracleSetup(Map<String, File> propertyFiles,
+			boolean is3D) throws Exception {
+		configureFixture();
+		createTables(propertyFiles, is3D);
+	}
 
     /**
      * Write SQL string to create tables in the test database based on the property files.
      * 
      * @param propertyFiles
      *            Property files from app-schema-test suite.
+     * @param is3D
+     *            True if this is a 3D test and needs a particular WKT parser
      * @throws IllegalAttributeException
      * @throws NoSuchElementException
      * @throws IOException
      */
-    private void createTables(Map<String, File> propertyFiles) throws IllegalAttributeException,
-            NoSuchElementException, IOException {
-    	
-    	String parser = System.getProperty("wktparser");
-    	if (parser == null) {
-    		parser = "SDO_GEOMETRY"; //default wkt parser procedure, does not support 3D
-    		//alternative wkt parser can be passed on for 3d testing 
+	private void createTables(Map<String, File> propertyFiles, boolean is3D)
+			throws IllegalAttributeException, NoSuchElementException,
+			IOException {
+
+		String parser;
+		if (is3D) {
+			// use 3D parser
+			String user = System.getProperty("SC4OUser");
+			if (user == null) {
+				throw new UnsupportedOperationException(
+						"Please specify SC4OUser parameter to run 3D tests with Oracle!");
+			}
+			parser = user + ".SC4O.ST_GeomFromEWKT";
+		} else {
+			parser = "SDO_GEOMETRY"; //default wkt parser procedure, does not support 3D
     	}
     	
         StringBuffer buf = new StringBuffer();

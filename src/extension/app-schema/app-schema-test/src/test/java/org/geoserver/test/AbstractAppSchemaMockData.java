@@ -164,6 +164,11 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
      * AppSchemaCatalog to work with AppSchemaValidator for test requests validation. 
      */
     private AppSchemaCatalog catalog;
+
+    /**
+     * True if running 3D online test. Only matters for Oracle, since a special wkt parser is needed.
+     */
+	private boolean is3D = false;
     /**
      * Constructor with the default namespaces, schema directory, and catalog file.
      */
@@ -495,6 +500,25 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     }    
     
     /**
+     * The same as {@link #addFeatureType(String, String, String, String...)} except this to enable 3D WKT parser for Oracle. 
+     * Use this one for tests with 3D data that needs to be run online.
+     * 
+     * @param namespacePrefix
+     *            namespace prefix of the WFS feature type
+     * @param typeName
+     *            local name of the WFS feature type
+     * @param mappingFileName
+     *            file name of the app-schema mapping file
+     * @param supportFileNames
+     *            names of other files to be copied into the feature type directory
+     */
+    public void add3DFeatureType(String namespacePrefix, String typeName, String mappingFileName,
+            String... supportFileNames) {
+        addFeatureType(namespacePrefix, typeName, mappingFileName, supportFileNames);
+        this.is3D = true;
+    }
+    
+    /**
      * Determine which setup class to use based on the fixture id specified in the vm arg.
      * 
      * @throws Exception
@@ -502,8 +526,12 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     private void createTablesInTestDatabase() throws Exception {
         if (onlineTestId != null) {
             AbstractReferenceDataSetup setup = null;
-            if (onlineTestId.equals("oracle")) {
-                setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
+            if (onlineTestId.equals("oracle")) {            	
+            	if (is3D) {
+            		setup = AppSchemaTestOracleSetup.get3DInstance(propertiesFiles);
+            	} else {
+                    setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
+            	}
             } else if (onlineTestId.equals("postgis")) {
                 setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
             }

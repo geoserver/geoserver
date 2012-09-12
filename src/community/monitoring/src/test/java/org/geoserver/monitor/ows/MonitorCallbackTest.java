@@ -16,7 +16,9 @@ import net.opengis.ows11.Ows11Factory;
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.GetCoverageType;
 import net.opengis.wcs10.Wcs10Factory;
+import net.opengis.wcs10.Wcs10Package;
 import net.opengis.wcs11.Wcs11Factory;
+import net.opengis.wcs11.impl.DomainSubsetTypeImpl;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.GetFeatureType;
@@ -43,7 +45,9 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
@@ -51,9 +55,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+
 
 public class MonitorCallbackTest {
 
@@ -208,10 +215,25 @@ public class MonitorCallbackTest {
     @Test
     public void testWCS10GetCoverage() throws Exception {
         GetCoverageType gc = Wcs10Factory.eINSTANCE.createGetCoverageType();
+        net.opengis.wcs10.SpatialSubsetType spatialSubset = Wcs10Factory.eINSTANCE.createSpatialSubsetType();
+        
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        GeneralEnvelope env = new GeneralEnvelope(new double[]{-123.4, 48.2}, new double[]{-120.9, 50.1});
+        env.setCoordinateReferenceSystem(crs);
+        BoundingBox bbox = new ReferencedEnvelope(env);
+
+        spatialSubset.getEnvelope().clear();
+        spatialSubset.getEnvelope().add(env);
+        net.opengis.wcs10.DomainSubsetType domainSubset = Wcs10Factory.eINSTANCE.createDomainSubsetType();
+        domainSubset.setSpatialSubset(spatialSubset);
+        
         gc.setSourceCoverage("acme:foo");
+        gc.setDomainSubset(domainSubset);
+        
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.0.0", gc));
         
         assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals(bbox, data.getBbox());
     }
     
     @Test

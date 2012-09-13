@@ -24,9 +24,13 @@ import org.opengeo.gsr.core.label.LineLabelPlacementEnumConverter;
 import org.opengeo.gsr.core.label.PointLabelPlacementEnumConverter;
 import org.opengeo.gsr.core.label.PolygonLabelPlacementEnumConverter;
 import org.opengeo.gsr.core.symbol.HorizontalAlignmentEnumConverter;
+import org.opengeo.gsr.core.symbol.SimpleFillSymbol;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnumConverter;
+import org.opengeo.gsr.core.symbol.SimpleLineSymbol;
 import org.opengeo.gsr.core.symbol.SimpleLineSymbolEnumConverter;
+import org.opengeo.gsr.core.symbol.SimpleMarkerSymbol;
 import org.opengeo.gsr.core.symbol.SimpleMarkerSymbolEnumConverter;
+import org.opengeo.gsr.core.symbol.Symbol;
 import org.opengeo.gsr.core.symbol.VerticalAlignmentEnumConverter;
 import org.opengeo.gsr.service.CatalogService;
 
@@ -69,6 +73,10 @@ public class GeoServicesJsonFormat extends ReflectiveJSONFormat {
         xstream.alias("", Point.class);
         xstream.alias("", SpatialReference.class);
         xstream.alias("", SpatialReferenceWKID.class);
+        xstream.alias("", SimpleFillSymbol.class);
+        xstream.alias("", SimpleLineSymbol.class);
+        xstream.alias("", SimpleMarkerSymbol.class);
+        xstream.alias("", Symbol.class);
 
         // omit fields
         xstream.omitField(CatalogService.class, "name");

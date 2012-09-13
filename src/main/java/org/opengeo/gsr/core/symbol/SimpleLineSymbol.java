@@ -15,7 +15,7 @@ public class SimpleLineSymbol extends Symbol {
 
     private int[] color;
 
-    private int width;
+    private double width;
 
     public SimpleLineSymbolEnum getStyle() {
         return style;
@@ -33,15 +33,15 @@ public class SimpleLineSymbol extends Symbol {
         this.color = color;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 
-    public SimpleLineSymbol(SimpleLineSymbolEnum style, int[] color, int width) {
+    public SimpleLineSymbol(SimpleLineSymbolEnum style, int[] color, double width) {
         super("SLS");
         this.style = style;
         this.color = color;

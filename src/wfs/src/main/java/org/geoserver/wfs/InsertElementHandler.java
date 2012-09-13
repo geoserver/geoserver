@@ -181,14 +181,15 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     //fire pre insert event
                     TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_INSERT,
                             request, elementName, collection);
-                    event.setSource( insert );
+                    event.setSource(Insert.WFS11.unadapt(insert));
                     
                     listener.dataStoreChange( event );
                     fids.addAll(store.addFeatures(collection));
                     
                     //fire post insert event
                     SimpleFeatureCollection features = store.getFeatures(filterFactory.id(new HashSet<FeatureId>(fids)));
-                    event = new TransactionEvent(TransactionEventType.POST_INSERT, request, elementName, features, insert );
+                    event = new TransactionEvent(TransactionEventType.POST_INSERT, request, 
+                        elementName, features, Insert.WFS11.unadapt(insert));
                     listener.dataStoreChange( event );
                 }
             }

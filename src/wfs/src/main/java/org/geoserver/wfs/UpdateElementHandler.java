@@ -233,7 +233,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             SimpleFeatureCollection features = store.getFeatures(filter);
             TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_UPDATE, request,
                     elementName, features);
-            event.setSource( update );
+            event.setSource(Update.WFS11.unadapt(update));
             
             listener.dataStoreChange( event );
 
@@ -301,7 +301,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                 response.addUpdatedFeatures(handle, changedIds);
 
                 listener.dataStoreChange(new TransactionEvent(TransactionEventType.POST_UPDATE,
-                        request, elementName, changed, update));
+                        request, elementName, changed, Update.WFS11.unadapt(update)));
                 
             }
 

@@ -118,7 +118,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
             // notify listeners
             TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_DELETE, request,
                     elementName, store.getFeatures(filter));
-            event.setSource( delete );
+            event.setSource( Delete.WFS11.unadapt((Delete)delete));
             listener.dataStoreChange( event );
 
             // compute damaged area

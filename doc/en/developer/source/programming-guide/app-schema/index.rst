@@ -141,6 +141,29 @@ Perceptual diff tests for app-schema WMS support will only be performed if::
 and `Perceptual Diff
 <http://pdiff.sourceforge.net/>`_ is installed on the computer from which the tests are executed.
 
+3D tests
+````````
+There are a number of tests that try out 3D features in App-schema. To run these as online tests against a postgis or oracle database, a number of prerequisites must be met.
 
+For PostGIS:
 
+    * You must use postgis 2 to support 3D.
+    * In your postgis, if it hasn't been done yet, this command must be executed: http://spatialreference.org/ref/epsg/4979/postgis/ to support srid 4979 (wgs84 with 3d)
+
+For Oracle:
+
+    * You must use Oracle 11g Release 2, preferably the latest version that can be downloaded for best 3D support
+    * Oracle does NOT support WKT parsing of 3d geometries, so some extra DBA work is needed to set this up. Otherwise the online tests, which rely on WKT to enter data in the database, will fail.
+
+      You need the following package 'SC4O' (Spatial Companion for Oracle), created Simon Greener: download at http://www.spatialdbadvisor.com/files/SC4O.zip.
+      It has an installation script for linux and windows that must be run from the server that runs oracle. The package will provide JTS functionality that can be called from PL/SQL.
+
+      If the online test user is different from the user used for installation of the package, the online test user must be given permission to use the package.
+      You must also execute as an admin user the following command for the online test user:
+      CALL DBMS_JAVA.GRANT_PERMISSION('onlinetestuser','java.lang.RuntimePermission','getClassLoader','');
+
+      Afterwards, you have to tell the online testing system to use the JTS method for wkt parsing rather than the regular oracle method SDO_GEOMETRY.
+      You do this with the system property -Dwktparser. The method you need is SC4O.ST_GeomFromEWKT but you need to specify the user where the package was installed.
+      For example, I installed the package using the System user. Then I gave onlinetestuser permission to execute it.
+      I run the test with -Dwktparser=System.SC4O.ST_GeomFromEWKT
 

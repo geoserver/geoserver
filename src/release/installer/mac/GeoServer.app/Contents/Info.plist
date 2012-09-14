@@ -31,7 +31,7 @@
 		<key>WorkingDirectory</key>
 		<string>$APP_PACKAGE/Contents/Resources/Java</string>
 		<key>VMOptions</key>
-		<string>-DGEOSERVER_DATA_DIR=data_dir -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Xms128m -Xmx512m</string>
+		<string>-DGEOSERVER_DATA_DIR=data_dir -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Xms128m -Xmx512m -XX:MaxPermSize=128m</string>
 		<key>MainClass</key>
 		<string>org.geoserver.console.Main</string>
 		<key>JVMVersion</key>

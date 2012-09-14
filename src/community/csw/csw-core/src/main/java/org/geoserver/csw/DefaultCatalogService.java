@@ -51,7 +51,7 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     @Override
     public CapabilitiesType getCapabilities(GetCapabilitiesType request) throws ServiceException {
         checkStore();
-        CapabilitiesType caps = new GetCapabilities(this.csw, context).run(request);
+        CapabilitiesType caps = new GetCapabilities(this.csw, this.store, context).run(request);
         
         // check for decorator extensions
         for(CapabilitiesDecorator decorator : GeoServerExtensions.extensions(CapabilitiesDecorator.class))
@@ -86,8 +86,7 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     @Override
     public CloseableIterator<String> getDomain(GetDomainType request) throws ServiceException {
         checkStore();
-
-        return null;
+        return new GetDomain(this.csw, this.store).run(request);
     }
 
     @Override

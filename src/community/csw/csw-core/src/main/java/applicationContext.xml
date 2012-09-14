@@ -131,6 +131,10 @@
     <bean id="cswDublinCoreResponse-2.0.2" class="org.geoserver.csw.response.CSWRecordsResponse">
       <constructor-arg index="0" ref="geoServer"/>
     </bean>
+
+    <bean id="cswGetDomainResponse-2.0.2" class="org.geoserver.csw.response.CSWGetDomainResponse">
+      <constructor-arg index="0" ref="geoServer"/>
+    </bean>
     
     <!-- SchemaComponent delegates -->
     <bean id="cswRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">

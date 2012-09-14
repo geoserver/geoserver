@@ -478,7 +478,7 @@ public class GetCapabilities {
         getRecordConstraint2.getValue().add("SpecificationTitle");
 
         getRecords.getConstraint().add(getRecordConstraint1);
-        getRecords.getConstraint().add(getRecordConstraint2);
+        //getRecords.getConstraint().add(getRecordConstraint2);
     }
 
     /**
@@ -584,6 +584,19 @@ public class GetCapabilities {
         RequestMethodType getDomainPost = owsf.createRequestMethodType();
         getDomainPost.setHref(getDomainHref);
 
+        // - GetDomain - parameters
+        DomainType getDomainParam1 = owsf.createDomainType();
+        DomainType getDomainParam2 = owsf.createDomainType();
+
+        getDomainParam1.setName("parameterName");
+        getDomainParam1.getValue().add("xsd:anyURI");
+
+        getDomainParam2.setName("propertyName");
+        getDomainParam2.getValue().add("xsd:anyURI");
+        
+        getDomain.getParameter().add(getDomainParam1);
+        getDomain.getParameter().add(getDomainParam2);
+        
         // - GetDomain - constraints
         DomainType getDomainPostConstraints = owsf.createDomainType();
         getDomainPostConstraints.setName("PostEncoding");

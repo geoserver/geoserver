@@ -86,7 +86,7 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     @Override
     public CloseableIterator<String> getDomain(GetDomainType request) throws ServiceException {
         checkStore();
-        // TODO Auto-generated method stub
+
         return null;
     }
 

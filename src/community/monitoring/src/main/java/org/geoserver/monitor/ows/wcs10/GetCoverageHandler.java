@@ -7,12 +7,9 @@ package org.geoserver.monitor.ows.wcs10;
 import java.util.Arrays;
 import java.util.List;
 
-import net.opengis.wcs10.GetCoverageType;
-import net.opengis.wcs10.SpatialSubsetType;
-
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
+import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
@@ -32,18 +29,23 @@ public class GetCoverageHandler extends RequestObjectHandler {
     
     @Override
     protected BoundingBox getBBox(Object request) {
-        GetCoverageType gcRequest = (GetCoverageType) request;
         
-        // Domain subset may contain a spatial subset.
-        SpatialSubsetType spatialSubset = gcRequest.getDomainSubset().getSpatialSubset();
+        Object domainSubset = OwsUtils.get(request, "domainSubset");
+        Object spatialSubset = OwsUtils.get(domainSubset, "spatialSubset");
+        
         
         if(spatialSubset==null) {
             return null;
         }
         
-        // If there is a spatial subset, it should contain exactly one OpenGIS Envelope.
-        // This needs to be converted to a BoundingBox (implemented by ReferencedEnvelope)
-        return new ReferencedEnvelope((Envelope) spatialSubset.getEnvelope().get(0));
+        @SuppressWarnings("unchecked")
+		List<Envelope> envelopes = (List<Envelope>) OwsUtils.get(spatialSubset, "envelope");
+        
+        // According to the WCS spec there should be exactly one
+        Envelope env = envelopes.get(0);
+        
+        // Turn into a class that implements BoundingBox
+        return new ReferencedEnvelope(env);
     }
 
 }

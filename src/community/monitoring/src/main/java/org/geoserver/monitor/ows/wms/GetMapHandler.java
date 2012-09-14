@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.wms.GetMapRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -39,9 +38,8 @@ public class GetMapHandler extends RequestObjectHandler {
 
     @Override
     protected BoundingBox getBBox(Object request) {
-        GetMapRequest gmRequest = (GetMapRequest) request;
-        CoordinateReferenceSystem crs = gmRequest.getCrs();
-        Envelope env = gmRequest.getBbox();
+        CoordinateReferenceSystem crs = (CoordinateReferenceSystem) OwsUtils.get(request, "crs");
+        Envelope env = (Envelope) OwsUtils.get(request, "bbox");
         BoundingBox bbox = new ReferencedEnvelope(env, crs);
         return bbox;
     }

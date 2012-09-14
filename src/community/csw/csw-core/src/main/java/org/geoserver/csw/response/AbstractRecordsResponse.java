@@ -16,6 +16,7 @@ import org.geoserver.csw.CSWInfo;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geotools.csw.CSW;
 import org.opengis.feature.type.FeatureType;
 
 /**
@@ -40,10 +41,14 @@ public abstract class AbstractRecordsResponse extends Response {
 
     @Override
     public boolean canHandle(Operation operation) {
-        return getRequestedSchema(operation).equals(schema);
+        String requestedSchema = getRequestedSchema(operation);
+        if(requestedSchema == null) {
+            requestedSchema = CSW.NAMESPACE;
+        }
+        return requestedSchema.equals(schema);
     }
 
-    private Object getRequestedSchema(Operation operation) {
+    private String getRequestedSchema(Operation operation) {
         Object request = operation.getParameters()[0];
         if (request instanceof GetRecordByIdType) {
             GetRecordByIdType gr = (GetRecordByIdType) request;
@@ -68,10 +73,13 @@ public abstract class AbstractRecordsResponse extends Response {
         RequestBaseType request = (RequestBaseType) operation.getParameters()[0];
         CSWInfo csw = gs.getService(CSWInfo.class);
 
-        FeatureType recordSchema = result.getRecords().getSchema();
-        if (!recordType.equals(recordSchema)) {
-            throw new IllegalArgumentException("Cannot encode this kind of record "
-                    + recordSchema.getName() + " into schema " + schema);
+        // if this is a hit request we don't have records to encode
+        if(result.getRecords() != null) {
+            FeatureType recordSchema = result.getRecords().getSchema();
+            if (!recordType.equals(recordSchema)) {
+                throw new IllegalArgumentException("Cannot encode this kind of record "
+                        + recordSchema.getName() + " into schema " + schema);
+            }
         }
 
         transformResponse(output, result, request, csw);

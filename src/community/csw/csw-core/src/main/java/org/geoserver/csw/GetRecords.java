@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
@@ -74,6 +75,12 @@ public class GetRecords {
                 maxRecords = request.getMaxRecords();
             }
             
+            // get and check the offset
+            int offset = request.getStartPosition() == null ? 0 : request.getStartPosition();
+            if(offset <= 0) {
+                throw new ServiceException("startPosition must be a positive number", ServiceException.INVALID_PARAMETER_VALUE, "startPosition");
+            }
+            
             // and check what kind of result is desired
             ResultType resultType = request.getResultType();
             if(maxRecords == 0 && resultType == ResultType.RESULTS) {
@@ -93,14 +100,13 @@ public class GetRecords {
             int nextRecord = 0;
             FeatureCollection records = null;
             if(resultType != ResultType.VALIDATE) {
-                // get the offset too and compute the number of records we're returning and the next record
-                int offset = request.getStartPosition() == null ? 0 : request.getStartPosition();
+                // compute the number of records we're returning and the next record
                 if(numberOfRecordsMatched - offset <= maxRecords) {
                     numberOfRecordsReturned = numberOfRecordsMatched - offset;
                     nextRecord = -1;
                 } else {
                     numberOfRecordsReturned = maxRecords;
-                    nextRecord = offset + numberOfRecordsMatched + 1;
+                    nextRecord = offset + numberOfRecordsReturned;
                 }
     
                 // time to run the queries if we are not in hits mode
@@ -140,7 +146,8 @@ public class GetRecords {
                 }
             }
             
-            CSWRecordsResult result = new CSWRecordsResult(cswQuery.getElementSetName().getValue(), 
+            ElementSetType elementSet = getElementSet(cswQuery);
+            CSWRecordsResult result = new CSWRecordsResult(elementSet, 
                     request.getOutputSchema(), numberOfRecordsMatched, numberOfRecordsReturned, nextRecord, timestamp, records);
             return result;
         } catch(IOException e) {
@@ -150,7 +157,7 @@ public class GetRecords {
 
     private List<Query> toGtQueries(RecordDescriptor rd, QueryType query) throws IOException {
         // prepare to build the queries
-        Filter filter = query.getConstraint().getFilter();
+        Filter filter = query.getConstraint() != null ? query.getConstraint().getFilter() : null;
         Set<Name> supportedTypes = getSupportedTypes();
         
         // build one query per type name, forgetting about paging for the time being
@@ -166,14 +173,30 @@ public class GetRecords {
             q.setFilter(filter);
             q.setProperties(getPropertyNames(rd, query));
             q.setSortBy(query.getSortBy());
+            
+            result.add(q);
         }
         
         return result;
     }
 
     private List<PropertyName> getPropertyNames(RecordDescriptor rd, QueryType query) {
-        if(query.getElementSetName() != null) {
-            Set<Name> properties = rd.getPropertiesForElementSet(query.getElementSetName().getValue());
+        if(query.getElementName() != null && !query.getElementName().isEmpty()) {
+            // turn the QName into PropertyName. We don't do any verification cause the
+            // elements in the actual feature could be parts of substitution groups 
+            // of the elements in the feature's schema
+            NamespaceSupport namespaces = rd.getNamespaceSupport();
+            List<PropertyName> result = new ArrayList<PropertyName>();
+            for (QName qn : query.getElementName()) {
+                String ns = qn.getNamespaceURI();
+                String localName = qn.getLocalPart();
+                PropertyName property = buildPropertyName(rd, namespaces, ns, localName);
+                result.add(property);
+            }
+            return result;
+        } else {
+            ElementSetType elementSet = getElementSet(query);
+            Set<Name> properties = rd.getPropertiesForElementSet(elementSet);
             if(properties != null) {
                 // turn the names into PropertyName
                 NamespaceSupport namespaces = rd.getNamespaceSupport();
@@ -189,23 +212,16 @@ public class GetRecords {
                 // the profile is the full one
                 return null;
             }
-        } else if(query.getElementName() != null) {
-            // turn the QName into PropertyName. We don't do any verification cause the
-            // elements in the actual feature could be parts of substitution groups 
-            // of the elements in the feature's schema
-            NamespaceSupport namespaces = rd.getNamespaceSupport();
-            List<PropertyName> result = new ArrayList<PropertyName>();
-            for (QName qn : query.getElementName()) {
-                String ns = qn.getNamespaceURI();
-                String localName = qn.getLocalPart();
-                PropertyName property = buildPropertyName(rd, namespaces, ns, localName);
-                result.add(property);
-            }
-            return result;
-        } else {
-            // return all properties
-            return null;
         }
+    }
+
+    private ElementSetType getElementSet(QueryType query) {
+        ElementSetType elementSet = query.getElementSetName() != null ? query.getElementSetName().getValue() : null;
+        if(elementSet == null) {
+            // the default is "summary"
+            elementSet = ElementSetType.SUMMARY;
+        }
+        return elementSet;
     }
 
     private PropertyName buildPropertyName(RecordDescriptor rd, NamespaceSupport namespaces,

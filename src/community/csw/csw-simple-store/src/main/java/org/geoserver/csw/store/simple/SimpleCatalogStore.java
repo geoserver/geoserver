@@ -92,7 +92,7 @@ public class SimpleCatalogStore implements CatalogStore {
         FeatureCollection records = new RecordsFeatureCollection(root, startIndex);
 
         // filtering
-        if (q.getFilter() != Filter.INCLUDE) {
+        if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
             records = new FilteringFeatureCollection<FeatureType, Feature>(records, q.getFilter());
         }
 

@@ -1,9 +1,14 @@
 package org.geoserver.csw;
 
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
@@ -14,10 +19,17 @@ import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
 
+import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
+import org.geoserver.data.test.MockData;
+import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.xml.XmlConverterFactory;
+import org.w3c.dom.Document;
 
 public class GetRecordsTest extends CSWTestSupport {
 
@@ -27,13 +39,25 @@ public class GetRecordsTest extends CSWTestSupport {
     public static Test suite() {
         return new OneTimeTestSetup(new GetRecordsTest());
     }
- 
+    
+    @Override
+    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+        super.populateDataDirectory(dataDirectory);
+        
+        // copy all records into the data directory
+        File root = dataDirectory.getDataDirectoryRoot();
+        File catalog = new File(root, "catalog");
+        File records = new File("./src/test/resources/org/geoserver/csw/records");
+        FileUtils.copyDirectory(records, catalog);
+    }
+
     public void testKVPParameterCQL() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetRecords");
-        raw.put("namespace", "xmlns(csw=http://www.opengis.net/cat/csw/2.0.2),xmlns(rim=urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0)");
+        raw.put("namespace",
+                "xmlns(csw=http://www.opengis.net/cat/csw/2.0.2),xmlns(rim=urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0)");
         raw.put("resultType", "results");
         raw.put("requestId", "myId");
         raw.put("outputFormat", "application/xml");
@@ -52,7 +76,7 @@ public class GetRecordsTest extends CSWTestSupport {
         GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader();
         Object request = reader.createRequest();
         GetRecordsType gr = (GetRecordsType) reader.read(request, parseKvp(raw), raw);
-        
+
         // basic checks
         assertEquals("CSW", gr.getService());
         assertEquals("2.0.2", gr.getVersion());
@@ -63,17 +87,19 @@ public class GetRecordsTest extends CSWTestSupport {
         assertNotNull(gr.getDistributedSearch());
         assertEquals(new Integer(10), gr.getDistributedSearch().getHopCount());
         assertEquals("http://www.geoserver.org", gr.getResponseHandler());
-        
+
         // now onto the query
         QueryType query = (QueryType) gr.getQuery();
         assertEquals("AnyText like '%pollution%'", query.getConstraint().getCqlText());
         assertEquals(2, query.getTypeNames().size());
-        assertEquals(new QName("http://www.opengis.net/cat/csw/2.0.2", "Record"), query.getTypeNames().get(0));
-        assertEquals(new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage"), query.getTypeNames().get(1));
+        assertEquals(new QName("http://www.opengis.net/cat/csw/2.0.2", "Record"), query
+                .getTypeNames().get(0));
+        assertEquals(new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage"),
+                query.getTypeNames().get(1));
         assertEquals(2, query.getElementName().size());
         assertEquals(2, query.getElementName().size());
     }
-    
+
     public void testKVPParameterFilter() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -83,30 +109,31 @@ public class GetRecordsTest extends CSWTestSupport {
         raw.put("typenames", "csw:Record");
         raw.put("elementSetName", "brief");
         raw.put("constraintLanguage", "FILTER");
-        raw.put("constraint", "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:Not><ogc:PropertyIsEqualTo><ogc:PropertyName>prop1</ogc:PropertyName><ogc:Literal>10</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Not></ogc:Filter>");
+        raw.put("constraint",
+                "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:Not><ogc:PropertyIsEqualTo><ogc:PropertyName>prop1</ogc:PropertyName><ogc:Literal>10</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Not></ogc:Filter>");
 
         GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader();
         Object request = reader.createRequest();
         GetRecordsType gr = (GetRecordsType) reader.read(request, parseKvp(raw), raw);
-        
+
         // basic checks
         assertEquals("CSW", gr.getService());
         assertEquals("2.0.2", gr.getVersion());
-        
+
         // now onto the query
         QueryType query = (QueryType) gr.getQuery();
         assertEquals(CQL.toFilter("!(prop1 = 10)"), query.getConstraint().getFilter());
         assertEquals("1.1.0", query.getConstraint().getVersion());
         assertEquals(1, query.getTypeNames().size());
-        assertEquals(new QName("http://www.opengis.net/cat/csw/2.0.2", "Record"), query.getTypeNames().get(0));
+        assertEquals(new QName("http://www.opengis.net/cat/csw/2.0.2", "Record"), query
+                .getTypeNames().get(0));
         assertEquals(ElementSetType.BRIEF, query.getElementSetName().getValue());
     }
-    
-   
-    
+
     public void testXMLReaderParameter() throws Exception {
         CSWXmlReader reader = new CSWXmlReader("GetRecords", "2.0.2", new CSWConfiguration());
-        GetRecordsType gr = (GetRecordsType)  reader.read(null, getResourceAsReader("GetRecordsBrief.xml"), (Map) null);
+        GetRecordsType gr = (GetRecordsType) reader.read(null,
+                getResourceAsReader("GetRecordsBrief.xml"), (Map) null);
         // check the attributes
         assertEquals("application/xml", gr.getOutputFormat());
         assertEquals("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", gr.getOutputSchema());
@@ -127,6 +154,120 @@ public class GetRecordsTest extends CSWTestSupport {
         assertEquals(expected, esn.getTypeNames());
         assertEquals(ElementSetType.BRIEF, esn.getValue());
     }
+
+    /*
+     * Rigth now we don't support the "validate" mode, we need a way to re-encode the request in XML
+     * or to snatch it from the raw POST request
+     * 
+     * public void testValidateRequest() throws Exception { String request =
+     * "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=validate";
+     * Document d = getAsDOM(request); }
+     */
+
+    public void testHitRequest() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record";
+        Document d = getAsDOM(request);
+        // print(d);
+
+        // we have the right kind of document
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+
+        // check we have a timestamp that is a valid XML date, and it's GMT (we don't 
+        // test parts of the date since we are bound to fail even the year if the test is run
+        // across midnight of 
+        String timestampPath = "/csw:GetRecordsResponse/csw:GetSearchStatus/@timestamp";
+        String timeStamp = xpath.evaluate(timestampPath, d);
+        assertNotNull(timeStamp);
+        Calendar cal = new XmlConverterFactory()
+                .createConverter(String.class, Calendar.class, null).convert(timeStamp,
+                        Calendar.class);
+        assertNotNull(cal);
+        assertEquals(TimeZone.getTimeZone("GMT"), cal.getTimeZone());
+        
+        // check we have the expected results
+        assertXpathEvaluatesTo("summary", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
+        
+        // check we have no results
+        assertXpathEvaluatesTo("0", "count(//csw:SearchResults/*)", d);
+    }
     
+    public void testHitMaxOffset() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=5&maxRecords=2";
+        Document d = getAsDOM(request);
+        // print(d);
+
+        // we have the right kind of document
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+
+        // check we have the expected results
+        assertXpathEvaluatesTo("summary", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("7", "//csw:SearchResults/@nextRecord", d);
+        
+        // check we have no results
+        assertXpathEvaluatesTo("0", "count(//csw:SearchResults/*)", d);
+    }
+    
+    public void testInvalidStartPosition() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=0";
+        Document d = getAsDOM(request);
+        // print(d);
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "startPosition");
+    }
+    
+    public void testInvalidOutputSchema() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&outputSchema=http://www.geoserver.org";
+        Document d = getAsDOM(request);
+        // print(d);
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputSchema");
+    }
+    
+    public void testAllRecordsDefaultElementSet() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results";
+        Document d = getAsDOM(request);
+        
+        // check we have the expected results
+        assertXpathEvaluatesTo("summary", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
+        
+        // check we 10 summary records (max records defaults to 10)
+        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:SummaryRecord)", d);
+    }
+    
+    public void testAllRecordsBrief() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief";
+        Document d = getAsDOM(request);
+        
+        // check we have the expected results
+        assertXpathEvaluatesTo("brief", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
+        
+        // check we 10 summary records (max records defaults to 10)
+        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:BriefRecord)", d);
+    }
+    
+    public void testAllRecordsFull() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=full";
+        Document d = getAsDOM(request);
+        
+        // check we have the expected results
+        assertXpathEvaluatesTo("full", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
+        
+        // check we 10 summary records (max records defaults to 10)
+        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:Record)", d);
+    }
 
 }

@@ -82,7 +82,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader {
         query.setTypeNames(typeNames);
         
         // handle the element set
-        ElementSetType elementSet = (ElementSetType) kvp.remove("elementSetName");
+        ElementSetType elementSet = (ElementSetType) kvp.remove("ELEMENTSETNAME");
         if (elementSet != null) {
             ElementSetNameType esn = Csw20Factory.eINSTANCE.createElementSetNameType();
             esn.setValue(elementSet);

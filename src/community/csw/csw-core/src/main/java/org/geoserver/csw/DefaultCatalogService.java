@@ -121,8 +121,9 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // pick the implementation of CatalogStore that has the higher
-        store = GeoServerExtensions.bean(CatalogStore.class, applicationContext);
+        this.context = applicationContext;
+        // pick the implementation of CatalogStore that has the higher priority
+        this.store = GeoServerExtensions.bean(CatalogStore.class, applicationContext);
     }
 
 }

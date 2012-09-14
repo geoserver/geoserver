@@ -614,11 +614,19 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         boolean needsWrapping = false;
         for (LayerInfo layer : layers) {
             LayerInfo checked = checkAccess(user, layer);
-            if(checked == null)
-                return null;
-            else if(checked != null && checked != layer) 
-                needsWrapping = true;
-            wrapped.add(checked);
+            if (checked != null) {
+                if (checked != layer) {
+                    needsWrapping = true;
+                }
+                wrapped.add(checked);
+            } else {
+                needsWrapping = true;                
+            }
+        }
+        
+        // if no layer can be accessed we hide the group
+        if (wrapped.size() == 0) {
+            return null;
         }
         
         if(needsWrapping)

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.csw.store.simple.sort;
+package org.geoserver.csw.feature.sort;
 
 import java.util.Comparator;
 import java.util.List;

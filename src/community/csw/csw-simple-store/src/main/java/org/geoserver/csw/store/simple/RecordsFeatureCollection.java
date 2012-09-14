@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.feature.AbstractFeatureCollection;
+import org.geoserver.csw.feature.MemoryFeatureCollection;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
@@ -29,7 +31,7 @@ class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Fe
     int offset;
 
     public RecordsFeatureCollection(File root, int offset) {
-        super(CSWRecordTypes.RECORD);
+        super(CSWRecordDescriptor.RECORD);
         this.root = root;
         this.offset = offset;
     }

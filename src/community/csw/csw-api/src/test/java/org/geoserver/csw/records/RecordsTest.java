@@ -71,7 +71,7 @@ public class RecordsTest extends TestCase {
     }
 
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
-        Collection<Property> propertyList = f.getProperties(CSWRecordTypes.RECORD_BBOX_NAME);
+        Collection<Property> propertyList = f.getProperties(CSWRecordDescriptor.RECORD_BBOX_NAME);
         Property[] properties = (Property[]) propertyList.toArray(new Property[propertyList.size()]);
         assertEquals(properties.length, envelopes.length);
         ReferencedEnvelope total = null;
@@ -91,14 +91,14 @@ public class RecordsTest extends TestCase {
     }
 
     private void assertRecordElement(Feature f, String elementName, Object... values) {
-        AttributeDescriptor identifierDescriptor = CSWRecordTypes.getDescriptor(elementName);
+        AttributeDescriptor identifierDescriptor = CSWRecordDescriptor.getDescriptor(elementName);
         Collection<Property> propertyList = f.getProperties(identifierDescriptor.getName());
         Property[] properties = (Property[]) propertyList.toArray(new Property[propertyList.size()]);
         assertEquals(properties.length, values.length);
         for (int i = 0; i < properties.length; i++) {
             ComplexAttribute cad = (ComplexAttribute) properties[i];
             assertEquals(identifierDescriptor, cad.getDescriptor());
-            assertEquals(values[i], cad.getProperty(CSWRecordTypes.SIMPLE_LITERAL_VALUE).getValue());
+            assertEquals(values[i], cad.getProperty(CSWRecordDescriptor.SIMPLE_LITERAL_VALUE).getValue());
         }
     }
 

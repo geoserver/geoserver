@@ -7,7 +7,8 @@ package org.geoserver.csw.store.simple;
 import java.util.Iterator;
 import java.util.List;
 
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.feature.AbstractFeatureCollection;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;

@@ -27,7 +27,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class CSWRecordBuilder {
 
-    ComplexFeatureBuilder fb = new ComplexFeatureBuilder(CSWRecordTypes.RECORD);
+    ComplexFeatureBuilder fb = new ComplexFeatureBuilder(CSWRecordDescriptor.RECORD);
 
     AttributeBuilder ab = new AttributeBuilder(new LenientFeatureFactoryImpl());
 
@@ -41,23 +41,23 @@ public class CSWRecordBuilder {
      */
     public void addElement(String name, String... values) {
         for (String value : values) {
-            AttributeDescriptor descriptor = CSWRecordTypes.getDescriptor(name);
+            AttributeDescriptor descriptor = CSWRecordDescriptor.getDescriptor(name);
             ab.setDescriptor(descriptor);
-            ab.add(null, value, CSWRecordTypes.SIMPLE_LITERAL_VALUE);
+            ab.add(null, value, CSWRecordDescriptor.SIMPLE_LITERAL_VALUE);
             Attribute element = ab.build();
 
-            fb.append(CSWRecordTypes.DC_ELEMENT_NAME, element);
+            fb.append(CSWRecordDescriptor.DC_ELEMENT_NAME, element);
         }
     }
     
     public void addElementWithScheme(String name, String scheme, String value) {
-        AttributeDescriptor descriptor = CSWRecordTypes.getDescriptor(name);
+        AttributeDescriptor descriptor = CSWRecordDescriptor.getDescriptor(name);
         ab.setDescriptor(descriptor);
-        ab.add(null, value, CSWRecordTypes.SIMPLE_LITERAL_VALUE);
-        ab.add(null, scheme, CSWRecordTypes.SIMPLE_LITERAL_SCHEME);
+        ab.add(null, value, CSWRecordDescriptor.SIMPLE_LITERAL_VALUE);
+        ab.add(null, scheme, CSWRecordDescriptor.SIMPLE_LITERAL_SCHEME);
         Attribute element = ab.build();
 
-        fb.append(CSWRecordTypes.DC_ELEMENT_NAME, element);
+        fb.append(CSWRecordDescriptor.DC_ELEMENT_NAME, element);
     }
 
 
@@ -68,10 +68,10 @@ public class CSWRecordBuilder {
      */
     public void addBoundingBox(ReferencedEnvelope env) {
         boxes.add(env);
-        ab.setDescriptor(CSWRecordTypes.RECORD_BBOX_DESCRIPTOR);
+        ab.setDescriptor(CSWRecordDescriptor.RECORD_BBOX_DESCRIPTOR);
         Attribute element = ab.buildSimple(null, env);
 
-        fb.append(CSWRecordTypes.RECORD_BBOX_NAME, element);
+        fb.append(CSWRecordDescriptor.RECORD_BBOX_NAME, element);
     }
 
     /**
@@ -104,9 +104,9 @@ public class CSWRecordBuilder {
             geom = geom.getFactory().createMultiPolygon(new Polygon[] {(Polygon) geom}); 
         }
 
-        ab.setDescriptor(CSWRecordTypes.RECORD_GEOMETRY_DESCRIPTOR);
+        ab.setDescriptor(CSWRecordDescriptor.RECORD_GEOMETRY_DESCRIPTOR);
         Attribute element = ab.buildSimple(null, geom);
-        fb.append(CSWRecordTypes.RECORD_GEOMETRY_NAME, element);
+        fb.append(CSWRecordDescriptor.RECORD_GEOMETRY_NAME, element);
 
         boxes.clear();
         return fb.buildFeature(id);

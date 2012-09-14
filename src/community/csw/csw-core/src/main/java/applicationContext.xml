@@ -140,6 +140,9 @@
         <constructor-arg index="3" value="CSWRecordSchemaComponent.xml"/>
     </bean>   
     
+    <!-- The record descriptors -->
+    <bean id="cswRecordDescriptor" class="org.geoserver.csw.records.CSWRecordDescriptor"/>
+    
     <!-- http url mapping -->
     <bean id="CSWURLMapping" 
       class="org.geoserver.ows.OWSHandlerMapping">

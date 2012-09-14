@@ -11,7 +11,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.ows.FlatKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
@@ -65,7 +65,7 @@ class TypeNameResolver {
                 prefix = tn.substring(0, idx);
                 uri = namespaces.getURI(prefix);
                 if (uri == null) {
-                    uri = CSWRecordTypes.NAMESPACES.getURI(prefix);
+                    uri = CSWRecordDescriptor.NAMESPACES.getURI(prefix);
                     if (uri == null) {
                         throw new ServiceException("Type name " + tn
                                 + " has an unknown prefix, please qualify it using the "

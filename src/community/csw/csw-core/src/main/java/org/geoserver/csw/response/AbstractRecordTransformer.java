@@ -14,7 +14,7 @@ import javax.xml.transform.TransformerException;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.RequestBaseType;
 
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
@@ -28,7 +28,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Encodes a FeatureCollection containing {@link CSWRecordTypes#RECORD} features into the specified
+ * Encodes a FeatureCollection containing {@link CSWRecordDescriptor#RECORD} features into the specified
  * XML according to the chosen profile, brief, summary or full
  * 
  * @author Andrea Aime - GeoSolutions

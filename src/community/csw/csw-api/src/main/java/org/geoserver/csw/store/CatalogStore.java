@@ -30,6 +30,17 @@ public interface CatalogStore {
      */
     FeatureCollection getRecords(Query q, Transaction t) throws IOException;
 
+    /**
+     * Returns the number of records that {@link #getRecords(Query, Transaction)} would return given
+     * the same query and transaction
+     * 
+     * @param q
+     * @param t
+     * @return
+     * @throws IOException
+     */
+    int getRecordsCount(Query q, Transaction t) throws IOException;
+
     CloseableIterator<String> getDomain(Name typeName, Name attributeName) throws IOException;
 
     List<FeatureId> addRecord(Feature f, Transaction t) throws IOException;

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.csw.store.simple;
+package org.geoserver.csw.feature;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import org.opengis.feature.type.FeatureType;
  * 
  * @source $URL$
  */
-abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature> implements
+public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature> implements
         FeatureCollection<T, F> {
     /**
      * listeners

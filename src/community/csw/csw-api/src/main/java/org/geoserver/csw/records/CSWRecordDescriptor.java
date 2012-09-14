@@ -17,6 +17,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import net.opengis.cat.csw20.ElementSetType;
+
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
@@ -39,11 +41,12 @@ import org.xml.sax.helpers.NamespaceSupport;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 /**
- * Container for FeatureType related constants useful in building CSW records
+ * Describes the CSW records and provides some handy constants to help building features
+ * representing CSW:Record
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class CSWRecordTypes {
+public class CSWRecordDescriptor implements RecordDescriptor {
 
     /**
      * Contains the declarations of common namespaces and prefixes used in the CSW world
@@ -179,15 +182,15 @@ public class CSWRecordTypes {
 
     /**
      * Locates the AttributeDescriptor corresponding to the specified element name among the ones
-     * available in {@link CSWRecordTypes#DC_DESCRIPTORS} and {@link CSWRecordTypes#DCT_DESCRIPTORS} 
+     * available in {@link CSWRecordDescriptor#DC_DESCRIPTORS} and {@link CSWRecordDescriptor#DCT_DESCRIPTORS} 
      * 
      * @param elementName
      * @return
      */
     public static AttributeDescriptor getDescriptor(String elementName) {
-        AttributeDescriptor identifierDescriptor = CSWRecordTypes.DC_DESCRIPTORS.get(elementName);
+        AttributeDescriptor identifierDescriptor = CSWRecordDescriptor.DC_DESCRIPTORS.get(elementName);
         if (identifierDescriptor == null) {
-            identifierDescriptor = CSWRecordTypes.DCT_DESCRIPTORS.get(elementName);
+            identifierDescriptor = CSWRecordDescriptor.DCT_DESCRIPTORS.get(elementName);
         }
         return identifierDescriptor;
     }
@@ -233,6 +236,33 @@ public class CSWRecordTypes {
         int modifier = field.getModifiers();
         return Modifier.isStatic(modifier) && Modifier.isPublic(modifier)
                 && Modifier.isFinal(modifier);
+    }
+
+    @Override
+    public FeatureType getFeatureType() {
+        return RECORD;
+    }
+
+    @Override
+    public String getOutputSchema() {
+        return CSW.NAMESPACE;
+    }
+
+    @Override
+    public Set<Name> getPropertiesForElementSet(ElementSetType elementSet) {
+        switch (elementSet) {
+        case BRIEF:
+            return CSWRecordDescriptor.BRIEF_ELEMENTS;
+        case SUMMARY:
+            return CSWRecordDescriptor.SUMMARY_ELEMENTS;
+        default:
+            return null;
+        }
+    }
+    
+    @Override
+    public NamespaceSupport getNamespaceSupport() {
+        return NAMESPACES;
     }
 
 }

@@ -4,6 +4,8 @@
  */
 package org.geoserver.csw;
 
+import java.util.List;
+
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.DescribeRecordType;
 import net.opengis.cat.csw20.GetCapabilitiesType;
@@ -16,11 +18,11 @@ import net.opengis.cat.csw20.TransactionType;
 
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
+import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -70,8 +72,8 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     @Override
     public CSWRecordsResult getRecords(GetRecordsType request) throws ServiceException {
         checkStore();
-        // TODO Auto-generated method stub
-        return null;
+        List<RecordDescriptor> descriptors = GeoServerExtensions.extensions(RecordDescriptor.class, context);
+        return new GetRecords(this.csw, store, descriptors).run(request);
     }
 
     @Override

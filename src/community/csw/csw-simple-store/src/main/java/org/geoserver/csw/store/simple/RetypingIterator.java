@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
@@ -18,7 +18,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * Basic attribute shaver, works properly only against {@link CSWRecordTypes#RECORD}
+ * Basic attribute shaver, works properly only against {@link CSWRecordDescriptor#RECORD}
  * 
  * @author Andrea Aime - GeoSolutions
  * 
@@ -94,8 +94,8 @@ class RetypingIterator implements Iterator<Feature> {
             if (names.contains(p.getName()) || names.contains(p.getName().getLocalPart())) {
                 // this makes the thing type specific, but at least it works for the record case
                 // TODO: eventually figure out how to make this for the general case...
-                if (p.getType().equals(CSWRecordTypes.SIMPLE_LITERAL)) {
-                    builder.append(CSWRecordTypes.DC_ELEMENT_NAME, p);
+                if (p.getType().equals(CSWRecordDescriptor.SIMPLE_LITERAL)) {
+                    builder.append(CSWRecordDescriptor.DC_ELEMENT_NAME, p);
                 } else {
                     builder.append(p.getName(), p);
                 }

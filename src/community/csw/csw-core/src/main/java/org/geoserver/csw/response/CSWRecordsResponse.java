@@ -12,7 +12,7 @@ import net.opengis.cat.csw20.RequestBaseType;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
 
@@ -24,7 +24,7 @@ import org.geotools.csw.CSW;
 public class CSWRecordsResponse extends AbstractRecordsResponse {
 
     public CSWRecordsResponse(GeoServer gs) {
-        super(CSWRecordTypes.RECORD, CSW.NAMESPACE, gs);
+        super(CSWRecordDescriptor.RECORD, CSW.NAMESPACE, gs);
     }
 
     protected void transformResponse(OutputStream output, CSWRecordsResult result,

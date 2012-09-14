@@ -16,10 +16,11 @@ import java.util.Set;
 
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.feature.MemoryFeatureCollection;
+import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.store.CatalogCapabilities;
 import org.geoserver.csw.store.CatalogStore;
-import org.geoserver.csw.store.simple.sort.ComplexComparatorFactory;
 import org.geotools.csw.DC;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
@@ -68,18 +69,18 @@ public class SimpleCatalogStore implements CatalogStore {
     @Override
     public FeatureType[] getRecordSchemas() throws IOException {
         // right now we only support CSW record, hopefully this will be extended later
-        return new FeatureType[] { CSWRecordTypes.RECORD };
+        return new FeatureType[] { CSWRecordDescriptor.RECORD };
     }
 
     @Override
     public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
         if (q.getTypeName() != null
-                && !q.getTypeName().equals(CSWRecordTypes.RECORD.getName().getLocalPart())) {
+                && !q.getTypeName().equals(CSWRecordDescriptor.RECORD.getName().getLocalPart())) {
             throw new IOException(q.getTypeName() + " is not a supported type");
         }
         if (q.getNamespace() != null
                 && !q.getNamespace().toString()
-                        .equals(CSWRecordTypes.RECORD.getName().getNamespaceURI())) {
+                        .equals(CSWRecordDescriptor.RECORD.getName().getNamespaceURI())) {
             throw new IOException(q.getNamespace() + ":" + q.getTypeName()
                     + " is not a supported type");
         }
@@ -121,7 +122,7 @@ public class SimpleCatalogStore implements CatalogStore {
     @Override
     public CloseableIterator<String> getDomain(Name typeName, final Name attributeName) throws IOException {
         // do we have such attribute?
-        AttributeDescriptor ad = CSWRecordTypes.getDescriptor(attributeName.getLocalPart());
+        AttributeDescriptor ad = CSWRecordDescriptor.getDescriptor(attributeName.getLocalPart());
         if(ad == null) {
             return new CloseableIteratorAdapter<String>(new ArrayList<String>().iterator());
         }
@@ -135,7 +136,7 @@ public class SimpleCatalogStore implements CatalogStore {
         } else {
             xpath = "dct:" + ad.getLocalName();
         }
-        q.setProperties(Arrays.asList(FF.property(xpath, CSWRecordTypes.NAMESPACES)));
+        q.setProperties(Arrays.asList(FF.property(xpath, CSWRecordDescriptor.NAMESPACES)));
         
         // collect the values without duplicates
         FeatureIterator<Feature> fi = null;
@@ -177,6 +178,14 @@ public class SimpleCatalogStore implements CatalogStore {
     public CatalogCapabilities getCapabilities() {
         // for the moment let's roll with the basic capabilities, we'll add extras later
         return new CatalogCapabilities();
+    }
+
+    @Override
+    public int getRecordsCount(Query q, Transaction t) throws IOException {
+        // simply delegate to the feature collection, we have no optimizations 
+        // available for the time being (even counting the files in case of no filtering
+        // would be wrong as we have to 
+        return getRecords(q, t).size();
     }
 
 }

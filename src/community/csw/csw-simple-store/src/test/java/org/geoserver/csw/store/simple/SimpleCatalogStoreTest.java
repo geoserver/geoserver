@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.csw.records.CSWRecordTypes;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.data.Query;
@@ -68,7 +68,7 @@ public class SimpleCatalogStoreTest extends TestCase {
     public void testFeatureTypes() throws IOException {
         FeatureType[] fts = store.getRecordSchemas();
         assertEquals(1, fts.length);
-        assertEquals(CSWRecordTypes.RECORD, fts[0]);
+        assertEquals(CSWRecordDescriptor.RECORD, fts[0]);
     }
     
     public void testReadAllRecords() throws IOException {
@@ -110,7 +110,7 @@ public class SimpleCatalogStoreTest extends TestCase {
     }
 
     public void testElementValueFilter() throws IOException {
-        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
+        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
         FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
@@ -128,7 +128,7 @@ public class SimpleCatalogStoreTest extends TestCase {
     }
     
     public void testScheme() throws IOException {
-        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
+        Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
         FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
@@ -172,8 +172,8 @@ public class SimpleCatalogStoreTest extends TestCase {
     
     public void testSortAscend() throws IOException {
         Query queryImage = new Query("Record");
-        queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
-        queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordTypes.NAMESPACES), SortOrder.ASCENDING)});
+        queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
+        queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.ASCENDING)});
         
         FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         // there are only 3 records with Image type
@@ -189,8 +189,8 @@ public class SimpleCatalogStoreTest extends TestCase {
     
     public void testSortDescend() throws IOException {
         Query queryImage = new Query("Record");
-        queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
-        queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordTypes.NAMESPACES), SortOrder.DESCENDING)});
+        queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
+        queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.DESCENDING)});
         
         FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         // there are only 3 records with Image type
@@ -235,11 +235,11 @@ public class SimpleCatalogStoreTest extends TestCase {
     
     public void testLimitAttributes() throws IOException {
         Query query = new Query("Record");
-        Filter typeDataset = FF.equals(FF.property("dc:type/dc:value", CSWRecordTypes.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Dataset"));
+        Filter typeDataset = FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Dataset"));
         query.setFilter(typeDataset);
-        query.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:subject/dc:value", CSWRecordTypes.NAMESPACES), SortOrder.ASCENDING)});
+        query.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:subject/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.ASCENDING)});
         // select some properties we did not use for filtering and sorting
-        query.setProperties(Arrays.asList(FF.property("dc:identifier", CSWRecordTypes.NAMESPACES)));
+        query.setProperties(Arrays.asList(FF.property("dc:identifier", CSWRecordDescriptor.NAMESPACES)));
         
         FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);    
         assertEquals(3, records.size());

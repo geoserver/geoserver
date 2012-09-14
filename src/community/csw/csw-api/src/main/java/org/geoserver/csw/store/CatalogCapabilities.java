@@ -33,4 +33,14 @@ public class CatalogCapabilities {
     public List<Name> getQueriables(Name typeName) {
         return Collections.emptyList();
     }
+    
+    /**
+     * Returns the list of queriable properties for which an enumeration of the domain makes sense
+     * 
+     * @param typeName
+     * @return
+     */
+    public List<Name> getDomainQueriables(Name typeName) {
+        return Collections.emptyList();
+    }
 }

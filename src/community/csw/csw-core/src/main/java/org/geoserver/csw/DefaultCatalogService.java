@@ -16,6 +16,7 @@ import net.opengis.cat.csw20.TransactionType;
 
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
+import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -67,14 +68,14 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     }
 
     @Override
-    public FeatureCollection getRecords(GetRecordsType request) throws ServiceException {
+    public CSWRecordsResult getRecords(GetRecordsType request) throws ServiceException {
         checkStore();
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public FeatureCollection getRecordById(GetRecordByIdType request) throws ServiceException {
+    public CSWRecordsResult getRecordById(GetRecordByIdType request) throws ServiceException {
         checkStore();
         // TODO Auto-generated method stub
         return null;

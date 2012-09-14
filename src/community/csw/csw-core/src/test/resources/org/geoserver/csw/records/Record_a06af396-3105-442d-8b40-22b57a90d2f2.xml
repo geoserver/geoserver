@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:Record xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
+  xmlns:ows="http://www.opengis.net/ows" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/" 
+  xmlns:dct="http://purl.org/dc/terms/">
+    <dc:identifier>urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2</dc:identifier>
+    <dc:type>http://purl.org/dc/dcmitype/Image</dc:type>
+    <dc:title>Lorem ipsum dolor sit amet</dc:title>
+    <dc:format>image/jpeg</dc:format>
+    <dct:spatial>IT-FI</dct:spatial>
+</csw:Record>

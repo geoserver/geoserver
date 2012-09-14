@@ -16,8 +16,8 @@ import net.opengis.cat.csw20.HarvestType;
 import net.opengis.cat.csw20.TransactionType;
 
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.platform.ServiceException;
-import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.type.FeatureType;
 
 /**
@@ -39,12 +39,12 @@ public interface CatalogService {
     /**
      * Returns the records matching the specified request
      */
-    FeatureCollection getRecords(GetRecordsType request) throws ServiceException;
+    CSWRecordsResult getRecords(GetRecordsType request) throws ServiceException;
 
     /**
      * Returns the records matching the specified request
      */
-    FeatureCollection getRecordById(GetRecordByIdType request) throws ServiceException;
+    CSWRecordsResult getRecordById(GetRecordByIdType request) throws ServiceException;
     
     /**
      * Returns the list of possible values for the specified parameter/property

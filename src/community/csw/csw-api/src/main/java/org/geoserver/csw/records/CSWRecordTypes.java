@@ -10,8 +10,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -53,6 +55,10 @@ public class CSWRecordTypes {
     public static final Name SIMPLE_LITERAL_SCHEME;
 
     public static final Name SIMPLE_LITERAL_VALUE;
+    
+    public static final Set<Name> BRIEF_ELEMENTS;
+    
+    public static final Set<Name> SUMMARY_ELEMENTS;
 
     public static final Map<String, AttributeDescriptor> DC_DESCRIPTORS;
 
@@ -141,17 +147,17 @@ public class CSWRecordTypes {
             builder.setDefaultGeometry(RECORD_GEOMETRY_NAME);
             
             // and now the actual bbox, as a ReferencedEnvelope with the native CRS
-            builder.setNamespaceURI(CSW.NAMESPACE);
+            builder.setNamespaceURI(OWS.NAMESPACE);
             builder.setName("BoundingBoxType");
             builder.setBinding(ReferencedEnvelope.class);
             AttributeType bboxType = builder.attribute();
             builder.setMinOccurs(0);
             builder.setMaxOccurs(-1);
-            builder.setNamespaceURI(CSW.NAMESPACE);
+            builder.setNamespaceURI(OWS.NAMESPACE);
             builder.setName("BoundingBox");
             builder.setPropertyType(bboxType);
             RECORD_BBOX_DESCRIPTOR = builder.attributeDescriptor();
-            RECORD_BBOX_NAME = new NameImpl(CSW.NAMESPACE, "BoundingBox");
+            RECORD_BBOX_NAME = new NameImpl(OWS.NAMESPACE, "BoundingBox");
 
             // create the CSW record
             builder.setNamespaceURI(CSW.NAMESPACE);
@@ -164,6 +170,11 @@ public class CSWRecordTypes {
             throw new RuntimeException("Failed to create one of the attribute descriptors for "
                     + "the DC or DCT elements", e);
         }
+        
+        // setup the list of names for brief and summary records
+        BRIEF_ELEMENTS = createNameSet("dc:identifier", "dc:title", "dc:type", "ows:BoundingBox");
+        SUMMARY_ELEMENTS = createNameSet("dc:identifier", "dc:title", "dc:type", "dc:subject", 
+                "dc:format", "dc:relation", "dct:modified", "dct:abstract", "dct:spatial", "ows:BoundingBox");
     }
 
     /**
@@ -179,6 +190,18 @@ public class CSWRecordTypes {
             identifierDescriptor = CSWRecordTypes.DCT_DESCRIPTORS.get(elementName);
         }
         return identifierDescriptor;
+    }
+
+    private static Set<Name> createNameSet(String... names) {
+        Set<Name> result = new LinkedHashSet<Name>();
+        for (String name : names) {
+            String[] splitted = name.split(":");
+            String uri = NAMESPACES.getURI(splitted[0]);
+            String localName = splitted[1];
+            result.add(new NameImpl(uri, localName));
+        }
+        
+        return result;
     }
 
     private static void fillSimpleLiteralDescriptors(TypeBuilder builder, Class schemaClass,

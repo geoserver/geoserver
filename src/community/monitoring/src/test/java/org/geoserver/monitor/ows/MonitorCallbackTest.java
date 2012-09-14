@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -256,9 +257,10 @@ public class MonitorCallbackTest {
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(env);
         net.opengis.ows11.BoundingBoxType wcsBbox = net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
-        wcsBbox.setLowerCorner(Arrays.asList(new double[]{-123.4, 48.2}));
-        wcsBbox.setUpperCorner(Arrays.asList(new double[]{-120.9, 50.1}));
-        wcsBbox.setCrs("urn:ogc:def:crs:OGC:1.3:CRS84");
+        wcsBbox.setLowerCorner(Arrays.asList(-123.4d, 48.2d));
+        wcsBbox.setUpperCorner(Arrays.asList(-120.9d, 50.1d));
+        //wcsBbox.setCrs("urn:ogc:def:crs:OGC:1.3:CRS84");
+        wcsBbox.setCrs("urn:ogc:def:crs:EPSG:4326");
         net.opengis.wcs11.DomainSubsetType domainSubset = Wcs11Factory.eINSTANCE.createDomainSubsetType();
         domainSubset.setBoundingBox(wcsBbox);
         

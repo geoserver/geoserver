@@ -79,6 +79,7 @@
     <bean id="cswDescribeRecordKvpRequestReader" class="org.geoserver.csw.kvp.DescribeRecordKvpRequestReader"/>
     <bean id="cswGetDomainKvpRequestReader" class="org.geoserver.csw.kvp.GetDomainKvpRequestReader"/>
     <bean id="cswGetRecordsKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordsKvpRequestReader"/>
+    <bean id="cswGetRecordByIdKvpRequestReader" class="org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader"/>
     
     <!-- XML Configuration -->
     <bean id="cswXmlConfiguration-2.0.2"

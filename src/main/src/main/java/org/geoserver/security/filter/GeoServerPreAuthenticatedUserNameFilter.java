@@ -41,6 +41,9 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
     private String roleConverterName;
     private String roleServiceName;
     private GeoServerRoleConverter converter;
+    
+    protected final static String UserNameAlreadyRetrieved = "org.geoserver.security.filter.usernameAlreadyRetrieved";
+    protected final static String UserName = "org.geoserver.security.filter.username";
 
     public RoleSource getRoleSource() {
         return roleSource;
@@ -110,21 +113,34 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
 
     @Override
     protected String getPreAuthenticatedPrincipal(HttpServletRequest request) {
+        // avoid retrieving the user name more than once
+        if (request.getAttribute(UserNameAlreadyRetrieved)!=null)
+            return (String) request.getAttribute(UserName);
+        
         String principal = getPreAuthenticatedPrincipalName(request);
         if (principal!=null && principal.trim().length()==0)
-            principal=null;
-        
+            principal=null;        
         try {
             if (principal!=null && RoleSource.UserGroupService.equals(getRoleSource())) {
                 GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(getUserGroupServiceName());
                 GeoServerUser u = service.getUserByUsername(principal);
-                if (u!=null && u.isEnabled()==false)
-                    principal=null;            
+                if (u!=null && u.isEnabled()==false) {
+                    principal=null;
+                    handleDisabledUser(u, request);
+                }
+                
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+        request.setAttribute(UserNameAlreadyRetrieved, Boolean.TRUE);
+        if (principal!=null)
+            request.setAttribute(UserName,principal);
         return principal;    
+    }
+    
+    protected void handleDisabledUser(GeoServerUser u,HttpServletRequest request) {
+        // do nothing
     }
 
     @Override

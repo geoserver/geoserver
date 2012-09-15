@@ -63,7 +63,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
     public final static String testPassword = "pw1";
     public final static String rootRole = "RootRole";
     public final static String derivedRole = "DerivedRole";
-    public final static String pattern = "/foo/**";
+    protected String pattern = "/foo/**";
     public final static String testProviderName = "testAuthenticationProvider";
     
     

@@ -64,7 +64,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
             
             Authentication postAuthentication = SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey!=null) {
-                if (cacheAuthentication(postAuthentication)) {
+                if (cacheAuthentication(postAuthentication,(HttpServletRequest)request)) {
                     getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,postAuthentication);    
                 }
             }
@@ -146,8 +146,9 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         return aep;
     }
 
-    protected boolean cacheAuthentication(Authentication auth) {
-        return true;
+    protected boolean cacheAuthentication(Authentication auth,HttpServletRequest request) {
+        // only cache if no HTTP session is available 
+        return request.getSession(false) == null;
     }
 
     @Override

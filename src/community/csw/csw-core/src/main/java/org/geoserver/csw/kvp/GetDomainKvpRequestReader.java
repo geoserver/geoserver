@@ -27,20 +27,23 @@ public class GetDomainKvpRequestReader extends CSWKvpRequestReader {
     @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // fix propertyName before we get into EMF reflection mode
-        List propertyName = (List) kvp.remove(PROPERTYNAME);
-        
-        if (propertyName != null && propertyName.size() == 1)
-        {
-            Object property = null; 
-            
-            if (propertyName.get(0) instanceof List) {
-                property = ((List)propertyName.get(0)).get(0);
-            }
-            
-            if (property instanceof QName) {
-                kvp.put(PROPERTYNAME, ((QName) property).getLocalPart());
-            } else if (property instanceof String) {
-                kvp.put(PROPERTYNAME, property);
+        Object propertyName = kvp.remove(PROPERTYNAME);
+
+        if (propertyName != null) {
+            if (propertyName instanceof List && ((List) propertyName).size() > 0) {
+                Object property = null;
+
+                if (((List) propertyName).get(0) instanceof List) {
+                    property = ((List) ((List) propertyName).get(0)).get(0);
+                }
+
+                if (property instanceof QName) {
+                    kvp.put(PROPERTYNAME, ((QName) property).getLocalPart());
+                } else if (property instanceof String) {
+                    kvp.put(PROPERTYNAME, property);
+                }
+            } else if (propertyName instanceof String) {
+                kvp.put(PROPERTYNAME, propertyName);
             }
         }
         return super.read(request, kvp, rawKvp);

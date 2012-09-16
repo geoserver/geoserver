@@ -119,7 +119,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
 
         assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
                 .getLength() > 0);
-        assertEquals("6", xpath.evaluate("count(//ows:Operation)", dom));
+        assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
         assertEquals(
@@ -143,7 +143,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
 
         assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
                 .getLength() > 0);
-        assertEquals("6", xpath.evaluate("count(//ows:Operation)", dom));
+        assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
         assertEquals(

@@ -12,6 +12,7 @@ import javax.xml.namespace.QName;
 
 import net.opengis.cat.csw20.DescribeRecordType;
 
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -21,7 +22,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class DescribeRecordKvpRequestReader extends CSWKvpRequestReader {
 
-    TypeNameResolver resolver = new TypeNameResolver();
+    TypeNamesResolver resolver = new TypeNamesResolver();
 
     public DescribeRecordKvpRequestReader() {
         super(DescribeRecordType.class);
@@ -32,10 +33,16 @@ public class DescribeRecordKvpRequestReader extends CSWKvpRequestReader {
         // at this point the namespace and type names are separated, we need to merge them and build
         // QNames
         String typename = (String) kvp.get("typename");
-        NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
+        if(typename != null) {
+            NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
+            if(namespaces == null) {
+                // when null the default is the CSW one
+                namespaces = CSWRecordDescriptor.NAMESPACES;
+            }
         
-        List<QName> qnames = resolver.parseQNames(typename, namespaces);
-        kvp.put("typename", qnames);
+            List<QName> qnames = resolver.parseQNames(typename, namespaces);
+            kvp.put("typename", qnames);
+        }
 
         // proceed with the normal reflective setup
         return super.read(request, kvp, rawKvp);

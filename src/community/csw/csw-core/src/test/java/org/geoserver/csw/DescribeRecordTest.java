@@ -81,7 +81,7 @@ public class DescribeRecordTest extends CSWTestSupport {
         raw.put("request", "DescribeRecord");
         raw.put("namespace",
                 "xmlns(=http://www.opengis.net/cat/csw/2.0.2),xmlns(rim=urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0)");
-        raw.put("typename", "csw:Record,rim:RegistryPackage");
+        raw.put("typename", "Record,rim:RegistryPackage");
         raw.put("schemalanguage", "XMLSCHEMA");
         raw.put("outputFormat", "application/xml");
 
@@ -102,7 +102,7 @@ public class DescribeRecordTest extends CSWTestSupport {
     public void testBasicGetLocalSchema() throws Exception {
         Document dom = getAsDOM("csw?service=CSW&version=2.0.2&request=DescribeRecord");
         checkValidationErrors(dom);
-        // print(dom);
+        print(dom);
 
         assertCswRecordSchema(dom, false);
         

@@ -75,9 +75,9 @@ public class GetRecords {
                 maxRecords = request.getMaxRecords();
             }
             
-            // get and check the offset
-            int offset = request.getStartPosition() == null ? 0 : request.getStartPosition();
-            if(offset <= 0) {
+            // get and check the offset (which is 1 based, but our API is 0 based)
+            int offset = request.getStartPosition() == null ? 0 : request.getStartPosition() - 1;
+            if(offset < 0) {
                 throw new ServiceException("startPosition must be a positive number", ServiceException.INVALID_PARAMETER_VALUE, "startPosition");
             }
             
@@ -103,10 +103,11 @@ public class GetRecords {
                 // compute the number of records we're returning and the next record
                 if(numberOfRecordsMatched - offset <= maxRecords) {
                     numberOfRecordsReturned = numberOfRecordsMatched - offset;
-                    nextRecord = -1;
+                    nextRecord = 0;
                 } else {
                     numberOfRecordsReturned = maxRecords;
-                    nextRecord = offset + numberOfRecordsReturned;
+                    // mind, nextRecord is 1 based too
+                    nextRecord = offset + numberOfRecordsReturned + 1;
                 }
     
                 // time to run the queries if we are not in hits mode

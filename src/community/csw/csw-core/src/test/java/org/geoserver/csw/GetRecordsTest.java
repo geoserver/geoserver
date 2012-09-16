@@ -22,13 +22,18 @@ import net.opengis.cat.csw20.ResultType;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
-import org.geotools.filter.text.cql2.CQL;
+import org.geotools.csw.DC;
 import org.geotools.xml.XmlConverterFactory;
+import org.opengis.filter.Filter;
+import org.opengis.filter.Not;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
 
 public class GetRecordsTest extends CSWTestSupport {
@@ -74,6 +79,7 @@ public class GetRecordsTest extends CSWTestSupport {
         raw.put("hopCount", "10");
         raw.put("responsehandler", "http://www.geoserver.org");
         GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader();
+        reader.setApplicationContext(applicationContext);
         Object request = reader.createRequest();
         GetRecordsType gr = (GetRecordsType) reader.read(request, parseKvp(raw), raw);
 
@@ -105,14 +111,15 @@ public class GetRecordsTest extends CSWTestSupport {
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetRecords");
-        raw.put("namespace", "xmlns(csw=http://www.opengis.net/cat/csw/2.0.2))");
+        raw.put("namespace", "xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)");
         raw.put("typenames", "csw:Record");
         raw.put("elementSetName", "brief");
         raw.put("constraintLanguage", "FILTER");
         raw.put("constraint",
-                "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:Not><ogc:PropertyIsEqualTo><ogc:PropertyName>prop1</ogc:PropertyName><ogc:Literal>10</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Not></ogc:Filter>");
+                "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:Not><ogc:PropertyIsEqualTo><ogc:PropertyName>dc:title</ogc:PropertyName><ogc:Literal>foo</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Not></ogc:Filter>");
 
         GetRecordsKvpRequestReader reader = new GetRecordsKvpRequestReader();
+        reader.setApplicationContext(applicationContext);
         Object request = reader.createRequest();
         GetRecordsType gr = (GetRecordsType) reader.read(request, parseKvp(raw), raw);
 
@@ -122,7 +129,18 @@ public class GetRecordsTest extends CSWTestSupport {
 
         // now onto the query
         QueryType query = (QueryType) gr.getQuery();
-        assertEquals(CQL.toFilter("!(prop1 = 10)"), query.getConstraint().getFilter());
+        
+        // checking the filter is structured as expected, with the proper namespace support
+        Filter filter = query.getConstraint().getFilter();
+        assertTrue(filter instanceof Not);
+        Filter negated = ((Not) filter).getFilter();
+        assertTrue(negated instanceof PropertyIsEqualTo);
+        PropertyName pname = (PropertyName) ((PropertyIsEqualTo) negated).getExpression1();
+        assertEquals("dc:title/dc:value", pname.getPropertyName());
+        assertNotNull(pname.getNamespaceContext());
+        assertEquals(DC.NAMESPACE, pname.getNamespaceContext().getURI("dc"));
+        
+        
         assertEquals("1.1.0", query.getConstraint().getVersion());
         assertEquals(1, query.getTypeNames().size());
         assertEquals(new QName("http://www.opengis.net/cat/csw/2.0.2", "Record"), query
@@ -268,6 +286,68 @@ public class GetRecordsTest extends CSWTestSupport {
         
         // check we 10 summary records (max records defaults to 10)
         assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:Record)", d);
+    }
+    
+    public void testEmptyResult() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&constraint=dc:title = 'foo'";
+        Document d = getAsDOM(request);
+
+        // print(d);
+        assertXpathEvaluatesTo("summary", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+    }
+
+    
+    public void testTitleFilter() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=dc:title like '%25ipsum%25'";
+        Document d = getAsDOM(request);
+        // print(d);
+
+        assertIpsumRecords(d);
+    }
+    
+    public void testUnqualifiedTitleFilter() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=title like '%25ipsum%25'";
+        Document d = getAsDOM(request);
+        // print(d);
+
+        assertIpsumRecords(d);
+    }
+    
+    private void assertIpsumRecords(Document d) throws XpathException {
+        // basic checks
+        assertXpathEvaluatesTo("brief", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("2", "count(//csw:SearchResults/*)", d);
+        
+        // verify we got the records we expected
+        assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", d);
+        assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])", d);
+    }
+    
+    public void testFullTextSearch() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=AnyText like '%25sed%25'";
+        Document d = getAsDOM(request);
+        // print(d);
+
+        // basic checks
+        assertXpathEvaluatesTo("brief", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("3", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("3", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("3", "count(//csw:SearchResults/*)", d);
+        
+        // verify we got the records we expected
+        // this one has 'sed' in the abstract
+        assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", d);
+        // this one in the abstract
+        assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:66ae76b7-54ba-489b-a582-0f0633d96493'])", d);
+        // and this one in the title
+        assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
     }
 
 }

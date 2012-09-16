@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 
 import net.opengis.cat.csw20.ElementSetType;
 
+import org.geoserver.csw.util.NamespaceQualifier;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
@@ -36,6 +37,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.FeatureTypeFactory;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -79,8 +81,11 @@ public class CSWRecordDescriptor implements RecordDescriptor {
 
     public static final AttributeDescriptor RECORD_GEOMETRY_DESCRIPTOR;
 
-
     public static final FeatureType RECORD;
+    
+    static final SimpleLiteralPathExtender PATH_EXTENDER;
+    
+    static final NamespaceQualifier NSS_QUALIFIER;
 
     static {
         // prepare the common namespace support
@@ -91,6 +96,11 @@ public class CSWRecordDescriptor implements RecordDescriptor {
         NAMESPACES.declarePrefix("dct", DCT.NAMESPACE);
         NAMESPACES.declarePrefix("ows", OWS.NAMESPACE);
         NAMESPACES.declarePrefix("ogc", OGC.NAMESPACE);
+        
+        // create the xpath extender that fill adapt dc:title to dc:title/dc:value
+        PATH_EXTENDER = new SimpleLiteralPathExtender(NAMESPACES);
+        // qualified the xpath in the filters
+        NSS_QUALIFIER = new NamespaceQualifier(NAMESPACES);
         
         // prepare the CSW record related types
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
@@ -238,6 +248,8 @@ public class CSWRecordDescriptor implements RecordDescriptor {
                 && Modifier.isFinal(modifier);
     }
 
+    
+
     @Override
     public FeatureType getFeatureType() {
         return RECORD;
@@ -263,6 +275,12 @@ public class CSWRecordDescriptor implements RecordDescriptor {
     @Override
     public NamespaceSupport getNamespaceSupport() {
         return NAMESPACES;
+    }
+
+    @Override
+    public Filter adaptFilter(Filter filter) {
+        Filter qualified = (Filter) filter.accept(NSS_QUALIFIER, null);
+        return (Filter) qualified.accept(PATH_EXTENDER, null); 
     }
 
 }

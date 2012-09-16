@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw.store;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,6 +15,7 @@ import net.opengis.cat.csw20.Csw20Factory;
 import net.opengis.ows10.DomainType;
 import net.opengis.ows10.Ows10Factory;
 
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.opengis.feature.type.Name;
 
 /**
@@ -246,6 +248,16 @@ public class CatalogCapabilities {
      * @return
      */
     public List<Name> getDomainQueriables(Name typeName) {
-        return Collections.emptyList();
+        List<Name> queriables = new ArrayList<Name>();
+        
+        for(Name property : CSWRecordDescriptor.SUMMARY_ELEMENTS)
+        {
+            if (property.equals(typeName))
+            {
+                queriables.add(property);
+            }
+        }
+        
+        return queriables;
     }
 }

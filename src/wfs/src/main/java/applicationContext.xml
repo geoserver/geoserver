@@ -348,11 +348,13 @@
 		<constructor-arg index="0" value="propertyName"/>
 		<constructor-arg index="1" value="java.lang.String"/>
 		<property name="version" value="1.0.0"/>
+		<property name="service" value="wfs"/>
 	</bean>
 	<bean id="propertyName11KvpParser" class="org.geoserver.ows.NestedKvpParser">
         <constructor-arg index="0" value="propertyName"/>
         <constructor-arg index="1" value="java.lang.String"/>
         <property name="version" value="1.1.0"/>
+        <property name="service" value="wfs"/>
     </bean>
 	<bean id="maxFeatureKvpParser" class="org.geoserver.ows.util.NumericKvpParser">
 		<constructor-arg index="0" value="maxFeatures"/>
@@ -391,6 +393,7 @@
   <bean id="propertyName20KvpParser" class="org.geoserver.wfs.kvp.QNameNestedKvpParser">
     <constructor-arg value="propertyName"/>
     <constructor-arg ref="catalog"/>
+    <property name="service" value="wfs"/>
   </bean>
   <bean id="storedQueryIdKvpParser" class="org.geoserver.wfs.kvp.URIKvpParser">
     <constructor-arg value="storedQueryId"/>

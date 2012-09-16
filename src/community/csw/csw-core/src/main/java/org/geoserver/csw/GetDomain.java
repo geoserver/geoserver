@@ -5,7 +5,6 @@
 package org.geoserver.csw;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.opengis.cat.csw20.GetDomainType;
@@ -13,8 +12,12 @@ import net.opengis.ows10.DomainType;
 
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.ServiceException;
+import org.geotools.csw.CSW;
+import org.geotools.feature.NameImpl;
+import org.opengis.feature.type.Name;
 
 /**
  * Runs the GetDomain request
@@ -65,7 +68,25 @@ public class GetDomain {
             }
 
             if (request.getPropertyName() != null && !request.getPropertyName().isEmpty()) {
-                
+                final String propertyName = request.getPropertyName();
+                String nameSpace = null;
+                String localPart = null;
+                if (propertyName.indexOf(":") > 0)
+                {
+                    nameSpace = propertyName.split(":")[0];
+                    localPart = propertyName.split(":")[1];
+                } 
+                else 
+                {
+                    localPart = propertyName;
+                }
+                Name typeName = (nameSpace != null ? new NameImpl(CSWRecordDescriptor.NAMESPACES.getURI(nameSpace), localPart) : new NameImpl(localPart) );
+
+                List<Name> domainQueriables = store.getCapabilities().getDomainQueriables(typeName);
+                if (domainQueriables != null && domainQueriables.size() > 0)
+                {
+                    return this.store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), typeName);
+                }
             }
 
             return new CloseableIteratorAdapter<String>(result.iterator());

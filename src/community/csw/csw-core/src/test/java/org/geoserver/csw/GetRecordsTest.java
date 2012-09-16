@@ -23,13 +23,11 @@ import net.opengis.cat.csw20.ResultType;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
-import org.geotools.csw.DC;
 import org.geotools.xml.XmlConverterFactory;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Not;
@@ -358,6 +356,33 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
     }
     
+    /**
+     * This one comes from the CITE tests, like filters are to be applied in a case insensitive
+     * fashion
+     * 
+     * @throws Exception
+     */
+    public void testFullTextSearchCaseInsensitive() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=full&constraint=AnyText like '%25lorem%25'";
+        Document d = getAsDOM(request);
+        checkValidationErrors(d, new CSWConfiguration());
+        // print(d);
+
+        // basic checks
+        assertXpathEvaluatesTo("full", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("5", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("5", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("5", "count(//csw:SearchResults/*)", d);
+        
+        // verify we got the records we expected
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a'])", d);
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:88247b56-4cbc-4df9-9860-db3f8042e357'])", d);
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", d);
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])", d);
+    }
+    
     public void testSortByIdentifier() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&sortBy=dc:identifier:A";
         Document d = getAsDOM(request);
@@ -384,7 +409,8 @@ public class GetRecordsTest extends CSWTestSupport {
     }
     
     public void testSortByDateSelectElements() throws Exception {
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
+        		"&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
         // print(d);
@@ -406,6 +432,37 @@ public class GetRecordsTest extends CSWTestSupport {
         List<String> sorted = new ArrayList<String>(dates);
         Collections.sort(sorted);
         assertEquals(sorted, dates);
+    }
+    
+    public void testFilterBBox() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
+                "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(ows:BoundingBox, 47.0, -4.5, 52.0, 1.0)";
+        Document d = getAsDOM(request);
+        checkValidationErrors(d, new CSWConfiguration());
+        print(d);
+
+        // basic checks
+        assertXpathEvaluatesTo("full", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("2", "count(//csw:SearchResults/*)", d);
+        
+        // verify we got the expected records
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc'])", d);
+        assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
+    }
+    
+    /**
+     * From CITE compliance, throw an error if a non spatial property is used in a spatial filter
+     * @throws Exception
+     */
+    public void testSpatialFilterNonGeomProperty() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
+                "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(dct:spatial, 47.0, -4.5, 52.0, 1.0)";
+        Document d = getAsDOM(request);
+        // print(d);
+        checkOws10Exception(d);
     }
 
 }

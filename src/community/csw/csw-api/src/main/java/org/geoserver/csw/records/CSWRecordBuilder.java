@@ -49,7 +49,7 @@ public class CSWRecordBuilder {
             fb.append(CSWRecordDescriptor.DC_ELEMENT_NAME, element);
         }
     }
-    
+
     public void addElementWithScheme(String name, String scheme, String value) {
         AttributeDescriptor descriptor = CSWRecordDescriptor.getDescriptor(name);
         ab.setDescriptor(descriptor);
@@ -60,7 +60,6 @@ public class CSWRecordBuilder {
         fb.append(CSWRecordDescriptor.DC_ELEMENT_NAME, element);
     }
 
-
     /**
      * Adds a bounding box to the record. The envelope must be in WGS84
      * 
@@ -68,10 +67,6 @@ public class CSWRecordBuilder {
      */
     public void addBoundingBox(ReferencedEnvelope env) {
         boxes.add(env);
-        ab.setDescriptor(CSWRecordDescriptor.RECORD_BBOX_DESCRIPTOR);
-        Attribute element = ab.buildSimple(null, env);
-
-        fb.append(CSWRecordDescriptor.RECORD_BBOX_NAME, element);
     }
 
     /**
@@ -85,10 +80,10 @@ public class CSWRecordBuilder {
         Geometry geom = null;
         for (ReferencedEnvelope env : boxes) {
             try {
-                env = env.transform(DefaultGeographicCRS.WGS84, true);
+                env = env.transform(CSWRecordDescriptor.DEFAULT_CRS, true);
 
                 Polygon poly = JTS.toGeometry(env);
-                poly.setUserData(DefaultGeographicCRS.WGS84);
+                poly.setUserData(CSWRecordDescriptor.DEFAULT_CRS);
                 if (geom == null) {
                     geom = poly;
                 } else {
@@ -100,13 +95,14 @@ public class CSWRecordBuilder {
                                 + "this should never happen with valid coordinates", e);
             }
         }
-        if(geom instanceof Polygon) {
-            geom = geom.getFactory().createMultiPolygon(new Polygon[] {(Polygon) geom}); 
+        if (geom instanceof Polygon) {
+            geom = geom.getFactory().createMultiPolygon(new Polygon[] { (Polygon) geom });
         }
 
-        ab.setDescriptor(CSWRecordDescriptor.RECORD_GEOMETRY_DESCRIPTOR);
+        ab.setDescriptor(CSWRecordDescriptor.RECORD_BBOX_DESCRIPTOR);
         Attribute element = ab.buildSimple(null, geom);
-        fb.append(CSWRecordDescriptor.RECORD_GEOMETRY_NAME, element);
+        element.getUserData().put(CSWRecordDescriptor.ORIGINAL_BBOXES, new ArrayList<ReferencedEnvelope>(boxes));
+        fb.append(CSWRecordDescriptor.RECORD_BBOX_NAME, element);
 
         boxes.clear();
         return fb.buildFeature(id);

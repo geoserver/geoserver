@@ -6,6 +6,7 @@ package org.geoserver.csw.util;
 
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.spatial.BBOX;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -31,5 +32,16 @@ public class NamespaceQualifier extends DuplicatingFilterVisitor {
             nss = defaultNss;
         }
         return getFactory(extraData).property(expression.getPropertyName(), nss);
+    }
+    
+    @Override
+    public Object visit(BBOX filter, Object extraData) {
+        if(filter.getExpression1() instanceof PropertyName) {
+            PropertyName pname = (PropertyName) filter.getExpression1();
+            PropertyName qualified = (PropertyName) pname.accept(this, extraData);
+            return getFactory(extraData).bbox(qualified, filter.getBounds());            
+        } else {
+            return super.visit(filter, extraData);
+        }
     }
 }

@@ -166,6 +166,12 @@ public class GetRecords {
         Filter filter = query.getConstraint() != null ? query.getConstraint().getFilter() : null;
         Set<Name> supportedTypes = getSupportedTypes();
         
+        // the CSW specification expects like filters to be case insensitive (by CITE tests)
+        // but we default to have filters case sensitive instead
+        if(filter != null) {
+            filter = (Filter) filter.accept(new CaseInsenstiveFilterTransformer(), null);
+        }
+        
         // build one query per type name, forgetting about paging for the time being
         List<Query> result = new ArrayList<Query>();
         for (QName qName : query.getTypeNames()) {
@@ -181,7 +187,13 @@ public class GetRecords {
             q.setSortBy(query.getSortBy());
             
             // perform some necessary query adjustments
-            Query adapted = rd.adaptQuery(q);            
+            Query adapted = rd.adaptQuery(q);     
+            
+            // the specification demands that we throw an error if a spatial operator
+            // is used against a non spatial property
+            if(q.getFilter() != null) {
+                q.getFilter().accept(new SpatialFilterChecker(rd.getFeatureType()), null);
+            }
             
             result.add(adapted);
         }

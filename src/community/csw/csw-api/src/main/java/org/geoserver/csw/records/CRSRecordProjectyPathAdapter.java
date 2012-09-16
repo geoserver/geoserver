@@ -30,4 +30,5 @@ public class CRSRecordProjectyPathAdapter extends DuplicatingFilterVisitor {
         return extender.extendProperty(expression, filterFactory, nss);
     }
 
+    
 }

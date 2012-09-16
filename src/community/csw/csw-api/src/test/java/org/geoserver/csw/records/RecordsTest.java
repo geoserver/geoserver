@@ -1,12 +1,12 @@
 package org.geoserver.csw.records;
 
 import java.util.Collection;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -14,6 +14,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.geometry.MismatchedDimensionException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
 
 public class RecordsTest extends TestCase {
 
@@ -71,14 +72,13 @@ public class RecordsTest extends TestCase {
     }
 
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
-        Collection<Property> propertyList = f.getProperties(CSWRecordDescriptor.RECORD_BBOX_NAME);
-        Property[] properties = (Property[]) propertyList.toArray(new Property[propertyList.size()]);
-        assertEquals(properties.length, envelopes.length);
+        Property p = f.getProperty(CSWRecordDescriptor.RECORD_BBOX_NAME);
+        MultiPolygon geometry = (MultiPolygon) p.getValue();
+        List<ReferencedEnvelope> featureEnvelopes = (List<ReferencedEnvelope>) p.getUserData().get(CSWRecordDescriptor.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
-        for (int i = 0; i < properties.length; i++) {
-            Attribute at = (Attribute) properties[i];
-            assertEquals(envelopes[i], at.getValue());
-            ReferencedEnvelope re = envelopes[i].transform(DefaultGeographicCRS.WGS84, true);
+        for (int i = 0; i < envelopes.length; i++) {
+            assertEquals(envelopes[i], featureEnvelopes.get(i));
+            ReferencedEnvelope re = envelopes[i].transform(CSWRecordDescriptor.DEFAULT_CRS, true);
             if(total == null) {
                 total = re;
             } else {
@@ -86,7 +86,6 @@ public class RecordsTest extends TestCase {
             }
         }
         
-        Geometry geometry = (Geometry) f.getDefaultGeometryProperty().getValue();
         assertTrue(total.contains(geometry.getEnvelopeInternal()));
     }
 

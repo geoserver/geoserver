@@ -5,6 +5,7 @@
 package org.geoserver.csw.response;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import net.opengis.cat.csw20.RequestBaseType;
@@ -67,7 +68,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                     Collection<Property> properties = f.getProperties(name);
                     if(properties != null && !properties.isEmpty()) {
                         for (Property p : properties) {
-                            encodProperty(f, p);
+                            encodeProperty(f, p);
                         }
                     } else if(DC_TITLE.getName().equals(name)) {
                         // dc:title is mandatory even if we don't have a value for it
@@ -78,18 +79,19 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                 // csw:Record has freeform order
                 for (Property p : f.getProperties()) {
                     if (elements == null || elements.contains(p.getName())) {
-                        encodProperty(f, p);
+                        encodeProperty(f, p);
                     }
                 }
             }
             
             // encode the bbox if present
             if(elements == null || elements.contains(CSWRecordDescriptor.RECORD_BBOX_NAME)) {
-                Collection<Property> bboxes = f.getProperties(CSWRecordDescriptor.RECORD_BBOX_NAME);
+                Property bboxes = f.getProperty(CSWRecordDescriptor.RECORD_BBOX_NAME);
                 if(bboxes != null) {
-                    for (Property p : bboxes) {
+                    // grab the original bounding boxes from the user data (the geometry is an aggregate)
+                    List<ReferencedEnvelope> originalBoxes = (List<ReferencedEnvelope>) bboxes.getUserData().get(CSWRecordDescriptor.ORIGINAL_BBOXES);
+                    for (ReferencedEnvelope re : originalBoxes) {
                         try {
-                            ReferencedEnvelope re = (ReferencedEnvelope) p.getValue();
                             ReferencedEnvelope wgs84re = re.transform(
                                     CRS.decode(CSWRecordDescriptor.DEFAULT_CRS_NAME), true);
 
@@ -100,7 +102,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
 
                             AttributesImpl attributes = new AttributesImpl();
                             addAttribute(attributes, "crs", CSWRecordDescriptor.DEFAULT_CRS_NAME);
-                            start("ows:BoundingBox");
+                            start("ows:BoundingBox", attributes);
                             element("ows:LowerCorner", minx + " " + miny);
                             element("ows:UpperCorner", maxx + " " + maxy);
                             end("ows:BoundingBox");
@@ -115,13 +117,11 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
             end(element);
         }
 
-        private void encodProperty(Feature f, Property p) {
+        private void encodeProperty(Feature f, Property p) {
             if (p.getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
                 encodeSimpleLiteral(p);
             } else if (CSWRecordDescriptor.RECORD_BBOX_NAME.equals(p.getName())) {
                 // skip it for the moment, it is constrained to be last
-            } else if(CSWRecordDescriptor.RECORD_GEOMETRY_NAME.equals(p.getName())) {
-                // skip it, we only use it for filtering
             } else {
                 throw new IllegalArgumentException("Don't know how to encode property " + p
                         + " in record " + f);

@@ -120,7 +120,7 @@ public class SimpleCatalogStoreTest extends TestCase {
     }
     
     public void testSpatialFilter() throws IOException {
-        Filter filter = FF.bbox("", 13.754, 60.042, 17.920, 68.410 , "EPSG:4326");
+        Filter filter = FF.bbox("", 60.042, 13.754, 68.410, 17.920, CSWRecordDescriptor.DEFAULT_CRS_NAME);
         FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
@@ -136,7 +136,7 @@ public class SimpleCatalogStoreTest extends TestCase {
     }
     
     public void testSpatialFilterWorld() throws IOException {
-        Filter filter = FF.bbox("", -180, -90, 180, 90, "EPSG:4326");
+        Filter filter = FF.bbox("", -90, -180, 90, 180, CSWRecordDescriptor.DEFAULT_CRS_NAME);
         FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         // there are only 3 records with a bbox
         assertEquals(3, records.size());

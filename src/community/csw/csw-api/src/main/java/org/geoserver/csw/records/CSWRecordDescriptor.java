@@ -24,7 +24,6 @@ import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
 import org.geotools.data.Query;
-import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
@@ -33,16 +32,13 @@ import org.geotools.filter.SortByImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.v1_0.OGC;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.OWS;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.FeatureTypeFactory;
-import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -55,13 +51,30 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 
 /**
  * Describes the CSW records and provides some handy constants to help building features
- * representing CSW:Record
+ * representing CSW:Record.
+ * 
+ * A few remarks about the {@link #RECORD} feature type:
+ * <ul>
+ * <li>The SimpleLiterals are complex elements with simple contents, which we cannot properly
+ * represent in GeoTools as the moment, the adopted solution is to have SimpleLiteral sport two
+ * properties, value and scheme, which means the property paths in filters and sort operations have
+ * to be adapted from <code>dc(t):elementName</code> to <code>dc(t):elementName/dc:value</code>
+ * <li>The ows:BoundingBox element can be repeated multiple times and can have different SRS in each
+ * instance, to deal with that we build a single geometry, a multipolygon, and keep the original
+ * bounding boxes in the attribute user data, under the {@link #ORIGINAL_BBOXES} key</li>
+ * </ul>
  * 
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWRecordDescriptor implements RecordDescriptor {
     
     private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    
+    /**
+     * A user property of the boundingBox attribute containing the original envelopes
+     * of the Record. 
+     */
+    public static final String ORIGINAL_BBOXES = "RecordOriginalBounds";
 
     /**
      * Contains the declarations of common namespaces and prefixes used in the CSW world
@@ -90,10 +103,6 @@ public class CSWRecordDescriptor implements RecordDescriptor {
 
     public static final AttributeDescriptor RECORD_BBOX_DESCRIPTOR;
     
-    public static final NameImpl RECORD_GEOMETRY_NAME;
-
-    public static final AttributeDescriptor RECORD_GEOMETRY_DESCRIPTOR;
-
     public static final FeatureType RECORD;
     
     static final CRSRecordProjectyPathAdapter PATH_EXTENDER;
@@ -117,6 +126,13 @@ public class CSWRecordDescriptor implements RecordDescriptor {
         NAMESPACES.declarePrefix("dct", DCT.NAMESPACE);
         NAMESPACES.declarePrefix("ows", OWS.NAMESPACE);
         NAMESPACES.declarePrefix("ogc", OGC.NAMESPACE);
+
+        // build the default CRS
+        try {
+            DEFAULT_CRS = CRS.decode(DEFAULT_CRS_NAME);
+        } catch(Exception e) {
+            throw new RuntimeException("Failed to decode the default CRS, this should never happen!", e);
+        }
         
         // prepare the CSW record related types
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
@@ -161,39 +177,24 @@ public class CSWRecordDescriptor implements RecordDescriptor {
 
             // create the geometry representation, used for the sake of in memory filtering 
             // and spatial representation in a single CRS
-            builder.setNamespaceURI(CSW.NAMESPACE);
-            builder.setName("geometry");
-            builder.setBinding(MultiPolygon.class);
-            builder.crs(DefaultGeographicCRS.WGS84);
-            GeometryType geometryType = builder.geometry();
-            builder.setMinOccurs(0);
-            builder.setMaxOccurs(1);
-            builder.setNamespaceURI(CSW.NAMESPACE);
-            builder.setName("geometry");
-            builder.setPropertyType(geometryType);
-            RECORD_GEOMETRY_DESCRIPTOR = builder.attributeDescriptor();
-            RECORD_GEOMETRY_NAME = new NameImpl(CSW.NAMESPACE, "geometry");
-            builder.setDefaultGeometry(RECORD_GEOMETRY_NAME);
-            
-            // and now the actual bbox, as a ReferencedEnvelope with the native CRS
             builder.setNamespaceURI(OWS.NAMESPACE);
             builder.setName("BoundingBoxType");
-            builder.setBinding(ReferencedEnvelope.class);
-            AttributeType bboxType = builder.attribute();
+            builder.setBinding(MultiPolygon.class);
+            builder.crs(DEFAULT_CRS);
+            AttributeType bboxType = builder.geometry();
             builder.setMinOccurs(0);
-            builder.setMaxOccurs(-1);
+            builder.setMaxOccurs(1);
             builder.setNamespaceURI(OWS.NAMESPACE);
             builder.setName("BoundingBox");
             builder.setPropertyType(bboxType);
             RECORD_BBOX_DESCRIPTOR = builder.attributeDescriptor();
             RECORD_BBOX_NAME = new NameImpl(OWS.NAMESPACE, "BoundingBox");
-
+            
             // create the CSW record
             builder.setNamespaceURI(CSW.NAMESPACE);
             builder.setName(CSW.Record.getLocalPart());
             builder.add(DC_ELEMENT);
             builder.add(RECORD_BBOX_DESCRIPTOR);
-            builder.add(RECORD_GEOMETRY_DESCRIPTOR);
             RECORD = builder.feature();
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to create one of the attribute descriptors for "
@@ -209,11 +210,6 @@ public class CSWRecordDescriptor implements RecordDescriptor {
         PATH_EXTENDER = new CRSRecordProjectyPathAdapter(NAMESPACES);
         // qualified the xpath in the filters
         NSS_QUALIFIER = new NamespaceQualifier(NAMESPACES);
-        try {
-            DEFAULT_CRS = CRS.decode(DEFAULT_CRS_NAME);
-        } catch(Exception e) {
-            throw new RuntimeException("Failed to decode the default CRS, this should never happen!", e);
-        }
         // applies the default CRS to geometry filters coming from the outside
         CRS_DEFAULTER = new DefaultCRSFilterVisitor(FF, DEFAULT_CRS);
         // transforms geometry filters into the internal representation

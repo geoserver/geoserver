@@ -19,7 +19,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
-import org.geotools.ows.v1_1.OWS;
+import org.geotools.ows.OWS;
 import org.geotools.util.Converters;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.feature.Feature;
@@ -85,7 +85,7 @@ public abstract class AbstractRecordTransformer extends TransformerBase {
             attributes = new AttributesImpl();
             addAttribute(attributes, "timestamp",
                     Converters.convert(response.getTimestamp(), String.class));
-            element("csw:GetSearchStatus", null, attributes);
+            element("csw:SearchStatus", null, attributes);
             
             if(response.getElementSet() == null) {
                 response.setElementSet(ElementSetType.FULL);

@@ -10,7 +10,6 @@ import java.util.Map;
 import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geotools.filter.v1_1.OGC;
-import org.geotools.gml3.v3_2.GML;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.Encoder;
 

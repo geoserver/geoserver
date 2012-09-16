@@ -53,6 +53,7 @@
     <bean id="cswAcceptFormatsKvpParser" class="org.geoserver.csw.kvp.AcceptFormatsKvpParser"/>
     <bean id="cswAcceptVersionsKvpParser" class="org.geoserver.csw.kvp.AcceptVersionsKvpParser"/>
     <bean id="cswSectionsKvpParser" class="org.geoserver.csw.kvp.SectionsKvpParser"/>
+    <bean id="cswTypeNameParser" class="org.geoserver.csw.kvp.TypenamesKvpParser"/>
     <bean id="cswNamespaceParser" class="org.geoserver.ows.kvp.NamespaceKvpParser">
        <constructor-arg value="namespace"/>
     </bean>
@@ -68,11 +69,16 @@
     <bean id="cswResultTypeParser" class="org.geoserver.ows.kvp.EnumKvpParser">
        <constructor-arg value="resultType"/>
        <constructor-arg value="net.opengis.cat.csw20.ResultType"/>
+       <property name="service" value="csw"/>
     </bean>
     <bean id="cswElementSetTypeParser" class="org.geoserver.ows.kvp.EnumKvpParser">
        <constructor-arg value="elementSetName"/>
        <constructor-arg value="net.opengis.cat.csw20.ElementSetType"/>
     </bean>
+    <bean id="cswSortByKvpParser" class="org.geoserver.csw.kvp.SortByKvpParser">
+       <constructor-arg ref="filterFactory"/>
+    </bean>
+    
     
     <!-- KVP readers -->
     <bean id="cswGetCapabilitesKvpRequestReader" class="org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader"/>
@@ -148,16 +154,27 @@
     <bean id="cswRecordDescriptor" class="org.geoserver.csw.records.CSWRecordDescriptor"/>
     
     <!-- http url mapping -->
-    <bean id="CSWURLMapping" 
+    <bean id="cswURLMapping" 
       class="org.geoserver.ows.OWSHandlerMapping">
       <constructor-arg ref="catalog"/>
       <property name="alwaysUseFullPath" value="true"/>
+      <property name="interceptors">
+        <list>
+          <ref bean="cswCiteComplianceHack"/>
+        </list>
+      </property>
       <property name="mappings">
         <props>
           <prop key="/csw">dispatcher</prop>
           <prop key="/csw/*">dispatcher</prop>
         </props>
       </property>
+    </bean>
+    
+    <!-- cite compliance hack -->
+    <bean id="cswCiteComplianceHack" class="org.geoserver.ows.CiteComplianceHack">
+      <constructor-arg ref="geoServer"/>
+          <constructor-arg value="org.geoserver.csw.CSWInfo"/>
     </bean>
       
 </beans>

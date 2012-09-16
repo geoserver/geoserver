@@ -156,7 +156,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
     public void testSections() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
         // print(dom);
-        //checkValidationErrors(dom);
+        checkValidationErrors(dom);
 
         // basic check on local name
         Element e = dom.getDocumentElement();
@@ -167,9 +167,24 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         assertEquals("1", xpath.evaluate("count(//ows:ServiceIdentification)", dom));
         assertEquals("1", xpath.evaluate("count(//ows:ServiceProvider)", dom));
         assertEquals("0", xpath.evaluate("count(//ows:OperationsMetadata)", dom));
-        assertEquals("0", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
+        // this one is mandatory, cannot be skipped
+        assertEquals("1", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
 
         assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength() == 0);
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
+    }
+    
+    public void testCiteCompliance() throws Exception {
+        CSWInfo csw = getGeoServer().getService(CSWInfo.class);
+        try {
+            csw.setCiteCompliant(true);
+            getGeoServer().save(csw);
+            
+            Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities");
+            checkOws10Exception(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
+        } finally {
+            csw.setCiteCompliant(false);
+            getGeoServer().save(csw);
+        }
     }
 }

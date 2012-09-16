@@ -223,37 +223,36 @@ public class GetCapabilities {
         }
 
         // Filter Capabilities
-        if (sections == null || requestedSection("OperationsMetadata", sections)) {
-            final FilterFactory2 ffFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
-            // - Spatial Capabilities
-            //SpatialCapabilities spatialCapabilities = ffFactory.spatialCapabilities(geometryOperands, spatialOperands);
-            SpatialCapabilities spatialCapabilities = new CSWSpatialCapabilities();
-                
-            // - Scalar Capabilities
-            Operator[] operators = new Operator[] { ffFactory.operator("EqualTo"),
-                    ffFactory.operator("Like"), ffFactory.operator("LessThan"),
-                    ffFactory.operator("GreaterThan"), ffFactory.operator("LessThanEqualTo"),
-                    ffFactory.operator("GreaterThanEqualTo"), ffFactory.operator("NotEqualTo"),
-                    ffFactory.operator("Between"), ffFactory.operator("NullCheck") };
-            ComparisonOperators comparisonOperators = ffFactory.comparisonOperators(operators);
-            ArithmeticOperators arithmeticOperators = ffFactory.arithmeticOperators(true, null);
-            ScalarCapabilities scalarCapabilities = ffFactory.scalarCapabilities(
-                    comparisonOperators, arithmeticOperators, logicalOperators);
-            // - removing Arithmetic Operators...
-            ((ScalarCapabilitiesImpl)scalarCapabilities).setArithmeticOperators(null);
-
-            // - Id Capabilities
-            IdCapabilities id = ffFactory.idCapabilities(eid, fid);
-
-            FilterCapabilities filterCapabilities = ffFactory.capabilities("1.1.0",
-                    scalarCapabilities, spatialCapabilities, id);
+        // this part is not optional, the schema has min = 0, so we don't check for the sections
+        final FilterFactory2 ffFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+        // - Spatial Capabilities
+        //SpatialCapabilities spatialCapabilities = ffFactory.spatialCapabilities(geometryOperands, spatialOperands);
+        SpatialCapabilities spatialCapabilities = new CSWSpatialCapabilities();
             
-            ((FilterCapabilitiesImpl)filterCapabilities).setScalar(scalarCapabilities);
-            ((FilterCapabilitiesImpl)filterCapabilities).setSpatial(spatialCapabilities);
-            ((FilterCapabilitiesImpl)filterCapabilities).setId(id);
-            
-            caps.setFilterCapabilities(filterCapabilities);
-        }
+        // - Scalar Capabilities
+        Operator[] operators = new Operator[] { ffFactory.operator("EqualTo"),
+                ffFactory.operator("Like"), ffFactory.operator("LessThan"),
+                ffFactory.operator("GreaterThan"), ffFactory.operator("LessThanEqualTo"),
+                ffFactory.operator("GreaterThanEqualTo"), ffFactory.operator("NotEqualTo"),
+                ffFactory.operator("Between"), ffFactory.operator("NullCheck") };
+        ComparisonOperators comparisonOperators = ffFactory.comparisonOperators(operators);
+        ArithmeticOperators arithmeticOperators = ffFactory.arithmeticOperators(true, null);
+        ScalarCapabilities scalarCapabilities = ffFactory.scalarCapabilities(
+                comparisonOperators, arithmeticOperators, logicalOperators);
+        // - removing Arithmetic Operators...
+        ((ScalarCapabilitiesImpl)scalarCapabilities).setArithmeticOperators(null);
+
+        // - Id Capabilities
+        IdCapabilities id = ffFactory.idCapabilities(eid, fid);
+
+        FilterCapabilities filterCapabilities = ffFactory.capabilities("1.1.0",
+                scalarCapabilities, spatialCapabilities, id);
+        
+        ((FilterCapabilitiesImpl)filterCapabilities).setScalar(scalarCapabilities);
+        ((FilterCapabilitiesImpl)filterCapabilities).setSpatial(spatialCapabilities);
+        ((FilterCapabilitiesImpl)filterCapabilities).setId(id);
+        
+        caps.setFilterCapabilities(filterCapabilities);
 
         return caps;
     }

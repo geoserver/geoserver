@@ -21,8 +21,6 @@ import net.opengis.cat.csw20.QueryType;
 
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
-import org.geoserver.csw.util.NamespaceQualifier;
-import org.geoserver.csw.util.QNameResolver;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.filter.text.cql2.CQL;
@@ -31,6 +29,7 @@ import org.geotools.filter.v1_1.OGCConfiguration;
 import org.geotools.xml.Parser;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -90,6 +89,9 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
 
         // parse the type names
         String typeNamesString = (String) kvp.get("typeNames");
+        if(typeNamesString == null) {
+            throw new ServiceException("Mandatory parameter typeNames is missing", ServiceException.MISSING_PARAMETER_VALUE, "typeNames");
+        }
         NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
         if (namespaces == null) {
             // by spec, "NAMSPACE, If not included, all qualified names are in default namespace"
@@ -108,7 +110,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
         } 
         
         // and the element names
-        String elementNamesString = (String) kvp.remove("elementName");
+        String elementNamesString = (String) kvp.remove("ELEMENTNAME");
         if(elementNamesString != null) {
             List<QName> elementNames = resolver.parseQNames(elementNamesString, namespaces);
             query.getElementName().addAll(elementNames);
@@ -153,18 +155,9 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
             }
         }
         
-        // perform some necessary filter adjustments
-        if(query.getConstraint() != null && query.getConstraint().getFilter() != null) {
-            // adapt the filter to the internal feature type if necessary
-            for (QName typeName : typeNames) {
-                 RecordDescriptor rd = descriptors.get(typeName);
-                 if(rd != null) {
-                     Filter filter = query.getConstraint().getFilter();
-                     Filter adapted = rd.adaptFilter(filter);
-                     query.getConstraint().setFilter(adapted);
-                     break;
-                 }
-            }
+        // check if we have to sort the request
+        if(kvp.get("SORTBY") != null) {
+            query.setSortBy((SortBy[]) kvp.get("SORTBY"));
         }
 
         return query;

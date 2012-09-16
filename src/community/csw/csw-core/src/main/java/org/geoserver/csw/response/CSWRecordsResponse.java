@@ -31,6 +31,7 @@ public class CSWRecordsResponse extends AbstractRecordsResponse {
             RequestBaseType request, CSWInfo csw) {
         CSWRecordTransformer transformer = new CSWRecordTransformer(request,
                 csw.isCanonicalSchemaLocation());
+        transformer.setIndentation(2);
         try {
             transformer.transform(result, output);
         } catch (TransformerException e) {

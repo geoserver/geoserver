@@ -2,9 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	<!-- factories -->
-	<bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
-
 	<bean id="wfsLegacyLoader" class="org.geoserver.wfs.WFSLoader"/>
 	<bean id="wfsLoader" class="org.geoserver.wfs.WFSXStreamLoader">
 	  <constructor-arg ref="resourceLoader"/>
@@ -242,8 +239,9 @@
     </bean>
 
 	<!-- cite compliance hack -->
-	<bean id="citeComplianceHack" class="org.geoserver.wfs.CiteComplianceHack">
+	<bean id="wfsCiteComplianceHack" class="org.geoserver.ows.CiteComplianceHack">
 		<constructor-arg ref="geoServer"/>
+        <constructor-arg value="org.geoserver.wfs.WFSInfo"/>
 	</bean>
 	
 	<!-- XML Log Buffer Size Interceptor -->
@@ -264,7 +262,7 @@
 		<property name="alwaysUseFullPath" value="true"/>
 		<property name="interceptors">
 			<list>
-				<ref bean="citeComplianceHack"/>
+				<ref bean="wfsCiteComplianceHack"/>
 				<ref bean="xmlPostRequestLogBufferSize"/>
 			</list>
 		</property>

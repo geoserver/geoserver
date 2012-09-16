@@ -9,12 +9,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
 import net.opengis.cat.csw20.DescribeRecordType;
+
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.ServiceException;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 
 /**
@@ -23,6 +27,20 @@ import org.opengis.feature.type.FeatureType;
  * @author Andrea Aime - GeoSolutions
  */
 public class DescribeRecord {
+
+    static final Logger LOGGER = Logging.getLogger(DescribeRecord.class);
+    
+    /**
+     * In case we make the schema languages pluggable we'll have to check what we actually
+     * support, for the moment here is a set of different ways to refer to XML schema
+     */
+    static final Set<String> SUPPORTED_SCHEMA_LANGUAGES = new HashSet<String>() {
+        {
+            add("XMLSCHEMA");
+            add("http://www.w3.org/2001/XMLSchema");
+            add("http://www.w3.org/XML/Schema");
+        }
+    };
 
     CSWInfo csw;
 
@@ -41,6 +59,13 @@ public class DescribeRecord {
      */
     public FeatureType[] run(DescribeRecordType request) {
         try {
+            // check we are not asked for a schema language we do not support
+            if(request.getSchemaLanguage() != null 
+                    && !SUPPORTED_SCHEMA_LANGUAGES.contains(request.getSchemaLanguage())) {
+                throw new ServiceException("Unsupported schema language " + request.getSchemaLanguage(), 
+                        ServiceException.INVALID_PARAMETER_VALUE, "schemaLanguage");
+            }
+            
             if (request.getTypeName() == null || request.getTypeName().isEmpty()) {
                 // return all the ones we have
                 return store.getRecordSchemas();
@@ -57,13 +82,12 @@ public class DescribeRecord {
                     }
                 }
 
-                // if we still have some elements it means we don't have some of the requested
-                // schemas
+                // we could be left with some extra feature types, the spec says we should not
+                // complain and just return the ones we have (eventually an empty document)
                 if (requested.size() != 0) {
-                    throw new ServiceException("Failed to find feature types: " + requested,
-                            ServiceException.INVALID_PARAMETER_VALUE, "typename");
+                    LOGGER.log(Level.FINE, "Failed to locate feature types " + requested + ", ignoring them");
                 }
-
+                
                 return (FeatureType[]) result.toArray(new FeatureType[result.size()]);
             }
         } catch (IOException e) {

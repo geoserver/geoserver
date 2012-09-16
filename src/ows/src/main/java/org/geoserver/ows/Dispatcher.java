@@ -678,6 +678,7 @@ public class Dispatcher extends AbstractController {
         // sure the "mandatory" parameters are specified, even though we 
         // succesfully dispatched the request.
         if (citeCompliant) {
+            // the version is mandatory for all requests but GetCapabilities
             if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
                 if (req.getVersion() == null) {
                     //must be a version on non-capabilities requests
@@ -709,12 +710,13 @@ public class Dispatcher extends AbstractController {
                             "InvalidParameterValue", "version");
                     }
                 }
-
-                if (req.getService() == null) {
-                    //give up 
-                    throw new ServiceException("Could not determine service",
-                        "MissingParameterValue", "service");
-                }
+            }
+            
+            // the service is mandatory for all requests instead
+            if (req.getService() == null) {
+                //give up 
+                throw new ServiceException("Could not determine service",
+                    "MissingParameterValue", "service");
             }
         }
 
@@ -828,15 +830,20 @@ public class Dispatcher extends AbstractController {
             }
 
             if (responses.isEmpty()) {
-                String msg = "No response: ( object = " + result.getClass();
-
-                if (req.getOutputFormat() != null) {
-                    msg += (", outputFormat = " + req.getOutputFormat());
+                if(req.getOutputFormat() != null) { 
+                    throw new ServiceException("Failed to find response for output format " + req.getOutputFormat(), 
+                            ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
+                } else {
+                    String msg = "No response: ( object = " + result.getClass();
+    
+                    if (req.getOutputFormat() != null) {
+                        msg += (", outputFormat = " + req.getOutputFormat());
+                    }
+    
+                    msg += " )";
+    
+                    throw new RuntimeException(msg);
                 }
-
-                msg += " )";
-
-                throw new RuntimeException(msg);
             }
 
             if (responses.size() > 1) {

@@ -23,12 +23,19 @@ import org.geoserver.csw.util.NamespaceQualifier;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
+import org.geotools.data.Query;
+import org.geotools.data.store.ReprojectingFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
+import org.geotools.filter.SortByImpl;
+import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
+import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.OWS;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
@@ -38,6 +45,10 @@ import org.opengis.feature.type.FeatureTypeFactory;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -49,6 +60,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWRecordDescriptor implements RecordDescriptor {
+    
+    private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     /**
      * Contains the declarations of common namespaces and prefixes used in the CSW world
@@ -83,9 +96,17 @@ public class CSWRecordDescriptor implements RecordDescriptor {
 
     public static final FeatureType RECORD;
     
-    static final SimpleLiteralPathExtender PATH_EXTENDER;
+    static final CRSRecordProjectyPathAdapter PATH_EXTENDER;
     
     static final NamespaceQualifier NSS_QUALIFIER;
+    
+    static final DefaultCRSFilterVisitor CRS_DEFAULTER;
+    
+    static final ReprojectingFilterVisitor CRS_REPROJECTOR;
+    
+    public static final String DEFAULT_CRS_NAME = "urn:x-ogc:def:crs:EPSG:6.11:4326";
+    
+    public static final CoordinateReferenceSystem DEFAULT_CRS;
 
     static {
         // prepare the common namespace support
@@ -96,11 +117,6 @@ public class CSWRecordDescriptor implements RecordDescriptor {
         NAMESPACES.declarePrefix("dct", DCT.NAMESPACE);
         NAMESPACES.declarePrefix("ows", OWS.NAMESPACE);
         NAMESPACES.declarePrefix("ogc", OGC.NAMESPACE);
-        
-        // create the xpath extender that fill adapt dc:title to dc:title/dc:value
-        PATH_EXTENDER = new SimpleLiteralPathExtender(NAMESPACES);
-        // qualified the xpath in the filters
-        NSS_QUALIFIER = new NamespaceQualifier(NAMESPACES);
         
         // prepare the CSW record related types
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
@@ -188,6 +204,20 @@ public class CSWRecordDescriptor implements RecordDescriptor {
         BRIEF_ELEMENTS = createNameSet("dc:identifier", "dc:title", "dc:type", "ows:BoundingBox");
         SUMMARY_ELEMENTS = createNameSet("dc:identifier", "dc:title", "dc:type", "dc:subject", 
                 "dc:format", "dc:relation", "dct:modified", "dct:abstract", "dct:spatial", "ows:BoundingBox");
+        
+        // create the xpath extender that fill adapt dc:title to dc:title/dc:value
+        PATH_EXTENDER = new CRSRecordProjectyPathAdapter(NAMESPACES);
+        // qualified the xpath in the filters
+        NSS_QUALIFIER = new NamespaceQualifier(NAMESPACES);
+        try {
+            DEFAULT_CRS = CRS.decode(DEFAULT_CRS_NAME);
+        } catch(Exception e) {
+            throw new RuntimeException("Failed to decode the default CRS, this should never happen!", e);
+        }
+        // applies the default CRS to geometry filters coming from the outside
+        CRS_DEFAULTER = new DefaultCRSFilterVisitor(FF, DEFAULT_CRS);
+        // transforms geometry filters into the internal representation
+        CRS_REPROJECTOR = new ReprojectingFilterVisitor(FF, RECORD);
     }
 
     /**
@@ -278,9 +308,32 @@ public class CSWRecordDescriptor implements RecordDescriptor {
     }
 
     @Override
-    public Filter adaptFilter(Filter filter) {
-        Filter qualified = (Filter) filter.accept(NSS_QUALIFIER, null);
-        return (Filter) qualified.accept(PATH_EXTENDER, null); 
+    public Query adaptQuery(Query query) {
+        Filter filter = query.getFilter();
+        if(filter != null && !Filter.INCLUDE.equals(filter)) {
+            Filter qualified = (Filter) filter.accept(NSS_QUALIFIER, null);
+            Filter extended = (Filter) qualified.accept(PATH_EXTENDER, null);
+            Filter defaulted = (Filter) extended.accept(CRS_DEFAULTER, null);
+            Filter reprojected = (Filter) defaulted.accept(CRS_REPROJECTOR, null);
+            query.setFilter(extended);
+        }
+        
+        SortBy[] sortBy = query.getSortBy();
+        if(sortBy != null && sortBy.length > 0) {
+            CSWPropertyPathExtender extender = new CSWPropertyPathExtender();
+            for (int i = 0; i < sortBy.length; i++) {
+                SortBy sb = sortBy[i];
+                if(!SortBy.NATURAL_ORDER.equals(sb) && !SortBy.REVERSE_ORDER.equals(sb)) {
+                    PropertyName name = sb.getPropertyName();
+                    PropertyName extended = extender.extendProperty(name, FF, NAMESPACES);
+                    sortBy[i] = new SortByImpl(extended, sb.getSortOrder());
+                }
+            }
+            query.setSortBy(sortBy);
+        }
+        
+        return query;
+         
     }
 
 }

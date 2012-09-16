@@ -17,6 +17,7 @@ import org.geotools.xml.transform.Translator;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
@@ -31,6 +32,8 @@ import org.xml.sax.helpers.AttributesImpl;
 public class CSWRecordTransformer extends AbstractRecordTransformer {
 
     static final String CSW_ROOT_LOCATION = "http://schemas.opengis.net/csw/2.0.2/";
+    
+    private static final AttributeDescriptor DC_TITLE = CSWRecordDescriptor.getDescriptor("title");
 
     public CSWRecordTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
         super(request, canonicalSchemaLocation);
@@ -58,29 +61,24 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
             Set<Name> elements = getElements(response);
             
             // encode all elements besides bbox
-            for (Property p : f.getProperties()) {
-                if (elements == null || elements.contains(p.getName())) {
-                    if (p.getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
-                        ComplexAttribute sl = (ComplexAttribute) p;
-                        String scheme = (String) sl.getProperty("scheme").getValue();
-                        String value = (String) sl.getProperty("value").getValue();
-                        Name dn = p.getDescriptor().getName();
-                        String name = dn.getLocalPart();
-                        String prefix = CSWRecordDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
-                        if (scheme == null) {
-                            element(prefix + ":" + name, value);
-                        } else {
-                            AttributesImpl attributes = new AttributesImpl();
-                            addAttribute(attributes, "scheme", scheme);
-                            element(prefix + ":" + name, value, attributes);
+            if(elements != null && ! element.isEmpty()) {
+                // brief and summary have a specific order
+                for (Name name : elements) {
+                    Collection<Property> properties = f.getProperties(name);
+                    if(properties != null && !properties.isEmpty()) {
+                        for (Property p : properties) {
+                            encodProperty(f, p);
                         }
-                    } else if (CSWRecordDescriptor.RECORD_BBOX_NAME.equals(p.getName())) {
-                        // skip it for the moment, it is constrained to be last
-                    } else if(CSWRecordDescriptor.RECORD_GEOMETRY_NAME.equals(p.getName())) {
-                        // skip it, we only use it for filtering
-                    } else {
-                        throw new IllegalArgumentException("Don't know how to encode property " + p
-                                + " in record " + f);
+                    } else if(DC_TITLE.getName().equals(name)) {
+                        // dc:title is mandatory even if we don't have a value for it
+                        element("dc:title", null);
+                    }
+                }
+            } else {
+                // csw:Record has freeform order
+                for (Property p : f.getProperties()) {
+                    if (elements == null || elements.contains(p.getName())) {
+                        encodProperty(f, p);
                     }
                 }
             }
@@ -93,17 +91,19 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                         try {
                             ReferencedEnvelope re = (ReferencedEnvelope) p.getValue();
                             ReferencedEnvelope wgs84re = re.transform(
-                                    CRS.decode("EPSG:4326", true), true);
+                                    CRS.decode(CSWRecordDescriptor.DEFAULT_CRS_NAME), true);
 
                             String minx = String.valueOf(wgs84re.getMinX());
                             String miny = String.valueOf(wgs84re.getMinY());
                             String maxx = String.valueOf(wgs84re.getMaxX());
                             String maxy = String.valueOf(wgs84re.getMaxY());
 
-                            start("ows:WGS84BoundingBox");
+                            AttributesImpl attributes = new AttributesImpl();
+                            addAttribute(attributes, "crs", CSWRecordDescriptor.DEFAULT_CRS_NAME);
+                            start("ows:BoundingBox");
                             element("ows:LowerCorner", minx + " " + miny);
                             element("ows:UpperCorner", maxx + " " + maxy);
-                            end("ows:WGS84BoundingBox");
+                            end("ows:BoundingBox");
                         } catch (Exception e) {
                             throw new ServiceException("Failed to encode the current record: " + f,
                                     e);
@@ -113,6 +113,35 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
 
             }
             end(element);
+        }
+
+        private void encodProperty(Feature f, Property p) {
+            if (p.getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
+                encodeSimpleLiteral(p);
+            } else if (CSWRecordDescriptor.RECORD_BBOX_NAME.equals(p.getName())) {
+                // skip it for the moment, it is constrained to be last
+            } else if(CSWRecordDescriptor.RECORD_GEOMETRY_NAME.equals(p.getName())) {
+                // skip it, we only use it for filtering
+            } else {
+                throw new IllegalArgumentException("Don't know how to encode property " + p
+                        + " in record " + f);
+            }
+        }
+
+        private void encodeSimpleLiteral(Property p) {
+            ComplexAttribute sl = (ComplexAttribute) p;
+            String scheme = (String) sl.getProperty("scheme").getValue();
+            String value = (String) sl.getProperty("value").getValue();
+            Name dn = p.getDescriptor().getName();
+            String name = dn.getLocalPart();
+            String prefix = CSWRecordDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
+            if (scheme == null) {
+                element(prefix + ":" + name, value);
+            } else {
+                AttributesImpl attributes = new AttributesImpl();
+                addAttribute(attributes, "scheme", scheme);
+                element(prefix + ":" + name, value, attributes);
+            }
         }
 
         private String getRecordElement(CSWRecordsResult response) {

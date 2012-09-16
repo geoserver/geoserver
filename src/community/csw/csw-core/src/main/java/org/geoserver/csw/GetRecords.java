@@ -147,6 +147,11 @@ public class GetRecords {
                 }
             }
             
+            // in case this is a hits request we are actually not returning any record
+            if(resultType == ResultType.HITS) {
+                numberOfRecordsReturned = 0;
+            }
+            
             ElementSetType elementSet = getElementSet(cswQuery);
             CSWRecordsResult result = new CSWRecordsResult(elementSet, 
                     request.getOutputSchema(), numberOfRecordsMatched, numberOfRecordsReturned, nextRecord, timestamp, records);
@@ -175,8 +180,12 @@ public class GetRecords {
             q.setProperties(getPropertyNames(rd, query));
             q.setSortBy(query.getSortBy());
             
-            result.add(q);
+            // perform some necessary query adjustments
+            Query adapted = rd.adaptQuery(q);            
+            
+            result.add(adapted);
         }
+        
         
         return result;
     }
@@ -217,6 +226,9 @@ public class GetRecords {
     }
 
     private ElementSetType getElementSet(QueryType query) {
+        if(query.getElementName() != null && query.getElementName().size() > 0) {
+            return ElementSetType.FULL;
+        }
         ElementSetType elementSet = query.getElementSetName() != null ? query.getElementSetName().getValue() : null;
         if(elementSet == null) {
             // the default is "summary"

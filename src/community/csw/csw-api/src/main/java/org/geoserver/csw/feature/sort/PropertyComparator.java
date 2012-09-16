@@ -43,9 +43,9 @@ class PropertyComparator implements Comparator<Feature> {
 
     private int compareAscending(Feature f1, Feature f2) {
         Attribute a1 = (Attribute) propertyName.evaluate(f1);
-        Comparable o1 = (Comparable) a1.getValue();
+        Comparable o1 = a1 != null ? (Comparable) a1.getValue() : null;
         Attribute a2 = (Attribute) propertyName.evaluate(f2);
-        Comparable o2 = (Comparable) a2.getValue();
+        Comparable o2 = a2 != null ? (Comparable) a2.getValue() : null;
 
         if (o1 == null) {
             if (o2 == null) {

@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
 public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
-    protected static final String BASEPATH = "ows";
+    protected static final String BASEPATH = "csw";
     
     protected void setUpInternal() throws Exception {
         // init xmlunit

@@ -20,8 +20,8 @@ public class WMSFilterMosaicTestSupport extends WMSDimensionsTestSupport {
      * @param presentation
      * @param resolution
      */
-    protected void setupMosaicFilter(String filter) {
-        CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+    protected void setupMosaicFilter(String filter, String layer) {
+        CoverageInfo info = getCatalog().getCoverageByName(layer);
         
         info.getParameters().put("Filter", filter);
         

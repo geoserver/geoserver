@@ -11,65 +11,117 @@ import org.geoserver.wms.WMSFilterMosaicTestSupport;
 
 /**
  * Class to test ImageMosaic cql filter
+ * 
  * @see {@link WMSFilterMosaicTestSupport}
  * 
  * @author carlo cancellieri
- *
+ * 
  */
 public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
 
-	final static String BASE_URL = "wms?service=WMS&version=1.1.0"
-			+ "&request=GetMap&layers=watertemp&styles="
-			+ "&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
-			+ "&srs=EPSG:4326&format=image/png";
-	final static String MIME = "image/png";
+    final static String layer = WATTEMP.getLocalPart();
 
-	public void testElevationAsCQL() throws Exception {
-		
-		// specifying default filter
-		String cql_filter = "elevation=100";
-		super.setupMosaicFilter(cql_filter);
+    final static String BASE_URL = "wms?service=WMS&version=1.1.0" + "&request=GetMap&layers="
+            + layer + "&styles=" + "&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
+            + "&srs=EPSG:4326&format=image/png";
 
-		BufferedImage image = getAsImage(BASE_URL, "image/png");
+    final static String MIME = "image/png";
 
-		// at this elevation the pixel is black
-		assertPixel(image, 36, 31, new Color(0, 0, 0));
-		// and this one a light blue, but slightly darker than before
-		assertPixel(image, 68, 72, new Color(240, 240, 255));
-		
-		image = getAsImage(BASE_URL+ "&cql_filter=INCLUDE", "image/png");
-	}
-	
-	public void testQueryTimeElevationAsCQL() throws Exception {
-		
-		// specifying default filter
-		String cql_filter = "elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'";
-		super.setupMosaicFilter(cql_filter);
-		
-		/*
-		 * result:
-		Filter = "[[ elevation = 100 ] AND [ ingestion = 2008-10-31T00:00:00.000Z ]]"
-		*/
-		BufferedImage image = getAsImage(BASE_URL, "image/png");
+    // specifying default filter
+    final static String cql_filter = "elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'";
 
-		// at this elevation the pixel is black
-		assertPixel(image, 36, 31, new Color(0, 0, 0));
-		// and this one a light blue, but slightly darker than before
-		assertPixel(image, 68, 72, new Color(240, 240, 255));
-		
-		/*
-		 * override default filter
-		 * result:
-		Filter = "[[ elevation = 0 ] AND [ ingestion = 2008-11-01T00:00:00.000Z ]]"
-		*/
-		cql_filter = "elevation=100 AND ingestion=\'2008-11-01T00:00:00.000Z\'";
-		BufferedImage image2 = getAsImage(BASE_URL + "&cql_filter=" + cql_filter,
-				"image/png");
-		
-		assertPixel(image2, 36, 31, new Color(0, 0, 0));
-		assertPixel(image2, 68, 72, new Color(246, 246, 255));
-		
-	}
+    public void testAsCQL() throws Exception {
+        // CASE 'MOSAIC WITH DEFAULT FILTERS'
 
+        // setting the default filter
+        super.setupMosaicFilter(cql_filter, layer);
+
+        // get mosaic using the default filter
+        BufferedImage image = getAsImage(BASE_URL, "image/png");
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0, 0, 0));
+        assertPixel(image, 68, 72, new Color(240, 240, 255));
+
+    }
+
+    public void testCaseDefault() throws Exception {
+        // CASE 'MOSAIC WITHOUT FILTERS'
+
+        // disable the default filter
+        super.setupMosaicFilter("", layer);
+
+        // get mosaic without the default filter
+        BufferedImage image = getAsImage(BASE_URL, "image/png");
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 182, 182));
+    }
+
+    public void testCaseElev100andIngestion31Oct() throws Exception {
+        // CASE 'MOSAIC WITH FILTERS'
+
+        // overriding the default filter using cql_filter parameter
+        BufferedImage image = getAsImage(BASE_URL
+                + "&cql_filter=elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'",
+                "image/png");
+
+        // setting the default filter
+        super.setupMosaicFilter(cql_filter, layer);
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0, 0, 0));
+        assertPixel(image, 68, 72, new Color(240, 240, 255));
+    }
+
+    public void testCaseElev100andIngestion01Nov() throws Exception {
+
+        // CASE 'MOSAIC WITH FILTERS'
+
+        // overriding the default filter using cql_filter parameter
+        BufferedImage image = getAsImage(BASE_URL
+                + "&cql_filter=elevation=100 AND ingestion=\'2008-11-01T00:00:00.000Z\'",
+                "image/png");
+
+        // setting the default filter
+        super.setupMosaicFilter(cql_filter, layer);
+
+        // at this elevation the pixel is black
+        assertPixel(image, 36, 31, new Color(0, 0, 0));
+        assertPixel(image, 68, 72, new Color(246, 246, 255));
+
+    }
+
+    public void testCaseElev0andIngestion31Oct() throws Exception {
+        // CASE 'MOSAIC WITH FILTERS'
+
+        // overriding the default filter using cql_filter parameter
+        BufferedImage image = getAsImage(BASE_URL
+                + "&cql_filter=elevation=0 AND ingestion=\'2008-10-31T00:00:00.000Z\'", "image/png");
+
+        // setting the default filter
+        super.setupMosaicFilter(cql_filter, layer);
+
+        // should be similar to the default, but with different shades of color
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        assertPixel(image, 68, 72, new Color(255, 182, 182));
+    }
+
+    public void testCaseElev0andIngestion01Nov() throws Exception {
+        // CASE 'MOSAIC WITH FILTERS'
+
+        // overriding the default filter using cql_filter parameter
+        BufferedImage image = getAsImage(BASE_URL
+                + "&cql_filter=elevation=0 AND ingestion=\'2008-11-01T00:00:00.000Z\'", "image/png");
+
+        // setting the default filter
+        super.setupMosaicFilter(cql_filter, layer);
+
+        assertPixel(image, 36, 31, new Color(246, 246, 255));
+        // and this one a light blue, but slightly darker than before
+        assertPixel(image, 68, 72, new Color(255, 185, 185));
+
+    }
 
 }

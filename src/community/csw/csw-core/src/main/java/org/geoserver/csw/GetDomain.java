@@ -78,6 +78,10 @@ public class GetDomain {
                 } 
                 else 
                 {
+                    if (propertyName.equalsIgnoreCase("anyText"))
+                    {
+                        nameSpace = CSWRecordDescriptor.NAMESPACES.getURI("csw");
+                    }
                     localPart = propertyName;
                 }
                 Name typeName = (nameSpace != null ? new NameImpl(CSWRecordDescriptor.NAMESPACES.getURI(nameSpace), localPart) : new NameImpl(localPart) );

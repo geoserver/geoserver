@@ -4,12 +4,7 @@
  */
 package org.geoserver.csw.response;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
-
 import java.io.IOException;
-import java.io.Writer;
-
-import javax.xml.transform.TransformerException;
 
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.RequestBaseType;
@@ -21,7 +16,6 @@ import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
 import org.geotools.ows.OWS;
 import org.geotools.util.Converters;
-import org.geotools.xml.transform.TransformerBase;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.xml.sax.ContentHandler;
@@ -33,17 +27,10 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public abstract class AbstractRecordTransformer extends TransformerBase {
-
-    static final String CSW_ROOT_LOCATION = "http://schemas.opengis.net/csw/2.0.2/";
-
-    RequestBaseType request;
-
-    boolean canonicalSchemaLocation;
+public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
 
     public AbstractRecordTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
-        this.request = request;
-        this.canonicalSchemaLocation = canonicalSchemaLocation;
+        super(request, canonicalSchemaLocation);
     }
     
     /**
@@ -52,14 +39,10 @@ public abstract class AbstractRecordTransformer extends TransformerBase {
      */
     public abstract boolean canHandleRespose(CSWRecordsResult response);
 
-    public void encode(CSWRecordsResult response, Writer writer) throws TransformerException {
-        transform(response, writer);
-    }
-
-    abstract class AbstractRecordTranslator extends TranslatorSupport {
+    abstract class AbstractRecordTranslator extends AbstractCSWTranslator {
 
         public AbstractRecordTranslator(ContentHandler handler) {
-            super(handler, null, null);
+            super(handler);
         }
 
         @Override
@@ -117,21 +100,6 @@ public abstract class AbstractRecordTransformer extends TransformerBase {
 
             end("csw:SearchResults");
             end("csw:GetRecordsResponse");
-        }
-
-        public void addAttribute(AttributesImpl attributes, String name, Object value) {
-            if (value != null) {
-                attributes.addAttribute("", name, name, "",
-                        value instanceof String ? (String) value : String.valueOf(value));
-            }
-        }
-
-        private String cswSchemaLocation(String schema) {
-            if (canonicalSchemaLocation) {
-                return CSW_ROOT_LOCATION + schema;
-            } else {
-                return buildSchemaURL(request.getBaseUrl(), "csw/2.0.2/" + schema);
-            }
         }
 
         /**

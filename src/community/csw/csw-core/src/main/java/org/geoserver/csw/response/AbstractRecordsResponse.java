@@ -7,9 +7,12 @@ package org.geoserver.csw.response;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.xml.transform.TransformerException;
+
 import net.opengis.cat.csw20.GetRecordByIdType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.RequestBaseType;
+import net.opengis.cat.csw20.ResultType;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
@@ -20,7 +23,7 @@ import org.geotools.csw.CSW;
 import org.opengis.feature.type.FeatureType;
 
 /**
- * Base class for CSW record responses
+ * Base class for XML based CSW record responses
  * 
  * @author Andrea Aime - GeoSolutions
  */
@@ -33,7 +36,7 @@ public abstract class AbstractRecordsResponse extends Response {
     FeatureType recordType;
 
     public AbstractRecordsResponse(FeatureType recordType, String schema, GeoServer gs) {
-        super(CSWRecordsResult.class);
+        super(CSWRecordsResult.class, "application/xml");
         this.schema = schema;
         this.gs = gs;
         this.recordType = recordType;
@@ -42,7 +45,7 @@ public abstract class AbstractRecordsResponse extends Response {
     @Override
     public boolean canHandle(Operation operation) {
         String requestedSchema = getRequestedSchema(operation);
-        if(requestedSchema == null) {
+        if (requestedSchema == null) {
             requestedSchema = CSW.NAMESPACE;
         }
         return requestedSchema.equals(schema);
@@ -70,11 +73,11 @@ public abstract class AbstractRecordsResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation) throws IOException,
             ServiceException {
         CSWRecordsResult result = (CSWRecordsResult) value;
-        RequestBaseType request = (RequestBaseType) operation.getParameters()[0];
+        GetRecordsType request = (GetRecordsType) operation.getParameters()[0];
         CSWInfo csw = gs.getService(CSWInfo.class);
 
-        // if this is a hit request we don't have records to encode
-        if(result.getRecords() != null) {
+        // check the output schema is valid
+        if (result.getRecords() != null) {
             FeatureType recordSchema = result.getRecords().getSchema();
             if (!recordType.equals(recordSchema)) {
                 throw new IllegalArgumentException("Cannot encode this kind of record "
@@ -82,7 +85,23 @@ public abstract class AbstractRecordsResponse extends Response {
             }
         }
 
-        transformResponse(output, result, request, csw);
+        if (request.getResultType() == ResultType.VALIDATE) {
+            // this one is output schema independent
+            transformAcknowledgement(output, request, csw);
+        } else {
+            transformResponse(output, result, request, csw);
+        }
+    }
+
+    private void transformAcknowledgement(OutputStream output, GetRecordsType request, CSWInfo csw) {
+        AcknoledgementTransformer transformer = new AcknoledgementTransformer(request,
+                csw.isCanonicalSchemaLocation());
+        transformer.setIndentation(2);
+        try {
+            transformer.transform(null, output);
+        } catch (TransformerException e) {
+            throw new ServiceException(e);
+        }
     }
 
     /**

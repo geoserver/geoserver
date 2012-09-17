@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<csw:GetRecords xmlns="http://www.occamlab.com/ctl"
+                xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+                xmlns:ctl="http://www.occamlab.com/ctl"
+                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:dct="http://purl.org/dc/terms/"
+                xmlns:gml="http://www.opengis.net/gml"
+                xmlns:ogc="http://www.opengis.net/ogc"
+                xmlns:ows="http://www.opengis.net/ows"
+                xmlns:p="http://teamengine.sourceforge.net/parsers"
+                xmlns:parsers="http://www.occamlab.com/te/parsers"
+                xmlns:saxon="http://saxon.sf.net/"
+                xmlns:te="http://www.occamlab.com/te"
+                xmlns:tec="java:com.occamlab.te.TECore"
+                xmlns:tems="java:com.occamlab.te.web.MonitorServlet"
+                xmlns:xi="http://www.w3.org/2001/XInclude"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                resultType="validate"
+                service="CSW"
+                version="2.0.2">
+   <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>full</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+         <ogc:Filter>
+            <ogc:PropertyIsLike escapeChar="\" singleChar="." wildCard="*">
+               <ogc:PropertyName>csw:AnyText</ogc:PropertyName>
+               <ogc:Literal>*lorem*</ogc:Literal>
+            </ogc:PropertyIsLike>
+         </ogc:Filter>
+      </csw:Constraint>
+   </csw:Query>
+</csw:GetRecords>

@@ -7,7 +7,7 @@ package org.geoserver.csw.store.simple;
 import javax.xml.namespace.QName;
 
 import org.geoserver.csw.util.QNameResolver;
-import org.geotools.csw.DC;
+import org.geotools.csw.CSW;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -17,7 +17,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class OWSAnyExpander extends DuplicatingFilterVisitor {
+public class CSWAnyExpander extends DuplicatingFilterVisitor {
 
     QNameResolver resolver = new QNameResolver();
 
@@ -28,8 +28,8 @@ public class OWSAnyExpander extends DuplicatingFilterVisitor {
         if (nss != null) {
             QName name = resolver.parseQName(expression.getPropertyName(), nss);
             String uri = name.getNamespaceURI();
-            if ("AnyText".equals(path)
-                    && (uri == null || "".equals(uri) || DC.NAMESPACE.equals(uri))) {
+            if (path.endsWith("AnyText")
+                    && (uri == null || "".equals(uri) || CSW.NAMESPACE.equals(uri))) {
                 return new RecordTextFunction();
             }
         }

@@ -193,12 +193,7 @@ public class GetRecordsTest extends CSWTestSupport {
         // across midnight of 
         String timestampPath = "/csw:GetRecordsResponse/csw:SearchStatus/@timestamp";
         String timeStamp = xpath.evaluate(timestampPath, d);
-        assertNotNull(timeStamp);
-        Calendar cal = new XmlConverterFactory()
-                .createConverter(String.class, Calendar.class, null).convert(timeStamp,
-                        Calendar.class);
-        assertNotNull(cal);
-        assertEquals(TimeZone.getTimeZone("GMT"), cal.getTimeZone());
+        assertGMLTimestamp(timeStamp);
         
         // check we have the expected results
         assertXpathEvaluatesTo("summary", "//csw:SearchResults/@elementSet", d);
@@ -209,6 +204,15 @@ public class GetRecordsTest extends CSWTestSupport {
         // check we have no results
         assertXpathEvaluatesTo("0", "count(//csw:SearchResults/*)", d);
     }
+
+    private void assertGMLTimestamp(String timeStamp) throws Exception {
+        assertNotNull(timeStamp);
+        Calendar cal = new XmlConverterFactory()
+                .createConverter(String.class, Calendar.class, null).convert(timeStamp,
+                        Calendar.class);
+        assertNotNull(cal);
+        assertEquals(TimeZone.getTimeZone("GMT"), cal.getTimeZone());
+    }
     
     public void testHitMaxOffset() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=5&maxRecords=2";
@@ -218,7 +222,6 @@ public class GetRecordsTest extends CSWTestSupport {
 
         // we have the right kind of document
         assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
-        XpathEngine xpath = XMLUnit.newXpathEngine();
 
         // check we have the expected results
         assertXpathEvaluatesTo("summary", "//csw:SearchResults/@elementSet", d);
@@ -463,6 +466,44 @@ public class GetRecordsTest extends CSWTestSupport {
         Document d = getAsDOM(request);
         // print(d);
         checkOws10Exception(d);
+    }
+    
+    /**
+     * From CITE compliance, throw an error the output format is not supported
+     * @throws Exception
+     */
+    public void testUnsupportedOutputFormat() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&outputFormat=application/xhtml+xml";
+        Document d = getAsDOM(request);
+        // print(d);
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
+    }
+
+    public void testValidateGet() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=validate";
+        Document d = getAsDOM(request);
+        checkValidationErrors(d, new CSWConfiguration());
+        // print(d);
+        
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        assertXpathEvaluatesTo("http://localhost/geoserver/" + request, "/csw:Acknowledgement/csw:EchoedRequest/ows:Get/@xlink:href", d);
+        
+        String timeStamp = xpath.evaluate("/csw:Acknowledgement/@timeStamp", d);
+        assertGMLTimestamp(timeStamp);
+    }
+    
+    public void testValidatePost() throws Exception {
+        String request = getResourceAsString("GetRecordsValidate.xml");
+        Document d = postAsDOM("csw", request);
+        checkValidationErrors(d, new CSWConfiguration());
+        // print(d);
+        
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String timeStamp = xpath.evaluate("/csw:Acknowledgement/@timeStamp", d);
+        assertGMLTimestamp(timeStamp);
+        
+        assertXpathEvaluatesTo("*lorem*", "/csw:Acknowledgement/csw:EchoedRequest/csw:GetRecords/csw:Query/" +
+        		"csw:Constraint/ogc:Filter/ogc:PropertyIsLike/ogc:Literal", d);
     }
 
 }

@@ -21,11 +21,11 @@ import org.geotools.csw.CSW;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
-import org.geotools.ows.v1_1.OWS;
+import org.geotools.filter.v1_1.OGC;
+import org.geotools.ows.OWS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
-import org.geotools.xml.XSD;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
@@ -40,6 +40,7 @@ public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
         namespaces.put("dct", DCT.NAMESPACE);
         namespaces.put("csw", CSW.NAMESPACE);
         namespaces.put("ows", OWS.NAMESPACE);
+        namespaces.put("ogc", OGC.NAMESPACE);
         namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("xlink", XLINK.NAMESPACE);
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");

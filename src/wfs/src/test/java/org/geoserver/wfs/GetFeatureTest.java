@@ -1,6 +1,5 @@
 package org.geoserver.wfs;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;

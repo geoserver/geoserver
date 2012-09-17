@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.NumericKvpParser;
 import org.geoserver.wfs.GetFeature;
 import org.geoserver.wfs.StoredQuery;
@@ -262,7 +263,16 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
 
         //propertyName
         if (kvp.containsKey("propertyName")) {
-            querySet(eObject, "propertyName", (List) kvp.get("propertyName"));
+            List<String> propertyName = null;
+            if( kvp.get("propertyName") != null && kvp.get("propertyName") instanceof List ) 
+            {
+                propertyName = (List) kvp.get("propertyName");
+            }
+            else if( kvp.get("propertyName") != null && kvp.get("propertyName") instanceof String ) 
+            {
+                propertyName = KvpUtils.readFlat((String) kvp.get("propertyName"));
+            } 
+            querySet(eObject, "propertyName", propertyName);
         }
 
         //sortBy

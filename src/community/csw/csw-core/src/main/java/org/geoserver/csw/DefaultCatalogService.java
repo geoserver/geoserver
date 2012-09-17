@@ -6,6 +6,8 @@ package org.geoserver.csw;
 
 import java.util.List;
 
+import javax.xml.ws.Response;
+
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.DescribeRecordType;
 import net.opengis.cat.csw20.GetCapabilitiesType;

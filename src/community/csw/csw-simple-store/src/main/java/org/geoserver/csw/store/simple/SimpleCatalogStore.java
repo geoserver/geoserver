@@ -6,6 +6,7 @@ package org.geoserver.csw.store.simple;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +39,6 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
-import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * A simple implementation of {@link CatalogStore} geared towards test support. 
@@ -95,7 +95,7 @@ public class SimpleCatalogStore implements CatalogStore {
         // filtering
         if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
             Filter filter = q.getFilter();
-            OWSAnyExpander expander = new OWSAnyExpander();
+            CSWAnyExpander expander = new CSWAnyExpander();
             Filter expanded = (Filter) filter.accept(expander, null);
             
             records = new FilteringFeatureCollection<FeatureType, Feature>(records, expanded);
@@ -151,8 +151,13 @@ public class SimpleCatalogStore implements CatalogStore {
             @Override
             public void visit(Feature feature) {
                 ComplexAttribute att = (ComplexAttribute) feature.getProperty(attributeName.getLocalPart());
-                values.add((String) att.getProperty("value").getValue());
-                
+                if (att != null && att.getProperty("value") != null)
+                    try {
+                        values.add( new String( ((String) att.getProperty("value").getValue()).getBytes("ISO-8859-1"), "UTF-8" ) );
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+//                values.add((String) att.getProperty("value").getValue());
             }
         }, null);
         

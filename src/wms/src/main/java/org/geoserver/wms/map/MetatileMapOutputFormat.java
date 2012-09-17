@@ -6,20 +6,19 @@ package org.geoserver.wms.map;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.media.jai.JAI;
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedOp;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -32,10 +31,9 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.crop.GTCropDescriptor;
+import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.i18n.Errors;
-import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -48,14 +46,59 @@ import org.geotools.util.logging.Logging;
  * @author Simone Giannecchini - GeoSolutions
  */
 public final class MetatileMapOutputFormat implements GetMapOutputFormat {
- 
-    private static final RenderingHints NO_CACHE_HINTS = new RenderingHints(JAI.KEY_TILE_CACHE, null);
 
     /** A logger for this class. */
     private static final Logger LOGGER = Logging.getLogger(MetatileMapOutputFormat.class);
 
     /** Small number for double equality comparison */
     public static final double EPS = 1E-6;
+    
+    /**
+     * This variable is use for testing purposes in order to force this
+     * {@link GridCoverageRenderer} to dump images at various steps on the disk.
+     */
+    private static boolean DEBUG = Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.MetatileMapOutputFormat.debug"));
+
+    private static String DEBUG_DIR;
+    static {
+        if (DEBUG) {
+            final File tempDir = new File(GeoServerExtensions.getProperty("user.home"),".geoserver");
+            if (!tempDir.exists() ) {
+                if(!tempDir.mkdir())
+                System.out
+                        .println("Unable to create debug dir, exiting application!!!");
+                DEBUG=false;
+                DEBUG_DIR = null;
+            } else
+               {
+                        DEBUG_DIR = tempDir.getAbsolutePath();
+                         System.out.println("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
+               }
+        }
+
+    }    
+    
+    /**
+     * Write the provided {@link RenderedImage} in the debug directory with the provided file name.
+     * 
+     * @param raster
+     *            the {@link RenderedImage} that we have to write.
+     * @param fileName
+     *            a {@link String} indicating where we should write it.
+     */
+    static void writeRenderedImage(final RenderedImage raster, final String fileName) {
+        if (DEBUG_DIR == null)
+            throw new NullPointerException(
+                    "Unable to write the provided coverage in the debug directory");
+        if (DEBUG == false)
+            throw new IllegalStateException(
+                    "Unable to write the provided coverage since we are not in debug mode");
+        try {
+            ImageIO.write(raster, "tiff", new File(DEBUG_DIR, fileName + ".tiff"));
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
+        }
+    }    
 
     private static QuickTileCache tileCache;
 
@@ -97,7 +140,10 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                 // compute the meta-tile
                 if (LOGGER.isLoggable(Level.FINER)) {
                     LOGGER.finer("Building meta tile " + key.metaTileCoords.x + ", "
-                            + key.metaTileCoords.y);
+                            + key.metaTileCoords.y+" of size w="+
+                            key.getTileSize() * key.getMetaFactor()+", h="+
+                            key.getTileSize() * key.getMetaFactor()+ " with metatilign factor "+key.getMetaFactor());
+                    
                 }
 
                 // alter the map definition so that we build a meta-tile instead
@@ -187,8 +233,14 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
         } else if (metaTile instanceof BufferedImage) {
             type = 2;
         }
+        if(LOGGER.isLoggable(Level.FINER)){
+        	LOGGER.finer("Metatile type " + type);        
+        }
 
         // now do the splitting
+        if(DEBUG){
+        	writeRenderedImage(metaTile,"metaTile");
+        } 
         for (int i = 0; i < metaFactor; i++) {
             for (int j = 0; j < metaFactor; j++) {
                 int x = j * tileSize;
@@ -197,14 +249,18 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                 RenderedImage tile;
                 switch (type) {
                 case 0:
-                    // do a crop, and then turn it into a buffered image so that we can release
-                    // the image chain
-                    RenderedOp cropped = GTCropDescriptor.create(metaTile, Float.valueOf(x), Float.valueOf(y), Float.valueOf(
-                            tileSize), Float.valueOf(tileSize), NO_CACHE_HINTS);
-                    RasterCleaner.addImage(cropped);
-                    tile = cropped.getAsBufferedImage();
-                    break;
+                	// RENDERED IMAGE
+                    if(LOGGER.isLoggable(Level.FINER)){
+                    	LOGGER.finer("Metatile split on RenderedImage");        
+                    }          
+                    metaTile=PlanarImage.wrapRenderedImage(metaTile);
+                    RasterCleaner.addImage(metaTile);
+
                 case 1:
+                	// PLANAR IMAGE
+                    if(LOGGER.isLoggable(Level.FINER)){
+                    	LOGGER.finer("Metatile split on PlanarImage");        
+                    }                	
                     final PlanarImage pImage = (PlanarImage) metaTile;
                     final WritableRaster wTile = WritableRaster.createWritableRaster(
                             pImage.getSampleModel().createCompatibleSampleModel(tileSize, tileSize), 
@@ -221,6 +277,10 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                     }
                     break;
                 case 2:
+                	// BUFFERED IMAGE
+                    if(LOGGER.isLoggable(Level.FINER)){
+                    	LOGGER.finer("Metatile split on BufferedImage");        
+                    }                  	
                     final BufferedImage image = (BufferedImage) metaTile;
                     tile = image.getSubimage(x, y, tileSize, tileSize);                    
                     break;                    
@@ -230,6 +290,9 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                 }
 
                 tiles[(i * key.getMetaFactor()) + j] = tile;
+                if(DEBUG){
+                	writeRenderedImage(tile, "tile"+i+"-"+j);
+                }                
             }
         }
         

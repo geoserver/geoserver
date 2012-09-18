@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  <!-- the shared filter factory -->
-  <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
   <!-- memory backend provider -->
   <bean id="memorySecurityProvider" class="org.geoserver.security.impl.MemorySecurityProvider"/>
  <!-- memory read only backend provider -->

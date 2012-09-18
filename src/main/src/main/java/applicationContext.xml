@@ -14,6 +14,9 @@
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
     
+    <!-- the shared filter factory -->
+    <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
+    
     <!-- geotools factory iterator provider, commented 
     <bean id="factoryIteratorProvider" depends-on="extensions" 
        class="org.geoserver.platform.GeoServerFactoryIteratorProvider"/>

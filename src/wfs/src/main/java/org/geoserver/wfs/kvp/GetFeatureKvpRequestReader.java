@@ -263,16 +263,16 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
 
         //propertyName
         if (kvp.containsKey("propertyName")) {
-            List<String> propertyName = null;
+            List<String> propertyNames = new ArrayList<String>();
             if( kvp.get("propertyName") != null && kvp.get("propertyName") instanceof List ) 
             {
-                propertyName = (List) kvp.get("propertyName");
+                propertyNames = (List) kvp.get("propertyName");
             }
             else if( kvp.get("propertyName") != null && kvp.get("propertyName") instanceof String ) 
             {
-                propertyName = KvpUtils.readFlat((String) kvp.get("propertyName"));
+                propertyNames.addAll(KvpUtils.readFlat((String) kvp.get("propertyName")));
             } 
-            querySet(eObject, "propertyName", propertyName);
+            querySet(eObject, "propertyName", propertyNames);
         }
 
         //sortBy

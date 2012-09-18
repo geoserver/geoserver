@@ -55,7 +55,7 @@ public interface CatalogService {
      * The optional GetRepositoryItem request, used for ebRIM but could be useful for
      * a general catalog that wants the data to be made available for download as well
      */
-    RepositoryItem getRepositoryItem(GetRepositoryItem request) throws ServiceException;
+    RepositoryItem getRepositoryItem(GetRepositoryItemBean request) throws ServiceException;
 
     /**
      * Runs a harvest request

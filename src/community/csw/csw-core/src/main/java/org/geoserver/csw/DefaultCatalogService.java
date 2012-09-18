@@ -6,8 +6,6 @@ package org.geoserver.csw;
 
 import java.util.List;
 
-import javax.xml.ws.Response;
-
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.DescribeRecordType;
 import net.opengis.cat.csw20.GetCapabilitiesType;
@@ -92,10 +90,9 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     }
 
     @Override
-    public RepositoryItem getRepositoryItem(GetRepositoryItem request) throws ServiceException {
+    public RepositoryItem getRepositoryItem(GetRepositoryItemBean request) throws ServiceException {
         checkStore();
-        // TODO Auto-generated method stub
-        return null;
+        return new GetRepositoryItem(this.csw, this.store).run(request);
     }
 
     @Override

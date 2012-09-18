@@ -7,13 +7,13 @@ package org.geoserver.csw.kvp;
 
 import java.util.Map;
 
-import org.geoserver.csw.GetRepositoryItem;
+import org.geoserver.csw.GetRepositoryItemBean;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * GetRepositoryItem KVP request reader
+ * GetRepositoryItemBean KVP request reader
  * 
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -22,21 +22,21 @@ public class GetRepositoryItemKvpRequestReader extends KvpRequestReader {
     private Service csw;
     
     public GetRepositoryItemKvpRequestReader(Service csw) {
-        super(GetRepositoryItem.class);
+        super(GetRepositoryItemBean.class);
         this.csw = csw;
     }
 
     @Override
     public Object read(Object req, Map kvp, Map rawKvp) throws Exception {
 
-        GetRepositoryItem request = (GetRepositoryItem) super.read(req, kvp, rawKvp);
+        GetRepositoryItemBean request = (GetRepositoryItemBean) super.read(req, kvp, rawKvp);
         
         final String version = request.getVersion();
         if (null == version) {
             String code = "NoVersionInfo";
             String simpleName = getClass().getSimpleName();
             throw new ServiceException(
-                    "Version parameter not provided for GetRepositoryItem operation", code, simpleName);
+                    "Version parameter not provided for GetRepositoryItemBean operation", code, simpleName);
         }
         
         if (!csw.getVersion().toString().equals(version)) {
@@ -55,7 +55,7 @@ public class GetRepositoryItemKvpRequestReader extends KvpRequestReader {
             String code = "NoID";
             String simpleName = getClass().getSimpleName();
             throw new ServiceException(
-                    "ID parameter not provided for GetRepositoryItem operation", code, simpleName);
+                    "ID parameter not provided for GetRepositoryItemBean operation", code, simpleName);
         }
         
         return request;

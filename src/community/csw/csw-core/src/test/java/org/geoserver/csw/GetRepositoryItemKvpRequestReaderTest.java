@@ -44,16 +44,16 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
         params = null;
     }
 
-    private GetRepositoryItem getRequest(Map<String, String> rawKvp) throws Exception {
+    private GetRepositoryItemBean getRequest(Map<String, String> rawKvp) throws Exception {
         return getRequest(rawKvp, new HashMap<String, Object>(rawKvp));
     }
 
-    private GetRepositoryItem getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
+    private GetRepositoryItemBean getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
             throws Exception {
 
         GetRepositoryItemKvpRequestReader reader = new GetRepositoryItemKvpRequestReader(csw);
-        GetRepositoryItem req = (GetRepositoryItem) reader.createRequest();
-        return (GetRepositoryItem) reader.read(req, kvp, rawKvp);
+        GetRepositoryItemBean req = (GetRepositoryItemBean) reader.createRequest();
+        return (GetRepositoryItemBean) reader.read(req, kvp, rawKvp);
     }
 
     public void testGetRequestNoVersion() throws Exception {

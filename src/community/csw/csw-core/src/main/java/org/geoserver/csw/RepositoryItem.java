@@ -7,7 +7,7 @@ package org.geoserver.csw;
 import java.io.InputStream;
 
 /**
- * Represents a CSW repository item, allows to properly respond to a GetRepositoryItem request
+ * Represents a CSW repository item, allows to properly respond to a GetRepositoryItemBean request
  * 
  * @author Andrea Aime - GeoSolutions
  */

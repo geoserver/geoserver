@@ -2,59 +2,59 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.csw;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
+import org.geoserver.csw.store.CatalogStore;
+import org.geoserver.platform.ServiceException;
+
 /**
- * Represents the CSW/ebRIM GetRepositoryItem request
+ * Runs the GetRepositoryItem request
  * 
- * @author Andrea Aime - GeoSolutions
- * */
+ * @author Alessio Fabiani - GeoSolutions
+ */
 public class GetRepositoryItem {
 
-    String service;
+    CSWInfo csw;
 
-    String version;
+    CatalogStore store;
 
-    String id;
-
-    /**
-     * The OGC service (should be "CSW")
-     * 
-     * @return
-     */
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
+    public GetRepositoryItem(CSWInfo csw, CatalogStore store) {
+        this.csw = csw;
+        this.store = store;
     }
 
     /**
-     * The service version (for example "2.0.2")
+     * Returns the requested RepositoryItem
      * 
+     * @param request
      * @return
      */
-    public String getVersion() {
-        return version;
-    }
+    public RepositoryItem run(GetRepositoryItemBean request) {
+        try {
+            return new RepositoryItem(){
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+                @Override
+                public String getMime() {
+                    return "application/xml";
+                }
 
-    /**
-     * The repository item id
-     * 
-     * @return
-     */
-    public String getId() {
-        return id;
+                @Override
+                public InputStream getContents() {
+                    String theString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Foo/>";
+                    try {
+                        return new ByteArrayInputStream(theString.getBytes("UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new ServiceException(e, "Failed to parse the requested Repository Item",
+                                ServiceException.NO_APPLICABLE_CODE);
+                    }
+                }};
+        } catch (Exception e) {
+            throw new ServiceException(e, "Failed to retrieve the requested Repository Item",
+                    ServiceException.NO_APPLICABLE_CODE);
+        }
     }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
 }

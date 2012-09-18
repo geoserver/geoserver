@@ -145,6 +145,10 @@
       <constructor-arg index="0" ref="geoServer"/>
     </bean>
     
+    <bean id="cswGetRepositoryItemResponse-2.0.2" class="org.geoserver.csw.response.CSWGetRepositoryItemResponse">
+      <constructor-arg index="0" ref="geoServer"/>
+    </bean>
+    
     <!-- SchemaComponent delegates -->
     <bean id="cswRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">
         <constructor-arg index="0" ref="geoServer"/>

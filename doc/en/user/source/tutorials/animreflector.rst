@@ -40,20 +40,27 @@ the WMS BBOX parameter is given the series of values ``-90,40,-60,70``, ``-80\,4
 
 .. code-block:: html 
 
-   http://localhost:8080/geoserver/wms/animate?layers=topp:states&aparam=bbox&avalues=-90\,40\,-60\,70,-80\,40\,-60\,70,-70\,40\,-50\,70
+   http://localhost:8080/geoserver/wms/animate
+   ?layers=topp:states
+   &aparam=bbox
+   &avalues=-90\,40\,-60\,70,-80\,40\,-60\,70,-70\,40\,-50\,70
 
 For an example of nested parameters, assume the existence of a style named ``selection`` using an SLD variable ``color``.
 The following request creates an animated map where the selection color changes between red, green and blue
 
 .. code-block:: html
 
-    http://localhost:8080/geoserver/wms/animate?layers=topp:states,topp:states&styles=polygon,selection&aparam=env:color&avalues=FF0000,00FF00,0000FF
+    http://localhost:8080/geoserver/wms/animate
+    ?layers=topp:states,topp:states
+    &styles=polygon,selection
+    &aparam=env:color
+    &avalues=FF0000,00FF00,0000FF
   
 
 Using the WMS Animator
 ----------------------
 
-To invoke the WMS Animator specify ``wms/animate?`` instead of ``wms?`` in a GetMap request. 
+To invoke the WMS Animator specify the path ``wms/animate`` instead of ``wms`` in a GetMap request. 
 
 Every Animator request must specify the ``layers``, ``aparam`` and ``avalues`` parameters. 
 Any other valid WMS parameters may be used in the request as well.
@@ -112,8 +119,8 @@ Animation Options
 ^^^^^^^^^^^^^^^^^
 
 The Animator provides options to control looping and frame speed.  
-These are specified using the WMS ``format_options`` parameter.
-The supported options are:
+These are specified using the ``format_options`` :ref:`WMS parameter <wms_vendor_parameters>`.
+The available options are:
 
 .. list-table::
    :widths: 50 50  
@@ -125,7 +132,7 @@ The supported options are:
        The default is ``false``.
    * - ``gif_frames_delay``
      - Specifies the frame delay in milliseconds.  
-       The default is 1000.
+       The default is 1000 ms.
 
 
 Example 1
@@ -138,7 +145,11 @@ This gives the effect of zooming in.
 
 .. code-block:: html
 
-    http://localhost:8080/geoserver/wms/animate?layers=topp:states&format=image/gif;subtype=animated&aparam=bbox&avalues=-180\,-90\,180\,90,-125\,25\,-67\,50
+    http://localhost:8080/geoserver/wms/animate
+    ?layers=topp:states
+    &format=image/gif;subtype=animated
+    &aparam=bbox
+    &avalues=-180\,-90\,180\,90,-125\,25\,-67\,50
 
 Example 2
 ^^^^^^^^^
@@ -149,32 +160,49 @@ The output map uses the default styles, the specified width (640 pixels), and th
 
 .. code-block:: html
 
-    http://localhost:8080/geoserver/wms/animate?layers=topp:states,sf:restricted&format=image/gif;subtype=animated&aparam=bbox&avalues=-180\,-90\,180\,90,-125\,25\,-67\,50&format_options=gif_loop_continuosly:true&width=640
+    http://localhost:8080/geoserver/wms/animate
+    ?layers=topp:states,sf:restricted
+    &format=image/gif;subtype=animated
+    &aparam=bbox
+    &avalues=-180\,-90\,180\,90,-125\,25\,-67\,50
+    &format_options=gif_loop_continuosly:true
+    &width=640
 
 Example 3
 ^^^^^^^^^
 
 The following request uses 
-``format_options=gif_loop_continuosly:true;gif_frames_delay:10``
-to loop the animation fast and continously.
+the ``format_options`` of ``gif_loop_continuosly:true`` and ``gif_frames_delay:10``
+to rotate the map image fast and continously.
 
 .. code-block:: html
 
-    http://localhost:8080/geoserver/wms/animate?layers=topp:states,sf:restricted&format=image/gif;subtype=animated&aparam=angle&avalues=0,45,90,135,180,225,270,365&format_options=gif_loop_continuosly:true;gif_frames_delay:10&width=640
+    http://localhost:8080/geoserver/wms/animate
+    ?layers=topp:states,sf:restricted
+    &format=image/gif;subtype=animated
+    &aparam=angle
+    &avalues=0,45,90,135,180,225,270,365
+    &format_options=gif_loop_continuosly:true;gif_frames_delay:10
+    &width=640
 
 Displaying frame parameters as decorations
 ------------------------------------------
 
 It is possible to decorate each frame image with the ``avalue`` parameter value that generated it using the 
 :ref:`wms_decorations` ``text`` decoration.
-The current parameter value can be accessed via the ``avalue`` environment variable.
-(This environment variable can also be accessed as a SLD parameter.)
+The current animation parameter value can be accessed via the ``avalue`` environment variable.
+(This environment variable can also be used in :ref:`sld_variable_substitution`.)
 
 Here is an example that uses a decoration showing the frame parameter value:
 
 .. code-block:: html
 
-   http://localhost:8080/geoserver/wms/animate?LAYERS=topp%3Aworld&aparam=time&avalues=2004-01-01T00:00:00.000Z,2004-02-01T00:00:00.000Z&format=image/gif;subtype=animated&format_options=layout:message
+   http://localhost:8080/geoserver/wms/animate
+   ?layers=topp%3Aworld
+   &aparam=time
+   &avalues=2004-01-01T00:00:00.000Z,2004-02-01T00:00:00.000Z
+   &format=image/gif;subtype=animated
+   &format_options=layout:message
 
 It uses the following decoration layout, located in ``layouts/message.xml``:
 
@@ -194,18 +222,17 @@ It uses the following decoration layout, located in ``layouts/message.xml``:
 Specifying WMS Animator default behaviour
 -----------------------------------------
 
-The GeoServer Adinistrator GUI allows specifying some default parameters for the WMS Animator. 
-
-The :guilabel:`Services > WMS` config screen shows the parameters depicted below:
+The GeoServer Adinistrator GUI allows specifying some limits and default options for the WMS Animator. 
+The settings are made on the :guilabel:`Services > WMS` config screen as shown below:
 
 .. figure:: animator_wms_params.jpg
    :align: center
    
    *WMS Animator default settings*
 
-The first three options allow setting limits on the animation output. 
+The first three options set server limits on the animation output. 
 It is possible to set the **maximum number of frames** an animation can contain, the **maximum rendering time** to produce an animation and the **maximum size** of the whole animation.
 
-It is also possible to set the default animation 
-**frames delay** (expressed in ms) and the ``looping behaviour``.
-These values can be overridden using the ``format_options`` parameter as described above.
+The default animation 
+**frame delay** (expressed in ms) and **looping behaviour** can be set as well.
+These values can be overridden by using the ``format_options`` parameter as described above.

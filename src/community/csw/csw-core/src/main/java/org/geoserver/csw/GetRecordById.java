@@ -14,6 +14,7 @@ import java.util.Set;
 
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
+
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.response.CSWRecordsResult;
@@ -86,7 +87,7 @@ public class GetRecordById {
 				records = new CompositeFeatureCollection(results);
 			}
 			            
-            ElementSetType elementSet = request.getElementSetName().getValue();
+            ElementSetType elementSet = getElementSetName(request);
             
             CSWRecordsResult result = new CSWRecordsResult(elementSet, 
                     request.getOutputSchema(), numberOfRecordsMatched, numberOfRecordsMatched, 0, timestamp, records);
@@ -96,6 +97,16 @@ public class GetRecordById {
         }
     }
     
+    private ElementSetType getElementSetName(GetRecordByIdType request) {
+        ElementSetType elementSet = request.getElementSetName() != null ? request
+                .getElementSetName().getValue() : null;
+        if (elementSet == null) {
+            // the default is "summary"
+            elementSet = ElementSetType.SUMMARY;
+        }
+        return elementSet;
+    }
+
     private Set<Name> getSupportedTypes() throws IOException {
         Set<Name> result = new HashSet<Name>();
         for (FeatureType ft : store.getRecordSchemas()) {

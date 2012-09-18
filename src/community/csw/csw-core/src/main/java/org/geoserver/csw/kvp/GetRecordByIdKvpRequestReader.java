@@ -5,14 +5,18 @@
 
 package org.geoserver.csw.kvp;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.net.URI;
+
 import net.opengis.cat.csw20.Csw20Factory;
 import net.opengis.cat.csw20.ElementSetNameType;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
+
+import org.geoserver.platform.ServiceException;
+
 
 /**
  * GetRecordById KVP request reader
@@ -36,7 +40,11 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
     	}
     	
     	List<URI> idsuri = new ArrayList<URI>(); 
-    	String[] ids = ((String) kvp.get("id")).split(","); 
+    	String rawId = (String) kvp.get("id");
+    	if(rawId == null) {
+    	    throw new ServiceException("Missing required parameter id", ServiceException.MISSING_PARAMETER_VALUE, "id");
+    	}
+        String[] ids = rawId.split("\\s*,\\s*"); 
     	for (String id: ids) {
     		idsuri.add(new URI(id));
     	}

@@ -7,6 +7,7 @@ package org.geoserver.csw.response;
 import java.io.IOException;
 
 import net.opengis.cat.csw20.ElementSetType;
+import net.opengis.cat.csw20.GetRecordByIdType;
 import net.opengis.cat.csw20.RequestBaseType;
 
 import org.geoserver.csw.records.CSWRecordDescriptor;
@@ -50,44 +51,64 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
             final CSWRecordsResult response = (CSWRecordsResult) o;
 
             AttributesImpl attributes = new AttributesImpl();
-            addAttribute(attributes, "version", "2.0.2");
             addAttribute(attributes, "xmlns:csw", CSW.NAMESPACE);
             addAttribute(attributes, "xmlns:dc", DC.NAMESPACE);
             addAttribute(attributes, "xmlns:dct", DCT.NAMESPACE);
             addAttribute(attributes, "xmlns:ows", OWS.NAMESPACE);
             addAttribute(attributes, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
-            String locationAtt = "xsi:schemaLocation";
-            StringBuilder locationDef = new StringBuilder();
-            locationDef.append(CSW.NAMESPACE).append(" ");
-            locationDef.append(cswSchemaLocation("record.xsd"));
-            addAttribute(attributes, locationAtt, locationDef.toString());
+            if(request instanceof GetRecordByIdType) {
+                String locationAtt = "xsi:schemaLocation";
+                StringBuilder locationDef = new StringBuilder();
+                locationDef.append(CSW.NAMESPACE).append(" ");
+                locationDef.append(cswSchemaLocation("CSW-discovery.xsd"));
+                addAttribute(attributes, locationAtt, locationDef.toString());
 
-            start("csw:GetRecordsResponse", attributes);
+                start("csw:GetRecordByIdResponse", attributes);
+                encodeRecords(response);
+                end("csw:GetRecordByIdResponse");
+            } else {
+                addAttribute(attributes, "version", "2.0.2");
+                String locationAtt = "xsi:schemaLocation";
+                StringBuilder locationDef = new StringBuilder();
+                locationDef.append(CSW.NAMESPACE).append(" ");
+                locationDef.append(cswSchemaLocation("record.xsd"));
+                addAttribute(attributes, locationAtt, locationDef.toString());
 
-            attributes = new AttributesImpl();
-            addAttribute(attributes, "timestamp",
-                    Converters.convert(response.getTimestamp(), String.class));
-            element("csw:SearchStatus", null, attributes);
-            
-            if(response.getElementSet() == null) {
-                response.setElementSet(ElementSetType.FULL);
+                start("csw:GetRecordsResponse", attributes);
+
+                attributes = new AttributesImpl();
+                addAttribute(attributes, "timestamp",
+                        Converters.convert(response.getTimestamp(), String.class));
+                element("csw:SearchStatus", null, attributes);
+                
+                if(response.getElementSet() == null) {
+                    response.setElementSet(ElementSetType.FULL);
+                }
+
+                attributes = new AttributesImpl();
+                addAttribute(attributes, "numberOfRecordsMatched", response.getNumberOfRecordsMatched());
+                addAttribute(attributes, "numberOfRecordsReturned",
+                        response.getNumberOfRecordsReturned());
+                addAttribute(attributes, "nextRecord", response.getNextRecord());
+                addAttribute(attributes, "recordSchema", response.getRecordSchema());
+                addAttribute(attributes, "elementSet", response.getElementSet());
+                start("csw:SearchResults", attributes);
+
+                encodeRecords(response);
+
+                end("csw:SearchResults");
+                end("csw:GetRecordsResponse");
             }
 
-            attributes = new AttributesImpl();
-            addAttribute(attributes, "numberOfRecordsMatched", response.getNumberOfRecordsMatched());
-            addAttribute(attributes, "numberOfRecordsReturned",
-                    response.getNumberOfRecordsReturned());
-            addAttribute(attributes, "nextRecord", response.getNextRecord());
-            addAttribute(attributes, "recordSchema", response.getRecordSchema());
-            addAttribute(attributes, "elementSet", response.getElementSet());
-            start("csw:SearchResults", attributes);
+        }
 
+        private void encodeRecords(final CSWRecordsResult response) {
             // encode the records
             if(response.getRecords() != null) {
                 try {
                     response.getRecords().accepts(new FeatureVisitor() {
-    
+      
                         @Override
                         public void visit(Feature feature) {
                             encode(response, feature);
@@ -97,9 +118,6 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
                     throw new ServiceException("Failed to encoder records", e);
                 }
             }
-
-            end("csw:SearchResults");
-            end("csw:GetRecordsResponse");
         }
 
         /**

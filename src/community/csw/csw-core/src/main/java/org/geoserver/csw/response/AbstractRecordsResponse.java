@@ -73,7 +73,7 @@ public abstract class AbstractRecordsResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation) throws IOException,
             ServiceException {
         CSWRecordsResult result = (CSWRecordsResult) value;
-        GetRecordsType request = (GetRecordsType) operation.getParameters()[0];
+        RequestBaseType request = (RequestBaseType) operation.getParameters()[0];
         CSWInfo csw = gs.getService(CSWInfo.class);
 
         // check the output schema is valid
@@ -85,7 +85,7 @@ public abstract class AbstractRecordsResponse extends Response {
             }
         }
 
-        if (request.getResultType() == ResultType.VALIDATE) {
+        if (getResultType(request) == ResultType.VALIDATE) {
             // this one is output schema independent
             transformAcknowledgement(output, request, csw);
         } else {
@@ -93,8 +93,16 @@ public abstract class AbstractRecordsResponse extends Response {
         }
     }
 
-    private void transformAcknowledgement(OutputStream output, GetRecordsType request, CSWInfo csw) {
-        AcknoledgementTransformer transformer = new AcknoledgementTransformer(request,
+    private ResultType getResultType(RequestBaseType request) {
+        if(request instanceof GetRecordsType) {
+            return ((GetRecordsType) request).getResultType();
+        } else {
+            return ResultType.RESULTS;
+        }
+    }
+
+    private void transformAcknowledgement(OutputStream output, RequestBaseType request, CSWInfo csw) {
+        AcknowledgementTransformer transformer = new AcknowledgementTransformer(request,
                 csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);
         try {

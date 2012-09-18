@@ -33,9 +33,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class AcknoledgementTransformer extends AbstractCSWTransformer {
+public class AcknowledgementTransformer extends AbstractCSWTransformer {
 
-    public AcknoledgementTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
+    public AcknowledgementTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
         super(request, canonicalSchemaLocation);
     }
 

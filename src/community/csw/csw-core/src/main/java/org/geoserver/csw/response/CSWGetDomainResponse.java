@@ -20,7 +20,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Encodes responses with CSW Dublin Core records
+ * Encodes domain values responses
  * 
  * @author Andrea Aime - GeoSolutions
  */

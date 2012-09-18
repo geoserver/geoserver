@@ -18,12 +18,12 @@ public class CSWLegacyLoader extends LegacyServiceLoader<CSWInfo> {
     public CSWInfo load(LegacyServicesReader reader, GeoServer geoServer)
             throws Exception {
         
-        CSWInfoImpl wps = new CSWInfoImpl();
-        wps.setId("csw");
-        wps.setGeoServer(geoServer);
-        wps.getVersions().add( new Version( "2.0.2") );
+        CSWInfoImpl csw = new CSWInfoImpl();
+        csw.setId("csw");
+        csw.setGeoServer(geoServer);
+        csw.getVersions().add( new Version( "2.0.2") );
         
-        return wps;
+        return csw;
     }
 
 }

@@ -81,8 +81,8 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     @Override
     public CSWRecordsResult getRecordById(GetRecordByIdType request) throws ServiceException {
         checkStore();
-        // TODO Auto-generated method stub
-        return null;
+        List<RecordDescriptor> descriptors = GeoServerExtensions.extensions(RecordDescriptor.class, context);
+        return new GetRecordById(this.csw, store, descriptors).run(request);
     }
 
     @Override

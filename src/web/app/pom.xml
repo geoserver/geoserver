@@ -747,6 +747,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>csw-simple</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>csw-simple-store</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>jdbcconfig</id>
       <dependencies>
         <dependency>

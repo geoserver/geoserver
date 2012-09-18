@@ -51,9 +51,9 @@ public class GetDomain {
                     final String operation = parameterName.split("\\.")[0];
                     final String parameter = parameterName.split("\\.")[1];
                     
-                    if (store.getCapabilities().operationParameters.get(operation) != null)
+                    if (GetCapabilities.operationParameters.get(operation) != null)
                     {
-                        for (DomainType param : store.getCapabilities().operationParameters.get(operation))
+                        for (DomainType param : GetCapabilities.operationParameters.get(operation))
                         {
                             if (param.getName().equalsIgnoreCase(parameter))
                             {

@@ -20,7 +20,7 @@ import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
 import org.geoserver.csw.records.CSWRecordDescriptor;
-import org.geoserver.csw.store.CatalogCapabilities;
+import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.CatalogStore;
 import org.geotools.csw.DC;
 import org.geotools.data.Query;
@@ -185,9 +185,9 @@ public class SimpleCatalogStore implements CatalogStore {
     }
 
     @Override
-    public CatalogCapabilities getCapabilities() {
+    public CatalogStoreCapabilities getCapabilities() {
         // for the moment let's roll with the basic capabilities, we'll add extras later
-        return new CatalogCapabilities();
+        return new CatalogStoreCapabilities();
     }
 
     @Override

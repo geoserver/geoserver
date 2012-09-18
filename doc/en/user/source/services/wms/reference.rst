@@ -16,6 +16,9 @@ The relevant OGC WMS specifications are:
 - `OGC Web Map Service Implementation Specification, Version 1.3.0 <http://portal.opengeospatial.org/files/?artifact_id=14416>`_
  
 GeoServer also supports some extensions to the WMS specification made by the Styled Layer Descriptor (SLD) standard to control the styling of the map output.
+These are defined in:
+
+- `OpenGIS Styled Layer Descriptor Profile of the Web Map Service Implementation Specification, Version 1.1.0 <http://portal.opengeospatial.org/files/?artifact_id=22364>`_
 
 Benefits of WMS
 --------------- 
@@ -197,6 +200,14 @@ The standard parameters for the GetMap operation are:
      - No
      - Time value or range for map data.
        See :ref:`wms_time` for more information.
+   * - ``sld``
+     - No
+     - A URL referencing a StyledLayerDescriptor XML file
+       which is used to control or enhance map layers and styling
+   * - ``sld_body``
+     - No
+     - A URL-encoded StyledLayerDescriptor
+       which is used to control or enhance map layers and styling     
 
        
 GeoServer provides a number of useful vendor-specific parameters for the GetMap operation.  

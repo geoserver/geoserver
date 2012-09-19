@@ -109,11 +109,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.security</groupId>
-      <artifactId>sec-cas</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
     </dependency>
@@ -692,6 +687,16 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>teradata</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>cas</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.security</groupId>
+          <artifactId>sec-cas</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

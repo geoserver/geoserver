@@ -209,6 +209,11 @@
    <artifactId>teradata</artifactId>
    <version>${project.version}</version>
   </dependency>
+  <dependency>
+   <groupId>org.geoserver.security</groupId>
+   <artifactId>sec-cas</artifactId>
+   <version>${project.version}</version>
+  </dependency>
  </dependencies>
  <build>
   <plugins>

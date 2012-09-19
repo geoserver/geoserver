@@ -172,6 +172,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>security</id>
+      <modules>
+        <module>security</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -197,6 +204,7 @@
         <module>wps</module>
         <module>querylayer</module>
         <module>teradata</module>
+        <module>security</module>
       </modules>
     </profile>
 
@@ -225,6 +233,7 @@
         <module>wps</module>
         <module>querylayer</module>
         <module>teradata</module>
+        <module>security</module>
       </modules>
     </profile>
 

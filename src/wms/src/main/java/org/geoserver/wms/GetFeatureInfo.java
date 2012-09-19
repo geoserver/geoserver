@@ -710,7 +710,7 @@ public class GetFeatureInfo {
      * 
      * @throws RuntimeException
      */
-    private Coordinate pixelToWorld(double x, double y, ReferencedEnvelope map, double width, double height) {
+    public static Coordinate pixelToWorld(double x, double y, ReferencedEnvelope map, double width, double height) {
         // set up the affine transform and calculate scale values
         AffineTransform at = worldToScreenTransform(map, width, height);
 
@@ -739,7 +739,7 @@ public class GetFeatureInfo {
      * 
      * @return a transform that maps from real world coordinates to the screen
      */
-    private AffineTransform worldToScreenTransform(ReferencedEnvelope mapExtent, double width, double height) {
+    private static AffineTransform worldToScreenTransform(ReferencedEnvelope mapExtent, double width, double height) {
         
         //the transformation depends on an x/y ordering, if we have a lat/lon crs swap it
         CoordinateReferenceSystem crs = mapExtent.getCoordinateReferenceSystem();

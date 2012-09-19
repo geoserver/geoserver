@@ -166,7 +166,7 @@ public class MonitorCallbackTest {
         
         gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
         
-        Envelope env = new Envelope(100,200,300,4);
+        Envelope env = new Envelope(100,110,70,80);
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         gm.setBbox(env);
         gm.setCrs(crs);
@@ -180,11 +180,23 @@ public class MonitorCallbackTest {
     public void testWMSGetFeatureInfo() throws Exception {
         GetFeatureInfoRequest gfi = new GetFeatureInfoRequest();
         
+        GetMapRequest gm = new GetMapRequest();
+        gm.setHeight(20);
+        gm.setWidth(10);
+        Envelope env = new Envelope(100,110,30,50);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        gm.setBbox(env);
+        gm.setCrs(crs);
+        gfi.setGetMapRequest(gm);
+        gfi.setXPixel(6);
+        gfi.setYPixel(17);
+        
         gfi.setQueryLayers(Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
         callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", gfi));
         
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
+        assertEquals(new ReferencedEnvelope(106,106,33,33,crs),data.getBbox());
     }
     
     @Test

@@ -97,9 +97,7 @@ pushd .. > /dev/null
 # clear out any changes
 git reset --hard HEAD
 
-# checkout and update primary / release branches
-git checkout rel_$branch
-git pull origin rel_$branch
+# checkout and update primary branch
 git checkout $branch
 git pull origin $branch
 

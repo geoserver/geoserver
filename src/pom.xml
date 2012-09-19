@@ -1168,6 +1168,7 @@
       <descriptor>release/ext-wps.xml</descriptor>
       <descriptor>release/ext-querylayer.xml</descriptor>
       <descriptor>release/ext-teradata.xml</descriptor>
+      <descriptor>release/ext-cas.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.2-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

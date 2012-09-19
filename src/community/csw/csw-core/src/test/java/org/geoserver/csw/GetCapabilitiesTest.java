@@ -107,7 +107,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
 
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
-        // print(dom);
+        print(dom);
         checkValidationErrors(dom);
 
         // basic check on local name
@@ -127,6 +127,12 @@ public class GetCapabilitiesTest extends CSWTestSupport {
                 xpath.evaluate(
                         "//ows:OperationsMetadata/ows:Operation[@name=\"GetCapabilities\"]/ows:Constraint/ows:Value",
                         dom));
+        
+        // check we have csw:AnyText among the queriables
+        assertXpathEvaluatesTo("1", "count(//ows:Operation[@name='GetRecords']/ows:Constraint[@name='SupportedDublinCoreQueryables' and ows:Value = 'csw:AnyText'])", dom);
+        
+        // check we have dc:subject among the domain property names
+        assertXpathEvaluatesTo("1", "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'dc:title'])", dom);
     }
 
     public void testPostBasic() throws Exception {

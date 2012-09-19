@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
-import org.geoserver.csw.GetRepositoryItemBean;
-import org.geoserver.csw.RepositoryItem;
+import org.geoserver.csw.GetRepositoryItemType;
+import org.geoserver.csw.store.RepositoryItem;
+import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -32,7 +34,7 @@ public class CSWGetRepositoryItemResponse extends Response {
     @Override
     public boolean canHandle(Operation operation) {
         Object request = operation.getParameters()[0];
-        if (request instanceof GetRepositoryItemBean) {
+        if (request instanceof GetRepositoryItemType) {
             return true;
         } else {
             throw new IllegalArgumentException("Unsupported request object type: " + request);
@@ -49,37 +51,21 @@ public class CSWGetRepositoryItemResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation) throws IOException,
             ServiceException {
 
-        InputStream input = ((RepositoryItem) value).getContents();
-
-        if (null != input) {
-            try {
-                byte[] buffer = new byte[1024]; // Adjust if you want
-                int bytesRead;
-                while ((bytesRead = input.read(buffer)) != -1) {
-                    output.write(buffer, 0, bytesRead);
-                }
-            } catch (Exception e) {
-
-            } finally {
-                try {
-                    if (output != null) {
-                        output.flush();
-                        output.close();
-                    }
-                } catch (Exception e) {
-                    // Nothing to do
-                }
-
-                try {
-                    if (input != null) {
-                        input.close();
-                    }
-                } catch (Exception e) {
-                    // Nothing to do
-                }
-
+        InputStream input = null;
+        try {
+            input = ((RepositoryItem) value).getContents();
+            if (null != input) {
+                IOUtils.copy(input, output);
+            } else {
+                throw new HttpErrorCodeException(404, "Repository item had no content");
             }
+        } catch (IOException e) {
+            throw new ServiceException("Failed to encode the repository item onto the output", e);
+        } finally {
+            IOUtils.closeQuietly(input);
+            output.flush();
         }
+        
     }
 
 }

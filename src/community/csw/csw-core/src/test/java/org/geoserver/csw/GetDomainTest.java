@@ -45,17 +45,6 @@ public class GetDomainTest extends CSWTestSupport {
         return new OneTimeTestSetup(new GetDomainTest());
     }
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-
-        // copy all records into the data directory
-        File root = dataDirectory.getDataDirectoryRoot();
-        File catalog = new File(root, "catalog");
-        File records = new File("./src/test/resources/org/geoserver/csw/records");
-        FileUtils.copyDirectory(records, catalog);
-    }
-
     public void testKVPParameter() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");

@@ -4,6 +4,8 @@
  */
 package org.geoserver.csw;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +14,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.cat.csw20.CapabilitiesType;
@@ -37,7 +41,7 @@ import net.opengis.ows10.TelephoneType;
 
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.config.ContactInfo;
-import org.geoserver.csw.store.CatalogStoreCapabilities;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.RequestUtils;
@@ -50,6 +54,8 @@ import org.geotools.filter.capability.SpatialCapabiltiesImpl;
 import org.geotools.filter.capability.SpatialOperatorsImpl;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.capability.ArithmeticOperators;
 import org.opengis.filter.capability.ComparisonOperators;
@@ -62,6 +68,7 @@ import org.opengis.filter.capability.SpatialCapabilities;
 import org.opengis.filter.capability.SpatialOperator;
 import org.opengis.filter.capability.SpatialOperators;
 import org.springframework.context.ApplicationContext;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * The CSW GetCapabilities implementation
@@ -188,22 +195,9 @@ public class GetCapabilities {
 
         // - Constraints
         DomainType getRecordConstraint1 = owsf.createDomainType();
-        DomainType getRecordConstraint2 = owsf.createDomainType();
         getRecordConstraint1.setName("PostEncoding");
         getRecordConstraint1.getValue().add("XML");
-        getRecordConstraint2.setName("AdditionalQueryables");
-        getRecordConstraint2.getValue().add("SpecificationDate");
-        getRecordConstraint2.getValue().add("ConditionApplyingToAccessAndUse");
-        getRecordConstraint2.getValue().add("AccessConstraints");
-        getRecordConstraint2.getValue().add("MetadataPointOfContact");
-        getRecordConstraint2.getValue().add("SpecificationDateType");
-        getRecordConstraint2.getValue().add("Classification");
-        getRecordConstraint2.getValue().add("OtherConstraints");
-        getRecordConstraint2.getValue().add("Degree");
-        getRecordConstraint2.getValue().add("Lineage");
-        getRecordConstraint2.getValue().add("SpecificationTitle");
         operationConstraints.get("GetRecords").add(getRecordConstraint1);
-        //operationConstraints.get("GetRecords").add(getRecordConstraint2);
         
         /** 
          * GetRecordById 
@@ -599,6 +593,31 @@ public class GetCapabilities {
         {
             getRecords.getConstraint().add(constraint);
         }
+        
+        // the additional queriables based on the store
+        try {
+            for(FeatureType ft : store.getRecordSchemas()) {
+                // TODO: encode the ISO additional queriables too
+                if(ft.equals(CSWRecordDescriptor.RECORD)) {
+                    List<Name> queriables = store.getCapabilities().getQueriables(ft.getName());
+                    if(queriables != null && queriables.size() > 0) {
+                        DomainType dt = owsf.createDomainType();
+                        dt.setName("SupportedDublinCoreQueryables");
+                        
+                        for (Name q : queriables) {
+                            NamespaceSupport nss = CSWRecordDescriptor.NAMESPACES;
+                            String prefix = nss.getPrefix(q.getNamespaceURI());
+                            dt.getValue().add(prefix + ":" + q.getLocalPart());
+                        }
+                        
+                        getRecords.getConstraint().add(dt);
+                    }
+                }
+                
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to encode getRecords additional queriables", e);
+        }
     }
 
     /**
@@ -688,10 +707,41 @@ public class GetCapabilities {
         getDomainPost.getConstraint().add(getDomainPostConstraints);
         getDomainHTTP.getPost().add(getDomainPost);
 
-        // - Parameters
+        // - Fixed Parameters
         for (DomainType param : operationParameters.get("GetDomain"))
         {
             getDomain.getParameter().add(param);
+        }
+        
+        // The domain queriables list from the catalog store
+        try {
+            Set<String> summary = new HashSet<String>();
+            for(FeatureType ft : store.getRecordSchemas()) {
+                    List<Name> queriables = store.getCapabilities().getDomainQueriables(ft.getName());
+                    
+                    if(queriables != null && queriables.size() > 0) {
+                        for (Name q : queriables) {
+                            NamespaceSupport nss = CSWRecordDescriptor.NAMESPACES;
+                            String prefix = nss.getPrefix(q.getNamespaceURI());
+                            summary.add(prefix + ":" + q.getLocalPart());
+                        }
+                        
+                        
+                    }
+                }
+                
+            if(summary.size() > 0) {
+                List<String> sorted = new ArrayList<String>(summary);
+                Collections.sort(sorted);
+                DomainType dt = owsf.createDomainType();
+                dt.setName("PropertyName");
+                for (String name : sorted) {
+                    dt.getValue().add(name);
+                }
+                getDomain.getParameter().add(dt);
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to encode getDomain ParameterName values", e);
         }
 
         // - Constraints

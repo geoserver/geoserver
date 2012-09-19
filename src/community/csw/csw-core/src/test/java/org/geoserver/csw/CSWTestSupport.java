@@ -1,5 +1,6 @@
 package org.geoserver.csw;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -52,7 +54,14 @@ public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        // we need no data whatsoever for most of the CSW tests, let's not waste time adding some
+        // do not call super, we don't need all the normal layers
+        // super.populateDataDirectory(dataDirectory);
+        
+        // copy all records into the data directory
+        File root = dataDirectory.getDataDirectoryRoot();
+        File catalog = new File(root, "catalog");
+        File records = new File("./src/test/resources/org/geoserver/csw/records");
+        FileUtils.copyDirectory(records, catalog);
     }
 
     protected String root() {

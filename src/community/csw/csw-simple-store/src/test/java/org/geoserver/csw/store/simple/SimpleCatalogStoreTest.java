@@ -10,9 +10,12 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.store.CatalogStoreCapabilities;
+import org.geoserver.csw.store.RepositoryItem;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
 import org.geotools.data.Query;
@@ -43,6 +46,15 @@ public class SimpleCatalogStoreTest extends TestCase {
     
     protected void setUp() throws Exception {
         Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true);
+    }
+    
+    public void testCapabilities() throws Exception {
+        CatalogStoreCapabilities capabilities = store.getCapabilities();
+        assertFalse(capabilities.supportsTransactions());
+        Name cswRecordName = CSWRecordDescriptor.RECORD.getName();
+        assertTrue(capabilities.supportsGetRepositoryItem(cswRecordName));
+        assertTrue(capabilities.getQueriables(cswRecordName).contains(new NameImpl(CSW.NAMESPACE, "AnyText")));
+        assertTrue(capabilities.getDomainQueriables(cswRecordName).contains(new NameImpl(DC.NAMESPACE, "title")));
     }
 
     public void testCreationExceptions() throws IOException {
@@ -279,4 +291,15 @@ public class SimpleCatalogStoreTest extends TestCase {
         domain.close();
     }
     
+    public void testGetRepositoryItem() throws IOException {
+        RepositoryItem item = store.getRepositoryItem("foo");
+        assertNull(item);
+        
+        item = store.getRepositoryItem("urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        assertNotNull(item);
+        assertEquals("application/xml", item.getMime());
+        String contents = IOUtils.toString(item.getContents(), "UTF-8");
+        String expected = "This is a random comment that will show up only when fetching the repository item";
+        assertTrue(contents.contains(expected));
+    }
 }

@@ -1,18 +1,16 @@
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 import junit.framework.Test;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
-import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
 import org.w3c.dom.Document;
@@ -72,7 +70,7 @@ public class GetRecordByIdTest extends CSWTestSupport {
     
     public void testGetSingle() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
-        print(dom);
+        // print(dom);
         checkValidationErrors(dom);
         
         // check we have the expected results
@@ -134,17 +132,6 @@ public class GetRecordByIdTest extends CSWTestSupport {
         assertXpathEvaluatesTo("Lorem ipsum", "//csw:BriefRecord/dc:title", dom);    
         assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:BriefRecord/dc:type", dom);    
         assertXpathEvaluatesTo("", "//csw:BriefRecord/dc:subject", dom);
-    }
-    
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
-        // copy all records into the data directory
-        File root = dataDirectory.getDataDirectoryRoot();
-        File catalog = new File(root, "catalog");
-        File records = new File("./src/test/resources/org/geoserver/csw/records");
-        FileUtils.copyDirectory(records, catalog);
     }
 
 }

@@ -21,6 +21,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
+import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.opengis.feature.type.FeatureType;
@@ -90,7 +91,7 @@ public class DefaultCatalogService implements CatalogService, ApplicationContext
     }
 
     @Override
-    public RepositoryItem getRepositoryItem(GetRepositoryItemBean request) throws ServiceException {
+    public RepositoryItem getRepositoryItem(GetRepositoryItemType request) throws ServiceException {
         checkStore();
         return new GetRepositoryItem(this.csw, this.store).run(request);
     }

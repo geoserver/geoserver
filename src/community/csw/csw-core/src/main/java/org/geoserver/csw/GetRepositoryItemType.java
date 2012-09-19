@@ -10,7 +10,7 @@ package org.geoserver.csw;
  * 
  * @author Andrea Aime - GeoSolutions
  * */
-public class GetRepositoryItemBean {
+public class GetRepositoryItemType {
 
     String service;
 

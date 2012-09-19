@@ -20,7 +20,6 @@ import org.geotools.util.Version;
 /**
  * Unit test suite for {@link GetRepositoryItemKvpRequestReader}
  * 
- * @author Gabriel Roldan
  * @version $Id$
  */
 public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
@@ -44,36 +43,16 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
         params = null;
     }
 
-    private GetRepositoryItemBean getRequest(Map<String, String> rawKvp) throws Exception {
+    private GetRepositoryItemType getRequest(Map<String, String> rawKvp) throws Exception {
         return getRequest(rawKvp, new HashMap<String, Object>(rawKvp));
     }
 
-    private GetRepositoryItemBean getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
+    private GetRepositoryItemType getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
             throws Exception {
 
         GetRepositoryItemKvpRequestReader reader = new GetRepositoryItemKvpRequestReader(csw);
-        GetRepositoryItemBean req = (GetRepositoryItemBean) reader.createRequest();
-        return (GetRepositoryItemBean) reader.read(req, kvp, rawKvp);
-    }
-
-    public void testGetRequestNoVersion() throws Exception {
-        params.put("id", "foo");
-        try {
-            getRequest(params);
-            fail("expected ServiceException if version is not provided");
-        } catch (ServiceException e) {
-            assertEquals("NoVersionInfo", e.getCode());
-        }
-    }
-
-    public void testGetRequestInvalidVersion() throws Exception {
-        params.put("VERSION", "fakeVersion");
-        try {
-            getRequest(params);
-            fail("expected ServiceException if the wrong version is requested");
-        } catch (ServiceException e) {
-            assertEquals("InvalidVersion", e.getCode());
-        }
+        GetRepositoryItemType req = (GetRepositoryItemType) reader.createRequest();
+        return (GetRepositoryItemType) reader.read(req, kvp, rawKvp);
     }
 
     public void testGetRequestNoIdRequested() throws Exception {
@@ -82,10 +61,18 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
             getRequest(params);
             fail("expected ServiceException if no ID is requested");
         } catch (ServiceException e) {
-            assertEquals("NoID", e.getCode());
+            assertEquals(ServiceException.MISSING_PARAMETER_VALUE, e.getCode());
+            assertEquals("id", e.getLocator());
         }
     }
-
-//    public void testGetRequest() throws Exception {
-//    }
+    
+    public void testParseValidRequest() throws Exception {
+        params.put("service", "csw");
+        params.put("VERSION", "2.0.2");
+        params.put("id", "foo");
+        GetRepositoryItemType request = getRequest(params);
+        assertEquals("2.0.2", request.getVersion());
+        assertEquals("csw", request.getService());
+        assertEquals("foo", request.getId());
+    }
 }

@@ -2,12 +2,13 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.csw;
+package org.geoserver.csw.store;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Represents a CSW repository item, allows to properly respond to a GetRepositoryItemBean request
+ * Represents a CSW repository item, that is, the eventual data associated to a certain CSW Record.
  * 
  * @author Andrea Aime - GeoSolutions
  */
@@ -23,6 +24,7 @@ public interface RepositoryItem {
     
     /**
      * The repository item contents
+     * @throws IOException 
      */
-    public InputStream getContents();
+    public InputStream getContents() throws IOException;
 }

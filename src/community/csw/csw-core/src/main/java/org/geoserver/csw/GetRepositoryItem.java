@@ -5,10 +5,13 @@
 package org.geoserver.csw;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.geoserver.csw.store.CatalogStore;
+import org.geoserver.csw.store.RepositoryItem;
+import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -33,28 +36,16 @@ public class GetRepositoryItem {
      * @param request
      * @return
      */
-    public RepositoryItem run(GetRepositoryItemBean request) {
+    public RepositoryItem run(GetRepositoryItemType request)  {
         try {
-            return new RepositoryItem(){
-
-                @Override
-                public String getMime() {
-                    return "application/xml";
-                }
-
-                @Override
-                public InputStream getContents() {
-                    String theString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Foo/>";
-                    try {
-                        return new ByteArrayInputStream(theString.getBytes("UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        throw new ServiceException(e, "Failed to parse the requested Repository Item",
-                                ServiceException.NO_APPLICABLE_CODE);
-                    }
-                }};
-        } catch (Exception e) {
-            throw new ServiceException(e, "Failed to retrieve the requested Repository Item",
-                    ServiceException.NO_APPLICABLE_CODE);
+            RepositoryItem item = store.getRepositoryItem(request.getId());
+            if(item == null) {
+                // by spec we have to return a 404
+                throw new HttpErrorCodeException(404, "No repository item found for id " + request.getId());
+            }
+            return item;
+        } catch (IOException e) {
+            throw new ServiceException("Failed to load the repository item", e);
         }
     }
 }

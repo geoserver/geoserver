@@ -55,4 +55,13 @@ public class CatalogStoreCapabilities {
         
         return queriables;
     }
+    
+    /**
+     * Returns true if GetRepositoryItem is supported on the specified type
+     * @param typeName
+     * @return
+     */
+    public boolean supportsGetRepositoryItem(Name typeName) {
+        return false;
+    }
 }

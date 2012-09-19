@@ -17,6 +17,7 @@ import net.opengis.cat.csw20.TransactionType;
 
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.response.CSWRecordsResult;
+import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.ServiceException;
 import org.opengis.feature.type.FeatureType;
 
@@ -55,7 +56,7 @@ public interface CatalogService {
      * The optional GetRepositoryItem request, used for ebRIM but could be useful for
      * a general catalog that wants the data to be made available for download as well
      */
-    RepositoryItem getRepositoryItem(GetRepositoryItemBean request) throws ServiceException;
+    RepositoryItem getRepositoryItem(GetRepositoryItemType request) throws ServiceException;
 
     /**
      * Runs a harvest request

@@ -13,7 +13,6 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.geometry.MismatchedDimensionException;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 public class RecordsTest extends TestCase {

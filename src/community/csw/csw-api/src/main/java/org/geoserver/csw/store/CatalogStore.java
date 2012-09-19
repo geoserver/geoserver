@@ -101,6 +101,15 @@ public interface CatalogStore {
      */
     void updateRecord(Name typeName, Name[] attributeNames, Object[] attributeValues,
             Filter filter, Transaction t) throws IOException;
+    
+    /**
+     * Returns the repository item for the specified record id, or null
+     * if the repository item is not found, or the operation is not supported 
+     * 
+     * @param recordId
+     * @return
+     */
+    RepositoryItem getRepositoryItem(String recordId) throws IOException;
 
     /**
      * Returns the store capabilities

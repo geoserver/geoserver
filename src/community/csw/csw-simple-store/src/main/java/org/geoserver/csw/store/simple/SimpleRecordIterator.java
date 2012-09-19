@@ -44,6 +44,8 @@ class SimpleRecordIterator implements Iterator<Feature> {
     Iterator<File> files;
 
     RecordType record;
+    
+    File lastFile;
 
     Parser parser;
 
@@ -63,6 +65,7 @@ class SimpleRecordIterator implements Iterator<Feature> {
     public boolean hasNext() {
         while ((record == null || offset > 0) && files.hasNext()) {
             File file = files.next();
+            lastFile = file;
             InputStream is = null;
             try {
                 is = new FileInputStream(file);
@@ -133,6 +136,10 @@ class SimpleRecordIterator implements Iterator<Feature> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException("This iterator is read only");
+    }
+    
+    public File getLastFile() {
+        return lastFile;
     }
 
 }

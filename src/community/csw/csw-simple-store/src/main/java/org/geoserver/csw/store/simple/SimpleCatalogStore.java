@@ -5,7 +5,9 @@
 package org.geoserver.csw.store.simple;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,13 +17,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
 import org.geoserver.csw.records.CSWRecordDescriptor;
-import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.CatalogStore;
+import org.geoserver.csw.store.CatalogStoreCapabilities;
+import org.geoserver.csw.store.RepositoryItem;
+import org.geoserver.csw.util.QNameResolver;
 import org.geotools.csw.DC;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
@@ -30,6 +36,7 @@ import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
@@ -53,6 +60,21 @@ import org.opengis.filter.identity.FeatureId;
 public class SimpleCatalogStore implements CatalogStore {
 
     private File root;
+    
+    static final List<Name> QUERIABLES;
+    
+    static {
+        List<String> queriables = Arrays.asList("dc:contributor", "dc:source", "dc:language", 
+                "dc:title", "dc:subject", "dc:creator", "dc:type", "ows:BoundingBox", "dct:modified", 
+                "dct:abstract", "dc:relation", "dc:date", "dc:identifier", "dc:publisher", 
+                "dc:format", "csw:AnyText", "dc:rights");
+        QUERIABLES = new ArrayList<Name>();
+        QNameResolver resolver = new QNameResolver();
+        for (String q : queriables) {
+            QName qname = resolver.parseQName(q, CSWRecordDescriptor.NAMESPACES);
+            QUERIABLES.add(new NameImpl(qname));
+        }
+    }
 
     public SimpleCatalogStore(File root) {
         this.root = root;
@@ -186,8 +208,24 @@ public class SimpleCatalogStore implements CatalogStore {
 
     @Override
     public CatalogStoreCapabilities getCapabilities() {
-        // for the moment let's roll with the basic capabilities, we'll add extras later
-        return new CatalogStoreCapabilities();
+        return new CatalogStoreCapabilities() {
+          
+            @Override
+            public boolean supportsGetRepositoryItem(Name typeName) {
+                return CSWRecordDescriptor.RECORD.getName().equals(typeName);
+            }
+            
+            @Override
+            public List<Name> getQueriables(Name typeName) {
+                return QUERIABLES;
+            }
+            
+            @Override
+            public List<Name> getDomainQueriables(Name typeName) {
+                return QUERIABLES;
+            }
+            
+        };
     }
 
     @Override
@@ -196,6 +234,35 @@ public class SimpleCatalogStore implements CatalogStore {
         // available for the time being (even counting the files in case of no filtering
         // would be wrong as we have to 
         return getRecords(q, t).size();
+    }
+
+    /**
+     * This dummy implementation returns the file backing the record, verbatim
+     */
+    @Override
+    public RepositoryItem getRepositoryItem(String recordId) {
+        SimpleRecordIterator it = new SimpleRecordIterator(root, 0);
+        while(it.hasNext()) {
+            Feature f = it.next();
+            if(recordId.equals(f.getIdentifier().getID())) {
+                final File file = it.getLastFile();
+                return new RepositoryItem() {
+                    
+                    @Override
+                    public String getMime() {
+                        return "application/xml";
+                    }
+                    
+                    @Override
+                    public InputStream getContents() throws IOException {
+                        return new FileInputStream(file);
+                    }
+                };
+            }
+        }
+        
+        // not found
+        return null;
     }
 
 }

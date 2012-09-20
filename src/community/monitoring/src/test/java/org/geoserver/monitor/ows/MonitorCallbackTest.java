@@ -176,27 +176,35 @@ public class MonitorCallbackTest {
         assertEquals(new ReferencedEnvelope(env,crs),data.getBbox());
     }
     
+    void assertEqualsBbox(BoundingBox expected, BoundingBox result, double delta) {
+    	assertEquals(expected.getMaxX(), result.getMaxX(), delta);
+    	assertEquals(expected.getMinX(), result.getMinX(), delta);
+    	assertEquals(expected.getMaxY(), result.getMaxY(), delta);
+    	assertEquals(expected.getMinY(), result.getMinY(), delta);
+    }
+    
     @Test
     public void testWMSGetFeatureInfo() throws Exception {
         GetFeatureInfoRequest gfi = new GetFeatureInfoRequest();
         
         GetMapRequest gm = new GetMapRequest();
-        gm.setHeight(20);
-        gm.setWidth(10);
-        Envelope env = new Envelope(100,110,30,50);
-        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        gm.setHeight(330);
+        gm.setWidth(780);
+        Envelope env = new ReferencedEnvelope(-126.81851,-115.818992,44.852958,49.5066,null);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326",true);
         gm.setBbox(env);
         gm.setCrs(crs);
         gfi.setGetMapRequest(gm);
-        gfi.setXPixel(6);
-        gfi.setYPixel(17);
+        gfi.setXPixel(260);
+        gfi.setYPixel(63);
+        gfi.setVersion("1.1.1");
         
         gfi.setQueryLayers(Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
         callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", gfi));
         
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        assertEquals(new ReferencedEnvelope(106,106,33,33,crs),data.getBbox());
+        assertEqualsBbox(new ReferencedEnvelope(-123.15,-123.15, 48.62,48.62,crs),data.getBbox(), 0.01);
     }
     
     @Test

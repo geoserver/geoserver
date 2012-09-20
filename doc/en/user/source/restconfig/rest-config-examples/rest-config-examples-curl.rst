@@ -126,7 +126,7 @@ already existed on the server. This example shows how to load and create a datas
 
   curl -u admin:geoserver -XPUT -H 'Content-type: text/plain' \ 
      -d 'file:///data/shapefiles/' \
-     "http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/external.shp?configure=all"
+     "http://localhost:8080/geoserver/rest/workspaces/acme/datastores/shapefiles/external.shp?configure=all"
 
 Note the ``configure=all`` query string parameter.
 

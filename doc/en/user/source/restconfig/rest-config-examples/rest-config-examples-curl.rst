@@ -51,10 +51,10 @@ request::
 
   curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme.xml
 
-Uploading a Shapefile
+Uploading a shapefile
 ---------------------
 
-In this example a new datastore will be created by uploading a Shapefile. The 
+In this example a new datastore will be created by uploading a shapefile. The 
 following uploads the zipped shapefile ``roads.zip`` and creates a new 
 datastore named ``roads``::
 
@@ -101,15 +101,15 @@ retrieves the created feature type as XML::
      ...
    </featureType>
 
-Adding an existing Shapefile
+Adding an existing shapefile
 ----------------------------
 
-In the previous example a Shapefile was uploaded directly by sending a zip file
-in the body of a request. This example shows how to add a Shapefile that already
+In the previous example a shapefile was uploaded directly by sending a zip file
+in the body of a request. This example shows how to add a shapefile that already
 exists on the server.
 
-Consider a directory on the server ``/data/shapefiles/roads`` that contains the Shapefile ``roads.shp``. The following adds a new datastore for the 
-Shapefile::
+Consider a directory on the server ``/data/shapefiles/roads`` that contains the shapefile ``roads.shp``. The following adds a new datastore for the 
+shapefile::
 
   curl -u admin:geoserver -XPUT -H 'Content-type: text/plain' \ 
      -d 'file:///data/shapefiles/roads/roads.shp' \
@@ -117,27 +117,23 @@ Shapefile::
 
 Note the ``external.shp`` part of the request uri.
 
-Adding a directory of existing Shapefiles
+Adding a directory of existing shapefiles
 -----------------------------------------
 
-In the previous example a datastore was created for a single Shapefile that 
-already existed on the server. This example shows how to add a directory of 
-Shapefiles.
+In the previous example a datastore was created for a single shapefile that 
+already existed on the server. This example shows how to load and create a datastore for a number of shapefiles in a single operation. All the shapefiles exist in one folder, ``/data/shapefiles``::
 
-Consider a directory on the server ``/data/shapefiles`` that contains a number
-of different Shapefiles. The following adds a new datastore for all the 
-Shapefiles in the directory::
 
   curl -u admin:geoserver -XPUT -H 'Content-type: text/plain' \ 
-     -d 'file:///data/shapefiles/roads' \
-     "http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/external.shp?configure=all"
+     -d 'file:///data/shapefiles/' \
+     "http://localhost:8080/geoserver/rest/workspaces/acme/datastores/shapefiles/external.shp?configure=all"
 
 Note the ``configure=all`` query string parameter.
 
 Changing a feature type style
 -----------------------------
 
-In the previous example a Shapefile was uploaded, and in the process a feature 
+In the previous example a shapefile was uploaded, and in the process a feature 
 type was created. Whenever a feature type is created an layer is implicitly 
 created for it. The following retrieves the layer as XML::
 

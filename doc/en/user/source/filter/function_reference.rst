@@ -39,7 +39,7 @@ Function argument type reference
    * - Timestamp
      - Date and time information
      
-Comparison Functions
+Comparison functions
 --------------------------------
 
 .. list-table::
@@ -50,7 +50,7 @@ Comparison Functions
      - **Arguments**
      - **Description**
    * - between
-     - ``num``:Number, ``low``:Number,``high``:Number
+     - ``num``:Number, ``low``:Number, ``high``:Number
      - returns true if ``low`` <= ``num`` <= ``high``
    * - equalTo
      - ``a``:Object, ``b``:Object
@@ -85,7 +85,7 @@ Comparison Functions
      - Returns true if ``x`` and ``y`` are equal, false otherwise
      
      
-Control Functions
+Control functions
 --------------------------------
 
 .. list-table::
@@ -98,6 +98,27 @@ Control Functions
    * - if_then_else
      - ``condition``:Boolean, ``x``:Object, ``y``: Object
      - Returns ``x`` if the condition is true, ``y`` otherwise
+
+Environment function
+--------------------
+
+This function returns the value of environment variables
+defined in various contexts.
+Contexts which define environment variables include
+:ref:`SLD rendering <sld_variable_substitution>`
+and the :ref:`tutorials_animreflector`.
+
+.. list-table::
+   :widths: 20 25 55
+   
+   
+   * - **Name**
+     - **Arguments**
+     - **Description**
+   * - env
+     - ``variable``:String
+     - Returns the value of the environment variable ``variable``.
+
 
 
 Feature functions
@@ -122,7 +143,7 @@ Feature functions
        Allows property names to be computed or specified by 
        :ref:`sld_variable_substitution`.
      
-Spatial Relationship Functions
+Spatial Relationship functions
 ------------------------------
 
 For more information about the precise meaning of the spatial relationships consult the `OGC Simple Feature Specification for SQL <http://www.opengeospatial.org/standards/sfs>`_
@@ -172,7 +193,7 @@ For more information about the precise meaning of the spatial relationships cons
      - Returns true is fully contained inside ``b``
 
      
-Geometric Functions
+Geometric functions
 --------------------
 
 .. list-table::
@@ -305,7 +326,7 @@ Geometric Functions
    
    
 	 
-Math Functions
+Math functions
 --------------
 
 .. list-table::
@@ -329,40 +350,40 @@ Math Functions
      - The absolute value of the specified Double ``value``
    * - acos
      - ``angle``:Double
-     - Returns the arc cosine of an ``angle`` expressed in radians, in the range of 0.0 through ``PI``
+     - Returns the arc cosine of an ``angle`` in radians, in the range of 0.0 through ``PI``
    * - asin
      - ``angle``:Double
-     - Returns the arc sine of an ``angle`` expressed in radians, in the range of ``-PI / 2`` through ``PI / 2``
+     - Returns the arc sine of an ``angle`` in radians, in the range of ``-PI / 2`` through ``PI / 2``
    * - atan
      - ``angle``:Double
-     - Returns the arc tangent of an angle, in the range of ``-PI/2`` through ``PI/2``
+     - Returns the arc tangent of an angle in radians, in the range of ``-PI/2`` through ``PI/2``
    * - atan2
      - ``x``:Double, ``y``:Double
-     - Converts rectangular coordinates ``(x, y)`` to polar ``(r, theta)``.
+     - Converts a rectangular coordinate ``(x, y)`` to polar **(r, theta)** and returns **theta**.
    * - ceil
      - ``x``: Double
-     - Returns the smallest (closest to negative infinity) double value that is greater than or equal to the argument and is equal to a mathematical integer.
+     - Returns the smallest (closest to negative infinity) double value that is greater than or equal to ``x`` and is equal to a mathematical integer.
    * - cos
      - ``angle``: Double
      - Returns the cosine of an ``angle`` expressed in radians
    * - double2bool
      - ``x``: Double
-     - Returns true if the number is zero, false otherwise
+     - Returns ``true`` if ``x`` is zero, ``false`` otherwise
    * - exp
      - ``x``: Double
-     - Returns Euler's number raised to the power of ``x``
+     - Returns Euler's number **e** raised to the power of ``x``
    * - floor
      - ``x``: Double
-     - Returns the largest (closest to positive infinity) value that is less than or equal to the argument and is equal to a mathematical integer
+     - Returns the largest (closest to positive infinity) value that is less than or equal to ``x`` and is equal to a mathematical integer
    * - IEEERemainder
      - ``x``: Double, ``y``:Double
-     - Computes the remainder operation on two arguments as prescribed by the IEEE 754 standard
+     - Computes the remainder of ``x`` divided by ``y`` as prescribed by the IEEE 754 standard
    * - int2bbool
      - ``x``: Integer
-     - Returns true if the number is zero, false otherwise
+     - Returns true if ``x`` is zero, false otherwise
    * - int2ddouble
      - ``x``: Integer
-     - Converts the number to Double
+     - Converts ``x`` to a Double
    * - log
      - ``x``: Integer
      - Returns the natural logarithm (base ``e``) of ``x``
@@ -389,10 +410,10 @@ Math Functions
      -  Same as ``round``, but returns a Long
    * - round
      - ``x``:Double
-     -  Returns the closest Integer to the argument. The result is rounded to an integer by adding 1/2, taking the floor of the result, and casting the result to type Integer. In other words, the result is equal to the value of the expression ``(int)floor(a + 0.5)``
+     -  Returns the closest Integer to ``x``. The result is rounded to an integer by adding 1/2, taking the floor of the result, and casting the result to type Integer. In other words, the result is equal to the value of the expression ``(int)floor(a + 0.5)``
    * - roundDouble
      - ``x``:Double
-     - Returns the closest Long to the argument
+     - Returns the closest Long to ``x``
    * - tan
      - ``angle``:Double
      - Returns the trigonometric tangent of ``angle``
@@ -517,37 +538,36 @@ See also :ref:`transformation_func`.
      
        ``data``:Object,
        ``value``:Object, ...
-     - Transforms a ``lookupValue`` from a set of discrete attribute values into another set of values.
+     - Transforms a ``lookupValue`` from a set of discrete data values into another set of values.
        Any number of ``data``/``value`` pairs may be specified.
-       ``belongsTo`` is optional, and has the value ``succeeding`` or ``preceding``.
    * - Categorize
      - ``lookupValue``:Object, 
-       ``thresholdLow``:Object,
-       
        ``value``:Object,
+       
        ``threshold``:Object, ...
+       ``value``:Object,
        
        ``belongsTo`` : String
      - Transforms a continuous-valued attribute value into a set of discrete values.
        ``lookupValue`` and ``value`` must be an orderable type (typically numeric).
-       The initial ``thresholdLow`` value is required.
-       Any number of additional ``value``/``threshold`` pairs may be specified.
-       ``belongsTo`` is optional, and defines which interval contains lookup values equal to a threshold value
-       with the value ``succeeding`` or ``preceding``.
+       The initial ``value`` is required.
+       Any number of additional ``threshold``/``value`` pairs may be specified.
+       ``belongsTo`` is optional, with the value ``succeeding`` or ``preceding``.
+       It defines which interval to use when the lookup value equals a threshold value.
    * - Interpolate
      - ``lookupValue``:Numeric, 
        
        ``data``:Numeric,
-       ``value``:Numeric *or* String, 
+       ``value``:Numeric *or* #RRGGBB, 
        ...
        
        ``mode``:String,
        ``method``:String
      - Transforms a continuous-valued attribute value into another continuous range of values.
        Any number of ``data``/``value`` pairs may be specified.
-       ``mode`` is optional, and defines the interpolation algorithm used
-       with the value ``linear``, ``cosine`` or ``cubic``.
-       ``method`` is optional, and defines whether the target values are numeric or colors
-       with the value ``numeric`` or ``color``.
+       ``mode`` is optional, with the value ``linear``, ``cosine`` or ``cubic``.
+       It defines the interpolation algorithm to use.
+       ``method`` is optional, with the value ``numeric`` or ``color``.
+       It defines whether the target values are numeric or RGB color specifications.
 
 

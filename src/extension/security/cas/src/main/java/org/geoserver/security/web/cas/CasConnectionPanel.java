@@ -49,8 +49,6 @@ public class CasConnectionPanel<T extends CasAuthenticationProperties> extends F
                         
         add(new TextField<String>("casServerUrlPrefix"));
         add(new HelpLink("casServerUrlPrefixHelp",this).setDialog(dialog));
-        add(new TextField<String>("service"));
-        add(new HelpLink("serviceHelp",this).setDialog(dialog));
         add(new CheckBox("sendRenew"));
         add(new TextField<String>("proxyCallbackUrlPrefix").setRequired(false));
         add(new HelpLink("proxyCallbackUrlPrefixHelp",this).setDialog(dialog));
@@ -72,22 +70,6 @@ public class CasConnectionPanel<T extends CasAuthenticationProperties> extends F
             }
         }.setDefaultFormProcessing(false));
         
-        add(new AjaxSubmitLink("casServiceTest") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                try {
-                    testURL("service",null);
-                    info(new StringResourceModel("serviceConnectionSuccessful",CasConnectionPanel.this, null).getObject());
-                }
-                catch(Exception e) {
-                    error(e);
-                    LOGGER.log(Level.WARNING, "Cas connection error ", e);
-                }
-                finally {
-                    target.addComponent(feedbackPanel);
-                }
-            }
-        }.setDefaultFormProcessing(false));
         
         
         add(new AjaxSubmitLink("proxyCallbackTest") {

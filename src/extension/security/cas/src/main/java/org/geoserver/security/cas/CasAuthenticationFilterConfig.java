@@ -24,6 +24,7 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
     
     private String userGroupServiceName;
      
+
     /**
      * The geoserver url where the case server sends credential information
      * 
@@ -31,7 +32,7 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
      * http://localhost:8080/geoserver/j_spring_cas_security_check
      */
     private String service;
-    
+
     
     /**
      * if true, no single sign on possible
@@ -99,23 +100,6 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
     }
 
 
-
-    /* (non-Javadoc)
-     * @see org.geoserver.security.cas.CasAuthenticationProperties#getService()
-     */
-    @Override
-    public String getService() {
-        return service;
-    }
-
-
-
-    public void setService(String service) {
-        this.service = service;
-    }
-
-
-
     /* (non-Javadoc)
      * @see org.geoserver.security.cas.CasAuthenticationProperties#isSendRenew()
      */
@@ -155,6 +139,14 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
 
     public void setProxyCallbackUrlPrefix(String proxyCallbackUrlPrefix) {
         this.proxyCallbackUrlPrefix = proxyCallbackUrlPrefix;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
     }
  
     

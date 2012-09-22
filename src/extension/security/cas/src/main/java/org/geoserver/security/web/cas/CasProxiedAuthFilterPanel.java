@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.cas;
 
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.cas.CasProxiedAuthenticationFilterConfig;
 import org.geoserver.security.cas.GeoServerCasProxiedAuthenticationFilter;
@@ -24,6 +25,10 @@ public class CasProxiedAuthFilterPanel
     public CasProxiedAuthFilterPanel(String id, IModel<CasProxiedAuthenticationFilterConfig> model) {
         super(id, model);
         add (new CasConnectionPanel<CasProxiedAuthenticationFilterConfig>("cas",model)) ;
+        
+        CheckBox createSession = new CheckBox("createHTTPSessionForValidTicket");
+        add(createSession);
+
     }
 
 }

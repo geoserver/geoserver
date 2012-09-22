@@ -30,6 +30,7 @@ import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
+import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -76,7 +77,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
     public static final String LOGOUT_PARAM="logout";
 
     protected Cas20ProxyTicketValidator validator;
-    protected String service, userGroupServiceName;
+    protected String userGroupServiceName;
     protected ServiceAuthenticationDetailsSource casAuthenticationDetailsSource = new ServiceAuthenticationDetailsSource();
     protected SimpleUrlAuthenticationSuccessHandler successHandler;
     protected String urlInCasLogoutPage;
@@ -104,8 +105,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
         
         ServiceProperties sp = new ServiceProperties();
         sp.setSendRenew(authConfig.isSendRenew());
-        sp.setService(authConfig.getService());
-        sp.setAuthenticateAllArtifacts(true);
+        sp.setService(authConfig.getService());                
         
         try {
             sp.afterPropertiesSet();
@@ -129,8 +129,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
         validator.setRenew(authConfig.isSendRenew());
         if (StringUtils.hasLength(authConfig.getProxyCallbackUrlPrefix()))
                 validator.setProxyCallbackUrl(GeoServerCasConstants.createProxyCallBackURl(authConfig.getProxyCallbackUrlPrefix()));
-                
-        service=authConfig.getService();
+                        
         userGroupServiceName=authConfig.getUserGroupServiceName();
         urlInCasLogoutPage=authConfig.getUrlInCasLogoutPage();
         casLogoutURL=GeoServerCasConstants.createCasURl(authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
@@ -147,8 +146,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
     protected Assertion getCASAssertion(HttpServletRequest request) {
         String ticket = request.getParameter(GeoServerCasConstants.ARTIFACT_PARAMETER);
         if (ticket==null) return null;
+        
+        if (ticket.startsWith(GeoServerCasConstants.SERVICE_TICKET_PREFIX)==false)
+            return null;
+        
         try {
-            return validator.validate(ticket, service);          
+            return validator.validate(ticket, request.getRequestURL().toString());          
             
         } catch (TicketValidationException e) {
             LOGGER.warning(e.getMessage());
@@ -197,8 +200,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
             }
         }
                 
-//        req.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, aep);
-        //chain.doFilter(req, res);          
+        req.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, aep);
+        chain.doFilter(req, res);          
     }            
 
     
@@ -245,7 +248,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
              
         }                                                
         result.setDetails(casAuthenticationDetailsSource.buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(result);                        
+        SecurityContextHolder.getContext().setAuthentication(result);
+        request.getSession(true).setAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY, assertion);
     }
 
     

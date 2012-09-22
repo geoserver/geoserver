@@ -33,8 +33,49 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setClassName(GeoServerCasAuthenticationFilter.class.getName());
         config.setName("testCAS");
         
-        config.setUrlInCasLogoutPage("blbalba");
+        config.setService(null);
         boolean failed = false;                                        
+        try {
+            getSecurityManager().saveFilter(config);
+        } catch (CasFilterConfigException ex){
+            assertEquals(CasFilterConfigException.CAS_SERVICE_URL_REQUIRED,ex.getId());
+            assertEquals(0,ex.getArgs().length);
+            LOGGER.info(ex.getMessage());            
+            failed=true;
+        }
+        assertTrue(failed);
+      
+      
+        config.setService("blabal");
+        failed = false;                                        
+        try {
+            getSecurityManager().saveFilter(config);
+        } catch (CasFilterConfigException ex){
+            assertEquals(CasFilterConfigException.CAS_SERVICE_URL_MALFORMED,ex.getId());
+            assertEquals(0,ex.getArgs().length);
+            LOGGER.info(ex.getMessage());            
+            failed=true;
+        }
+        assertTrue(failed);              
+        config.setService("http://localhost/service");
+        
+        config.setProxyCallbackUrlPrefix("https://myhost/callback");        
+        failed = false;                                        
+        try {
+            getSecurityManager().saveFilter(config);
+        } catch (CasFilterConfigException ex){
+            assertEquals(CasFilterConfigException.CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST,ex.getId());
+            assertEquals(0,ex.getArgs().length);
+            LOGGER.info(ex.getMessage());            
+            failed=true;
+        }
+        assertTrue(failed);
+        config.setProxyCallbackUrlPrefix(null);
+
+
+        
+        config.setUrlInCasLogoutPage("blbalba");
+        failed = false;                                        
         try {
             getSecurityManager().saveFilter(config);
         } catch (CasFilterConfigException ex){
@@ -66,34 +107,9 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
                 
         SecurityFilterConfig fconfig= (SecurityFilterConfig) config; 
         
-        config.setService(null);
-        boolean failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(fconfig);
-        } catch (CasFilterConfigException ex){
-            assertEquals(CasFilterConfigException.CAS_SERVICE_URL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-        
-        
-        config.setService("blabal");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(fconfig);
-        } catch (CasFilterConfigException ex){
-            assertEquals(CasFilterConfigException.CAS_SERVICE_URL_MALFORMED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);        
-        config.setService("http://localhost/service");
         
         config.setCasServerUrlPrefix(null);        
-        failed = false;                                        
+        boolean failed = false;                                        
         try {
             getSecurityManager().saveFilter(fconfig);
         } catch (CasFilterConfigException ex){
@@ -143,18 +159,6 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         }
         assertTrue(failed);
         
-        config.setProxyCallbackUrlPrefix("https://myhost/callback");
-        failed = false;                                        
-        try {
-            getSecurityManager().saveFilter(fconfig);
-        } catch (CasFilterConfigException ex){
-            assertEquals(CasFilterConfigException.CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
-        }
-        assertTrue(failed);
-
         config.setProxyCallbackUrlPrefix("https://localhost/callback");
         getSecurityManager().saveFilter(fconfig);
                                         

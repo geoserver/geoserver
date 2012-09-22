@@ -13,10 +13,11 @@
     <constructor-arg ref="pgtStorage"/>
   </bean>
   
+   
   <bean id="casFilterProvider" class="org.geoserver.security.cas.GeoServerCasAuthenticationProvider">
     <constructor-arg ref="pgtCallback"/>
     <constructor-arg ref="pgtStorage"/>
-  </bean>
+  </bean>  
   <bean id="casProxiedFilterProvider" class="org.geoserver.security.cas.GeoServerCasProxiedAuthenticationProvider">
     <constructor-arg ref="pgtStorage"/>
   </bean>
@@ -27,13 +28,13 @@
     <!--  CAS single sign out handler -->
   <bean id="casSingleSignOutHandler" class="org.jasig.cas.client.session.SingleSignOutHandler" />
 
-   <!--  web stuff -->
+   <!--  web stuff, disabled until proper GUI integration 
    <bean id="casPanelInfo" class="org.geoserver.security.web.cas.CasAuthFilterPanelInfo">
         <property name="id" value="security.casAuthFilter" />
         <property name="shortTitleKey" value="CasAuthFilterPanel.short"/>
         <property name="titleKey" value="CasAuthFilterPanel.title"/>
         <property name="descriptionKey" value="CasAuthFilterPanel.description"/>
-   </bean>            
+   </bean>  -->          
    <bean id="casProxiedPanelInfo" class="org.geoserver.security.web.cas.CasProxiedAuthFilterPanelInfo">
         <property name="id" value="security.CasProxiedAuthFilter" />
         <property name="shortTitleKey" value="CasProxiedAuthFilterPanel.short"/>

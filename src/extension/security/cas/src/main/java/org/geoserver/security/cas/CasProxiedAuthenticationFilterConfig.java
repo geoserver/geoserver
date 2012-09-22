@@ -22,13 +22,6 @@ public class CasProxiedAuthenticationFilterConfig extends PreAuthenticatedUserNa
     private static final long serialVersionUID = 1L;
     
     
-    /**
-     * The geoserver url where the case server sends credential information
-     * 
-     * example:
-     * http://localhost:8080/geoserver/j_spring_cas_security_check
-     */
-    private String service;
     
     
     /**
@@ -55,15 +48,12 @@ public class CasProxiedAuthenticationFilterConfig extends PreAuthenticatedUserNa
     
     private String proxyCallbackUrlPrefix;
     
-    public String getService() {
-        return service;
-    }
-
-
-    public void setService(String service) {
-        this.service = service;
-    }
-
+    /**
+     * if <code>true</code>, an HTTP session is created after
+     * a successful ticket validation
+     */
+    private boolean createHTTPSessionForValidTicket;
+    
 
     public boolean isSendRenew() {
         return sendRenew;
@@ -95,9 +85,20 @@ public class CasProxiedAuthenticationFilterConfig extends PreAuthenticatedUserNa
         this.proxyCallbackUrlPrefix = proxyCallbackUrlPrefix;
     }
 
+      
     @Override
     public boolean providesAuthenticationEntryPoint() {
         return false;
+    }
+
+
+    public boolean isCreateHTTPSessionForValidTicket() {
+        return createHTTPSessionForValidTicket;
+    }
+
+
+    public void setCreateHTTPSessionForValidTicket(boolean createHTTPSessionForValidTicket) {
+        this.createHTTPSessionForValidTicket = createHTTPSessionForValidTicket;
     }
 
 }

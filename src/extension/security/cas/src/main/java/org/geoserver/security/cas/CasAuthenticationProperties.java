@@ -18,9 +18,6 @@ public interface CasAuthenticationProperties {
     public abstract String getCasServerUrlPrefix();
     public abstract void setCasServerUrlPrefix(String url);
 
-    public abstract String getService();
-    public abstract void setService(String url);
-
     public abstract boolean isSendRenew();
     public abstract void setSendRenew(boolean renew);
 

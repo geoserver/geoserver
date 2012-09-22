@@ -21,6 +21,16 @@
           <div wicket:id="cas"></div>
         </fieldset>
    </li>      
+   <li>
+    <label for="service"><wicket:message key="service"></wicket:message></label>
+    <input id="service" wicket:id="service" type="text" class="text"></input>
+    &nbsp;<a href="#" wicket:id="serviceHelp" class="help-link"></a>
+   </li>   
+   <li>
+      <div class="button-group selfclear">
+        <a wicket:id="casServiceTest"><span><wicket:message key="casServiceTest"></wicket:message></span></a>
+      </div>
+   </li>         
    <li>                    
      <label for="urlInCasLogoutPage"><wicket:message key="urlInLogoutPage"></wicket:message></label>
      <input id="urlCasInLogoutPage" wicket:id="urlInCasLogoutPage" type="text" class="text"></input>

@@ -197,18 +197,18 @@ public class LiveCasData extends LiveData {
             }
         }; 
 
-        HttpsServer httpsServer=null;
-        try {
-            httpsServer=createSSLServer();
-            httpsServer.start();
-            checkSSLServer();
-        } catch (Exception ex) {
-            disableTest("problem simulating ssl server: "+ex.getMessage());
-            return null;                        
-        } finally {
-            if (httpsServer!=null)
-                httpsServer.stop(0);
-        }
+//        HttpsServer httpsServer=null;
+//        try {
+//            httpsServer=createSSLServer();
+//            httpsServer.start();
+//            checkSSLServer();
+//        } catch (Exception ex) {
+//            disableTest("problem simulating ssl server: "+ex.getMessage());
+//            return null;                        
+//        } finally {
+//            if (httpsServer!=null)
+//                httpsServer.stop(0);
+//        }
         
         return fixtureFile;
     }

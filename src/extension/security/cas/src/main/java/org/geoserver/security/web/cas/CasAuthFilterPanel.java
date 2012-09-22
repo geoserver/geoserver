@@ -36,13 +36,31 @@ public class CasAuthFilterPanel
     public CasAuthFilterPanel(String id, IModel<CasAuthenticationFilterConfig> model) {
         super(id, model);
         add (connectionPanel=new CasConnectionPanel<CasAuthenticationFilterConfig>("cas",model)) ;
+        add(new TextField<String>("service"));
+        add(new HelpLink("serviceHelp",this).setDialog(dialog));
         add(new TextField<String>("urlInCasLogoutPage"));
         add(new HelpLink("urlInLogoutPageHelp",this).setDialog(dialog));
         
         
         add(new UserGroupServiceChoice("userGroupServiceName"));
 
-        
+        add(new AjaxSubmitLink("casServiceTest") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    testURL("service");
+                    info(new StringResourceModel("serviceConnectionSuccessful",CasAuthFilterPanel.this, null).getObject());
+                }
+                catch(Exception e) {
+                    error(e);
+                    LOGGER.log(Level.WARNING, "Cas connection error ", e);
+                }
+                finally {
+                    target.addComponent(connectionPanel.getFeedbackPanel());
+                }
+            }
+        }.setDefaultFormProcessing(false));
+                
         add(new AjaxSubmitLink("urlInLogoutPageTest") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

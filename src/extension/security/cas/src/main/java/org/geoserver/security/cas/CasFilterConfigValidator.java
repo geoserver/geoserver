@@ -40,15 +40,6 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
 
     public void validateFilterConfig(CasAuthenticationProperties config) throws FilterConfigException {
         
-        URL serviceUrl=null;;
-        if (StringUtils.hasLength(config.getService())==false)
-            throw  createFilterException(CasFilterConfigException.CAS_SERVICE_URL_REQUIRED);        
-        try {
-            serviceUrl= new URL(config.getService());
-        } catch (MalformedURLException ex) {
-            throw  createFilterException(CasFilterConfigException.CAS_SERVICE_URL_MALFORMED);
-        }
-        
         if (StringUtils.hasLength(config.getCasServerUrlPrefix())==false)
             throw  createFilterException(CasFilterConfigException.CAS_SERVER_URL_REQUIRED);
     
@@ -68,8 +59,6 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
             if ("https".equalsIgnoreCase(callBackUrl.getProtocol())==false)
                 throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_NOT_HTTPS);
             
-            if (callBackUrl.getHost().equals(serviceUrl.getHost())==false)
-                throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST);            
         }
     }
 
@@ -88,6 +77,27 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
             }
         }
         
+        URL serviceUrl=null;
+        if (StringUtils.hasLength(config.getService())==false)
+           throw  createFilterException(CasFilterConfigException.CAS_SERVICE_URL_REQUIRED);        
+        try {
+           serviceUrl= new URL(config.getService());
+        } catch (MalformedURLException ex) {
+          throw  createFilterException(CasFilterConfigException.CAS_SERVICE_URL_MALFORMED);
+        }
+
+        if (StringUtils.hasLength(config.getProxyCallbackUrlPrefix())) {
+            URL callBackUrl=null;
+            try {
+                callBackUrl=new URL(config.getProxyCallbackUrlPrefix());
+            } catch (MalformedURLException ex) {
+                throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_MALFORMED);
+            }
+            if (callBackUrl.getHost().equals(serviceUrl.getHost())==false)
+                throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST);
+        }
+
+              
         checkExistingUGService(config.getUserGroupServiceName());
         
         validateFilterConfig((CasAuthenticationProperties) config);                  

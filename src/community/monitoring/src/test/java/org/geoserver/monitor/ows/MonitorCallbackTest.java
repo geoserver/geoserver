@@ -33,6 +33,7 @@ import net.opengis.wfs.WfsFactory;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.monitor.BBoxAsserts;
 import org.geoserver.monitor.MemoryMonitorDAO;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorDAO;
@@ -176,13 +177,6 @@ public class MonitorCallbackTest {
         assertEquals(new ReferencedEnvelope(env,crs),data.getBbox());
     }
     
-    void assertEqualsBbox(BoundingBox expected, BoundingBox result, double delta) {
-    	assertEquals(expected.getMaxX(), result.getMaxX(), delta);
-    	assertEquals(expected.getMinX(), result.getMinX(), delta);
-    	assertEquals(expected.getMaxY(), result.getMaxY(), delta);
-    	assertEquals(expected.getMinY(), result.getMinY(), delta);
-    }
-    
     @Test
     public void testWMSGetFeatureInfo() throws Exception {
         GetFeatureInfoRequest gfi = new GetFeatureInfoRequest();
@@ -204,7 +198,7 @@ public class MonitorCallbackTest {
         
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        assertEqualsBbox(new ReferencedEnvelope(-123.15,-123.15, 48.62,48.62,crs),data.getBbox(), 0.01);
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(-123.15,-123.15, 48.62,48.62,crs),data.getBbox(), 0.01);
     }
     
     @Test

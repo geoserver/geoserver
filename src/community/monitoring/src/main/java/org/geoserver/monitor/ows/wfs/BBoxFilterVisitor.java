@@ -31,7 +31,7 @@ public class BBoxFilterVisitor extends DefaultFilterVisitor implements
         } else {
             bbox.include(filter.getBounds());
         }
-        return super.visit(filter, data);
+        return filter.getBounds();
     }
     
     @Override

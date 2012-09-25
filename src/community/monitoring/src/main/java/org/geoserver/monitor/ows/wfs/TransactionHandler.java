@@ -13,9 +13,12 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.geoserver.monitor.RequestData;
+import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.Filter;
+import org.opengis.geometry.BoundingBox;
 
 public class TransactionHandler extends WFSRequestObjectHandler {
 
@@ -97,5 +100,21 @@ public class TransactionHandler extends WFSRequestObjectHandler {
         
         return layers;
     }
-
+    @Override
+    protected BoundingBox getBBox(Object request) {
+        FeatureMap elements = (FeatureMap) OwsUtils.get(request, "group");
+        
+        BBoxFilterVisitor visitor = new BBoxFilterVisitor();
+        if (elements == null) {
+            return visitor.getBbox();
+        }
+        
+        for(Object e : elements){
+            // It's wrapped up inside some UMF object
+            Object subOperation = OwsUtils.get(e, "value");
+            Filter f = (Filter) OwsUtils.get(subOperation, "filter");
+            if(f!=null) f.accept(visitor, null);
+        }
+        return visitor.getBbox();
+    }
 }

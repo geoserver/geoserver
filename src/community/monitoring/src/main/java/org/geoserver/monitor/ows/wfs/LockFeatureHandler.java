@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
+import org.opengis.filter.Filter;
+import org.opengis.geometry.BoundingBox;
 
 public class LockFeatureHandler extends WFSRequestObjectHandler {
 
@@ -30,5 +33,15 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
         
         return layers;
     }
-
+    
+    @Override
+    protected BoundingBox getBBox(Object request) {
+        List locks = (List) OwsUtils.get(request, "lock");
+        BBoxFilterVisitor visitor = new BBoxFilterVisitor();
+        for(Object l : locks){
+            Filter f = (Filter) OwsUtils.get(l, "filter");
+            if(f!=null) f.accept(visitor, null);
+        }
+        return visitor.getBbox();
+    }
 }

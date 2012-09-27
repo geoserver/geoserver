@@ -1,9 +1,10 @@
 package org.geoserver.security.validation;
 
-import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.geoserver.security.GeoServerSecurityFilterChain;
-import org.geoserver.security.GeoServerSecurityTestSupport;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.GeoServerRoleFilterConfig;
@@ -23,381 +24,315 @@ import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilt
 import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilter;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
-import org.geotools.util.logging.Logging;
+import org.geoserver.test.GeoServerMockTestSupport;
+import org.junit.Test;
 
-public class FilterConfigValidatorTest extends GeoServerSecurityTestSupport {
+public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
-    
-    static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
-        
+    @Test
     public void testDigestConfigValidation() throws Exception{
         DigestAuthenticationFilterConfig config = new DigestAuthenticationFilterConfig();
         config.setClassName(GeoServerDigestAuthenticationFilter.class.getName());
         config.setName("testDigest");
+
+        GeoServerSecurityManager secMgr = getSecurityManager();
+
+        FilterConfigValidator validator = new FilterConfigValidator(secMgr);
         
-        boolean failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no user group service should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setUserGroupServiceName("blabla");
-        failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("unknown user group service should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
         config.setNonceValiditySeconds(-1);
-        failed = false;                                        
+
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("invalid nonce should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.INVALID_SECONDS,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            failed=true;
         }
-        assertTrue(failed);
 
         config.setNonceValiditySeconds(100);
-        getSecurityManager().saveFilter(config);
-
+        validator.validateFilterConfig(config);
     }
-    
+
+    @Test
     public void testRoleFilterConfigValidation() throws Exception{
-       GeoServerRoleFilterConfig config = new GeoServerRoleFilterConfig();
+        GeoServerRoleFilterConfig config = new GeoServerRoleFilterConfig();
         config.setClassName(GeoServerRoleFilter.class.getName());
         config.setName("testRoleFilter");
         
-        boolean failed = false;                                        
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        FilterConfigValidator validator = new FilterConfigValidator(secMgr);
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no header attribute should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.HEADER_ATTRIBUTE_NAME_REQUIRED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
-        
         config.setHttpResponseHeaderAttrForIncludedRoles("roles");
         config.setRoleConverterName("unknown");
-        failed = false;                                        
+        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("unkonwn role converter should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_ROLE_CONVERTER,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("unknown",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
-        
 
         config.setRoleConverterName(null);
-        getSecurityManager().saveFilter(config);
-
+        validator.validateFilterConfig(config);
     }
-    
+
+    @Test
     public void testSecurityInterceptorFilterConfigValidation() throws Exception{
         SecurityInterceptorFilterConfig config = new SecurityInterceptorFilterConfig();
         config.setClassName(GeoServerSecurityInterceptorFilter.class.getName());
         config.setName("testInterceptFilter");
-        
-         
-         boolean failed = false;                                        
+
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        FilterConfigValidator validator = new FilterConfigValidator(secMgr);
          try {
-             getSecurityManager().saveFilter(config);
+             validator.validateFilterConfig(config);
+             fail("no metadata source should fail");
          } catch (FilterConfigException ex){
              assertEquals(FilterConfigException.SECURITY_METADATA_SOURCE_NEEDED,ex.getId());
              assertEquals(0,ex.getArgs().length);
-             LOGGER.info(ex.getMessage());
-             
-             failed=true;
          }
-         assertTrue(failed);
          
          config.setSecurityMetadataSource("unknown");
-         failed = false;                                        
          try {
-             getSecurityManager().saveFilter(config);
+             validator.validateFilterConfig(config);
+             fail("unknown metadata source should fail");
          } catch (FilterConfigException ex){
              assertEquals(FilterConfigException.UNKNOWN_SECURITY_METADATA_SOURCE,ex.getId());
              assertEquals(1,ex.getArgs().length);
              assertEquals("unknown",ex.getArgs()[0]);
-             LOGGER.info(ex.getMessage());            
-             failed=true;
          }
-         assertTrue(failed);
-         
-         //getSecurityManager().saveFilter(config);
-
      }
 
-    
-    
+    @Test
     public void testX509FilterConfigValidation() throws Exception{
-        
-        
-        
         X509CertificateAuthenticationFilterConfig config = new X509CertificateAuthenticationFilterConfig();
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName("testX509");
+
         check((PreAuthenticatedUserNameFilterConfig) config);
     }
 
-
+    @Test
     public void testUsernamePasswordFilterConfigValidation() throws Exception{
         UsernamePasswordAuthenticationFilterConfig config = 
                 new UsernamePasswordAuthenticationFilterConfig();
         config.setClassName(GeoServerUserNamePasswordAuthenticationFilter.class.getName());
         config.setName("testUsernamePassword");
-        
-        boolean failed = false;                                        
+
+        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no user should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.USER_PARAMETER_NAME_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setUsernameParameterName("user");
-        failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no password should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.PASSWORD_PARAMETER_NAME_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setPasswordParameterName("password");
-        getSecurityManager().saveFilter(config);
-
+        validator.validateFilterConfig(config);
     }
 
+    @Test
     public void testJ2eeFilterConfigValidation() throws Exception{
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
         config.setName("testJ2ee");
-        
-        
+
         config.setRoleServiceName("blabla");
-        boolean failed = false;                                        
+
+        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("unknown role service should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        getSecurityManager().saveFilter(config);
+        validator.validateFilterConfig(config);
 
     }
-    
+
+    @Test
     public void testExceptionTranslationFilterConfigValidation() throws Exception{
         ExceptionTranslationFilterConfig config = new ExceptionTranslationFilterConfig();
         config.setClassName(GeoServerExceptionTranslationFilter.class.getName());
         config.setName("testEx");
-        
-        boolean failed = false;                                        
+
+        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no access denied page should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.ACCESS_DENIED_PAGE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setAccessDeniedErrorPage("blabla");
         config.setAuthenticationFilterName("unknown");
-        failed = false;                                        
+        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no access denied page prefix should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.ACCESS_DENIED_PAGE_PREFIX,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
+        
         }
-        assertTrue(failed);
 
-                
         config.setAccessDeniedErrorPage("/denied.jsp");
         config.setAuthenticationFilterName("unknown");
-        failed = false;                                        
+
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("invalid entry point should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.INVALID_ENTRY_POINT,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("unknown",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
                 
         config.setAuthenticationFilterName(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
-        failed = false;                                        
+
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no auth entry point should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.NO_AUTH_ENTRY_POINT,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR,ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
-
         
         config.setAuthenticationFilterName(null);        
-        getSecurityManager().saveFilter(config);
+        validator.validateFilterConfig(config);
     }
 
     public void check(PreAuthenticatedUserNameFilterConfig config) throws Exception {
         
-        boolean failed = false;                                        
+        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no role source should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.ROLE_SOURCE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
-
         
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.UserGroupService);
-        failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no user group service should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setUserGroupServiceName("blabla");
-        failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("unknown group service should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
         
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.RoleService);                
         config.setRoleServiceName("blabla");
-        failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("unknown role service should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("blabla",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
         
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.Header);
-        failed = false;                                        
+
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no roles header attribute should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.ROLES_HEADER_ATTRIBUTE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
-        config.setRolesHeaderAttribute("roles");
 
+        config.setRolesHeaderAttribute("roles");
         config.setRoleConverterName("unknown");
-        failed = false;                                        
+        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("unknown role converter should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_ROLE_CONVERTER,ex.getId());
             assertEquals(1,ex.getArgs().length);
             assertEquals("unknown",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());            
-            failed=true;
         }
-        assertTrue(failed);
-        
+
         config.setRoleConverterName(null);
-        getSecurityManager().saveFilter(config);
-        
+        validator.validateFilterConfig(config);
+
     }
-    
+
+    @Test
     public void testRequestHeaderFilterConfigValidation() throws Exception{
         RequestHeaderAuthenticationFilterConfig config = new RequestHeaderAuthenticationFilterConfig();
         config.setClassName(GeoServerRequestHeaderAuthenticationFilter.class.getName());
         config.setName("testRequestHeader");
 
-        boolean failed = false;                                        
+        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
+            fail("no principal header attribute should fail");
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.PRINCIPAL_HEADER_ATTRIBUTE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            
-            failed=true;
         }
-        assertTrue(failed);
 
         config.setPrincipalHeaderAttribute("user");
         check((PreAuthenticatedUserNameFilterConfig) config);
-        
-
     }
 
 

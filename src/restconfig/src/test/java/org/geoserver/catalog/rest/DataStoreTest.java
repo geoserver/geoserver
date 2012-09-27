@@ -6,9 +6,11 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -18,23 +20,31 @@ import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.StoreInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-
 public class DataStoreTest extends CatalogRESTTestSupport {
 
+    @Before
+    public void addDataStores() throws IOException {
+        getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
+    }
+
+    @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores.xml");
         assertEquals( catalog.getStoresByWorkspace( "sf", DataStoreInfo.class ).size(), 
             dom.getElementsByTagName( "dataStore").getLength() );
     }
-    
+
+    @Test
     public void testGetAllAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/workspaces/sf/datastores.json");
         assertTrue( json instanceof JSONObject );
@@ -49,7 +59,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             assertEquals( 1, catalog.getDataStoresByWorkspace("sf").size() );
         }
     }
-    
+
+    @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores.html");
         List<DataStoreInfo> datastores = catalog.getDataStoresByWorkspace("sf"); 
@@ -64,15 +75,18 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             assertTrue( link.getAttribute("href").endsWith( ds.getName() + ".html") );
         }
     }
-    
+
+    @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores").getStatusCode() );
     }
-    
+
+    @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/datastores").getStatusCode() );
     }
-    
+
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.xml");
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
@@ -80,7 +94,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         assertEquals( "sf", xp.evaluate( "/dataStore/workspace/name", dom) );
         assertXpathExists( "/dataStore/connectionParameters", dom );
     }
-    
+
+    @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.html");
         
@@ -114,7 +129,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         props.store( new FileOutputStream( file ), null );
         return dir;
     }
-    
+
+    @Test
     public void testPostAsXML() throws Exception {
         
         File dir = setupNewDataStore();
@@ -141,7 +157,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
     }
-    
+
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/workspaces/sf/datastores/sf.json" );
         
@@ -152,8 +169,10 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         assertEquals( "sf", dataStore.getJSONObject( "workspace").get( "name" ) );
         assertNotNull( dataStore.get( "connectionParameters") );
     }
-    
+
+    @Test
     public void testPostAsJSON() throws Exception {
+        removeStore("sf", "newDataStore");
         File dir = setupNewDataStore();
         String json = 
             "{'dataStore':{" +
@@ -178,7 +197,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
     }
-    
+
+    @Test
     public void testPostToResource() throws Exception {
         String xml = 
         "<dataStore>" + 
@@ -190,7 +210,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             postAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
         assertEquals( 405, response.getStatusCode() );
     }
-    
+
+    @Test
     public void testPut() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("true", "/dataStore/enabled", dom );
@@ -210,7 +231,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         
         assertFalse( catalog.getDataStoreByName( "sf", "sf").isEnabled() );
     }
-    
+
+    @Test
     public void testPut2() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("2", "count(//dataStore/connectionParameters/*)", dom );
@@ -237,7 +259,8 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         assertTrue( ds.getConnectionParameters().containsKey( "one" ) );
         assertTrue( ds.getConnectionParameters().containsKey( "two" ) );
     }
-    
+
+    @Test
     public void testPutNonExistant() throws Exception {
         String xml = 
             "<dataStore>" + 
@@ -248,12 +271,15 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             putAsServletResponse("/rest/workspaces/sf/datastores/nonExistant", xml, "text/xml" );
         assertEquals( 404, response.getStatusCode() );
     }
-    
+
+    @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404, deleteAsServletResponse("/rest/workspaces/sf/datastores/nonExistant").getStatusCode() );
     }
-    
+
+    @Test
     public void testDelete() throws Exception {
+        removeStore("sf", "newDataStore");
         File dir = setupNewDataStore();
         String xml =
             "<dataStore>" +
@@ -278,11 +304,13 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         assertEquals( 200, deleteAsServletResponse("/rest/workspaces/sf/datastores/newDataStore").getStatusCode());
         assertNull( catalog.getDataStoreByName("sf", "newDataStore"));
     }
-    
+
+    @Test
     public void testDeleteNonEmptyForbidden() throws Exception {
         assertEquals( 403, deleteAsServletResponse("/rest/workspaces/sf/datastores/sf").getStatusCode());
     }
-    
+
+    @Test
     public void testDeleteRecursive() throws Exception {
         assertNotNull(catalog.getDataStoreByName("sf", "sf"));
         MockHttpServletResponse response =
@@ -297,14 +325,17 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             }
         }
     }
-    
+
+    @Test
     public void testPutNameChangeForbidden() throws Exception {
+        getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, getCatalog());
         String xml = "<dataStore>" +
             "<name>newName</name>" + 
             "</dataStore>";
         assertEquals( 403, putAsServletResponse("/rest/workspaces/sf/datastores/sf", xml, "text/xml").getStatusCode());
     }
-    
+
+    @Test
     public void testPutWorkspaceChangeForbidden() throws Exception {
         String xml = "<dataStore>" +
         "<workspace>gs</workspace>" + 

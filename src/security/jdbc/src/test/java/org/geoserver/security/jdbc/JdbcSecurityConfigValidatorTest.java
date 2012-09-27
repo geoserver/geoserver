@@ -25,7 +25,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     
     
     @Override
-    protected SecurityUserGroupServiceConfig getUGConfig(String name, Class<?> aClass,
+    protected SecurityUserGroupServiceConfig createUGConfig(String name, Class<?> aClass,
             String encoder, String policyName) {
         JDBCUserGroupServiceConfig config = new JDBCUserGroupServiceConfig();
         config.setName(name);
@@ -37,7 +37,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
     
     @Override
-    protected SecurityRoleServiceConfig getRoleConfig(String name, Class<?> aClass,String adminRole) {
+    protected SecurityRoleServiceConfig createRoleConfig(String name, Class<?> aClass,String adminRole) {
         JDBCRoleServiceConfig config = new JDBCRoleServiceConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -47,7 +47,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
     
     @Override
-    protected SecurityAuthProviderConfig getAuthConfig(String name, Class<?> aClass,String userGroupServiceName) {
+    protected SecurityAuthProviderConfig createAuthConfig(String name, Class<?> aClass,String userGroupServiceName) {
         JDBCConnectAuthProviderConfig config = new JDBCConnectAuthProviderConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -61,7 +61,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
         super.testRoleConfig();
         
         JDBCRoleServiceConfig  config = 
-                (JDBCRoleServiceConfig)getRoleConfig("jdbc", JDBCRoleService.class, 
+                (JDBCRoleServiceConfig)createRoleConfig("jdbc", JDBCRoleService.class, 
                 AbstractRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         
         config.setDriverClassName("a.b.c");
@@ -71,7 +71,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
         config.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
         
         JDBCRoleServiceConfig  configJNDI = (JDBCRoleServiceConfig) 
-                getRoleConfig("jndi", JDBCRoleService.class, 
+                createRoleConfig("jndi", JDBCRoleService.class, 
                 		AbstractRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         configJNDI.setJndi(true);
         configJNDI.setJndiName("jndi:connect");
@@ -221,7 +221,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
         super.testUserGroupConfig();
         
         JDBCUserGroupServiceConfig  config = 
-                (JDBCUserGroupServiceConfig)getUGConfig("jdbc", JDBCUserGroupService.class,
+                (JDBCUserGroupServiceConfig)createUGConfig("jdbc", JDBCUserGroupService.class,
                 getPlainTextPasswordEncoder().getName() ,PasswordValidator.DEFAULT_NAME);
 
         config.setDriverClassName("a.b.c");
@@ -232,7 +232,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
 
 
         JDBCUserGroupServiceConfig  configJNDI = (JDBCUserGroupServiceConfig) 
-                getUGConfig("jdbc", JDBCUserGroupService.class, 
+                createUGConfig("jdbc", JDBCUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME);
         configJNDI.setJndi(true);                        
         configJNDI.setJndiName("jndi:connect");
@@ -377,7 +377,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     public void testAuthenticationProvider() throws IOException {
         super.testAuthenticationProvider();
         JDBCConnectAuthProviderConfig config = 
-                (JDBCConnectAuthProviderConfig) getAuthConfig("jdbcprov", JDBCConnectAuthProvider.class, "default");
+                (JDBCConnectAuthProviderConfig) createAuthConfig("jdbcprov", JDBCConnectAuthProvider.class, "default");
         
         config.setConnectURL("jdbc:connect");
         

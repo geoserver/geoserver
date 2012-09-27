@@ -17,6 +17,16 @@ public class XMLUserGroupServiceConfig extends XMLSecurityServiceConfig
     String passwordEncoderName;
     String passwordPolicyName;
 
+    public XMLUserGroupServiceConfig() {
+        
+    }
+
+    public XMLUserGroupServiceConfig(XMLUserGroupServiceConfig other) {
+        super(other);
+        passwordEncoderName = other.getPasswordEncoderName();
+        passwordPolicyName = other.getPasswordPolicyName();
+    }
+
     @Override
     public String getPasswordEncoderName() {
         return passwordEncoderName;

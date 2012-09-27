@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerAuthenticationProvider;
@@ -54,6 +55,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
+import static org.junit.Assert.assertTrue;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 
 public abstract class AbstractAuthenticationProviderTest extends AbstractSecurityServiceTest {
@@ -65,21 +67,20 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
     public final static String derivedRole = "DerivedRole";
     protected String pattern = "/foo/**";
     public final static String testProviderName = "testAuthenticationProvider";
-    
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         createServices();
     }
-    
-    protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getSpringContextLocations()));
-        list.add(AbstractAuthenticationProviderTest.class.getResource(
-                AbstractAuthenticationProviderTest.class.getSimpleName() + "-context.xml").toString());
-        return list.toArray(new String[list.size()]);
-    };
 
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add(AbstractAuthenticationProviderTest.class.getResource(
+                AbstractAuthenticationProviderTest.class.getSimpleName() + "-context.xml").toString());
+    }
+   
     protected TestingAuthenticationCache getCache() {
         return (TestingAuthenticationCache) getSecurityManager().getAuthenticationCache();
     }

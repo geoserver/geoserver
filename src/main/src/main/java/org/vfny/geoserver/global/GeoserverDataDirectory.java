@@ -342,7 +342,11 @@ public class GeoserverDataDirectory {
         }
         return catalog;
     }
-    
+
+    public static void setCatalog(Catalog catalog) {
+        GeoserverDataDirectory.catalog = catalog;
+    }
+
     /**
      * Helper method to help client code migrade from using this class to using
      * {@link org.geoserver.config.GeoserverDataDirectory}.

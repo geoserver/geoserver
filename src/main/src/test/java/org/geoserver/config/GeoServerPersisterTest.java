@@ -2,13 +2,14 @@ package org.geoserver.config;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.*;
 
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -22,23 +23,46 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.util.IOUtils;
+import org.geoserver.test.GeoServerSystemTestSupport;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class GeoServerPersisterTest extends GeoServerTestSupport {
+public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
 
     Catalog catalog;
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
-        catalog = getCatalog();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
         GeoServerPersister p = 
             new GeoServerPersister( getResourceLoader(), new XStreamPersisterFactory().createXMLPersister() );
         catalog.addListener( p );
     }
-    
+
+    @Before
+    public void initCatalog() {
+        catalog = getCatalog();
+    }
+
+    @Before
+    public void revertCatalog() throws Exception {
+        removeLayerGroup(null, "lg");
+        removeLayerGroup("gs", "lg");
+        removeLayerGroup("acme", "lg");
+        removeWorkspace("acme");
+        removeNamespace("bar");
+        removeStyle(null, "foostyle");
+        removeStyle("gs", "foostyle");
+        
+        getCatalog().setDefaultWorkspace(getCatalog().getWorkspaceByName("gs"));
+    }
+
+    @Test
     public void testAddWorkspace() throws Exception {
         File ws = new File( testData.getDataDirectoryRoot(), "workspaces/acme" );
         assertFalse( ws.exists() );
@@ -50,6 +74,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( ws.exists() );
     }
     
+    @Test
     public void testRemoveWorkspace() throws Exception {
         testAddWorkspace();
         
@@ -61,6 +86,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( ws.exists() );
     }
     
+    @Test
     public void testDefaultWorkspace() throws Exception {
         testAddWorkspace();
         WorkspaceInfo ws = catalog.getWorkspaceByName("acme");
@@ -73,6 +99,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo("acme", "/workspace/name", dom );
     }
     
+    @Test
     public void testAddDataStore() throws Exception {
         testAddWorkspace();
         
@@ -88,6 +115,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( new File( dir, "datastore.xml").exists() );
     }
     
+    @Test
     public void testModifyDataStore() throws Exception {
         testAddDataStore();
         
@@ -122,6 +150,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( f2.exists() );
     }
     
+    @Test
     public void testRemoveDataStore() throws Exception {
         testAddDataStore();
         
@@ -153,7 +182,8 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         
         assertTrue( d.exists() );
     }
-    
+
+    @Test
     public void testChangeFeatureTypeStore() throws Exception {
         testAddFeatureType();
         
@@ -175,6 +205,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( f2.exists() );
     }
     
+    @Test
     public void testModifyFeatureType() throws Exception {
         testAddFeatureType();
         
@@ -189,6 +220,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "fooTitle", "/featureType/title", dom );
     }
     
+    @Test
     public void testRemoveFeatureType() throws Exception {
         testAddFeatureType();
         
@@ -202,6 +234,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( d.exists() );
     }
     
+    @Test
     public void testAddCoverageStore() throws Exception {
         testAddWorkspace();
         
@@ -217,6 +250,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( new File( dir, "coveragestore.xml").exists() );
     }
     
+    @Test
     public void testModifyCoverageStore() throws Exception {
         testAddCoverageStore();
         
@@ -232,6 +266,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "file:data/foo.tiff","/coverageStore/url/text()", dom );
     }
     
+    @Test
     public void testRemoveCoverageStore() throws Exception {
         testAddCoverageStore();
         
@@ -243,6 +278,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( f.exists() );
     }
     
+    @Test
     public void testAddCoverage() throws Exception {
         testAddCoverageStore();
         
@@ -264,6 +300,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( d.exists() );
     }
     
+    @Test
     public void testModifyCoverage() throws Exception {
         testAddCoverage();
         
@@ -278,6 +315,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "fooTitle", "/coverage/title", dom );
     }
     
+    @Test
     public void testRemoveCoverage() throws Exception {
         testAddCoverage();
         
@@ -291,7 +329,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( d.exists() );
     }
     
-    
+    @Test
     public void testAddWMSStore() throws Exception {
         testAddWorkspace();
         
@@ -307,6 +345,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( new File( dir, "wmsstore.xml").exists() );
     }
     
+    @Test
     public void testModifyWMSStore() throws Exception {
         testAddWMSStore();
         
@@ -322,6 +361,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo(capsURL, "/wmsStore/capabilitiesURL/text()", dom);
     }
     
+    @Test
     public void testRemoveWMSStore() throws Exception {
         testAddWMSStore();
         
@@ -333,6 +373,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( f.exists() );
     }
     
+    @Test
     public void testAddWMSLayer() throws Exception {
         testAddWMSStore();
         
@@ -354,6 +395,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( new File( d, "wmslayer.xml").exists() );
     }
     
+    @Test
     public void testModifyWMSLayer() throws Exception {
         testAddWMSLayer();
         
@@ -367,6 +409,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "fooTitle", "/wmsLayer/title", dom );
     }
     
+    @Test
     public void testRemoveWMSLayer() throws Exception {
         testAddWMSLayer();
         
@@ -379,7 +422,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( d.exists() );
     }
     
-    
+    @Test
     public void testAddLayer() throws Exception {
         testAddFeatureType();
         testAddStyle();
@@ -399,6 +442,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( f.exists() );
     }
     
+    @Test
     public void testModifyLayer() throws Exception {
         testAddLayer();
         
@@ -413,6 +457,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "/foo/bar", "/layer/path", dom );
     }
     
+    @Test
     public void testRemoveLayer() throws Exception {
         testAddLayer();
         
@@ -439,7 +484,8 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         
         assertTrue( f.exists() );
     }
-
+    
+    @Test
     public void testAddStyleWithWorkspace() throws Exception {
         File f = new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml");
         assertFalse( f.exists() );
@@ -456,6 +502,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo(catalog.getDefaultWorkspace().getId(), "/style/workspace/id", dom );
     }
 
+    @Test
     public void testModifyStyle() throws Exception {
         testAddStyle();
         
@@ -470,6 +517,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "foostyle2.sld", "/style/filename", dom );
     }
 
+    @Test
     public void testModifyStyleChangeWorkspace() throws Exception {
         testAddStyle();
         
@@ -487,6 +535,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "foostyle2.sld", "/style/filename", dom );
     }
 
+    @Test
     public void testModifyStyleChangeWorkspace2() throws Exception {
         testAddStyle();
 
@@ -508,6 +557,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
     }
 
+    @Test
     public void testModifyStyleWithResourceChangeWorkspace() throws Exception {
         testAddStyle();
 
@@ -533,6 +583,8 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
         assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg").exists());
     }
+    
+    @Test
     public void testRemoveStyle() throws Exception {
         testAddStyle();
         
@@ -546,6 +598,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( f.exists() );
     }
 
+    @Test
     public void testRemoveStyleWithWorkspace() throws Exception {
         StyleInfo s = catalog.getFactory().createStyle();
         s.setName("foostyle");
@@ -563,6 +616,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( f.exists() );
     }
 
+    @Test
     public void testAddLayerGroup() throws Exception {
         testAddLayer();
         //testAddStyle();
@@ -585,6 +639,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertTrue( f.exists() );
     }
     
+    @Test
     public void testAddLayerGroupWithWorkspace() throws Exception {
         File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
         assertFalse( f.exists() );
@@ -604,6 +659,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo(catalog.getWorkspaceByName("acme").getId(), "/layerGroup/workspace/id", dom );
     }
 
+    @Test
     public void testModifyLayerGroup() throws Exception {
         testAddLayerGroup();
         
@@ -623,6 +679,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( s.getId(), "/layerGroup/styles/style/id", dom );
     }
     
+    @Test
     public void testModifyLayerGroupChangeWorkspace() throws Exception {
         testAddLayerGroup();
         File f = 
@@ -640,6 +697,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
             "workspaces/acme/layergroups/lg.xml").exists());
     }
 
+    @Test
     public void testRemoveLayerGroup() throws Exception {
         testAddLayerGroup();
         
@@ -653,6 +711,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertFalse( f.exists() );
     }
 
+    @Test
     public void testRemoveLayerGroupWithWorkspace() throws Exception {
         testModifyLayerGroupChangeWorkspace();
 
@@ -666,6 +725,8 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         catalog.remove(lg);
         assertFalse(f.exists());
     }
+    
+    @Test
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setAdminUsername("roadRunner");
@@ -678,6 +739,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "ACME", "/global/settings/title", dom );
     }
 
+    @Test
     public void testAddSettings() throws Exception {
         testAddWorkspace();
         WorkspaceInfo ws = catalog.getWorkspaceByName("acme");
@@ -696,6 +758,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "ACME", "/settings/title", dom );
     }
 
+    @Test
     public void testModifySettings() throws Exception {
         testAddSettings();
         WorkspaceInfo ws = catalog.getWorkspaceByName("acme");
@@ -711,6 +774,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( "FOO", "/settings/title", dom );
     }
 
+    @Test
     public void testModifySettingsChangeWorkspace() throws Exception {
         testAddSettings();
 
@@ -733,6 +797,7 @@ public class GeoServerPersisterTest extends GeoServerTestSupport {
         assertXpathEvaluatesTo( ws2.getId(), "/settings/workspace/id", dom );   
     }
 
+    @Test
     public void testRemoveSettings() throws Exception {
         testAddSettings();
         WorkspaceInfo ws = catalog.getWorkspaceByName("acme");

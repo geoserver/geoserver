@@ -97,6 +97,8 @@ public class CatalogImpl implements Catalog {
     protected ResourcePool resourcePool;
     protected GeoServerResourceLoader resourceLoader;
 
+    protected boolean extendedValidation = true;
+
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
         resourcePool = new ResourcePool(this);
@@ -104,6 +106,14 @@ public class CatalogImpl implements Catalog {
     
     public CatalogFacade getFacade() {
         return facade;
+    }
+
+    public void setExtendedValidation(boolean extendedValidation) {
+        this.extendedValidation = extendedValidation;
+    }
+
+    public boolean isExtendedValidation() {
+        return extendedValidation;
     }
 
     public Iterable<CatalogValidator> getValidators() {
@@ -1492,6 +1502,11 @@ public class CatalogImpl implements Catalog {
     
     protected List<RuntimeException> postValidate(CatalogInfo info, boolean isNew) {
         List<RuntimeException> errors = new ArrayList<RuntimeException>();
+
+        if (!extendedValidation) {
+            return errors; 
+        }
+
         for (CatalogValidator constraint : getValidators()) {
             try {
                 info.accept(new CatalogValidatorVisitor(constraint, isNew));

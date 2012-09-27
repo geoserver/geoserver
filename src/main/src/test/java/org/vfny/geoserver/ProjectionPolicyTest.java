@@ -9,6 +9,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerTestSupport;

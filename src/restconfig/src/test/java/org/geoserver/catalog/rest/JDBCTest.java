@@ -16,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.MockData;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureWriter;
@@ -24,6 +25,8 @@ import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
@@ -31,7 +34,9 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 
 public class JDBCTest extends CatalogRESTTestSupport {
 
@@ -39,11 +44,11 @@ public class JDBCTest extends CatalogRESTTestSupport {
         File path = new File(getTestData().getDataDirectoryRoot(), "target/acme");
         return path.getAbsolutePath();
     }
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
         HashMap params = new HashMap();
         params.put( JDBCDataStoreFactory.NAMESPACE.key, MockData.DEFAULT_URI);
         params.put( JDBCDataStoreFactory.DATABASE.key, databasePath());
@@ -52,10 +57,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
         H2DataStoreFactory fac =  new H2DataStoreFactory();
         
         JDBCDataStore ds = fac.createDataStore(params);
-        if (Arrays.asList(ds.getTypeNames()).indexOf("widgets") >= 0) {
-            return;
-        }
-        
+
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName( "widgets" );
         tb.setSRS( "EPSG:4326");
@@ -80,7 +82,13 @@ public class JDBCTest extends CatalogRESTTestSupport {
         fw.close();
         ds.dispose();
     }
-    
+
+    @Before
+    public void removeAcmeDataStore() {
+        removeStore("gs", "acme");
+    }
+
+    @Test
     public void testCreateDataStore() throws Exception {
         assertNull( catalog.getDataStoreByName( "gs", "acme") );
         
@@ -99,7 +107,8 @@ public class JDBCTest extends CatalogRESTTestSupport {
         
         assertNotNull( catalog.getDataStoreByName( "gs", "acme") );
     }
-    
+
+    @Test
     public void testCreateFeatureType() throws Exception {
         testCreateDataStore();
         DataStoreInfo ds = catalog.getDataStoreByName( "gs", "acme");
@@ -120,7 +129,8 @@ public class JDBCTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:widgets");
         assertEquals( 2, dom.getElementsByTagName( "gs:widgets" ).getLength() );
     }
-    
+
+    @Test
     public void testCreateGeometrylessFeatureType() throws Exception {
         testCreateDataStore();
         
@@ -169,7 +179,8 @@ public class JDBCTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:widgetsNG");
         assertEquals( 2, dom.getElementsByTagName( "gs:widgetsNG" ).getLength() );
     }
-    
+
+    @Test
     public void testCreateSQLView() throws Exception {
         // first create the store
         testCreateDataStore();
@@ -212,6 +223,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
         assertEquals( 2, dom.getElementsByTagName( "gs:sqlview" ).getLength() );
     }
 
+    @Test
     public void testUploadUsesNativeNameForConflictDetection() throws Exception {
         testCreateDataStore(); // creates "acme" datastore
 

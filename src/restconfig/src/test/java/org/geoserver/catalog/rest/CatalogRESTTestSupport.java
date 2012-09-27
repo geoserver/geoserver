@@ -4,11 +4,7 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -16,44 +12,24 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.security.AccessMode;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
 
-public abstract class CatalogRESTTestSupport extends GeoServerTestSupport {
+public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport {
 
-    protected Catalog catalog;
-    protected XpathEngine xp;
-    
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory)
-            throws Exception {
-        super.populateDataDirectory(dataDirectory);
-
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-        security.mkdir();
-        
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-        setUpUsers(props);
-        props.store(new FileOutputStream(users), "");
-        
-        File layers = new File(security, "layers.properties");
-        props.put("*.*.r", "*");
-        props.put("*.*.w", "*");
-        setUpLayerRoles(props);
-        props.store(new FileOutputStream(layers), "");
-    }
+    protected static Catalog catalog;
+    protected static XpathEngine xp;
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        //addUser("admin", "geoxserver", null, Arrays.asList("ROLE_ADMINISTRATOR"));
+        addLayerAccessRule("*", "*", AccessMode.READ, "*");
+        addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
+
         catalog = getCatalog();
         
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -64,28 +40,16 @@ public abstract class CatalogRESTTestSupport extends GeoServerTestSupport {
         
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
-
-        doLogin();
     }
 
-    protected void setUpUsers(Properties props) {
+    protected final void setUpUsers(Properties props) {
     }
 
-    protected void setUpLayerRoles(Properties properties) {
+    protected final void setUpLayerRoles(Properties properties) {
     }
 
-    protected void doLogin() throws Exception {
-        SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
-        l.add(new GrantedAuthorityImpl("ROLE_ADMINISTRATOR"));
-        
-        SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken("admin","geoserver",l));
-    }
-
-    @Override
-    protected void tearDownInternal() throws Exception {
-        super.tearDownInternal();
-        SecurityContextHolder.clearContext();
+    @Before
+    public void login() throws Exception {
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
 }

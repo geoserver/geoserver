@@ -5,6 +5,8 @@
 
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -31,6 +33,7 @@ import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
 import org.geoserver.security.password.DecodingUserDetailsService;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
+import org.junit.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -88,6 +91,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
     }
 
 
+    @Test
     public void testDecodingUserDetailsService() throws Exception {
         GeoServerUserGroupService service = createUserGroupService("test");        
         DecodingUserDetailsService decService = DecodingUserDetailsService.newInstance(service);
@@ -102,6 +106,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertTrue(plainpassword.equals(admin2.getPassword()));
     }
 
+    @Test
     public void testCopyFrom() {
         try {
     
@@ -154,6 +159,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         
     }
 
+    @Test
     public void testEncryption() throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         GeoServerPasswordEncoder encoder = getPlainTextPasswordEncoder();
@@ -216,6 +222,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertEquals(plainTextUserGroup, ugService.getToBeEncrypted());        
     }
     
+    @Test
     public void testEncryption2() throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
@@ -279,6 +286,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
     }
 
 
+    @Test
     public void testPasswordPersistence() throws Exception {
         Catalog cat = getCatalog();
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();

@@ -32,7 +32,8 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         WFSInfoImpl wfs = new WFSInfoImpl();
         wfs.setId( "wfs" );
         wfs.setName("WFS");
-        
+        wfs.setMaxFeatures(1000000);
+
         //gml2
         GMLInfoImpl gml2 = new GMLInfoImpl();
         gml2.setSrsNameStyle( GMLInfo.SrsNameStyle.XML );

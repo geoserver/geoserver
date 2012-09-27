@@ -5,13 +5,16 @@
 
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
+
 import org.geoserver.data.test.LiveData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -26,6 +29,8 @@ import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.test.GeoServerAbstractTestSupport;
+import org.geoserver.test.GeoServerBaseTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
 
 
@@ -35,7 +40,12 @@ import org.geotools.data.DataUtilities;
  * @author christian
  *
  */
-public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestSupport {
+public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        //explictily do nothing, we want no layers
+    }
 
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
         return null;
@@ -506,11 +516,6 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
         userGroupStore.removeUser(user2);
         GeoServerUserGroup disabledGroup = userGroupStore.getGroupByGroupname("disabledgroup");
         userGroupStore.removeGroup(disabledGroup);
-    }
-    
-    @Override
-    protected TestData buildTestData() throws Exception {
-        return new LiveData(unpackTestDataDir());
     }
 
     public static File unpackTestDataDir() throws Exception {

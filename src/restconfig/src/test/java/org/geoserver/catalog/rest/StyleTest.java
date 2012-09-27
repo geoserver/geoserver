@@ -6,9 +6,11 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import net.sf.json.JSON;
@@ -18,7 +20,10 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.styling.Style;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -26,7 +31,19 @@ import org.w3c.dom.NodeList;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class StyleTest extends CatalogRESTTestSupport {
-    
+
+    @Before
+    public void removeStyles() throws IOException {
+        removeStyle("gs", "foo");
+        removeStyle(null, "foo");
+    }
+
+    @Before
+    public void addPondsStyle() throws IOException {
+       getTestData().addStyle(SystemTestData.PONDS.getLocalPart(), getCatalog());
+    }
+
+    @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/styles.xml" );
         
@@ -34,6 +51,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo(""+styles.size(), "count(//style)", dom);
     }
     
+    @Test
     public void testGetAllASJSON() throws Exception {
         JSON json = getAsJSON("/rest/styles.json");
         
@@ -42,6 +60,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             ((JSONObject) json).getJSONObject("styles").getJSONArray("style").size());
     }
     
+    @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/styles.html");
         
@@ -56,6 +75,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         }
     }
 
+    @Test
     public void testGetAllFromWorkspace() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/gs/styles.xml" );
         assertEquals("styles", dom.getDocumentElement().getNodeName());
@@ -80,6 +100,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         cat.add(s);
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/styles/Ponds.xml" );
         
@@ -88,6 +109,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Ponds.sld", "/style/filename", dom);
     }
     
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/styles/Ponds.json");
         
@@ -96,12 +118,14 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals( "Ponds.sld", style.get( "filename") );
     }
     
+    @Test
     public void testGetAsSLD() throws Exception {
         Document dom = getAsDOM( "/rest/styles/Ponds.sld");
         
         assertEquals( "sld:StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
     }
 
+    @Test
     public void testGetFromWorkspace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml"); 
         assertEquals(404, resp.getStatusCode());
@@ -130,6 +154,8 @@ public class StyleTest extends CatalogRESTTestSupport {
               "</sld:NamedLayer>" + 
             "</sld:StyledLayerDescriptor>";
     }
+    
+    @Test
     public void testPostAsSLD() throws Exception {
         String xml = newSLDXML();
 
@@ -142,6 +168,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull( catalog.getStyleByName( "foo" ) );
     }
     
+    @Test
     public void testPostAsSLDToWorkspace() throws Exception {
         assertNull( catalog.getStyleByName( "gs", "foo" ) );
         
@@ -159,6 +186,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
     }
 
+    @Test
     public void testPostAsSLDWithName() throws Exception {
         String xml = newSLDXML();
 
@@ -171,6 +199,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull( catalog.getStyleByName( "bar" ) );
     }
 
+    @Test
     public void testPostToWorkspace() throws Exception {
         Catalog cat = getCatalog();
         assertNull(cat.getStyleByName("gs", "foo"));
@@ -186,6 +215,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(cat.getStyleByName("gs", "foo"));
     }
 
+    @Test
     public void testPut() throws Exception {
         StyleInfo style = catalog.getStyleByName( "Ponds");
         assertEquals( "Ponds.sld", style.getFilename() );
@@ -204,6 +234,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals( "Forests.sld", style.getFilename() );
     }
     
+    @Test
     public void testPutAsSLD() throws Exception {
         String xml = newSLDXML();
 
@@ -219,6 +250,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
     }
 
+    @Test
     public void testPutToWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -236,6 +268,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals("bar.sld", cat.getStyleByName("gs","foo").getFilename());
     }
 
+    @Test
     public void testPutToWorkspaceChangeWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -249,6 +282,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals(403, response.getStatusCode());
     }
 
+    @Test
     public void testDelete() throws Exception {
         String xml = 
             "<style>" +
@@ -265,6 +299,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNull( catalog.getStyleByName( "dummy" ) );
     }
     
+    @Test
     public void testDeleteWithLayerReference() throws Exception {
         assertNotNull( catalog.getStyleByName( "Ponds" ) );
         
@@ -275,6 +310,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull( catalog.getStyleByName( "Ponds" ) );
     }
 
+    @Test
     public void testDeleteWithoutPurge() throws Exception {
         String xml = newSLDXML();
 
@@ -292,6 +328,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
     }
     
+    @Test
     public void testDeleteWithPurge() throws Exception {
         String xml = newSLDXML();
 
@@ -309,6 +346,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
     }
 
+    @Test
     public void testDeleteFromWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -321,6 +359,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNull(cat.getStyleByName("gs", "foo"));
     }
 
+    @Test
     public void testDeleteFromWorkspaceWithPurge() throws Exception {
         testPostAsSLDToWorkspace();
 
@@ -337,6 +376,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
     }
 
+    @Test
     public void testGetAllByLayer() throws Exception {
         Document dom = getAsDOM( "/rest/layers/cite:BasicPolygons/styles.xml");
         LayerInfo layer = catalog.getLayerByName( "cite:BasicPolygons" );
@@ -344,7 +384,9 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo(layer.getStyles().size()+"", "count(//style)", dom );
     }
     
+    @Test
     public void testPostByLayer() throws Exception {
+
         LayerInfo l = catalog.getLayerByName( "cite:BasicPolygons" );
         int nstyles = l.getStyles().size();
         
@@ -362,7 +404,9 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertTrue( l2.getStyles().contains( catalog.getStyleByName( "Ponds") ) );
     }
     
+    @Test
     public void testPostByLayerWithDefault() throws Exception {
+        getTestData().addVectorLayer(SystemTestData.BASIC_POLYGONS, getCatalog());
         LayerInfo l = catalog.getLayerByName( "cite:BasicPolygons" );
         int nstyles = l.getStyles().size();
         
@@ -379,7 +423,9 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals( catalog.getStyleByName( "Ponds"), l2.getDefaultStyle() );
     }
     
+    @Test
     public void testPostByLayerExistingWithDefault() throws Exception {
+        getTestData().addVectorLayer(SystemTestData.BASIC_POLYGONS, getCatalog());
         testPostByLayer();
         
         LayerInfo l = catalog.getLayerByName("cite:BasicPolygons");

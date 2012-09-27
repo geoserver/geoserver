@@ -1,9 +1,23 @@
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.geoserver.data.test.CiteTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class GeometrylessWriteTest extends WFSTestSupport {
-    public void testUpdate() throws Exception {
+public class GeometrylessWriteTest extends WFSTestSupport2 {
+	
+	
+	@Before
+	public void revertGeometries() throws Exception {
+		revertLayer( CiteTestData.GEOMETRYLESS );
+	}
+    
+	@Test
+	public void testUpdate() throws Exception {
         // perform an update
         String update = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
                 + "xmlns:cite=\"http://www.opengis.net/cite\" "
@@ -26,6 +40,7 @@ public class GeometrylessWriteTest extends WFSTestSupport {
                 .getFirstChild().getNodeValue());
     }
     
+    @Test
     public void testDelete() throws Exception {
         // perform an update
         String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
@@ -47,6 +62,7 @@ public class GeometrylessWriteTest extends WFSTestSupport {
         assertEquals(0, dom.getElementsByTagName("cite:Geometryless").getLength());
     }
     
+    @Test
     public void testInsert() throws Exception {
         // perform an insert
         String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
@@ -70,4 +86,5 @@ public class GeometrylessWriteTest extends WFSTestSupport {
         dom = getAsDOM("wfs?request=GetFeature&typename=cite:Geometryless&version=1.0.0&service=wfs");
         assertEquals(4, dom.getElementsByTagName("cite:Geometryless").getLength());
     }
+
 }

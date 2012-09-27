@@ -63,8 +63,14 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         List<ResourceInfo> resources = catalog.getResourcesByStore(store, ResourceInfo.class);
         for (ResourceInfo ri : resources) {
             List<LayerInfo> layers = catalog.getLayers(ri);
-            for (LayerInfo li : layers) {
-                li.accept(this);
+            if (!layers.isEmpty()){ 
+                for (LayerInfo li : layers) {
+                    li.accept(this);
+                }
+            }
+            else {
+                // no layers for the resource, delete directly
+                ri.accept(this);
             }
         }
 

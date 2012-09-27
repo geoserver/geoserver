@@ -5,6 +5,8 @@
 
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,6 +19,7 @@ import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,10 +31,7 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
     protected GeoServerUserGroupService usergroupService;
     protected GeoServerRoleStore roleStore;
     protected GeoServerUserGroupStore usergroupStore;
-    
 
-    
-    
     protected void setServices(String serviceName) throws Exception{
         roleService=createRoleService(serviceName);
         usergroupService=createUserGroupService(serviceName);
@@ -41,6 +41,7 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         //getSecurityManager().saveSecurityConfig(config)setActiveUserGroupService(usergroupService);
     }
     
+    @Test
     public void testConfiguration() {
         try {
             setServices("config");
@@ -55,6 +56,7 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         }
     }
     
+    @Test
     public void testRoleCalculation() {
         try {
 
@@ -180,6 +182,7 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         }
     }
     
+    @Test
     public void testPersonalizedRoles() {
        try {
     

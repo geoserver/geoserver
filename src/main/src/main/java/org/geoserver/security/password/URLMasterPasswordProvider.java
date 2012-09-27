@@ -173,7 +173,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         }
     }
 
-    static class URLMasterPasswordProviderValidator extends SecurityConfigValidator {
+    public static class URLMasterPasswordProviderValidator extends SecurityConfigValidator {
 
         public URLMasterPasswordProviderValidator(GeoServerSecurityManager securityManager) {
             super(securityManager);

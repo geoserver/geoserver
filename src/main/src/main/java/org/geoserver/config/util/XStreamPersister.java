@@ -232,6 +232,16 @@ public class XStreamPersister {
     private Level forceLevel = LOGGER.getLevel() == null? Level.INFO : LOGGER.getLevel();
     
     /**
+     * Flag controlling whether the persister should perform encryption on password fields
+     */
+    boolean encryptPasswordFields = true;
+
+    /**
+     * verboseness flag
+     */
+    boolean verbose = true;
+
+    /**
      * Constructs the persister and underlying xstream.
      */
     protected XStreamPersister() {
@@ -469,7 +479,23 @@ public class XStreamPersister {
     public void setHideFeatureTypeAttributes() {
         xs.omitField(FeatureTypeInfoImpl.class, "attributes");
     }
-    
+
+    public void setEncryptPasswordFields(boolean encryptPasswordFields) {
+        this.encryptPasswordFields = encryptPasswordFields;
+    }
+
+    public boolean isEncryptPasswordFields() {
+        return encryptPasswordFields;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
     /**
      * Saves an object to persistence.
      * 
@@ -671,7 +697,7 @@ public class XStreamPersister {
                 encryptionFields=Collections.emptySet();
             }
 
-            GeoServerSecurityManager secMgr = getSecurityManager();
+            GeoServerSecurityManager secMgr = encryptPasswordFields ? getSecurityManager() : null;
             Map map = (Map) source;
             for (Iterator iterator = map.entrySet().iterator(); iterator.hasNext();) {
                 Map.Entry entry = (Map.Entry) iterator.next();
@@ -1346,7 +1372,7 @@ public class XStreamPersister {
         @Override
         protected void doMarshal(Object source, HierarchicalStreamWriter writer,
                 MarshallingContext context) {
-            GeoServerSecurityManager secMgr = getSecurityManager();
+            GeoServerSecurityManager secMgr = encryptPasswordFields ? getSecurityManager() : null;
             if (secMgr != null && secMgr.isInitialized()) {
                 //set the hint for the map converter as to which fields to encode in the connection
                 // parameter of this store
@@ -1411,13 +1437,12 @@ public class XStreamPersister {
             }
 
             //process any parameters that require decryption 
-            GeoServerSecurityManager secMgr = getSecurityManager();
+            GeoServerSecurityManager secMgr = encryptPasswordFields ? getSecurityManager() : null;
             if (secMgr != null) {
                 secMgr.getConfigPasswordEncryptionHelper().decode(store);
             }
 
-            
-            if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+            if((LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()) || verbose){
                 LOGGER.info( "Loaded store '" +  store.getName() +  "', " + (store.isEnabled() ? "enabled" : "disabled") );
             }
             return store;
@@ -1523,7 +1548,7 @@ public class XStreamPersister {
                    if ( def ) {
                        map.put( null, ns );
                    }
-                   if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+                   if((LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()) || verbose){
                        LOGGER.info( "Loading namespace '" + ns.getPrefix() + "'" );
                    }
                }
@@ -1533,7 +1558,8 @@ public class XStreamPersister {
                    if ( def ) {
                        map.put( null, ws );
                    }
-                   if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+
+                   if((LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()) || verbose){
                        LOGGER.info( "Loading workspace '" + ws.getName() + "'" );
                    }
                }
@@ -1566,7 +1592,7 @@ public class XStreamPersister {
             String type = obj instanceof CoverageInfo ? "coverage" : 
                 obj instanceof FeatureTypeInfo ? "feature type" : "resource";
             
-            if(LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()){
+            if((LOGGER.isLoggable(Level.INFO) && forceLevel.intValue() <= Level.INFO.intValue()) || verbose){
                 LOGGER.info( "Loaded " + type + " '" + obj.getName() + "', " + enabled );
             }
             

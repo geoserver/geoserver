@@ -1,26 +1,19 @@
 package org.geoserver.service.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
-import org.geoserver.config.GeoServer;
-import org.geoserver.platform.GeoServerExtensions;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class WMSSettingsTest extends CatalogRESTTestSupport {
 
-    protected GeoServer geoServer;
-
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        geoServer = GeoServerExtensions.bean(GeoServer.class, applicationContext);
-    }
-
+    @Test
     public void testGetASJSON() throws Exception {
         JSON json = getAsJSON("/rest/services/wms/settings.json");
         JSONObject jsonObject = (JSONObject) json;
@@ -28,22 +21,24 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
         assertEquals("wms", wmsinfo.get("id"));
         assertEquals("true", wmsinfo.get("enabled").toString().trim());
-        assertEquals("OGC:WMS", wmsinfo.get("name"));
+        assertEquals("WMS", wmsinfo.get("name"));
         JSONObject watermark = (JSONObject) wmsinfo.get("watermark");
         assertEquals("false", watermark.get("enabled").toString().trim());
         assertEquals("Nearest", wmsinfo.get("interpolation"));
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM("/rest/services/wms/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
         assertEquals(1, dom.getElementsByTagName("name").getLength());
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
-        assertXpathEvaluatesTo("OGC:WMS", "/wms/name", dom);
+        assertXpathEvaluatesTo("WMS", "/wms/name", dom);
         assertXpathEvaluatesTo("false", "/wms/watermark/enabled", dom);
         assertXpathEvaluatesTo("Nearest", "/wms/interpolation", dom);
     }
 
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",
@@ -58,6 +53,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
         assertEquals("WMS", wmsinfo.get("name"));
     }
 
+    @Test
     public void testPutASXML() throws Exception {
         String xml = "<wms>"
                 + "<id>wms</id>"
@@ -75,6 +71,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testDelete() throws Exception {
         assertEquals(405, deleteAsServletResponse("/rest/services/wms/settings").getStatusCode());
     }

@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -25,9 +26,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 
 public class CatalogFactoryImpl implements CatalogFactory {
 
-    CatalogImpl catalog;
+    Catalog catalog;
     
-    public CatalogFactoryImpl( CatalogImpl catalog ) {
+    public CatalogFactoryImpl( Catalog catalog ) {
         this.catalog = catalog;
     }
     

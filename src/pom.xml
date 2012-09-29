@@ -31,7 +31,8 @@
  </licenses>
 
  <ciManagement>
-    <system>continuum</system>
+    <system>hudson</system>
+    <url>http://hudson.opengeo.org/hudson/</url>
     <notifiers>
       <notifier>
         <type>mail</type>
@@ -42,7 +43,7 @@
         <sendOnFailure>true</sendOnFailure>
       </notifier>
     </notifiers>
-  </ciManagement>
+ </ciManagement>
 
  <repositories>
   <repository>

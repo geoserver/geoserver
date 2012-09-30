@@ -607,13 +607,15 @@ public abstract class GeoServerLoader {
 
             // load workspace specific settings
             File workspaces = resourceLoader.find("workspaces");
-            for (File dir : workspaces.listFiles()) {
-                if (!dir.isDirectory() && !dir.isHidden()) continue;
-
-                f = resourceLoader.find(dir, "settings.xml");
-                if (f != null) {
-                    SettingsInfo settings = depersist(xp, f, SettingsInfo.class );
-                    geoServer.add(settings);
+            if (workspaces != null) {
+                for (File dir : workspaces.listFiles()) {
+                    if (!dir.isDirectory() && !dir.isHidden()) continue;
+    
+                    f = resourceLoader.find(dir, "settings.xml");
+                    if (f != null) {
+                        SettingsInfo settings = depersist(xp, f, SettingsInfo.class );
+                        geoServer.add(settings);
+                    }
                 }
             }
 

@@ -24,11 +24,16 @@ class FileModel implements IModel {
     static final Logger LOGGER = Logging.getLogger(FileModel.class);
     
     IModel delegate;
+    File rootDir;
     
     FileModel(IModel delegate) {
-        this.delegate = delegate;
+        this(delegate, GeoserverDataDirectory.getGeoserverDataDirectory());
     }
 
+    FileModel(IModel delegate, File rootDir) {
+        this.delegate = delegate;
+        this.rootDir = rootDir;
+    }
     
     
     private boolean isSubfile(File root, File selection) {
@@ -52,7 +57,7 @@ class FileModel implements IModel {
     public void setObject(Object object) {
         String location = (String) object;
         
-        File dataDirectory = canonicalize(GeoserverDataDirectory.getGeoserverDataDirectory());
+        File dataDirectory = canonicalize(rootDir);
         File file = canonicalize(new File(location));
         if(isSubfile(dataDirectory, file)) {
             File curr = file;

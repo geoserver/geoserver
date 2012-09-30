@@ -129,6 +129,22 @@ public class StoredQueryProvider {
             throw new RuntimeException(e);
         }
     }
+    
+    /**
+     * Removes all stored queries.
+     */
+    public void removeAll() {
+        try {
+            File dir = storedQueryDir();
+            File[] files = dir.listFiles();
+            for(int i=0; i<files.length; i++) {
+                 files[i].delete();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     
     /**

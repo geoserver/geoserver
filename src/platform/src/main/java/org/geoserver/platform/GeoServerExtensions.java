@@ -48,7 +48,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * logger 
      */
-    public static Logger LOGGER = Logging.getLogger( "org.geoserver" );
+    public static Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
     
     /**
      * Caches the names of the beans for a particular type, so that the lookup (expensive)
@@ -117,7 +117,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
                     //JD: this can happen during testing... if the application 
                     // context has been closed and a non-one time setup test is
                     // run that triggers an extension lookup
-                    LOGGER.log( Level.SEVERE, "bean lookup error", e );
+                    LOGGER.log( Level.WARNING, "bean lookup error", e );
                     return Collections.EMPTY_LIST;
                 }
             }
@@ -312,7 +312,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     static void checkContext(ApplicationContext context) {
         if ( context == null ) {
-            LOGGER.severe( "Extension lookup occured, but ApplicationContext is unset.");
+            LOGGER.warning( "Extension lookup occured, but ApplicationContext is unset.");
         }
     }
     

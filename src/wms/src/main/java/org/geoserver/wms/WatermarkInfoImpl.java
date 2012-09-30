@@ -12,7 +12,7 @@ public class WatermarkInfoImpl implements WatermarkInfo {
 
     Position position = Position.BOT_RIGHT;
 
-    int transparency = 255;
+    int transparency = 100;
 
     String url;
 

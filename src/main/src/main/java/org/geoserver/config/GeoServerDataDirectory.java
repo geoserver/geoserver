@@ -4,11 +4,11 @@
  */
 package org.geoserver.config;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -732,11 +732,14 @@ public class GeoServerDataDirectory {
     // Helper methods
     //
     void copy( InputStream data, File targetDir, String filename ) throws IOException {
-        BufferedOutputStream out = 
-            new BufferedOutputStream( new FileOutputStream( new File( targetDir, filename ) ) );
-        IOUtils.copy( data, out );
-        out.flush();
-        out.close();
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(new File( targetDir, filename ));
+            IOUtils.copy( data, out );
+            out.flush();
+        } finally {
+            IOUtils.closeQuietly(out);
+        }
     }
     
     File file( File f ) {

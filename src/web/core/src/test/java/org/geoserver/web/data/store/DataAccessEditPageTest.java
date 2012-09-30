@@ -1,9 +1,12 @@
 package org.geoserver.web.data.store;
 
+import static org.junit.Assert.*;
+
 import java.io.Serializable;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
@@ -13,20 +16,26 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
 
     private DataStoreInfo store;
 
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void init() {
         store = getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);
         tester.startPage(new DataAccessEditPage(store.getId()));
-
-        // print(tester.getLastRenderedPage(), true, true);
     }
 
+    @Test
     public void testLoad() {
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
@@ -54,14 +63,27 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     // tester.assertRenderedPage(StorePage.class);
     // }
 
+    @Test
     public void testNameRequired() {
+        
         FormTester form = tester.newFormTester("dataStoreForm");
         form.setValue("dataStoreNamePanel:border:paramValue", null);
+        form.setValue("workspacePanel:border:paramValue", "cite");
         form.submit();
         // missing click link , the validation triggers before it
 
+        tester.debugComponentTrees();
         tester.assertRenderedPage(DataAccessEditPage.class);
-        tester.assertErrorMessages(new String[] { "Field 'Data Source Name' is required." });
+
+        List<String> l = Lists.transform(tester.getMessages(FeedbackMessage.ERROR), 
+            new Function<Serializable, String>() {
+                @Override
+                public String apply(Serializable input) {
+                    return input.toString();
+                }
+        });
+        assertTrue(l.contains("Field 'Data Source Name' is required."));
+        //tester.assertErrorMessages(new String[] { "Field 'Data Source Name' is required." });
     }
 
     /**
@@ -128,6 +150,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         }
     }
 
+    @Test
     public void testEditDettached() throws Exception {
         final Catalog catalog = getCatalog();
         DataStoreInfo ds = catalog.getFactory().createDataStore();

@@ -13,20 +13,22 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import static org.junit.Assert.*;
 
 public class RestConcurrencyTest extends CatalogRESTTestSupport {
 
     static volatile Exception exception;
     volatile DispatcherServlet dispatcher;
-    
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
 
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         exception = null;
 
         // Uncomment this and ... KA-BOOM!!!!
@@ -61,13 +63,6 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
     }
 
     @Override
-    protected boolean useLegacyDataDirectory() {
-        // if we don't do this the writes will be load and after the reload we won't get
-        // the newly added layer
-        return false;
-    }
-    
-    @Override
     protected DispatcherServlet getDispatcher() throws Exception {
         if(dispatcher == null) {
             synchronized (this) {
@@ -79,6 +74,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
         return dispatcher;
     }
 
+    @Test
     public void testFeatureTypeConcurrency() throws Exception {
         int typeCount = 5;
         addPropertyDataStores(typeCount);
@@ -128,7 +124,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
         }
 
         private void callInternal() throws Exception {
-            doLogin();
+            login();
             String threadId = Thread.currentThread().getId() + " ";
             for (int i = 0; i < loops && exception == null; i++) {
                 // add the type name

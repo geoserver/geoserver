@@ -24,6 +24,7 @@ import org.geoserver.security.ResourceAccessManager;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
 import org.geotools.factory.Hints;
+import org.junit.Before;
 import org.opengis.util.ProgressListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -90,11 +91,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected List<WorkspaceInfo> workspaces;
 
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         rwUser = new TestingAuthenticationToken("rw", "supersecret", Arrays.asList(new GrantedAuthority[] {
                 new GeoServerRole("READER"), new GeoServerRole("WRITER") }));
         roUser = new TestingAuthenticationToken("ro", "supersecret",

@@ -1,5 +1,7 @@
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,28 +15,43 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
+import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
+import org.geoserver.security.validation.SecurityConfigException;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.RunTestSetup;
+import org.geoserver.test.SystemTest;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
+@Category(SystemTest.class)
+public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
 
     enum Pos {
      FIRST,LAST,BEFORE,AFTER;   
     };
-    
+
     @Override
-    protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getSpringContextLocations()));
-        list.add(getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
-        return list.toArray(new String[list.size()]);
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add(getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
     }
 
-    public void testInactive() throws Exception {
+    @After
+    public void removeCustomFilterConfig() throws Exception {
+        GeoServerSecurityManager secMgr= getSecurityManager();
+        if(secMgr.listFilters().contains("custom")) {
+            secMgr.removeFilter(secMgr.loadFilterConfig("custom"));
+        }
+    }
+    @Test public void testInactive() throws Exception {
         HttpServletRequest request = createRequest("/foo");
         MockHttpServletResponse response = dispatch(request);
         assertNull(response.getHeader("foo"));
@@ -54,7 +71,7 @@ public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
         SecurityManagerConfig mgrConfig = secMgr.getSecurityConfig();
         mgrConfig.setConfigPasswordEncrypterName(getPlainTextPasswordEncoder().getName());
 
-
+        mgrConfig.getFilterChain().remove("custom");
         if (pos==Pos.FIRST)
             mgrConfig.getFilterChain().insertFirst("/**",  "custom");
         if (pos==Pos.LAST)
@@ -67,6 +84,7 @@ public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
         secMgr.saveSecurityConfig(mgrConfig);
     }
 
+    @Test 
     public void testFirst() throws Exception {
         setupFilterEntry(Pos.FIRST, null, false);
 
@@ -75,6 +93,7 @@ public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
         assertEquals("bar", response.getHeader("foo"));
     }
 
+    @Test
     public void testLast() throws Exception {
         setupFilterEntry(Pos.LAST, null, true);
 
@@ -83,6 +102,7 @@ public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
         assertEquals("bar", response.getHeader("foo"));
     }
 
+    @Test
     public void testBefore() throws Exception {
         setupFilterEntry(Pos.BEFORE, 
             GeoServerSecurityFilterChain.ANONYMOUS_FILTER, false);
@@ -92,6 +112,7 @@ public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
         assertEquals("bar", response.getHeader("foo"));
     }
 
+    @Test
     public void testAfter() throws Exception {
         setupFilterEntry(Pos.AFTER, 
             GeoServerSecurityFilterChain.ANONYMOUS_FILTER, true);
@@ -119,7 +140,7 @@ public class GeoServerCustomFilterTest extends GeoServerSecurityTestSupport {
         }
     }
 
-    static class FilterConfig extends BaseSecurityNamedServiceConfig {
+    static class FilterConfig extends SecurityFilterConfig {
         boolean assertAuth = true;
 
         public void setAssertAuth(boolean assertAuth) {

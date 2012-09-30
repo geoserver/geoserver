@@ -6,9 +6,11 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.*;
+
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * This is to test using isList to group multiple values as a concatenated single value without
@@ -18,15 +20,8 @@ import junit.framework.Test;
  */
 
 public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new TimeSeriesInlineWfsTest());
-    }
-
-    protected NamespaceTestData buildTestData() {
+    
+    protected TimeSeriesInlineMockData createTestData() {
         // only the test data is different since the config is slightly different (not using feature
         // chaining)
         // but the test cases from TimeSeriesWfsTest are the same
@@ -36,6 +31,7 @@ public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
     /**
      * Test subsetting timePositionList.
      */
+    @Test
     public void testTimePositionSubset() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //
@@ -94,6 +90,7 @@ public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
     /**
      * Test filtering quantity list that is not feature chained.
      */
+    @Test
     public void testQuantityListSubset() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //

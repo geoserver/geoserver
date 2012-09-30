@@ -6,16 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import javax.xml.namespace.QName;
-
-import junit.framework.Test;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -24,20 +22,13 @@ import org.w3c.dom.Element;
 
 public class ReprojectionTest extends WFSTestSupport {
     private static final String TARGET_CRS_CODE = "EPSG:900913";
-    public static QName NULL_GEOMETRIES = new QName(MockData.CITE_URI, "NullGeometries", MockData.CITE_PREFIX);
-    public static QName GOOGLE = new QName(MockData.CITE_URI, "GoogleFeatures", MockData.CITE_PREFIX);
+    public static QName NULL_GEOMETRIES = new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
+    public static QName GOOGLE = new QName(SystemTestData.CITE_URI, "GoogleFeatures", SystemTestData.CITE_PREFIX);
     static MathTransform tx;
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new ReprojectionTest());
-    }
-    
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-    
+    @Override
+    protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
+   
         CoordinateReferenceSystem epsg4326 = CRS.decode(TARGET_CRS_CODE);
         CoordinateReferenceSystem epsg32615 = CRS.decode("EPSG:32615");
         
@@ -45,39 +36,36 @@ public class ReprojectionTest extends WFSTestSupport {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
         getGeoServer().save( wfs );
+        
+        
+        dataDirectory.addVectorLayer(NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
+        Map<LayerProperty, Object> extra = new HashMap<LayerProperty, Object>();
+        extra.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
+        extra.put(LayerProperty.SRS, 900913);
+        dataDirectory.addVectorLayer(GOOGLE, extra, getClass(), getCatalog());
     }
     
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addPropertiesType(NULL_GEOMETRIES, 
-                ReprojectionTest.class.getResource("NullGeometries.properties"), Collections.EMPTY_MAP);
-        Map<String, Object> extra = new HashMap<String, Object>();
-        extra.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.REPROJECT_TO_DECLARED.getCode());
-        extra.put(MockData.KEY_SRS_NUMBER, 900913);
-        dataDirectory.addPropertiesType(GOOGLE, 
-                ReprojectionTest.class.getResource("GoogleFeatures.properties"), extra);
-    }
-    
+    @Test
     public void testGetFeatureGet() throws Exception {
         
         Document dom1 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-            MockData.POLYGONS.getLocalPart());
+            SystemTestData.POLYGONS.getLocalPart());
         Document dom2 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-            MockData.POLYGONS.getLocalPart() + "&srsName=" + TARGET_CRS_CODE);
+            SystemTestData.POLYGONS.getLocalPart() + "&srsName=" + TARGET_CRS_CODE);
         
 //        print(dom1);
 //        print(dom2);
         
         runTest(dom1,dom2, tx);
     }
-    
+   
+    @Test
     public void testGetFeatureGetAutoCRS() throws Exception {
         
         Document dom1 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-            MockData.POLYGONS.getLocalPart());
+            SystemTestData.POLYGONS.getLocalPart());
         Document dom2 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-            MockData.POLYGONS.getLocalPart() + "&srsName=AUTO:42001,9001,-93,0");
+            SystemTestData.POLYGONS.getLocalPart() + "&srsName=AUTO:42001,9001,-93,0");
         
 //        print(dom1);
 //        print(dom2);
@@ -86,16 +74,17 @@ public class ReprojectionTest extends WFSTestSupport {
         runTest(dom1,dom2, tx);
     }
     
+    @Test
     public void testGetFeatureAutoCRSBBox() throws Exception {
         CoordinateReferenceSystem auto = CRS.decode("AUTO:42001,9001,-93,0");
-        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(getLayerId(MockData.POLYGONS));
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.POLYGONS));
         ReferencedEnvelope nativeEnv = ftInfo.getFeatureSource(null, null).getBounds();
         ReferencedEnvelope reprojectedEnv = nativeEnv.transform(auto, true);
         
         Document dom1 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-                MockData.POLYGONS.getLocalPart());
+                SystemTestData.POLYGONS.getLocalPart());
             Document dom2 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-                MockData.POLYGONS.getLocalPart() + "&srsName=AUTO:42001,9001,-93,00&bbox=" + 
+                SystemTestData.POLYGONS.getLocalPart() + "&srsName=AUTO:42001,9001,-93,00&bbox=" + 
                 reprojectedEnv.getMinX() + "," + reprojectedEnv.getMinY() + "," 
                 + reprojectedEnv.getMaxX() + "," + reprojectedEnv.getMaxY() 
                 + ",AUTO:42001,9001,-93,0");
@@ -107,6 +96,7 @@ public class ReprojectionTest extends WFSTestSupport {
             runTest(dom1,dom2, tx);
     }
     
+    @Test
     public void testGetFeatureReprojectedFeatureType() throws Exception {
         // bbox is 4,4,6,6 in wgs84, coordinates have been reprojected to 900913
         Document dom = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
@@ -115,6 +105,7 @@ public class ReprojectionTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//cite:GoogleFeatures)", dom);
     }
     
+    @Test
     public void testGetFeaturePost() throws Exception {
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
         + "version=\"1.0.0\" "
@@ -122,7 +113,7 @@ public class ReprojectionTest extends WFSTestSupport {
         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
         + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
         + "<wfs:Query typeName=\"" + 
-            MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "\"> "
+            SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "\"> "
         + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
         + "</wfs:Query> " + "</wfs:GetFeature>";
         
@@ -134,7 +125,7 @@ public class ReprojectionTest extends WFSTestSupport {
         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
         + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
         + "<wfs:Query srsName=\"" + TARGET_CRS_CODE + "\" typeName=\"" + 
-            MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "\"> "
+            SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "\"> "
         + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
         + "</wfs:Query> " + "</wfs:GetFeature>";
         Document dom2 = postAsDOM("wfs", xml);
@@ -142,6 +133,7 @@ public class ReprojectionTest extends WFSTestSupport {
         runTest(dom1, dom2, tx);
     }
     
+    @Test
     public void testReprojectNullGeometries() throws Exception {
         // see http://jira.codehaus.org/browse/GEOS-1612
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -158,27 +150,29 @@ public class ReprojectionTest extends WFSTestSupport {
         assertEquals(1, dom.getElementsByTagName("wfs:FeatureCollection").getLength());
     }
     
+    @Test
     public void testGetFeatureWithProjectedBoxGet() throws Exception {
         Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
         
-        String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + MockData.POLYGONS.getLocalPart() 
+        String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + SystemTestData.POLYGONS.getLocalPart() 
             + "&bbox=" + cr[0] + "," + cr[1] + "," + cr[2] + "," + cr[3] + "," + TARGET_CRS_CODE;
         dom = getAsDOM( q );
         
-        assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
     }
     
+    @Test
     public void testGetFeatureWithProjectedBoxPost() throws Exception {
         Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
         
         String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\""
-            + " xmlns:" + MockData.POLYGONS.getPrefix() + "=\"" + MockData.POLYGONS.getNamespaceURI() + "\""
+            + " xmlns:" + SystemTestData.POLYGONS.getPrefix() + "=\"" + SystemTestData.POLYGONS.getNamespaceURI() + "\""
             + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
             + " xmlns:gml=\"http://www.opengis.net/gml\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
-            + "<wfs:Query typeName=\"" + MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "\">"
+            + "<wfs:Query typeName=\"" + SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "\">"
             + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
             + "<ogc:Filter>" 
             +  "<ogc:BBOX>"
@@ -199,23 +193,24 @@ public class ReprojectionTest extends WFSTestSupport {
         
         dom = postAsDOM( "wfs", xml );
         
-        assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
     }
 
     /**
      * See GEOT-3760
      * @throws Exception
      */
+    @Test
     public void testGetFeatureWithProjectedBoxIntersectsPost() throws Exception {
         Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
         
         String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\""
-            + " xmlns:" + MockData.POLYGONS.getPrefix() + "=\"" + MockData.POLYGONS.getNamespaceURI() + "\""
+            + " xmlns:" + SystemTestData.POLYGONS.getPrefix() + "=\"" + SystemTestData.POLYGONS.getNamespaceURI() + "\""
             + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
             + " xmlns:gml=\"http://www.opengis.net/gml\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
-            + "<wfs:Query typeName=\"" + MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() 
+            + "<wfs:Query typeName=\"" + SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() 
             + "\" srsName=\"" + TARGET_CRS_CODE + "\">"
             + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
             + "<ogc:Filter>" 
@@ -237,7 +232,7 @@ public class ReprojectionTest extends WFSTestSupport {
         
         dom = postAsDOM( "wfs", xml );
         
-        assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
     }
     
     /**
@@ -248,7 +243,7 @@ public class ReprojectionTest extends WFSTestSupport {
      */
     private double[] getTransformedPolygonsLayerBBox() throws Exception, TransformException {
         String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + 
-            MockData.POLYGONS.getLocalPart();
+            SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM( q );
         Element envelope = getFirstElementByTagName(dom, "gml:Box" );
         String coordinates = getFirstElementByTagName(envelope, "gml:coordinates").getFirstChild().getNodeValue();

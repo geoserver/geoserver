@@ -1,10 +1,15 @@
 package org.geoserver.wfs.v2_0;
 
+
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collections;
 import javax.xml.namespace.QName;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.WFSInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.junit.Test;
 
 /**
  * 
@@ -15,18 +20,21 @@ import org.w3c.dom.NodeList;
  */
 public class BoundingBox3DTest extends WFS20TestSupport {
     
-   
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
+	@Override
+    protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
+    	
+    	//temp hack until feature bounding for 3D is fixed.
+    	WFSInfo wfs = getWFS();
+    	wfs.setFeatureBounding(false);
+    	getGeoServer().save(wfs);
+    	
         // add extra types
-        dataDirectory.addPropertiesType( 
-                new QName( MockData.SF_URI, "With3D", MockData.SF_PREFIX ), 
-                org.geoserver.wfs.v1_1.GetFeatureTest.class.getResource("With3D.properties"), 
-                Collections.EMPTY_MAP);
+        dataDirectory.addVectorLayer( 
+                new QName( SystemTestData.SF_URI, "With3D", SystemTestData.SF_PREFIX ),                 
+                Collections.EMPTY_MAP, org.geoserver.wfs.v1_1.BoundingBox3DTest.class, getCatalog());
     }
         
+	@Test
     public void testBBox1() throws Exception {
         Document doc = getAsDOM( "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,0,200,200,50");
         assertGML32(doc);
@@ -38,6 +46,7 @@ public class BoundingBox3DTest extends WFS20TestSupport {
         
     }
     
+	@Test
     public void testBBox2() throws Exception {
         Document doc = getAsDOM( "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,50,200,200,100");
         assertGML32(doc);

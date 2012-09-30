@@ -6,6 +6,7 @@ package org.geoserver.test.onlineTest;
 
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public abstract class WfsOnlineTest extends AbstractDataReferenceWfsTest {
@@ -24,6 +25,7 @@ public abstract class WfsOnlineTest extends AbstractDataReferenceWfsTest {
      */
     protected static final String OM_SCHEMA_LOCATION_URL = "http://schemas.opengis.net/om/1.0.0/observation.xsd";
 
+    @Test
     public void testNoPrimaryKey() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:ShearDisplacementStructure&featureid=gsml.sheardisplacementstructure.46216";
         Document doc = getAsDOM(path);

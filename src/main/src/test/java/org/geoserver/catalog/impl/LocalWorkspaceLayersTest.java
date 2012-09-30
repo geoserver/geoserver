@@ -1,5 +1,7 @@
 package org.geoserver.catalog.impl;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
@@ -10,16 +12,20 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
-public class LocalWorkspaceLayersTest extends GeoServerTestSupport {
+public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
 
     Catalog catalog;
 
+    @Before
     public void setUpInternal() {
         catalog = getCatalog();
     }
 
+    @Test
     public void testGroupLayerInWorkspace() {
         WorkspaceInfo workspace = catalog.getWorkspaceByName("sf");
         WorkspaceInfo workspace2 = catalog.getWorkspaceByName("cite");
@@ -51,6 +57,7 @@ public class LocalWorkspaceLayersTest extends GeoServerTestSupport {
         LocalWorkspace.remove();
     }
 
+    @Test
     public void testLayersInLocalWorkspace() {
         List<LayerInfo> layers = catalog.getLayers();
 

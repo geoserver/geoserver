@@ -6,11 +6,15 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
+
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -29,7 +33,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  * @author Rini Angreani, Curtin University of Technology
  */
-public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
+public class SRSWfsTest extends AbstractAppSchemaTestSupport {
 
     final String EPSG_4326 = "urn:x-ogc:def:crs:EPSG:4326";
 
@@ -37,26 +41,13 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
 
     final String DIMENSION = "2";
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        Test test = new OneTimeTestSetup(new SRSWfsTest());
-        return test;
-    }
-
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected SRSMockData createTestData() {
         return new SRSMockData();
     }
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaWfsTestSupport#oneTimeSetUp()
-     */
     @Override
-    protected void oneTimeSetUp() throws Exception {
+    protected void setUpTestData(SystemTestData testData) throws Exception {
         // use the OGC standard for axis order
         //
         // must be done *before* super.oneTimeSetUp() to ensure CRS factories
@@ -72,15 +63,13 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
         Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
         // apply changes
         CRS.reset("all");
-        super.oneTimeSetUp();
+        
+        super.setUpTestData(testData);
     }
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaWfsTestSupport#oneTimeTearDown()
-     */
     @Override
-    protected void oneTimeTearDown() throws Exception {
-        super.oneTimeTearDown();
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        super.onTearDown(testData);
         // undo the changes made for this suite and reset
         System.clearProperty("org.geotools.referencing.forceXY");
         Hints.removeSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER);
@@ -90,10 +79,17 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
 
     /**
      * Test content of GetFeature response.
+     * @throws FactoryException 
+     * @throws NoSuchAuthorityCodeException 
      */
-    public void testGetFeatureContent() {
+    @Test
+    public void testGetFeatureContent() throws NoSuchAuthorityCodeException, FactoryException {
         String id = "1";
 
+        // make sure we are really working in lat/lon order
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        assertEquals(AxisOrder.NORTH_EAST, CRS.getAxisOrder(crs));
+        
         Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:geomContainer&version=1.1.0");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -236,6 +232,7 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
      * @throws MismatchedDimensionException
      * @throws TransformException
      */
+    @Test
     public void testReproject() throws NoSuchAuthorityCodeException, FactoryException,
             MismatchedDimensionException, TransformException {
 
@@ -401,6 +398,7 @@ public class SRSWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Ensure filters are still working.
      */
+    @Test
     public void testFilters() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer" +
             "&srsname=urn:x-ogc:def:crs:EPSG::4326&featureid=1");

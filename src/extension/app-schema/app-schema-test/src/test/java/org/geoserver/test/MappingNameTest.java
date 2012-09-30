@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * Tests whether the use of special characters in a mapping name can be used for feature chaining
@@ -17,19 +17,10 @@ import junit.framework.Test;
  * 
  */
 
-public class MappingNameTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new MappingNameTest());
-    }
+public class MappingNameTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected MappingNameMockData createTestData() {
         return new MappingNameMockData();
     }
 
@@ -37,6 +28,7 @@ public class MappingNameTest extends AbstractAppSchemaWfsTestSupport {
      * Test whether GetFeature returns a FeatureCollection with the right content based on the
      * feature chaining.
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));

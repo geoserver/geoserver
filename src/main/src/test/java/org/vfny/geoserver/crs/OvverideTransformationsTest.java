@@ -1,18 +1,24 @@
 package org.vfny.geoserver.crs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.ConcatenatedOperation;
 import org.opengis.referencing.operation.CoordinateOperation;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-public class OvverideTransformationsTest extends GeoServerTestSupport {
+public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
     
     private static final String SOURCE_CRS = "EPSG:TEST1";
     private static final String TARGET_CRS = "EPSG:TEST2";
@@ -21,23 +27,24 @@ public class OvverideTransformationsTest extends GeoServerTestSupport {
     private static final double[] DST_TEST_POINT = {39.594235744481225, 3.0844689951999427};
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+    
         // setup the grid file, the definitions and the tx overrides
-        new File(dataDirectory.getDataDirectoryRoot(), "user_projections").mkdir();
-        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg.properties"), "user_projections/epsg.properties");
-        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg_operations.properties"), "user_projections/epsg_operations.properties");
-        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("stgeorge.las"), "user_projections/stgeorge.las");
-        dataDirectory.copyTo(OvverideTransformationsTest.class.getResourceAsStream("stgeorge.los"), "user_projections/stgeorge.los");
+        new File(testData.getDataDirectoryRoot(), "user_projections").mkdir();
+        testData.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg.properties"), "user_projections/epsg.properties");
+        testData.copyTo(OvverideTransformationsTest.class.getResourceAsStream("test_epsg_operations.properties"), "user_projections/epsg_operations.properties");
+        testData.copyTo(OvverideTransformationsTest.class.getResourceAsStream("stgeorge.las"), "user_projections/stgeorge.las");
+        testData.copyTo(OvverideTransformationsTest.class.getResourceAsStream("stgeorge.los"), "user_projections/stgeorge.los");
         
         CRS.reset("all");
-
-        super.populateDataDirectory(dataDirectory);
     }
-    
+
     /**
      * Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}.
      * @throws TransformException 
      */
+    @Test 
     public void testCreateOperationFromCustomCodes() throws Exception {
         // Test CRSs
         CoordinateReferenceSystem source = CRS.decode(SOURCE_CRS);
@@ -55,6 +62,7 @@ public class OvverideTransformationsTest extends GeoServerTestSupport {
      * Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}.
      * @throws TransformException 
      */
+    @Test
     public void testOverrideEPSGOperation() throws Exception {
         // Test CRSs
         CoordinateReferenceSystem source = CRS.decode("EPSG:4269");
@@ -73,6 +81,7 @@ public class OvverideTransformationsTest extends GeoServerTestSupport {
      * 
      * @throws TransformException 
      */
+    @Test
     public void testFallbackOnEPSGDatabaseStd() throws Exception {
         // Test CRSs
         CoordinateReferenceSystem source = CRS.decode("EPSG:3003");
@@ -87,6 +96,7 @@ public class OvverideTransformationsTest extends GeoServerTestSupport {
      * See if we can use the stgeorge grid shift files as the ESPG db would like us to
      * @throws Exception
      */
+    @Test
     public void testNadCon() throws Exception {
         CoordinateReferenceSystem crs4138 = CRS.decode("EPSG:4138");
         CoordinateReferenceSystem crs4326 = CRS.decode("EPSG:4326");

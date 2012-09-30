@@ -1,5 +1,7 @@
 package org.geoserver.web.publish;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.ErrorLevelFeedbackMessageFilter;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -11,14 +13,16 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
     
     LayerInfo polygons;
     FormTestPage page;
 
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void init() {
         polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         page = new FormTestPage(new ComponentBuilder() {
         
@@ -29,6 +33,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
     }
     
+    @Test
     public void testDefaults() {
         tester.assertRenderedPage(FormTestPage.class);
         FormTester ft = tester.newFormTester("form");
@@ -36,6 +41,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         assertEquals(0,  page.getSession().getFeedbackMessages().messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR)).size());
     }
     
+    @Test
     public void testInvalid() {
         final LayerInfo polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         FormTestPage page = new FormTestPage(new ComponentBuilder() {
@@ -54,6 +60,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         assertEquals(1,  page.getSession().getFeedbackMessages().messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR)).size());
     }
     
+    @Test
     public void testValid() {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:cacheAgeMax", "3600");

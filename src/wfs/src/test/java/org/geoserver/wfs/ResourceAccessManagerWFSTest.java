@@ -2,25 +2,24 @@ package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Pattern;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
 import org.geotools.factory.CommonFactoryFinder;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.PropertyName;
@@ -89,17 +88,20 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
     "  </wfs:Delete>\n" + 
     "</wfs:Transaction>";
 
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.BUILDINGS);
+    }
+
     /**
      * Add the test resource access manager in the spring context
      */
-    protected String[] getSpringContextLocations() {
-        String[] base = super.getSpringContextLocations();
-        String[] extended = new String[base.length + 1];
-        System.arraycopy(base, 0, extended, 0, base.length);
-        extended[base.length] = "classpath:/org/geoserver/wfs/ResourceAccessManagerContext.xml";
-        return extended;
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+    	super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath:/org/geoserver/wfs/ResourceAccessManagerContext.xml");
     }
-    
+        
     /**
      * Enable the Spring Security auth filters
      */
@@ -113,35 +115,26 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
      * Add the users
      */
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-        security.mkdir();
+    protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
 
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-        props.put("cite", "cite,ROLE_DUMMY");
-        props.put("cite_readfilter", "cite,ROLE_DUMMY");
-        props.put("cite_readatts", "cite,ROLE_DUMMY");
-        props.put("cite_readattsnf", "cite,ROLE_DUMMY");
-        props.put("cite_insertfilter", "cite,ROLE_DUMMY");
-        props.put("cite_writefilter", "cite,ROLE_DUMMY");
-        props.put("cite_writeatts", "cite,ROLE_DUMMY");
-        props.store(new FileOutputStream(users), "");
-    }
-
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-
+        addUser("cite", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_readfilter", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite,ROLE_DUMMY", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_readatts", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_readattsnf", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_insertfilter", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_writefilter", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_writeatts", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        
+        //------
+        
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
         // populate the access manager
         TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext
                 .getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
-        FeatureTypeInfo buildings = catalog.getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
+        FeatureTypeInfo buildings = catalog.getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
 
         // limits for mr readfilter
         Filter fid113 = ff.equal(ff.property("FID"), ff.literal("113"), false);
@@ -173,32 +166,35 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
                 null, writeAtts, null));
     }
 
+    @Test
     public void testNoLimits() throws Exception {
-        // no limits, should see all of the attributes and rows
-        authenticate("cite", "cite");
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
-        // print(doc);
-        assertXpathEvaluatesTo("2", "count(//cite:Buildings)", doc);
-        assertXpathEvaluatesTo("2", "count(//cite:ADDRESS)", doc);
+       // no limits, should see all of the attributes and rows
+       setRequestAuth("cite", "cite");
+       Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
+               + getLayerId(SystemTestData.BUILDINGS));
+       print(doc);
+       assertXpathEvaluatesTo("2", "count(//cite:Buildings)", doc);
+       assertXpathEvaluatesTo("2", "count(//cite:ADDRESS)", doc);
     }
 
+    @Test
     public void testReadFilter() throws Exception {
         // should only see one feature and all attributes
-        authenticate("cite_readfilter", "cite");
+        setRequestAuth("cite_readfilter", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
-        // print(doc);
+                + getLayerId(SystemTestData.BUILDINGS));
+        print(doc);
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
         assertXpathEvaluatesTo("113", "//cite:FID", doc);
         assertXpathEvaluatesTo("1", "count(//cite:ADDRESS)", doc);
     }
     
+    @Test
     public void testReadFilterReproject() throws Exception {
         // should only see one feature and all attributes
-        authenticate("cite_readfilter", "cite");
+        setRequestAuth("cite_readfilter", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS) + "&srsName=EPSG:4269");
+                + getLayerId(SystemTestData.BUILDINGS) + "&srsName=EPSG:4269");
         // print(doc);
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
         assertXpathEvaluatesTo("113", "//cite:FID", doc);
@@ -206,40 +202,42 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("http://www.opengis.net/gml/srs/epsg.xml#4269", "//gml:MultiPolygon/@srsName", doc);
     }
 
+    @Test
     public void testFilterAttribute() throws Exception {
         // should only see one feature
-        authenticate("cite_readatts", "cite");
+        setRequestAuth("cite_readatts", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
         assertXpathEvaluatesTo("113", "//cite:FID", doc);
         assertXpathEvaluatesTo("0", "count(//cite:ADDRESS)", doc);
     }
     
+    @Test
     public void testDescribeLimitedAttributes() throws Exception {
         // this one should see all attributes
-        authenticate("admin", "geoserver");
+        setRequestAuth("admin", "geoserver");
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='the_geom'])", doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='ADDRESS'])", doc);
 
         // this one should see only 2
-        authenticate("cite_readatts", "cite");
+        setRequestAuth("cite_readatts", "cite");
         doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='the_geom'])", doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
         assertXpathEvaluatesTo("0", "count(//xsd:element[@name='ADDRESS'])", doc);
         
         // paranoid check to make sure there is no caching
-        authenticate("admin", "geoserver");
+        setRequestAuth("admin", "geoserver");
         doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='the_geom'])", doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
@@ -247,11 +245,12 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testFilterRequestedAttribute() throws Exception {
         // should only see one feature
-        authenticate("cite_readatts", "cite");
+        setRequestAuth("cite_readatts", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS) + "&propertyName=FID,ADDRESS");
+                + getLayerId(SystemTestData.BUILDINGS) + "&propertyName=FID,ADDRESS");
         // print(doc);
         
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", doc);
@@ -262,11 +261,12 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testExtraAttributesNoFilter() throws Exception {
         // should only see one feature
-        authenticate("cite_readattsnf", "cite");
+        setRequestAuth("cite_readattsnf", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS) + "&propertyName=FID,ADDRESS");
+                + getLayerId(SystemTestData.BUILDINGS) + "&propertyName=FID,ADDRESS");
         // print(doc);
         
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", doc);
@@ -276,18 +276,20 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertTrue(pattern.matcher(message).matches());
     }
     
+    @Test
     public void testLimitAttributesNoFilter() throws Exception {
         // should only see one feature
-        authenticate("cite_readattsnf", "cite");
+        setRequestAuth("cite_readattsnf", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         
         assertXpathEvaluatesTo("0", "count(//cite:ADDRESS)", doc);
     }
 
+    @Test
     public void testInsertNoLimits() throws Exception {
-        authenticate("cite", "cite");
+        setRequestAuth("cite", "cite");
         Document dom = postAsDOM("wfs", INSERT_RESTRICTED_STREET);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//wfs:WFS_TransactionResponse)", dom);
@@ -296,8 +298,9 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wfs:Status/wfs:SUCCESS)", dom);
     }
     
+    @Test
     public void testInsertRestricted() throws Exception {
-        authenticate("cite_insertfilter", "cite");
+        setRequestAuth("cite_insertfilter", "cite");
         Document dom = postAsDOM("wfs", INSERT_RESTRICTED_STREET);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//wfs:WFS_TransactionResponse)", dom);
@@ -307,8 +310,9 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertTrue(message.matches(".*write restrictions.*"));
     }
     
+    @Test
     public void testInsertAttributeRestricted() throws Exception {
-        authenticate("cite_writeatts", "cite");
+        setRequestAuth("cite_writeatts", "cite");
         Document dom = postAsDOM("wfs", INSERT_RESTRICTED_STREET);
         print(dom);
         assertXpathEvaluatesTo("1", "count(//wfs:WFS_TransactionResponse)", dom);
@@ -318,23 +322,25 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertTrue(message.matches(".*write protected.*ADDRESS.*"));
     }
     
+    @Test
     public void testUpdateNoLimits() throws Exception {
-        authenticate("cite", "cite");
+        setRequestAuth("cite", "cite");
         Document dom = postAsDOM("wfs", UPDATE_ADDRESS);
         //print(dom);
         assertXpathEvaluatesTo("2", "//wfs:totalUpdated", dom);
     }
     
+    @Test
     public void testUpdateLimitWrite() throws Exception {
-        authenticate("cite_writefilter", "cite");
+        setRequestAuth("cite_writefilter", "cite");
         Document dom = postAsDOM("wfs", UPDATE_ADDRESS);
         //print(dom)
         assertXpathEvaluatesTo("1", "//wfs:totalUpdated", dom);
         
         // double check
-        authenticate("cite", "cite");
+        setRequestAuth("cite", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         //print(doc);
         
         // check this one has been updated
@@ -343,8 +349,9 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("215 Main Street", "//cite:Buildings[cite:FID = '114']/cite:ADDRESS", doc);
     }
     
+    @Test
     public void testUpdateAttributeRestricted() throws Exception {
-        authenticate("cite_writeatts", "cite");
+        setRequestAuth("cite_writeatts", "cite");
         Document dom = postAsDOM("wfs", UPDATE_ADDRESS);
         // print(dom);
 
@@ -356,16 +363,17 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertTrue(message.matches(".*write protected.*ADDRESS.*"));
     }
     
+    @Test
     public void testDeleteLimitWrite() throws Exception {
-        authenticate("cite_writefilter", "cite");
+        setRequestAuth("cite_writefilter", "cite");
         Document dom = postAsDOM("wfs", DELETE_ADDRESS);
         // print(dom);
         assertXpathEvaluatesTo("1", "//wfs:totalDeleted", dom);
         
         // double check
-        authenticate("cite", "cite");
+        setRequestAuth("cite", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                + getLayerId(MockData.BUILDINGS));
+                + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         
         // check this one has been deleted

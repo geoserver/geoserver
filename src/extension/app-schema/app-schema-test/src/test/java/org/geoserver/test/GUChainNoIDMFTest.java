@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -16,22 +16,14 @@ import org.w3c.dom.Document;
  * @author Victor Tey, CSIRO Exploration and Mining
  * 
  */
-public class GUChainNoIDMFTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GUChainNoIDMFTest());
-    }
+public class GUChainNoIDMFTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected GUChainNoIDMFTestMockData createTestData() {
         return new GUChainNoIDMFTestMockData();
     }
 
+    @Test
     public void testInLineFeatureNoId() {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:GeologicUnit&version=1.1.0");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"

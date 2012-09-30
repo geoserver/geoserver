@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * 
@@ -15,25 +15,17 @@ import junit.framework.Test;
  * @author Niels Charlier (Curtin University of Technology)
  * 
  */
-public class IdNotEncodedTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new IdNotEncodedTest());
-    }
+public class IdNotEncodedTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected IdNotEncodedMockData createTestData() {
         return new IdNotEncodedMockData();
     }
 
     /**
      * Test whether GetFeature
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedInterval");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));

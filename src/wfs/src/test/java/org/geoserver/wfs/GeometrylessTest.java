@@ -1,23 +1,15 @@
 package org.geoserver.wfs;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 public class GeometrylessTest extends WFSTestSupport {
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GeometrylessTest());
-    }
-    
-//    protected String getLogConfiguration() {
-//        return "/DEFAULT_LOGGING.properties";
-//    }
-    
+      
+	@Test
     public void testGetFeature10() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cite:Geometryless&version=1.0.0&service=wfs");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement()
@@ -29,7 +21,8 @@ public class GeometrylessTest extends WFSTestSupport {
         NodeList features = doc.getElementsByTagName("cite:Geometryless");
         assertEquals(3, featureMembers.getLength());
     }
-    
+   
+	@Test
     public void testGetFeatureReproject10() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
@@ -46,6 +39,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, featureMembers.getLength());
     }
     
+	@Test
     public void testGetFeature11() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cite:Geometryless&version=1.1.0&service=wfs");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement()
@@ -58,6 +52,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, features.getLength());
     }
     
+	@Test
     public void testGetFeatureReproject11() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
@@ -73,6 +68,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, features.getLength());
     }
     
+	@Test
     public void testGetFeatureReprojectPost() throws Exception {
         String request = "<wfs:GetFeature service=\"WFS\" xmlns:wfs=\"http://www.opengis.net/wfs\" " +
         		"version=\"1.0.0\"  outputFormat=\"GML2\" " +
@@ -93,8 +89,6 @@ public class GeometrylessTest extends WFSTestSupport {
         NodeList features = doc.getElementsByTagName("cite:Geometryless");
         assertEquals(3, features.getLength());
     }
-    
-    
-    
+  
     
 }

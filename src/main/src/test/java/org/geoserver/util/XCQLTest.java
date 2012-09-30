@@ -4,15 +4,18 @@
  */
 package org.geoserver.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 
-import junit.framework.TestCase;
+public class XCQLTest {
 
-public class XCQLTest extends TestCase {
-
+    @Test
     public void testToFilter() throws Exception {
         String filter = "IN('foo','bar')";
         try {
@@ -26,6 +29,7 @@ public class XCQLTest extends TestCase {
         assertEquals(f1, f2);
     }
 
+    @Test
     public void testToFilterFallback() throws Exception {
         String filter = "id = 2";
         

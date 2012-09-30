@@ -1,25 +1,29 @@
 package org.geoserver.wfs.response;
 
+import static junit.framework.Assert.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureIterator;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class ExcelOutputFormatTest extends WFSTestSupport {
+    @Test
     public void testExcel97OutputFormat() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel");
@@ -36,6 +40,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         testExcelOutputFormat( wb );
     }
 
+    @Test
     public void testExcel2007OutputFormat() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel2007");
@@ -103,6 +108,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         assertNull(cell);    	
     }
     
+    @Test
     public void testExcel97MultipleFeatureTypes() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel");
@@ -112,6 +118,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         testMultipleFeatureTypes( wb );        
     }
 
+    @Test
     public void testExcel2007MultipleFeatureTypes() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");

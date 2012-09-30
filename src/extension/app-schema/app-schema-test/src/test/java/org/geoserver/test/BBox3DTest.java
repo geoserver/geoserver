@@ -6,8 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
@@ -16,20 +15,10 @@ import org.w3c.dom.Document;
  * 
  * @author Niels Charlier
  */
-public class BBox3DTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        Test test = new OneTimeTestSetup(new BBox3DTest());
-        return test;
-    }
+public class BBox3DTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected BBox3DMockData createTestData() {
         return new BBox3DMockData();
     }
 
@@ -37,6 +26,7 @@ public class BBox3DTest extends AbstractAppSchemaWfsTestSupport {
      * Tests re-projection of NonFeatureTypeProxy.
      * 
      */
+    @Test
     public void testBbox1() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,0,200,200,50");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
@@ -55,8 +45,10 @@ public class BBox3DTest extends AbstractAppSchemaWfsTestSupport {
      * Tests re-projection of NonFeatureTypeProxy.
      * 
      */
-    public void testBbox2() {
+    @Test
+    public void testBbox2() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,50,200,200,200");
+        // print(doc);
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         //all features fall in to the x-y boundaries, only mf1 and mf4 fall in to the z boundaries
         assertXpathCount( 1,"//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']", doc);
@@ -75,6 +67,7 @@ public class BBox3DTest extends AbstractAppSchemaWfsTestSupport {
      * Tests re-projection of NonFeatureTypeProxy.
      * 
      */
+    @Test
     public void testBboxPost() {
     	String xml = //
             "<wfs:GetFeature " //

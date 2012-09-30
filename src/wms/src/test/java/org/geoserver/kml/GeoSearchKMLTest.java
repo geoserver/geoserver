@@ -4,16 +4,20 @@
  */
 package org.geoserver.kml;
 
+import static org.junit.Assert.*;
+
 import java.util.logging.Level;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GeoSearchKMLTest extends RegionatingTestSupport {
+    @Test
     public void testOutput() throws Exception {
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -30,6 +34,7 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     /**
      * Test that requests regionated by data actually return stuff.
      */
+    @Test
     public void testDataRegionator() throws Exception{
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -51,7 +56,8 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
      /**
       * Test that requests regionated by geometry actually return stuff.
       */
-     public void testGeometryRegionator() throws Exception{
+    @Test
+    public void testGeometryRegionator() throws Exception{
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
             "&format=" + KMLMapOutputFormat.MIME_TYPE + 
@@ -69,7 +75,8 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
      /**
       * Test that requests regionated by random criteria actually return stuff.
       */
-     public void testRandomRegionator() throws Exception{
+    @Test
+    public void testRandomRegionator() throws Exception{
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
             "&format=" + KMLMapOutputFormat.MIME_TYPE + 
@@ -88,6 +95,7 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
      * Test that when a bogus regionating strategy is requested things still work.
      * TODO: Evaluate whether an error message should be returned instead.
      */
+    @Test
     public void testBogusRegionator() throws Exception {
         Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
         final String path = 
@@ -105,6 +113,7 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     /**
      * Test whether geometries that cross tiles get put into both of them.
      */
+    @Test
     public void testBigGeometries() throws Exception {
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -126,6 +135,7 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     /**
      * Test whether specifying different regionating strategies changes the results.
      */
+    @Test
     public void testStrategyChangesStuff() throws Exception {
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -163,6 +173,7 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     /**
      * Test whether specifying different regionating strategies changes the results.
      */
+    @Test
     public void testDuplicateAttribute() throws Exception {
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 

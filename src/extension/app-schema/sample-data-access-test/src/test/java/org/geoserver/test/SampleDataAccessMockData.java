@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.data.util.IOUtils;
 import org.geotools.data.SampleDataAccess;
@@ -30,7 +31,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  * Inspired by {@link MockData}.
  */
-public class SampleDataAccessMockData implements TestData {
+public class SampleDataAccessMockData extends SystemTestData {
 
     public static final String DATASTORE_NAME = "datastore";
 
@@ -65,8 +66,6 @@ public class SampleDataAccessMockData implements TestData {
     public static final String KEY_NATIVE_ENVELOPE = "native_envelope";
 
     static final Envelope DEFAULT_ENVELOPE = new Envelope(-180, 180, -90, 90);
-
-    private File data;
 
     /** the 'featureTypes' directory, under 'data' */
     File featureTypes;
@@ -119,6 +118,11 @@ public class SampleDataAccessMockData implements TestData {
     public void setUp() throws Exception {
         setUpCatalog();
         copyTo(MockData.class.getResourceAsStream("services.xml"), "services.xml");
+    }
+
+    @Override
+    public void setUpDefault() throws Exception {
+        //do nothing
     }
 
     /**

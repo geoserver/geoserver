@@ -1,11 +1,11 @@
 package org.geoserver.csw;
 
+import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Test;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
 
@@ -13,6 +13,7 @@ import org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 
@@ -23,13 +24,7 @@ import org.w3c.dom.Document;
  */
 public class GetRecordByIdTest extends CSWTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetRecordByIdTest());
-    }
- 
+    @Test 
     public void testKVPReader() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -56,18 +51,21 @@ public class GetRecordByIdTest extends CSWTestSupport {
         assertEquals("REC-12", dr.getId().get(2).toString());
     }
 
+    @Test 
     public void testXMLReader() throws Exception {
         CSWXmlReader reader = new CSWXmlReader("GetRecordById", "2.0.2", new CSWConfiguration());
         GetRecordByIdType dr = (GetRecordByIdType)  reader.read(null, getResourceAsReader("GetRecordById.xml"), (Map) null);
         assertGetRecordByIdValid(dr);
     }
 
+    @Test 
     public void testGetMissingId() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById");
         checkOws10Exception(dom, ServiceException.MISSING_PARAMETER_VALUE, "id");
     }
 
     
+    @Test 
     public void testGetSingle() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         // print(dom);
@@ -84,6 +82,7 @@ public class GetRecordByIdTest extends CSWTestSupport {
         assertXpathEvaluatesTo("GR-22", "//csw:SummaryRecord/dct:spatial", dom);
     }
     
+    @Test 
     public void testGetMultiple() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f,urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd");
         // print(dom);
@@ -97,6 +96,7 @@ public class GetRecordByIdTest extends CSWTestSupport {
         assertXpathEvaluatesTo("Proin sit amet justo. In justo. Aenean adipiscing nulla id tellus.", "//csw:SummaryRecord[dc:identifier='urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd']/dct:abstract", dom);       
     }
     
+    @Test 
     public void testGetNothing() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=REC-1,REC-2");
         // print(dom);
@@ -106,6 +106,7 @@ public class GetRecordByIdTest extends CSWTestSupport {
         assertXpathEvaluatesTo("0", "count(//csw:SummaryRecord)", dom);       
     }
     
+    @Test 
     public void testGetFull() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=full&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         // print(dom);
@@ -121,6 +122,7 @@ public class GetRecordByIdTest extends CSWTestSupport {
         assertXpathEvaluatesTo("GR-22", "//csw:Record/dct:spatial", dom);
     }
     
+    @Test 
     public void testGetBrief() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=brief&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         // print(dom);

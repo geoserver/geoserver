@@ -1,16 +1,20 @@
 package org.geoserver.wfs.kvp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URLDecoder;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Id;
 import org.opengis.filter.PropertyIsEqualTo;
 
-public class Filter_1_0_0_KvpParserTest extends TestCase {
+public class Filter_1_0_0_KvpParserTest {
 
+	@Test
     public void test() throws Exception {
         String filter = "%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net"
                 + "%2Fogc%22+xmlns%3Acdf%3D%22http%3A%2F%2Fwww.opengis.net%2Fcite%2Fdata%22"
@@ -28,6 +32,7 @@ public class Filter_1_0_0_KvpParserTest extends TestCase {
         assertTrue(f instanceof PropertyIsEqualTo);
     }
 
+	@Test
     public void testMultiFilter() throws Exception {
         String filter = "(%3CFilter%20xmlns=%22http://www.opengis.net/ogc%22%3E"
                 + "%3CFeatureId%20fid=%22states.3%22/%3E%3C/Filter%3E)"
@@ -50,6 +55,7 @@ public class Filter_1_0_0_KvpParserTest extends TestCase {
         assertEquals("tiger_roads.3", fid);
     }
 
+	@Test
     public void testEmptyAndNonEmptyFilter() throws Exception {
         String param = "()(%3CFilter%20xmlns=%22http://www.opengis.net/ogc"
                 + "%22%3E%3CFeatureId%20fid=%22roads.3%22/%3E%3C/Filter%3E)";

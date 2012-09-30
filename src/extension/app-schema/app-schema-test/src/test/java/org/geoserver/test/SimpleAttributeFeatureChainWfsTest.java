@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -15,23 +15,17 @@ import org.w3c.dom.Document;
  * 
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
-public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SimpleAttributeFeatureChainWfsTest());
-    }
+public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected SimpleAttributeFeatureChainMockData createTestData() {
         return new SimpleAttributeFeatureChainMockData();
     }
 
     /**
      * Test that feature chaining for gml:name works.
      */
+    @Test
     public void testGetFeature() {
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature";
         Document doc = getAsDOM(path);
@@ -107,6 +101,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaWfsTest
     /**
      * Test reprojecting with feature chained geometry.
      */
+    @Test
     public void testReprojecting() {
         String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&srsName=EPSG:4326";
         Document doc = getAsDOM(path);
@@ -183,6 +178,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaWfsTest
     /**
      * Test that filtering feature chained values works.
      */
+    @Test
     public void testAttributeFilter() {
         // filter by name
         String xml = //
@@ -287,6 +283,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaWfsTest
     /**
      * Test filtering client properties.
      */
+    @Test
     public void testClientPropertiesFilter() {
         // filter by codespace coming from parent table
         String xml = //

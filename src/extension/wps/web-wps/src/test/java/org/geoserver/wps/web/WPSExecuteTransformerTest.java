@@ -1,5 +1,7 @@
 package org.geoserver.wps.web;
 
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
@@ -12,28 +14,27 @@ import java.util.Map;
 
 import javax.xml.transform.dom.DOMSource;
 
-import junit.framework.TestCase;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.easymock.classextension.EasyMock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geoserver.wps.web.InputParameterValues.ParameterValue;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.feature.NameImpl;
 import org.geotools.xml.Parser;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
-public class WPSExecuteTransformerTest extends TestCase {
+public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUpInternal() throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
@@ -47,6 +48,7 @@ public class WPSExecuteTransformerTest extends TestCase {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
 
+    @Test
     public void testSingleProcess() throws Exception {
         ExecuteRequest executeBuffer = getExecuteBuffer();
 
@@ -91,6 +93,7 @@ public class WPSExecuteTransformerTest extends TestCase {
         assertXMLEqual(control, test);
     }
     
+    @Test
     public void testSubprocess() throws Exception {
         Name areaName = new NameImpl("JTS", "area");
         
@@ -197,6 +200,7 @@ public class WPSExecuteTransformerTest extends TestCase {
         }
     }
 
+    @Test
     public void testIncludeNamespaceMapping() throws Exception {
         Name centroidName = new NameImpl("gs", "Centroid");
         InputParameterValues inputValues = new InputParameterValues(centroidName, "features");

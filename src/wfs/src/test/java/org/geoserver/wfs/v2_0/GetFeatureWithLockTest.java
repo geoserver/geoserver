@@ -4,28 +4,25 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.*;
+
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GetFeatureWithLockTest extends WFS20TestSupport {
-    
-//    /**
-//     * This is a READ ONLY TEST so we can use one time setup
-//     */
-//    public static Test suite() {
-//        return new OneTimeTestSetup(new GetFeatureWithLockTest());
-//    }
-//    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void setUpInternal(SystemTestData data) throws Exception {
         getServiceDescriptor20().getOperations().add( "ReleaseLock");
     }
 
+    @Test
     public void testPOST() throws Exception {
         String xml = "<wfs:GetFeatureWithLock service='WFS' version='2.0.0' " +
             "handle='GetFeatureWithLock-tc1' expiry='5' resultType='results' " + 
@@ -38,6 +35,8 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         assertNotNull( dom.getDocumentElement().getAttribute("lockId") );
     }
     
+
+    @Test
     public void testUpdateLockedFeatureWithLockId() throws Exception {
         // get feature
         String xml = 
@@ -93,6 +92,9 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         
         XMLAssert.assertXpathExists("//wfs:UpdateResults//fes:ResourceId[@rid = '" + fid + "']", dom);
     }
+    
+
+    @Test
     public void testUpdateLockedFeatureWithoutLockId() throws Exception {
 
         // get feature
@@ -146,12 +148,14 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         dom = postAsDOM("wfs", xml);
         
         // release the lock
-        get("wfs?request=ReleaseLock&lockId=" + lockId);
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
 
         assertEquals("ows:ExceptionReport", dom.getDocumentElement() .getNodeName());
         XMLAssert.assertXpathExists("//ows:Exception[@exceptionCode = 'MissingParameterValue']", dom);
     }
 
+
+    @Test
     public void testGetFeatureWithLockReleaseActionSome() throws Exception {
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
                 + "  version=\"2.0.0\"" + "  expiry=\"10\""
@@ -219,7 +223,7 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         dom = postAsDOM("wfs", xml);
 
         // release locks
-        get("wfs?request=ReleaseLock&lockId=" + lockId);
+        get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
 
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "//wfs:totalUpdated/text()", dom);
@@ -292,13 +296,15 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         dom = postAsDOM("cdf/wfs", xml);
         
         // release locks
-        get("cdf/wfs?request=ReleaseLock&lockId=" + lockId);
+        get("cdf/wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
         
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "//wfs:totalUpdated/text()", dom);
         XMLAssert.assertXpathExists("//wfs:UpdateResults//fes:ResourceId[@rid = '" + fid2 + "']", dom);
     }
     
+
+    @Test
     public void testLayerQualified() throws Exception {
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
         + "  version=\"2.0.0\"" + "  expiry=\"10\""
@@ -369,7 +375,7 @@ public class GetFeatureWithLockTest extends WFS20TestSupport {
         dom = postAsDOM("cdf/Locks/wfs", xml);
         
         // release locks
-        get("cdf/Locks/wfs?request=ReleaseLock&lockId=" + lockId);
+        get("cdf/Locks/wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
         
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "//wfs:totalUpdated/text()", dom);

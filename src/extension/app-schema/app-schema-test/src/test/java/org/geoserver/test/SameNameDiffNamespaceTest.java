@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * Tests whether two 'name' properties with different namespace are properly encoded
@@ -15,25 +15,17 @@ import junit.framework.Test;
  * @author Niels Charlier, Curtin University of Technology
  * 
  */
-public class SameNameDiffNamespaceTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SameNameDiffNamespaceTest());
-    }
+public class SameNameDiffNamespaceTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected SameNameDiffNamespaceMockData createTestData() {
         return new SameNameDiffNamespaceMockData();
     }
        
     /**
      * Test GetFeature with two 'name' properties with different namespace.
      */
+    @Test
     public void testSameNameDiffNamespace3() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));

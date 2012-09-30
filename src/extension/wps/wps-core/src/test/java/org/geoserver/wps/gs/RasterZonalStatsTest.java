@@ -2,7 +2,6 @@ package org.geoserver.wps.gs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,10 @@ import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class RasterZonalStatsTest extends WPSTestSupport {
@@ -24,36 +26,29 @@ public class RasterZonalStatsTest extends WPSTestSupport {
 
     // put everything in the SF namespace because the GML encoder always applies the "feature" prefix to
     // the output GML, so we need all tests to generate GML in the same namespace
-    public static QName TASMANIA_BM_ZONES = new QName(MockData.SF_URI, "BmZones",
-            MockData.SF_PREFIX);
+    public static QName TASMANIA_BM_ZONES = new QName(MockData.SF_URI, "BmZones", MockData.SF_PREFIX);
 
     @Override
-    protected void setUpInternal() throws Exception {
-        // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
-        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("feature", "http://cite.opengeospatial.org/gmlsf");
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    }
-
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
-        dataDirectory.addPropertiesType(RESTRICTED,
-                getClass().getResource("restricted.properties"), Collections.singletonMap(
-                        MockData.KEY_SRS_NUMBER, "EPSG:26713"));
-        dataDirectory.addPropertiesType(TASMANIA_BM_ZONES, getClass().getResource(
-                "tazdem_zones.properties"), Collections.singletonMap(MockData.KEY_SRS_NUMBER,
-                "EPSG:26713"));
-        dataDirectory.addCoverage(DEM, getClass().getResource("sfdem.tiff"), MockData.TIFF, null);
+        // add extra data used by this test
+        addWcs11Coverages(testData);
+        
+        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        props.put(LayerProperty.SRS, 26713);
+        
+        testData.addRasterLayer(DEM, "sfdem.tiff", ".tiff", props, getClass(), getCatalog());
+        testData.addVectorLayer(RESTRICTED, props, "restricted.properties", getClass(), getCatalog());
+        testData.addVectorLayer(TASMANIA_BM_ZONES, props, "tazdem_zones.properties", getClass(), getCatalog());
     }
     
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("feature", "http://cite.opengeospatial.org/gmlsf");
+    }
+    
+    @Test
     public void testStatisticsTazDem() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -118,6 +113,7 @@ public class RasterZonalStatsTest extends WPSTestSupport {
                 "//feature:BmZones[feature:z_cat=4]/feature:stddev", dom);
     }
 
+    @Test
     public void testStatisticsSfDem() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -170,7 +166,5 @@ public class RasterZonalStatsTest extends WPSTestSupport {
         assertXpathEvaluatesTo("93.61445950603424",
                 "//feature:restricted[feature:z_cat=3]/feature:stddev", dom);
     }
-
-    
 
 }

@@ -1,18 +1,23 @@
 package org.geoserver.web.data.layergroup;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 
 public class LayerGroupNewPageTest extends LayerGroupBaseTest {
-    
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+
+    @Before
+    public void doLogin() {
         login();
     }
 
+    @Test
     public void testMissingName() {
         LayerGroupNewPage page = new LayerGroupNewPage();
         // print(page, false, false);
@@ -27,6 +32,7 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
         tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
     }
     
+    @Test
     public void testDuplicateName() {
         LayerGroupNewPage page = new LayerGroupNewPage();
         // print(page, false, false);
@@ -51,6 +57,7 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
             .endsWith("Layer group named 'lakes' already exists"));
     }
     
+    @Test
     public void testNewName() {
         LayerGroupNewPage page = new LayerGroupNewPage();
         // print(page, false, false);

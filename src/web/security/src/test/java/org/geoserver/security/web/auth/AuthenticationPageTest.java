@@ -8,13 +8,22 @@ import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.geoserver.security.GeoServerSecurityFilterChain.*;
+import static org.junit.Assert.*;
 
 public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
 
     AuthenticationPage page;
 
+    @Before
+    public void init() throws Exception {
+        deactivateRORoleService();
+    }
+
+    @Test
     public void testSetProvider() throws Exception {
         initializeForXML();
         createUserPasswordAuthProvider("default2", "default");
@@ -64,6 +73,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         return false;
     }
 
+    @Test
     public void testSetFilter() throws Exception {
         initializeForXML();
         activateRORoleService();

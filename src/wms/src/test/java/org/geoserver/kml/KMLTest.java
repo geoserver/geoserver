@@ -4,16 +4,19 @@
  */
 package org.geoserver.kml;
 
-import java.net.URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
+import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -23,17 +26,6 @@ public class KMLTest extends WMSTestSupport {
         
     private static final QName STORM_OBS = new QName(MockData.CITE_URI, "storm_obs", MockData.CITE_PREFIX);
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new KMLTest());
-    }
-    
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-    }
     
     @Override
     protected String getLogConfiguration() {
@@ -41,14 +33,17 @@ public class KMLTest extends WMSTestSupport {
     }
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("notthere", KMLTest.class.getResource("notthere.sld"));
-        dataDirectory.addStyle("scaleRange", KMLTest.class.getResource("scaleRange.sld"));
-        URL soProperty = KMLTest.class.getResource("storm_obs.properties");
-        dataDirectory.addPropertiesType(STORM_OBS, soProperty, Collections.EMPTY_MAP);
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addStyle("notthere","notthere.sld",getClass(),catalog);
+        testData.addStyle("scaleRange","scaleRange.sld",getClass(),catalog);
+        testData.addVectorLayer(STORM_OBS,Collections.EMPTY_MAP, 
+                "storm_obs.properties",getClass(),catalog);
     }
     
+    
+    @Test
     public void testVector() throws Exception {
         Document doc = getAsDOM(
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -63,6 +58,7 @@ public class KMLTest extends WMSTestSupport {
         );
     }
     
+    @Test
     public void testVectorScaleRange() throws Exception {
         Document doc = getAsDOM(
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -76,6 +72,7 @@ public class KMLTest extends WMSTestSupport {
         );
     }
    
+    @Test
     public void testVectorWithFeatureId() throws Exception {
         Document doc = getAsDOM(
             "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -89,6 +86,7 @@ public class KMLTest extends WMSTestSupport {
         assertEquals( 1, doc.getElementsByTagName("Placemark").getLength());
     }
     
+    @Test
     public void testVectorWithRemoteLayer() throws Exception {
         if(!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER))
             return;
@@ -109,6 +107,7 @@ public class KMLTest extends WMSTestSupport {
     }
    
     // see GEOS-1948
+    @Test
     public void testMissingGraphic() throws Exception {
         Document doc = getAsDOM(
                 "wms?request=getmap&service=wms&version=1.1.1" + 
@@ -120,6 +119,7 @@ public class KMLTest extends WMSTestSupport {
         assertEquals( 1, doc.getElementsByTagName("Placemark").getLength());
     }    
     
+    @Test
     public void testContentDisposition() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
                 "wms?request=getmap&service=wms&version=1.1.1"
@@ -131,6 +131,7 @@ public class KMLTest extends WMSTestSupport {
         assertEquals("attachment; filename=cite-BasicPolygons.kmz",resp.getHeader("Content-Disposition"));
     }
     
+    @Test
     public void testEncodeTime() throws Exception {
         setupTemplate(STORM_OBS, "time.ftl", "${obs_datetime.value}");
         // AA: for the life of me I cannot make xpath work against this output, not sure why, so going
@@ -141,6 +142,7 @@ public class KMLTest extends WMSTestSupport {
         assertTrue(doc.contains("<when>1994-07-0"));
     }
 
+    @Test
     public void testKmltitleFormatOption() throws Exception {
         final String kmlRequest = "wms?request=getmap&service=wms&version=1.1.1" + 
             "&format=" + KMLMapOutputFormat.MIME_TYPE + 
@@ -154,6 +156,7 @@ public class KMLTest extends WMSTestSupport {
         assertEquals("myCustomLayerTitle", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getTextContent());
     }    
 
+    @Test
     public void testKmltitleFormatOptionWithMultipleLayers() throws Exception {
         final String kmlRequest = "wms?request=getmap&service=wms&version=1.1.1" + 
         "&format=" + KMLMapOutputFormat.MIME_TYPE + 

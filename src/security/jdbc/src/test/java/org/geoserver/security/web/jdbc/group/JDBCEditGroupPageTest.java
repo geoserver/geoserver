@@ -3,21 +3,27 @@ package org.geoserver.security.web.jdbc.group;
 import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.group.EditGroupPageTest;
+import org.junit.Test;
 
 public class JDBCEditGroupPageTest extends EditGroupPageTest {
 
-    public void testFill() throws Exception{
+    @Override
+    protected void doInitialize() throws Exception {
         initializeForJDBC();
+    }
+
+    @Test
+    public void testFill() throws Exception{
         doTestFill();
     }
     
+    @Test
     public void testReadOnlyUserGroupService() throws Exception {
-        initializeForJDBC();
         doTestReadOnlyUserGroupService();
     }
     
+    @Test
     public void testReadOnlyRoleService() throws Exception {
-        initializeForJDBC();
         doTestReadOnlyRoleService();
     }
 

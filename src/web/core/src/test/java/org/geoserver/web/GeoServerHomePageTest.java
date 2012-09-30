@@ -1,22 +1,23 @@
 package org.geoserver.web;
 
+import static org.junit.Assert.*;
+
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
+import org.junit.Test;
 
 public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
 
     @Override
-    protected String[] getSpringContextLocations() {
-        String[] defaultLocations = super.getSpringContextLocations();
-        String[] extraLocations = new String[defaultLocations.length + 1];
-        System.arraycopy(defaultLocations, 0, extraLocations, 0, defaultLocations.length);
-        extraLocations[extraLocations.length - 1] = "classpath*:/org/geoserver/web/GeoServerHomePageTestContext.xml";
-        return extraLocations;
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath*:/org/geoserver/web/GeoServerHomePageTestContext.xml");
     }
 
+    @Test
     public void testProvidedGetCapabilities() {
         tester.startPage(GeoServerHomePage.class);
 
@@ -26,6 +27,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
                         CapabilitiesHomePageLinkProvider.class)));
     }
 
+    @Test
     public void testProvidedCentralBodyContent() {
 
         tester.startPage(GeoServerHomePage.class);

@@ -4,17 +4,17 @@
  */
 package org.geoserver.filters;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.geoserver.test.GeoServerTestSupport;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
 import com.mockrunner.mock.web.MockServletContext;
 
-public class RequestWrapperTestSupport extends GeoServerTestSupport{
+public class RequestWrapperTestSupport {
 
 	protected final String[] testStrings = new String[]{
 		"Hello, this is a test",

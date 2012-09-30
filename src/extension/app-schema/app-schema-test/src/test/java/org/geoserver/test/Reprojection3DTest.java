@@ -6,7 +6,9 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -16,20 +18,10 @@ import org.w3c.dom.Document;
  * 
  * @author Niels Charlier
  */
-public class Reprojection3DTest extends AbstractAppSchemaWfsTestSupport {
-
-	/**
-	 * Read-only test so can use one-time setup.
-	 * 
-	 * @return
-	 */
-	public static Test suite() {
-		Test test = new OneTimeTestSetup(new Reprojection3DTest());
-		return test;
-	}
+public class Reprojection3DTest extends AbstractAppSchemaTestSupport {
 
 	@Override
-	protected NamespaceTestData buildTestData() {
+	protected BBox3DMockData createTestData() {
 		return new BBox3DMockData();
 	}
 
@@ -37,7 +29,8 @@ public class Reprojection3DTest extends AbstractAppSchemaWfsTestSupport {
 	 * Tests re-projection of NonFeatureTypeProxy.
 	 * 
 	 */
-	public void testReprojection() {
+    @Test
+    public void testReprojection() {
 		Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4891");
 		LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n"
 				+ prettyString(doc));

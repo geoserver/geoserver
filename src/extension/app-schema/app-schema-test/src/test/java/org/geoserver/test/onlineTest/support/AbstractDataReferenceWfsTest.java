@@ -9,10 +9,14 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.sql.DataSource;
-import junit.framework.TestResult;
-import org.geoserver.test.AbstractAppSchemaWfsTestSupport;
+
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.NamespaceTestData;
+import org.junit.Assume;
+import org.junit.Before;
 
 /**
  * Base class that provides the Wfs test support framework and perform checks on the fixture and the
@@ -21,7 +25,7 @@ import org.geoserver.test.NamespaceTestData;
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
  * 
  */
-public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaWfsTestSupport {
+public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTestSupport {
     protected AbstractReferenceDataSetup setup = null;
 
     protected Properties fixture = null;
@@ -31,6 +35,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaWfsT
     public AbstractDataReferenceWfsTest() throws Exception {
         setup = this.getReferenceDataSetup();
         available = this.checkAvailable();
+        Assume.assumeTrue(available);
         if (available)
             initialiseTest();
     }
@@ -53,28 +58,19 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaWfsT
      * looking up the file and reporting it not found to the user.
      */
     protected static Map<String, Boolean> found = new HashMap<String, Boolean>();
-
+    
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        if (available) {
-            setup.setUp();
-        }
-        super.oneTimeSetUp();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        setup.setUp();
+        
+        super.setUpTestData(testData);
     }
-
+    
     public abstract AbstractReferenceDataSetup getReferenceDataSetup() throws Exception;
 
     public void connect() throws Exception {
-
         setup.initializeDatabase();
         setup.setUpData();
-    }
-
-    @Override
-    public void run(TestResult result) {
-        if (available) {
-            super.run(result);
-        }
     }
 
     /**
@@ -152,8 +148,5 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaWfsT
     protected String getFixtureId() {
         return setup.getDatabaseID();
     }
-
-    @Override
-    protected abstract NamespaceTestData buildTestData();
 
 }

@@ -4,10 +4,12 @@ import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public abstract class AbstractProcessFilterTest extends WPSTestSupport {
 
+    @Test
     public void testCapabilitesFiltering() throws Exception {
         Document d = getAsDOM("wps?service=wps&request=getcapabilities");
         // print(d);
@@ -16,6 +18,7 @@ public abstract class AbstractProcessFilterTest extends WPSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wps:Process[ows:Identifier = 'JTS:buffer'])", d);
     }
     
+    @Test
     public void testDescribeProcessFiltering() throws Exception {
         // this one we can describe
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
@@ -32,6 +35,7 @@ public abstract class AbstractProcessFilterTest extends WPSTestSupport {
         assertXpathEvaluatesTo("No such process: gs:Unique", "//ows:ExceptionText", d);
     }
     
+    @Test
     public void testExecuteFilteringAllow() throws Exception {
         String xml =  
                 "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
@@ -78,6 +82,7 @@ public abstract class AbstractProcessFilterTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon", d);
     }
     
+    @Test
     public void testExecuteFilteringDeny() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"

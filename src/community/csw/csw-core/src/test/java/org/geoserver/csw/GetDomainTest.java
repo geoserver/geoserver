@@ -1,26 +1,24 @@
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Test;
 import net.opengis.cat.csw20.GetDomainType;
 
-import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.csw.kvp.GetDomainKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
-import org.geoserver.data.test.MockData;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.xlink.XLINK;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetDomainTest extends CSWTestSupport {
@@ -38,13 +36,7 @@ public class GetDomainTest extends CSWTestSupport {
         xpath.setNamespaceContext(nameSpaceContext);
     }
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetDomainTest());
-    }
-
+    @Test 
     public void testKVPParameter() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -61,6 +53,7 @@ public class GetDomainTest extends CSWTestSupport {
         assertEquals("GetRecords.resultType", gd.getParameterName());
     }
 
+    @Test 
     public void testKVPProperty() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -77,6 +70,7 @@ public class GetDomainTest extends CSWTestSupport {
         assertEquals("dc:title", gd.getPropertyName());
     }
 
+    @Test 
     public void testXMLReaderParameter() throws Exception {
         CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration());
         GetDomainType gd = (GetDomainType) reader.read(null,
@@ -86,6 +80,7 @@ public class GetDomainTest extends CSWTestSupport {
         assertEquals("GetRecords.resultType", gd.getParameterName());
     }
 
+    @Test 
     public void testXMLReaderProperty() throws Exception {
         CSWXmlReader reader = new CSWXmlReader("GetDomain", "2.0.2", new CSWConfiguration());
         GetDomainType gd = (GetDomainType) reader.read(null,
@@ -95,6 +90,7 @@ public class GetDomainTest extends CSWTestSupport {
         assertEquals("dc:title", gd.getPropertyName());
     }
 
+    @Test 
     public void testGETReaderParameter() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?service=csw&version=2.0.2&request=GetDomain&parameterName=GetRecords.resultType");
@@ -105,6 +101,7 @@ public class GetDomainTest extends CSWTestSupport {
         assertXpathEvaluatesTo("3", "count(//csw:Value)", dom);
     }
 
+    @Test 
     public void testGETReaderProperty() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title");

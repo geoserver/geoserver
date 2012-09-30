@@ -4,10 +4,14 @@
  */
 package org.geoserver.wfs;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import net.sf.json.JSONObject;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -16,21 +20,13 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
 	
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-    	super.oneTimeSetUp();
+    protected void setUpInternal(SystemTestData data) throws Exception {
     	WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
     	getGeoServer().save(wfs);
     }
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new WFSServiceExceptionTest());
-    }
-	
-
+    @Test
     public void testJsonException() throws Exception {
     	
         String path="wfs/?service=wfs" +

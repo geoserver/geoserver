@@ -3,10 +3,11 @@ package org.geoserver.wps.web;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.wps.WPSInfo;
-import org.geoserver.wps.web.WPSAdminPage;
+import org.junit.Test;
 
 public class WPSAdminPageTest extends GeoServerWicketTestSupport {
 
+    @Test
     public void test() throws Exception {
         login();
         WPSInfo wps = getGeoServerApplication().getGeoServer().getService(WPSInfo.class);

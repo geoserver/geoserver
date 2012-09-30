@@ -11,6 +11,7 @@ public class TransactionListenerTester implements TransactionListener {
     
     public void clear() {
         events.clear();
+        features.clear();
     }
 
     public void dataStoreChange(TransactionEvent event) throws WFSException {

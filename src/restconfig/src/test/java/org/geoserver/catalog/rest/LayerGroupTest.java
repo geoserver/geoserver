@@ -6,21 +6,27 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.*;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class LayerGroupTest extends CatalogRESTTestSupport {
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void revertChanges() throws Exception {
+        removeLayerGroup(null, "sfLayerGroup");
+        removeLayerGroup("sf", "foo");
+        removeLayerGroup(null, "newLayerGroup");
         
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName( "sfLayerGroup" );
@@ -31,16 +37,19 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         lg.setBounds( new ReferencedEnvelope( -180,-90,180,90, CRS.decode( "EPSG:4326") ) );
         catalog.add( lg );
     }
-    
+
+    @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/layergroups.xml");
         assertEquals( catalog.getLayerGroups().size(), dom.getElementsByTagName( "layerGroup").getLength());
     }
-    
+
+    @Test
     public void testGetAllAsHTML() throws Exception {
         getAsDOM( "/rest/layergroups.html");
     }
 
+    @Test
     public void testGetAllFromWorkspace() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/layergroups.xml" );
         assertEquals("layerGroups", dom.getDocumentElement().getNodeName());
@@ -67,6 +76,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         cat.add(lg);
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         print(get("/rest/layergroups/sfLayerGroup.xml"));
         Document dom = getAsDOM( "/rest/layergroups/sfLayerGroup.xml");
@@ -75,11 +85,13 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "2", "count(//layer)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
     }
-    
+
+    @Test
     public void testGetAsHTML() throws Exception {
         getAsDOM( "/rest/layergroups/sfLayerGroup.html");
     }
 
+    @Test
     public void testGetFromWorkspace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/sf/layergroups/foo.xml"); 
         assertEquals(404, resp.getStatusCode());
@@ -94,6 +106,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("sf", "/layerGroup/workspace/name", dom);
     }
 
+    @Test
     public void testPost() throws Exception {
         String xml = 
             "<layerGroup>" + 
@@ -127,8 +140,10 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         
         assertNotNull( lg.getBounds() );
     }
-    
+
+    @Test
     public void testPostNoStyles() throws Exception {
+        
         String xml = 
             "<layerGroup>" + 
                 "<name>newLayerGroup</name>" +
@@ -153,6 +168,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertNull(lg.getStyles().get( 1 ));
     }
 
+    @Test
     public void testPostToWorkspace() throws Exception {
         Catalog cat = getCatalog();
         assertNull(cat.getLayerGroupByName("sf", "foo"));
@@ -171,6 +187,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertNotNull(cat.getLayerGroupByName("sf", "foo"));
     }
 
+    @Test
     public void testPut() throws Exception {
         String xml = 
             "<layerGroup>" + 
@@ -192,6 +209,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals( "line", lg.getStyles().get( 1 ).getName() );
     }
 
+    @Test
     public void testPutToWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -211,6 +229,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals("line", cat.getLayerGroupByName("sf", "foo").getStyles().get(0).getName());
     }
 
+    @Test
     public void testPutToWorkspaceChangeWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -224,6 +243,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals(403, response.getStatusCode());
     }
 
+    @Test
     public void testDelete() throws Exception {
         MockHttpServletResponse response = deleteAsServletResponse( "/rest/layergroups/sfLayerGroup");
         assertEquals( 200, response.getStatusCode() );
@@ -231,6 +251,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals( 0, catalog.getLayerGroups().size() );
     }
 
+    @Test
     public void testDeleteFromWorkspace() throws Exception {
         testPostToWorkspace();
 

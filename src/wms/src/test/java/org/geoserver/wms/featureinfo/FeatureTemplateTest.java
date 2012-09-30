@@ -4,27 +4,23 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import java.util.Iterator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import junit.framework.Test;
+import java.util.Iterator;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.featureinfo.dummy.Dummy;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 
 public class FeatureTemplateTest extends WMSTestSupport {
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new FeatureTemplateTest());
-    }
-    
-
+  
+    @Test
     public void testWithDateAndBoolean() throws Exception {
 
         SimpleFeatureSource source = getFeatureSource( MockData.PRIMITIVEGEOFEATURE );
@@ -47,6 +43,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         }
     }
      
+    @Test
     public void testRawValue() throws Exception {
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         SimpleFeatureCollection fc = source.getFeatures();
@@ -66,6 +63,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         }
     }
 
+    @Test
     public void testWithNull() throws Exception {
         
         SimpleFeatureSource source = getFeatureSource( MockData.BASIC_POLYGONS );
@@ -94,6 +92,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
       
     }
     
+    @Test
     public void testAlternateLookup() throws Exception {
         
         SimpleFeatureSource source = getFeatureSource( MockData.PRIMITIVEGEOFEATURE );

@@ -4,15 +4,27 @@
  */
 package org.geoserver.platform;
 
-import static org.easymock.EasyMock.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -21,18 +33,19 @@ import org.springframework.context.ApplicationContext;
  * @author Gabriel Roldan (TOPP)
  * @version $Id$
  */
-public class GeoServerExtensionsTest extends TestCase {
+public class GeoServerExtensionsTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         System.setProperty("TEST_PROPERTY", "ABC");
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         System.setProperty("TEST_PROPERTY", "");
     }
 
+    @Test
     public void testSetApplicationContext() {
         ApplicationContext appContext1 = createMock(ApplicationContext.class);
         ApplicationContext appContext2 = createMock(ApplicationContext.class);
@@ -48,6 +61,7 @@ public class GeoServerExtensionsTest extends TestCase {
         assertEquals(0, gse.extensionsCache.size());
     }
 
+    @Test
     public void testExtensions() {
         ApplicationContext appContext = createMock(ApplicationContext.class);
         GeoServerExtensions gse = new GeoServerExtensions();
@@ -85,6 +99,7 @@ public class GeoServerExtensionsTest extends TestCase {
      * setApplicationContext(), the extensions() method shall look into it and
      * bypass the cache
      */
+    @Test
     public void testExtensionsApplicationContext() {
         ApplicationContext appContext = createMock(ApplicationContext.class);
         ApplicationContext customAppContext = createMock(ApplicationContext.class);
@@ -119,6 +134,7 @@ public class GeoServerExtensionsTest extends TestCase {
         verify(customAppContext);
     }
     
+    @Test
     public void testExtensionFilterByName() {
         ApplicationContext appContext = createNiceMock(ApplicationContext.class);
 
@@ -147,6 +163,7 @@ public class GeoServerExtensionsTest extends TestCase {
         assertSame(this, extensions.get(0));
     }
     
+    @Test
     public void testExtensionFilterByClass() {
         ApplicationContext appContext = createNiceMock(ApplicationContext.class);
 
@@ -175,6 +192,7 @@ public class GeoServerExtensionsTest extends TestCase {
         assertSame(this, extensions.get(0));
     }
 
+    @Test
     public void testBeanString() {
         ApplicationContext appContext = createMock(ApplicationContext.class);
 
@@ -196,6 +214,7 @@ public class GeoServerExtensionsTest extends TestCase {
         verify(appContext);
     }
 
+    @Test
     public void testExtensionProvider() {
         ApplicationContext appContext = createMock(ApplicationContext.class);
         GeoServerExtensions gse = new GeoServerExtensions();
@@ -236,12 +255,14 @@ public class GeoServerExtensionsTest extends TestCase {
         fail("Not yet implemented");
     }
     
+    @Test
     public void testSystemProperty() {
         // check for a property we did set up in the setUp
         assertEquals("ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", (ApplicationContext) null));
         assertEquals("ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", (ServletContext) null));
     }
     
+    @Test
     public void testWebProperty() {
         ServletContext servletContext = createMock(ServletContext.class);
         expect(servletContext.getInitParameter("TEST_PROPERTY")).andReturn("DEF").anyTimes();
@@ -251,6 +272,5 @@ public class GeoServerExtensionsTest extends TestCase {
         assertEquals("ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", servletContext));
         assertEquals("WWW", GeoServerExtensions.getProperty("WEB_PROPERTY", servletContext));
     }
-    
 
 }

@@ -3,6 +3,7 @@ package org.geoserver.wcs;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 import static org.geoserver.data.test.MockData.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +17,20 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.test.WCSTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class DescribeCoverageTest extends WCSTestSupport {
 
+    @Before
+    public void revertTasmaniaDem() throws IOException {
+        getTestData().addDefaultRasterLayer(TASMANIA_DEM, getCatalog());
+    }
+
+    @Test
     public void testDescribeAll() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&version=1.0.0");
         // print(dom);
@@ -32,7 +41,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals(count, dom.getElementsByTagName("wcs:CoverageOffering").getLength());
     }
     
-      public void testSkipMisconfigured() throws Exception {
+    @Test
+    public void testSkipMisconfigured() throws Exception {
           // enable skipping of misconfigured layers
           GeoServerInfo global = getGeoServer().getGlobal();
           global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
@@ -48,6 +58,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
           assertEquals(count - 1, dom.getElementsByTagName("wcs:CoverageOffering").getLength());
       }
 
+    @Test
     public void testDescribeUnknownCoverageKvp() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage=plop");
@@ -59,6 +70,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertTrue(element.getTextContent().contains("plop"));
     }
 
+    @Test
     public void testDescribeMissingVersion() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&coverage="
                 + getLayerId(TASMANIA_DEM));
@@ -69,6 +81,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals("version", element.getAttribute("locator"));
     }
 
+    @Test
     public void testDescribeUnknownCoverageXml() throws Exception {
         List<Exception> errors = new ArrayList<Exception>();
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + // 
@@ -88,6 +101,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertTrue(element.getTextContent().contains("plop"));
     }
     
+    @Test
     public void testMetadataLinks() throws Exception {
         
         Catalog catalog = getCatalog();
@@ -102,7 +116,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
                 + getLayerId(TASMANIA_DEM));
-        // print(dom);
+         print(dom);
         checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
         assertXpathEvaluatesTo("http://www.geoserver.org", "//wcs:metadataLink/@about", dom);
         assertXpathEvaluatesTo("FGDC", "//wcs:metadataLink/@metadataType", dom);
@@ -110,6 +124,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", "//wcs:metadataLink/@xlink:href", dom);
     }
 
+    @Test
     public void testDescribeDemCoverageKvp() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -119,6 +134,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         checkDemCoverageDescription(dom);
     }
 
+    @Test
     public void testDescribeDemCoverageXml() throws Exception {
         List<Exception> errors = new ArrayList<Exception>();
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + // 
@@ -170,6 +186,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals(1, dom.getElementsByTagName("wcs:AxisDescription").getLength());
     }
 
+    @Test
     public void testDescribeRotatedCoverage() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -212,6 +229,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals(1, dom.getElementsByTagName("wcs:AxisDescription").getLength());
     }
 
+    @Test
     public void testDescribeImageCoverage() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -257,6 +275,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals(1, dom.getElementsByTagName("wcs:interval").getLength());
     }
     
+    @Test
     public void testWorkspaceQualified() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + // 
                 "<wcs:DescribeCoverage service=\"WCS\" " + //
@@ -273,6 +292,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals("wcs:CoverageDescription", dom.getDocumentElement().getNodeName());
     }
     
+    @Test
     public void testLayerQualified() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + // 
                 "<wcs:DescribeCoverage service=\"WCS\" " + //
@@ -289,6 +309,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertEquals("wcs:CoverageDescription", dom.getDocumentElement().getNodeName());
     }
     
+    @Test
     public void testTimeCoverageList() throws Exception {
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
         
@@ -309,6 +330,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:temporalDomain/gml:timePosition[2]", dom);
     }
     
+    @Test
     public void testTimeCoverageContinousInterval() throws Exception {
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.CONTINUOUS_INTERVAL, null);
         
@@ -329,6 +351,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod/wcs:endPosition", dom);
     }
     
+    @Test
     public void testTimeCoverageDiscreteInterval() throws Exception {
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.DISCRETE_INTERVAL, new Double(1000 * 60 * 60));
         
@@ -350,6 +373,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("PT1H", "//wcs:temporalDomain/wcs:timePeriod/wcs:timeResolution", dom);
     }
     
+    @Test
     public void testElevationList() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         

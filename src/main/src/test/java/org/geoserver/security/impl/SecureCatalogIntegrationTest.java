@@ -1,14 +1,20 @@
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.FeatureCollection;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opengis.filter.Filter;
 
 /**
@@ -18,18 +24,20 @@ import org.opengis.filter.Filter;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-public class SecureCatalogIntegrationTest extends GeoServerTestSupport {
+@Category(SystemTest.class)
+public class SecureCatalogIntegrationTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-        security.mkdir();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+
+        File security = new File(testData.getDataDirectoryRoot(), "security");
         File layers = new File(security, "layers.properties");
         IOUtils.copy(SecureCatalogIntegrationTest.class
                 .getResourceAsStream("functional.properties"), layers);
     }
 
+    @Test
     public void testFullAccess() throws Exception {
         FeatureSource source = getFeatureSource(MockData.LINES);
         FeatureCollection fc = source.getFeatures();
@@ -37,6 +45,7 @@ public class SecureCatalogIntegrationTest extends GeoServerTestSupport {
         store.removeFeatures(Filter.INCLUDE);
     }
 
+    @Test
     public void testCannotRead() throws Exception {
         try {
             getFeatureSource(MockData.BUILDINGS);
@@ -47,6 +56,7 @@ public class SecureCatalogIntegrationTest extends GeoServerTestSupport {
         }
     }
 
+    @Test
     public void testCannotWrite() throws Exception {
         FeatureStore fs = (FeatureStore) getFeatureSource(MockData.DELETES);
                 

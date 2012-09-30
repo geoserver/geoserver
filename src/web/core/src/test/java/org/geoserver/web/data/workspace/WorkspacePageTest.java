@@ -1,20 +1,24 @@
 package org.geoserver.web.data.workspace;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class WorkspacePageTest extends GeoServerWicketTestSupport {
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void init() {
         login();
         tester.startPage(WorkspacePage.class);
         
         // print(tester.getLastRenderedPage(), true, true);
     }
     
+    @Test
     public void testLoad() {
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();

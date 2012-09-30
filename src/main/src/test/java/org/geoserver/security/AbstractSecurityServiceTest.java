@@ -5,13 +5,16 @@
 
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
+
 import org.geoserver.data.test.LiveData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -26,6 +29,8 @@ import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.test.GeoServerAbstractTestSupport;
+import org.geoserver.test.GeoServerBaseTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
 
 
@@ -35,7 +40,12 @@ import org.geotools.data.DataUtilities;
  * @author christian
  *
  */
-public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestSupport {
+public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        //explictily do nothing, we want no layers
+    }
 
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
         return null;
@@ -75,7 +85,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
                         
         role_auth.getProperties().put("employee","");
         role_auth.getProperties().put("bbox","lookupAtRuntime");
-                        
+
         roleStore.addRole(role_admin);
         roleStore.addRole(role_auth);
         roleStore.addRole(role_wfs);
@@ -503,18 +513,17 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
     }
     public void removeValues(GeoServerUserGroupStore userGroupStore) throws IOException {
         GeoServerUser user2 = userGroupStore.getUserByUsername("user2");
-        userGroupStore.removeUser(user2);
+        if (user2 != null) {
+            userGroupStore.removeUser(user2);
+        }
         GeoServerUserGroup disabledGroup = userGroupStore.getGroupByGroupname("disabledgroup");
-        userGroupStore.removeGroup(disabledGroup);
-    }
-    
-    @Override
-    protected TestData buildTestData() throws Exception {
-        return new LiveData(unpackTestDataDir());
+        if (disabledGroup != null) {
+            userGroupStore.removeGroup(disabledGroup);
+        }
     }
 
     public static File unpackTestDataDir() throws Exception {
-        URL url = AbstractSecurityServiceTest.class.getResource("/datadir");
+        URL url = AbstractSecurityServiceTest.class.getResource("/data_dir/default");
         if (!"file".equals(url.getProtocol())) {
             //means a dependency is using this directory via a jarfile, copy out manually
             File dataDir = File.createTempFile("data", "live", new File("./target"));
@@ -523,7 +532,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
 
             //TODO: instead of harcoding files, dynamically read all subentries from the jar
             // and copy them out
-            FileUtils.copyURLToFile(AbstractSecurityServiceTest.class.getResource("/datadir/dummy.txt"), 
+            FileUtils.copyURLToFile(AbstractSecurityServiceTest.class.getResource("/data_dir/default/dummy.txt"), 
                 new File(dataDir, "dummy.txt"));
             return dataDir;
         }

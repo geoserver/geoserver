@@ -1,17 +1,21 @@
 package org.geoserver.logging;
 
+import static org.junit.Assert.*;
 import junit.framework.TestCase;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geotools.data.DataUtilities;
+import org.junit.Before;
+import org.junit.Test;
 
-public class LegacyLoggingImporterTest extends TestCase {
+public class LegacyLoggingImporterTest {
 
     GeoServer gs;
     LegacyLoggingImporter importer;
     
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         gs = new GeoServerImpl();
         
         importer = new LegacyLoggingImporter();
@@ -19,6 +23,7 @@ public class LegacyLoggingImporterTest extends TestCase {
         		DataUtilities.urlToFile(getClass().getResource("services.xml")).getParentFile());
     }
     
+    @Test
     public void test() throws Exception {
         assertEquals( "DEFAULT_LOGGING.properties", importer.getConfigFileName() );
         assertFalse( importer.getSuppressStdOutLogging() );

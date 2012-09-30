@@ -1,26 +1,24 @@
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.servlet.ServletResponse;
-
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
-import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,14 +26,8 @@ import org.w3c.dom.NodeList;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetCapabilitiesTest extends WFS20TestSupport {
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCapabilitiesTest());
-    }
-    
+       
+    @Test
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
         
@@ -47,6 +39,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertTrue(xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength() > 0);
     }
     
+    @Test
     public void testPost() throws Exception {
         String xml = "<GetCapabilities service=\"WFS\" "
                 + " xmlns=\"http://www.opengis.net/wfs/2.0\" "
@@ -60,6 +53,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals("2.0.0", doc.getDocumentElement().getAttribute("version"));
     }
     
+    @Test
     public void testNamespaceFilter() throws Exception {
         // filter on an existing namespace
         Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities&namespace=sf");
@@ -76,6 +70,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals(0, xpath.getMatchingNodes("//wfs:FeatureType", doc).getLength());
     }
 
+    @Test
     public void testPostNoSchemaLocation() throws Exception {
         String xml = "<GetCapabilities service=\"WFS\" version='2.0.0' "
                 + " xmlns=\"http://www.opengis.net/wfs/2.0\" "
@@ -87,6 +82,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals("2.0.0", doc.getDocumentElement().getAttribute("version"));
     }
     
+    @Test
     public void testOutputFormats() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
         
@@ -114,6 +110,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals( s1, s2 );
     }
 
+    @Test
     public void testSupportedSpatialOperators() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
 
@@ -136,6 +133,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertTrue(ops.containsAll(expectedSpatialOperators));
     }
 
+    @Test
     public void testFunctionArgCount() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
         
@@ -145,6 +143,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//fes:Function[@name=\"abs\"]/fes:Arguments/fes:Argument)", doc);
     }
 
+    @Test
     public void testTypeNameCount() throws Exception {
         // filter on an existing namespace
         Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
@@ -166,6 +165,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                 "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType", doc).getLength());
     }
 
+    @Test
     public void testTypeNames() throws Exception {
         // filter on an existing namespace
         Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
@@ -186,6 +186,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         }
     }
 
+    @Test
     public void testOperationsMetadata() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
         assertEquals("WFS_Capabilities", doc.getDocumentElement().getLocalName());
@@ -202,6 +203,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//ows:Operation[@name='DropStoredQuery']", doc);
     }
 
+    @Test
     public void testValidCapabilitiesDocument() throws Exception {
         InputStream in = get("wfs?service=WFS&version=2.0.0&request=getCapabilities");
         Parser p = new Parser(new WFSConfiguration());
@@ -214,6 +216,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertTrue(p.getValidationErrors().isEmpty());
     }
     
+    @Test
     public void testLayerQualified() throws Exception {
      // filter on an existing namespace
         Document doc = getAsDOM("sf/PrimitiveGeoFeature/wfs?service=WFS&version=2.0.0&request=getCapabilities");
@@ -232,6 +235,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         //TODO: test with a non existing workspace
     }
     
+    @Test
     public void testSOAP() throws Exception {
         String xml = 
            "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> " + 
@@ -254,18 +258,21 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertEquals(1, dom.getElementsByTagName("wfs:WFS_Capabilities").getLength());
     }
 
+    @Test
     public void testAcceptVersions11() throws Exception {
         Document dom = getAsDOM("wfs?request=GetCapabilities&acceptversions=1.1.0,1.0.0");
         assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
         assertEquals("1.1.0", dom.getDocumentElement().getAttribute("version"));
     }
 
+    @Test
     public void testAcceptVersions11WithVersion() throws Exception {
         Document dom = getAsDOM("wfs?request=GetCapabilities&version=2.0.0&acceptversions=1.1.0,1.0.0");
         assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
         assertEquals("1.1.0", dom.getDocumentElement().getAttribute("version"));   
     }
 
+    @Test
     public void testAcceptFormats() throws Exception {
         ServletResponse response = getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0");
         assertEquals("application/xml", response.getContentType());

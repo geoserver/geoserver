@@ -1,9 +1,16 @@
 package org.geoserver.wms.wms_1_3;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
+
 import javax.xml.namespace.QName;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -139,14 +146,18 @@ public class GetMapIntegrationTest extends WMSTestSupport {
          "</StyledLayerDescriptor>";
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("Population",
-                org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class.getResource("Population.sld"));
-        dataDirectory.addPropertiesType(new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class.getResource("states.properties"), null);
-    }
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addStyle("Population","Population.sld",
+                org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class,catalog);
+        testData.addVectorLayer(new QName(MockData.SF_URI, "states", MockData.SF_PREFIX), 
+                Collections.EMPTY_MAP,"states.properties",org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class,catalog);
+    } 
+     
+
     
+    @Test
     public void testSldBody10() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -155,6 +166,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
     
+    @Test
     public void testSldBody10Validate() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -175,6 +187,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
+    @Test
     public void testSldBody11() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -183,6 +196,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
     
+    @Test
     public void testSldBody11Validate() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -197,6 +211,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
+    @Test 
     public void testSldBody11NoVersion() throws Exception {
         //will fail beacuse sld version == 1.0
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="

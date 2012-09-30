@@ -1,26 +1,30 @@
 package org.geoserver.sfs;
 
+import static org.junit.Assert.assertEquals;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 import org.restlet.data.MediaType;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class DescribeTest extends GeoServerTestSupport {
+public class DescribeTest extends GeoServerSystemTestSupport {
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpWcs11RasterLayers();
     }
-    
+
     protected String root() {
         return "rest/sfs/";
     }
-    
+
+    @Test
     public void testDescribePrimitiveGeoFeature() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "describe/sf:PrimitiveGeoFeature");
         assertEquals(200, response.getErrorCode());
@@ -53,13 +57,15 @@ public class DescribeTest extends GeoServerTestSupport {
         assertEquals("boolean", description.get("booleanProperty"));
     }
     
+    @Test
     public void testDescribeMissingLayer() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "describe/abc:notThere");
         assertEquals(404, response.getStatusCode());
         assertEquals(MediaType.TEXT_PLAIN.getName(), response.getContentType());
         assertEquals("No such layer: abc:notThere", response.getOutputStreamContent());
     }
-    
+
+    @Test
     public void testDescribeCoverage() throws Exception {
         final String tasmania = getLayerId(MockData.TASMANIA_BM);
         MockHttpServletResponse response = getAsServletResponse(root() + "describe/" + tasmania);

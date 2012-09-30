@@ -3,14 +3,20 @@ package org.geoserver.security.web.jdbc.role;
 import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.role.NewRolePageTest;
+import org.junit.Test;
 
 public class JDBCNewRolePageTest extends NewRolePageTest {
 
+    @Test
     public void testFill() throws Exception{
-        initializeForJDBC();
         doTestFill();
     }
 
+    @Override
+    protected void doInitialize() throws Exception {
+        initializeForJDBC();
+    }
+    
     void initializeForJDBC() throws Exception {
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }

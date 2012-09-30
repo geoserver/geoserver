@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
@@ -11,6 +12,8 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -21,9 +24,8 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     XpathEngine xpath;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setXpahEngine() throws Exception {
 
         baseFeatureInfo = "wms?service=WMS&version=1.1.1&request=GetFeatureInfo&bbox=-180,-90,180,90"
                 + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
@@ -61,6 +63,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         }
     }
 
+    @Test
     public void testNoDimension() throws Exception {
         assertEquals("TimeElevation.0", getFeatureAt(baseFeatureInfo, 20, 10));
         assertEquals("TimeElevation.1", getFeatureAt(baseFeatureInfo, 60, 10));
@@ -68,6 +71,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(baseFeatureInfo, 60, 30));
     }
 
+    @Test
     public void testElevationDefault() throws Exception {
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
                 null, UNITS, UNIT_SYMBOL);
@@ -79,6 +83,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertNull(getFeatureAt(baseFeatureInfo, 60, 30));
     }
 
+    @Test
     public void testElevationSingle() throws Exception {
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
                 null, UNITS, UNIT_SYMBOL);
@@ -92,6 +97,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     }
 
+    @Test
     public void testElevationListMulti() throws Exception {
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
                 null, UNITS, UNIT_SYMBOL);
@@ -104,6 +110,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testElevationListExtra() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
@@ -117,6 +124,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testElevationInterval() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
@@ -130,6 +138,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testElevationIntervalResolution() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
@@ -143,6 +152,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testTimeDefault() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
 
@@ -153,6 +163,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(baseFeatureInfo, 60, 30));
     }
 
+    @Test
     public void testTimeCurrent() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         String base = baseFeatureInfo + "&time=CURRENT";
@@ -164,6 +175,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(baseFeatureInfo, 60, 30));
     }
 
+    @Test
     public void testTimeSingle() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         String base = baseFeatureInfo + "&time=2011-05-02";
@@ -176,6 +188,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     }
 
+    @Test
     public void testTimeListMulti() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         String base = baseFeatureInfo + "&time=&time=2011-05-02,2011-05-04";
@@ -187,6 +200,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testTimeListExtra() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         // adding a extra elevation that is simply not there, should not break
@@ -199,6 +213,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testTimeInterval() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
@@ -211,6 +226,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals("TimeElevation.3", getFeatureAt(base, 60, 30));
     }
 
+    @Test
     public void testTimeIntervalResolution() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);

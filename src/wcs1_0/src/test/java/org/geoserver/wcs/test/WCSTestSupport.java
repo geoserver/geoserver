@@ -5,6 +5,7 @@
 package org.geoserver.wcs.test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static junit.framework.Assert.*;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -22,7 +23,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -77,19 +78,18 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         }
         IS_WINDOWS = windows;
     }
-    
+
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+
         // add a raster mosaic with time and elevation
-        dataDirectory.addCoverageFromZip(WATTEMP, TestData.class.getResource("watertemp.zip"),
-                        null, "raster");
+        testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
     }
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -100,7 +100,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
     }
-    
+
     @Override
     protected boolean isMemoryCleanRequired() {
         return IS_WINDOWS;

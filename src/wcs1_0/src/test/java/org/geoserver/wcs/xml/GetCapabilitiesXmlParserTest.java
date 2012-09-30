@@ -1,26 +1,29 @@
 package org.geoserver.wcs.xml;
 
+import static org.junit.Assert.*;
+
 import java.io.StringReader;
 
-import junit.framework.TestCase;
 import net.opengis.wcs10.GetCapabilitiesType;
 
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.wcs.WCSConfiguration;
+import org.junit.Before;
+import org.junit.Test;
 
-public class GetCapabilitiesXmlParserTest extends TestCase {
+public class GetCapabilitiesXmlParserTest {
 
     private WCSConfiguration configuration;
 
     private WcsXmlReader reader;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         configuration = new WCSConfiguration();
         reader = new WcsXmlReader("GetCapabilities", "1.0.0", configuration);
     }
 
+    @Test
     public void testBasic() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wcs:GetCapabilities service=\"WCS\" updateSequence=\"1\" "

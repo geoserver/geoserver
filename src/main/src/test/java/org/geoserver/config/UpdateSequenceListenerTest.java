@@ -1,9 +1,13 @@
 package org.geoserver.config;
 
-import org.geoserver.test.GeoServerTestSupport;
+import static org.junit.Assert.*;
 
-public class UpdateSequenceListenerTest extends GeoServerTestSupport {
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 
+public class UpdateSequenceListenerTest extends GeoServerSystemTestSupport {
+
+    @Test
     public void testCatalogUpdates() {
         long updateSequence = getGeoServer().getGlobal().getUpdateSequence();
         
@@ -14,6 +18,7 @@ public class UpdateSequenceListenerTest extends GeoServerTestSupport {
         assertTrue(newUpdateSequence > updateSequence);
     }
     
+    @Test
     public void testServiceUpdates() {
         GeoServerInfo global = getGeoServer().getGlobal();
         long updateSequence = global.getUpdateSequence();

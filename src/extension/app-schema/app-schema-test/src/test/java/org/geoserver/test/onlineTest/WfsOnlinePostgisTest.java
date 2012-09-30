@@ -4,7 +4,7 @@
  */
 package org.geoserver.test.onlineTest;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.geoserver.test.NamespaceTestData;
 import org.geoserver.test.onlineTest.setup.WfsOnlineTestMockData;
@@ -18,21 +18,8 @@ public class WfsOnlinePostgisTest extends WfsOnlineTest {
         // TODO Auto-generated constructor stub
     }
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        try {
-            return new OneTimeTestSetup(new WfsOnlinePostgisTest());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected WfsOnlineTestMockData createTestData() {
         return new WfsOnlineTestMockData();
 
     }

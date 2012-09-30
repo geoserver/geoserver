@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.data.store;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -16,6 +18,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geotools.data.shapefile.ShapefileDirectoryFactory;
+import org.junit.Test;
 
 /**
  * Test for the shapefile directory ppanel
@@ -43,6 +46,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         return page;
     }
 
+    @Test
     public void testChangeWorkspaceNamespace() throws Exception {
         startPage();
 

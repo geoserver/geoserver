@@ -11,6 +11,8 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.GeoServerTestSupport;
 
 /**
@@ -20,39 +22,45 @@ import org.geoserver.test.GeoServerTestSupport;
  * @author David Winslow <dwinslow@openplans.org>
  * 
  */
-public abstract class RegionatingTestSupport extends GeoServerTestSupport {
+public abstract class RegionatingTestSupport extends GeoServerSystemTestSupport {
+    
     public static QName STACKED_FEATURES = new QName(MockData.SF_URI, "Stacked", MockData.SF_PREFIX);
     public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed", MockData.SF_PREFIX);
     public static QName TILE_TESTS = new QName(MockData.SF_URI, "Tiles", MockData.SF_PREFIX);
     public static QName CENTERED_POLY = new QName(MockData.SF_URI, "CenteredPoly", MockData.SF_PREFIX);
 
-    public void populateDataDirectory(MockData data) throws Exception{
-        super.populateDataDirectory(data);
+    @Override
+    protected void setUpTestData(SystemTestData data) throws Exception {
+        super.setUpTestData(data);
 
-        data.addPropertiesType(
+        data.setUpVectorLayer(
                 STACKED_FEATURES,
-                getClass().getResource("Stacked.properties"),
-                Collections.EMPTY_MAP
+                null, 
+                "Stacked.properties",
+                getClass()
                 );
-        data.addPropertiesType(
+        data.setUpVectorLayer(
                 DISPERSED_FEATURES,
-                getClass().getResource("Dispersed.properties"),
-                Collections.EMPTY_MAP
+                null,
+                "Dispersed.properties",
+                getClass()
                 );
         
         HashMap extra = new HashMap();
         extra.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.FORCE_DECLARED.getCode());
         
-        data.addPropertiesType(
+        data.setUpVectorLayer(
                 TILE_TESTS,
-                getClass().getResource("TileTests.properties"),
-                extra
+                null,
+                "TileTests.properties",
+                getClass()
                 );
         
-        data.addPropertiesType(
+        data.setUpVectorLayer(
                 CENTERED_POLY,
-                getClass().getResource("CenteredPoly.properties"),
-                Collections.EMPTY_MAP
+                null,
+                "CenteredPoly.properties",
+                getClass()
                 );
     }
 

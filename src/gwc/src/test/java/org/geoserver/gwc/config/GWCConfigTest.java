@@ -4,19 +4,35 @@
  */
 package org.geoserver.gwc.config;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
 
-public class GWCConfigTest extends TestCase {
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
+import org.junit.Test;
+
+public class GWCConfigTest extends GeoServerSystemTestSupport {
 
     private GWCConfig oldDefaults;
 
     private GWCConfig config;
 
-    protected void setUp() throws Exception {
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+    }
+    
+    @Before
+    public void setup() throws Exception {
         oldDefaults = GWCConfig.getOldDefaults();
         config = new GWCConfig();
     }
 
+    @Test
     public void testSaneConfig() {
         assertTrue(config.isSane());
         assertSame(config, config.saneConfig());
@@ -53,6 +69,7 @@ public class GWCConfigTest extends TestCase {
 
     }
 
+    @Test
     public void testClone() {
         GWCConfig clone = config.clone();
         assertEquals(config, clone);
@@ -63,6 +80,7 @@ public class GWCConfigTest extends TestCase {
         assertNotSame(config.getDefaultVectorCacheFormats(), clone.getDefaultVectorCacheFormats());
     }
 
+    @Test
     public void testIsServiceEnabled() {
         config.setWMSCEnabled(!config.isWMSCEnabled());
         config.setTMSEnabled(!config.isTMSEnabled());

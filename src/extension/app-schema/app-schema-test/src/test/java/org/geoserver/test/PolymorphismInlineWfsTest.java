@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -15,20 +15,10 @@ import org.w3c.dom.Document;
  * 
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
-public class PolymorphismInlineWfsTest extends AbstractAppSchemaWfsTestSupport {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        PolymorphismInlineWfsTest test = new PolymorphismInlineWfsTest();
-        Test suite = new OneTimeTestSetup(test);
-        return suite;
-    }
+public class PolymorphismInlineWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected PolymorphismInlineMockData createTestData() {
         return new PolymorphismInlineMockData();
     }
 
@@ -38,6 +28,7 @@ public class PolymorphismInlineWfsTest extends AbstractAppSchemaWfsTestSupport {
      * encoded correctly when the first attribute is omitted. This is to make sure the fix won't be
      * broken in the future. See GEOT-3304.
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature");
         LOGGER

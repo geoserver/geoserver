@@ -4,19 +4,20 @@
  */
 package org.geoserver.monitor;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.geoserver.monitor.MonitorServletRequest.MonitorInputStream;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockServletInputStream;
 
-import junit.framework.TestCase;
+public class MonitorServletRequestTest {
 
-public class MonitorServletRequestTest extends TestCase {
-
-    
+    @Test
     public void testInputStream() throws Exception {
         byte[] data = data();
         MockServletInputStream mock = new MockServletInputStream(data);

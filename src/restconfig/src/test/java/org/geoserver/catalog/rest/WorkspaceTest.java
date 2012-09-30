@@ -5,6 +5,7 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,12 +27,20 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class WorkspaceTest extends CatalogRESTTestSupport {
 
+    @Before
+    public void addWorkspaces() {
+        getTestData().addWorkspace(SystemTestData.DEFAULT_PREFIX, SystemTestData.DEFAULT_URI, catalog);
+        getTestData().addWorkspace(SystemTestData.SF_PREFIX, SystemTestData.SF_URI, catalog);
+    }
+
+    @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces.xml");
         assertEquals( catalog.getNamespaces().size() , 
             dom.getElementsByTagName( "workspace").getLength() );
     }
     
+    @Test
     public void testGetAllAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/workspaces.json");
         assertTrue( json instanceof JSONObject );
@@ -39,6 +51,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( catalog.getNamespaces().size() , workspaces.size() ); 
     }
     
+    @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces.html" );
         
@@ -55,14 +68,17 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         }
     }
     
+    @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse( "/rest/workspaces" ).getStatusCode() );
     }
     
+    @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals( 405, deleteAsServletResponse( "/rest/workspaces").getStatusCode() );
     }
     
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf.xml");
         assertEquals( "workspace", dom.getDocumentElement().getLocalName() );
@@ -72,6 +88,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( "sf", name.getFirstChild().getTextContent() );
     }
     
+    @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf.html");
 
@@ -87,10 +104,12 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         }
     }
     
+    @Test
     public void testGetNonExistant() throws Exception {
         assertEquals( 404, getAsServletResponse( "/rest/workspaces/none").getStatusCode() );
     }
     
+    @Test
     public void testPostAsXML() throws Exception {
         String xml = 
             "<workspace>" + 
@@ -105,13 +124,16 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertNotNull(ws);
     }
     
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/workspaces/sf.json");
         JSONObject workspace = ((JSONObject) json).getJSONObject( "workspace") ;
         assertEquals( "sf", workspace.get( "name" ) );
     }
     
+    @Test
     public void testPostAsJSON() throws Exception {
+        removeWorkspace("foo");
         String json = "{'workspace':{ 'name':'foo' }}";
         
         MockHttpServletResponse response = postAsServletResponse( "/rest/workspaces", json, "text/json" );
@@ -124,6 +146,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertNotNull(ws);
     }
     
+    @Test
     public void testPostToResource() throws Exception {
         String xml = 
             "<workspace>" +
@@ -135,10 +158,12 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( 405, response.getStatusCode() );
     }
     
+    @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404, deleteAsServletResponse("/rest/workspaces/newExistant").getStatusCode() );
     }
     
+    @Test
     public void testDelete() throws Exception {
         String xml = 
             "<workspace>" +
@@ -153,14 +178,18 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( 404, getAsServletResponse( "/rest/workspaces/foo.xml" ).getStatusCode() );
     }
     
+    @Test
     public void testDeleteNonEmptyForbidden() throws Exception {
+        getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
         assertEquals( 403, deleteAsServletResponse("/rest/workspaces/sf").getStatusCode() );
     }
     
+    @Test
     public void testDeleteDefaultNotAllowed() throws Exception {
         assertEquals( 405, deleteAsServletResponse("/rest/workspaces/default").getStatusCode() );
     }
     
+    @Test
     public void testDeleteAllOneByOne() throws Exception {
         for(WorkspaceInfo ws : getCatalog().getWorkspaces()) {
             // empty the workspace otherwise we can't remove it
@@ -171,7 +200,6 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
             // actually go and remove the store
             String resource = "/rest/workspaces/" + ws.getName();
-            System.out.println(resource);
             assertEquals( 200, deleteAsServletResponse(resource).getStatusCode() );
             assertEquals( 404, getAsServletResponse(resource).getStatusCode() );
         }
@@ -179,7 +207,9 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals(0, dom.getElementsByTagName( "workspace").getLength() );
     }
     
+    @Test
     public void testDeleteRecursive() throws Exception {
+        getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
         List<StoreInfo> stores = catalog.getStoresByWorkspace("sf", StoreInfo.class); 
         assertFalse(stores.isEmpty());
 
@@ -196,6 +226,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
     }
 
+    @Test
     public void testPut() throws Exception {
         String xml = 
             "<workspace>" +
@@ -216,6 +247,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
     }
     
+    @Test
     public void testPutNameChangeForbidden() throws Exception {
         String xml = 
             "<workspace>" +
@@ -227,6 +259,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( 403, response.getStatusCode() );
     }
     
+    @Test
     public void testPutNonExistant() throws Exception {
         String xml = 
             "<workspace>" +
@@ -243,6 +276,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( 404, response.getStatusCode() );
     }
     
+    @Test
     public void testGetDefaultWorkspace() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/default.xml");
         
@@ -250,6 +284,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         assertEquals( 1, dom.getElementsByTagName( "name" ).getLength() );
     }
     
+    @Test
     public void testPutDefaultWorkspace() throws Exception {
         WorkspaceInfo def = getCatalog().getDefaultWorkspace();
         assertEquals( "gs", def.getName() );

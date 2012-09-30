@@ -6,6 +6,7 @@ package org.geoserver.catalog;
 
 import static org.geoserver.catalog.Predicates.contains;
 import static org.geoserver.catalog.Predicates.equal;
+import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -23,9 +24,11 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 
-public class PredicatesTest extends TestCase {
+public class PredicatesTest {
 
     private WorkspaceInfoImpl ws;
 
@@ -47,7 +50,8 @@ public class PredicatesTest extends TestCase {
 
     private StyleInfoImpl style2;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         ns = new NamespaceInfoImpl();
         ns.setId("nsid");
         ns.setPrefix("test");
@@ -104,6 +108,7 @@ public class PredicatesTest extends TestCase {
         vectorLayer.getStyles().add(style2);
     }
 
+    @Test
     public void testPropertyEqualsSimple() {
         assertTrue(equal("prefix", ns.getPrefix()).evaluate(ns));
         assertTrue(equal("id", ws.getId()).evaluate(ws));
@@ -119,6 +124,7 @@ public class PredicatesTest extends TestCase {
         assertTrue(equal("styles", styles).evaluate(vectorLayer));
     }
 
+    @Test
     public void testPropertyEqualsCompound() {
         assertTrue(equal("resource.id", featureType.getId()).evaluate(vectorLayer));
         assertTrue(equal("resource.maxFeatures", featureType.getMaxFeatures())
@@ -138,6 +144,7 @@ public class PredicatesTest extends TestCase {
                 vectorLayer));
     }
 
+    @Test
     public void testPropertyEqualsConverters() {
 
         Object expected;
@@ -169,6 +176,7 @@ public class PredicatesTest extends TestCase {
                 vectorLayer));
     }
 
+    @Test
     public void testPropertyEqualsIndexed() {
 
         AuthorityURLInfo aurl1 = new AuthorityURL();
@@ -189,12 +197,14 @@ public class PredicatesTest extends TestCase {
         assertTrue(equal("authorityURLs[3].name", aurl3.getName()).evaluate(vectorLayer));
     }
 
+    @Test
     public void testPropertyEqualsAny() {
         assertTrue(equal("styles.id", style1.getId()).evaluate(vectorLayer));
         assertTrue(equal("styles.name", style2.getName()).evaluate(vectorLayer));
         assertFalse(equal("styles.id", "nonExistent").evaluate(vectorLayer));
     }
 
+    @Test
     public void testContains() {
         assertTrue(contains("URI", "example").evaluate(ns));
         assertFalse(contains("resource.ns.URI", "example").evaluate(vectorLayer));

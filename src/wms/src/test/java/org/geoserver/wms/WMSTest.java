@@ -1,24 +1,29 @@
 package org.geoserver.wms;
 
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.sql.Date;
+
 import javax.xml.namespace.QName;
+
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 
 /**
@@ -30,10 +35,12 @@ public class WMSTest extends WMSTestSupport {
     static final QName TIME_WITH_START_END = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
     WMS wms;
     
+    
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        dataDirectory.addPropertiesType(TIME_WITH_START_END, 
-                getClass().getResource("TimeElevationWithStartEnd.properties"),Collections.EMPTY_MAP);
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addVectorLayer(TIME_WITH_START_END,Collections.EMPTY_MAP,"TimeElevationWithStartEnd.properties",
+                getClass(),getCatalog());
     }
 
     protected void setupStartEndTimeDimension(String featureTypeName, String dimension, String start, String end) {
@@ -47,13 +54,11 @@ public class WMSTest extends WMSTestSupport {
         getCatalog().save(info);
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    @Before
+    public  void setWMS() throws Exception {
         wms = new WMS(getGeoServer());
     }
-    
+    @Test
     public void testGetTimeElevationToFilterStartEndDate() throws Exception {
         
         setupStartEndTimeDimension(TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");

@@ -1,9 +1,12 @@
 package org.geoserver.wfs;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -11,14 +14,14 @@ import org.w3c.dom.NodeList;
 public class SrsNameTest extends WFSTestSupport {
     
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void setUpInternal(SystemTestData testData) throws Exception {
         
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
         getGeoServer().save( wfs );
     }
 
+    @Test
     public void testWfs10() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.0.0"
                 + "&typename=cgf:Points";
@@ -26,6 +29,7 @@ public class SrsNameTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", d.getDocumentElement()
                 .getNodeName());
 
+        print(d);
         NodeList boxes = d.getElementsByTagName("gml:Box");
         assertFalse(boxes.getLength() == 0);
         for (int i = 0; i < boxes.getLength(); i++) {
@@ -44,6 +48,7 @@ public class SrsNameTest extends WFSTestSupport {
 
     }
 
+    @Test
     public void testWfs11() throws Exception {
         WFSInfo wfs = getWFS();
         boolean oldFeatureBounding = wfs.isFeatureBounding();

@@ -4,6 +4,10 @@
  */
 package org.geoserver.gwc;
 
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -20,7 +24,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.TestCase;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
@@ -29,20 +32,24 @@ import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 
-public class GWCTransactionListenerTest extends TestCase {
+public class GWCTransactionListenerTest {
 
     private GWC mediator;
 
     private GWCTransactionListener listener;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         mediator = mock(GWC.class);
         listener = new GWCTransactionListener(mediator);
     }
 
+    @Test
     public void testNoInteractionsInUnusedMethods() {
 
         TransactionType request = mock(TransactionType.class);
@@ -55,6 +62,7 @@ public class GWCTransactionListenerTest extends TestCase {
         verifyNoMoreInteractions(request, mediator);
     }
 
+    @Test
     public void testAfterTransactionUncommitted() {
 
         TransactionType request = mock(TransactionType.class);
@@ -66,6 +74,7 @@ public class GWCTransactionListenerTest extends TestCase {
         verifyNoMoreInteractions(request, result, mediator);
     }
 
+    @Test
     public void testDataStoreChangeDoesNotPropagateExceptions() {
 
         TransactionEvent event = mock(TransactionEvent.class);
@@ -77,6 +86,7 @@ public class GWCTransactionListenerTest extends TestCase {
         }
     }
 
+    @Test
     public void testDataStoreChangeOfNoInterest() {
         TransactionEvent event = mock(TransactionEvent.class);
         when(event.getSource()).thenReturn(new Object());
@@ -89,6 +99,7 @@ public class GWCTransactionListenerTest extends TestCase {
         verifyNoMoreInteractions(event, mediator);
     }
 
+    @Test
     public void testDataStoreChangePostInsert() {
 
         InsertElementType insert = mock(InsertElementType.class);
@@ -104,6 +115,7 @@ public class GWCTransactionListenerTest extends TestCase {
         verifyNoMoreInteractions(mediator);
     }
 
+    @Test
     public void testDataStoreChangeDoesNotAffectTileLayer() {
 
         InsertElementType insert = mock(InsertElementType.class);
@@ -126,6 +138,7 @@ public class GWCTransactionListenerTest extends TestCase {
 
     }
 
+    @Test
     public void testDataStoreChangeInsert() {
 
         Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
@@ -146,6 +159,7 @@ public class GWCTransactionListenerTest extends TestCase {
         assertSame(affectedBounds, placeHolder.get("theGroup").get(0));
     }
 
+    @Test
     public void testAfterTransaction() throws Exception {
 
         Map<Object, Object> extendedProperties = new HashMap<Object, Object>();

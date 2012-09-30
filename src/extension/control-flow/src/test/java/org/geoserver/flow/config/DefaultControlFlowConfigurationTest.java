@@ -1,11 +1,11 @@
 package org.geoserver.flow.config;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
-import junit.framework.TestCase;
 
 import org.geoserver.flow.ControllerPriorityComparator;
 import org.geoserver.flow.FlowController;
@@ -15,9 +15,11 @@ import org.geoserver.flow.controller.IpFlowController;
 import org.geoserver.flow.controller.SingleIpFlowController;
 import org.geoserver.flow.controller.UserFlowController;
 import org.geoserver.security.PropertyFileWatcher;
+import org.junit.Test;
 
-public class DefaultControlFlowConfigurationTest extends TestCase {
+public class DefaultControlFlowConfigurationTest {
 
+    @Test
     public void testParsing() throws Exception {
         Properties p = new Properties();
         p.put("timeout", "10");

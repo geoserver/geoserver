@@ -1,5 +1,9 @@
 package org.geoserver.wfs.v1_1;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -10,15 +14,16 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.opengis.feature.simple.SimpleFeatureType;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,17 +33,17 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class TransactionTest extends WFSTestSupport {
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
-        dataDirectory.addPropertiesType( 
-                new QName( MockData.SF_URI, "WithGMLProperties", MockData.SF_PREFIX ), 
-                getClass().getResource("WithGMLProperties.properties"),
-                Collections.EMPTY_MAP
-             );
+    public static final QName WITH_GML = new QName(SystemTestData.SF_URI,
+        "WithGMLProperties", SystemTestData.SF_PREFIX);
+
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.ROAD_SEGMENTS);
+        getTestData().addVectorLayer(WITH_GML, Collections.EMPTY_MAP, getClass(),
+                getCatalog());
     }
 
+    @Test
     public void testInsert1() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
                 + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -111,7 +116,8 @@ public class TransactionTest extends WFSTestSupport {
     }
 
     	
-     public void testInsertWithNoSRS() throws Exception {
+    @Test
+    public void testInsertWithNoSRS() throws Exception {
         // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" " + "version=\"1.1.0\" "
                 + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
@@ -165,6 +171,7 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals("20.0 40.0", getFirstElementByTagName(dom, "gml:pos").getFirstChild().getNodeValue());
     }
 
+    @Test
     public void testInsertWithSRS() throws Exception {
 
         // 1. do a getFeature
@@ -213,6 +220,7 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals(n + 1, pointsList.getLength());
     }
 
+    @Test
     public void testInsertWithGMLProperties() throws Exception {
     
          String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" " + 
@@ -287,6 +295,7 @@ public class TransactionTest extends WFSTestSupport {
          assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
     }
     
+    @Test
     public void testUpdateWithGMLProperties() throws Exception {
         String xml = 
             "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 
@@ -393,6 +402,7 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
     }
     
+    @Test
     public void testInsertWithBoundedBy() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -432,6 +442,7 @@ public class TransactionTest extends WFSTestSupport {
         assertTrue(dom.getElementsByTagName("ogc:FeatureId").getLength() > 0);
     }
     
+    @Test
     public void testInsert2() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -477,10 +488,12 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals( 52.0648, Double.parseDouble( pos[3] ), 1E-4 );
     }
     
+    @Test
     public void testUpdateForcedSRS() throws Exception {
         testUpdate("srsName=\"EPSG:4326\"");
     }
     
+    @Test
     public void testUpdateNoSRS() throws Exception {
         testUpdate("");
     }
@@ -536,6 +549,7 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals( 52.0648, Double.parseDouble( pos[3] ), 1E-4 );
     }
     
+    @Test
     public void testUpdateWithInvalidProperty() throws Exception {
         String xml =
             "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 
@@ -563,6 +577,7 @@ public class TransactionTest extends WFSTestSupport {
             
     }
     
+    @Test
     public void testInsertLayerQualified() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -595,6 +610,7 @@ public class TransactionTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testUpdateLayerQualified() throws Exception {
         String xml =
             "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 
@@ -633,7 +649,8 @@ public class TransactionTest extends WFSTestSupport {
          
     }
 
-   public void testUpdateWithDifferentPrefix() throws Exception {
+    @Test
+    public void testUpdateWithDifferentPrefix() throws Exception {
        String xml =
            "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" + 
            " xmlns:ogc=\"http://www.opengis.net/ogc\"" +
@@ -661,7 +678,8 @@ public class TransactionTest extends WFSTestSupport {
        assertEquals( "1", updated.getFirstChild().getNodeValue());
    }
 
-   public void testInsertUseExistingId() throws Exception {
+    @Test
+    public void testInsertUseExistingId() throws Exception {
        // create a store that can actually handle user specified ids
        // TODO: factor this out into base class or something
        Catalog cat = getCatalog();
@@ -674,8 +692,8 @@ public class TransactionTest extends WFSTestSupport {
        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
        cat.add(ds);
        
-       FeatureSource fs1 = getFeatureSource(MockData.FIFTEEN);
-       FeatureSource fs2 = getFeatureSource(MockData.SEVEN);
+       FeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
+       FeatureSource fs2 = getFeatureSource(SystemTestData.SEVEN);
        
        DataStore store = (DataStore) ds.getDataStore(null);
        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -701,7 +719,7 @@ public class TransactionTest extends WFSTestSupport {
            "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
                + " xmlns:gml=\"http://www.opengis.net/gml\" "
-               + " xmlns:gs='" + MockData.DEFAULT_URI + "'>"
+               + " xmlns:gs='" + SystemTestData.DEFAULT_URI + "'>"
                + "<wfs:Insert idgen='UseExisting'>"
                + " <gs:bar gml:id='bar.1234'>"
                + "    <gs:name>acme</gs:name>" 

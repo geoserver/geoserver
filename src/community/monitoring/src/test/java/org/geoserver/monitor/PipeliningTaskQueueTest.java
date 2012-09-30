@@ -4,14 +4,18 @@
  */
 package org.geoserver.monitor;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class PipeliningTaskQueueTest extends TestCase {
+public class PipeliningTaskQueueTest {
 
     static {
 //        java.util.logging.ConsoleHandler handler = new java.util.logging.ConsoleHandler();
@@ -23,17 +27,18 @@ public class PipeliningTaskQueueTest extends TestCase {
     
     PipeliningTaskQueue<Integer> taskQueue;
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         taskQueue = new PipeliningTaskQueue();
         taskQueue.start();
     }
     
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         taskQueue.stop();
     }
     
+    @Test
     public void test() throws Exception {
         
         ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<Worker>();

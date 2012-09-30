@@ -1,7 +1,7 @@
 package org.geoserver.test.onlineTest;
 
-import junit.framework.Test;
-
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.NamespaceTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 
 /**
@@ -15,23 +15,10 @@ public class DataReferenceWmsOracleWithJoiningTest extends DataReferenceWmsOracl
         super();
     }
 
-    /**
-     * Read-only test so can use one-time setup.
-     *
-     * @return
-     */
-    public static Test suite() {
-        try {
-            return new OneTimeTestSetup(new DataReferenceWmsOracleWithJoiningTest());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     @Override
-    protected void oneTimeSetUp() throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
         AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "true");
-        super.oneTimeSetUp();
+        super.onSetUp(testData);
     }
-
+    
 }

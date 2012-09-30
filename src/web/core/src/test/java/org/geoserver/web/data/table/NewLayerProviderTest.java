@@ -1,24 +1,28 @@
 package org.geoserver.web.data.table;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layer.NewLayerPageProvider;
+import org.junit.Test;
 
 
 public class NewLayerProviderTest extends GeoServerWicketTestSupport {
-    
+
     @Override
-    protected void populateDataDirectory(MockData dataDirectory)
-            throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWellKnownCoverageTypes();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpDefaultRasterLayers();
     }
-    
+
+    @Test
     public void testFeatureType() {
         StoreInfo cite = getCatalog().getStoreByName( MockData.CITE_PREFIX,StoreInfo.class );
         NewLayerPageProvider provider = new NewLayerPageProvider();
@@ -29,6 +33,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
         assertEquals(0, provider.size());
     }
     
+    @Test
     public void testCoverages() {
         StoreInfo dem = getCatalog().getStoreByName( MockData.TASMANIA_DEM.getLocalPart(),StoreInfo.class );
         NewLayerPageProvider provider = new NewLayerPageProvider();
@@ -39,6 +44,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
         assertEquals(0, provider.size());
     }
     
+    @Test
     public void testEmpty() {
         NewLayerPageProvider provider = new NewLayerPageProvider();
         provider.setShowPublished(true);
@@ -52,6 +58,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
      * as published. It wasn't being the case due to comparing the resource's name instead of the
      * nativeName against the name the DataStore provides
      */
+    @Test
     public void testPublishedUnpublishedWithChangedResourceName() {
         Catalog catalog = getCatalog();
         StoreInfo cite = catalog.getStoreByName(MockData.CITE_PREFIX, StoreInfo.class);

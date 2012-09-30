@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -18,8 +19,11 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,6 +34,17 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 
 public class FeatureTypeTest extends CatalogRESTTestSupport {
 
+    @Before
+    public void removePdsStore() {
+        removeStore("gs", "pds");
+    }
+
+    @Before
+    public void addPrimitiveGeoFeature() throws IOException {
+        revertLayer(SystemTestData.PRIMITIVEGEOFEATURE);
+    }
+
+    @Test
     public void testGetAllByWorkspace() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/featuretypes.xml");
         assertEquals( 
@@ -95,6 +110,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         put( "/rest/workspaces/gs/datastores/ngpds/file.properties?" + q, zbytes.toByteArray(), "application/zip");
     }
     
+    @Test
     public void testGetAllByDataStore() throws Exception {
       
         addPropertyDataStore(true);
@@ -106,6 +122,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "1", "count(//featureType/name[text()='pdsb'])", dom );
     }
     
+    @Test
     public void testGetAllAvailable() throws Exception {
         addPropertyDataStore(false);
         
@@ -114,6 +131,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsb'])", dom);
     }
 
+    @Test
     public void testGetAllAvailableWithGeometryOnly() throws Exception {
         addGeomlessPropertyDataStore(false);
 
@@ -124,14 +142,17 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("0", "count(//featureTypeName)", dom);
     }
 
+    @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatusCode() );
     }
     
+    @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatusCode() );
     }
     
+    @Test
     public void testPostAsXML() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=sf:pdsa");
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -164,6 +185,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( 2, dom.getElementsByTagName( "gs:pdsa").getLength());
     }
     
+    @Test
     public void testPostAsJSON() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&typename=sf:pdsa");
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -198,6 +220,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( 2, dom.getElementsByTagName( "gs:pdsa").getLength());
     }
     
+    @Test
     public void testPostToResource() throws Exception {
         addPropertyDataStore(true);
         String xml = 
@@ -210,6 +233,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( 405, response.getStatusCode() );
     }
     
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
         
@@ -234,6 +258,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo(  re.getMaxY()+"" , "/featureType/latLonBoundingBox/maxy", dom );
     }
     
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/workspaces/sf/featuretypes/PrimitiveGeoFeature.json");
         JSONObject featureType = ((JSONObject)json).getJSONObject("featureType");
@@ -244,10 +269,12 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( "EPSG:4326", featureType.get( "srs") );
     }
     
+    @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
     }
     
+    @Test
     public void testPut() throws Exception {
         String xml = 
           "<featureType>" + 
@@ -264,6 +291,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( "new title", ft.getTitle() );
     }
     
+    @Test
     public void testPutWithCalculation() throws Exception {
         String clearLatLonBoundingBox =
               "<featureType>"
@@ -304,6 +332,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertXpathExists("/featureType/latLonBoundingBox/minx[text()!='0.0']", dom);
     }
 
+    @Test
     public void testPutNonExistant() throws Exception {
         String xml = 
             "<featureType>" + 
@@ -314,6 +343,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
           assertEquals( 404, response.getStatusCode() );
     }
    
+    @Test
     public void testDelete() throws Exception {
         assertNotNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
         for (LayerInfo l : catalog.getLayers( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature") ) ) {
@@ -324,11 +354,13 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
     }
     
+    @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
             deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/NonExistant").getStatusCode());
     }
     
+    @Test
     public void testDeleteRecursive() throws Exception {
         assertNotNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
         assertNotNull(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
@@ -342,6 +374,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertNull(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
     }
     
+    @Test
     public void testPostGeometrylessFeatureType() throws Exception {
         addGeomlessPropertyDataStore(false);
         
@@ -357,6 +390,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
       assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa" ) );
     }
     
+    @Test
     public void testCreateFeatureType() throws Exception {
         String xml = "<featureType>\n" + 
         		"  <name>states</name>\n" + 
@@ -401,6 +435,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals(Double.class, schema.getDescriptor("LAND_KM").getType().getBinding());
     }
 
+    @Test
     public void testPostFillInMetadata() throws Exception {
         addPropertyDataStore(false);
         String xml = 

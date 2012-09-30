@@ -1,15 +1,19 @@
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import javax.xml.namespace.QName;
-
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
@@ -17,34 +21,33 @@ import org.w3c.dom.Element;
 
 public class ReprojectionWriteTest extends WFSTestSupport {
     private static final String TARGET_CRS_CODE = "EPSG:900913";
-    public static QName NULL_GEOMETRIES = new QName(MockData.CITE_URI, "NullGeometries", MockData.CITE_PREFIX);
-    public static QName GOOGLE = new QName(MockData.CITE_URI, "GoogleFeatures", MockData.CITE_PREFIX);
+    public static QName NULL_GEOMETRIES = new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
+    public static QName GOOGLE = new QName(SystemTestData.CITE_URI, "GoogleFeatures", SystemTestData.CITE_PREFIX);
     MathTransform tx;
-    
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-    
+        
+    @Before
+    public void setUpTX() throws Exception {    
         CoordinateReferenceSystem epsg4326 = CRS.decode(TARGET_CRS_CODE);
         CoordinateReferenceSystem epsg32615 = CRS.decode("EPSG:32615");
         
         tx = CRS.findMathTransform(epsg32615, epsg4326);
+        
+        this.revertLayer(SystemTestData.POLYGONS);
     }
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addPropertiesType(NULL_GEOMETRIES, 
-                ReprojectionTest.class.getResource("NullGeometries.properties"), Collections.EMPTY_MAP);
-        Map<String, Object> extra = new HashMap<String, Object>();
-        extra.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.REPROJECT_TO_DECLARED);
-        extra.put(MockData.KEY_SRS_NUMBER, 900913);
-        dataDirectory.addPropertiesType(GOOGLE, 
-                ReprojectionTest.class.getResource("GoogleFeatures.properties"), extra);
+    protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
+        dataDirectory.addVectorLayer(NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
+        Map<LayerProperty, Object> extra = new HashMap<LayerProperty, Object>();
+        extra.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
+        extra.put(LayerProperty.SRS, 900913);
+        dataDirectory.addVectorLayer(GOOGLE, extra, getClass(), getCatalog());
     }
     
+    @Test
     public void testInsertSrsName() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.0.0&typeName=" + 
-            MockData.POLYGONS.getLocalPart();
+        SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM( q );
         
         Element polygonProperty = getFirstElementByTagName(dom, "cgf:polygonProperty");
@@ -57,7 +60,7 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
         + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
         + " xmlns:gml=\"http://www.opengis.net/gml\" "
-        + " xmlns:cgf=\"" + MockData.CGF_URI + "\">"
+        + " xmlns:cgf=\"" + SystemTestData.CGF_URI + "\">"
         + "<wfs:Insert handle=\"insert-1\" srsName=\"" + TARGET_CRS_CODE + "\">"
         + " <cgf:Polygons>"
         +    "<cgf:polygonProperty>"
@@ -83,13 +86,14 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         
         dom = getAsDOM( q );
         
-        assertEquals( 2, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 2, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         
     }
     
+    @Test
     public void testInsertGeomSrsName() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + 
-            MockData.POLYGONS.getLocalPart();
+        SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM( q );
         
         Element polygonProperty = getFirstElementByTagName(dom, "cgf:polygonProperty");
@@ -102,7 +106,7 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
         + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
         + " xmlns:gml=\"http://www.opengis.net/gml\" "
-        + " xmlns:cgf=\"" + MockData.CGF_URI + "\">"
+        + " xmlns:cgf=\"" + SystemTestData.CGF_URI + "\">"
         + "<wfs:Insert handle=\"insert-1\">"
         + " <cgf:Polygons>"
         +    "<cgf:polygonProperty>"
@@ -128,13 +132,14 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         
         dom = getAsDOM( q );
         
-        assertEquals( 2, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 2, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         
     }
     
+    @Test
     public void testUpdate() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + 
-        MockData.POLYGONS.getLocalPart();
+        SystemTestData.POLYGONS.getLocalPart();
         
         Document dom = getAsDOM( q );
         

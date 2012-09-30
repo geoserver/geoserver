@@ -2,32 +2,14 @@ package org.geoserver.wps.gs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class ReprojectProcessTest extends WPSTestSupport {
 
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();        
-        
-        // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
-        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("feature", "http://www.opengis.net/cite");
-
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    };
-
+    @Test
     public void testForce() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -56,6 +38,7 @@ public class ReprojectProcessTest extends WPSTestSupport {
                 "//gml:MultiPolygon/@srsName", response);
     }
 
+    @Test
     public void testReproject() throws Exception {
         // note, we use 3395 instead of 900913 because it's more accurate, the referencing subsystem
         // with assertions enabled will flip if we use the latter due to small reprojection errors

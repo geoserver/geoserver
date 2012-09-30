@@ -1,10 +1,15 @@
 package org.geoserver.wfs.v1_1;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetFeatureWithLockTest extends WFSTestSupport {
 
+	 @Test
      public void test() throws Exception {
         String xml = "<wfs:GetFeatureWithLock service=\"WFS\" version=\"1.1.0\" "
                 + "	  handle=\"GetFeatureWithLock-tc1\""

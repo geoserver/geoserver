@@ -5,9 +5,14 @@
  */
 package org.geoserver.wfs.response;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -15,19 +20,19 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 
-import junit.framework.TestCase;
 
-public class GeoJSONBuilderTest extends TestCase {
+public class GeoJSONBuilderTest {
 
     StringWriter writer;
     GeoJSONBuilder builder;
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
         writer = new StringWriter();
         builder = new GeoJSONBuilder(writer);
     }
     
+    @Test
     public void testWriteNormal() throws Exception {
         Geometry g = new WKTReader().read("MULTILINESTRING((0 0, 1 1))");
         builder.writeGeom(g);
@@ -36,6 +41,7 @@ public class GeoJSONBuilderTest extends TestCase {
             writer.toString());
     }
     
+    @Test
     public void testWriteGeometrySubclass() throws Exception {
         builder.writeGeom(new MyPoint(1,2));
         
@@ -49,6 +55,7 @@ public class GeoJSONBuilderTest extends TestCase {
         }
     }
     
+    @Test
     public void testWriteDate() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();
@@ -61,6 +68,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"date\":\"2011-10-25Z\"}", writer.toString());
     }
 
+    @Test
     public void testWriteTime() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();
@@ -73,6 +81,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"time\":\"15:48:05Z\"}", writer.toString());
     }
 
+    @Test
     public void testWriteDateTime() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();
@@ -88,6 +97,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"timestamp\":\"2011-10-25T15:48:05Z\"}", writer.toString());
     }
 
+    @Test
     public void testWriteDateTimeMillis() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();
@@ -104,6 +114,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"timestamp\":\"2011-10-25T15:48:05.223Z\"}", writer.toString());
     }
 
+    @Test
     public void testWriteJavaDate() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();
@@ -120,6 +131,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"date\":\"2011-10-25T15:48:05.223Z\"}", writer.toString());
     }
 
+    @Test
     public void testWriteCalendar() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();
@@ -131,6 +143,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"cal\":\"2011-10-25T00:00:00Z\"}", writer.toString());
     }
 
+    @Test
     public void testWriteCalendarTZ() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT-05:00"));
         cal.clear();
@@ -142,6 +155,7 @@ public class GeoJSONBuilderTest extends TestCase {
         assertEquals("{\"cal\":\"2011-10-25T00:00:00-05:00\"}", writer.toString());
     }
 
+    @Test
     public void testWriteCalendarFull() throws Exception{
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cal.clear();

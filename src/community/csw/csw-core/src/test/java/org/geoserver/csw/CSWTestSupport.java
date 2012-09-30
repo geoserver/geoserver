@@ -1,5 +1,7 @@
 package org.geoserver.csw;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +19,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.csw.CSW;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.csw.DC;
@@ -28,13 +30,15 @@ import org.geotools.ows.OWS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
-public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
+public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     protected static final String BASEPATH = "csw";
     
-    protected void setUpInternal() throws Exception {
+    @BeforeClass
+    public static void configureXMLUnit() throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("csw", CSW.NAMESPACE);
@@ -53,12 +57,9 @@ public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
     };
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        // do not call super, we don't need all the normal layers
-        // super.populateDataDirectory(dataDirectory);
-        
+    protected void setUpTestData(SystemTestData testData) throws Exception {
         // copy all records into the data directory
-        File root = dataDirectory.getDataDirectoryRoot();
+        File root = testData.getDataDirectoryRoot();
         File catalog = new File(root, "catalog");
         File records = new File("./src/test/resources/org/geoserver/csw/records");
         FileUtils.copyDirectory(records, catalog);

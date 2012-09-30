@@ -1,5 +1,8 @@
 package org.geoserver.wps.gs;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 
 import net.opengis.wfs.FeatureCollectionType;
@@ -8,6 +11,7 @@ import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Parser;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -16,6 +20,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ClipProcessTest extends WPSTestSupport {
 
+    @Test
     public void testClipRectangle() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
                 + "xmlns:ows='http://www.opengis.net/ows/1.1'>"

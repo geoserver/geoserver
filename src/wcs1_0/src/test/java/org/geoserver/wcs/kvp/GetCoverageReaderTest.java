@@ -1,40 +1,30 @@
 package org.geoserver.wcs.kvp;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
+import static org.junit.Assert.*;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Test;
 import net.opengis.wcs10.GetCoverageType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wcs.test.WCSTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException;
 
 public class GetCoverageReaderTest extends WCSTestSupport {
 
     static Wcs10GetCoverageRequestReader reader;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCoverageReaderTest());
+    @Before
+    public void setUp() {
+        reader = new Wcs10GetCoverageRequestReader(getCatalog());
     }
 
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        Catalog catalog = (Catalog) applicationContext.getBean("catalog");
-        reader = new Wcs10GetCoverageRequestReader(catalog);
-    }
-
-    // protected String getDefaultLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
-
+    @Test
     public void testMissingParams() throws Exception {
         Map<String, Object> raw = baseMap();
 
@@ -84,6 +74,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         return raw;
     }
 
+    @Test
     public void testUnknownCoverageParams() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = "fairyTales:rumpelstilskin";
@@ -100,6 +91,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testBasic() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);
@@ -118,6 +110,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         assertEquals("EPSG:4326", getCoverage.getOutput().getCrs().getValue());
     }
 
+    @Test
     public void testUnsupportedCRS() throws Exception {
         Map<String, Object> raw = baseMap();
         final String layerId = getLayerId(TASMANIA_BM);

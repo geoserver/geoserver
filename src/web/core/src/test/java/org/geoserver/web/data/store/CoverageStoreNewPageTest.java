@@ -4,10 +4,14 @@
  */
 package org.geoserver.web.data.store;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geotools.gce.arcgrid.ArcGridFormatFactory;
 import org.geotools.gce.gtopo30.GTopo30FormatFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.coverage.grid.Format;
 
 public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
@@ -21,9 +25,9 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     String formatDescription;
 
-    @Override
     @SuppressWarnings("deprecation")
-    public void setUpInternal() {
+    @Before
+    public void init() {
         Format format = new GTopo30FormatFactory().createFormat();
         formatType = format.getName();
         formatDescription = format.getDescription();
@@ -42,6 +46,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         return page;
     }
 
+    @Test
     public void testInitCreateNewCoverageStoreInvalidDataStoreFactoryName() {
 
         final String formatName = "_invalid_";
@@ -56,6 +61,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
     /**
      * A kind of smoke test that only asserts the page is rendered when first loaded
      */
+    @Test
     public void testPageRendersOnLoad() {
 
         startPage();
@@ -66,6 +72,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("rasterStoreForm:workspacePanel", WorkspacePanel.class);
     }
 
+    @Test
     public void testInitialModelState() {
 
         CoverageStoreNewPage page = startPage();
@@ -79,6 +86,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
                 "file:data/example.extension");
     }
 
+    @Test
     public void testMultipleResources() {
 
         CoverageStoreNewPage page = startPage();

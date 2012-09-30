@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,13 +12,17 @@ import java.util.Map;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class ProxyBaseURLIntegrationTest extends GeoServerTestSupport {
-    
+public class ProxyBaseURLIntegrationTest extends GeoServerSystemTestSupport {
+
     @Override
-    protected void setUpInternal() throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
@@ -27,19 +31,25 @@ public class ProxyBaseURLIntegrationTest extends GeoServerTestSupport {
     /**
      * Do the links in getcaps respect the proxy base url?
      */
+    @Test
     public void testProxyBaseUrl() throws Exception {
+        // setup the proxy base        
         final String proxyBaseUrl = "http://localhost/proxy";
         GeoServerInfo gs = getGeoServer().getGlobal();
-        gs.setProxyBaseUrl(proxyBaseUrl);
+        gs.getSettings().setProxyBaseUrl(proxyBaseUrl);
         getGeoServer().save(gs);
+        
+        // setup the wms online resource
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        String geoserverSite = "http://www.geoserver.org";
+        wms.setOnlineResource(geoserverSite);
+        getGeoServer().save(wms);
 
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1");
         //print(dom);
 
         String serviceOnlineRes = "/WMT_MS_Capabilities/Service/OnlineResource/@xlink:href";
-
-        String onlineResource = getGeoServer().getService(WMSInfo.class).getOnlineResource();
-        assertXpathEvaluatesTo(onlineResource, serviceOnlineRes, dom);
+        assertXpathEvaluatesTo(geoserverSite, serviceOnlineRes, dom);
 
         String getCapsGet = "/WMT_MS_Capabilities/Capability/Request/GetCapabilities/DCPType/HTTP/Get/OnlineResource/@xlink:href";
         assertXpathEvaluatesTo(proxyBaseUrl + "/wms?SERVICE=WMS&", getCapsGet, dom);

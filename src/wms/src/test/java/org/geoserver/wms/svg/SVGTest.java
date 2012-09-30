@@ -4,30 +4,28 @@
  */
 package org.geoserver.wms.svg;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SVGTest extends WMSTestSupport {
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SVGTest());
-    }
-    
+
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("multifts", getClass().getResource("./polyMultiFts.sld"));
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addStyle("multifts","./polyMultiFts.sld",getClass(),getCatalog());
     }
-    
+        
+    @Test
     public void testBasicSvgGenerator() throws Exception {
         getWMS().setSvgRenderer(WMS.SVG_SIMPLE);
             Document doc = getAsDOM(
@@ -43,6 +41,7 @@ public class SVGTest extends WMSTestSupport {
             assertEquals( 1, doc.getElementsByTagName("g").getLength());
     }
     
+    @Test
     public void testBasicSvgGeneratorMultipleFts() throws Exception {
         getWMS().setSvgRenderer(WMS.SVG_SIMPLE);
             Document doc = getAsDOM(
@@ -58,6 +57,7 @@ public class SVGTest extends WMSTestSupport {
             assertEquals( 1, doc.getElementsByTagName("g").getLength());
     }
     
+    @Test
     public void testBatikSvgGenerator() throws Exception {
         //batik includes DTD reference which forces us to be online, skip test
         // in offline case
@@ -81,6 +81,7 @@ public class SVGTest extends WMSTestSupport {
         assertTrue(doc.getElementsByTagName("g").getLength() > 1);
     }
     
+    @Test
     public void testBatikMultipleFts() throws Exception {
         //batik includes DTD reference which forces us to be online, skip test
         // in offline case

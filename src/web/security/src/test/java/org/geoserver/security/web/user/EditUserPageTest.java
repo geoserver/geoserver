@@ -1,5 +1,7 @@
 package org.geoserver.security.web.user;
 
+import static org.junit.Assert.*;
+
 import java.util.SortedSet;
 
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -9,14 +11,25 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.web.AbstractSecurityPage;
+import org.junit.Before;
+import org.junit.Test;
 
 public class EditUserPageTest extends AbstractUserPageTest {
 
     
     GeoServerUser current;
 
+    @Before
+    public void init() throws Exception {
+        doInitialize();
+        clearServices();
+
+        deactivateRORoleService();
+        deactivateROUGService();
+    }
+
+    @Test
     public void testFill() throws Exception{
-        initializeForXML();
         doTestFill();
     }
 
@@ -85,6 +98,7 @@ public class EditUserPageTest extends AbstractUserPageTest {
         assertTrue(roleList.contains(gaService.getRoleByName("ROLE_NEW")));
     }
     
+    @Test
     public void testReadOnlyUserGroupService() throws Exception {
         initializeForXML();
         doTestReadOnlyUserGroupService();
@@ -119,8 +133,8 @@ public class EditUserPageTest extends AbstractUserPageTest {
 
     }
     
+    @Test
     public void testReadOnlyRoleService() throws Exception {
-        initializeForXML();
         doTestReadOnlyRoleService();
     }
 
@@ -151,8 +165,8 @@ public class EditUserPageTest extends AbstractUserPageTest {
 
     }
     
+    @Test
     public void testAllServicesReadOnly() throws Exception {
-        initializeForXML();
         insertValues();
         activateROUGService();
         activateRORoleService();
@@ -179,8 +193,8 @@ public class EditUserPageTest extends AbstractUserPageTest {
             new EditUserPage(getUserGroupServiceName(),current).setReturnPage(returnPage));
     }
 
+    @Test
     public void testPasswordsDontMatch() throws Exception {
-        initializeForXML();
         insertValues();
         current = ugService.getUserByUsername("user1");
         super.doTestPasswordsDontMatch(EditUserPage.class);

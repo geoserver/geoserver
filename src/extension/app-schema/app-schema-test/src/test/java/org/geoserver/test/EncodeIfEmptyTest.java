@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -15,28 +15,20 @@ import org.w3c.dom.Document;
  * 
  * @author Victor Tey (CSIRO Earth Science and Resource Engineering)
  */
-public class EncodeIfEmptyTest extends AbstractAppSchemaWfsTestSupport {
+public class EncodeIfEmptyTest extends AbstractAppSchemaTestSupport {
 
     /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new EncodeIfEmptyTest());
-    }
-
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaWfsTestSupport#buildTestData()
+     * @see org.geoserver.test.AbstractAppSchemaTestSupport#buildTestData()
      */
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected EncodeIfEmptyMockData createTestData() {
         return new EncodeIfEmptyMockData();
     }
 
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
+    @Test
     public void testEncodeIfEmpty() {
         String path = "wfs?request=GetFeature&typename=om:OM_Observation&outputFormat=gml32";
         Document doc = getAsDOM(path);

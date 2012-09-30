@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
@@ -30,24 +30,14 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  * @author Victor Tey, CSIRO Exploration and Mining
  */
-public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
+public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
 
     final String EPSG_4326 = "urn:x-ogc:def:crs:EPSG:4326";
 
     final String EPSG_4283 = "EPSG:4283";
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        Test test = new OneTimeTestSetup(new SRSReprojectionTest());
-        return test;
-    }
-
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected SRSReprojectionMockData createTestData() {
         return new SRSReprojectionMockData();
     }
 
@@ -55,6 +45,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
      * Tests re-projection of NonFeatureTypeProxy.
      * 
      */
+    @Test
     public void testNonFeatureTypeProxy() {
         Document doc = null;
         doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4326");
@@ -109,6 +100,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
      * parent feature and only on the nested feature level
      * 
      */
+    @Test
     public void testChainingReprojection() throws NoSuchAuthorityCodeException, FactoryException,
             MismatchedDimensionException, TransformException {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer");
@@ -183,6 +175,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaWfsTestSupport {
      * geometry
      * 
      */
+    @Test
     public void testChainingXlink() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));

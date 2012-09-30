@@ -1,5 +1,8 @@
 package org.geoserver.wps.gs;
 
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import java.io.IOException;
 
 import org.geoserver.catalog.CoverageInfo;
@@ -11,6 +14,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.process.raster.gs.ContourProcess;
 import org.geotools.util.NullProgressListener;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.Envelope;
 
@@ -28,6 +32,7 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
 	 * 
 	 * @throws Exception
 	 */
+    @Test
 	public void testProcessStandaloneBasicValues() throws Exception {
 		GridCoverage2D gc = extractCoverageSubset();
 
@@ -77,6 +82,7 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testProcessStandaloneBasicInterval() throws Exception {
 		final GridCoverage2D gc = extractCoverageSubset();
 

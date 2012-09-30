@@ -3,6 +3,7 @@ package org.geoserver.catalog.impl;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -18,15 +19,15 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.feature.NameImpl;
+import org.junit.Before;
+import org.junit.Test;
 
-public class LocalWorkspaceCatalogTest extends TestCase {
+public class LocalWorkspaceCatalogTest {
 
     LocalWorkspaceCatalog catalog;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         WorkspaceInfo ws1 = createNiceMock(WorkspaceInfo.class);
         expect(ws1.getName()).andReturn("ws1").anyTimes();
         replay(ws1);
@@ -143,6 +144,7 @@ public class LocalWorkspaceCatalogTest extends TestCase {
         catalog = new LocalWorkspaceCatalog(cat);
     }
 
+    @Test 
     public void testGetStyleByName() throws Exception {
         assertNull(catalog.getStyleByName("s1"));
         assertNull(catalog.getStyleByName("s2"));
@@ -167,6 +169,7 @@ public class LocalWorkspaceCatalogTest extends TestCase {
         assertNull(catalog.getStyleByName("s2"));
     }
 
+    @Test
     public void testGetLayerGroupByName() throws Exception {
         assertNull(catalog.getLayerGroupByName("lg1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
@@ -191,6 +194,7 @@ public class LocalWorkspaceCatalogTest extends TestCase {
         assertNull(catalog.getLayerGroupByName("lg2"));
     }
 
+    @Test
     public void testGetLayerByName() throws Exception {
         assertNull(catalog.getLayerByName("l1"));
         assertNull(catalog.getLayerByName("l2"));
@@ -212,6 +216,7 @@ public class LocalWorkspaceCatalogTest extends TestCase {
         assertNull(catalog.getLayerByName("l2"));
     }
 
+    @Test
     public void testGetLayersWithSameName() throws Exception {
         LayerInfo layerInfo1 = catalog.getLayerByName(new NameImpl("ws1", "lc"));
         ResourceInfo resource1 = layerInfo1.getResource();

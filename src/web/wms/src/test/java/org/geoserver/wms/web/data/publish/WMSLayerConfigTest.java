@@ -1,5 +1,7 @@
 package org.geoserver.wms.web.data.publish;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
@@ -17,10 +19,12 @@ import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.geoserver.wms.web.publish.WMSLayerConfig;
+import org.junit.Test;
 
 @SuppressWarnings("serial")
 public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
     
+    @Test
     public void testExisting() {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         FormTestPage page = new FormTestPage(new ComponentBuilder() {
@@ -43,6 +47,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:panel:styles:defaultStyle", target);
     }
     
+    @Test
     public void testNew() {
         final LayerInfo layer = getCatalog().getFactory().createLayer();
         layer.setResource(getCatalog().getFactory().createFeatureType());
@@ -73,6 +78,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertFalse(page.getSession().getFeedbackMessages().hasErrorMessageFor(layerConfig));
     }
 
+    @Test
     public void testLegendGraphicURL() throws Exception {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         FormTestPage page = new FormTestPage(new ComponentBuilder() {

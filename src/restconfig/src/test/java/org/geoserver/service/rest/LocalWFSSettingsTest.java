@@ -1,6 +1,8 @@
 package org.geoserver.service.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -8,21 +10,27 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
+import org.junit.After;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
-
-    protected GeoServer geoServer;
+    
+    @After 
+    public void revertChanges() {
+        LocalWorkspace.remove();
+        revertService(WFSInfo.class, "sf");
+    }
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        geoServer = GeoServerExtensions.bean(GeoServer.class, applicationContext);
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        GeoServer geoServer = getGeoServer();
         WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName("sf");
         LocalWorkspace.set(ws);
         WFSInfo wfsInfo = geoServer.getService(WFSInfo.class);
@@ -30,18 +38,18 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         geoServer.save(wfsInfo);
     }
 
-    @Override
-    protected void tearDownInternal() throws Exception {
+    @After
+    public void clearLocalWorkspace() throws Exception {
         LocalWorkspace.remove();
     }
 
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON("/rest/services/wfs/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wfsinfo = (JSONObject) jsonObject.get("wfs");
-        assertEquals("wfs", wfsinfo.get("id"));
-        assertEquals("My GeoServer WFS", wfsinfo.get("name"));
+        assertEquals("WFS", wfsinfo.get("name"));
         JSONObject workspace = (JSONObject) wfsinfo.get("workspace");
         assertNotNull(workspace);
         assertEquals("sf", workspace.get("name"));
@@ -49,16 +57,18 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         assertEquals("1000000", wfsinfo.get("maxFeatures").toString().trim());
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM("/rest/services/wfs/sf/settings.xml");
         assertEquals("wfs", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wfs/workspace/name", dom);
-        assertXpathEvaluatesTo("My GeoServer WFS", "/wfs/name", dom);
+        assertXpathEvaluatesTo("WFS", "/wfs/name", dom);
         assertXpathEvaluatesTo("COMPLETE", "/wfs/serviceLevel", dom);
         assertXpathEvaluatesTo("1000000", "/wfs/maxFeatures", dom);
     }
 
+    @Test
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
         String input = "{'wfs': {'id' : 'wfs', 'name' : 'WFS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";
@@ -69,13 +79,13 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wfs");
-        assertEquals("wfs", wmsinfo.get("id"));
         assertEquals("WFS", wmsinfo.get("name"));
         JSONObject workspace = (JSONObject) wmsinfo.get("workspace");
         assertNotNull(workspace);
         assertEquals("sf", workspace.get("name"));
     }
 
+    @Test
     public void testCreateAsXML() throws Exception {
         removeLocalWorkspace();
         String xml = "<wfs>" + "<id>wfs</id>" + "<workspace>" + "<name>sf</name>"
@@ -92,6 +102,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("OGC:WFS", "/wfs/name", dom);
     }
 
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wfs': {'id':'wfs','workspace':{'name':'sf'},'enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/sf/settings/",
@@ -101,10 +112,10 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wfsinfo = (JSONObject) jsonObject.get("wfs");
-        assertEquals("wfs", wfsinfo.get("id"));
         assertEquals("false", wfsinfo.get("enabled").toString().trim());
     }
 
+    @Test
     public void testPutAsXML() throws Exception {
         String xml = "<wfs>" + "<id>wfs</id>" + "<workspace>" + "<name>sf</name>"
                 + "</workspace>" + "<enabled>false</enabled>" + "</wfs>";
@@ -115,6 +126,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
     }
 
+    @Test
     public void testDelete() throws Exception {
         assertEquals(200, deleteAsServletResponse("/rest/services/wfs/sf/settings").getStatusCode());
         boolean thrown = false;
@@ -127,6 +139,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
     }
 
     private void removeLocalWorkspace() {
+        GeoServer geoServer = getGeoServer();
         WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName("sf");
         WFSInfo wfsInfo = geoServer.getService(ws, WFSInfo.class);
         geoServer.remove(wfsInfo);

@@ -4,7 +4,9 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import java.awt.image.BufferedImage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLUnit;
@@ -12,6 +14,8 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -27,9 +31,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     
     private XpathEngine xpath;
     
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    @Before
+    public void setXpathEngine() throws Exception {            
         xpath = XMLUnit.newXpathEngine();
     };
     
@@ -59,6 +62,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         }
     }
     
+    @Test 
     public void testDefaultValues() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
@@ -69,6 +73,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(19.15, getFeatureAt(BASE_URL, 68, 72), EPS);
     }
     
+    @Test 
     public void testElevation() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
@@ -80,6 +85,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(14.492, getFeatureAt(url, 68, 72), EPS);
     }
     
+    @Test
     public void testTime() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
@@ -91,6 +97,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         assertEquals(19.371, getFeatureAt(url, 68, 72), EPS);
     }
     
+    @Test
     public void testTimeElevation() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);

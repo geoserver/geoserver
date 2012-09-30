@@ -4,35 +4,30 @@
  */
 package org.geoserver.kml;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.zip.ZipFile;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.kml.KMZMapResponse.KMZMap;
-import org.geoserver.ows.Response;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class KMZMapProducerTest extends WMSTestSupport {
     KMZMapOutputFormat mapProducer;
     KMZMapResponse mapEncoder;
     KMZMap producedMap;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new KMZMapProducerTest());
-    }
-
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void createMapContext() throws Exception {
 
         // create a map context
         WMSMapContent mapContent = new WMSMapContent();
@@ -51,6 +46,7 @@ public class KMZMapProducerTest extends WMSTestSupport {
         producedMap = mapProducer.produceMap(mapContent);
     }
 
+    @Test
     public void test() throws Exception {
         // create the kmz
         File temp = File.createTempFile("test", "kmz");

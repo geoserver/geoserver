@@ -40,11 +40,21 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
     protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
         ArrayList<String> sqls = du.splitPostgisSQLScript(script);
-        for (String sql : sqls) {           
-            this.run(sql);
-        }
+        // run the script as a single shot, going back and forth line
+        // by line takes forever to run (more than a minute)
+        String pgScript = rebuildAsSingle(sqls);
+        this.run(pgScript);
         this.setDataVersion(this.scriptVersion);
 
+    }
+
+    private String rebuildAsSingle(ArrayList<String> sqls) {
+        StringBuilder sb = new StringBuilder();
+        for (String sql : sqls) {
+            sb.append(sql).append("\n");
+        }
+        
+        return sb.toString();
     }
 
     // these private helper class might be useful in the future. feel free to change its access

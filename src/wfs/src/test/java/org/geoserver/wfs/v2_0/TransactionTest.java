@@ -4,17 +4,21 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
-
 import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.data.test.MockData;
-import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,17 +27,17 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class TransactionTest extends WFS20TestSupport {
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
-        dataDirectory.addPropertiesType( 
-            new QName( MockData.SF_URI, "WithGMLProperties", MockData.SF_PREFIX ), 
-            org.geoserver.wfs.v1_1.TransactionTest.class.getResource("WithGMLProperties.properties"),
-            Collections.EMPTY_MAP
-         );
+    public static final QName WITH_GML = new QName(SystemTestData.SF_URI,
+            "WithGMLProperties", SystemTestData.SF_PREFIX);
+
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.ROAD_SEGMENTS);
+        getTestData().addVectorLayer(WITH_GML, Collections.EMPTY_MAP,
+                org.geoserver.wfs.v1_1.TransactionTest.class, getCatalog());
     }
     
+    @Test
     public void testInsert1() throws Exception {
         String xml = "<wfs:Transaction service='WFS' version='2.0.0' "
             + " xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:gml='" + GML.NAMESPACE + "' "
@@ -105,7 +109,8 @@ public class TransactionTest extends WFS20TestSupport {
     }
 
     	
-     public void testInsertWithNoSRS() throws Exception {
+    @Test
+    public void testInsertWithNoSRS() throws Exception {
         // 1. do a getFeature
         String getFeature = 
             "<wfs:GetFeature service='WFS' version='2.0.0' "
@@ -167,6 +172,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals("20.0 40.0", getFirstElementByTagName(dom, "gml:pos").getFirstChild().getNodeValue());
     }
 
+    @Test
     public void testInsertWithSRS() throws Exception {
 
         // 1. do a getFeature
@@ -222,6 +228,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals(n + 1, pointsList.getLength());
     }
 
+    @Test
     public void testInsertWithGMLProperties() throws Exception {
     
          String xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" " + 
@@ -296,6 +303,7 @@ public class TransactionTest extends WFS20TestSupport {
          assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
     }
     
+    @Test
     public void testUpdateWithGMLProperties() throws Exception {
         String xml = 
             "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" " + 
@@ -401,6 +409,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
     }
     
+    @Test
     public void testInsertWithBoundedBy() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" "
             + " xmlns:wfs='" + WFS.NAMESPACE + "' "
@@ -439,6 +448,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertTrue(dom.getElementsByTagName("fes:ResourceId").getLength() > 0);
     }
     
+    @Test
     public void testInsert2() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" "
             + " xmlns:wfs='" + WFS.NAMESPACE + "' "
@@ -483,6 +493,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals( 52.0648, Double.parseDouble( pos[3] ), 1E-4 );
     }
 
+    @Test
     public void testInsert3() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" "
                 + " xmlns:wfs='" + WFS.NAMESPACE + "' "
@@ -538,10 +549,12 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals( 40.0, Double.parseDouble( pos[9] ), 1E-1 );
     }
 
+    @Test
     public void testUpdateForcedSRS() throws Exception {
         testUpdate("srsName=\"EPSG:4326\"");
     }
     
+    @Test
     public void testUpdateNoSRS() throws Exception {
         testUpdate("");
     }
@@ -597,6 +610,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals( 52.0648, Double.parseDouble( pos[3] ), 1E-4 );
     }
     
+    @Test
     public void testUpdateWithInvalidProperty() throws Exception {
         String xml =
             "<wfs:Transaction service=\"WFS\" version=\"2.0.0\"" + 
@@ -622,6 +636,7 @@ public class TransactionTest extends WFS20TestSupport {
             assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
+    @Test
     public void testInsertLayerQualified() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" "
             + " xmlns:fes='" + FES.NAMESPACE + "' " 
@@ -655,6 +670,7 @@ public class TransactionTest extends WFS20TestSupport {
 
     }
     
+    @Test
     public void testUpdateLayerQualified() throws Exception {
         String xml =
             "<wfs:Transaction service=\"WFS\" version=\"2.0.0\"" 
@@ -693,7 +709,8 @@ public class TransactionTest extends WFS20TestSupport {
          
     }
 
-   public void testUpdateWithDifferentPrefix() throws Exception {
+    @Test
+    public void testUpdateWithDifferentPrefix() throws Exception {
        String xml =
            "<wfs:Transaction service=\"WFS\" version=\"2.0.0\"" + 
             " xmlns:fes='" + FES.NAMESPACE + "' " +  
@@ -721,7 +738,8 @@ public class TransactionTest extends WFS20TestSupport {
        assertEquals( "1", updated.getFirstChild().getNodeValue());
    }
 
-   public void testReplace() throws Exception {
+    @Test
+    public void testReplace() throws Exception {
        Document dom = getAsDOM("wfs?service=wfs&version=2.0.0&request=getfeature&typename=cite:RoadSegments" +
            "&cql_filter=FID+EQ+'102'");
        XMLAssert.assertXpathExists("//cite:RoadSegments/cite:FID[text() = '102']", dom);
@@ -770,7 +788,8 @@ public class TransactionTest extends WFS20TestSupport {
        XMLAssert.assertXpathExists("//cite:RoadSegments/cite:FID[text() = '1234']", dom);
    }
 
-   public void testSOAP() throws Exception {
+    @Test
+    public void testSOAP() throws Exception {
        String xml = 
           "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> " + 
                " <soap:Header/> " + 

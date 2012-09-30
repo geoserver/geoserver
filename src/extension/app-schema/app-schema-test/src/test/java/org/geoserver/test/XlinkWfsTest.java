@@ -6,7 +6,9 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.w3c.dom.Document;
@@ -16,25 +18,17 @@ import org.w3c.dom.Document;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public class XlinkWfsTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new XlinkWfsTest());
-    }
+public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected XlinkMockData createTestData() {
         return new XlinkMockData();
     }
 
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
+    @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
@@ -44,6 +38,7 @@ public class XlinkWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test whether DescribeFeatureType returns xsd:schema.
      */
+    @Test
     public void testDescribeFeatureType() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
@@ -53,6 +48,7 @@ public class XlinkWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
@@ -62,6 +58,7 @@ public class XlinkWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test content of GetFeature response.
      */
+    @Test
     public void testGetFeatureContent() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
 

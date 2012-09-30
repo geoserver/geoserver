@@ -1,6 +1,5 @@
 package org.geoserver.wps.process;
 
-import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
 
 /**

@@ -2,13 +2,12 @@ package org.geoserver.wfs;
 
 import java.io.File;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -17,6 +16,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
@@ -26,17 +26,11 @@ import static org.custommonkey.xmlunit.XMLAssert.*;
 
 public class SQLViewTest extends WFSTestSupport {
 
-    String tableTypeName;
-    String viewTypeName;
+    static final String tableTypeName = "gs:pgeo";
+    static final String viewTypeName = "gs:pgeo_view";
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        // just populate with the minimum
-        dataDirectory.addWellKnownType(MockData.PRIMITIVEGEOFEATURE, null);
-    }
-
-    @Override
-    protected void setUpInternal() throws Exception {
+    protected void setUpInternal(SystemTestData data) throws Exception {
         // run all the tests against a store that can do sql views 
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
@@ -50,7 +44,7 @@ public class SQLViewTest extends WFSTestSupport {
         params.put("database", dbFile.getAbsolutePath());
         cat.add(ds);
         
-        SimpleFeatureSource fsp = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+        SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
         
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -70,8 +64,6 @@ public class SQLViewTest extends WFSTestSupport {
         FeatureTypeInfo tft = cb.buildFeatureType(featureStore);
         cat.add(tft);
         
-        tableTypeName = tft.prefixedName();
-        
         // create the sql view
         JDBCDataStore jds = (JDBCDataStore) ds.getDataStore(null);
         VirtualTable vt = new VirtualTable("pgeo_view", "select \"name\", \"pointProperty\" from \"pgeo\" where \"booleanProperty\" = %bool% and \"name\" = '%name%'");
@@ -83,13 +75,13 @@ public class SQLViewTest extends WFSTestSupport {
         FeatureTypeInfo vft = cb.buildFeatureType(jds.getFeatureSource(vt.getName()));
         vft.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);
         cat.add(vft);
-        viewTypeName = vft.prefixedName();
     }
     
     /**
      * Checks the setup did the expected job
      * @throws Exception
      */
+    @Test
     public void testStoreSetup() throws Exception {
         FeatureTypeInfo tableTypeInfo = getCatalog().getFeatureTypeByName(tableTypeName);
         assertNotNull(tableTypeInfo);
@@ -100,6 +92,7 @@ public class SQLViewTest extends WFSTestSupport {
         assertEquals(1, viewTypeInfo.getFeatureSource(null, null).getCount(Query.ALL));
     }
     
+    @Test
     public void testViewParams() throws Exception {
         Document dom = getAsDOM("wfs?service=WFS&request=GetFeature&typename=" + viewTypeName + "&version=1.1&viewparams=bool:true;name:name-f003");
         print(dom);

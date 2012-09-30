@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,6 +27,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
@@ -34,6 +37,7 @@ import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
 import org.geotools.xml.AppSchemaCache;
 import org.geotools.xml.AppSchemaXSDRegistry;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -47,8 +51,8 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 public class RestconfigWfsTest extends CatalogRESTTestSupport {
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(org.geoserver.data.test.SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setCanonicalSchemaLocation(true);
         wfs.setEncodeFeatureMember(true);
@@ -57,22 +61,14 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         AppSchemaCache.disableAutomaticConfiguration();
     }
 
-    @SuppressWarnings("deprecation")
+    
     @Override
-    protected void oneTimeTearDown() throws Exception {
-        super.oneTimeTearDown();
+    @SuppressWarnings("deprecated")
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        super.onTearDown(testData);
         DataAccessRegistry.unregisterAll();
         AppSchemaDataAccessRegistry.clearAppSchemaProperties();
         AppSchemaXSDRegistry.getInstance().dispose();
-    }
-
-    /**
-     * Enable data directory upgrade to enable manual verification of references between objects in
-     * the serialised form.
-     */
-    @Override
-    protected boolean useLegacyDataDirectory() {
-        return false;
     }
 
     private static final String WORKSPACE = "<workspace>" //
@@ -176,6 +172,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
      * Test that REST can be used to configure an app-schema datastore and that this datastore can
      * be used to service a WFS request.
      */
+    @Test
     public void testRestconfig() throws Exception {
         MockHttpServletResponse response;
         // create workspace

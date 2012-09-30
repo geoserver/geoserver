@@ -1,5 +1,7 @@
 package org.geoserver.security.web.user;
 
+import static org.junit.Assert.*;
+
 import java.util.SortedSet;
 
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -10,6 +12,8 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
 import org.geoserver.security.web.UserGroupRoleServicesPage;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NewUserPageTest extends AbstractUserPageTest {
 
@@ -18,9 +22,19 @@ public class NewUserPageTest extends AbstractUserPageTest {
         tester.startPage(page=(AbstractUserPage) 
             new NewUserPage(getUserGroupServiceName()).setReturnPage(returnPage));
     }
-    
-    public void testFill() throws Exception{
+
+    @Before
+    public void init() throws Exception {
+        doInitialize();
+        clearServices();
+    }
+
+    protected void doInitialize() throws Exception {
         initializeForXML();
+    }
+
+    @Test
+    public void testFill() throws Exception{
         doTestFill();
     }
 
@@ -83,8 +97,8 @@ public class NewUserPageTest extends AbstractUserPageTest {
     }
 
     
+    @Test
     public void testFill3() throws Exception{
-        initializeForXML();
         doTestFill3();
     }
 
@@ -132,8 +146,9 @@ public class NewUserPageTest extends AbstractUserPageTest {
         
     }
     
+    @Test
     public void testFill2() throws Exception{
-        initializeForXML();
+        //initializeForXML();
         doTestFill2();
     }
 
@@ -186,8 +201,8 @@ public class NewUserPageTest extends AbstractUserPageTest {
 
     
     
+    @Test
     public void testUserNameConflict() throws Exception {        
-        initializeForXML();
         insertValues();        
         
         initializeTester();
@@ -203,8 +218,9 @@ public class NewUserPageTest extends AbstractUserPageTest {
         tester.assertRenderedPage(NewUserPage.class);
     }
 
+    @Test
     public void testInvalidWorkflow() throws Exception{
-        initializeForXML();
+        
         activateROUGService();        
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getROUserGroupServiceName());
         boolean fail = true;
@@ -218,6 +234,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
             fail("No runtime exception for read only UserGroupService");
     }
     
+    @Test
     public void testPasswordsDontMatch() throws Exception {
         super.doTestPasswordsDontMatch(NewUserPage.class);
     }

@@ -1,24 +1,24 @@
 package org.geoserver.security;
 
-import java.util.Arrays;
+import static org.junit.Assert.*;
 
-public class GeoServerCustomSecurityProviderTest extends GeoServerSecurityTestSupport {
+import java.util.List;
+
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+@Category(SystemTest.class)
+public class GeoServerCustomSecurityProviderTest extends GeoServerSystemTestSupport {
+
     @Override
-    protected String[] getSpringContextLocations() {
-        String[] locations = super.getSpringContextLocations();
-        String[] locationsWithExtra = Arrays.copyOf(super.getSpringContextLocations(), locations.length + 1);
-        locationsWithExtra[locationsWithExtra.length - 1] = getClass().getResource(getClass().getSimpleName() + "-context.xml").toString(); 
-        return locationsWithExtra;
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add(
+            getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
     }
-    
-    @Override
-    protected void oneTimeTearDown() throws Exception {
-		// since we are testing a shutdown hook, we need to be able to avoid
-		// double-deleting the spring context after calling it manually in
-		// testThatDestroyIsCalled()
-    	if (applicationContext != null) super.oneTimeTearDown();
-    }
-    
+
     public static class SecurityProvider extends GeoServerSecurityProvider {
         static boolean initCalled = false;
         static boolean destroyCalled = false;
@@ -33,13 +33,15 @@ public class GeoServerCustomSecurityProviderTest extends GeoServerSecurityTestSu
             destroyCalled = true;
         }
     }
-    
+
+    @Test
     public void testThatInitIsCalled() {
         assertTrue("The Security provider's init method should be called", SecurityProvider.initCalled);
     }
 
+    @Test
     public void testThatDestroyIsCalled() throws Exception {
-    	super.oneTimeTearDown();
+        destroyGeoServer();
         assertTrue("The Security provider's destroy method should be called", SecurityProvider.destroyCalled);
     }
 }

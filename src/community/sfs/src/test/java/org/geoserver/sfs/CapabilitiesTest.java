@@ -1,28 +1,35 @@
 package org.geoserver.sfs;
 
+import static org.junit.Assert.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class CapabilitiesTest extends GeoServerTestSupport {
+public class CapabilitiesTest extends GeoServerSystemTestSupport {
     
     protected String root() {
         return "rest/sfs/";
     }
-    
+
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        testData.setUpSecurity();
+       
         // just add one as the others will make reprojection trip over assertions during tests
-        dataDirectory.addWellKnownType(MockData.PRIMITIVEGEOFEATURE, null);
+        testData.setUpVectorLayer(MockData.PRIMITIVEGEOFEATURE);
+        
         // add coverages to make sure they are going to be skipped
-        dataDirectory.addWcs11Coverages();
+        testData.setUpWcs11RasterLayers();
     }
-    
+
+    @Test
     public void testBasicContents() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "capabilities");
         assertEquals(200, response.getErrorCode());
@@ -40,9 +47,9 @@ public class CapabilitiesTest extends GeoServerTestSupport {
         assertEquals("urn:ogc:def:crs:EPSG:4326", primitive.get("crs"));
         assertEquals("xy", primitive.get("axisorder"));
         JSONArray bbox = (JSONArray) primitive.get("bbox");
-        assertEquals(-180.0, bbox.getDouble(0));
-        assertEquals(-90.0, bbox.getDouble(1));
-        assertEquals(180.0, bbox.getDouble(2));
-        assertEquals(90.0, bbox.getDouble(3));
+        assertEquals(-180.0, bbox.getDouble(0), 1E-7);
+        assertEquals(-90.0, bbox.getDouble(1), 1E-7);
+        assertEquals(180.0, bbox.getDouble(2), 1E-7);
+        assertEquals(90.0, bbox.getDouble(3), 1E-7);
     }
 }

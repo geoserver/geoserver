@@ -4,16 +4,18 @@
  */
 package org.geoserver.config.util;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.impl.LayerIdentifier;
+import org.junit.Test;
 
-public class LayerIdentifierInfoListConverterTest extends TestCase {
+public class LayerIdentifierInfoListConverterTest {
 
+    @Test 
     public void testFromString() {
         final String serialized = "[{\"authority\":\"auth1\",\"identifier\":\"IDENTIFIER_1\"},{\"authority\":\"auth2\",\"identifier\":\"IDENTIFIER_2\"}]";
         List<LayerIdentifierInfo> expected = new ArrayList<LayerIdentifierInfo>();
@@ -34,6 +36,7 @@ public class LayerIdentifierInfoListConverterTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testFromInvalidString() {
         final String serialized = "[{\"name:\"auth1\",\"href\":\"http://geoserver.org/auth1?\"},]";
 
@@ -45,6 +48,7 @@ public class LayerIdentifierInfoListConverterTest extends TestCase {
         }
     }
 
+    @Test
     public void testToString() {
         List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
 
@@ -64,6 +68,7 @@ public class LayerIdentifierInfoListConverterTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testToStringListWithNullElement() {
         List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
 
@@ -79,6 +84,7 @@ public class LayerIdentifierInfoListConverterTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testToStringListWithOnlyNullElements() {
         List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
         list.add(null);
@@ -89,6 +95,7 @@ public class LayerIdentifierInfoListConverterTest extends TestCase {
 
     }
 
+    @Test
     public void testToStringEmptyList() {
         List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>();
 

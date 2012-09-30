@@ -4,38 +4,36 @@
  */
 package org.geoserver.rest.format;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Test;
-
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 
 /**
  * A set of generic tests for output formats to just check that they can read their own output. 
  * Format classes should probably still have their own custom tests to verify the format itself is correct.
  */
-public class FormatTest extends GeoServerTestSupport {
+public class FormatTest extends GeoServerSystemTestSupport {
     static List formats;
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new FormatTest());
-    }
 
-    public void oneTimeSetUp() throws Exception{
-    	super.oneTimeSetUp();
-    	// Add to this list if you would like to test another general format
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // Add to this list if you would like to test another general format
         formats = new ArrayList();
         formats.add(new MapXMLFormat());
         formats.add(new MapJSONFormat());
     }
 
+    @Test
     public void testFormatMap(){
         Iterator it = formats.iterator();
         while (it.hasNext()){
@@ -57,6 +55,7 @@ public class FormatTest extends GeoServerTestSupport {
         }
     }
 
+    @Test
     public void testFormatList(){
         Iterator it = formats.iterator();
         while (it.hasNext()){

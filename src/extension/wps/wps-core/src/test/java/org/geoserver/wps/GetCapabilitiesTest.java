@@ -1,25 +1,24 @@
 package org.geoserver.wps;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import junit.framework.Test;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetCapabilitiesTest extends WPSTestSupport {
 
-    //read-only test
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCapabilitiesTest());
-    }
-    
+    @Test
     public void testGetBasic() throws Exception { // Standard Test A.4.2.1
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
         //print(d);
         basicCapabilitiesTest(d);
     }
     
+    @Test
     public void testProcesseListSorted() throws Exception { // Standard Test A.4.2.1
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
         // print(d);
@@ -35,6 +34,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         }
     }
 
+    @Test
     public void testPostBasic() throws Exception { // Standard Test A.4.2.2
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:GetCapabilities service=\"WPS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
@@ -44,18 +44,21 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         basicCapabilitiesTest(d);
     }
     
+    @Test
     public void testBasicGetAcceptVersions() throws Exception { // Standard Test A.4.2.3
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities&AcceptVersions=1.0.0" );
         // print(d);
         basicCapabilitiesTest(d);
     }
     
+    @Test
     public void testBasicGetLanguage() throws Exception { // Standard Test A.4.2.3
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities&language=en-US" );
         // print(d);
         basicCapabilitiesTest(d);
     }
 
+    @Test
     public void testBasicPostAcceptVersions() throws Exception { // Standard Test A.4.2.3
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:GetCapabilities service=\"WPS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
@@ -69,6 +72,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         basicCapabilitiesTest(d);
     }
 
+    @Test
     public void testBasicPostLanguage() throws Exception { // Standard Test A.4.2.3
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:GetCapabilities service=\"WPS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
@@ -101,6 +105,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         }
     }
 
+    @Test
     public void testUnsupportedVersionHighPost() throws Exception { // Standard Test A.4.2.5
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:GetCapabilities service=\"WPS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
@@ -116,6 +121,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         checkOws11Exception(dom, "VersionNegotiationFailed");
     }
 
+    @Test
     public void testUnsupportedVersionLowPost() throws Exception { // Standard Test A.4.2.5
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:GetCapabilities service=\"WPS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
@@ -131,6 +137,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         checkOws11Exception(dom, "VersionNegotiationFailed");
     }
     
+    @Test
     public void testUnsupportedVersionGet() throws Exception { // Standard Test A.4.2.5
         Document dom = getAsDOM(root() + "request=GetCapabilities&service=WPS&acceptVersions=9.9.9,8.8.8");
         
@@ -138,11 +145,13 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         checkOws11Exception(dom, "VersionNegotiationFailed");
     }
     
+    @Test
     public void testSupportedVersionGet() throws Exception { // Standard Test A.4.2.5
         Document dom = getAsDOM(root() + "request=GetCapabilities&service=WPS&acceptVersions=0.5.0,1.0.0");
         assertEquals("wps:Capabilities", dom.getFirstChild().getNodeName());
     }
     
+    @Test
     public void testSupportedVersionPost() throws Exception { // Standard Test A.4.2.5
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:GetCapabilities service=\"WPS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "

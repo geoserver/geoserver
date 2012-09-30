@@ -1,11 +1,20 @@
 package org.geoserver.catalog;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
 import java.util.List;
 
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.TestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-public class CatalogIntegrationTest extends GeoServerTestSupport {
+@Category(SystemTest.class)
+public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
 
+    @Test
     public void testWorkspaceRemoveAndReadd() {
         // remove all workspaces
         Catalog catalog = getCatalog();

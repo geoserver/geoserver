@@ -4,13 +4,16 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import junit.framework.Test;
+
+
+import static junit.framework.Assert.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -21,6 +24,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
      * 
      * @throws Exception
      */
+    @Test
     public void testSimpleJSONP() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
@@ -59,6 +63,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
      * 
      * @throws Exception
      */
+    @Test
     public void testCustomJSONP() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
@@ -97,6 +102,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
      * 
      * @throws Exception
      */
+    @Test
     public void testSimpleJSON() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
@@ -123,11 +129,5 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
     }
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetFeatureInfoJSONTest());
-    }
-
+ 
 }

@@ -3,6 +3,7 @@ package org.geoserver.security.decorators;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,6 +11,8 @@ import java.util.Iterator;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
 import org.geotools.feature.FeatureCollection;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -23,10 +26,8 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
     private SortBy sort;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         feature = createNiceMock(Feature.class);
         replay(feature);
         Iterator it = createNiceMock(Iterator.class);
@@ -44,6 +45,7 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
         replay(fc);
     }
 
+    @Test
     public void testHide() throws Exception {
 
         SecuredFeatureCollection ro = new SecuredFeatureCollection(fc, WrapperPolicy.hide(null));
@@ -108,6 +110,7 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
         assertEquals(ro.policy, sorted.policy);
     }
 
+    @Test
     public void testChallenge() throws Exception {
 
         SecuredFeatureCollection ro = new SecuredFeatureCollection(fc, WrapperPolicy.readOnlyChallenge(null));

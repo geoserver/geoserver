@@ -1,6 +1,7 @@
 package org.geoserver.wms.web.data;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -15,6 +16,8 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.w3c.dom.Document;
 
@@ -22,8 +25,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     
     StyleInfo buildingsStyle;
 
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         login();
         buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
         StyleEditPage edit = new StyleEditPage(buildingsStyle);
@@ -31,6 +34,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 //        org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
     }
 
+    @Test
     public void testLoad() throws Exception {
         tester.assertRenderedPage(StyleEditPage.class);
         tester.assertNoErrorMessage();
@@ -54,6 +58,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertXMLEqual(d1, d2);
     }
     
+    @Test
     public void testMissingName() throws Exception {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "");
@@ -62,7 +67,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StyleEditPage.class);
         tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
     }
-    
+
+    @Test
     public void testChangeName() throws Exception {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "BuildingsNew");

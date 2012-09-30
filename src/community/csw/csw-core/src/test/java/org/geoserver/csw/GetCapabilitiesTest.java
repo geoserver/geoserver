@@ -1,12 +1,12 @@
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Test;
 import net.opengis.ows10.GetCapabilitiesType;
 
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -21,6 +21,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.xlink.XLINK;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXParseException;
@@ -40,13 +41,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         xpath.setNamespaceContext(nameSpaceContext);
     }
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCapabilitiesTest());
-    }
-
+    @Test 
     public void testKVPReader() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -81,6 +76,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         assertEquals("text/plain", outputFormats.get(1));
     }
 
+    @Test 
     public void testXMLReader() throws Exception {
         CSWXmlReader reader = new CSWXmlReader("GetCapabilities", "2.0.2", new CSWConfiguration());
         GetCapabilitiesType caps = (GetCapabilitiesType) reader.read(null,
@@ -88,6 +84,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         assertReturnedCapabilitiesComplete(caps);
     }
 
+    @Test 
     public void testXMLReaderInvalid() throws Exception {
         // create a schema invalid request
         String capRequest = getResourceAsString("GetCapabilities.xml");
@@ -105,9 +102,10 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         }
     }
 
+    @Test 
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
-        print(dom);
+        // print(dom);
         checkValidationErrors(dom);
 
         // basic check on local name
@@ -135,6 +133,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'dc:title'])", dom);
     }
 
+    @Test 
     public void testPostBasic() throws Exception {
         Document dom = postAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
         // print(dom);
@@ -159,6 +158,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
                         dom));
     }
 
+    @Test 
     public void testSections() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
         // print(dom);
@@ -180,6 +180,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
     
+    @Test 
     public void testCiteCompliance() throws Exception {
         CSWInfo csw = getGeoServer().getService(CSWInfo.class);
         try {

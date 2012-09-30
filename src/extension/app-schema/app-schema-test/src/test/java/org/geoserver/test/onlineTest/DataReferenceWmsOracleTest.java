@@ -4,8 +4,6 @@
  */
 package org.geoserver.test.onlineTest;
 
-import junit.framework.Test;
-
 import org.geoserver.test.NamespaceTestData;
 import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
 import org.geoserver.test.onlineTest.setup.ReferenceDataOracleSetup;
@@ -22,21 +20,8 @@ public class DataReferenceWmsOracleTest extends DataReferenceWmsOnlineTest {
         super();
     }
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        try {
-            return new OneTimeTestSetup(new DataReferenceWmsOracleTest());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-    
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected AppSchemaWmsReferenceMockData createTestData() {
     	AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("simplelithology", "styles/cgi-simplelithology-2008.sld");

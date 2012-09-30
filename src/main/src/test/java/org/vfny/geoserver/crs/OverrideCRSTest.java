@@ -1,40 +1,47 @@
 package org.vfny.geoserver.crs;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.datum.BursaWolfParameters;
 import org.geotools.referencing.datum.DefaultGeodeticDatum;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.ProjectedCRS;
 
-public class OvverideCRSTest extends GeoServerTestSupport {
+@Category(SystemTest.class)
+public class OverrideCRSTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        new File(dataDirectory.getDataDirectoryRoot(), "user_projections").mkdir();
-        dataDirectory.copyTo(OvverideCRSTest.class.getResourceAsStream("test_override_epsg.properties"), "user_projections/epsg_overrides.properties");
-        
-        CRS.reset("all");
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        new File(testData.getDataDirectoryRoot(), "user_projections").mkdir();
+        testData.copyTo(OverrideCRSTest.class.getResourceAsStream("test_override_epsg.properties"), 
+            "user_projections/epsg_overrides.properties");
 
-        super.populateDataDirectory(dataDirectory);
+        CRS.reset("all");
     }
-    
+
+    @Test
     public void testOverride() throws Exception {
         CoordinateReferenceSystem epsg3003 = CRS.decode("EPSG:3003");
         DefaultGeodeticDatum datum3003 = (DefaultGeodeticDatum) (((ProjectedCRS)  epsg3003).getDatum());
         BursaWolfParameters[] bwParamArray3003 = datum3003.getBursaWolfParameters();
         assertEquals(1, bwParamArray3003.length);
         BursaWolfParameters bw3003 = bwParamArray3003[0];
-        assertEquals(-104.1, bw3003.dx);
-        assertEquals(-49.1, bw3003.dy);
-        assertEquals(-9.9, bw3003.dz);
-        assertEquals(0.971, bw3003.ex);
-        assertEquals(-2.917, bw3003.ey);
-        assertEquals(0.714, bw3003.ez);
-        assertEquals(-11.68, bw3003.ppm);
+        double tol = 1E-7;
+        assertEquals(-104.1, bw3003.dx, tol);
+        assertEquals(-49.1, bw3003.dy, tol);
+        assertEquals(-9.9, bw3003.dz, tol);
+        assertEquals(0.971, bw3003.ex, tol);
+        assertEquals(-2.917, bw3003.ey, tol);
+        assertEquals(0.714, bw3003.ez, tol);
+        assertEquals(-11.68, bw3003.ppm, tol);
         
         // without an override they should be the same as 3002
         CoordinateReferenceSystem epsg3002 = CRS.decode("EPSG:3002");

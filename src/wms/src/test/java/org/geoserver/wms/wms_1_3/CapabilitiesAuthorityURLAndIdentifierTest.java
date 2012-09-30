@@ -14,6 +14,7 @@ import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
@@ -38,7 +39,8 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("ows", "http://www.opengis.net/ows");
     }
-
+    
+    @Test
     public void testRootLayer() throws Exception {
         WMSInfo serviceInfo = getWMS().getServiceInfo();
         addAuthUrl("rootAuth1", "http://geoserver/wms/auth1", serviceInfo.getAuthorityURLs());
@@ -82,6 +84,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
                 doc);
     }
 
+    @Test
     public void testLayer() throws Exception {
 
         String layerId = getLayerId(MockData.PRIMITIVEGEOFEATURE);

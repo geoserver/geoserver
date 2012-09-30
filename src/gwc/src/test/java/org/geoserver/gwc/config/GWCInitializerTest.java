@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.config;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.mockito.Matchers.eq;
@@ -16,8 +18,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -29,12 +29,14 @@ import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-public class GWCInitializerTest extends TestCase {
+public class GWCInitializerTest {
 
     private GWCInitializer initializer;
 
@@ -46,8 +48,8 @@ public class GWCInitializerTest extends TestCase {
 
     private TileLayerCatalog tileLayerCatalog;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         configPersister = mock(GWCConfigPersister.class);
         when(configPersister.getConfig()).thenReturn(GWCConfig.getOldDefaults());
@@ -60,6 +62,7 @@ public class GWCInitializerTest extends TestCase {
 
     }
 
+    @Test
     public void testInitializeLayersToOldDefaults() throws Exception {
         // no gwc-gs.xml exists
         when(configPersister.findConfigFile()).thenReturn(null);
@@ -84,6 +87,7 @@ public class GWCInitializerTest extends TestCase {
         verify(tileLayerCatalog, times(1)).save(eq(tileLayerGroup));
     }
 
+    @Test
     public void testUpgradeDirectWMSIntegrationFlag() throws Exception {
         // no gwc-gs.xml exists, so that initialization runs
         when(configPersister.findConfigFile()).thenReturn(null);
@@ -113,6 +117,7 @@ public class GWCInitializerTest extends TestCase {
 
     }
 
+    @Test
     public void testUpgradeFromTileLayerInfosToTileLayerCatalog() throws Exception {
         // do have gwc-gs.xml, so it doesn't go through the createDefaultTileLayerInfos path
         File fakeConfig = new File("target", "gwc-gs.xml");

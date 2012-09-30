@@ -1,29 +1,12 @@
 package org.geoserver.wfs.v2_0;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.wfs.GetFeatureTest;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class ExtendedOperatorTest extends WFS20TestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new ExtendedOperatorTest());
-    }
-
-    
+    @Test
     public void testInvokeExtendedOperator() throws Exception {
         
         String xml = 

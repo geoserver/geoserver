@@ -1,26 +1,20 @@
 package org.geoserver.catalog.impl;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 
-import javax.xml.namespace.QName;
-
-import junit.framework.Test;
-
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -28,39 +22,42 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.MockTestData;
+import org.geoserver.test.GeoServerMockTestSupport;
 import org.geoserver.test.RemoteOWSTestSupport;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ResourceInfo;
 import org.geotools.feature.NameImpl;
-import org.geotools.gce.geotiff.GeoTiffWriter;
-import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Point;
 
-public class CatalogBuilderTest extends GeoServerTestSupport {
+public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new CatalogBuilderTest());
-    }
+//    /**
+//     * This is a READ ONLY TEST so we can use one time setup
+//     */
+//    public static Test suite() {
+//        return new OneTimeTestSetup(new CatalogBuilderTest());
+//    }
+//
+//    @Override
+//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+//        super.populateDataDirectory(dataDirectory);
+//        dataDirectory.addWellKnownCoverageTypes();
+//    }
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWellKnownCoverageTypes();
+    protected MockTestData createTestData() throws Exception {
+        MockTestData testData = new MockTestData();
+        testData.setIncludeRaster(true);
+        return testData;
     }
 
+    @Test
     public void testFeatureTypeNoSRS() throws Exception {
         // build a feature type (it's already in the catalog, but we just want to
         // check it's built as expected
@@ -83,6 +80,8 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertNull(fti.getLatLonBoundingBox());
     }
 
+    
+    @Test
     public void testFeatureType() throws Exception {
         // build a feature type (it's already in the catalog, but we just want to
         // check it's built as expected
@@ -105,6 +104,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertNotNull(fti.getLatLonBoundingBox());
     }
 
+    @Test
     public void testGeometryless() throws Exception {
         // build a feature type (it's already in the catalog, but we just want to
         // check it's built as expected
@@ -124,6 +124,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertNull(layer.getDefaultStyle());
     }
 
+    @Test
     public void testCoverage() throws Exception {
         // build a feature type (it's already in the catalog, but we just want to
         // check it's built as expected
@@ -141,10 +142,11 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertNotNull(fti.getLatLonBoundingBox());
     }
 
+    @Test
     public void testEmptyBounds() throws Exception {
         // test the bounds of a single point
         Catalog cat = getCatalog();
-        FeatureTypeInfo fti = cat.getFeatureTypeByName(getLayerId(MockData.POINTS));
+        FeatureTypeInfo fti = cat.getFeatureTypeByName(toString(MockData.POINTS));
         assertEquals(Point.class, fti.getFeatureType().getGeometryDescriptor().getType()
                 .getBinding());
         assertEquals(1, fti.getFeatureSource(null, null).getCount(Query.ALL));
@@ -163,6 +165,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testWMS() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
             LOGGER.warning("Remote OWS tests disabled, skipping catalog builder wms tests");
@@ -204,113 +207,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertFalse(wmsLayer.getKeywords().isEmpty());
     }
 
-    public void testLargeNDMosaic() throws Exception {
-        // build a mosaic with 1025 files (the standard ulimit is 1024)
-        File mosaic = new File("./target/largeMosaic");
-        try {
-            createTimeMosaic(mosaic, 1025);
-            
-            // now configure a new store based on it
-            Catalog cat = getCatalog();
-            CatalogBuilder cb = new CatalogBuilder(cat);
-            CoverageStoreInfo store = cb.buildCoverageStore("largeMosaic");
-            store.setURL(mosaic.getAbsolutePath());
-            store.setType("ImageMosaic");
-            cat.add(store);
-            
-            // and configure also the coverage
-            cb.setStore(store);
-            CoverageInfo ci = cb.buildCoverage();
-            cat.add(ci);
-            cat.getResourcePool().dispose();
-        } finally {
-            if(mosaic.exists() && mosaic.isDirectory()) {
-                FileUtils.deleteDirectory(mosaic);
-            }
-        }
-    }
-    
-    public void testMosaicParameters() throws Exception {
-        // build a mosaic with 1025 files (the standard ulimit is 1024)
-        File mosaic = new File("./target/smallMosaic");
-        try {
-            createTimeMosaic(mosaic, 4);
-            
-            // now configure a new store based on it
-            Catalog cat = getCatalog();
-            CatalogBuilder cb = new CatalogBuilder(cat);
-            CoverageStoreInfo store = cb.buildCoverageStore("smallMosaic");
-            store.setURL(mosaic.getAbsolutePath());
-            store.setType("ImageMosaic");
-            cat.add(store);
-            
-            // and configure also the coverage
-            cb.setStore(store);
-            CoverageInfo ci = cb.buildCoverage();
-            cat.add(ci);
-            
-            // check the parameters have the default values
-            System.out.println(ci.getParameters());
-            assertEquals(String.valueOf(-1), ci.getParameters().get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
-            assertEquals("", ci.getParameters().get(ImageMosaicFormat.FILTER.getName().toString()));
-            cat.getResourcePool().dispose();
-        } finally {
-            if(mosaic.exists() && mosaic.isDirectory()) {
-                FileUtils.deleteDirectory(mosaic);
-            }
-        }
-    }
-
-    private void createTimeMosaic(File mosaic, int fileCount) throws IOException, FileNotFoundException {
-        if(mosaic.exists()) {
-            if(mosaic.isDirectory()) {
-                FileUtils.deleteDirectory(mosaic);
-            } else {
-                mosaic.delete();
-            }
-        }
-        mosaic.mkdir();
-        
-        // build the reference coverage into a byte array
-        GridCoverageFactory factory = new GridCoverageFactory();
-        BufferedImage bi = new BufferedImage(10, 10, BufferedImage.TYPE_4BYTE_ABGR);
-        ReferencedEnvelope envelope = new ReferencedEnvelope(0, 10, 0, 10, DefaultGeographicCRS.WGS84);
-        GridCoverage2D test = factory.create("test", bi, envelope);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        GeoTiffWriter writer = new GeoTiffWriter(bos);
-        writer.write(test, null);
-        
-        // create the lot of files
-        byte[] bytes = bos.toByteArray();
-        for(int i = 0; i < fileCount; i++) {
-            String pad = "";
-            if(i < 10) {
-                pad = "000";
-            } else if(i < 100) {
-                pad = "00";
-            } else if(i < 1000){
-                pad = "0";
-            }
-            File target = new File(mosaic, "tile_" +pad + i + ".tiff");
-            FileUtils.writeByteArrayToFile(target, bytes);
-        }
-        
-        // create the mosaic indexer property file
-        Properties p = new Properties();
-        p.put("ElevationAttribute", "elevation");
-        p.put("Schema", "*the_geom:Polygon,location:String,elevation:Integer");
-        p.put("PropertyCollectors", "IntegerFileNameExtractorSPI[elevationregex](elevation)");
-        FileOutputStream fos = new FileOutputStream(new File(mosaic, "indexer.properties"));
-        p.store(fos, null);
-        fos.close();
-        // and the regex itself
-        p.clear();
-        p.put("regex", "(?<=_)(\\d{4})");
-        fos = new FileOutputStream(new File(mosaic, "elevationregex.properties"));
-        p.store(fos, null);
-        fos.close();
-    }
-
+    @Test
     public void testLookupSRSDetached() throws Exception {
         Catalog cat = getCatalog();
         CatalogBuilder cb = new CatalogBuilder(cat);
@@ -330,6 +227,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertNotNull(ft.getCRS());
     }
 
+    @Test
     public void testSetupBoundsDetached() throws Exception {
         Catalog cat = getCatalog();
         CatalogBuilder cb = new CatalogBuilder(cat);
@@ -350,6 +248,7 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         assertNotNull(ft.getLatLonBoundingBox());
     }
 
+    @Test
     public void testMetadataFromFeatueSource() throws Exception {
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         cb.setStore(cb.buildDataStore("fooStore"));
@@ -394,9 +293,4 @@ public class CatalogBuilderTest extends GeoServerTestSupport {
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         cb.setupMetadata(ftInfo, fs);
     }
-
-    Name toName(QName qname) {
-        return new NameImpl(qname.getNamespaceURI(), qname.getLocalPart());
-    }
-
 }

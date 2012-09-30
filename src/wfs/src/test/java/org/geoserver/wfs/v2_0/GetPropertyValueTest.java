@@ -1,11 +1,15 @@
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.assertEquals;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetPropertyValueTest extends WFS20TestSupport {
 
+	@Test
     public void testPOST() throws Exception {
         String xml = 
             "<wfs:GetPropertyValue service='WFS' version='2.0.0' "
@@ -22,6 +26,7 @@ public class GetPropertyValueTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member/sf:pointProperty/gml:Point)", dom);
     }
     
+	@Test
     public void testGET() throws Exception {
         Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetPropertyValue" +
             "&typeNames=sf:PrimitiveGeoFeature&valueReference=pointProperty");
@@ -32,6 +37,7 @@ public class GetPropertyValueTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member/sf:pointProperty/gml:Point)", dom);
     }
 
+	@Test
     public void testResolveException() throws Exception {
         String xml = 
             "<wfs:GetPropertyValue service='WFS' version='2.0.0' "

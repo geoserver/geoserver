@@ -1,22 +1,34 @@
 package org.geoserver.wfs;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 public class GetFeatureMissingTypesTest extends WFSTestSupport {
 
-	public void testPostMissingType10() throws Exception {
-    	// let's remove one property file so that its schema cannot be computed
-    	// (GEOS-3049)
-    	File root = getTestData().getDataDirectoryRoot();
-    	File nsDirectory = new File(root, MockData.BUILDINGS.getPrefix());
-		File buildings = new File(nsDirectory, MockData.BUILDINGS.getLocalPart() + ".properties");
-		assertTrue(buildings.delete());
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.BUILDINGS);
+    }
 
-		// we're requesting another feature type, that should work
+    @Test
+    public void testPostMissingType10() throws Exception {
+        // let's remove one property file so that its schema cannot be computed
+        // (GEOS-3049)
+        File root = getTestData().getDataDirectoryRoot();
+        File nsDirectory = new File(root, SystemTestData.BUILDINGS.getPrefix());
+        File buildings = new File(nsDirectory,
+                SystemTestData.BUILDINGS.getLocalPart() + ".properties");
+        assertTrue(buildings.delete());
+
+        // we're requesting another feature type, that should work
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
                 + "version=\"1.0.0\" "
                 + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
@@ -40,7 +52,7 @@ public class GetFeatureMissingTypesTest extends WFSTestSupport {
         + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
         + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
-        + "<wfs:Query typeName=\"" + getLayerId(MockData.BUILDINGS) +"\"/> "
+        + "<wfs:Query typeName=\"" + getLayerId(SystemTestData.BUILDINGS) +"\"/> "
         + "</wfs:GetFeature>";
 
 		doc = postAsDOM("wfs", xml);
@@ -49,12 +61,13 @@ public class GetFeatureMissingTypesTest extends WFSTestSupport {
 		        .getNodeName());
     }
 	
+	@Test
 	public void testPostMissingType11() throws Exception {
         // let's remove one property file so that its schema cannot be computed
         // (GEOS-3049)
         File root = getTestData().getDataDirectoryRoot();
-        File nsDirectory = new File(root, MockData.BUILDINGS.getPrefix());
-        File buildings = new File(nsDirectory, MockData.BUILDINGS.getLocalPart() + ".properties");
+        File nsDirectory = new File(root, SystemTestData.BUILDINGS.getPrefix());
+        File buildings = new File(nsDirectory, SystemTestData.BUILDINGS.getLocalPart() + ".properties");
         assertTrue(buildings.delete());
 
         // we're requesting another feature type, that should work
@@ -78,7 +91,7 @@ public class GetFeatureMissingTypesTest extends WFSTestSupport {
             + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
             + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
             + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
-            + "<wfs:Query typeName=\"" + getLayerId(MockData.BUILDINGS) +"\"/> "
+            + "<wfs:Query typeName=\"" + getLayerId(SystemTestData.BUILDINGS) +"\"/> "
             + "</wfs:GetFeature>";
 
         doc = postAsDOM("wfs", xml);

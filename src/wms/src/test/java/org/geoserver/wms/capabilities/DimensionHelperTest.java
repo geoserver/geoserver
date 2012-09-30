@@ -1,19 +1,23 @@
 package org.geoserver.wms.capabilities;
 
+import static org.junit.Assert.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.TimeZone;
-import junit.framework.TestCase;
+
+import org.junit.Test;
 
 /**
  * A test for proper ISO8601 formatting.
  * @author Ian Schneider <ischneider@opengeo.org>
  */
-public class DimensionHelperTest extends TestCase {
+public class DimensionHelperTest {
     
+    @Test
     public void testNegativeYears() {
         DimensionHelper.ISO8601Formatter fmt = new DimensionHelper.ISO8601Formatter();
         
@@ -45,6 +49,7 @@ public class DimensionHelperTest extends TestCase {
      * 
      * The random seed is not specified to allow various test runs broader coverage.
      */
+    @Test
     public void testFormatterFuzz() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -64,6 +69,7 @@ public class DimensionHelperTest extends TestCase {
         }
     }
 
+    @Test
     public void testPadding() throws ParseException {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         df.setTimeZone(TimeZone.getTimeZone("GMT"));

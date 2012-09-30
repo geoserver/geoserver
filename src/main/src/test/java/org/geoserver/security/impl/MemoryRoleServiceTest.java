@@ -5,6 +5,8 @@
 
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.SortedSet;
 
@@ -18,9 +20,13 @@ import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
 import org.geoserver.security.password.PasswordValidator;
+import org.geoserver.test.SystemTest;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(SystemTest.class)
 public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
-  
 
     @Override
     public GeoServerRoleService createRoleService(String name) throws IOException {
@@ -28,17 +34,22 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         config.setName(name);
         GeoServerRoleService service = new MemoryRoleService();
         service.initializeFromConfig(config);
-        service.setSecurityManager(GeoServerExtensions.bean(GeoServerSecurityManager.class));
+        service.setSecurityManager(getSecurityManager());
         return service;
     }
 
-    @Override
-    protected void tearDownInternal() throws Exception {
-        super.tearDownInternal();
-        store.clear();
+    @Before
+    public void init() throws IOException {
+        service = createRoleService("test");
+        store = service.createStore();
     }
+//    @After
+//    public void clearRoleService() throws IOException {
+//        store.clear();
+//    }
 
 
+    @Test 
     public void testInsert() {
         super.testInsert();
         try {
@@ -50,6 +61,7 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
         }
     }
     
+    @Test 
     public void testMappedAdminRoles() throws Exception {
         MemoryRoleServiceConfigImpl config = new MemoryRoleServiceConfigImpl();
         config.setName("testAdminRole");

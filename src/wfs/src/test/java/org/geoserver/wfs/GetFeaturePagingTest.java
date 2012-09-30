@@ -7,18 +7,19 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
 public class GetFeaturePagingTest extends WFSTestSupport {
-
+	
     @Override
-    protected void setUpInternal() throws Exception {
+    protected void setUpInternal(SystemTestData testData) throws Exception {
         //run all the tests against a store that can do native paging (h2) and one that 
         // can't (property)
         Catalog cat = getCatalog();
@@ -31,8 +32,8 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
         cat.add(ds);
         
-        FeatureSource fs1 = getFeatureSource(MockData.FIFTEEN);
-        FeatureSource fs2 = getFeatureSource(MockData.SEVEN);
+        FeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
+        FeatureSource fs2 = getFeatureSource(SystemTestData.SEVEN);
         
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -59,6 +60,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         cat.add(ft);
     }
 
+    @Test
     public void testSingleType() throws Exception {
         doTestSingleType("gs:Fifteen");
         doTestSingleType("cdf:Fifteen");
@@ -87,6 +89,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + typeName + ")", doc);
     }
     
+    @Test
     public void testStartIndexSimplePOST() throws Exception {
         doTestStartIndexSimplePOST("gs:Fifteen");
         doTestStartIndexSimplePOST("cdf:Fifteen");
@@ -123,10 +126,11 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         return xml;
     }
     
+    @Test
     public void testStartIndexMultipleTypes() throws Exception {
         doTestStartIndexMultipleTypes("gs:Fifteen", "gs:Seven");
         doTestStartIndexMultipleTypes("cdf:Fifteen", "cdf:Seven");
-        doTestStartIndexMultipleTypes("gs:Fifteen", "cdf:Seven");
+    	doTestStartIndexMultipleTypes("gs:Fifteen", "cdf:Seven");
         doTestStartIndexMultipleTypes("cdf:Fifteen", "gs:Seven");
     }
     
@@ -134,6 +138,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         String typeNames = fifteen+","+seven;
         Document doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&" +
             "typename=" + typeNames + "&startIndex=10");
+        print(doc);
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("7", "count(//" + seven + ")", doc);
 
@@ -158,6 +163,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + seven + ")", doc);
     }
     
+    @Test
     public void testStartIndexMultipleTypesPOST() throws Exception {
         doTestStartIndexMultipleTypesPOST("gs:Fifteen", "gs:Seven");
         doTestStartIndexMultipleTypesPOST("cdf:Fifteen", "cdf:Seven");
@@ -202,6 +208,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
         return xml;
     }
     
+    @Test
     public void testWithFilter() throws Exception {
         doTestWithFilter("gs:Fifteen");
         doTestWithFilter("cdf:Fifteen");

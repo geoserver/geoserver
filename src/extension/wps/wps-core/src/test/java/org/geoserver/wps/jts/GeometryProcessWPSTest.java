@@ -3,6 +3,7 @@ package org.geoserver.wps.jts;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -12,6 +13,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class GeometryProcessWPSTest extends WPSTestSupport {
 
+    @Test
 	public void testBufferCapabilities() throws Exception {
 		// buffer uses an enumerated attribute, make sure it's not blacklisted because of that
 		Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
@@ -20,6 +22,7 @@ public class GeometryProcessWPSTest extends WPSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wps:Process/ows:Identifier[text() = 'JTS:buffer'])", d);
 	}
 	
+    @Test
 	public void testDescribeBuffer() throws Exception {
 		Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
 		// print(d);
@@ -36,6 +39,7 @@ public class GeometryProcessWPSTest extends WPSTestSupport {
 		assertXpathEvaluatesTo("Square", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[3]/text()", d);
 	}                                        
 	
+    @Test
 	public void testExecuteBuffer() throws Exception {
         String xml =  
             "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 

@@ -4,18 +4,19 @@
  */
 package org.geoserver.wms.georss;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.Test;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.Query;
+import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,20 +25,16 @@ import org.w3c.dom.NodeList;
 public class AtomGeoRSSTransformerTest extends WMSTestSupport {
     static WMSMapContent map;
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new AtomGeoRSSTransformerTest());
-    }
-
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+ 
+    @Before
+    public void initializeMap() throws Exception {
+       
 
         map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
     }
-
+    
+    @org.junit.Test
     public void testLatLongInternal() throws Exception {
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(getWMS());
         tx.setGeometryEncoding(AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
@@ -65,6 +62,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
 
+    @org.junit.Test
     public void testLatLongWMS() throws Exception {
         Document document = getAsDOM(
                 "wms/reflect?format_options=encoding:latlong&format=application/atom+xml&layers=" 
@@ -86,7 +84,8 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("geo:long").getLength());
         }
     }
-
+    
+    @org.junit.Test
     public void testSimpleInternal() throws Exception {
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(getWMS());
         tx.setGeometryEncoding(AtomGeoRSSTransformer.GeometryEncoding.SIMPLE);
@@ -113,7 +112,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("georss:polygon").getLength());
         }
     }
-
+    @org.junit.Test
     public void testSimpleWMS() throws Exception {
         Document document = getAsDOM(
                 "wms/reflect?format_options=encoding:simple&format=application/atom+xml&layers=" 
@@ -135,7 +134,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("georss:polygon").getLength());
         }
     }
-    
+    @org.junit.Test
     public void testGmlWMS() throws Exception {
         Document document = getAsDOM(
                 "wms/reflect?format_options=encoding:gml&format=application/atom+xml&layers=" 

@@ -1,5 +1,6 @@
 package org.geoserver.security.web.service;
 
+import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 
 import org.apache.wicket.Component;

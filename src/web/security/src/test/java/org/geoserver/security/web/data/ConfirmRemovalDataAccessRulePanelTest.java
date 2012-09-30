@@ -11,10 +11,12 @@ import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.web.AbstractConfirmRemovalPanelTest;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Test;
 
 public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemovalPanelTest<DataAccessRule> {
     private static final long serialVersionUID = 1L;
 
+    @Test
     public void testRemoveRule() throws Exception {
         initializeForXML();
         removeObject();        

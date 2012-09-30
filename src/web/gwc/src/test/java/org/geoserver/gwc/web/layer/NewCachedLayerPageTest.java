@@ -4,16 +4,12 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import junit.framework.Test;
-
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class NewCachedLayerPageTest extends GeoServerWicketTestSupport {
 
-    public static Test suite() {
-        return new OneTimeTestSetup(new NewCachedLayerPageTest());
-    }
-
+    @Test
     public void testPageLoad() {
         NewCachedLayerPage page = new NewCachedLayerPage();
 

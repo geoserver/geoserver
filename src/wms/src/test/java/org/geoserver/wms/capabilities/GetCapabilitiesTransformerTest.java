@@ -4,7 +4,8 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -35,7 +34,9 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.referencing.CRS;
-import org.geotools.util.Version;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -46,7 +47,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  * @author Gabriel Roldan
  * @version $Id$
  */
-public class GetCapabilitiesTransformerTest extends TestCase {
+public class GetCapabilitiesTransformerTest {
 
     private XpathEngine XPATH;
 
@@ -92,7 +93,8 @@ public class GetCapabilitiesTransformerTest extends TestCase {
      * Sets up the configuration objects with default values. Since they're live, specific tests can
      * modify their state before running the assertions
      */
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         geosConfig = new GeoServerImpl();
 
         geosInfo = new GeoServerInfoImpl(geosConfig);
@@ -116,10 +118,7 @@ public class GetCapabilitiesTransformerTest extends TestCase {
         XPATH = XMLUnit.newXpathEngine();
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testHeader() throws Exception {
         GetCapabilitiesTransformer tr;
         tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
@@ -127,12 +126,13 @@ public class GetCapabilitiesTransformerTest extends TestCase {
         tr.transform(req, writer);
         String content = writer.getBuffer().toString();
 
-        assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
+        Assert.assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         String dtdDef = "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"" + baseUrl
                 + "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd\">";
-        assertTrue(content.contains(dtdDef));
+        Assert.assertTrue(content.contains(dtdDef));
     }
 
+    @Test
     public void testRootElement() throws Exception {
         GetCapabilitiesTransformer tr;
         tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
@@ -151,6 +151,7 @@ public class GetCapabilitiesTransformerTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testServiceSection() throws Exception {
         wmsInfo.setTitle("title");
         wmsInfo.setAbstract("abstract");
@@ -220,6 +221,7 @@ public class GetCapabilitiesTransformerTest extends TestCase {
         assertXpathEvaluatesTo("accessConstraints", service + "/AccessConstraints", dom);
     }
 
+    @Test
     public void testCRSList() throws Exception {
         GetCapabilitiesTransformer tr;
         tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
@@ -232,6 +234,7 @@ public class GetCapabilitiesTransformerTest extends TestCase {
         assertEquals(supportedCodes.size(), allCrsCodes.getLength());
     }
 
+    @Test
     public void testLimitedCRSList() throws Exception {
         wmsInfo.getSRS().add("EPSG:3246");
         wmsInfo.getSRS().add("EPSG:23030");
@@ -245,6 +248,7 @@ public class GetCapabilitiesTransformerTest extends TestCase {
         assertEquals(2, limitedCrsCodes.getLength());
     }
 
+    @Test
     public void testVendorSpecificCapabilities() throws Exception {
         ExtendedCapabilitiesProvider vendorCapsProvider = new ExtendedCapabilitiesProvider() {
 

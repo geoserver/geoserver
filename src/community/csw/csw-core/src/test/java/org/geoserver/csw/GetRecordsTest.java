@@ -1,8 +1,8 @@
 package org.geoserver.csw;
 
+import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,22 +13,20 @@ import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
 import net.opengis.cat.csw20.ElementSetNameType;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
 
-import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
-import org.geoserver.data.test.MockData;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.xml.XmlConverterFactory;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Not;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -37,13 +35,7 @@ import org.w3c.dom.Document;
 
 public class GetRecordsTest extends CSWTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetRecordsTest());
-    }
-    
+    @Test 
     public void testKVPParameterCQL() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -94,6 +86,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertEquals(2, query.getElementName().size());
     }
 
+    @Test 
     public void testKVPParameterFilter() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "CSW");
@@ -133,6 +126,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertEquals(ElementSetType.BRIEF, query.getElementSetName().getValue());
     }
 
+    @Test 
     public void testXMLReaderParameter() throws Exception {
         CSWXmlReader reader = new CSWXmlReader("GetRecords", "2.0.2", new CSWConfiguration());
         GetRecordsType gr = (GetRecordsType) reader.read(null,
@@ -162,11 +156,13 @@ public class GetRecordsTest extends CSWTestSupport {
      * Rigth now we don't support the "validate" mode, we need a way to re-encode the request in XML
      * or to snatch it from the raw POST request
      * 
+     * @Test 
      * public void testValidateRequest() throws Exception { String request =
      * "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=validate";
      * Document d = getAsDOM(request); }
      */
 
+    @Test 
     public void testHitRequest() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record";
         Document d = getAsDOM(request);
@@ -203,6 +199,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertEquals(TimeZone.getTimeZone("GMT"), cal.getTimeZone());
     }
     
+    @Test 
     public void testHitMaxOffset() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=5&maxRecords=2";
         Document d = getAsDOM(request);
@@ -222,6 +219,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("0", "count(//csw:SearchResults/*)", d);
     }
     
+    @Test 
     public void testInvalidStartPosition() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=0";
         Document d = getAsDOM(request);
@@ -229,6 +227,7 @@ public class GetRecordsTest extends CSWTestSupport {
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "startPosition");
     }
     
+    @Test 
     public void testInvalidOutputSchema() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&outputSchema=http://www.geoserver.org";
         Document d = getAsDOM(request);
@@ -236,6 +235,7 @@ public class GetRecordsTest extends CSWTestSupport {
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputSchema");
     }
     
+    @Test 
     public void testAllRecordsDefaultElementSet() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results";
         Document d = getAsDOM(request);
@@ -252,6 +252,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:SummaryRecord)", d);
     }
     
+    @Test 
     public void testAllRecordsBrief() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief";
         Document d = getAsDOM(request);
@@ -267,6 +268,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:BriefRecord)", d);
     }
     
+    @Test 
     public void testAllRecordsFull() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=full";
         Document d = getAsDOM(request);
@@ -282,6 +284,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("10", "count(//csw:SearchResults/csw:Record)", d);
     }
     
+    @Test 
     public void testEmptyResult() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&constraint=dc:title = 'foo'";
         Document d = getAsDOM(request);
@@ -295,6 +298,7 @@ public class GetRecordsTest extends CSWTestSupport {
     }
 
     
+    @Test 
     public void testTitleFilter() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=dc:title like '%25ipsum%25'";
         Document d = getAsDOM(request);
@@ -303,6 +307,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertIpsumRecords(d);
     }
     
+    @Test 
     public void testUnqualifiedTitleFilter() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=title like '%25ipsum%25'";
         Document d = getAsDOM(request);
@@ -326,6 +331,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])", d);
     }
     
+    @Test 
     public void testFullTextSearch() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=AnyText like '%25sed%25'";
         Document d = getAsDOM(request);
@@ -354,6 +360,7 @@ public class GetRecordsTest extends CSWTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testFullTextSearchCaseInsensitive() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=full&constraint=AnyText like '%25lorem%25'";
         Document d = getAsDOM(request);
@@ -375,6 +382,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertXpathEvaluatesTo("1", "count(//csw:Record[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])", d);
     }
     
+    @Test 
     public void testSortByIdentifier() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&sortBy=dc:identifier:A";
         Document d = getAsDOM(request);
@@ -400,6 +408,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertEquals(sorted, identifiers);
     }
     
+    @Test 
     public void testSortByDateSelectElements() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
         		"&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
@@ -426,6 +435,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertEquals(sorted, dates);
     }
     
+    @Test 
     public void testFilterBBox() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
                 "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(ows:BoundingBox, 47.0, -4.5, 52.0, 1.0)";
@@ -449,6 +459,7 @@ public class GetRecordsTest extends CSWTestSupport {
      * From CITE compliance, throw an error if a non spatial property is used in a spatial filter
      * @throws Exception
      */
+    @Test 
     public void testSpatialFilterNonGeomProperty() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
                 "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(dct:spatial, 47.0, -4.5, 52.0, 1.0)";
@@ -461,6 +472,7 @@ public class GetRecordsTest extends CSWTestSupport {
      * From CITE compliance, throw an error the output format is not supported
      * @throws Exception
      */
+    @Test 
     public void testUnsupportedOutputFormat() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&outputFormat=application/xhtml+xml";
         Document d = getAsDOM(request);
@@ -468,6 +480,7 @@ public class GetRecordsTest extends CSWTestSupport {
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
     }
 
+    @Test 
     public void testValidateGet() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=validate";
         Document d = getAsDOM(request);
@@ -481,6 +494,7 @@ public class GetRecordsTest extends CSWTestSupport {
         assertGMLTimestamp(timeStamp);
     }
     
+    @Test 
     public void testValidatePost() throws Exception {
         String request = getResourceAsString("GetRecordsValidate.xml");
         Document d = postAsDOM("csw", request);

@@ -1,15 +1,15 @@
 package org.geoserver.flow.controller;
 
-import java.lang.Thread.State;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import java.lang.Thread.State;
 
 /**
  * Base class providing utilities to test flow controllers
  * @author Andrea Aime - OpenGeo
  *
  */
-public abstract class AbstractFlowControllerTest extends TestCase {
+public abstract class AbstractFlowControllerTest {
 
     /**
      * Waits until the thread enters in WAITING or TIMED_WAITING state

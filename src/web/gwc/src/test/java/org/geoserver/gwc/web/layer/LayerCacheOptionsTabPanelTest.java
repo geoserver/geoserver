@@ -4,9 +4,9 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import java.util.Arrays;
+import static org.junit.Assert.*;
 
-import junit.framework.Test;
+import java.util.Arrays;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -21,6 +21,8 @@ import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.layer.TileLayer;
+import org.junit.Before;
+import org.junit.Test;
 
 public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
@@ -28,12 +30,8 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
     private GeoServerTileLayerInfoModel tileLayerModel;
 
-    public static Test suite() {
-        return new OneTimeTestSetup(new LayerCacheOptionsTabPanelTest());
-    }
-
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void setUpInternal() throws Exception {
         LayerInfo layerInfo = getCatalog().getLayers().get(0);
         GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
         assertNotNull(tileLayer);
@@ -41,6 +39,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         tileLayerModel = new GeoServerTileLayerInfoModel(tileLayer.getInfo(), false);
     }
 
+    @Test
     public void testPageLoad() {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             private static final long serialVersionUID = -5907648151984337786L;
@@ -53,6 +52,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:panel", LayerCacheOptionsTabPanel.class);
     }
 
+    @Test
     public void testSaveExisting() {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             private static final long serialVersionUID = -6705646666953650890L;
@@ -76,6 +76,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         assertEquals(info.isEnabled(), actual.isEnabled());
     }
 
+    @Test
     public void testSaveNew() {
         GWC mediator = GWC.get();
         mediator.removeTileLayers(Arrays.asList(tileLayerModel.getObject().getName()));
@@ -105,6 +106,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         assertNotNull(mediator.getTileLayer(layerModel.getObject()));
     }
 
+    @Test
     public void testRemoveExisting() {
 
         GWC mediator = GWC.get();

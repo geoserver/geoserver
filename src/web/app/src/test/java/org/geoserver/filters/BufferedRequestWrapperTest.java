@@ -4,29 +4,26 @@
  */
 package org.geoserver.filters;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.util.Map;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
-import junit.framework.Test;
+import org.junit.Test;
 
-public class BufferedRequestWrapperTest extends RequestWrapperTestSupport{
+public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
 
-	/**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new BufferedRequestWrapperTest());
-    }
-
+    @Test
 	public void testGetInputStream() throws Exception{
 		for (int i = 0; i < testStrings.length; i++){
 			doInputStreamTest(testStrings[i]);
 		}
 	}
 
+	@Test
 	public void testGetReader() throws Exception{
 	    for (int i = 0; i < testStrings.length; i++){
 			doGetReaderTest(testStrings[i]);
@@ -71,6 +68,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport{
 		assertEquals(buff.toString(), testString);
 	}
     
+    @Test
     public void testMixedRequest() throws Exception {
         String body = "a=1&b=2";
         String queryString = "c=3&d=4";

@@ -5,6 +5,7 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -12,7 +13,9 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 public abstract class LayerGroupBaseTest extends GeoServerWicketTestSupport {
 
     @Override
-    protected void setUpInternal() throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
         // TODO: see GEOS-3040
         Catalog catalog = getCatalog();
         String lakes = MockData.LAKES.getLocalPart();

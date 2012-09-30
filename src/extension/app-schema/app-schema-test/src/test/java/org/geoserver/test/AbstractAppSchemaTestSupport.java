@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.*;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -20,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -27,6 +30,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
@@ -52,7 +56,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractTestSupport {
+public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSupport {
 
     /**
      * The namespace URI used internally in the DOM to qualify the name of an "xmlns:" attribute.
@@ -102,7 +106,43 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      * @see org.geoserver.test.GeoServerAbstractTestSupport#buildTestData()
      */
     @Override
-    protected abstract NamespaceTestData buildTestData();
+    protected abstract AbstractAppSchemaMockData createTestData();
+    
+    /**
+     * Configure WFS to encode canonical schema location and use featureMember.
+     * 
+     * <p>
+     * 
+     * FIXME: These settings should go in wfs.xml for the mock data when tests migrated to new data
+     * directory format. Have to do it programmatically for now. To do this insert in wfs.xml just
+     * after the <tt>featureBounding</tt> setting:
+     * 
+     * <ul>
+     * <li><tt>&lt;canonicalSchemaLocation&gt;true&lt;/canonicalSchemaLocation&gt;<tt></li>
+     * <li><tt>&lt;encodeFeatureMember&gt;true&lt;/encodeFeatureMember&gt;<tt></li>
+     * </ul>
+     */
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        wfs.setCanonicalSchemaLocation(true);
+        wfs.setEncodeFeatureMember(true);
+        getGeoServer().save(wfs);
+        // disable schema caching in tests, as schemas are expected to provided on the classpath
+        AppSchemaCache.disableAutomaticConfiguration();
+    }
+
+    /**
+     * Unregister all data access from registry to avoid stale data access being used by other unit
+     * tests.
+     */
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        DataAccessRegistry.unregisterAndDisposeAll();
+        AppSchemaDataAccessRegistry.clearAppSchemaProperties();
+        AppSchemaXSDRegistry.getInstance().dispose();
+        catalog = null;
+    }
 
     /**
      * Return the test data.
@@ -114,8 +154,8 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
      * @see org.geoserver.test.GeoServerAbstractTestSupport#getTestData()
      */
     @Override
-    public NamespaceTestData getTestData() {
-        return (NamespaceTestData) super.getTestData();
+    public AbstractAppSchemaMockData getTestData() {
+        return (AbstractAppSchemaMockData) super.getTestData();
     }
 
     /**
@@ -132,43 +172,6 @@ public abstract class AbstractAppSchemaWfsTestSupport extends GeoServerAbstractT
         return getNamespaces().get(prefix);
     }
 
-    /**
-     * Configure WFS to encode canonical schema location and use featureMember.
-     * 
-     * <p>
-     * 
-     * FIXME: These settings should go in wfs.xml for the mock data when tests migrated to new data
-     * directory format. Have to do it programmatically for now. To do this insert in wfs.xml just
-     * after the <tt>featureBounding</tt> setting:
-     * 
-     * <ul>
-     * <li><tt>&lt;canonicalSchemaLocation&gt;true&lt;/canonicalSchemaLocation&gt;<tt></li>
-     * <li><tt>&lt;encodeFeatureMember&gt;true&lt;/encodeFeatureMember&gt;<tt></li>
-     * </ul>
-     */
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        wfs.setCanonicalSchemaLocation(true);
-        wfs.setEncodeFeatureMember(true);
-        getGeoServer().save(wfs);
-        // disable schema caching in tests, as schemas are expected to provided on the classpath
-        AppSchemaCache.disableAutomaticConfiguration();
-    }
-
-    /**
-     * Unregister all data access from registry to avoid stale data access being used by other unit
-     * tests.
-     */
-    @Override
-    protected void oneTimeTearDown() throws Exception {
-        super.oneTimeTearDown();
-        DataAccessRegistry.unregisterAndDisposeAll();
-        AppSchemaDataAccessRegistry.clearAppSchemaProperties();
-        AppSchemaXSDRegistry.getInstance().dispose();
-        catalog = null;
-    }
 
     /**
      * Return the response for a GET request for a path (starts with "wfs?").

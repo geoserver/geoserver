@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * Tests whether app-schema can walk through substitution groups automatically,
@@ -16,25 +16,17 @@ import junit.framework.Test;
  * @author Niels Charlier, Curtin University of Technology
  * 
  */
-public class SubstitutionGroupTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SubstitutionGroupTest());
-    }
+public class SubstitutionGroupTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected SubstitutionGroupMockData createTestData() {
         return new SubstitutionGroupMockData();
     }
 
     /**
      * Test GetFeature .
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));

@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.web.jdbc;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 
 import org.apache.wicket.Component;
@@ -14,12 +16,14 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Test;
 
 public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
 
@@ -35,16 +39,15 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         config.setJndi(jndi);
         setupPanel(config);
     }
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         // disable url parameter encoding for these tests
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         config.setEncryptingUrlParams(false);
         getSecurityManager().saveSecurityConfig(config);
     }
-
     
     protected void setupPanel(JDBCSecurityServiceConfig theConfig) {
         this.config = theConfig;
@@ -57,6 +60,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         }, new CompoundPropertyModel(config)));
     }
 
+    @Test
     public void testJNDI() throws Exception {
         setupPanel(true);
         tester.assertRenderedPage(FormTestPage.class);
@@ -72,6 +76,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         assertEquals("jndiurl", config.getJndiName());
     }
 
+    @Test
     public void testConnectionTestJNDI() throws Exception {
         JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
         theConfig.setJndi(true);
@@ -83,6 +88,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
     }
 
+    @Test
     public void testBasic() throws Exception {
         setupPanel(false);
         tester.assertRenderedPage(FormTestPage.class);
@@ -104,6 +110,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         assertEquals("jdbc:h2", config.getConnectURL());
     }
 
+    @Test
     public void testConncetionTestBasic() throws Exception {
         JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
         theConfig.setUserName("user1");
@@ -118,6 +125,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
     }
     
+    @Test
     public void testConnectionTestBasicOK() throws Exception {
         JDBCUserGroupServiceConfig theConfig = new JDBCUserGroupServiceConfig();
         theConfig.setUserName("user1");

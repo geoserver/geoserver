@@ -1,41 +1,31 @@
 package org.geoserver.wfs.response;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import junit.framework.Test;
-import junit.textui.TestRunner;
+import java.io.File;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
-
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
-
+import org.junit.Test;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GeoJSONTest extends WFSTestSupport {
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GeoJSONTest());
-    }
-
-       
+         
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void setUpInternal(SystemTestData data) throws Exception {
         File security = new File(getTestData().getDataDirectoryRoot(), "security");
         security.mkdir();
         File layers = new File(security, "layers.properties");
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
     }
-	
-    
-    
+	    
+    @Test
     public void testFeatureBoundingDisabledCollection() throws Exception {
     	/* In GML we have the option not to compute the bounds in the response, 
     	 * and by default we don't, but GeoServer can be configured to return 
@@ -70,7 +60,7 @@ public class GeoJSONTest extends WFSTestSupport {
     	
     }
     
-    
+    @Test
     public void testGet() throws Exception {	
     	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat=json");
     	
@@ -81,6 +71,7 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
 
+    @Test
     public void testPost() throws Exception {
         String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\"json\" "
                 + "version=\"1.0.0\" "
@@ -99,6 +90,7 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
 
+    @Test
     public void testGeometryCollection() throws Exception {
     	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:AggregateGeoFeature&maxfeatures=3&outputformat=json");
     	
@@ -114,6 +106,7 @@ public class GeoJSONTest extends WFSTestSupport {
     	assertEquals(geomArray.getString(0), "55.174");
     }
     
+    @Test
     public void testMixedCollection() throws Exception {
         String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\"json\" "
         + "version=\"1.0.0\" "
@@ -147,6 +140,7 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals(aGeometry.getString("type"),"MultiLineString");
     }
     
+    @Test
     public void testCallbackFunction() throws Exception {    
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat=json&format_options=callback:myFunc");
         String out = resp.getOutputStreamContent();
@@ -164,8 +158,4 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
     
-    public static void main(String[] args) {
-        TestRunner runner = new TestRunner();
-        runner.run(GeoJSONTest.class);
-    }
 }

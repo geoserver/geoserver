@@ -1,14 +1,25 @@
 package org.geoserver.security.xml;
 
 import static org.geoserver.security.xml.XMLSecurityConfigException.*;
+import static org.junit.Assert.*;
+import static org.easymock.classextension.EasyMock.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
+import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
@@ -20,19 +31,14 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidatorTest;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 
 public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest {
 
     
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
-    
-    
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-    }
-        
-    protected SecurityUserGroupServiceConfig getUGConfig(String name, Class<?> aClass,
+
+    protected SecurityUserGroupServiceConfig createUGConfig(String name, Class<?> aClass,
             String encoder, String policyName, String fileName) {
         XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();
         config.setName(name);
@@ -44,7 +50,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         return config;
     }
     
-    protected SecurityRoleServiceConfig getRoleConfig(String name, Class<?> aClass,String adminRole,String fileName) {
+    protected SecurityRoleServiceConfig createRoleConfig(String name, Class<?> aClass,String adminRole,String fileName) {
         XMLRoleServiceConfig config = new XMLRoleServiceConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -54,296 +60,360 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         return config;
     }
 
+    @Test
     public void testRoleConfig() throws IOException{
         
         super.testRoleConfig();
-        
-        XMLRoleServiceConfig  config = 
-                (XMLRoleServiceConfig )getRoleConfig(XMLRoleService.DEFAULT_NAME, XMLRoleService.class, 
-                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,XMLConstants.FILE_RR);
-        boolean fail;
 
-        
-        fail=false;
+        XMLRoleServiceConfig  config = 
+                (XMLRoleServiceConfig )createRoleConfig(XMLRoleService.DEFAULT_NAME, XMLRoleService.class, 
+                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,XMLConstants.FILE_RR);
+
+        XMLSecurityConfigValidator validator = new XMLSecurityConfigValidator(getSecurityManager());
+
         try {
             config.setName("default2");
             config.setCheckInterval(-1l);
-            getSecurityManager().saveRoleService(config);                                     
+            validator.validateAddRoleService(config);
+            fail("invalid interval should fail");
+            //getSecurityManager().saveRoleService(config);                                     
         } catch (SecurityConfigException ex) {
             assertEquals( CHECK_INTERVAL_INVALID,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
         }
-        assertTrue(fail);
-        
 
-                
-        fail=false;
         try {
             config.setCheckInterval(999l);
-            getSecurityManager().saveRoleService(config);                         
+            validator.validateAddRoleService(config);
+            fail("invalid interval should fail");
+            //getSecurityManager().saveRoleService(config);                         
         } catch (SecurityConfigException ex) {
             assertEquals( CHECK_INTERVAL_INVALID,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
         }
-        assertTrue(fail);
 
         config.setCheckInterval(0);
         
         XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig) 
-                getRoleConfig("test1",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,"test1.xml");
+                createRoleConfig("test1",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,"test1.xml");
         
         try {
-            getSecurityManager().saveRoleService(xmlConfig);
-            getSecurityManager().removeRoleService(xmlConfig);
+            validator.validateAddRoleService(xmlConfig);
+            //getSecurityManager().saveRoleService(xmlConfig);
         } catch (SecurityConfigException ex) {
-            Assert.fail("Should work");
-        }
-        
-        fail=false;
-        xmlConfig = (XMLRoleServiceConfig) 
-                getRoleConfig("test2",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,"test2.xml");
-        try {
-            getSecurityManager().saveRoleService(xmlConfig);
-            GeoServerRoleStore store = getSecurityManager().loadRoleService("test2").createStore();
-            store.addRole(GeoServerRole.ADMIN_ROLE);
-            store.store();
-            getSecurityManager().removeRoleService(xmlConfig);
-        } catch (SecurityConfigException ex) {
-            assertEquals(ROLE_SERVICE_NOT_EMPTY_$1, ex.getId());
-            assertEquals("test2", ex.getArgs()[0]);
-            fail=true;
-        }
-        assertTrue(fail);
-
-        xmlConfig = (XMLRoleServiceConfig) 
-                getRoleConfig("test3",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
-                        new File(getSecurityManager().getRoleRoot(),"test3.xml").getAbsolutePath());
-        try {
-            getSecurityManager().saveRoleService(xmlConfig);
-            GeoServerRoleStore store = getSecurityManager().loadRoleService("test3").createStore();
-            store.addRole(GeoServerRole.ADMIN_ROLE);
-            store.store();
-            getSecurityManager().removeRoleService(xmlConfig);
-        } catch (SecurityConfigException ex) {
-            Assert.fail("Should work");
+            fail("Should work but got: " + ex.getMessage());
         }
 
-        // run only if a temp dir is availbale
+     // run only if a temp dir is availbale
         if (new XMLSecurityConfigValidator(getSecurityManager()).getTempDir()!=null) {
             String invalidPath="abc"+File.separator+"def.xml";
-            xmlConfig = (XMLRoleServiceConfig) 
-                    getRoleConfig("test4",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
+            XMLRoleServiceConfig xmlConfig4 = (XMLRoleServiceConfig) 
+                    createRoleConfig("test4",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
                             invalidPath);
-            
-            fail=false;
+
             try {
-                getSecurityManager().saveRoleService(xmlConfig);
+                validator.validateAddRoleService(xmlConfig4);
+                fail("file creation failure should occur");
+                //getSecurityManager().saveRoleService(xmlConfig);
             } catch (SecurityConfigException ex) {
                 assertEquals(FILE_CREATE_FAILED_$1, ex.getId());
                 assertEquals(invalidPath, ex.getArgs()[0]);
-                fail=true;
             }
-            assertTrue(fail);
         }
-        /////////////// test modify
-        xmlConfig = (XMLRoleServiceConfig)
-                getRoleConfig("test4",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
-                        "testModify.xml");
+
+        GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
+
+        GeoServerRoleService roleService1 = createNiceMock(GeoServerRoleService.class);
+        expect(roleService1.getRoleCount()).andReturn(0).anyTimes();
+        expect(secMgr.loadRoleService("test1")).andReturn(roleService1).anyTimes();
+
+        GeoServerRoleService roleService2 = createNiceMock(GeoServerRoleService.class);
+        expect(roleService2.getRoleCount()).andReturn(1).anyTimes();
+        expect(secMgr.loadRoleService("test2")).andReturn(roleService2).anyTimes();
+
+        GeoServerRoleService roleService3 = createNiceMock(GeoServerRoleService.class);
+        expect(roleService3.getRoleCount()).andReturn(1).anyTimes();
+        expect(secMgr.loadRoleService("test3")).andReturn(roleService3).anyTimes();
+
+        GeoServerRoleService roleService4 = createNiceMock(GeoServerRoleService.class);
+        expect(roleService4.getRoleCount()).andReturn(1).anyTimes();
+        expect(secMgr.loadRoleService("test4")).andReturn(roleService4).anyTimes();
+
+        GeoServerRoleService activeRoleService = createNiceMock(GeoServerRoleService.class);
+        expect(activeRoleService.getName()).andReturn("foo").anyTimes();
+        expect(secMgr.getActiveRoleService()).andReturn(activeRoleService).anyTimes();
+        
+        expect(secMgr.listRoleServices()).andReturn(new TreeSet<String>(
+            Arrays.asList("test1", "test2", "test3", "test4"))).anyTimes();
+        
+        replay(roleService1, roleService2, roleService3, roleService4, activeRoleService, secMgr);
+
+        validator = new XMLSecurityConfigValidator(secMgr);
+        try {
+            validator.validateRemoveRoleService(xmlConfig);
+            //getSecurityManager().removeRoleService(xmlConfig);
+        } catch (SecurityConfigException ex) {
+            fail("Should work but got: " + ex.getMessage());
+        }
+
+        xmlConfig = (XMLRoleServiceConfig) 
+                createRoleConfig("test2",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,"test2.xml");
 
         try {
-            getSecurityManager().saveRoleService(xmlConfig);
+            validator.validateRemoveRoleService(xmlConfig);
+            fail("non empty role service should fail");
+//            getSecurityManager().saveRoleService(xmlConfig);
+//            GeoServerRoleStore store = getSecurityManager().loadRoleService("test2").createStore();
+//            store.addRole(GeoServerRole.ADMIN_ROLE);
+//            store.store();
+//            getSecurityManager().removeRoleService(xmlConfig);
+        } catch (SecurityConfigException ex) {
+            assertEquals(ROLE_SERVICE_NOT_EMPTY_$1, ex.getId());
+            assertEquals("test2", ex.getArgs()[0]);
+        }
+
+        xmlConfig = (XMLRoleServiceConfig) 
+                createRoleConfig("test3",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
+                        new File(getSecurityManager().getRoleRoot(),"test3.xml").getAbsolutePath());
+        try {
+            validator.validateRemoveRoleService(xmlConfig);
+            
+//            getSecurityManager().saveRoleService(xmlConfig);
+//            GeoServerRoleStore store = getSecurityManager().loadRoleService("test3").createStore();
+//            store.addRole(GeoServerRole.ADMIN_ROLE);
+//            store.store();
+//            getSecurityManager().removeRoleService(xmlConfig);
+        } catch (SecurityConfigException ex) {
+            fail("Should work");
+        }
+
+        
+        /////////////// test modify
+        xmlConfig = (XMLRoleServiceConfig)
+                createRoleConfig("test4",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
+                        "testModify.xml");
+
+        XMLRoleServiceConfig oldXmlConfig = new XMLRoleServiceConfig(xmlConfig);
+        try {
             xmlConfig.setValidating(true);
-            getSecurityManager().saveRoleService(xmlConfig);
+            validator.validateModifiedRoleService(xmlConfig, xmlConfig);
+            
+            //getSecurityManager().saveRoleService(xmlConfig);
+            //xmlConfig.setValidating(true);
+            //getSecurityManager().saveRoleService(xmlConfig);
         } catch (SecurityConfigException ex) {
             Assert.fail("Should work");
         }
 
-        fail=false;
         try {
             xmlConfig.setFileName("xyz.xml");
-            getSecurityManager().saveRoleService(xmlConfig);
+            validator.validateModifiedRoleService(xmlConfig, oldXmlConfig);
+            fail("invalid filename change should fail");
+            //getSecurityManager().saveRoleService(xmlConfig);
         } catch (SecurityConfigException ex) {
             assertEquals(FILENAME_CHANGE_INVALID_$2, ex.getId());
             assertEquals("testModify.xml", ex.getArgs()[0]);
             assertEquals("xyz.xml", ex.getArgs()[1]);
-            fail=true;
         }
-        assertTrue(fail);
-
-                
     }
 
-    
+    @Test
     public void testUserGroupConfig() throws IOException{
-
         super.testUserGroupConfig();
         XMLUserGroupServiceConfig config = (XMLUserGroupServiceConfig) 
-                getUGConfig(XMLUserGroupService.DEFAULT_NAME, XMLUserGroupService.class, 
+                createUGConfig(XMLUserGroupService.DEFAULT_NAME, XMLUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,XMLConstants.FILE_UR);
-        boolean fail;
-        
-        fail=false;
+
+        XMLSecurityConfigValidator validator = new XMLSecurityConfigValidator(getSecurityManager());
+
         try {
             config.setName("default2");
             config.setCheckInterval(-1l);
-            getSecurityManager().saveUserGroupService(config);                         
+            validator.validateAddUserGroupService(config);
+            fail("invalid check interval should fail");
+            //getSecurityManager().saveUserGroupService(config);                         
         } catch (SecurityConfigException ex) {
             assertEquals( CHECK_INTERVAL_INVALID,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
         }
-        assertTrue(fail);
 
-        fail=false;
         try {
             config.setCheckInterval(999l);
-            getSecurityManager().saveUserGroupService(config);                         
+            validator.validateAddUserGroupService(config);
+            fail("invalid check interval should fail");
+            //getSecurityManager().saveUserGroupService(config);
         } catch (SecurityConfigException ex) {
             assertEquals( CHECK_INTERVAL_INVALID,ex.getId());
             assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
         }
-        assertTrue(fail);
 
         config.setCheckInterval(0);
 
         XMLUserGroupServiceConfig xmlConfig = (XMLUserGroupServiceConfig) 
-                getUGConfig("test1", XMLUserGroupService.class, 
+                createUGConfig("test1", XMLUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,"test1.xml");
 
         GeoServerUserGroup group=new GeoServerUserGroup("testgroup");
         
         try {
-            getSecurityManager().saveUserGroupService(xmlConfig);
-            getSecurityManager().removeUserGroupService(xmlConfig);
+            validator.validateAddUserGroupService(xmlConfig);
+            //getSecurityManager().saveUserGroupService(xmlConfig);
+            //getSecurityManager().removeUserGroupService(xmlConfig);
         } catch (SecurityConfigException ex) {
-            Assert.fail("Should work");
+            Assert.fail("Should work but got: " + ex.getMessage());
         }
-        
-        
-        
-        fail=false;
-        xmlConfig = (XMLUserGroupServiceConfig) 
-                getUGConfig("test2", XMLUserGroupService.class, 
-                getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,"test2.xml");
-        try {
-            getSecurityManager().saveUserGroupService(xmlConfig);
-            GeoServerUserGroupStore store = getSecurityManager().loadUserGroupService("test2").createStore();
-            store.addGroup(group);
-            store.store();
-            getSecurityManager().removeUserGroupService(xmlConfig);
-        } catch (SecurityConfigException ex) {
-            assertEquals(USERGROUP_SERVICE_NOT_EMPTY_$1, ex.getId());
-            assertEquals("test2", ex.getArgs()[0]);
-            fail=true;
-        }
-        assertTrue(fail);
 
-        xmlConfig = (XMLUserGroupServiceConfig) 
-                getUGConfig("test3", XMLUserGroupService.class, 
+        XMLUserGroupServiceConfig xmlConfig5 = (XMLUserGroupServiceConfig) 
+                createUGConfig("test5", XMLUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,
-                new File(getSecurityManager().getUserGroupRoot(),"test3.xml").getAbsolutePath());
+                "abc.xml");
+        try {
+            //getSecurityManager().saveUserGroupService(xmlConfig);
+            validator.validateAddUserGroupService(xmlConfig5);
+        } catch (SecurityConfigException ex) {
+            Assert.fail("Should work but got: " + ex.getMessage());
+        }
 
         try {
-            getSecurityManager().saveUserGroupService(xmlConfig);
-            GeoServerUserGroupStore store = getSecurityManager().loadUserGroupService("test3").createStore();
-            store.addGroup(group);
-            store.store();
-            getSecurityManager().removeUserGroupService(xmlConfig);
+            xmlConfig5.setFileName("");
+            validator.validateAddUserGroupService(xmlConfig5);
+            fail("empty file name should fail");
+            //getSecurityManager().saveUserGroupService(xmlConfig5);
         } catch (SecurityConfigException ex) {
-            Assert.fail("Should work");
+            assertEquals(FILENAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
 
         // run only if a temp dir is availbale
         if (new XMLSecurityConfigValidator(getSecurityManager()).getTempDir()!=null) {
             String invalidPath="abc"+File.separator+"def.xml";
-            xmlConfig = (XMLUserGroupServiceConfig) 
-                    getUGConfig("test4", XMLUserGroupService.class, 
+            XMLUserGroupServiceConfig xmlConfig4 = (XMLUserGroupServiceConfig) 
+                    createUGConfig("test4", XMLUserGroupService.class, 
                     getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,
                     invalidPath);
             
-            fail=false;
             try {
-                getSecurityManager().saveUserGroupService(xmlConfig);
+                validator.validateAddUserGroupService(xmlConfig4);
+                fail("file creation should fail");
+                //getSecurityManager().saveUserGroupService(xmlConfig);
             } catch (SecurityConfigException ex) {
                 assertEquals(FILE_CREATE_FAILED_$1, ex.getId());
                 assertEquals(invalidPath, ex.getArgs()[0]);
-                fail=true;
             }
-            assertTrue(fail);
         }
         
+        GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
+        expect(secMgr.listAuthenticationProviders()).andReturn(new TreeSet<String>()).anyTimes();
+        
+        GeoServerUserGroupService ugService1 = createNiceMock(GeoServerUserGroupService.class);
+        expect(ugService1.getName()).andReturn("test1").anyTimes();
+        expect(secMgr.loadUserGroupService("test1")).andReturn(ugService1).anyTimes();
+
+        GeoServerUserGroupService ugService2 = createNiceMock(GeoServerUserGroupService.class);
+        expect(ugService2.getName()).andReturn("test2").anyTimes();
+        expect(ugService2.getGroupCount()).andReturn(1).anyTimes();
+        expect(secMgr.loadUserGroupService("test2")).andReturn(ugService2).anyTimes();
+
+        GeoServerUserGroupService ugServiceModify = createNiceMock(GeoServerUserGroupService.class);
+        expect(ugServiceModify.getName()).andReturn("testModify").anyTimes();
+        expect(secMgr.loadUserGroupService("testModify")).andReturn(ugService2).anyTimes();
+        
+        expect(secMgr.listUserGroupServices()).andReturn(new TreeSet<String>(
+                Arrays.asList("test1", "test2", "testModify"))).anyTimes();
+
+        expect(secMgr.loadPasswordEncoder(getPlainTextPasswordEncoder().getName()))
+            .andReturn(getPlainTextPasswordEncoder()).anyTimes();
+        expect(secMgr.listPasswordValidators()).andReturn(
+            new TreeSet<String>(Arrays.asList(PasswordValidator.DEFAULT_NAME))).anyTimes();
+        replay(ugService1, ugService2, ugServiceModify, secMgr);
+
+        //expect(secMgr.listUserGroupServices()).andReturn()
+        validator = new XMLSecurityConfigValidator(secMgr);
+        try {
+            validator.validateRemoveUserGroupService(xmlConfig);
+            //getSecurityManager().removeRoleService(xmlConfig);
+        } catch (SecurityConfigException ex) {
+            fail("Should work but got: " + ex.getMessage());
+        }
         
         xmlConfig = (XMLUserGroupServiceConfig) 
-                getUGConfig("test5", XMLUserGroupService.class, 
-                getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,
-                "abc.xml");
+                createUGConfig("test2", XMLUserGroupService.class, 
+                getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,"test2.xml");
         try {
-            getSecurityManager().saveUserGroupService(xmlConfig);
+            validator.validateRemoveUserGroupService(xmlConfig);
+            fail("non empty ug service should fail");
+            //getSecurityManager().saveUserGroupService(xmlConfig);
+            //GeoServerUserGroupStore store = getSecurityManager().loadUserGroupService("test2").createStore();
+            //store.addGroup(group);
+            //store.store();
+            //getSecurityManager().removeUserGroupService(xmlConfig);
         } catch (SecurityConfigException ex) {
-            Assert.fail("Should work");
+            assertEquals(USERGROUP_SERVICE_NOT_EMPTY_$1, ex.getId());
+            assertEquals("test2", ex.getArgs()[0]);
+        }
+
+        xmlConfig = (XMLUserGroupServiceConfig) 
+                createUGConfig("test3", XMLUserGroupService.class, 
+                getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,
+                new File(getSecurityManager().getUserGroupRoot(),"test3.xml").getAbsolutePath());
+
+        try {
+            validator.validateRemoveUserGroupService(xmlConfig);
+            //getSecurityManager().saveUserGroupService(xmlConfig);
+            //GeoServerUserGroupStore store = getSecurityManager().loadUserGroupService("test3").createStore();
+            //store.addGroup(group);
+            //store.store();
+            //getSecurityManager().removeUserGroupService(xmlConfig);
+        } catch (SecurityConfigException ex) {
+            Assert.fail("Should work but got: " + ex.getMessage());
         }
         
-
-        fail=false;
-        try {
-            xmlConfig.setFileName("");
-            getSecurityManager().saveUserGroupService(xmlConfig);
-        } catch (SecurityConfigException ex) {
-            assertEquals(FILENAME_REQUIRED, ex.getId());
-            assertEquals(0, ex.getArgs().length);
-            fail=true;
-        }
-        assertTrue(fail);
-
         /////////////// test modify
         xmlConfig = (XMLUserGroupServiceConfig) 
-                getUGConfig("testModify", XMLUserGroupService.class, 
+                createUGConfig("testModify", XMLUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,"testModify.xml");
+        
+        XMLUserGroupServiceConfig oldXmlConfig = new XMLUserGroupServiceConfig(xmlConfig);
         try {
-            getSecurityManager().saveUserGroupService(xmlConfig);
             xmlConfig.setValidating(true);
-            getSecurityManager().saveUserGroupService(xmlConfig);
+            validator.validateModifiedUserGroupService(xmlConfig, oldXmlConfig);
+            //getSecurityManager().saveUserGroupService(xmlConfig);
+            //xmlConfig.setValidating(true);
+            //getSecurityManager().saveUserGroupService(xmlConfig);
         } catch (SecurityConfigException ex) {
-            Assert.fail("Should work");
+            Assert.fail("Should work but got: " + ex.getMessage());
         }
 
-        fail=false;
         try {
             xmlConfig.setFileName("xyz.xml");
-            getSecurityManager().saveUserGroupService(xmlConfig);
+            validator.validateModifiedUserGroupService(xmlConfig, oldXmlConfig);
+            fail("invalid file name change should fail");
+            //getSecurityManager().saveUserGroupService(xmlConfig);
         } catch (SecurityConfigException ex) {
             assertEquals(FILENAME_CHANGE_INVALID_$2, ex.getId());
             assertEquals("testModify.xml", ex.getArgs()[0]);
             assertEquals("xyz.xml", ex.getArgs()[1]);
-            fail=true;
         }
-        assertTrue(fail);
     }
 
     @Override
+    @Test
     public void testAuthenticationProvider() throws IOException {
         super.testAuthenticationProvider();
         
-        SecurityAuthProviderConfig config = getAuthConfig("default2", 
+        SecurityAuthProviderConfig config = createAuthConfig("default2", 
                 UsernamePasswordAuthenticationProvider.class, null);
+
+        XMLSecurityConfigValidator validator = new XMLSecurityConfigValidator(getSecurityManager());
         
-        boolean fail=false;
         try {
-            getSecurityManager().saveAuthenticationProvider(config/*, false*/);
+            //getSecurityManager().saveAuthenticationProvider(config/*, false*/);
+            validator.validateAddAuthProvider(config);
+            fail("no user group service should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(USERGROUP_SERVICE_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
-            fail=true;
         }
-        assertTrue(fail);
-
     }
 
 }

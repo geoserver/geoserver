@@ -42,7 +42,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - TOPP
  * 
  */
-public class LiveDbmsData extends LiveData {
+public class LiveDbmsData extends LiveSystemTestData {
     private static final Logger LOGGER = Logging.getLogger(LiveDbmsData.class);
 
     /**
@@ -91,7 +91,7 @@ public class LiveDbmsData extends LiveData {
      * @param filterMap
      * @param sqlScript
      */
-    public LiveDbmsData(File dataDirSourceDirectory, String fixtureId, File sqlScript) {
+    public LiveDbmsData(File dataDirSourceDirectory, String fixtureId, File sqlScript) throws IOException {
         super(dataDirSourceDirectory);
         this.fixture = lookupFixture(fixtureId);
         this.fixtureId = fixtureId;

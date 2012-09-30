@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -16,25 +16,17 @@ import org.w3c.dom.Document;
  * @author Victor Tey, CSIRO Exploration and Mining
  * 
  */
-public class ValidationTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new ValidationTest());
-    }
+public class ValidationTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected ValidationTestMockData createTestData() {
         return new ValidationTestMockData();
     }
 
     /**
      * Test that when minOccur=0 the validation should let it pass
      */
+    @Test
     public void testAttributeMinOccur0() {
         Document doc = null;
         doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
@@ -104,6 +96,7 @@ public class ValidationTest extends AbstractAppSchemaWfsTestSupport {
                 doc);
     }
 
+    @Test
     public void testSimpleContentInteger() {
         Document doc = null;
         doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=er:Commodity");
@@ -131,6 +124,7 @@ public class ValidationTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test minOccur=1 and the attribute should always be encoded even when empty.
      */
+    @Test
     public void testAttributeMinOccur1() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:gsml:MappedFeature response:\n"

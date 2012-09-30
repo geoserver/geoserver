@@ -1,5 +1,7 @@
 package org.geoserver.security.web.role;
 
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 
 import org.apache.wicket.Page;
@@ -14,17 +16,29 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
 
     NewRolePage page;
      
 
+    @Before
+    public void init() throws Exception {
+        doInitialize();
+        clearServices();
+    }
+
+    @Test
     public void testFill() throws Exception{
-        initializeForXML();
+        //initializeForXML();
         doTestFill();
     }
     
+    protected void doInitialize() throws Exception {
+        initializeForXML();
+    }
 
     protected void doTestFill() throws Exception {
         
@@ -72,8 +86,9 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         
     }
     
+    @Test
     public void testRoleNameConflict() throws Exception {
-        initializeForXML();
+
         insertValues();        
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRoleServiceName());
         tester.startPage(page=(NewRolePage) 
@@ -88,8 +103,8 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         tester.assertRenderedPage(NewRolePage.class);
     }
 
+    @Test
     public void testInvalidWorkflow() throws Exception{
-        initializeForXML();
         activateRORoleService();
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRORoleServiceName());
         boolean fail = true;

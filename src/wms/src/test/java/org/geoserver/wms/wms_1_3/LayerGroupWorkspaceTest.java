@@ -1,28 +1,32 @@
 package org.geoserver.wms.wms_1_3;
 
+import static junit.framework.Assert.fail;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+
 import java.util.Arrays;
 
 import javax.xml.namespace.QName;
 
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.w3c.dom.Document;
-
-import static org.custommonkey.xmlunit.XMLAssert.*;
 
 public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
     LayerGroupInfo global, sf, cite;
 
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    @Before
+    public void prepare() throws Exception {
 
         Catalog cat = getCatalog();
 
@@ -41,6 +45,13 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         cat.add(cite);
     }
 
+    @After
+    public void rollback() throws Exception {
+        Catalog cat = getCatalog();
+        cat.remove(cite);
+        cat.remove(sf);
+        cat.remove(global);
+    }
     protected void registerNamespaces(java.util.Map<String,String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
     };
@@ -57,6 +68,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         return group;
     }
 
+    @Test 
     public void testAddLayerGroup() throws Exception {
         Catalog cat = getCatalog();
         LayerGroupInfo lg = createLayerGroup(cat, "base", layer(cat, MockData.LOCKS));
@@ -67,6 +79,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         catch(Exception e) {}
     }
 
+    @Test 
     public void testGlobalCapabilities() throws Exception {
         Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
         
@@ -80,7 +93,9 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertBounds(cite, "cite:base", dom);
     }
 
-    public void testWorkspaceCapabilities() throws Exception {
+    @Test 
+    public 
+    void testWorkspaceCapabilities() throws Exception {
         Document dom = getAsDOM("sf/wms?request=getcapabilities&version=1.3.0");
 
         assertXpathExists("//wms:Layer/wms:Name[text() = 'base']", dom);
@@ -88,6 +103,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertBounds(sf, "base", dom);
     }
 
+    @Test
     public void testGlobalGetMap() throws Exception {
         Document dom = getAsDOM("wms/reflect?layers=base&format=kml");
         assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Lakes,cite:Forests']", dom);
@@ -99,6 +115,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Buildings']", dom);
     }
 
+    @Test 
     public void testWorkspaceGetMap() throws Exception {
         Document dom = getAsDOM("sf/wms?request=reflect&layers=base&format=kml");
         assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);

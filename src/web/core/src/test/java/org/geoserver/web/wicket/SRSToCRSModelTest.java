@@ -1,12 +1,15 @@
 package org.geoserver.web.wicket;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.apache.wicket.model.Model;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 
-public class SRSToCRSModelTest extends TestCase {
-    
+public class SRSToCRSModelTest {
+
+    @Test
     public void testNullSRS() throws Exception {
         Model srs = new Model(null); 
         SRSToCRSModel crs = new SRSToCRSModel(srs);
@@ -15,6 +18,7 @@ public class SRSToCRSModelTest extends TestCase {
         assertEquals(null, srs.getObject());
     }
     
+    @Test
     public void testNonNullSRS() throws Exception {
         Model srs = new Model("EPSG:32632"); 
         SRSToCRSModel crs = new SRSToCRSModel(srs);

@@ -4,7 +4,10 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -17,26 +20,30 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.Test;
 
 import org.apache.xerces.dom.DOMInputImpl;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.xml.XML;
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
+import org.junit.Test;
 /**
  * WMS 1.3 GetCapabilities system tests, following clauses in section 7.2 of <a
  * href="http://portal.opengeospatial.org/files/?artifact_id=14416">OGC document 06-042, OpenGIS Web
@@ -59,17 +66,18 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class CapabilitiesSystemTest extends WMSTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new CapabilitiesSystemTest());
-    }
-
+  
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpDefaultRasterLayers();        
+    }
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+       
+        
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -92,18 +100,17 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
         ResourceInfo resource = layer.getResource();
         resource.getMetadataLinks().add(mdlink);
         getCatalog().save(resource);
+        
+        Catalog catalog = getCatalog();
+        DataStoreInfo info =catalog.getDataStoreByName(MockData.SF_PREFIX);
+        info.setEnabled(false);
+        catalog.save(info);
     }
-
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
-        dataDirectory.disableDataStore(MockData.SF_PREFIX);
-    }
-
+ 
     /**
      * As for section 7.2.4.1, ensures the GeCapabilities document validates against its schema
      */
+    @Test
     public void testValidateCapabilitiesXML() throws Exception {
         Document dom = getAsDOM("ows?service=WMS&version=1.3.0&request=GetCapabilities");
         SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
@@ -113,6 +120,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
             
             public LSInput resolveResource(String type, String namespaceURI, String publicId,
                     String systemId, String baseURI) {
+
                 if(namespaceURI.equals("http://www.w3.org/1999/xlink")) {
                     try {
                         URL xlink = getClass().getResource("/schemas/xlink/1999/xlink.xsd");
@@ -121,6 +129,17 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
                         return input;
                     } catch(Exception e) {
                         return null;
+
+                    }
+                } else if(XML.NAMESPACE.equals(namespaceURI)) {
+                    try {
+                        URL xml = XML.class.getResource("xml.xsd");
+                        systemId = xml.toURI().toASCIIString();
+                        DOMInputImpl input = new DOMInputImpl(publicId, systemId, null);
+                        return input;
+                    } catch(Exception e) {
+                        return null;
+
                     }
                 } else {
                     return null;
@@ -152,6 +171,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testRequestVersionNumberNegotiation() throws Exception {
         Document dom;
         /*
@@ -196,7 +216,8 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      * , if a non supported format is requested, the default {@code text/xml} representation shall
      * be returned. The response Content-Type header shall also be {@code text/xml}
      */
-    public void testRequestOptionalFormatParameter() throws Exception {
+    @Test public 
+    void testRequestOptionalFormatParameter() throws Exception {
         MockHttpServletResponse response;
         String path = "ows?service=WMS&request=GetCapabilities&version=1.3.0";
         response = getAsServletResponse(path);
@@ -217,6 +238,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
     /**
      * Section 7.2.3.3, SERVICE is a mandatory parameter with fixed value {@code WMS}
      */
+    @Test 
     public void testRequestMandatoryServiceParameter() throws Exception {
         Document dom = getAsDOM("ows?request=GetCapabilities&version=1.3.0");
         print(dom);
@@ -228,6 +250,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      * Section 7.2.3.4, REQUEST is a mandatory parameter with fixed value {@code GetCapabilities}
      * (case insensitive for GeoServer, spec doesn't tell)
      */
+    @Test 
     public void testRequestMandatoryRequestParameter() throws Exception {
         Document dom = getAsDOM("ows?request=GetCapabilities&version=1.3.0");
         // print(dom);
@@ -241,6 +264,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      * This test assumes GeoServer delivers numeric (integer) {@code updateSequence} values
      * </p>
      */
+    @Test 
     public void testRequestUpdateSequence() throws Exception {
         Document dom = getAsDOM("ows?service=WMS&request=GetCapabilities&version=1.3.0");
         final XpathEngine xpath = XMLUnit.newXpathEngine();

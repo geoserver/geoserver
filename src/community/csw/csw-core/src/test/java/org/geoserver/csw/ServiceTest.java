@@ -1,6 +1,9 @@
 package org.geoserver.csw;
 
+import static org.junit.Assert.*;
+
 import org.geotools.util.Version;
+import org.junit.Test;
 
 /**
  * Checks the service is registered and reachable 
@@ -9,6 +12,7 @@ import org.geotools.util.Version;
  */
 public class ServiceTest extends CSWTestSupport {
 
+    @Test
     public void testServiceAvailable() {
         CSWInfo csw = getGeoServer().getService(CSWInfo.class);
         assertEquals(1, csw.getVersions().size());

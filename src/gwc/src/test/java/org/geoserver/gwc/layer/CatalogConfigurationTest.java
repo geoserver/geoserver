@@ -4,6 +4,12 @@
  */
 package org.geoserver.gwc.layer;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -21,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -30,6 +34,9 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -40,7 +47,7 @@ import com.google.common.collect.Iterables;
  * 
  * @author groldan
  */
-public class CatalogConfigurationTest extends TestCase {
+public class CatalogConfigurationTest {
 
     private Catalog catalog;
 
@@ -60,8 +67,8 @@ public class CatalogConfigurationTest extends TestCase {
 
     private GWCConfig defaults;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         defaults = GWCConfig.getOldDefaults();
         defaults.getDefaultVectorCacheFormats().clear();
         defaults.getDefaultVectorCacheFormats().add("image/png8");
@@ -155,26 +162,26 @@ public class CatalogConfigurationTest extends TestCase {
         when(mockMediator.getConfig()).thenReturn(defaults);
     }
 
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() {
         GWC.set(null);
     }
 
-    public void testGoofyMethods() {
+    @Test public void testGoofyMethods() {
         assertEquals("GeoServer Catalog Configuration", config.getIdentifier());
         assertNull(config.getServiceInformation());
         assertTrue(config.isRuntimeStatsEnabled());
     }
 
-    public void testInitialize() {
+    @Test public void testInitialize() {
         assertEquals(4, config.initialize(gridSetBroker));
     }
 
-    public void testGetTileLayerCount() {
+    @Test public void testGetTileLayerCount() {
         assertEquals(4, config.getTileLayerCount());
     }
 
-    public void testGetTileLayerNames() {
+    @Test public void testGetTileLayerNames() {
         Set<String> expected = ImmutableSet.of(tileLayerName(layer1), tileLayerName(layer2),
                 tileLayerName(group1), tileLayerName(group2));
 
@@ -183,12 +190,12 @@ public class CatalogConfigurationTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testGetLayers() {
+    @Test public void testGetLayers() {
         Iterable<GeoServerTileLayer> layers = config.getLayers();
         testGetLayers(layers);
     }
 
-    public void testDeprecatedGetTileLayers() {
+    @Test public void testDeprecatedGetTileLayers() {
         @SuppressWarnings("deprecation")
         List<GeoServerTileLayer> layers = config.getTileLayers();
         testGetLayers(layers);
@@ -210,7 +217,7 @@ public class CatalogConfigurationTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testGetTileLayer() {
+    @Test public void testGetTileLayer() {
         String layerName = tileLayerName(layerWithNoTileLayer);
         assertNull(config.getTileLayer(layerName));
         assertNull(config.getTileLayer(tileLayerName(groupWithNoTileLayer)));
@@ -223,7 +230,7 @@ public class CatalogConfigurationTest extends TestCase {
         assertNull(config.getTileLayer("anythingElse"));
     }
 
-    public void testModifyLayer() {
+    @Test public void testModifyLayer() {
         try {
             config.modifyLayer(null);
             fail("expected precondition exception");
@@ -273,7 +280,7 @@ public class CatalogConfigurationTest extends TestCase {
         assertFalse(config.getTileLayerNames().contains(origName));
     }
 
-    public void testRemoveLayer() {
+    @Test public void testRemoveLayer() {
         try {
             config.removeLayer(null);
             fail("expected precondition violation exception");
@@ -304,7 +311,7 @@ public class CatalogConfigurationTest extends TestCase {
         assertEquals(initialCount - 2, config.getTileLayerCount());
     }
 
-    public void testSaveRename() {
+    @Test public void testSaveRename() {
 
         GeoServerTileLayerInfo originalState = layerInfo1;
 
@@ -325,7 +332,7 @@ public class CatalogConfigurationTest extends TestCase {
         verify(mockMediator, times(1)).layerRenamed(eq(layerInfo1.getName()), eq("newName"));
     }
 
-    public void testSave() {
+    @Test public void testSave() {
         // add a pending delete
         when(tileLayerCatalog.delete(eq(layerInfo2.getId()))).thenReturn(layerInfo2);
         assertTrue(config.removeLayer(layerInfo2.getName()));

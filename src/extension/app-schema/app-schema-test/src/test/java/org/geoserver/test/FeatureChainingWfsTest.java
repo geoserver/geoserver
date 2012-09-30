@@ -6,12 +6,14 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
@@ -26,18 +28,10 @@ import org.w3c.dom.Node;
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  * @author Xiangtan Lin, CSIRO Information Management and Technology
  */
-public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new FeatureChainingWfsTest());
-    }
+public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected FeatureChainingMockData createTestData() {
         return new FeatureChainingMockData();
     }
 
@@ -94,6 +88,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test that ex schemas are found and the files exist.
      */
+    @Test
     public void testExSchemas() {
         assertNotNull(getExSchemaOne());
         assertTrue(getExSchemaOne().exists());
@@ -104,6 +99,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
+    @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
@@ -137,6 +133,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test DescribeFeatureType response for gsml:MappedFeature.
      */
+    @Test
     public void testDescribeFeatureTypeMappedFeature() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
@@ -160,6 +157,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test DescribeFeatureType response for gsml:GeologicUnit.
      */
+    @Test
     public void testDescribeFeatureTypeGeologicUnit() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"
@@ -180,6 +178,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test DescribeFeatureType response for ex:FirstParentFeature and ex:SecondParentFeature, which
      * have two schemas in the same namespace.
      */
+    @Test
     public void testDescribeFeatureTypeTwoSchemasSameNamespace() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=ex:FirstParentFeature,ex:SecondParentFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=ex:FirstParentFeature,"
@@ -201,6 +200,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test DescribeFeatureType response for om:Observation, which has 2 schemaUris specified in the
      * mapping file. Both must appear.
      */
+    @Test
     public void testDescribeFeatureTypeObservation() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=om:Observation");
         LOGGER.info("WFS DescribeFeatureType, typename=om:Observation response:\n"
@@ -224,6 +224,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test DescribeFeatureType response for mixed namespaces.
      */
+    @Test
     public void testDescribeFeatureTypeMixedNamespaces() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=gsml:MappedFeature,ex:FirstParentFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature,ex:FirstParentFeature response:\n"
@@ -234,6 +235,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test DescribeFeatureType response for many types.
      */
+    @Test
     public void testDescribeFeatureTypeManyTypes() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typeName=gsml:MappedFeature,gsml:GeologicUnit,ex:FirstParentFeature,ex:SecondParentFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature,gsml:GeologicUnit,ex:FirstParentFeature,ex:SecondParentFeature response:\n"
@@ -267,6 +269,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test DescribeFeatureType response when no types are specified.
      */
+    @Test
     public void testDescribeFeatureTypeNoTypes() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0");
         LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
@@ -355,6 +358,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
@@ -366,6 +370,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
     }
     
+    @Test
     public void testGetFeatureValid() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature";
         String newline = System.getProperty("line.separator");
@@ -379,6 +384,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * chained to MappedFeature. This is to test that querying GeologicUnit as top level feature
      * still works, when its real type name is specified in the query.
      */
+    @Test
     public void testGetFeatureWithMappingName() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
@@ -392,6 +398,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * attributes weren't encoded, so this is to ensure that this works. This also tests that a
      * feature type can have multiple FEATURE_LINK to be referred by different types.
      */
+    @Test
     public void testComplexTypeWithSimpleContent() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:FirstParentFeature");
         LOGGER
@@ -442,6 +449,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test content of GetFeature response.
      */
+    @Test
     public void testGetFeatureContent() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
@@ -937,6 +945,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test if we can get mf4 by its name.
      */
+    @Test
     public void testGetFeaturePropertyFilter() {
         String xml = //
         "<wfs:GetFeature " //
@@ -958,6 +967,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test if we can get mf4 with a FeatureId fid filter.
      */
+    @Test
     public void testGetFeatureWithFeatureIdFilter() {
         String xml = //
         "<wfs:GetFeature " //
@@ -976,6 +986,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test if we can get mf4 with a GmlObjectId gml:id filter.
      */
+    @Test
     public void testGetFeatureWithGmlObjectIdFilter() {
         String xml = //
         "<wfs:GetFeature " //
@@ -995,6 +1006,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test anyType as complex attributes, and placeholder type (e.g AnyOrReference) which contains
      * <any/> element.
      */
+    @Test
     public void testAnyTypeAndAnyElement() {
         final String OBSERVATION_ID_PREFIX = "observation:";
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=om:Observation");
@@ -1059,6 +1071,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Making sure attributes that are encoded as xlink:href can still be queried in filters.
      */
+    @Test
     public void testFilteringXlinkHref() {
         String xml = //
         "<wfs:GetFeature " //
@@ -1112,6 +1125,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Making sure multi-valued attributes in nested features can be queried from the top level. (GEOT-3156) 
      */
+    @Test
     public void testFilteringNestedMultiValuedAttribute() {
         // PropertyIsEqual
         String xml = 
@@ -1172,6 +1186,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Similar to above test case but using AND as a wrapper for 2 filters involving nested
      * attributes.
      */
+    @Test
     public void testFilterAnd() {
         String xml = "<wfs:GetFeature "
                 + GETFEATURE_ATTRIBUTES
@@ -1205,6 +1220,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test that denormalized data reports the correct number of features
      */
+    @Test
     public void testDenormalisedFeaturesCount() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&maxFeatures=3");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&maxFeatures=3 response:\n"
@@ -1226,6 +1242,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test FeatureCollection is encoded with multiple featureMember elements
      * @throws Exception
      */
+    @Test
     public void testEncodeFeatureMember() throws Exception {
         // change fixture settings (must restore this at end)
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
@@ -1289,6 +1306,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test FeatureCollection is encoded with one featureMembers element
      * @throws Exception
      */
+    @Test
     public void testEncodeFeatureMembers() throws Exception {
         // change fixture settings (must restore this at end)
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);

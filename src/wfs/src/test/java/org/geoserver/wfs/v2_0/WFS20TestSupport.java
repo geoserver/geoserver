@@ -4,10 +4,13 @@
  */
 package org.geoserver.wfs.v2_0;
 
-import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.Service;
+import org.geoserver.platform.Service; 
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.wfs.v2_0.WFS;
 import org.w3c.dom.Document;

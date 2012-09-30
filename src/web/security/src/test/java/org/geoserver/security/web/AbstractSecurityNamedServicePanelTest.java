@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDialog;
+import org.junit.Before;
 
 public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecurityWicketTestSupport {
 
@@ -47,9 +49,8 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
         formTester = tester.newFormTester(path);
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void init() throws Exception {
         manager= getSecurityManager();
     }
     

@@ -20,6 +20,7 @@ import javax.xml.validation.SchemaFactory;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.WCSInfo;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -61,8 +62,8 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     }
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();

@@ -1,17 +1,23 @@
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.GeoServerRoleFilterConfig;
 import org.geoserver.security.filter.GeoServerRoleFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@Category(SystemTest.class)
 public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
 
-    
+    @Test
     public void testFilterChainWithEnabled() throws Exception {
         
         GeoServerSecurityManager secMgr = getSecurityManager();
@@ -35,6 +41,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         assertEquals(GeoServerRole.ANONYMOUS_ROLE.getAuthority(),response.getHeader("ROLES"));        
     }
 
+    @Test
     public void testFilterChainWithDisabled() throws Exception {
 
         MockHttpServletRequest request = createRequest("/foo");
@@ -48,7 +55,4 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         assertNull(response.getHeader("ROLES"));
         
     }
-
-
-
 }

@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -15,23 +15,14 @@ import org.w3c.dom.Document;
  * 
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
-public class PolymorphismWfsTest extends AbstractAppSchemaWfsTestSupport {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        PolymorphismWfsTest test = new PolymorphismWfsTest();
-        Test suite = new OneTimeTestSetup(test);
-        return suite;
-    }
+public class PolymorphismWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected PolymorphismMockData createTestData() {
         return new PolymorphismMockData();
     }
 
+    @Test
     public void testPolymorphism() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature");
         LOGGER
@@ -50,6 +41,7 @@ public class PolymorphismWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test filtering polymorphism with feature chaining set up works. Also tests filtering when
      * mappingName is used as linkElement.
      */
+    @Test
     public void testFirstValueFilters() {
 //        <AttributeMapping>
 //        <!-- Test feature chaining and polymorphism -->
@@ -105,6 +97,7 @@ public class PolymorphismWfsTest extends AbstractAppSchemaWfsTestSupport {
      * Test filtering polymorphism with no feature chaining works. Also tests filtering when
      * mappingName is used as linkElement.
      */
+    @Test
     public void testSecondValueFilters() {
 //        <AttributeMapping>
 //        <!-- Test polymorphism with no feature chaining i.e. no linkField -->
@@ -167,6 +160,7 @@ public class PolymorphismWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Tests filtering mapping of any type works.
      */
+    @Test
     public void testAnyTypeFilters() {
 //        <AttributeMapping>
 //        <!-- Test polymorphism with anyType  -->
@@ -220,6 +214,7 @@ public class PolymorphismWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Tests filtering feature chaining where it's linked by mappingName.
      */
+    @Test
     public void testMappingNameFilters() {
 //        <AttributeMapping>
 //        <!-- Test polymorphism using normal feature chaining with no conditions -->

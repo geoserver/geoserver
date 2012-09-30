@@ -1,32 +1,52 @@
 package org.geoserver.catalog;
 
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import static org.junit.Assert.assertEquals;
 
-public class SchemaMappingTest extends GeoServerTestSupport {
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@TestSetup(run=TestSetupFrequency.REPEAT)
+@Category(SystemTest.class)
+public class SchemaMappingTest extends GeoServerSystemTestSupport {
+
+    public SchemaMappingTest() {
+        super();
+    }
+
+    @Test
     public void testNoMapping() throws Exception {
         FeatureTypeInfo ft = 
             getCatalog().getFeatureTypeByName( "DividedRoutes");
         assertEquals( 4, ft.attributes().size() );
     }
-    
+
+    @Test
     public void testXsdMapping() throws Exception {
-        ((MockData)testData).copyToFeatureTypeDirectory( getClass().getResourceAsStream( "schema.xsd"), 
-                MockData.DIVIDED_ROUTES, "schema.xsd");
+        getDataDirectory().copyToResourceDir(
+            getDividedRoutes(), getClass().getResourceAsStream( "schema.xsd"), "schema.xsd");
+
         reloadCatalogAndConfiguration();
         FeatureTypeInfo ft = 
             getCatalog().getFeatureTypeByName( "DividedRoutes");
         assertEquals( 3, ft.attributes().size() );
     }
     
+    @Test
     public void testXmlMapping() throws Exception {
-        ((MockData)testData).copyToFeatureTypeDirectory( getClass().getResourceAsStream( "schema.xml"), 
-                MockData.DIVIDED_ROUTES, "schema.xml");
+        getDataDirectory().copyToResourceDir(
+                getDividedRoutes(), getClass().getResourceAsStream( "schema.xml"), "schema.xml");
+
         reloadCatalogAndConfiguration();
         FeatureTypeInfo ft = 
             getCatalog().getFeatureTypeByName( "DividedRoutes");
         assertEquals( 2, ft.attributes().size() );
     }
-    
+
+    FeatureTypeInfo getDividedRoutes() {
+        return getCatalog().getFeatureTypeByName( "DividedRoutes");
+    }
 }

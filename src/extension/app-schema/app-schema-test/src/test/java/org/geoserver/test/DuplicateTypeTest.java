@@ -6,8 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
@@ -15,20 +14,17 @@ import org.w3c.dom.Document;
  * 
  * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
  */
-public class DuplicateTypeTest extends AbstractAppSchemaWfsTestSupport {
-
-    public static Test suite() {
-        return new OneTimeTestSetup(new DuplicateTypeTest());
-    }
+public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected DuplicateTypeMockData createTestData() {
         return new DuplicateTypeMockData();
     }
 
     /**
      * Test GetFeature for gsml:DuplicateMappedFeature.
      */
+    @Test
     public void testGetDuplicateMappedFeature() throws Exception {
         String request = "GetFeature&version=1.1.0&typename=gsml:DuplicateMappedFeature";
         Document doc = getAsDOM("wfs?request=" + request);
@@ -50,6 +46,7 @@ public class DuplicateTypeTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test GetFeature for gsml:MappedFeature.
      */
+    @Test
     public void testGetMappedFeature() throws Exception {
         String request = "GetFeature&version=1.1.0&typename=gsml:MappedFeature";
         Document doc = getAsDOM("wfs?request=" + request);

@@ -1,24 +1,30 @@
 package org.geoserver.security.validation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.net.URL;
 
-import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.password.MasterPasswordChangeRequest;
 import org.geoserver.security.password.MasterPasswordProviderException;
 import org.geoserver.security.password.URLMasterPasswordProvider;
+import org.geoserver.security.password.URLMasterPasswordProvider.URLMasterPasswordProviderValidator;
 import org.geoserver.security.password.URLMasterPasswordProviderConfig;
 import org.geoserver.security.password.URLMasterPasswordProviderException;
+import org.geoserver.test.GeoServerMockTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
-public class MasterPasswordChangeValidatorTest extends GeoServerSecurityTestSupport {
+public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport {
 
     MasterPasswordChangeValidator validator;
-       
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+
+    @Before
+    public void setValidator() {
         validator = new MasterPasswordChangeValidator(getSecurityManager());
     }
-    
+
     protected void checkCurrentPassword(MasterPasswordChangeRequest r) throws Exception {
         try {
             validator.validateChangeRequest(r);
@@ -84,12 +90,17 @@ public class MasterPasswordChangeValidatorTest extends GeoServerSecurityTestSupp
         }
     }
 
+    @Test
     public void testUrlConfig() throws Exception {
+        URLMasterPasswordProviderValidator validator = 
+                new URLMasterPasswordProviderValidator(getSecurityManager());
+
         URLMasterPasswordProviderConfig config = new URLMasterPasswordProviderConfig();
         config.setName("foo");
         config.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
         try {
-            getSecurityManager().saveMasterPasswordProviderConfig(config);
+            validator.validateAddMasterPasswordProvider(config);
+            //getSecurityManager().saveMasterPasswordProviderConfig(config);
             fail();
         }
         catch(URLMasterPasswordProviderException e) {
@@ -98,7 +109,8 @@ public class MasterPasswordChangeValidatorTest extends GeoServerSecurityTestSupp
         config.setURL(new URL("file:ABC"));
         config.setReadOnly(true);
         try {
-            getSecurityManager().saveMasterPasswordProviderConfig(config);
+            validator.validateAddMasterPasswordProvider(config);
+            //getSecurityManager().saveMasterPasswordProviderConfig(config);
             fail();
         }
         catch(URLMasterPasswordProviderException e) {
@@ -107,12 +119,14 @@ public class MasterPasswordChangeValidatorTest extends GeoServerSecurityTestSupp
         }
     }
 
+    @Test
     public void testValidator() throws Exception{
         // test spring
         MasterPasswordChangeRequest r = new MasterPasswordChangeRequest();
         
         checkCurrentPassword(r);
-        r.setCurrentPassword(getMasterPassword().toCharArray());
+        r.setCurrentPassword("geoserver".toCharArray());
+        //r.setCurrentPassword(getMasterPassword().toCharArray());
         
         checkConfirmationPassword(r);
         r.setConfirmPassword("abc".toCharArray());

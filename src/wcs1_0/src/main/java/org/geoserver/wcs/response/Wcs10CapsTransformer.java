@@ -248,7 +248,9 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 attributes.addAttribute("", "version", "version", "", CUR_VERSION);
             }
             start("wcs:Service", attributes);
-            handleMetadataLink(wcs.getMetadataLink(), "simple");
+            if (wcs.getMetadataLink() != null) {
+                handleMetadataLink(wcs.getMetadataLink(), "simple");
+            }
             element("wcs:description", wcs.getAbstract());
             element("wcs:name", wcs.getName());
             element("wcs:label", wcs.getTitle());
@@ -309,6 +311,10 @@ public class Wcs10CapsTransformer extends TransformerBase {
          *             DOCUMENT ME!
          */
         private void handleKeywords(List kwords) {
+            if (kwords == null || kwords.isEmpty()) {
+                return;
+            }
+
             start("wcs:keywords");
 
             if (kwords != null) {

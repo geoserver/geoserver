@@ -1,5 +1,7 @@
 package org.geoserver.wfs.response;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +25,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import junit.framework.TestCase;
 import junit.framework.TestResult;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
@@ -36,11 +37,14 @@ import org.geotools.data.DataStore;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.Version;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class Ogr2OgrFormatTest extends TestCase {
+public class Ogr2OgrFormatTest {
 
     DataStore dataStore;
 
@@ -52,17 +56,11 @@ public class Ogr2OgrFormatTest extends TestCase {
 
     GetFeatureType gft;
 
-    @Override
-    public void run(TestResult result) {
-        if (!Ogr2OgrTestUtil.isOgrAvailable())
-            System.out.println("Skipping ogr2ogr format tests, ogr2ogr could not be found, "
-                    + getName());
-        else
-            super.run(result);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        // check if we can run the tests
+        Assume.assumeTrue(Ogr2OgrTestUtil.isOgrAvailable());
+        
         // the data source we'll use for the tests
         dataStore = new PropertyDataStore(new File("./src/test/java/org/geoserver/wfs/response"));
 
@@ -84,6 +82,7 @@ public class Ogr2OgrFormatTest extends TestCase {
                 Arrays.asList("GetFeature")), null, new Object[] { gft });
     }
 
+    @Test
     public void testCanHandle() {
         gft.setOutputFormat("OGR-KML");
         assertTrue(ogr.canHandle(op));
@@ -93,16 +92,19 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertTrue(ogr.canHandle(op));
     }
 
+    @Test
     public void testContentTypeZip() {
         gft.setOutputFormat("OGR-SHP");
         assertEquals("application/zip", ogr.getMimeType(null, op));
     }
     
+    @Test
     public void testContentTypeKml() {
         gft.setOutputFormat("OGR-KML");
         assertEquals("application/vnd.google-earth.kml", ogr.getMimeType(null, op));
     }
 
+    @Test
     public void testSimpleKML() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("Buildings").getFeatures();
@@ -124,6 +126,7 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertEquals(2, dom.getElementsByTagName("Placemark").getLength());
     }
     
+    @Test
     public void testZippedKML() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("Buildings").getFeatures();
@@ -148,6 +151,7 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertEquals(2, dom.getElementsByTagName("Placemark").getLength());
     }
     
+    @Test
     public void testEmptyKML() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("Buildings").getFeatures(Filter.EXCLUDE);
@@ -169,6 +173,7 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertEquals(0, dom.getElementsByTagName("Placemark").getLength());
     }
     
+    @Test
     public void testSimpleCSV() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("Buildings").getFeatures();
@@ -189,6 +194,7 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertTrue(csv.contains("123 Main Street"));
     }
     
+    @Test
     public void testSimpleMIF() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("Buildings").getFeatures();
@@ -212,6 +218,7 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertTrue(fileNames.contains("Buildings.mid"));
     }
     
+    @Test
     public void testGeometrylessCSV() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("Geometryless").getFeatures();
@@ -233,6 +240,7 @@ public class Ogr2OgrFormatTest extends TestCase {
         assertTrue(csv.contains("Alessia"));
     }
     
+    @Test
     public void testAllTypesKML() throws Exception {
         // prepare input
         FeatureCollection fc = dataStore.getFeatureSource("AllTypes").getFeatures();

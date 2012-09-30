@@ -1,6 +1,12 @@
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.data.test.CiteTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
@@ -12,6 +18,15 @@ import org.w3c.dom.Document;
  */
 public class TransactionTest extends WFSTestSupport {
 
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.POINTS);
+        revertLayer(CiteTestData.FIFTEEN);
+        revertLayer(CiteTestData.LINES);
+        revertLayer(CiteTestData.POLYGONS);
+    }
+
+    @Test
     public void testDelete() throws Exception {
 
         // 1. do a getFeature
@@ -53,6 +68,7 @@ public class TransactionTest extends WFSTestSupport {
 
     }
     
+	@Test
     public void testDoubleDelete() throws Exception {
     	// see 
 
@@ -96,6 +112,7 @@ public class TransactionTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("13", "count(//gml:featureMember)", dom);
     }
 
+	@Test
     public void testInsert() throws Exception {
 
         // 1. do a getFeature
@@ -138,6 +155,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getLength());
     }
 
+	@Test
     public void testUpdate() throws Exception {
 
         // 1. do a getFeature
@@ -179,6 +197,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getFirstChild().getNodeValue());
     }
     
+	@Test
     public void testUpdateLayerQualified() throws Exception {
         // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -222,6 +241,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getFirstChild().getNodeValue());
     }
 
+	@Test
     public void testInsertWithBoundedBy() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -259,6 +279,7 @@ public class TransactionTest extends WFSTestSupport {
         assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() > 0);
     }
     
+	@Test
     public void testInsertWorkspaceQualified() throws Exception {
      // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -303,6 +324,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getLength());
     }
     
+	@Test
     public void testInsertLayerQualified() throws Exception {
         // 1. do a getFeature
        String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -347,6 +369,7 @@ public class TransactionTest extends WFSTestSupport {
                .getLength());
    }
 
+	@Test
    public void testUpdateWithDifferentPrefix() throws Exception {
 
       // 1. do a getFeature

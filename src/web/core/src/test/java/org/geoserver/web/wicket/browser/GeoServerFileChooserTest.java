@@ -1,18 +1,24 @@
 package org.geoserver.web.wicket.browser;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
@@ -21,9 +27,8 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     private File two;
     private File child;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void init() throws IOException {
         
         root = new File("target/test-filechooser");
         if(root.exists())
@@ -47,6 +52,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         //WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
     
+    @Test
     public void testLoad() {
         setupChooser(root);
         
@@ -57,6 +63,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         assertEquals(1, ((DataView) tester.getComponentFromLastRenderedPage("form:panel:fileTable:fileTable:fileContent:files")).size());
     }
     
+    @Test
     public void testNullRoot() {
         setupChooser(null);
 
@@ -67,6 +74,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         tester.assertLabel("form:panel:breadcrumbs:path:0:pathItemLink:pathItem", getTestData().getDataDirectoryRoot().getName() + "/");
     }
     
+    @Test
     public void testInDialog() throws Exception {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             

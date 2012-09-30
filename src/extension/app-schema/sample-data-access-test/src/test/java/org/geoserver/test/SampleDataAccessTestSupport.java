@@ -15,10 +15,10 @@ import org.geotools.data.SampleDataAccess;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public abstract class SampleDataAccessTestSupport extends GeoServerAbstractTestSupport {
+public abstract class SampleDataAccessTestSupport extends GeoServerSystemTestSupport {
 
     @Override
-    protected TestData buildTestData() throws Exception {
+    protected SampleDataAccessMockData createTestData() throws Exception {
         return new SampleDataAccessMockData();
     }
 

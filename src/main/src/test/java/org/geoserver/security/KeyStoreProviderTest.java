@@ -1,10 +1,14 @@
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.security.password.RandomPasswordProvider;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 
-public class KeyStoreProviderTest extends GeoServerTestSupport {
+public class KeyStoreProviderTest extends GeoServerSystemTestSupport {
 
+    @Test
     public void testKeyStoreProvider() throws Exception {
         
         //System.setProperty(MasterPasswordProvider.DEFAULT_PROPERTY_NAME, "mymasterpw");
@@ -27,9 +31,9 @@ public class KeyStoreProviderTest extends GeoServerTestSupport {
         
         RandomPasswordProvider rpp = getSecurityManager().getRandomPassworddProvider();
         char[] urlKey = rpp.getRandomPasswordWithDefaultLength();
-        System.out.printf("Random password with length %d : %s\n",urlKey.length,new String(urlKey));
+        //System.out.printf("Random password with length %d : %s\n",urlKey.length,new String(urlKey));
         char[] urlKey2 = rpp.getRandomPasswordWithDefaultLength();
-        System.out.printf("Random password with length %d : %s\n",urlKey2.length,new String(urlKey2));
+        //System.out.printf("Random password with length %d : %s\n",urlKey2.length,new String(urlKey2));
         assertFalse(urlKey.equals(urlKey2));
 
         ksp.setSecretKey( KeyStoreProviderImpl.USERGROUP_PREFIX+"default"+

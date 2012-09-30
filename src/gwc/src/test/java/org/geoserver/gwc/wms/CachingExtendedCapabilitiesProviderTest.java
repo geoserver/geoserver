@@ -4,35 +4,34 @@
  */
 package org.geoserver.gwc.wms;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import junit.framework.Test;
 
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
-public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSupport {
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new CachingExtendedCapabilitiesProviderTest());
-    }
+public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setProxyBaseUrl("../wms/src/test/resources/geoserver");
         getGeoServer().save(global);
     }
 
+    @Test
     public void testCapabilitiesContributedInternalDTD() throws Exception {
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
@@ -79,6 +78,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Styles (#PCDATA)>"));
     }
 
+    @Test
     public void testTileSets() throws Exception {
         final int numLayers = getCatalog().getLayers().size();
         final int numCRSs = 2; // 4326 and 900913
@@ -109,6 +109,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         assertXpathExists(tileSetPath + "[1]/Styles", dom);
     }
 
+    @Test
     public void testLocalWorkspaceIntegration() throws Exception {
 
         final String tileSetPath = "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";

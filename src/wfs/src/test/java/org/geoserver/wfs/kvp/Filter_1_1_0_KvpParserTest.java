@@ -1,14 +1,18 @@
 package org.geoserver.wfs.kvp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.spatial.Intersects;
 
-public class Filter_1_1_0_KvpParserTest extends TestCase {
+public class Filter_1_1_0_KvpParserTest {
 
+	@Test
     public void testParse() throws Exception {
         final String filterString = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" "
                 + "xmlns:gml=\"http://www.opengis.net/gml\">"

@@ -1,14 +1,19 @@
 package org.geoserver.catalog.impl;
 
+import static org.junit.Assert.*;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
-public class InfoObjectProxyTest extends TestCase {
+public class InfoObjectProxyTest {
 
+    @Test
     public void test() throws Exception {
         BeanImpl bean = new BeanImpl();
         ModificationProxy handler = new ModificationProxy( bean ); 

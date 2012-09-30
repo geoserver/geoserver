@@ -1,5 +1,7 @@
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,18 +10,21 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.geoserver.security.GeoServerRoleConverter;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 
 
-public class GeoServerRoleConverterImplTest extends TestCase {
+public class GeoServerRoleConverterImplTest {
 
     private GeoServerRoleConverter converter;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         converter = new GeoServerRoleConverterImpl();
     }
 
+    @Test
     public void testConverter() {
         GeoServerRole r1 = new GeoServerRole("r1");
         r1.getProperties().setProperty("r1_p1", "r1_v1");

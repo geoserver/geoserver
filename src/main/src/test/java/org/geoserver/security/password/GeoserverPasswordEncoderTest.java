@@ -1,18 +1,25 @@
 package org.geoserver.security.password;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.xml.XMLUserGroupService;
+import org.geoserver.test.GeoServerMockTestSupport;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
+public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
 
     
     protected String testPassword="geoserver";
@@ -20,21 +27,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
     protected char[] emptyArray = new char[] {};
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
-    @Override
-    protected String[] getSpringContextLocations() {
-        String[] locations = super.getSpringContextLocations();
-        String[] newLocations=null;
-        String classPath = "classpath*:/passwordSecurityContext.xml";
-        if (locations==null) {
-            newLocations = new String[] {classPath};
-        } else {        
-            newLocations =Arrays.copyOf(locations, locations.length+1);
-            newLocations[newLocations.length-1]=classPath;
-        }
-        return newLocations;
-    }
-
-        
+    @Test
     public void testPlainTextEncoder() {
         GeoServerPasswordEncoder encoder = getPlainTextPasswordEncoder();
 
@@ -69,6 +62,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
         
     }
     
+    @Test
     public void testConfigPlainTextEncoder() {
         GeoServerPasswordEncoder encoder = getPlainTextPasswordEncoder();
         GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
@@ -125,6 +119,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
     }
 
     
+    @Test
     public void testDigestEncoder() {
         GeoServerPasswordEncoder encoder = getDigestPasswordEncoder();
         GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
@@ -188,7 +183,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
 
     }
 
-//    public void testDigestEncoderBytes() {
+//    @Test public void testDigestEncoderBytes() {
 //        GeoServerPasswordEncoder encoder = getDigestPasswordEncoder();
 //        assertEquals(PasswordEncodingType.DIGEST,encoder.getEncodingType());
 //        assertTrue(encoder.encodePassword(testPassword.toCharArray(), null).startsWith("digest1:"));
@@ -211,6 +206,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
 //            testPassword,null));
 //    }
 
+    @Test 
     public void testEmptyEncoder() {
         GeoServerPasswordEncoder encoder = getSecurityManager().loadPasswordEncoder(GeoServerEmptyPasswordEncoder.class);
         assertEquals(PasswordEncodingType.EMPTY, encoder.getEncodingType());
@@ -249,31 +245,26 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
 
     }
 
-    protected List<String> getConfigPBEEncoderNames() {
-        List<String> result = new ArrayList<String>();
-        result.add(getPBEPasswordEncoder().getName());
+    protected List<GeoServerPasswordEncoder> getConfigPBEEncoders() {
+        List<GeoServerPasswordEncoder> result = new ArrayList<GeoServerPasswordEncoder>();
+        result.add(getPBEPasswordEncoder());
         if (getSecurityManager().isStrongEncryptionAvailable()) {
-            result.add(getStrongPBEPasswordEncoder().getName());
+            result.add(getStrongPBEPasswordEncoder());
         } else {
             LOGGER.warning("Skipping strong encryption tests for configuration passwords");
         }
         return result;
     }
     
+    @Test
     public void testConfigPBEEncoder() throws Exception {
         
         // TODO runs from eclpise, but not from mnv clean install 
         //assertTrue("masterpw".equals(MasterPasswordProviderImpl.get().getMasterPassword()));
         
-        System.out.println("Strong cryptography enabled: " +
-            getSecurityManager().isStrongEncryptionAvailable());
-
         GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
 
-        List<String> encoderNames = getConfigPBEEncoderNames();
-        for (String encoderName: encoderNames) {
-            GeoServerPasswordEncoder encoder = (GeoServerPBEPasswordEncoder) 
-                    GeoServerExtensions.bean(encoderName);
+        for (GeoServerPasswordEncoder encoder: getConfigPBEEncoders()) {
             encoder.initialize(getSecurityManager());
             assertEquals(PasswordEncodingType.ENCRYPT,encoder.getEncodingType());
             
@@ -341,6 +332,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
     }
 
     
+    @Test 
     public void testUserGroupServiceEncoder() throws Exception {
         
         GeoServerUserGroupService service = getSecurityManager().
@@ -404,9 +396,15 @@ public class GeoserverPasswordEncoderTest extends GeoServerSecurityTestSupport {
             assertTrue(Arrays.equals(passwordArray ,encoder.decodeToCharArray(encFromArray)));
         }
     }
-    
+
+    @Test
     public void testCustomPasswordProvider() {
-        List<GeoServerPasswordEncoder> encoders = GeoServerExtensions.extensions(GeoServerPasswordEncoder.class);
+        ClassPathXmlApplicationContext appContext = 
+            new ClassPathXmlApplicationContext("classpath*:/passwordSecurityContext.xml");
+        appContext.refresh();
+
+        List<GeoServerPasswordEncoder> encoders = 
+            GeoServerExtensions.extensions(GeoServerPasswordEncoder.class, appContext);
         boolean found = false;
         for (GeoServerPasswordEncoder enc : encoders) {
             if (enc.getPrefix()!= null && enc.getPrefix().equals("plain4711")) {

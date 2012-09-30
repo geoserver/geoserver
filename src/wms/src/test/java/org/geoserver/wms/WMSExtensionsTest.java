@@ -5,16 +5,16 @@
 package org.geoserver.wms;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.geoserver.platform.ExtensionFilter;
 import org.geoserver.platform.ExtensionProvider;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -23,16 +23,9 @@ import org.springframework.context.ApplicationContext;
  * @author Gabriel Roldan (TOPP)
  * @version $Id$
  */
-public class WMSExtensionsTest extends TestCase {
+public class WMSExtensionsTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testFindMapProducers() {
         GetMapOutputFormat mockProducer1 = createMock(GetMapOutputFormat.class);
         GetMapOutputFormat mockProducer2 = createMock(GetMapOutputFormat.class);
@@ -59,6 +52,7 @@ public class WMSExtensionsTest extends TestCase {
         assertTrue(mapProducers.contains(mockProducer2));
     }
 
+    @Test
     public void testFindMapProducersEmpty() {
         ApplicationContext mockContext = EasyMock.createMock(ApplicationContext.class);
         // I'm not so pleasant with this block of code as it implies knowing how
@@ -77,6 +71,7 @@ public class WMSExtensionsTest extends TestCase {
         assertEquals(0, mapProducers.size());
     }
 
+    @Test
     public void testFindMapProducer() {
         GetMapOutputFormat mockProducer = createMock(GetMapOutputFormat.class);
 

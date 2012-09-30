@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.image.test.ImageAssert;
@@ -22,27 +22,14 @@ import org.w3c.dom.Document;
  * @author Niels Charlier
  * 
  */
-public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
+public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
 
     public WmsGetMapTest() throws Exception {
         super();
     }
     
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        try {
-            return new OneTimeTestSetup(new WmsGetMapTest());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected WmsSupportMockData createTestData() {
         WmsSupportMockData mockData = new WmsSupportMockData();
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("outcropcharacter", "styles/outcropcharacter.sld");
@@ -50,6 +37,7 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         return mockData;
     }
      
+    @Test
     public void testGetMapOutcropCharacter() throws Exception
     {
         InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
@@ -59,6 +47,7 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
         ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
     }
     
+    @Test
     public void testGetMapOutcropCharacterReprojection() throws Exception
     {
         InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4283&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
@@ -69,6 +58,7 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
 
     }
     
+    @Test
     public void testGetMapPositionalAccuracy() throws Exception
     {
         InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=positionalaccuracy&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
@@ -87,6 +77,7 @@ public class WmsGetMapTest extends AbstractAppSchemaWfsTestSupport {
     }  
     
    
+    @Test
     public void testGetMapAfterWFS() throws Exception
     {
         Document doc = getAsDOM("wfs?version=1.1.0&request=getFeature&typeName=gsml:MappedFeature&maxFeatures=1");

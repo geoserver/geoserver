@@ -1,5 +1,7 @@
 package org.geoserver.web.wicket.browser;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 
 import junit.framework.TestCase;
@@ -11,16 +13,18 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Before;
+import org.junit.Test;
 
-public class FileBreadcrumsTest extends TestCase {
+public class FileBreadcrumsTest {
     
     private WicketTester tester;
     private File root;
     private File leaf;
     private File lastClicked;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         tester = new WicketTester();
         root = new File("target/test-breadcrumbs");
         leaf = new File("target/test-breadcrumbs/one/two/three");
@@ -43,7 +47,8 @@ public class FileBreadcrumsTest extends TestCase {
         
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
-    
+
+    @Test
     public void testLoad() throws Exception {
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
@@ -53,7 +58,8 @@ public class FileBreadcrumsTest extends TestCase {
         tester.assertLabel("form:panel:path:2:pathItemLink:pathItem", "two/");
         tester.assertLabel("form:panel:path:3:pathItemLink:pathItem", "three/");
     }
-    
+
+    @Test
     public void testFollowLink() throws Exception {
         tester.clickLink("form:panel:path:1:pathItemLink");
         

@@ -1,5 +1,7 @@
 package org.geoserver.web.wicket.property;
 
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -7,13 +9,16 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.apache.wicket.markup.html.list.ListItem;
 
 public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport {
 
     Foo foo;
 
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void init() {
         foo = new Foo();
     }
 
@@ -22,6 +27,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         tester.assertRenderedPage(PropertyEditorTestPage.class);
     }
 
+    @Test
     public void testAdd() {
         //JD:for the life of me i can't figure out any sane way to test forms with ajax in the mix
         // so unable to test the case of adding multiple key/value pairs since it involves 
@@ -42,6 +48,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         assertEquals("bar", foo.getProps().get("foo"));
     }
 
+    @Test
     public void testRemove() {
         foo.getProps().put("foo", "bar");
         foo.getProps().put("bar", "baz");
@@ -77,6 +84,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         assertFalse(foo.getProps().containsKey("baz"));
     }
 
+    @Test
     public void testAddRemove() {
         startPage();
         tester.clickLink("form:props:add", true);

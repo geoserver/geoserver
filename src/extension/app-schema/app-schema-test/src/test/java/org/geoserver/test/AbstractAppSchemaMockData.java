@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
@@ -39,7 +40,8 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
+public abstract class AbstractAppSchemaMockData extends SystemTestData 
+    implements NamespaceTestData {
     
     /**
      * Folder for for test data.
@@ -143,8 +145,6 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     
     private final Map<String, String> layerStyles = new LinkedHashMap<String,String>();
 
-    private File data;
-    
     private File styles;
 
     /** the 'featureTypes' directory, under 'data' */
@@ -175,17 +175,19 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     public AbstractAppSchemaMockData() {
         this(NAMESPACES);
     }
-    
-    public AbstractAppSchemaMockData(Map<String, String> namespaces) {
-        this.namespaces = new LinkedHashMap<String, String>(namespaces);
-        // create the mock data directory
+
+    static File newRandomDirectory() {
         try {
-            data = IOUtils.createRandomDirectory("target", "app-schema-mock", "data");
+            return IOUtils.createRandomDirectory("target", "app-schema-mock", "data");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        data.delete();
-        data.mkdir();
+    }
+
+    public AbstractAppSchemaMockData(Map<String, String> namespaces) {
+        super(newRandomDirectory());
+        this.namespaces = new LinkedHashMap<String, String>(namespaces);
+
         // create a featureTypes directory
         featureTypesBaseDir = new File(data, "featureTypes");
         featureTypesBaseDir.mkdir();
@@ -288,11 +290,17 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
      * 
      * @see org.geoserver.data.test.TestData#setUp()
      */
-    public void setUp() {
+    public void setUp() throws IOException {
         setUpCatalog();
+        setUpSecurity();
         copy(MockData.class.getResourceAsStream("services.xml"), "services.xml");
     }
 
+    @Override
+    public void setUpDefault() throws Exception {
+        //do nothing
+    }
+    
     /**
      * Removes the mock data directory.
      * 

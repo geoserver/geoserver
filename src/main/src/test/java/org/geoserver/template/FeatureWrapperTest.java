@@ -4,6 +4,8 @@
  */
 package org.geoserver.template;
 
+import static org.junit.Assert.*;
+
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
@@ -12,6 +14,8 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -21,13 +25,13 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 
-public class FeatureWrapperTest extends TestCase {
+public class FeatureWrapperTest {
     SimpleFeatureCollection features;
     Configuration cfg;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
+    
         //create some data
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureType featureType = DataUtilities.createType("testType",
@@ -54,6 +58,7 @@ public class FeatureWrapperTest extends TestCase {
         cfg.setObjectWrapper(new FeatureWrapper());
     }
 
+    @Test
     public void testFeatureCollection() throws Exception {
         Template template = cfg.getTemplate("FeatureCollection.ftl");
 
@@ -63,6 +68,7 @@ public class FeatureWrapperTest extends TestCase {
         assertEquals("fid.1\nfid.2\nfid.3\n", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
+    @Test
     public void testFeatureSimple() throws Exception {
         Template template = cfg.getTemplate("FeatureSimple.ftl");
 
@@ -73,6 +79,7 @@ public class FeatureWrapperTest extends TestCase {
         assertEquals("one\n1\n1.1\nPOINT (1 1)", out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
+    @Test
     public void testFeatureDynamic() throws Exception {
         Template template = cfg.getTemplate("FeatureDynamic.ftl");
 

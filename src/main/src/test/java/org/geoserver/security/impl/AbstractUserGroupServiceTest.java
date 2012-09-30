@@ -5,28 +5,38 @@
 
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
 import junit.framework.Assert;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
+import org.junit.Before;
+import org.junit.Test;
 
 public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServiceTest {
 
     protected GeoServerUserGroupService service;
     protected GeoServerUserGroupStore store;
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();        
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         service = createUserGroupService("test");
-        store  = createStore(service);
+        //store  = createStore(service);
     }
 
-    
+    @Before
+    public void setServiceAndStore() throws Exception {
+        service = getSecurityManager().loadUserGroupService("test");
+        store = createStore(service);
+    }
+
     abstract protected SecurityUserGroupServiceConfig createConfigObject( String name );
 
+    @Test
     public void testInsert() {
         try {
             
@@ -58,6 +68,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         }        
     }
 
+    @Test
     public void testModify() {
         try {
             
@@ -90,6 +101,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         }        
     }
 
+    @Test
     public void testRemove() {
         try {
 
@@ -123,6 +135,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         }        
     }
 
+    @Test
     public void testIsModified() {
         try {
                         
@@ -197,6 +210,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         }        
     }
 
+    @Test
     public void testEmptyPassword() throws Exception {
         // all is empty
         checkEmpty(service);
@@ -214,6 +228,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         assertNull(user.getPassword());
     }
 
+    @Test
     public void testEraseCredentials() throws Exception {
         
         GeoServerUser user = store.createUserObject("user", "foobar", true);
@@ -228,6 +243,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
         assertNotNull(user.getPassword());
     }
     
+    @Test
     public void testPasswordRecoding() throws Exception{
 
         SecurityUserGroupServiceConfig config = getSecurityManager().loadUserGroupServiceConfig(service.getName());        

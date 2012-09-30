@@ -1,5 +1,8 @@
 package org.geoserver.security.cas;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.logging.Logger;
 
 import org.geoserver.security.GeoServerSecurityTestSupport;
@@ -10,12 +13,14 @@ import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 
 public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
 
     
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
+    @Test
     public void testCasProxiedFilterConfigValidation() throws Exception{
         CasProxiedAuthenticationFilterConfig config = new CasProxiedAuthenticationFilterConfig();
         config.setClassName(GeoServerCasProxiedAuthenticationFilter.class.getName());
@@ -28,6 +33,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         
 
     
+    @Test
     public void testCasFilterConfigValidation() throws Exception{
         CasAuthenticationFilterConfig config = new CasAuthenticationFilterConfig();
         config.setClassName(GeoServerCasAuthenticationFilter.class.getName());

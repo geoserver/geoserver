@@ -4,12 +4,16 @@
  */
 package org.vfny.geoserver.util;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.geoserver.test.GeoServerTestSupport;
+import org.junit.Test;
 
-public class SLDValidatorTest extends GeoServerTestSupport {
+public class SLDValidatorTest {
 
+    @Test
     public void testValid() throws Exception {
         SLDValidator validator = new SLDValidator();
         List errors = validator.validateSLD(getClass().getResourceAsStream("valid.sld"));
@@ -18,6 +22,7 @@ public class SLDValidatorTest extends GeoServerTestSupport {
         assertTrue(errors.isEmpty());
     }
     
+    @Test
     public void testInvalid() throws Exception {
         SLDValidator validator = new SLDValidator();
         List errors = validator.validateSLD(getClass().getResourceAsStream("invalid.sld"));

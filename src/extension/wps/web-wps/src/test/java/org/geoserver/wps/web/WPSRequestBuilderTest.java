@@ -1,5 +1,7 @@
 package org.geoserver.wps.web;
 
+import static junit.framework.Assert.assertTrue;
+
 import java.util.List;
 
 import org.apache.wicket.PageParameters;
@@ -8,7 +10,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.wps.web.WPSRequestBuilder;
+import org.junit.Test;
 
 /**
  * 
@@ -17,6 +19,7 @@ import org.geoserver.wps.web.WPSRequestBuilder;
  */
 public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
 
+    @Test
     public void testJTSAreaWorkflow() throws Exception {
         login();
 
@@ -80,6 +83,7 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testNameRequest() throws Exception {
         login();
         

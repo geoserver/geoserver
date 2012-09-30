@@ -1,24 +1,26 @@
 package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
-import org.geoserver.config.GeoServer;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GlobalSettingsTest extends CatalogRESTTestSupport {
 
-    protected GeoServer geoServer;
-
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    @Before
+    public void revertSettings() {
+        revertSettings(null);
     }
-
+    
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON("/rest/settings.json");
         print(json);
@@ -47,6 +49,7 @@ public class GlobalSettingsTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM("/rest/settings.xml");
         assertEquals("global", dom.getDocumentElement().getLocalName());
@@ -60,6 +63,7 @@ public class GlobalSettingsTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testPutAsJSON() throws Exception {
         String inputJson = "{'global': {" + "'settings':   {" + "'contact':     {"
                 + "'contactPerson': 'Claudius Ptolomaeus'" + "}," + "'charset': 'UTF-8',"
@@ -105,6 +109,7 @@ public class GlobalSettingsTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testPutAsXML() throws Exception {
         String xml = "<global><settings>" + "<charset>UTF-8</charset>"
                 + "<numDecimals>10</numDecimals>"

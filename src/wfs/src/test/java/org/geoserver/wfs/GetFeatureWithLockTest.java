@@ -1,25 +1,26 @@
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GetFeatureWithLockTest extends WFSTestSupport {
-    
-//    /**
-//     * This is a READ ONLY TEST so we can use one time setup
-//     */
-//    public static Test suite() {
-//        return new OneTimeTestSetup(new GetFeatureWithLockTest());
-//    }
-//    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void setUpInternal(SystemTestData systemTestData) throws Exception {
         getServiceDescriptor11().getOperations().add( "ReleaseLock");
     }
 
+    @Test
     public void testUpdateLockedFeatureWithLockId() throws Exception {
         // get feature
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -80,6 +81,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
         assertEquals(1, dom.getElementsByTagName("wfs:SUCCESS").getLength());
     }
 
+    @Test
     public void testUpdateLockedFeatureWithoutLockId() throws Exception {
 
         // get feature
@@ -133,7 +135,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
         dom = postAsDOM("wfs", xml);
 
         // release the lock
-        get("wfs?request=ReleaseLock&lockId=" + lockId);
+        get("wfs?request=ReleaseLock&version=1.1.0&lockId=" + lockId);
 
         // assertEquals( "wfs:WFS_TransactionResponse",
         // dom.getDocumentElement().getNodeName() );
@@ -142,6 +144,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
                         .getNodeName()));
     }
 
+    @Test
     public void testGetFeatureWithLockReleaseActionSome() throws Exception {
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
                 + "  version=\"1.0.0\"" + "  expiry=\"10\""
@@ -209,7 +212,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
         dom = postAsDOM("wfs", xml);
 
         // release locks
-        get("wfs?request=ReleaseLock&lockId=" + lockId);
+        get("wfs?request=ReleaseLock&version=1.1.0&lockId=" + lockId);
 
         assertEquals("wfs:WFS_TransactionResponse", dom.getDocumentElement()
                 .getNodeName());
@@ -217,6 +220,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testWorkspaceQualified() throws Exception {
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
         + "  version=\"1.0.0\"" + "  expiry=\"10\""
@@ -284,13 +288,14 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
         dom = postAsDOM("cdf/wfs", xml);
         
         // release locks
-        get("cdf/wfs?request=ReleaseLock&lockId=" + lockId);
+        get("cdf/wfs?request=ReleaseLock&version=1.1.0&lockId=" + lockId);
         
         assertEquals("wfs:WFS_TransactionResponse", dom.getDocumentElement()
                 .getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:SUCCESS").getLength());
     }
     
+    @Test
     public void testLayerQualified() throws Exception {
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
         + "  version=\"1.0.0\"" + "  expiry=\"10\""
@@ -362,7 +367,7 @@ public class GetFeatureWithLockTest extends WFSTestSupport {
         dom = postAsDOM("cdf/Locks/wfs", xml);
         
         // release locks
-        get("cdf/Locks/wfs?request=ReleaseLock&lockId=" + lockId);
+        get("cdf/Locks/wfs?request=ReleaseLock&version=1.1.0&lockId=" + lockId);
         
         assertEquals("wfs:WFS_TransactionResponse", dom.getDocumentElement()
                 .getNodeName());

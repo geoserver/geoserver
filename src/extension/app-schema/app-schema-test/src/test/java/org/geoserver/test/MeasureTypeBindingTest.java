@@ -1,6 +1,8 @@
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -9,19 +11,10 @@ import org.w3c.dom.Node;
  * @author Xiangtan Lin, CSIRO Information Management and Technology
  * 
  */
-public class MeasureTypeBindingTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new MeasureTypeBindingTest());
-    }
+public class MeasureTypeBindingTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected MeasureTypeBindingTestMockData createTestData() {
         return new MeasureTypeBindingTestMockData();
     }
 
@@ -30,6 +23,7 @@ public class MeasureTypeBindingTest extends AbstractAppSchemaWfsTestSupport {
      * GeoServer should encode output without error
      * (http://jira.codehaus.org/browse/GEOT-1272)
      */
+    @Test
     public void testMeasureTypeBindingWithoutUOM() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature";
         Document doc = getAsDOM(path);

@@ -1,6 +1,11 @@
 package org.geoserver.feature.retype;
 
-import static org.geoserver.data.test.MockData.*;
+import static org.geoserver.data.test.MockData.BRIDGES;
+import static org.geoserver.data.test.MockData.BUILDINGS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,24 +14,23 @@ import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.TestCase;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geotools.data.DataStore;
-import org.geotools.data.Query;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 
-public class RetypingFeatureSourceTest extends TestCase {
+public class RetypingFeatureSourceTest {
 
     static final String RENAMED = "houses";
 
@@ -36,8 +40,8 @@ public class RetypingFeatureSourceTest extends TestCase {
 
     private PropertyDataStore store;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         data = File.createTempFile("retype", "data", new File("./target"));
         data.delete();
         data.mkdir();
@@ -54,6 +58,7 @@ public class RetypingFeatureSourceTest extends TestCase {
         IOUtils.copy(properties.openStream(), new File(data, fileName));
     }
 
+    @Test
     public void testSimpleRename() throws IOException {
         SimpleFeatureSource fs = store.getFeatureSource(BUILDINGS.getLocalPart());
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -73,6 +78,7 @@ public class RetypingFeatureSourceTest extends TestCase {
         assertEquals(target, f.getType());
     }
 
+    @Test
     public void testConflictingRename() throws IOException {
         // we rename buildings to a feature type that's already available in the data store
         SimpleFeatureSource fs = store.getFeatureSource(BUILDINGS.getLocalPart());

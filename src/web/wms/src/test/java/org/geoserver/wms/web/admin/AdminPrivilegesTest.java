@@ -1,7 +1,10 @@
 package org.geoserver.wms.web.admin;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -12,42 +15,29 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wms.web.data.StyleEditPage;
 import org.geoserver.wms.web.data.StyleNewPage;
 import org.geoserver.wms.web.data.StylePage;
+import org.junit.Test;
 
 public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-    
-        //add a new user with only admin privileges to a single workspace
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-        security.mkdir();
-        
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-        props.put("cite", "cite,ROLE_CITE_ADMIN");
-        props.put("sf", "sf,ROLE_SF_ADMIN");
-        props.store(new FileOutputStream(users), "");
-    
-        File layers = new File(security, "layers.properties");
-        props.put("*.*.r", "*");
-        props.put("*.*.w", "*");
-        props.put("*.*.a", "ROLE_ADMINISTRATOR");
-        props.put("cite.*.a", "ROLE_CITE_ADMIN");
-        props.put("sf.*.a", "ROLE_SF_ADMIN");
-        props.store(new FileOutputStream(layers), "");
-    }
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
+        addUser("cite", "cite", null, Arrays.asList("ROLE_CITE_ADMIN"));
+        addUser("sf", "sf", null, Arrays.asList("ROLE_SF_ADMIN"));
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+        addLayerAccessRule("*", "*", AccessMode.READ, "*");
+        addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
+        addLayerAccessRule("*", "*", AccessMode.ADMIN, "ROLE_ADMINISTRATOR");
+        addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");
+        addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_SF_ADMIN");
         
         Catalog cat = getCatalog();
 
@@ -73,6 +63,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         login("sf", "sf", "ROLE_SF_ADMIN");
     }
 
+    @Test
     public void testStyleAllPageAsAdmin() throws Exception {
         login();
         tester.startPage(StylePage.class);
@@ -85,6 +76,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         assertEquals(cat.getStyles().size(), view.getItemCount());
     }
 
+    @Test
     public void testStyleAllPage() throws Exception {
         loginAsCite();
     
@@ -108,6 +100,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         }
     }
 
+    @Test
     public void testStyleNewPageAsAdmin() throws Exception {
         login();
     
@@ -121,6 +114,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         assertFalse(choice.isRequired());
     }
     
+    @Test
     public void testStyleNewPage() throws Exception {
         loginAsCite();
     
@@ -136,6 +130,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         assertTrue(choice.isRequired());
     }
 
+    @Test
     public void testStyleEditPageGlobal() throws Exception {
         loginAsCite();
     

@@ -1,20 +1,24 @@
 package org.geoserver.web.data.store;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StorePageTest extends GeoServerWicketTestSupport {
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void init() {
         login();
         tester.startPage(StorePage.class);
         
         // print(tester.getLastRenderedPage(), true, true);
     }
     
+    @Test
     public void testLoad() {
         tester.assertRenderedPage(StorePage.class);
         tester.assertNoErrorMessage();

@@ -1,13 +1,14 @@
 package org.geoserver.wfs.v1_1;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.StringTokenizer;
-
-import junit.framework.Test;
-
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
@@ -17,37 +18,37 @@ public class WFSReprojectionTest extends WFSTestSupport {
     private static final String TARGET_CRS_CODE = "EPSG:900913";
     MathTransform tx;
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new WFSReprojectionTest());
-    }
-    
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-    
+    @Before
+    public void init() throws Exception {
+
         CoordinateReferenceSystem epsgTarget = CRS.decode(TARGET_CRS_CODE);
         CoordinateReferenceSystem epsg32615 = CRS.decode("urn:x-ogc:def:crs:EPSG:6.11.2:32615");
-        
+              
         tx = CRS.findMathTransform(epsg32615, epsgTarget);
+    }
+    
+   
+    @Override
+    protected void setUpInternal(SystemTestData data) throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
         getGeoServer().save( wfs );
     }
     
+    @Test
     public void testGetFeatureGet() throws Exception {
         
         Document dom1 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-            MockData.POLYGONS.getLocalPart());
+            SystemTestData.POLYGONS.getLocalPart());
         print(dom1);
         Document dom2 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + 
-            MockData.POLYGONS.getLocalPart() + "&srsName=" + TARGET_CRS_CODE);
+            SystemTestData.POLYGONS.getLocalPart() + "&srsName=" + TARGET_CRS_CODE);
         print(dom2);
         
         runTest(dom1,dom2);
     }
     
+    @Test
     public void testGetFeaturePost() throws Exception {
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
         + "version=\"1.0.0\" "
@@ -55,7 +56,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
         + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
         + "<wfs:Query typeName=\"" + 
-            MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "\"> "
+            SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "\"> "
         + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
         + "</wfs:Query> " + "</wfs:GetFeature>";
         
@@ -68,7 +69,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
         + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
         + "<wfs:Query srsName=\"" + TARGET_CRS_CODE + "\" typeName=\"" + 
-            MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "\"> "
+            SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "\"> "
         + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
         + "</wfs:Query> " + "</wfs:GetFeature>";
         Document dom2 = postAsDOM("wfs", xml);
@@ -77,6 +78,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
         runTest(dom1, dom2);
     }
     
+    @Test
     public void testGetFeatureWithProjectedBoxGet() throws Exception {
         WFSInfo wfs = getWFS();
         boolean oldFeatureBounding = wfs.isFeatureBounding();
@@ -85,7 +87,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             
         try {
             String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + 
-                MockData.POLYGONS.getLocalPart();
+                SystemTestData.POLYGONS.getLocalPart();
             Document dom = getAsDOM( q );
     //        print(dom);
             Element envelope = getFirstElementByTagName(dom, "gml:Envelope" );
@@ -103,7 +105,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             q += "&bbox=" + cr[0] + "," + cr[1] + "," + cr[2] + "," + cr[3] + "," + TARGET_CRS_CODE;
             dom = getAsDOM( q );
             
-            assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+            assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         }
         finally {
             wfs.setFeatureBounding(oldFeatureBounding);
@@ -111,6 +113,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
         }
     }
     
+    @Test
     public void testGetFeatureWithProjectedBoxPost() throws Exception {
         WFSInfo wfs = getWFS();
         boolean oldFeatureBounding = wfs.isFeatureBounding();
@@ -119,7 +122,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
         
         try {
             String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + 
-                MockData.POLYGONS.getLocalPart();
+                SystemTestData.POLYGONS.getLocalPart();
             Document dom = getAsDOM( q );
             Element envelope = getFirstElementByTagName(dom, "gml:Envelope" );
             String lc = getFirstElementByTagName(envelope, "gml:lowerCorner" )
@@ -134,11 +137,11 @@ public class WFSReprojectionTest extends WFSTestSupport {
             tx.transform(c, 0, cr, 0, 2);
             
             String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\""
-                + " xmlns:" + MockData.POLYGONS.getPrefix() + "=\"" + MockData.POLYGONS.getNamespaceURI() + "\""
+                + " xmlns:" + SystemTestData.POLYGONS.getPrefix() + "=\"" + SystemTestData.POLYGONS.getNamespaceURI() + "\""
                 + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
                 + " xmlns:gml=\"http://www.opengis.net/gml\" "
                 + " xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
-                + "<wfs:Query typeName=\"" + MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "\">"
+                + "<wfs:Query typeName=\"" + SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "\">"
                 + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
                 + "<ogc:Filter>" 
                 +  "<ogc:BBOX>"
@@ -153,7 +156,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             
             dom = postAsDOM( "wfs", xml );
             
-            assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+            assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         }
         finally {
             wfs.setFeatureBounding(oldFeatureBounding);
@@ -191,13 +194,14 @@ public class WFSReprojectionTest extends WFSTestSupport {
         return coordinates;
     }
     
+    @Test
     public void testFilterReprojection() throws Exception {
         String xml = "<wfs:GetFeature " + "service='WFS' "
         + "version='1.0.0' "
         + "xmlns:cdf='http://www.opengis.net/cite/data' "
         + "xmlns:ogc='http://www.opengis.net/ogc' "
         + "xmlns:wfs='http://www.opengis.net/wfs' " + "> "
-        + "<wfs:Query typeName='" + MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart() + "' "
+        + "<wfs:Query typeName='" + SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart() + "' "
         +    " srsName='" + TARGET_CRS_CODE + "'> "
       +    "> "
         +    "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
@@ -212,7 +216,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
         + "</wfs:Query> " + "</wfs:GetFeature>";
         
         Document dom = postAsDOM("wfs",xml);
-        assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         
     }
 }

@@ -4,15 +4,17 @@
  */
 package org.geoserver.wms.capabilities;
 
-import java.util.HashMap;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import java.util.HashMap;
 
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
+import org.junit.Before;
+import org.junit.Test;
 
 @SuppressWarnings("rawtypes")
-public class CapabilitiesKvpReaderTest extends TestCase {
+public class CapabilitiesKvpReaderTest {
 
     private CapabilitiesKvpReader reader;
 
@@ -20,6 +22,7 @@ public class CapabilitiesKvpReaderTest extends TestCase {
 
     private HashMap rawKvp;
 
+    @Before
     public void setUp() {
         this.reader = new CapabilitiesKvpReader(new WMS(null));
         this.kvp = new HashMap();
@@ -27,6 +30,7 @@ public class CapabilitiesKvpReaderTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testDefault() throws Exception {
         rawKvp.put("request", "getcapabilities");
         kvp.put("request", "getcapabilities");
@@ -44,6 +48,7 @@ public class CapabilitiesKvpReaderTest extends TestCase {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testWMTVER() throws Exception {
         rawKvp.put("WMTVER", "1.0");
 
@@ -53,6 +58,7 @@ public class CapabilitiesKvpReaderTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testVersion() throws Exception {
         kvp.put("Version", "1.1.1");
         GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);
@@ -61,6 +67,7 @@ public class CapabilitiesKvpReaderTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testNamespace() throws Exception {
         kvp.put("namespace", "og");
         GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);
@@ -69,6 +76,7 @@ public class CapabilitiesKvpReaderTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testUpdateSequence() throws Exception {
         kvp.put("updateSequence", "1000");
         GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);

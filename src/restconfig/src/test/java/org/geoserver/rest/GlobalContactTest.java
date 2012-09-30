@@ -1,6 +1,8 @@
 package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -10,31 +12,34 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
 public class GlobalContactTest extends CatalogRESTTestSupport {
 
     protected GeoServer geoServer;
 
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        geoServer = GeoServerExtensions.bean(GeoServer.class, applicationContext);
+    @Before
+    public void init() {
+        geoServer = getGeoServer();
+
         ContactInfo contactInfo = new ContactInfoImpl();
         contactInfo.setAddress("1600 Pennsylvania Avenue");
         contactInfo.setAddressCity("Washington");
         contactInfo.setAddressPostalCode("20001");
         contactInfo.setAddressCountry("United States");
         contactInfo.setAddressState("DC");
+        
         GeoServerInfo geoServerInfo = geoServer.getGlobal();
         SettingsInfo settingsInfo = geoServerInfo.getSettings();
         settingsInfo.setContact(contactInfo);
-        geoServer.save(geoServerInfo);
+        geoServer.save(geoServerInfo);        
     }
 
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON("/rest/settings/contact.json");
         JSONObject jsonObject = (JSONObject) json;
@@ -48,6 +53,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("20001", contactInfo.get("addressPostalCode").toString());
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM("/rest/settings/contact.xml");
         assertEquals("contact", dom.getDocumentElement().getLocalName());
@@ -58,6 +64,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("20001", "/contact/addressPostalCode", dom);
     }
 
+    @Test
     public void testPutAsJSON() throws Exception {
         String inputJson = "{'contact':" + "{'id': 'contact',"
                 + "'address': '500 Market Street'," + "'addressCity': 'Philadelphia',"
@@ -77,6 +84,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
         assertEquals("19106", contactInfo.get("addressPostalCode").toString());
     }
 
+    @Test
     public void testPutAsXML() throws Exception {
         String xml = "<contact>" + "<address>1600 Pennsylvania Avenue</address>"
                 + "<addressCity>Washington</addressCity>"

@@ -1,7 +1,8 @@
 package org.geoserver.security.rememberme;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,15 +13,19 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
+import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,12 +33,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class RememberMeTest extends GeoServerTestSupport {
+@Category(SystemTest.class)
+public class RememberMeTest extends GeoServerSecurityTestSupport {
 
 
     @Override
-    protected void setUpInternal() throws Exception {
-        //setup a custom filter to capture authentication
+    protected void onSetUp(SystemTestData testData) throws Exception {
 
         SecurityNamedServiceConfig filterCfg = new BaseSecurityNamedServiceConfig();
         filterCfg.setName("custom");
@@ -53,10 +58,10 @@ public class RememberMeTest extends GeoServerTestSupport {
     }
 
     @Override
-    protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getSpringContextLocations()));
-        list.add(getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
-        return list.toArray(new String[list.size()]);
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add(
+            getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
     }
 
     static class AuthCapturingFilter extends GeoServerSecurityFilter {
@@ -87,6 +92,7 @@ public class RememberMeTest extends GeoServerTestSupport {
             applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
     }
 
+    @Test
     public void testRememberMeLogin() throws Exception {
         
         MockHttpServletRequest request = createRequest("/j_spring_security_check");
@@ -118,6 +124,7 @@ public class RememberMeTest extends GeoServerTestSupport {
         assertTrue(request.getAttribute("auth") instanceof RememberMeAuthenticationToken);
     }
 
+    @Test
     public void testRememberMeOtherUserGroupService() throws Exception {
         // TODO Justin, this should work now
         

@@ -4,36 +4,33 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import java.io.InputStream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import junit.framework.Test;
+import java.io.InputStream;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.junit.Test;
 
 public class GetStylesIntegrationTest extends WMSTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetStylesIntegrationTest());
-    }
-
-    
+ 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        Catalog catalog = getCatalog();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+       Catalog catalog = getCatalog();
         
         String lakes = MockData.LAKES.getLocalPart();
         String forests = MockData.FORESTS.getLocalPart();
@@ -56,6 +53,8 @@ public class GetStylesIntegrationTest extends WMSTestSupport {
         catalog.save(lakesLayer);
     }
     
+    
+    @Test
     public void testSimple() throws Exception {
         InputStream stream = get("wms?service=WMS&version=1.1.1&&request=GetStyles&layers="
                 + getLayerId(MockData.BASIC_POLYGONS) + "&sldver=1.0.0");
@@ -75,6 +74,7 @@ public class GetStylesIntegrationTest extends WMSTestSupport {
         assertEquals("BasicPolygons", style.getName());
     }
     
+    @Test
     public void testGroup() throws Exception {
         InputStream stream = get("wms?service=WMS&version=1.1.1&request=GetStyles&layers=lakesGroup&sldver=1.0.0");
         
@@ -91,6 +91,7 @@ public class GetStylesIntegrationTest extends WMSTestSupport {
         assertEquals(0, layer.styles().size());
     }
     
+    @Test
     public void testMultiStyle() throws Exception {
         InputStream stream = get("wms?service=WMS&version=1.1.1&request=GetStyles&layers="
                 + getLayerId(MockData.LAKES) + "&sldver=1.0.0");

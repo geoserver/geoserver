@@ -7,7 +7,7 @@
 package org.geoserver.test;
 
 import org.w3c.dom.Document;
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * 
@@ -16,21 +16,14 @@ import junit.framework.Test;
  * @author Victor Tey, CSIRO Exploration and Mining
  */
 
-public class FeatureGML32Test extends AbstractAppSchemaWfsTestSupport {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new FeatureGML32Test());
-    }
+public class FeatureGML32Test extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected FeatureGML32MockData createTestData() {
         return new FeatureGML32MockData();
     }
 
+    @Test
     public void testGetMappedFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&outputFormat=gml32&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"

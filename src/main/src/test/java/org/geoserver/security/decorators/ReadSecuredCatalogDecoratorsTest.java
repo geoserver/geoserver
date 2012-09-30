@@ -1,10 +1,14 @@
 package org.geoserver.security.decorators;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
+import org.junit.Test;
 
 public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest {
 
+    @Test
     public void testSecuredLayerInfoFeatures() {
         SecuredLayerInfo ro = new SecuredLayerInfo(statesLayer,
                 WrapperPolicy.hide(null));
@@ -15,6 +19,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
                 ((SecuredFeatureTypeInfo) ro.getResource()).policy);
     }
 
+    @Test
     public void testSecuredLayerInfoCoverages() {
         SecuredLayerInfo ro = new SecuredLayerInfo(arcGridLayer,
                 WrapperPolicy.hide(null));
@@ -24,6 +29,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertSame(ro.policy, ((SecuredCoverageInfo) ro.getResource()).policy);
     }
 
+    @Test
     public void testSecuredFeatureTypeInfoHide() throws Exception {
         SecuredFeatureTypeInfo ro = new SecuredFeatureTypeInfo(states,
                 WrapperPolicy.hide(null));
@@ -35,6 +41,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertTrue(((SecuredDataStoreInfo) store).policy.isHide());
     }
 
+    @Test
     public void testSecuredFeatureTypeInfoMetadata() throws Exception {
         SecuredFeatureTypeInfo ro = new SecuredFeatureTypeInfo(states,
                 WrapperPolicy.metadata(null));
@@ -49,6 +56,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertTrue(((SecuredDataStoreInfo) store).policy.isMetadata());
     }
 
+    @Test
     public void testSecuredTypeInfoReadOnly() throws Exception {
         SecuredFeatureTypeInfo ro = new SecuredFeatureTypeInfo(states,
                 WrapperPolicy.readOnlyChallenge(null));
@@ -59,6 +67,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertTrue(((SecuredDataStoreInfo) store).policy.isReadOnlyChallenge());
     }
 
+    @Test
     public void testSecuredDataStoreInfoHide() throws Exception {
         SecuredDataStoreInfo ro = new SecuredDataStoreInfo(statesStore,
                 WrapperPolicy.hide(null));
@@ -66,6 +75,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertTrue(dataStore.policy.isHide());
     }
 
+    @Test
     public void testSecuredDataStoreInfoMetadata() throws Exception {
         SecuredDataStoreInfo ro = new SecuredDataStoreInfo(statesStore,
                 WrapperPolicy.metadata(null));

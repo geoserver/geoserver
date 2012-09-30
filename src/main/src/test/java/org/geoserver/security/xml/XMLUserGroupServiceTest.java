@@ -5,6 +5,8 @@
 
 package org.geoserver.security.xml;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -12,6 +14,7 @@ import java.util.logging.Logger;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.event.UserGroupLoadedEvent;
@@ -22,7 +25,12 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
+import org.geoserver.test.SystemTest;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(SystemTest.class)
 public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
@@ -31,20 +39,13 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
         return createUserGroupService(serviceName,XMLConstants.FILE_UR); 
     }
-    
-    @Override
-    protected void tearDownInternal() throws Exception {
-        super.tearDownInternal();
-        if (getSecurityManager().listUserGroupServices().contains("test")) {
-            GeoServerUserGroupStore store = getSecurityManager().loadUserGroupService("test").createStore();
-            store.clear();
-            store.store();
-            getSecurityManager().removeUserGroupService(
-                    getSecurityManager().loadUserGroupServiceConfig("test"));
-        }
+
+    @Before
+    public void clearUserGroupService() throws Exception {
+        store.clear();
+        store.store();
     }
 
-    
     @Override
     protected XMLUserGroupServiceConfig  createConfigObject( String name ) {
         XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();         
@@ -83,7 +84,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
         return service;                
     }
     
-        
+    @Test
     public void testCopyFrom() {
         try {
     
@@ -109,6 +110,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
     }
 
+    @Test
     public void testDefault() {
         try {
 //            GeoserverUserGroupService service = createUserGroupService(
@@ -136,7 +138,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             Assert.fail(ex.getMessage());
         }                
     }
-
+    
+    @Test
     public void testLocking() throws Exception {
         File xmlFile = File.createTempFile("users", ".xml");
         FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"),xmlFile);
@@ -251,6 +254,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
                         
     }
 
+    @Test
     public void testDynamicReload() throws Exception {
         File xmlFile = File.createTempFile("users", ".xml");
         FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"),xmlFile);

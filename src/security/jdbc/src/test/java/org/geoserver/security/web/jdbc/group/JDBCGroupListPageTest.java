@@ -3,19 +3,23 @@ package org.geoserver.security.web.jdbc.group;
 import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.group.GroupListPageTest;
+import org.junit.Test;
 
 public class JDBCGroupListPageTest extends GroupListPageTest {
+    @Override
+    protected void doInitialize() throws Exception {
+        initializeForJDBC();
+    }
+
+    @Test
     public void testRemoveWithRoles() throws Exception {
         withRoles=true;
-        initializeForJDBC();
-        insertValues();
         addAdditonalData();
         doRemove(getTabbedPanelPath()+":panel:header:removeSelectedWithRoles");
     }
 
+    @Test
     public void testRemoveJDBC() throws Exception {
-        initializeForJDBC();
-        insertValues();
         addAdditonalData();
         doRemove(getTabbedPanelPath()+":panel:header:removeSelected");
     }

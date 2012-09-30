@@ -4,14 +4,12 @@
  */
 package org.geoserver.wms.describelayer;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.StringWriter;
 
 import javax.xml.transform.TransformerException;
-
-import junit.framework.TestCase;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -29,6 +27,9 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -38,7 +39,7 @@ import org.w3c.dom.Element;
  * @author Gabriel Roldan
  * @version $Id$
  */
-public class DescribeLayerTransformerTest extends TestCase {
+public class DescribeLayerTransformerTest {
 
     /**
      * A request for the tests to fill up with the test spficic parameters. setUp creates it whit a
@@ -63,7 +64,8 @@ public class DescribeLayerTransformerTest extends TestCase {
     /**
      * Sets up a base request with a mocked up geoserver and catalog for the tests
      */
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         // Map<String, String> namespaces = new HashMap<String, String>();
         // namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         // namespaces.put(TEST_NS_PREFIX, TEST_NAMESPACE);
@@ -129,24 +131,21 @@ public class DescribeLayerTransformerTest extends TestCase {
         request.setVersion(WMS.VERSION_1_1_1.toString());
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testPreconditions() throws TransformerException {
         try {
             new DescribeLayerTransformer(null);
-            fail("expected NPE on null base url");
+            Assert.fail("expected NPE on null base url");
         } catch (NullPointerException e) {
-            assertTrue(true);
+            Assert.assertTrue(true);
         }
 
         transformer = new DescribeLayerTransformer("http://geoserver.org");
         try {
             transformer.transform(null);
-            fail("expected IAE on null request");
+            Assert.fail("expected IAE on null request");
         } catch (TransformerException e) {
-            assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
         }
         try {
             transformer.transform(new Object());
@@ -166,6 +165,7 @@ public class DescribeLayerTransformerTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRootElement() throws Exception {
         transformer = new DescribeLayerTransformer("http://geoserver.org");
         Document dom = WMSTestSupport.transform(request, transformer);
@@ -174,6 +174,7 @@ public class DescribeLayerTransformerTest extends TestCase {
         assertEquals("1.1.1", root.getAttribute("version"));
     }
 
+    @Test
     public void testDTDLocation() throws Exception {
         final String expected = "!DOCTYPE WMS_DescribeLayerResponse SYSTEM \"http://geoserver.org/schemas/wms/1.1.1/WMS_DescribeLayerResponse.dtd\"";
         transformer = new DescribeLayerTransformer("http://geoserver.org");
@@ -182,6 +183,7 @@ public class DescribeLayerTransformerTest extends TestCase {
         assertTrue(writer.getBuffer().indexOf(expected) > 0);
     }
 
+    @Test
     public void testSingleVectorLayer() throws Exception {
         MapLayerInfo mapLayerInfo = new MapLayerInfo(vectorLayerInfo);
 
@@ -210,6 +212,7 @@ public class DescribeLayerTransformerTest extends TestCase {
         assertXpathEvaluatesTo("fakeWs:states", layerDescPath + "/Query/@typeName", dom);
     }
 
+    @Test
     public void testSingleRasterLayer() throws Exception {
         MapLayerInfo mapLayerInfo = new MapLayerInfo(coverageLayerInfo);
 
@@ -238,6 +241,7 @@ public class DescribeLayerTransformerTest extends TestCase {
         assertXpathEvaluatesTo("fakeWs:fakeCoverage", layerDescPath + "/Query/@typeName", dom);
     }
 
+    @Test
     public void testMultipleLayers() throws Exception {
         request.addLayer(new MapLayerInfo(vectorLayerInfo));
         request.addLayer(new MapLayerInfo(coverageLayerInfo));

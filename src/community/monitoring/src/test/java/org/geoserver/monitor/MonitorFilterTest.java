@@ -4,6 +4,8 @@
  */
 package org.geoserver.monitor;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import junit.framework.TestCase;
 
@@ -21,7 +24,7 @@ import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class MonitorFilterTest extends TestCase {
+public class MonitorFilterTest {
     
     DummyMonitorDAO dao;
     MonitorFilter filter;
@@ -55,6 +58,7 @@ public class MonitorFilterTest extends TestCase {
         
     }
     
+    @Test
     public void testSimple() throws Exception {
        
         HttpServletRequest req = request("GET", "/foo/bar", "12.34.56.78", null, null);
@@ -67,6 +71,7 @@ public class MonitorFilterTest extends TestCase {
         assertNull(data.getHttpReferer());
     }
     
+    @Test    
     public void testWithBody() throws Exception {
         chain.setServlet(new HttpServlet() {
             @Override
@@ -92,6 +97,8 @@ public class MonitorFilterTest extends TestCase {
         assertEquals(5, data.getResponseLength());
       
     }
+    
+    @Test
     public void testWithLongBody() throws Exception {
         chain.setServlet(new HttpServlet() {
             @Override
@@ -122,6 +129,8 @@ public class MonitorFilterTest extends TestCase {
         assertEquals(LONG_BODY_SIZE, data.getBodyContentLength()); // Should be the full length, not the trimmed one
       
     }
+    
+    @Test
     public void testWithUnboundedBody() throws Exception {
         final int UNBOUNDED_BODY_SIZE= 10000; // Something really big
         
@@ -156,6 +165,7 @@ public class MonitorFilterTest extends TestCase {
       
     }
    
+    @Test
     public void testReferer() throws Exception {
         HttpServletRequest req = request("GET", "/foo/bar", "12.34.56.78", null, "http://testhost/testpath");
         filter.doFilter(req, response(), chain);
@@ -167,6 +177,8 @@ public class MonitorFilterTest extends TestCase {
         assertEquals("http://testhost/testpath", data.getHttpReferer());
       
     }
+    
+    @Test
     public void testReferrer() throws Exception {
         // "Referrer" was misspelled in the HTTP spec, check if it works with the "correct" 
         // spelling. 

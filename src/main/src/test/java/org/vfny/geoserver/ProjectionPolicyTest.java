@@ -1,5 +1,7 @@
 package org.vfny.geoserver;
 
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,46 +12,50 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.TestData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
-import org.opengis.coverage.grid.GridCoverageReader;
+import org.junit.Test;
 import org.opengis.feature.Feature;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class ProjectionPolicyTest extends GeoServerTestSupport {
+public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
 
     static WKTReader WKT = new WKTReader();
     
+    
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        Map props = new HashMap();
-        props.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.FORCE_DECLARED);
-        props.put(MockData.KEY_SRS_NUMBER, 4269);
-        dataDirectory.addWellKnownType(MockData.BASIC_POLYGONS, props);
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.FORCE_DECLARED);
+        props.put(LayerProperty.SRS, 4269);
+        testData.setUpVectorLayer(SystemTestData.BASIC_POLYGONS, props);
         
-        props.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.REPROJECT_TO_DECLARED);
-        props.put(MockData.KEY_SRS_NUMBER, 4326);
-        dataDirectory.addWellKnownType(MockData.POLYGONS, props);
+        props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
+        props.put(LayerProperty.SRS, 4326);
+        testData.setUpVectorLayer(MockData.POLYGONS, props);
         
-        props.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.NONE);
-        props.put(MockData.KEY_SRS_NUMBER, 3004);
-        dataDirectory.addWellKnownType(MockData.LINES, props);
+        props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.NONE);
+        props.put(LayerProperty.SRS, 3004);
+        testData.setUpVectorLayer(MockData.LINES, props);
         
-        props.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.REPROJECT_TO_DECLARED);
-        props.put(MockData.KEY_SRS_NUMBER, 4326);
-        props.put(MockData.KEY_ALIAS, "MyPoints");
-        dataDirectory.addWellKnownType(MockData.POINTS, props);
+        props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
+        props.put(LayerProperty.SRS, 4326);
+        props.put(LayerProperty.NAME, "MyPoints");
+        testData.setUpVectorLayer(MockData.POINTS, props);
         
-        dataDirectory.addWcs10Coverages();
+        testData.setUpDefaultRasterLayers();
+        testData.setUpWcs10RasterLayers();
     }
     
+    @Test
     public void testForce() throws Exception {
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("EPSG:4269", fti.getSRS());
@@ -62,6 +68,7 @@ public class ProjectionPolicyTest extends GeoServerTestSupport {
         assertEquals(CRS.decode("EPSG:4269"), f.getType().getCoordinateReferenceSystem());
     }
     
+    @Test
     public void testReproject() throws Exception {
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(MockData.POLYGONS.getLocalPart());
         assertEquals("EPSG:4326", fti.getSRS());
@@ -79,6 +86,7 @@ public class ProjectionPolicyTest extends GeoServerTestSupport {
         assertEquals(CRS.decode("EPSG:4326"), f.getType().getCoordinateReferenceSystem());
     }
     
+    @Test
     public void testLeaveNative() throws Exception {
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(MockData.LINES.getLocalPart());
         assertEquals("EPSG:3004", fti.getSRS());
@@ -96,6 +104,7 @@ public class ProjectionPolicyTest extends GeoServerTestSupport {
         assertEquals(CRS.decode("EPSG:32615"), f.getType().getCoordinateReferenceSystem());
     }
     
+    @Test
     public void testWithRename() throws Exception {
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("MyPoints");
         assertEquals("EPSG:4326", fti.getSRS());
@@ -112,6 +121,7 @@ public class ProjectionPolicyTest extends GeoServerTestSupport {
         assertEquals(CRS.decode("EPSG:4326"), f.getType().getCoordinateReferenceSystem());
     }
     
+    @Test
     public void testForceCoverage() throws Exception {
         // force the data to another projection
         Catalog catalog = getCatalog();

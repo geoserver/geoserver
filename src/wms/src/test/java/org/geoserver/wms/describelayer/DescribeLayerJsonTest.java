@@ -4,13 +4,17 @@
  */
 package org.geoserver.wms.describelayer;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 
 /**
  * Unit test suite for {@link GeoJSONDescribeLayerResponse}
@@ -20,13 +24,9 @@ import org.geoserver.wms.WMSTestSupport;
  */
 public class DescribeLayerJsonTest extends WMSTestSupport {
 	
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DescribeLayerJsonTest());
-    }
+ 
     
+    @Test
     public void testBuild() throws Exception {
     	try {
 	    	new GeoJSONDescribeLayerResponse(getWMS(), "fail");
@@ -40,6 +40,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testCustomJSONP() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
         String request = "wms?version=1.1.1"
@@ -61,6 +62,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testSimpleJSON() throws Exception {
     	String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
         String request = "wms?version=1.1.1"
@@ -97,6 +99,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testJSONLayerGroup() throws Exception {
     	
         String layer = NATURE_GROUP;

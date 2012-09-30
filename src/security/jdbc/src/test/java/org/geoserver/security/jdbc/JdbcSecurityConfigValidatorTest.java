@@ -1,23 +1,38 @@
 package org.geoserver.security.jdbc;
 
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_INVALID;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_INVALID;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DRIVER_CLASSNAME_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DRIVER_CLASS_NOT_FOUND_$1;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JDBCURL_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JNDINAME_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.USERNAME_REQUIRED;
+import static org.junit.Assert.*;
+import static org.easymock.classextension.EasyMock.*;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.impl.AbstractRoleService;
-import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig;
 import org.geoserver.security.jdbc.config.JDBCRoleServiceConfig;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
+import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidatorTest;
 import org.geotools.util.logging.Logging;
-
-import static org.geoserver.security.jdbc.JDBCSecurityConfigException.*;
+import org.junit.Test;
+import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 
 public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest  {
 
@@ -25,7 +40,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     
     
     @Override
-    protected SecurityUserGroupServiceConfig getUGConfig(String name, Class<?> aClass,
+    protected SecurityUserGroupServiceConfig createUGConfig(String name, Class<?> aClass,
             String encoder, String policyName) {
         JDBCUserGroupServiceConfig config = new JDBCUserGroupServiceConfig();
         config.setName(name);
@@ -37,7 +52,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
     
     @Override
-    protected SecurityRoleServiceConfig getRoleConfig(String name, Class<?> aClass,String adminRole) {
+    protected SecurityRoleServiceConfig createRoleConfig(String name, Class<?> aClass,String adminRole) {
         JDBCRoleServiceConfig config = new JDBCRoleServiceConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -47,7 +62,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
     
     @Override
-    protected SecurityAuthProviderConfig getAuthConfig(String name, Class<?> aClass,String userGroupServiceName) {
+    protected SecurityAuthProviderConfig createAuthConfig(String name, Class<?> aClass,String userGroupServiceName) {
         JDBCConnectAuthProviderConfig config = new JDBCConnectAuthProviderConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -56,12 +71,13 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
 
     @Override
+    @Test
     public void testRoleConfig() throws IOException {
         
         super.testRoleConfig();
-        
+
         JDBCRoleServiceConfig  config = 
-                (JDBCRoleServiceConfig)getRoleConfig("jdbc", JDBCRoleService.class, 
+                (JDBCRoleServiceConfig)createRoleConfig("jdbc", JDBCRoleService.class, 
                 AbstractRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         
         config.setDriverClassName("a.b.c");
@@ -71,114 +87,110 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
         config.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
         
         JDBCRoleServiceConfig  configJNDI = (JDBCRoleServiceConfig) 
-                getRoleConfig("jndi", JDBCRoleService.class, 
+                createRoleConfig("jndi", JDBCRoleService.class, 
                 		AbstractRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         configJNDI.setJndi(true);
         configJNDI.setJndiName("jndi:connect");
         configJNDI.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);
         configJNDI.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
 
-        
-        boolean fail;
-
-        
-        
-        fail=false;
-        try {            
+        JdbcSecurityConfigValidator validator = 
+                new JdbcSecurityConfigValidator(getSecurityManager());
+        try {
             configJNDI.setJndiName("");
-            getSecurityManager().saveRoleService(configJNDI);
+            validator.validateAddRoleService(configJNDI);
+            //getSecurityManager().saveRoleService(configJNDI);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( JNDINAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( JNDINAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
-        fail=false;
         try {            
             config.setDriverClassName("");
-            getSecurityManager().saveRoleService(config);
+            validator.validateAddRoleService(config);
+            //getSecurityManager().saveRoleService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DRIVER_CLASSNAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DRIVER_CLASSNAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setDriverClassName("a.b.c");
-        fail=false;
         try {            
             config.setUserName("");
-            getSecurityManager().saveRoleService(config);                         
+            validator.validateAddRoleService(config);
+            //getSecurityManager().saveRoleService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( USERNAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( USERNAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setUserName("user");
-        fail=false;
         try {            
             config.setConnectURL(null);
-            getSecurityManager().saveRoleService(config);                         
+            validator.validateAddRoleService(config);
+            //getSecurityManager().saveRoleService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( JDBCURL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( JDBCURL_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
         
         config.setConnectURL("jdbc:connect");
-        try {            
-            getSecurityManager().saveRoleService(config);                         
+        try {      
+            validator.validateAddRoleService(config);
+            //getSecurityManager().saveRoleService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DRIVER_CLASS_NOT_FOUND_$1,ex.getId());
-            assertEquals("a.b.c",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DRIVER_CLASS_NOT_FOUND_$1, ex.getId());
+            assertEquals("a.b.c", ex.getArgs()[0]);
         }
-        assertTrue(fail);
         
         config.setDriverClassName("java.lang.String");
-                
         config.setPropertyFileNameDDL(null);
         try {
-            getSecurityManager().saveRoleService(config);
+            validator.validateAddRoleService(config);
+            //getSecurityManager().saveRoleService(config);
         } catch (SecurityConfigException ex) {
             throw new IOException(ex);
         }
+
+        GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
+        expect(secMgr.listRoleServices()).andReturn(
+            new TreeSet<String>(Arrays.asList("default", "jdbc"))).anyTimes();
+        replay(secMgr);
+        validator = new JdbcSecurityConfigValidator(secMgr);
+
+        JDBCRoleServiceConfig oldConfig = new JDBCRoleServiceConfig(config);
+
         config.setPropertyFileNameDML(null);
         try {            
-            getSecurityManager().saveRoleService(config);
+            //getSecurityManager().saveRoleService(config);
+            validator.validateModifiedRoleService(config, oldConfig);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DML_FILE_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DML_FILE_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);
         config.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
         
         // run only if a temp dir is availbale
         if (new JdbcSecurityConfigValidator(getSecurityManager()).getTempDir()!=null) {
+            oldConfig = new JDBCRoleServiceConfig(config);
             String invalidPath="abc"+File.separator+"def.properties";
             config.setPropertyFileNameDDL(invalidPath);
-            fail=false;
             try {
-                getSecurityManager().saveRoleService(config);
+                //getSecurityManager().saveRoleService(config);
+                validator.validateModifiedRoleService(config, oldConfig);
+                fail();
             } catch (SecurityConfigException ex) {
-                assertEquals(DDL_FILE_INVALID, ex.getId());
+                assertEquals(DDL_FILE_INVALID,  ex.getId());
                 assertEquals(invalidPath, ex.getArgs()[0]);
-                fail=true;
             }
-            assertTrue(fail);
         }
  
         config.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);
@@ -186,42 +198,44 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
  
         // run only if a temp dir is availbale
         if (new JdbcSecurityConfigValidator(getSecurityManager()).getTempDir()!=null) {
+            oldConfig = new JDBCRoleServiceConfig(config);
             String invalidPath="abc"+File.separator+"def.properties";
             config.setPropertyFileNameDML(invalidPath);
-            fail=false;
             try {
-                getSecurityManager().saveRoleService(config);
+                //getSecurityManager().saveRoleService(config);
+                validator.validateModifiedRoleService(config, oldConfig);
+                fail();
             } catch (SecurityConfigException ex) {
                 assertEquals(DML_FILE_INVALID, ex.getId());
-                assertEquals(invalidPath, ex.getArgs()[0]);
-                fail=true;
+                assertEquals(invalidPath,  ex.getArgs()[0]);
             }
-            assertTrue(fail);
         }
+
+        oldConfig = new JDBCRoleServiceConfig(config);
 
         config.setPropertyFileNameDDL(null);
         config.setCreatingTables(true);
         config.setPropertyFileNameDML(JDBCRoleService.DEFAULT_DML_FILE);
         
         try {
-            getSecurityManager().saveRoleService(config);
+            //getSecurityManager().saveRoleService(config);
+            validator.validateModifiedRoleService(config, oldConfig);
+            fail();
         } catch (SecurityConfigException ex) {
             assertEquals(DDL_FILE_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
-            fail=true;
         }
-        assertTrue(fail);
-
 
     }
 
     @Override
+    @Test
     public void testUserGroupConfig() throws IOException {
 
         super.testUserGroupConfig();
         
         JDBCUserGroupServiceConfig  config = 
-                (JDBCUserGroupServiceConfig)getUGConfig("jdbc", JDBCUserGroupService.class,
+                (JDBCUserGroupServiceConfig)createUGConfig("jdbc", JDBCUserGroupService.class,
                 getPlainTextPasswordEncoder().getName() ,PasswordValidator.DEFAULT_NAME);
 
         config.setDriverClassName("a.b.c");
@@ -232,112 +246,116 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
 
 
         JDBCUserGroupServiceConfig  configJNDI = (JDBCUserGroupServiceConfig) 
-                getUGConfig("jdbc", JDBCUserGroupService.class, 
+                createUGConfig("jdbc", JDBCUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME);
         configJNDI.setJndi(true);                        
         configJNDI.setJndiName("jndi:connect");
         configJNDI.setPropertyFileNameDDL(JDBCUserGroupService.DEFAULT_DDL_FILE);
         configJNDI.setPropertyFileNameDML(JDBCUserGroupService.DEFAULT_DML_FILE);
-        
-        boolean fail;
 
-        
-        
-        fail=false;
+        JdbcSecurityConfigValidator validator = 
+                new JdbcSecurityConfigValidator(getSecurityManager());
         try {            
             configJNDI.setJndiName("");
-            getSecurityManager().saveUserGroupService(configJNDI);                                     
+            //getSecurityManager().saveUserGroupService(configJNDI);
+            validator.validateAddUserGroupService(configJNDI);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals(JNDINAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals(JNDINAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
-        fail=false;
         try {            
             config.setDriverClassName("");
-            getSecurityManager().saveUserGroupService(config);                         
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateAddUserGroupService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DRIVER_CLASSNAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DRIVER_CLASSNAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setDriverClassName("a.b.c");
-        fail=false;
         try {            
             config.setUserName("");
-            getSecurityManager().saveUserGroupService(config);                         
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateAddUserGroupService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( USERNAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( USERNAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setUserName("user");
-        fail=false;
         try {            
             config.setConnectURL(null);
-            getSecurityManager().saveUserGroupService(config);                         
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateAddUserGroupService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( JDBCURL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( JDBCURL_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
         
         config.setConnectURL("jdbc:connect");
         try {            
-            getSecurityManager().saveUserGroupService(config);                         
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateAddUserGroupService(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DRIVER_CLASS_NOT_FOUND_$1,ex.getId());
-            assertEquals("a.b.c",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DRIVER_CLASS_NOT_FOUND_$1, ex.getId());
+            assertEquals("a.b.c", ex.getArgs()[0]);
         }
 
         config.setDriverClassName("java.lang.String");
-        
         config.setPropertyFileNameDDL(null);
         try {
-            getSecurityManager().saveUserGroupService(config);
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateAddUserGroupService(config);
         } catch (SecurityConfigException ex) {
             throw new IOException(ex);
         }
+
+        GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
+        expect(secMgr.listUserGroupServices()).andReturn(
+            new TreeSet<String>(Arrays.asList("default", "jdbc"))).anyTimes();
+        
+        GeoServerPlainTextPasswordEncoder pwEncoder = getPlainTextPasswordEncoder();
+        expect(secMgr.loadPasswordEncoder(pwEncoder.getName())).andReturn(pwEncoder).anyTimes();
+        expect(secMgr.listPasswordValidators()).andReturn(
+            new TreeSet<String>(Arrays.asList(PasswordValidator.DEFAULT_NAME))).anyTimes();
+        replay(secMgr);
+
+        validator = new JdbcSecurityConfigValidator(secMgr);
+
+        JDBCUserGroupServiceConfig oldConfig = new JDBCUserGroupServiceConfig(config);
+
         config.setPropertyFileNameDML(null);
         try {            
-            getSecurityManager().saveUserGroupService(config);
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateModifiedUserGroupService(config, oldConfig);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DML_FILE_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DML_FILE_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setPropertyFileNameDDL(JDBCUserGroupService.DEFAULT_DDL_FILE);
         config.setPropertyFileNameDML(JDBCUserGroupService.DEFAULT_DML_FILE);
         
         // run only if a temp dir is availbale
         if (new JdbcSecurityConfigValidator(getSecurityManager()).getTempDir()!=null) {
+            oldConfig = new JDBCUserGroupServiceConfig(config);
             String invalidPath="abc"+File.separator+"def.properties";
             config.setPropertyFileNameDDL(invalidPath);
-            fail=false;
             try {
-                getSecurityManager().saveUserGroupService(config);
+                //getSecurityManager().saveUserGroupService(config);
+                validator.validateModifiedUserGroupService(config, oldConfig);
+                fail();
             } catch (SecurityConfigException ex) {
                 assertEquals(DDL_FILE_INVALID, ex.getId());
-                assertEquals(invalidPath, ex.getArgs()[0]);
-                fail=true;
+                assertEquals(invalidPath,  ex.getArgs()[0]);
             }
-            assertTrue(fail);
         }
  
         config.setPropertyFileNameDDL(JDBCUserGroupService.DEFAULT_DDL_FILE);
@@ -345,17 +363,17 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
  
         // run only if a temp dir is availbale
         if (new JdbcSecurityConfigValidator(getSecurityManager()).getTempDir()!=null) {
+            oldConfig = new JDBCUserGroupServiceConfig(config);
             String invalidPath="abc"+File.separator+"def.properties";
             config.setPropertyFileNameDML(invalidPath);
-            fail=false;
             try {
-                getSecurityManager().saveUserGroupService(config);
+                //getSecurityManager().saveUserGroupService(config);
+                validator.validateModifiedUserGroupService(config, oldConfig);
+                fail();
             } catch (SecurityConfigException ex) {
                 assertEquals(DML_FILE_INVALID, ex.getId());
                 assertEquals(invalidPath, ex.getArgs()[0]);
-                fail=true;
             }
-            assertTrue(fail);
         }
 
         
@@ -364,58 +382,54 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
         config.setPropertyFileNameDML(JDBCUserGroupService.DEFAULT_DML_FILE);
         
         try {
-            getSecurityManager().saveUserGroupService(config);
+            //getSecurityManager().saveUserGroupService(config);
+            validator.validateModifiedUserGroupService(config, oldConfig);
+            fail();
         } catch (SecurityConfigException ex) {
             assertEquals(DDL_FILE_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
-            fail=true;
         }
-        assertTrue(fail);        
     }
 
     @Override
     public void testAuthenticationProvider() throws IOException {
         super.testAuthenticationProvider();
         JDBCConnectAuthProviderConfig config = 
-                (JDBCConnectAuthProviderConfig) getAuthConfig("jdbcprov", JDBCConnectAuthProvider.class, "default");
+                (JDBCConnectAuthProviderConfig) createAuthConfig("jdbcprov", JDBCConnectAuthProvider.class, "default");
         
         config.setConnectURL("jdbc:connect");
         
-        boolean fail=false;
+        JdbcSecurityConfigValidator validator = new JdbcSecurityConfigValidator(getSecurityManager());
+        
         try {            
             config.setDriverClassName("");
-            getSecurityManager().saveAuthenticationProvider(config);
+            //getSecurityManager().saveAuthenticationProvider(config);
+            validator.validateAddAuthProvider(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DRIVER_CLASSNAME_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DRIVER_CLASSNAME_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
         config.setDriverClassName("a.b.c");
-        fail=false;
         try {            
-            getSecurityManager().saveAuthenticationProvider(config);
+            //getSecurityManager().saveAuthenticationProvider(config);
+            validator.validateAddAuthProvider(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( DRIVER_CLASS_NOT_FOUND_$1,ex.getId());
-            assertEquals("a.b.c",ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( DRIVER_CLASS_NOT_FOUND_$1, ex.getId());
+            assertEquals("a.b.c", ex.getArgs()[0]);
         }
-        assertTrue(fail);
-        
-        fail=false;
+
         try {            
             config.setConnectURL(null);
-            getSecurityManager().saveAuthenticationProvider(config);
+            //getSecurityManager().saveAuthenticationProvider(config);
+            validator.validateAddAuthProvider(config);
+            fail();
         } catch (SecurityConfigException ex) {
-            assertEquals( JDBCURL_REQUIRED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-            LOGGER.info(ex.getMessage());
-            fail=true;
+            assertEquals( JDBCURL_REQUIRED, ex.getId());
+            assertEquals(0, ex.getArgs().length);
         }
-        assertTrue(fail);
 
     }
 

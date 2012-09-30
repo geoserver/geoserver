@@ -1,6 +1,8 @@
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import org.geoserver.test.OneTimeSetupTest.OneTimeTestSetup;
 import org.geoserver.wfs.WFSInfo;
@@ -11,19 +13,10 @@ import org.w3c.dom.Node;
  * @author Xiangtan Lin, CSIRO Information Management and Technology
  * 
  */
-public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
+public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new PropertyEncodingOrderTest());
-    }
-    
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected PropertyEncodingOrderMockData createTestData() {
         return new PropertyEncodingOrderMockData();
     }
     
@@ -34,6 +27,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testPropertyEncodingOrder_Borehole() throws Exception {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:Borehole";
         Document doc = getAsDOM(path);
@@ -119,6 +113,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testPropertyEncodingOrder_PlanarOrientation() throws Exception {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=er:MineralOccurrence";
         Document doc = getAsDOM(path);
@@ -188,6 +183,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaWfsTestSupport {
      * @throws Exception
      */
 
+    @Test
     public void testPropertyEncodingOrder_GeologicUnit() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(true);

@@ -1,27 +1,42 @@
 package org.geoserver.wfs;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.geoserver.data.test.MockData;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class RetypingTransactionTest extends WFSTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        Map props = new HashMap();
+    protected void setUpInternal(SystemTestData dataDirectory) throws Exception {        
+        Catalog catalog = getCatalog();
         
-        props.put(MockData.KEY_ALIAS, "MyPolygons");
-        dataDirectory.addWellKnownType(MockData.POLYGONS, props);
+        FeatureTypeInfo featureType1 = catalog.getFeatureTypeByName(SystemTestData.POLYGONS.getLocalPart());
+        featureType1.setName( "MyPolygons");
+        getCatalog().save(featureType1);
         
-        props.put(MockData.KEY_ALIAS, "MyLines");
-        dataDirectory.addWellKnownType(MockData.LINES, props);
+        FeatureTypeInfo featureType2 = catalog.getFeatureTypeByName(SystemTestData.LINES.getLocalPart());
+        featureType2.setName( "MyLines");
+        getCatalog().save(featureType2);
         
-        props.put(MockData.KEY_ALIAS, "MyPoints");
-        dataDirectory.addWellKnownType(MockData.POINTS, props);
+        FeatureTypeInfo featureType3 = catalog.getFeatureTypeByName(SystemTestData.POINTS.getLocalPart());
+        featureType3.setName( "MyPoints");
+        getCatalog().save(featureType3);
     }
 
+    @Before
+    public void revert() throws Exception {
+        revertLayer(SystemTestData.POLYGONS);
+        revertLayer(SystemTestData.LINES);
+        revertLayer(SystemTestData.POINTS);
+    }
+
+    @Test
     public void testInsert() throws Exception {
 
         // 1. do a getFeature
@@ -64,6 +79,7 @@ public class RetypingTransactionTest extends WFSTestSupport {
                 .getLength());
     }
 
+    @Test
     public void testUpdate() throws Exception {
      // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -104,6 +120,7 @@ public class RetypingTransactionTest extends WFSTestSupport {
                 .getFirstChild().getNodeValue());
     }
     
+    @Test
     public void testDelete() throws Exception {
 
         // 1. do a getFeature

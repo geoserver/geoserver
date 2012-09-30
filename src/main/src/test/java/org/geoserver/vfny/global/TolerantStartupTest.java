@@ -1,6 +1,7 @@
 package org.geoserver.vfny.global;
 
-import java.net.URL;
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,33 +10,32 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 
-public class TolerantStartupTest extends GeoServerTestSupport {
+public class TolerantStartupTest extends GeoServerSystemTestSupport {
     
     @Override
-    public MockData buildTestData() throws Exception {
-        MockData md = new MockData();
-        
-        QName name = MockData.BASIC_POLYGONS;
-        URL properties = MockData.class.getResource(name.getLocalPart() + ".properties");
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        QName name = SystemTestData.BASIC_POLYGONS;
         String styleName = name.getLocalPart();
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put(MockData.KEY_STYLE, styleName);
-        props.put(MockData.KEY_SRS_HANDLINGS, ProjectionPolicy.REPROJECT_TO_DECLARED.getCode());
-        props.put(MockData.KEY_SRS_NUMBER, "123456");
-        md.addPropertiesType(name, properties, props);
+        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        props.put(LayerProperty.STYLE, styleName);
+        props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
+        props.put(LayerProperty.SRS, 123456);
+        testData.setUpVectorLayer(name, props, name.getLocalPart() + ".properties", SystemTestData.class);
         
-        md.addWellKnownTypes(new QName[] {MockData.BUILDINGS});
-        
-        return md;
+        testData.setUpVectorLayer(SystemTestData.BUILDINGS);
     }
     
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-    
+//    @Override
+//    protected String getLogConfiguration() {
+//        return "/DEFAULT_LOGGING.properties";
+//    }
+     
+    @Test
     public void testContextStartup() {
         GeoServer config = (GeoServer) applicationContext.getBean("geoServer"); 
         assertNotNull(config.getCatalog().getFeatureTypeByName(MockData.BUILDINGS.getNamespaceURI(), MockData.BUILDINGS.getLocalPart()));

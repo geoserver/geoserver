@@ -1,5 +1,7 @@
 package org.geoserver.web.wicket;
 
+import static org.junit.Assert.*;
+
 import java.io.Serializable;
 
 import org.apache.wicket.Session;
@@ -11,10 +13,12 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class CRSPanelTest extends GeoServerWicketTestSupport {
 
+    @Test
     public void testStandloneUnset() throws Exception {
         tester.startPage( new CRSPanelTestPage() );
         
@@ -28,6 +32,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertNull( crsPanel.getCRS() );
     }
     
+    @Test
     public void testStandaloneUnchanged() throws Exception {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage( new CRSPanelTestPage( crs ) );
@@ -43,6 +48,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertEquals( DefaultGeographicCRS.WGS84, crsPanel.getCRS() );
     }
     
+    @Test
     public void testPopupWindow() throws Exception {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage( new CRSPanelTestPage( crs ) );
@@ -56,6 +62,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:crs:popup:content:wkt", crs.toWKT());
     }
     
+    @Test
     public void testPopupWindowNoCRS() throws Exception {
         // see GEOS-3207
         tester.startPage( new CRSPanelTestPage() );
@@ -67,6 +74,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertFalse(link.isEnabled());
     }
     
+    @Test
     public void testStandaloneChanged() throws Exception {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage( new CRSPanelTestPage( crs ) );
@@ -81,6 +89,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertEquals( CRS.decode("EPSG:3005"), crsPanel.getCRS() );
     }
     
+    @Test
     public void testRequired() throws Exception {
         tester.startPage( new CRSPanelTestPage( (CoordinateReferenceSystem) null ) );
         CRSPanel panel = (CRSPanel) tester.getComponentFromLastRenderedPage("form:crs");
@@ -93,6 +102,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         // System.out.println(Session.get().getFeedbackMessages().messageForComponent(panel));
     }
     
+    @Test
     public void testCompoundPropertyUnchanged() throws Exception {
         Foo foo = new Foo( DefaultGeographicCRS.WGS84 );
         tester.startPage( new CRSPanelTestPage( foo ));
@@ -106,6 +116,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertEquals( DefaultGeographicCRS.WGS84, foo.crs );
     }
     
+    @Test
     public void testCompoundPropertyChanged() throws Exception {
         Foo foo = new Foo( DefaultGeographicCRS.WGS84 );
         tester.startPage( new CRSPanelTestPage( foo ));
@@ -119,6 +130,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertEquals( CRS.decode("EPSG:3005"), foo.crs );
     }
     
+    @Test
     public void testPropertyUnchanged() throws Exception {
         Foo foo = new Foo( DefaultGeographicCRS.WGS84 );
         tester.startPage( new CRSPanelTestPage( new PropertyModel( foo, "crs") ));
@@ -132,6 +144,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertEquals( DefaultGeographicCRS.WGS84, foo.crs );
     }
     
+    @Test
     public void testPropertyChanged() throws Exception {
         Foo foo = new Foo( DefaultGeographicCRS.WGS84 );
         tester.startPage( new CRSPanelTestPage( new PropertyModel( foo, "crs" ) ));

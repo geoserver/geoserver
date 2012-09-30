@@ -1,40 +1,47 @@
 package org.geoserver.wfs;
 
-import java.util.HashMap;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.Test;
+import java.util.HashMap;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class DescribeFeatureTest extends WFSTestSupport {
-    
-//    /**
-//     * This is a READ ONLY TEST so we can use one time setup
-//     */
-//    public static Test suite() {
-//        return new OneTimeTestSetup(new DescribeFeatureTest());
-//    }
-    
+
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.AGGREGATEGEOFEATURE);
+    }
+       
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.disableDataStore(MockData.CITE_PREFIX);
+    protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
+    	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
+    	di.setEnabled(false);
+        getCatalog().save(di);
     }
 
+    @Test
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
     }
     
+    @Test
     public void testSkipMisconfiguredLayers() throws Exception {
         // make sure AggregateGeoFeature is in the mock data set
         Document doc = getAsDOM("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0");
@@ -49,7 +56,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         
         // misconfigure a layer
         FeatureTypeInfo ftype =
-                getCatalog().getFeatureTypeByName(MockData.AGGREGATEGEOFEATURE.getLocalPart());
+                getCatalog().getFeatureTypeByName(CiteTestData.AGGREGATEGEOFEATURE.getLocalPart());
         ftype.setNativeName("NOT ACTUALLY THERE");
         getCatalog().save(ftype);
         
@@ -58,8 +65,10 @@ public class DescribeFeatureTest extends WFSTestSupport {
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("0",
                 "count(//xsd:import[contains(@schemaLocation, 'AggregateGeoFeature')])", doc);
+        
     }
 
+    @Test
     public void testPost() throws Exception {
         String xml = "<wfs:DescribeFeatureType " + "service=\"WFS\" "
                 + "version=\"1.0.0\" "
@@ -69,6 +78,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
     }
 
+    @Test
     public void testPostDummyFeature() throws Exception {
 
         String xml = "<wfs:DescribeFeatureType " + "service=\"WFS\" "
@@ -83,6 +93,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testWithoutExplicitMapping() throws Exception {
         String xml = "<DescribeFeatureType xmlns='http://www.opengis.net/wfs'"+
            " xmlns:gml='http://www.opengis.net/gml'"+
@@ -96,6 +107,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         assertEquals( 1, doc.getElementsByTagName("xsd:complexType").getLength());
     }
     
+    @Test
     public void testWithoutTypeName() throws Exception {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0");
         NodeList nl = doc.getElementsByTagName("xsd:import");
@@ -120,7 +132,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         }
         
         String[] expected = new String[]{
-            MockData.SF_URI, MockData.CDF_URI, MockData.CGF_URI
+            CiteTestData.SF_URI, CiteTestData.CDF_URI, CiteTestData.CGF_URI
         };
         for ( String namespace : expected ) {
             assertNotNull( imprts.get( namespace ) );
@@ -141,6 +153,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         
     }
     
+    @Test
     public void testWorkspaceQualified() throws Exception {
         Document doc = getAsDOM("sf/wfs?request=DescribeFeatureType&version=1.0.0");
         
@@ -156,6 +169,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         
     }
 
+    @Test
     public void testMultipleNamespaceNoTargetNamespace() throws Exception {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.0.0&typeName=sf:PrimitiveGeoFeature,cgf:Points");
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());

@@ -4,39 +4,23 @@
  */
 package org.geoserver.wfs.response;
 
-import java.io.BufferedReader;
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
-
-import junit.framework.Test;
-
-import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.data.DataStore;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.spatialite.SpatiaLiteDataStoreFactory;
-import org.geotools.feature.FeatureCollection;
+import org.junit.Assume;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
@@ -50,35 +34,31 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SpatiaLiteOutputFormatTest());
-    }
-
     static Boolean SKIPPED = null;
 
-    @Override
-    protected void runTest() throws Throwable {
-        if (Boolean.TRUE.equals(SKIPPED)) {
-            return;
-        }
+    @BeforeClass
+    public static void checkSpatialiteAvailability() throws Throwable {
+        Assume.assumeTrue(!skipTests());
+    }
 
-        if (SKIPPED == null && !new SpatiaLiteDataStoreFactory().isAvailable()) {
-            SKIPPED = true;
-            System.out.println("Skipping spatialite tests, native libraries not installed");
-            return;
+    private static boolean skipTests() {
+        if (SKIPPED == null) {
+            if (!new SpatiaLiteDataStoreFactory().isAvailable()) {
+                SKIPPED = true;
+                System.out.println("Skipping spatialite tests, native libraries not installed");
+            } else {
+                SKIPPED = false;
+            }
         }
             
-        SKIPPED = false;
-        super.runTest();
+        return SKIPPED;
     }
 
     /**
      * Test a request with multiple layers.
      * @throws Exception
      */
+    @Test
     public void testMultiResponse() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=spatialite");
@@ -95,6 +75,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test SPATIALITE Mime format.
      * @throws Exception
      */
+    @Test
     public void testMIMEOutput() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
@@ -105,6 +86,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test the content disposition
      * @throws Exception
      */
+    @Test
     public void testContentDisposition() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
@@ -116,6 +98,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * If Mime Type is "application/xml", then an error has occurred
      * @throws Exception
      */
+    @Test
     public void testWFSError() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
@@ -126,6 +109,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test not null content.
      * @throws Exception
      */
+    @Test
     public void testContentNotNull() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
         ByteArrayInputStream sResponse = getBinaryInputStream(resp);
@@ -145,6 +129,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test a Point geometry.
      * @throws Exception
      */
+    @Test
     public void testPoints() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Points&outputFormat=spatialite");
@@ -180,6 +165,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test a LineString geometry.
      * @throws Exception
      */
+    @Test
     public void testLines() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Lines&outputFormat=spatialite");
@@ -197,6 +183,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test a MultiLineString geometry.
      * @throws Exception
      */
+    @Test
    public void testMultiLines() throws Exception {
        MockHttpServletResponse resp = getAsServletResponse(
                "wfs?request=GetFeature&typeName=MLines&outputFormat=spatialite");
@@ -214,6 +201,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test a Polygon geometry.
      * @throws Exception
      */
+    @Test
     public void testPolygons() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&typeName=Polygons&outputFormat=spatialite");
@@ -231,6 +219,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test a MultiPolygon geometry.
      * @throws Exception
      */
+    @Test
     public void testMultiPolygons() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
                 "wfs?request=GetFeature&typeName=MPolygons&outputFormat=spatialite");
@@ -249,6 +238,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
      * Test format option FILENAME.
      * @throws Exception
      */
+    @Test
     public void testCustomFileName() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(
             "wfs?request=GetFeature&format_options=FILENAME:customName.db&typeName=Points&outputFormat=spatialite");

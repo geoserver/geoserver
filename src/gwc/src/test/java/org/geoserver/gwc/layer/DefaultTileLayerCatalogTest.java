@@ -4,25 +4,31 @@
  */
 package org.geoserver.gwc.layer;
 
-import java.io.File;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
-import junit.framework.TestCase;
+import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geowebcache.config.XMLConfiguration;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 import com.thoughtworks.xstream.XStream;
 
-public class DefaultTileLayerCatalogTest extends TestCase {
+public class DefaultTileLayerCatalogTest {
 
     private File baseDirectory;
 
     private DefaultTileLayerCatalog catalog;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         baseDirectory = new File("target", "mockTileLayerCatalog");
         FileUtils.deleteDirectory(baseDirectory);
         baseDirectory.mkdirs();
@@ -34,11 +40,12 @@ public class DefaultTileLayerCatalogTest extends TestCase {
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
     }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         FileUtils.deleteDirectory(baseDirectory);
     }
 
-    public void testGetLayerById() {
+    @Test public void testGetLayerById() {
         GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
         info.setId("id1");
         info.setName("name1");
@@ -48,7 +55,7 @@ public class DefaultTileLayerCatalogTest extends TestCase {
         assertEquals(info, actual);
     }
 
-    public void testGetLayerByName() {
+    @Test public void testGetLayerByName() {
         GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
         info.setId("id1");
         info.setName("name1");
@@ -58,7 +65,7 @@ public class DefaultTileLayerCatalogTest extends TestCase {
         assertEquals(info, actual);
     }
 
-    public void testDelete() {
+    @Test public void testDelete() {
         GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
         info.setId("id1");
         info.setName("name1");
@@ -74,7 +81,7 @@ public class DefaultTileLayerCatalogTest extends TestCase {
         assertNull(catalog.getLayerById("id1"));
     }
 
-    public void testSave() {
+    @Test public void testSave() {
         final GeoServerTileLayerInfo original;
         {
             final GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();

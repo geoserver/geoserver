@@ -4,7 +4,8 @@
  */
 package org.geoserver.wms.decoration;
 
-import java.awt.AlphaComposite;
+import static org.junit.Assert.*;
+
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,11 +13,10 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.geoserver.wms.WMSMapContent;
+import org.junit.Test;
 
-public class MapDecorationLayoutTest extends TestCase {
+public class MapDecorationLayoutTest {
    // public static TestSuite suite() { return new TestSuite(MapDecorationLayout.class); }
 
     private class MockMapDecoration implements MapDecoration {
@@ -48,6 +48,7 @@ public class MapDecorationLayoutTest extends TestCase {
         return (Graphics2D)b.getGraphics();
     }
 
+    @Test
     public void testStaticSize() throws Exception {
         Graphics2D g2d = createMockGraphics(256, 256);
         MapDecorationLayout dl = new MapDecorationLayout();
@@ -79,6 +80,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.paint(g2d, new Rectangle(0, 0, 256, 256), null);
     }
 
+    @Test
     public void testSquished() throws Exception {
         Graphics2D g2d = createMockGraphics(100, 100);
         MapDecorationLayout dl = new MapDecorationLayout();
@@ -149,6 +151,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
     }
 
+    @Test
     public void testPosition() {
         Graphics2D g2d = createMockGraphics(100, 100);
         MapDecorationLayout dl = new MapDecorationLayout();
@@ -248,6 +251,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
     }
 
+    @Test
     public void testOffset() {
         Graphics2D g2d = createMockGraphics(100, 100);
         MapDecorationLayout dl = new MapDecorationLayout();
@@ -346,6 +350,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
     }
     
+    @Test
     public void testTopCenter() {
         Graphics2D g2d = createMockGraphics(100, 100);
         MapDecorationLayout dl = new MapDecorationLayout();
@@ -364,6 +369,7 @@ public class MapDecorationLayoutTest extends TestCase {
         dl.paint(g2d, new Rectangle(0, 0, 100, 100), null);
     }
     
+    @Test
     public void testResetGraphics() {
         Graphics2D g2d = createMockGraphics(100, 100);
         MapDecorationLayout dl = new MapDecorationLayout();

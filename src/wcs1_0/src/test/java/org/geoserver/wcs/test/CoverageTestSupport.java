@@ -9,7 +9,9 @@ import java.net.URL;
 import javax.xml.namespace.QName;
 
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wcs.WCSInfo;
 
@@ -19,7 +21,7 @@ import org.geoserver.wcs.WCSInfo;
  * @author Andrea Aime, TOPP
  * 
  */
-public abstract class CoverageTestSupport extends KvpRequestReaderTestSupport {
+public abstract class CoverageTestSupport extends GeoServerSystemTestSupport {
     protected static final String BASEPATH = "wcs";
 
     protected static final boolean SpatioTemporalRasterTests = false;
@@ -35,14 +37,26 @@ public abstract class CoverageTestSupport extends KvpRequestReaderTestSupport {
     }
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        dataDirectory.addWellKnownCoverageTypes();
-        URL style = MockData.class.getResource("raster.sld");
-        String styleName = "raster";
-        dataDirectory.addStyle(styleName, style);
-        if(SpatioTemporalRasterTests)
-        	dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
-	                null, styleName);
-        dataDirectory.addWcs10Coverages();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        testData.setUpDefaultRasterLayers();
+        if(SpatioTemporalRasterTests) {
+            testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
+//            dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
+//                    null, styleName);
+        }
+        testData.setUpWcs10RasterLayers();
+        //dataDirectory.addWcs10Coverages();
     }
+
+//    @Override
+//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+//        dataDirectory.addWellKnownCoverageTypes();
+//        URL style = MockData.class.getResource("raster.sld");
+//        String styleName = "raster";
+//        dataDirectory.addStyle(styleName, style);
+//        if(SpatioTemporalRasterTests)
+//        	dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
+//	                null, styleName);
+//        dataDirectory.addWcs10Coverages();
+//    }
 }

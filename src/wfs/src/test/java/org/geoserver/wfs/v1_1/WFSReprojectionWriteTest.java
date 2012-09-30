@@ -1,10 +1,14 @@
 package org.geoserver.wfs.v1_1;
 
-import java.util.StringTokenizer;
+import static org.junit.Assert.assertEquals;
 
-import org.geoserver.data.test.MockData;
+import java.util.StringTokenizer;
+import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
@@ -14,20 +18,31 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
     private static final String TARGET_CRS_CODE = "EPSG:900913";
     MathTransform tx;
     
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Override
+    protected void setUpInternal(SystemTestData systemTestData) throws Exception {
+        getServiceDescriptor11().getOperations().add( "ReleaseLock");
+    }
     
+    @Before
+    public void init() throws Exception {
         CoordinateReferenceSystem epsgTarget = CRS.decode(TARGET_CRS_CODE);
         CoordinateReferenceSystem epsg32615 = CRS.decode("urn:x-ogc:def:crs:EPSG:6.11.2:32615");
         
         tx = CRS.findMathTransform(epsg32615, epsgTarget);
     }
-    
+
+    @Before
+    public void revert() throws Exception {
+        revertLayer(CiteTestData.POLYGONS);
+        revertLayer(CiteTestData.GENERICENTITY);
+    }
+
+    @Test
     public void testInsertSrsName() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + 
-           MockData.POLYGONS.getLocalPart();
+           SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM( q );
-        assertEquals( 1, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 1, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         
         Element polygonProperty = getFirstElementByTagName(dom, "cgf:polygonProperty");
         Element posList = getFirstElementByTagName( polygonProperty, "gml:posList");
@@ -39,7 +54,7 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
         + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
         + " xmlns:gml=\"http://www.opengis.net/gml\" "
-        + " xmlns:cgf=\"" + MockData.CGF_URI + "\">"
+        + " xmlns:cgf=\"" + SystemTestData.CGF_URI + "\">"
         + "<wfs:Insert handle=\"insert-1\" srsName=\"" + TARGET_CRS_CODE + "\">"
         + " <cgf:Polygons>"
         +    "<cgf:polygonProperty>"
@@ -65,13 +80,14 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         
         dom = getAsDOM( q );
 //        print(dom);
-        assertEquals( 2, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 2, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         
     }
     
+    @Test
     public void testInsertGeomSrsName() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + 
-            MockData.POLYGONS.getLocalPart();
+            SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM( q );
         
         Element polygonProperty = getFirstElementByTagName(dom, "cgf:polygonProperty");
@@ -84,7 +100,7 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
         + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
         + " xmlns:gml=\"http://www.opengis.net/gml\" "
-        + " xmlns:cgf=\"" + MockData.CGF_URI + "\">"
+        + " xmlns:cgf=\"" + SystemTestData.CGF_URI + "\">"
         + "<wfs:Insert handle=\"insert-1\">"
         + " <cgf:Polygons>"
         +    "<cgf:polygonProperty>"
@@ -110,13 +126,14 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         
         dom = getAsDOM( q );
         
-        assertEquals( 2, dom.getElementsByTagName( MockData.POLYGONS.getPrefix() + ":" + MockData.POLYGONS.getLocalPart()).getLength() );
+        assertEquals( 2, dom.getElementsByTagName( SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart()).getLength() );
         
     }
     
+    @Test
     public void testUpdate() throws Exception {
         String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + 
-        MockData.POLYGONS.getLocalPart();
+        SystemTestData.POLYGONS.getLocalPart();
         
         Document dom = getAsDOM( q );
 //        print(dom);
@@ -180,10 +197,12 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         
     }
     
+    @Test
     public void testUpdateReprojectFilter() throws Exception {
         testUpdateReprojectFilter("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"");
     }
     
+    @Test
     public void testUpdateReprojectFilterDefaultCRS() throws Exception {
         testUpdateReprojectFilter("");
     }
@@ -219,10 +238,12 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         assertEquals( "3", totalUpdated.getFirstChild().getNodeValue() );
     }
     
+    @Test
     public void testDeleteReprojectFilter() throws Exception{
         testDeleteReprojectFilter("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"");
     }
     
+    @Test
     public void testDeleteReprojectFilterDefaultCRS() throws Exception{
         testDeleteReprojectFilter("");
     }
@@ -254,10 +275,12 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         assertEquals( "3", totalUpdated.getFirstChild().getNodeValue() );
     }
     
+    @Test
     public void testLockReprojectFilter() throws Exception {
         testLockReprojectFilter("srsName=\"urn:x-ogc:def:crs:EPSG:6.11.2:4326\"");
     }
     
+    @Test
     public void testLockReprojectFilterDefaultCRS() throws Exception {
         testLockReprojectFilter("");
     }
@@ -295,6 +318,10 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
         Document dom = postAsDOM( "wfs", xml );
         assertEquals( "wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName() );
         assertEquals(3, dom.getElementsByTagName("ogc:FeatureId").getLength());
+        
+        // release the lock
+        String lockId = dom.getElementsByTagName("wfs:LockId").item(0).getTextContent();        
+        get("wfs?request=ReleaseLock&version=1.1.0&lockId=" + lockId);
     }
     
     private double[] posList(String string) {

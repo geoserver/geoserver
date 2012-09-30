@@ -14,6 +14,8 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.web.AbstractConfirmRemovalPanelTest;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Before;
+import org.junit.Test;
 
 
 public class ConfirmRemovalGroupPanelTest extends AbstractConfirmRemovalPanelTest<GeoServerUserGroup> {
@@ -39,16 +41,24 @@ public class ConfirmRemovalGroupPanelTest extends AbstractConfirmRemovalPanelTes
             }
         }));
     }
-    
+
+    @Before
+    public void init() throws Exception {
+        initializeForXML();
+        clearServices();
+    }
+
+    @Test
     public void testRemoveGroup() throws Exception {
         disassociateRoles=false;
-        initializeForXML();
+        //initializeForXML();
         removeObject();                                       
     }
 
+    @Test
     public void testRemoveGroupWithRoles() throws Exception {
         disassociateRoles=true;
-        initializeForXML();
+        //initializeForXML();
         removeObject();                                       
     }
 

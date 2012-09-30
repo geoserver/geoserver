@@ -1,5 +1,7 @@
 package org.geoserver.web.data;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.apache.wicket.Component;
@@ -10,6 +12,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
 
@@ -22,6 +25,7 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         }));
     }
     
+    @Test
     public void testRemoveWorkspace() {
         setupPanel(getCatalog().getWorkspaceByName(MockData.CITE_PREFIX));
         
@@ -39,6 +43,7 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         assertEquals(typeInfos.size(), layerArray.length);
     }
     
+    @Test
     public void testRemoveLayer() {
         setupPanel(getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS)));
         
@@ -52,6 +57,7 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         assertFalse(tester.getLastRenderedPage().get("form:panel:modifiedObjects").isVisible());
     }
     
+    @Test
     public void testRemoveStyle() {
         setupPanel(getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart()));
         

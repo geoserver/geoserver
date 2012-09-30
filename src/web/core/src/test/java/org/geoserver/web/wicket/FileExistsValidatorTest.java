@@ -1,44 +1,64 @@
 package org.geoserver.web.wicket;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
 
-import junit.framework.Test;
-
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.web.StringValidatable;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.vfny.geoserver.global.GeoserverDataDirectory;
 
-public class FileExistsValidatorTest extends GeoServerTestSupport {
+import com.google.common.io.Files;
 
+public class FileExistsValidatorTest {
+
+    private static File root;
     private static FileExistsValidator validator;
 
-    public static Test suite() {
+    @BeforeClass
+    public static void init() throws IOException {
+        root = File.createTempFile("file", "tmp", new File("target"));
+        root.delete();
+        root.mkdirs();
+
+        File wcs = new File(root, "wcs"); 
+        wcs.mkdir();
+
+        Files.touch(new File(wcs, "BlueMarble.tiff"));
+
+        GeoserverDataDirectory.setResourceLoader(new GeoServerResourceLoader(root));
         validator = new FileExistsValidator();
-        return new OneTimeTestSetup(new FileExistsValidatorTest());
     }
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWellKnownCoverageTypes();
+    @AfterClass
+    public static void destroy() {
+        GeoserverDataDirectory.setResourceLoader(null);
     }
-    
+
+    @Test
     public void testAbsoluteRaw() throws Exception {
-        File tazbm = new File(getTestData().getDataDirectoryRoot(), "wcs/BlueMarble.tiff");
+        File tazbm = new File(root, "wcs/BlueMarble.tiff");
         StringValidatable validatable = new StringValidatable(tazbm.getAbsolutePath());
         
         validator.validate(validatable);
         assertTrue(validatable.isValid());
     }
-    
+
+    @Test
     public void testAbsoluteURI() throws Exception {
-        File tazbm = new File(getTestData().getDataDirectoryRoot(), "wcs/BlueMarble.tiff");
+        File tazbm = new File(root, "wcs/BlueMarble.tiff");
         StringValidatable validatable = new StringValidatable(tazbm.toURI().toString());
         
         validator.validate(validatable);
         assertTrue(validatable.isValid());
     }
-    
+
+    @Test
     public void testRelative() throws Exception {
         StringValidatable validatable = new StringValidatable("file:wcs/BlueMarble.tiff");
         

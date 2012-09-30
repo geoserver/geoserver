@@ -1,11 +1,15 @@
 package org.geoserver.wfs.v1_1;
 
+import static org.junit.Assert.assertEquals;
+
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.filter.v1_1.OGC;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class LockFeatureTest extends WFSTestSupport {
 
+	@Test
     public void testLock() throws Exception {
         String xml = "<wfs:LockFeature xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" xmlns:wfs=\"http://www.opengis.net/wfs\" expiry=\"5\" handle=\"LockFeature-tc1\" "
                 + " lockAction=\"ALL\" "

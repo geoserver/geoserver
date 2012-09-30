@@ -6,7 +6,9 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -17,23 +19,16 @@ import org.w3c.dom.Document;
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
 
-public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
+public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new WaterMLTimeSeriesWfsTest());
-    }
-
-    protected NamespaceTestData buildTestData() {
+    protected WaterMLTimeSeriesMockData createTestData() {
         return new WaterMLTimeSeriesMockData();
     }
 
     /**
      * Test get feature is fine with QuantityList as a list of simple type.
      */
+    @Test
     public void testGetFeature() {
         String path = "wfs?request=GetFeature&outputFormat=gml32&typename=wml2dr:MeasurementTimeseriesDomainRange";
         Document doc = getAsDOM(path);
@@ -93,6 +88,7 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test filtering QuantityList as a list of simple type.
      */
+    @Test
     public void testFilter() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //
@@ -143,6 +139,7 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test filtering timePositionList expecting a subset.
      */
+    @Test
     public void testTimePositionSubset() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //

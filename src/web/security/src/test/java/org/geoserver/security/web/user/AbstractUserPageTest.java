@@ -1,10 +1,13 @@
 package org.geoserver.security.web.user;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.Page;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.security.web.group.NewGroupPage;
 import org.geoserver.security.web.role.NewRolePage;
+import org.junit.Test;
 
 public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSupport {
 
@@ -13,16 +16,20 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     
     protected abstract void initializeTester();
         
+    @Test
     public void testReadOnlyRoleService() throws Exception{
-        initializeForXML();
+        doInitialize();
         activateRORoleService();
         initializeTester();
         assertTrue(page.userGroupPalette.isEnabled());
     }
 
+    protected void doInitialize() throws Exception {
+        initializeForXML();
+    }
 
     protected void doTestPasswordsDontMatch(Class <? extends Page> pageClass) throws Exception {
-        initializeForXML();
+        doInitialize();
         initializeTester();
         newFormTester();
         form.setValue("username", "user");

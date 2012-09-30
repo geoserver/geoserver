@@ -5,6 +5,8 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -15,9 +17,15 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
+import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
@@ -26,8 +34,8 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         
         // we need to add a wms store
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -37,22 +45,30 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         catalog.add(wms);
         
         // and a wms layer as well (cannot use the builder, would turn this test into an online one
-        WMSLayerInfo wml = catalog.getFactory().createWMSLayer();
-        wml.setName("states");
-        wml.setNativeName("topp:states");
-        wml.setStore(catalog.getStoreByName("demo", WMSStoreInfo.class));
-        wml.setCatalog(catalog);
-        wml.setNamespace(catalog.getNamespaceByPrefix("sf"));
-        wml.setSRS("EPSG:4326");
-        CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
-        wml.setNativeCRS(wgs84);
-        wml.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
-        wml.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
-        
-        catalog.add(wml);
-        
+        addStatesWmsLayer();
     } 
 
+    @Before
+    public void addStatesWmsLayer() throws Exception {
+        WMSLayerInfo wml = catalog.getResourceByName("sf", "states", WMSLayerInfo.class);
+        if (wml == null) {
+            wml = catalog.getFactory().createWMSLayer();
+            wml.setName("states");
+            wml.setNativeName("topp:states");
+            wml.setStore(catalog.getStoreByName("demo", WMSStoreInfo.class));
+            wml.setCatalog(catalog);
+            wml.setNamespace(catalog.getNamespaceByPrefix("sf"));
+            wml.setSRS("EPSG:4326");
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+            wml.setNativeCRS(wgs84);
+            wml.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
+            wml.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+            
+            catalog.add(wml);
+        }
+    }
+
+    @Test
     public void testGetAllByWorkspace() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers.xml");
         assertEquals( 
@@ -60,7 +76,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             dom.getElementsByTagName( "wmsLayer").getLength() );
     }
 
-    
+    @Test
     public void testGetAllByWMSStore() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmsstores/demo/wmslayers.xml");
         
@@ -68,6 +84,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo( "1", "count(//wmsLayer/name[text()='states'])", dom );
     }
     
+    @Test
     public void testGetAllAvailable() throws Exception {
         if(!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
             LOGGER.warning("Skipping layer availability test as remote server is not available");
@@ -82,14 +99,17 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("true", "count(//wmsLayerName) > 0", dom);
     }
     
+    @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatusCode() );
     }
     
+    @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatusCode() );
     }
  
+    @Test
     public void testPostAsXML() throws Exception {
         if(!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
             LOGGER.warning("Skipping layer posting test as remote server is not available");
@@ -117,6 +137,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertNotNull(layer.getNativeBoundingBox());
     }
     
+    @Test
     public void testPostAsJSON() throws Exception {
         if(!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
             LOGGER.warning("Skipping layer posting test as remote server is not available");
@@ -146,6 +167,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertNotNull(layer.getNativeBoundingBox());
     }
     
+    @Test
     public void testPostToResource() throws Exception {
         String xml = 
             "<wmsLayer>"+
@@ -157,6 +179,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertEquals( 405, response.getStatusCode() );
     }
     
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers/states.xml");
         
@@ -174,6 +197,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo(  re.getMaxY()+"" , "/wmsLayer/latLonBoundingBox/maxy", dom );
     }
     
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/workspaces/sf/wmslayers/states.json");
         JSONObject featureType = ((JSONObject)json).getJSONObject("wmsLayer");
@@ -184,11 +208,13 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertEquals( "EPSG:4326", featureType.get( "srs") );
     }
     
+    @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers/states.html");
         // print(dom);
     }
     
+    @Test
     public void testPut() throws Exception {
         String xml = 
           "<wmsLayer>" + 
@@ -205,6 +231,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertEquals( "Lots of states here", wli.getTitle() );
     }
     
+    @Test
     public void testPutNonExistant() throws Exception {
         String xml = 
             "<wmsLayer>" + 
@@ -215,6 +242,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
           assertEquals( 404, response.getStatusCode() );
     }
    
+    @Test
     public void testDelete() throws Exception {
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         assertEquals( 200,  
@@ -222,17 +250,22 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
     }
     
+    @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
             deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/NonExistent").getStatusCode());
     }
     
     void addLayer() {
-        LayerInfo l = catalog.getFactory().createLayer();
-        l.setResource(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
-        catalog.add(l);
+        LayerInfo l = catalog.getLayerByName(new NameImpl("sf", "states"));
+        if (l == null) {
+            l = catalog.getFactory().createLayer();
+            l.setResource(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
+            catalog.add(l);
+        }
     }
     
+    @Test
     public void testDeleteNonRecursive() throws Exception {
         addLayer();
         
@@ -241,6 +274,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatusCode());
     }
     
+    @Test
     public void testDeleteRecursive() throws Exception {
         addLayer();
         
@@ -254,6 +288,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
     }
     
+    @Test
     public void testResourceLink() throws Exception {
         addLayer();
          

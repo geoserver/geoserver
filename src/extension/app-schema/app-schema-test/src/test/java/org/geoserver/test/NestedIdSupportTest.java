@@ -5,9 +5,8 @@
 
 package org.geoserver.test;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
-
-import junit.framework.Test;
 
 /**
  * Test whether nested Id's can be used in a filter.
@@ -15,25 +14,17 @@ import junit.framework.Test;
  * @author Niels Charlier, Curtin University Of Technology *
  */
 
-public class NestedIdSupportTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new NestedIdSupportTest());
-    }
+public class NestedIdSupportTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected NestedIdSupportTestData createTestData() {
         return new NestedIdSupportTestData();
     }
 
     /**
      * Test Nested Id with Feature Chaining
      */
+    @Test
     public void testNestedIdFeatureChaining() {
         String xml = "<wfs:GetFeature " //
                 + "service=\"WFS\" " //
@@ -65,6 +56,7 @@ public class NestedIdSupportTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test Nested Id with InlineMapping
      * */
+    @Test
     public void testNestedIdInlineMapping() {
         String xml = "<wfs:GetFeature " //
                 + "service=\"WFS\" " //

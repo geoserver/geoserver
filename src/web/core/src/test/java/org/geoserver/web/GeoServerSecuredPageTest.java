@@ -1,9 +1,13 @@
 package org.geoserver.web;
 
+import static org.junit.Assert.*;
+
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.geoserver.web.data.layer.LayerPage;
+import org.junit.Test;
 
 public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
+    @Test
     public void testSecuredPageGivesRedirectWhenLoggedOut() {
         logout();
         tester.startPage(LayerPage.class);
@@ -15,6 +19,7 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
                         
     }
 
+    @Test
     public void testSecuredPageAllowsAccessWhenLoggedIn() {
         login();
         tester.startPage(LayerPage.class);

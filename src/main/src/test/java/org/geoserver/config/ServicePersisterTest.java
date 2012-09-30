@@ -1,26 +1,49 @@
 package org.geoserver.config;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-public class ServicePersisterTest extends GeoServerTestSupport {
+@Category(SystemTest.class)
+public class ServicePersisterTest extends GeoServerSystemTestSupport {
 
     GeoServer geoServer;
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        geoServer = getGeoServer();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        GeoServer geoServer = getGeoServer();
         geoServer.addListener(new ServicePersister(
-            (List) Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
+                (List) Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
     }
 
+    @Before
+    public void init() {
+        geoServer = getGeoServer();
+    }
+
+    @Before
+    public void removeFooService() {
+        GeoServer geoServer = getGeoServer();
+        WorkspaceInfo ws = getCatalog().getDefaultWorkspace();
+        ServiceInfo s = geoServer.getServiceByName(ws, "foo", ServiceInfo.class);
+        if (s != null) {
+            geoServer.remove(s);
+        }
+    }
+
+    @Test
     public void testAddWorkspaceLocalService() throws Exception {
         File dataDirRoot = getTestData().getDataDirectoryRoot();
         WorkspaceInfo ws = getCatalog().getDefaultWorkspace();
@@ -36,6 +59,7 @@ public class ServicePersisterTest extends GeoServerTestSupport {
         assertTrue(f.exists());
     }
 
+    @Test
     public void testRemoveWorkspaceLocalService() throws Exception {
         testAddWorkspaceLocalService();
 

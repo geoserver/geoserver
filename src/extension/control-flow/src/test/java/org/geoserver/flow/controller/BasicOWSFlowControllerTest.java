@@ -1,7 +1,11 @@
 package org.geoserver.flow.controller;
 
+import static org.junit.Assert.*;
+
+
 import org.geoserver.flow.controller.BasicOWSController;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 
 /**
  * This test just checks the basic OWS flow controller matches requests as expecte, for a
@@ -12,6 +16,7 @@ import org.geoserver.ows.Request;
  */
 public class BasicOWSFlowControllerTest extends AbstractFlowControllerTest {
 
+    @Test
     public void testMatchService() {
         BasicOWSController controller = new BasicOWSController("WMS", 1);
         assertFalse(controller.matchesRequest(buildRequest("WFS", "GetFeature", "GML")));
@@ -19,6 +24,7 @@ public class BasicOWSFlowControllerTest extends AbstractFlowControllerTest {
         assertTrue(controller.matchesRequest(buildRequest("WMS", "GetFeatureInfo", "image/png")));
     }
     
+    @Test
     public void testMatchServiceRequest() {
         BasicOWSController controller = new BasicOWSController("WMS", "GetMap", 1);
         assertFalse(controller.matchesRequest(buildRequest("WFS", "GetFeature", "GML")));
@@ -26,6 +32,7 @@ public class BasicOWSFlowControllerTest extends AbstractFlowControllerTest {
         assertFalse(controller.matchesRequest(buildRequest("WMS", "GetFeatureInfo", "image/png")));
     }
     
+    @Test
     public void testMatchServiceRequestOutputFormat() {
         BasicOWSController controller = new BasicOWSController("WMS", "GetMap", "image/png", 1);
         assertFalse(controller.matchesRequest(buildRequest("WFS", "GetFeature", "GML")));

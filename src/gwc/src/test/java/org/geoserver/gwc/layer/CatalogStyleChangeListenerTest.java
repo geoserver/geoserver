@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.layer;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -20,8 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -32,11 +32,13 @@ import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-public class CatalogStyleChangeListenerTest extends TestCase {
+public class CatalogStyleChangeListenerTest {
 
     private final String STYLE_NAME = "highways";
 
@@ -60,7 +62,8 @@ public class CatalogStyleChangeListenerTest extends TestCase {
 
     private CatalogStyleChangeListener listener;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         mockMediator = mock(GWC.class);
         mockStyle = mock(StyleInfo.class);
         when(mockStyle.getName()).thenReturn(STYLE_NAME);
@@ -92,7 +95,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
         styleNameModifyEvent.setNewValues(Arrays.asList(STYLE_NAME_MODIFIED));
     }
 
-    public void testIgnorableChange() throws Exception {
+    @Test public void testIgnorableChange() throws Exception {
 
         // not a name change
         styleNameModifyEvent.setPropertyNames(Arrays.asList("fileName"));
@@ -117,7 +120,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
         verify(mockTileLayerInfo, never()).cachedStyles();
     }
 
-    public void testRenameDefaultStyle() throws Exception {
+    @Test public void testRenameDefaultStyle() throws Exception {
         // this is another case of an ignorable change. Renaming the default style shall have no
         // impact.
         listener.handleModifyEvent(styleNameModifyEvent);
@@ -130,7 +133,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
         verify(mockTileLayerInfo, atLeastOnce()).cachedStyles();
     }
 
-    public void testRenameAlternateStyle() throws Exception {
+    @Test public void testRenameAlternateStyle() throws Exception {
 
         Set<ParameterFilter> params = new HashSet<ParameterFilter>();
         when(mockTileLayerInfo.getParameterFilters()).thenReturn(params);
@@ -155,7 +158,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
+    @Test public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
         when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(
                 Collections.singleton(mockLayerInfo));
         when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(Collections.EMPTY_LIST);
@@ -169,7 +172,7 @@ public class CatalogStyleChangeListenerTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testLayerGroupInfoImplicitOrExplicitStyleChanged() throws Exception {
+    @Test public void testLayerGroupInfoImplicitOrExplicitStyleChanged() throws Exception {
         LayerGroupInfo mockGroup = mock(LayerGroupInfo.class);
         when(GWC.tileLayerName(mockGroup)).thenReturn("mockGroup");
 

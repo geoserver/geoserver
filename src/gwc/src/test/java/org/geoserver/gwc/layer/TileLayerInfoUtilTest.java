@@ -4,10 +4,14 @@
  */
 package org.geoserver.gwc.layer;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
-import junit.framework.TestCase;
 
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -16,6 +20,8 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -23,20 +29,21 @@ import com.google.common.collect.ImmutableSet;
  * Unit test suite for {@link TileLayerInfoUtil}
  * 
  */
-public class TileLayerInfoUtilTest extends TestCase {
+public class TileLayerInfoUtilTest {
 
     private GWCConfig defaults;
 
     private GeoServerTileLayerInfo defaultVectorInfo;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setup() throws Exception {
         defaults = GWCConfig.getOldDefaults();
         defaultVectorInfo = TileLayerInfoUtil.create(defaults);
         defaultVectorInfo.getMimeFormats().clear();
         defaultVectorInfo.getMimeFormats().addAll(defaults.getDefaultVectorCacheFormats());
     }
 
+    @Test
     public void testCreateLayerInfo() {
         LayerInfoImpl layer = mockLayer("testLayer");
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(layer, defaults);
@@ -46,6 +53,7 @@ public class TileLayerInfoUtilTest extends TestCase {
         assertEquals(defaultVectorInfo, info);
     }
 
+    @Test
     public void testCreateLayerGroupInfo() {
         LayerGroupInfoImpl group = mockGroup("testGroup", mockLayer("testLayer"));
 
@@ -62,6 +70,7 @@ public class TileLayerInfoUtilTest extends TestCase {
         assertEquals(expected, info);
     }
 
+    @Test
     public void testCreateLayerInfoAutoCacheStyles() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setAutoCacheStyles(true);
@@ -83,6 +92,7 @@ public class TileLayerInfoUtilTest extends TestCase {
         assertEquals(ImmutableSet.of("style1", "style2"), actual.cachedStyles());
     }
 
+    @Test
     public void testCreateLayerGroup() {
         LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1"), mockLayer("L2"));
 
@@ -98,6 +108,7 @@ public class TileLayerInfoUtilTest extends TestCase {
         assertEquals(info, actual);
     }
 
+    @Test
     public void testUpdateAcceptAllRegExParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
 
@@ -118,6 +129,7 @@ public class TileLayerInfoUtilTest extends TestCase {
         assertNull(TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters()));
     }
 
+    @Test
     public void testUpdateAcceptAllFloatParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
 

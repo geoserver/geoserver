@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -15,28 +15,20 @@ import org.w3c.dom.Document;
  * 
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-public class Observation_2_0_WfsTest extends AbstractAppSchemaWfsTestSupport {
+public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
 
     /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new Observation_2_0_WfsTest());
-    }
-
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaWfsTestSupport#buildTestData()
+     * @see org.geoserver.test.AbstractAppSchemaTestSupport#buildTestData()
      */
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected Observation_2_0_MockData createTestData() {
         return new Observation_2_0_MockData();
     }
 
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
+    @Test
     public void testGetFeature() {
         String path = "wfs?request=GetFeature&typename=om:OM_Observation&outputFormat=gml32";
         Document doc = getAsDOM(path);
@@ -151,6 +143,7 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test filtering timePositionList expecting a subset.
      */
+    @Test
     public void testTimePositionSubset() {
         String beginPosition = "1950-03-01T00:00:00";
         String endPosition = "1950-06-01T00:00:00";

@@ -24,7 +24,7 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
     protected Boolean available = null;
     
-    public LiveDbmsDataSecurity(File dataDirSourceDirectory, String fixtureId, File sqlScript) {
+    public LiveDbmsDataSecurity(File dataDirSourceDirectory, String fixtureId, File sqlScript) throws IOException{
         super(dataDirSourceDirectory, fixtureId, sqlScript);
 
     }

@@ -6,10 +6,11 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 
-import junit.framework.Test;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
@@ -17,25 +18,17 @@ import org.w3c.dom.Document;
  * 
  * @author Florence Tan, CSIRO Earth Science and Resource Engineering
  */
-public class DuplicatePropertiesWfsTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DuplicatePropertiesWfsTest());
-    }
+public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected DuplicatePropertiesMockData createTestData() {
         return new DuplicatePropertiesMockData();
     }
 
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
+    @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
@@ -51,6 +44,7 @@ public class DuplicatePropertiesWfsTest extends AbstractAppSchemaWfsTestSupport 
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:ERM");
         LOGGER.info("WFS GetFeature&typename=ex:ERM response:\n" + prettyString(doc));

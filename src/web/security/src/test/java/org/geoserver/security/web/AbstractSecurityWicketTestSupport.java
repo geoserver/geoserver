@@ -2,10 +2,7 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-
-
 package org.geoserver.security.web;
-
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,14 +22,18 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.SecurityRoleServiceConfig;
+import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
@@ -56,6 +57,7 @@ import org.geoserver.security.xml.XMLRoleServiceTest;
 import org.geoserver.security.xml.XMLUserGroupServiceTest;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
 
 public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketTestSupport {
     
@@ -76,14 +78,14 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
     protected GeoServerUserGroupStore ugStore;
 
     @Override
-    protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList(Arrays.asList(super.getSpringContextLocations()));
-        list.add("classpath*:/applicationTestContext.xml");
-        return list.toArray(new String[list.size()]);
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath*:/applicationTestContext.xml");
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
+    
+    @Before 
+    public void setUp() throws Exception {
         login();        
         Locale.setDefault(Locale.ENGLISH);
         // run all tests with url param encryption
@@ -134,12 +136,27 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
     }
 
     protected void removeValues() throws IOException{
-        gaTest.removeValues(gaStore);
-        gaStore.store();
-        ugTest.removeValues(ugStore);
-        ugStore.store();
+        if (gaStore != null) {
+            gaTest.removeValues(gaStore);
+            gaStore.store();
+        }
+        if (ugStore != null) {
+            ugTest.removeValues(ugStore);
+            ugStore.store();
+        }
     }
-    
+
+    protected void clearServices() throws IOException {
+        if (gaStore != null) {
+            gaStore.clear();
+            gaStore.store();
+        }
+        if (ugStore != null) {
+            ugStore.clear();
+            ugStore.store();
+        }
+    }
+
     public String getRORoleServiceName() {
         return "ReadOnlyRoleService";
     }
@@ -166,6 +183,15 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         gaStore=null;
     }
 
+    protected void deactivateRORoleService() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        if (secMgr.listRoleServices().contains(getRORoleServiceName())) {
+            SecurityRoleServiceConfig config = 
+                secMgr.loadRoleServiceConfig((getRORoleServiceName()));
+            secMgr.removeRoleService(config);
+        }
+    }
+    
     protected GeoServerDigestPasswordEncoder getDigestPasswordEncoder() {
         return getSecurityManager().loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
     }
@@ -193,6 +219,14 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         ugStore.store();
                 
         ugStore=null;
+    }
+    protected void deactivateROUGService() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        if (secMgr.listUserGroupServices().contains(getROUserGroupServiceName())) {
+            SecurityUserGroupServiceConfig config = 
+                secMgr.loadUserGroupServiceConfig(getROUserGroupServiceName());
+            secMgr.removeUserGroupService(config);
+        }
     }
     
     public void executeModalWindowClosedCallback(ModalWindow modalWindow) {

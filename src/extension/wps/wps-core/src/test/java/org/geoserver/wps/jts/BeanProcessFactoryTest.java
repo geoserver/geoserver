@@ -1,13 +1,16 @@
 package org.geoserver.wps.jts;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -24,6 +27,8 @@ import org.geotools.process.feature.gs.BoundsProcess;
 import org.geotools.process.feature.gs.NearestProcess;
 import org.geotools.process.feature.gs.SnapProcess;
 import org.geotools.util.SimpleInternationalString;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
@@ -34,7 +39,7 @@ import org.opengis.util.InternationalString;
  * @author Andrea Aime - OpenGeo
  * 
  */
-public class BeanProcessFactoryTest extends TestCase {
+public class BeanProcessFactoryTest extends WPSTestSupport {
 
 	public class BeanProcessFactory extends AnnotatedBeanProcessFactory {
 
@@ -49,8 +54,8 @@ public class BeanProcessFactoryTest extends TestCase {
 
 	BeanProcessFactory factory;
 
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	    public void setUp() throws Exception {
 		factory = new BeanProcessFactory();
 
 		// check SPI will see the factory if we register it using an iterator
@@ -68,6 +73,7 @@ public class BeanProcessFactoryTest extends TestCase {
 		});
 	}
 
+	@Test
 	public void testNames() {
 		Set<Name> names = factory.getNames();
 		assertTrue(names.size() > 0);
@@ -75,6 +81,7 @@ public class BeanProcessFactoryTest extends TestCase {
 		assertTrue(names.contains(new NameImpl("bean", "Bounds")));
 	}
 
+	@Test
 	public void testDescribeBounds() {
 		NameImpl boundsName = new NameImpl("bean", "Bounds");
 		InternationalString desc = factory.getDescription(boundsName);
@@ -94,6 +101,7 @@ public class BeanProcessFactoryTest extends TestCase {
 		assertEquals(ReferencedEnvelope.class, bounds.type);
 	}
 
+	@Test
 	public void testExecuteBounds() throws ProcessException {
 		// prepare a mock feature collection
 		SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -118,6 +126,7 @@ public class BeanProcessFactoryTest extends TestCase {
 		assertEquals(re, computed);
 	}
 
+	@Test
 	public void testSPI() throws Exception {
 		NameImpl boundsName = new NameImpl("bean", "Bounds");
 		ProcessFactory factory = GeoServerProcessors.createProcessFactory(boundsName);

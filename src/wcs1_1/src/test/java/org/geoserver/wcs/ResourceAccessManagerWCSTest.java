@@ -1,10 +1,12 @@
 package org.geoserver.wcs;
 
-import static org.geoserver.data.test.MockData.*;
+import static org.geoserver.data.test.MockData.WORLD;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,23 +15,21 @@ import java.util.Properties;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
-import org.geoserver.security.TestResourceAccessManager;
-import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.SecurityUtils;
+import org.geoserver.security.TestResourceAccessManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.vfny.geoserver.wcs.WcsException;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -43,15 +43,9 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
 
-    /**
-     * Add the test resource access manager in the spring context
-     */
-    protected String[] getSpringContextLocations() {
-        String[] base = super.getSpringContextLocations();
-        String[] extended = new String[base.length + 1];
-        System.arraycopy(base, 0, extended, 0, base.length);
-        extended[base.length] = "classpath:/org/geoserver/wcs/ResourceAccessManagerContext.xml";
-        return extended;
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath:/org/geoserver/wcs/ResourceAccessManagerContext.xml");
     }
 
     /**
@@ -67,9 +61,9 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
      * Add the users
      */
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        File security = new File(testData.getDataDirectoryRoot(), "security");
         security.mkdir();
 
         File users = new File(security, "users.properties");
@@ -80,11 +74,12 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         props.put("cite_noworld_challenge", "cite,ROLE_DUMMY");
         props.put("cite_usa", "cite,ROLE_DUMMY");
         props.store(new FileOutputStream(users), "");
+
     }
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
         // populate the access manager
         TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext
@@ -101,7 +96,8 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
                 CatalogMode.CHALLENGE, Filter.EXCLUDE, null, null));
 
         // limits the area to north america
-        MultiPolygon rasterFilter = (MultiPolygon) new WKTReader().read("MULTIPOLYGON(((-120 30, -120 60, -60 60, -60 30, -120 30)))");
+        MultiPolygon rasterFilter = (MultiPolygon) new WKTReader()
+                .read("MULTIPOLYGON(((-120 30, -120 60, -60 60, -60 30, -120 30)))");
         tam.putLimits("cite_usa", world, new CoverageAccessLimits(CatalogMode.HIDE, null,
                 rasterFilter, null));
     }
@@ -117,31 +113,32 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         return raw;
     }
 
+    @Test
     public void testNoLimits() throws Exception {
         Map<String, Object> raw = getWorld();
 
         authenticate("cite", "cite");
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
-        
+
         // basic checks
         assertEquals(1, coverages.length);
         GridCoverage2D coverage = (GridCoverage2D) coverages[0];
         final CoordinateReferenceSystem wgs84Flipped = CRS.decode("urn:ogc:def:crs:EPSG:6.6:4326");
         assertEquals(wgs84Flipped, coverage.getEnvelope().getCoordinateReferenceSystem());
-        assertEquals(-90.0, coverage.getEnvelope().getMinimum(0));
-        assertEquals(-180.0, coverage.getEnvelope().getMinimum(1));
-        assertEquals(90.0, coverage.getEnvelope().getMaximum(0));
-        assertEquals(180.0, coverage.getEnvelope().getMaximum(1));
-        
+        assertEquals(-90.0, coverage.getEnvelope().getMinimum(0), 1e-6);
+        assertEquals(-180.0, coverage.getEnvelope().getMinimum(1), 1e-6);
+        assertEquals(90.0, coverage.getEnvelope().getMaximum(0), 1e-6);
+        assertEquals(180.0, coverage.getEnvelope().getMaximum(1), 1e-6);
+
         // make sure it has not been cropped
         int[] value = new int[3];
-        
+
         // some point in USA
         coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 40, -90), value);
         assertTrue(value[0] > 0);
         assertTrue(value[1] > 0);
         assertTrue(value[2] > 0);
-        
+
         // some point in Europe
         coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 45, 12), value);
         assertTrue(value[0] > 0);
@@ -149,6 +146,7 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         assertTrue(value[2] > 0);
     }
 
+    @Test
     public void testNoAccess() throws Exception {
         Map<String, Object> raw = getWorld();
 
@@ -162,6 +160,7 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         }
     }
 
+    @Test
     public void testChallenge() throws Exception {
         Map<String, Object> raw = getWorld();
 
@@ -172,49 +171,50 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         } catch (Throwable e) {
             // make sure we are dealing with some security exception
             Throwable se = null;
-            while(e.getCause() != null && e.getCause() != e) {
+            while (e.getCause() != null && e.getCause() != e) {
                 e = e.getCause();
                 if (SecurityUtils.isSecurityException(e)) {
                     se = e;
                 }
             }
-            
-            if(e == null) {
+
+            if (e == null) {
                 fail("We should have got some sort of SpringSecurityException");
             } else {
                 // some mumbling about not having enough privileges
                 assertTrue(se.getMessage().contains("World"));
                 assertTrue(se.getMessage().contains("privileges"));
             }
-            
+
         }
     }
-    
+
+    @Test
     public void testRasterFilterUSA() throws Exception {
         Map<String, Object> raw = getWorld();
 
         authenticate("cite_usa", "cite");
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
-        
+
         // basic checks
         assertEquals(1, coverages.length);
         GridCoverage2D coverage = (GridCoverage2D) coverages[0];
         final CoordinateReferenceSystem wgs84Flipped = CRS.decode("urn:ogc:def:crs:EPSG:6.6:4326");
         assertEquals(wgs84Flipped, coverage.getEnvelope().getCoordinateReferenceSystem());
-        assertEquals(-90.0, coverage.getEnvelope().getMinimum(0));
-        assertEquals(-180.0, coverage.getEnvelope().getMinimum(1));
-        assertEquals(90.0, coverage.getEnvelope().getMaximum(0));
-        assertEquals(180.0, coverage.getEnvelope().getMaximum(1));
-        
+        assertEquals(-90.0, coverage.getEnvelope().getMinimum(0), 1e-6);
+        assertEquals(-180.0, coverage.getEnvelope().getMinimum(1), 1e-6);
+        assertEquals(90.0, coverage.getEnvelope().getMaximum(0), 1e-6);
+        assertEquals(180.0, coverage.getEnvelope().getMaximum(1), 1e-6);
+
         // make sure it has been cropped
         int[] value = new int[3];
-        
+
         // some point in USA
         coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 40, -90), value);
         assertTrue(value[0] > 0);
         assertTrue(value[1] > 0);
         assertTrue(value[2] > 0);
-        
+
         // some point in Europe (should have been cropped, we should get the bkg value)
         coverage.evaluate((DirectPosition) new DirectPosition2D(wgs84Flipped, 45, 12), value);
         assertEquals(0, value[0]);
@@ -222,12 +222,7 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
         assertEquals(0, value[2]);
     }
 
-    @Override
     protected void authenticate(String username, String password) {
-        // override as this is not a test going through the servlet filters
-        GrantedAuthority ga = new GeoServerRole("MOCKROLE");
-        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-                username, null, Arrays.asList(new GrantedAuthority[] { ga }));
-        SecurityContextHolder.getContext().setAuthentication(user);
+        login(username, password, "MOCKROLE");
     }
 }

@@ -6,24 +6,24 @@ package org.geoserver.gwc.web;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Set;
-
-import junit.framework.Test;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
-    public static Test suite() {
-        return new OneTimeTestSetup(new GWCSettingsPageTest());
-    }
-
+    @Test
     public void testPageLoad() {
         GWCSettingsPage page = new GWCSettingsPage();
 
@@ -33,6 +33,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         // print(page, true, true);
     }
 
+    @Test
     public void testEditDirectWMSIntegration() {
         GWC gwc = GWC.get();
         boolean directWMSIntegrationEnabled = gwc.getConfig().isDirectWMSIntegrationEnabled();
@@ -42,6 +43,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!directWMSIntegrationEnabled, gwc.getConfig().isDirectWMSIntegrationEnabled());
     }
 
+    @Test
     public void testEditEnableWMSC() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isWMSCEnabled();
@@ -50,7 +52,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isWMSCEnabled());
     }
 
-    public void testEditEnableWMTS() {
+    @Test public void testEditEnableWMTS() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isWMTSEnabled();
         testEditCheckboxOption("form:gwcServicesPanel:enableWMTS", "gwcServicesPanel:enableWMTS",
@@ -58,6 +60,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isWMTSEnabled());
     }
 
+    @Test
     public void testEditEnableTMS() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isTMSEnabled();
@@ -66,6 +69,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isTMSEnabled());
     }
 
+    @Test
     public void testEnableCacheLayersByDefault() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -79,6 +83,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(gwc.getConfig().isCacheLayersByDefault());
     }
 
+    @Test
     public void testDisableCacheLayersByDefault() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -92,6 +97,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertFalse(gwc.getConfig().isCacheLayersByDefault());
     }
 
+    @Test
     public void testEnableAutoCacheStyles() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -106,6 +112,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(gwc.getConfig().isCacheNonDefaultStyles());
     }
 
+    @Test
     public void testDisableAutoCacheStyles() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -120,6 +127,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertFalse(gwc.getConfig().isCacheNonDefaultStyles());
     }
 
+    @Test
     public void testSetDefaultCacheFormats() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();

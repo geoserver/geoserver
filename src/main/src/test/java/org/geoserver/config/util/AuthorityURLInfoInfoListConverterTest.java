@@ -4,6 +4,8 @@
  */
 package org.geoserver.config.util;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +13,11 @@ import junit.framework.TestCase;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.impl.AuthorityURL;
+import org.junit.Test;
 
-public class AuthorityURLInfoInfoListConverterTest extends TestCase {
+public class AuthorityURLInfoInfoListConverterTest {
 
+    @Test 
     public void testFromString() {
         final String serialized = "[{\"name\":\"auth1\",\"href\":\"http://geoserver.org/auth1?\"},{\"name\":\"auth2\",\"href\":\"http://geoserver.org/auth2;someparam=somevalue&\"}]";
         List<AuthorityURLInfo> expected = new ArrayList<AuthorityURLInfo>();
@@ -34,6 +38,7 @@ public class AuthorityURLInfoInfoListConverterTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testFromInvalidString() {
         final String serialized = "[{\"name:\"auth1\",\"href\":\"http://geoserver.org/auth1?\"},]";
 
@@ -45,6 +50,7 @@ public class AuthorityURLInfoInfoListConverterTest extends TestCase {
         }
     }
 
+    @Test
     public void testToString() {
         List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
 
@@ -63,6 +69,7 @@ public class AuthorityURLInfoInfoListConverterTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testToStringListWithNullElement() {
         List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
 
@@ -78,6 +85,7 @@ public class AuthorityURLInfoInfoListConverterTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testToStringListWithOnlyNullElements() {
         List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
         list.add(null);
@@ -88,6 +96,7 @@ public class AuthorityURLInfoInfoListConverterTest extends TestCase {
 
     }
 
+    @Test
     public void testToStringEmptyList() {
         List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>();
 

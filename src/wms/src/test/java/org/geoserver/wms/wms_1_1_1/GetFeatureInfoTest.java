@@ -4,14 +4,19 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -19,11 +24,14 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
@@ -34,16 +42,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     public static QName SQUARES = new QName(MockData.CITE_URI, "squares", MockData.CITE_PREFIX);
     public static QName CUSTOM = new QName(MockData.CITE_URI, "custom", MockData.CITE_PREFIX);
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetFeatureInfoTest());
-    }
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
         
         // setup buffer
@@ -70,29 +72,27 @@ public class GetFeatureInfoTest extends WMSTestSupport {
             getCatalog().add(states);
             LayerInfo layer = cb.buildLayer(states);
             getCatalog().add(layer);
-        }
+        } 
+        Catalog catalog = getCatalog();
+        testData.addStyle("thickStroke","thickStroke.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("paramStroke","paramStroke.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("raster","raster.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("rasterScales","rasterScales.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("squares","squares.sld",GetFeatureInfoTest.class,catalog);
+        testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
+                GetFeatureInfoTest.class,catalog);
+        Map propertyMap = new HashMap();
+        propertyMap.put(LayerProperty.STYLE,"raster");
+        testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff","tiff",propertyMap,
+                SystemTestData.class,catalog);
+        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+                "raster-filter-test.zip",null, propertyMap,SystemTestData.class, catalog);
+        testData.addRasterLayer(CUSTOM, 
+                "custom.zip", null,propertyMap,GetFeatureInfoTest.class, catalog);
     }
+    
+    
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("thickStroke", GetFeatureInfoTest.class.getResource("thickStroke.sld"));
-        dataDirectory.addStyle("paramStroke", GetFeatureInfoTest.class.getResource("paramStroke.sld"));
-        dataDirectory.addStyle("raster", GetFeatureInfoTest.class.getResource("raster.sld"));
-        dataDirectory.addStyle("rasterScales", GetFeatureInfoTest.class.getResource("rasterScales.sld"));
-        dataDirectory.addCoverage(TASMANIA_BM, GetFeatureInfoTest.class.getResource("tazbm.tiff"),
-                "tiff", "raster");
-        dataDirectory.addStyle("squares", GetFeatureInfoTest.class.getResource("squares.sld"));
-        dataDirectory.addPropertiesType(SQUARES, GetFeatureInfoTest.class.getResource("squares.properties"),
-                null);
-        
-        // this also adds the raster style
-        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-               MockData.class.getResource("raster-filter-test.zip"), null, "raster");
-        
-        // add a raster with a a custom projection
-        dataDirectory.addCoverageFromZip(CUSTOM, GetFeatureInfoTest.class.getResource("custom.zip"), null, "raster");
-    }
     
     /**
      * Tests GML output does not break when asking for an area that has no data with
@@ -100,6 +100,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testGMLNoData() throws Exception {
         String layer = getLayerId(MockData.PONDS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -116,6 +117,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testSimple() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -133,6 +135,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testSelectPropertiesVector() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&service=wms" +
@@ -156,6 +159,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testSimpleHtml() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -173,6 +177,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testBuffer() throws Exception {
         // to setup the request and the buffer I rendered BASIC_POLYGONS using GeoServer, then played
         // against the image coordinates
@@ -202,6 +207,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testAutoBuffer() throws Exception {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
@@ -222,6 +228,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testParameterizedStyle() throws Exception {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
@@ -244,6 +251,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testBufferScales() throws Exception {
         String layer = getLayerId(SQUARES);
         String base = "wms?version=1.1.1&format=png&info_format=text/html&request=GetFeatureInfo&layers="
@@ -279,6 +287,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testTwoLayers() throws Exception {
         String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -297,6 +306,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testSelectPropertiesTwoVectorLayers() throws Exception {
         String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -323,6 +333,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testSelectPropertiesTwoVectorLayersOneList() throws Exception {
         String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -351,6 +362,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testTwoLayersFeatureCount() throws Exception {
         // this request hits on two overlapping features, a lake and a forest
         String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
@@ -380,6 +392,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void testUknownFormat() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
         String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=unknown/format&request=GetFeatureInfo&layers="
@@ -391,6 +404,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("info_format", "/ServiceExceptionReport/ServiceException/@locator", doc);
     }
     
+    @Test 
     public void testCoverage() throws Exception {
         // http://jira.codehaus.org/browse/GEOS-2574
         String layer = getLayerId(TASMANIA_BM);
@@ -404,6 +418,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
     }
     
+    @Test 
     public void testCoveragePropertySelection() throws Exception {
         // http://jira.codehaus.org/browse/GEOS-2574
         String layer = getLayerId(TASMANIA_BM);
@@ -417,6 +432,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
     }
     
+    @Test 
     public void testCoverageGML() throws Exception {
         // http://jira.codehaus.org/browse/GEOS-3996
         String layer = getLayerId(TASMANIA_BM);
@@ -431,6 +447,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
     
+    @Test 
     public void testCoverageScales() throws Exception {
         String layer = getLayerId(TASMANIA_BM);
         String request = "wms?service=wms&request=GetFeatureInfo&version=1.1.1" +
@@ -449,6 +466,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
     }
     
+    @Test 
     public void testOutsideCoverage() throws Exception {
         // a request which is way large on the west side, lots of blank space
         String layer = getLayerId(TASMANIA_BM);
@@ -466,6 +484,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      * Check we report back an exception when query_layer contains layers not part of LAYERS
      * @throws Exception
      */
+    @Test
     public void testUnkonwnQueryLayer() throws Exception {
         String layers1 = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
         String layers2 = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.BRIDGES);
@@ -476,6 +495,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(/ServiceExceptionReport)", dom);
     }
     
+    @Test 
     public void testLayerQualified() throws Exception {
         String layer = "Forests";
         String q = "?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -492,6 +512,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(result.indexOf("Green Forest") > 0);
     }
     
+    @Test 
     public void testGroupWorkspaceQualified() throws Exception {
         // check the group works without workspace qualification
         String url = "wms?request=getmap&service=wms&version=1.1.1"
@@ -512,6 +533,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
+    @Test 
     public void testNonExactVersion() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
         String request = "wms?version=1.0.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
@@ -530,6 +552,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(result.indexOf("Green Forest") > 0);
     }
     
+    @Test 
     public void testRasterFilterRed() throws Exception {
         String response = getAsString("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=" +
         		"&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
@@ -542,6 +565,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(response.indexOf("BLUE_BAND = 0.0") > 0);
     }
     
+    @Test 
     public void testRasterFilterGreen() throws Exception {
         String response = getAsString("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=" +
                 "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
@@ -554,6 +578,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(response.indexOf("BLUE_BAND = 0.0") > 0);
     }
     
+   @Test 
    public void testPropertySelectionWmsCascade() throws Exception {
        if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
            LOGGER.log(Level.WARNING, "Skipping testPropertySelectionWmsCascade");
@@ -580,6 +605,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
    }
     
    
+   @Test 
    public void testRasterKeepNative() throws Exception {
        // force it to "keep native"
        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(CUSTOM));

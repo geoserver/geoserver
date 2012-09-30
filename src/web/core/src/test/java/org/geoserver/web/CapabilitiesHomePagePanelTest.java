@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.apache.wicket.markup.html.WebPage;
 import org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo;
 import org.geotools.util.Version;
+import org.junit.Test;
 
 public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
 
@@ -21,6 +22,7 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
          */
     }
 
+    @Test
     public void testCapabilitiesLinks() {
 
         CapsInfo ci1 = new CapsInfo("FakeService1", new Version("1.0.0"), "../caps1_v1");

@@ -4,16 +4,10 @@
  */
 package org.geoserver.wms.map;
 
-import junit.framework.Test;
 
 public class GIFMapResponseTest extends RenderedImageMapOutputFormatTest {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GIFMapResponseTest());
-    }
+ 
 
     protected RenderedImageMapOutputFormat getProducerInstance() {
         return new RenderedImageMapOutputFormat("image/gif", getWMS());

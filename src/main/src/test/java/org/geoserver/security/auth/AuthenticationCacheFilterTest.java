@@ -2,10 +2,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
-
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +27,13 @@ import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.test.RunTestSetup;
+import org.geoserver.test.SystemTest;
+import org.geoserver.test.TestSetupFrequency;
+import org.geoserver.test.TestSetup;
 import org.geotools.data.Base64;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +42,7 @@ import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@Category(SystemTest.class)
 public class AuthenticationCacheFilterTest extends AbstractAuthenticationProviderTest {
     
     public final static String testFilterName = "basicAuthTestFilter";
@@ -97,6 +103,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         return result;
     }
+
+    @Test
     public void testBasicAuth() throws Exception{
         
                 
@@ -236,6 +244,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         
     }
     
+    @Test
     public void testJ2eeProxy() throws Exception{
 
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
@@ -343,6 +352,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 
     }
     
+    @Test
     public void testRequestHeaderProxy() throws Exception{
 
         RequestHeaderAuthenticationFilterConfig config = 
@@ -455,6 +465,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     }        
 
 
+    @Test
     public void testDigestAuth() throws Exception{
 
         DigestAuthenticationFilterConfig config = new DigestAuthenticationFilterConfig();
@@ -620,6 +631,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         removeAnonymousFilter();
     }
 
+    @Test
     public void testBasicAuthWithRememberMe() throws Exception{
     
         BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
@@ -736,6 +748,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         
     }
 
+    @Test
     public void testX509Auth() throws Exception{
 
         X509CertificateAuthenticationFilterConfig config = 
@@ -848,6 +861,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 
     }      
     
+    @Test
+    @RunTestSetup
     public void testCascadingFilters() throws Exception{
 
         BasicAuthenticationFilterConfig bconfig = new BasicAuthenticationFilterConfig();

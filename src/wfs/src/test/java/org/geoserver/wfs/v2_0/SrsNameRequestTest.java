@@ -6,6 +6,7 @@
 package org.geoserver.wfs.v2_0;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
@@ -163,6 +164,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an EPSG code srsName.
      */
+    @Test
     public void testEpsgCode() throws Exception {
         runTest(EPSG_CODE_SRSNAME, null, 5, HTTP_URL_SRSNAME, LON_LAT_DATA);
     }
@@ -171,6 +173,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an EPSG code srsName and a latitude/longitude
      * (correct axis order) native four-parameter bounding box.
      */
+    @Test
     public void testEpsgCodeNativeBbox() throws Exception {
         runTest(EPSG_CODE_SRSNAME, LAT_LON_BBOX, 1, HTTP_URL_SRSNAME, LON_LAT_DATA);
     }
@@ -179,6 +182,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an EPSG code srsName and a longitude/latitude (incorrect axis order) native four-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testEpsgCodeNativeBboxWrongAxisOrder() throws Exception {
         runTest(EPSG_CODE_SRSNAME, LON_LAT_BBOX, 0, null, null);
     }
@@ -187,6 +191,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an EPSG code srsName and a longitude/latitude
      * (correct axis order) five-parameter bounding box.
      */
+    @Test
     public void testEpsgCodeBbox() throws Exception {
         runTest(EPSG_CODE_SRSNAME, buildBbox(LON_LAT_BBOX, EPSG_CODE_SRSNAME), 1, HTTP_URL_SRSNAME,
                 LON_LAT_DATA);
@@ -195,6 +200,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test that a request with an EPSG code srsName and a latitude/longitude (incorrect axis order) five-parameter bounding box returns no features.
      */
+    @Test
     public void testEpsgCodeBboxWrongAxisOrder() throws Exception {
         runTest(EPSG_CODE_SRSNAME, buildBbox(LAT_LON_BBOX, EPSG_CODE_SRSNAME), 0, null, null);
     }
@@ -202,6 +208,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC HTTP URL srsName.
      */
+    @Test
     public void testHttpUrl() throws Exception {
         runTest(HTTP_URL_SRSNAME, null, 5, HTTP_URL_SRSNAME, LON_LAT_DATA);
     }
@@ -210,6 +217,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC HTTP URL srsName and a latitude/longitude
      * (correct axis order) native four-parameter bounding box.
      */
+    @Test
     public void testHttpUrlNativeBbox() throws Exception {
         runTest(HTTP_URL_SRSNAME, LAT_LON_BBOX, 1, HTTP_URL_SRSNAME, LON_LAT_DATA);
     }
@@ -218,6 +226,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC HTTP URL srsName and a longitude/latitude (incorrect axis order) native four-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testHttpUrlNativeBboxWrongAxisOrder() throws Exception {
         runTest(HTTP_URL_SRSNAME, LON_LAT_BBOX, 0, null, null);
     }
@@ -226,6 +235,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC HTTP URL srsName and a longitude/latitude
      * (correct axis order) five-parameter bounding box.
      */
+    @Test
     public void testHttpUrlBbox() throws Exception {
         runTest(HTTP_URL_SRSNAME, buildBbox(LON_LAT_BBOX, HTTP_URL_SRSNAME), 1, HTTP_URL_SRSNAME,
                 LON_LAT_DATA);
@@ -235,6 +245,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC HTTP URL srsName and a latitude/longitude (incorrect axis order) five-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testHttpUrlBboxWrongAxisOrder() throws Exception {
         runTest(HTTP_URL_SRSNAME, buildBbox(LAT_LON_BBOX, HTTP_URL_SRSNAME), 0, null, null);
     }
@@ -242,6 +253,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC URN Experimental srsName.
      */
+    @Test
     public void testUrnExperimental() throws Exception {
         runTest(URN_EXPERIMENTAL_SRSNAME, null, 5, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -250,6 +262,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC URN Experimental srsName and a
      * latitude/longitude (correct axis order) native four-parameter bounding box.
      */
+    @Test
     public void testUrnExperimentalNativeBbox() throws Exception {
         runTest(URN_EXPERIMENTAL_SRSNAME, LAT_LON_BBOX, 1, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -258,6 +271,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC URN Experimental srsName and a longitude/latitude (incorrect axis order) native four-parameter bounding box
      * returns no features.
      */
+    @Test
     public void testUrnExperimentalNativeBboxWrongAxisOrder() throws Exception {
         runTest(URN_EXPERIMENTAL_SRSNAME, LON_LAT_BBOX, 0, null, null);
     }
@@ -266,6 +280,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC URN Experimental srsName and a
      * latitude/longitude (correct axis order) five-parameter bounding box.
      */
+    @Test
     public void testUrnExperimentalBbox() throws Exception {
         runTest(URN_EXPERIMENTAL_SRSNAME, buildBbox(LAT_LON_BBOX, URN_EXPERIMENTAL_SRSNAME), 1,
                 URN_SRSNAME, LAT_LON_DATA);
@@ -275,6 +290,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC URN Experimental srsName and a longitude/latitude (incorrect axis order) five-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testUrnExperimentalBboxWrongAxisOrder() throws Exception {
         runTest(URN_EXPERIMENTAL_SRSNAME, buildBbox(LON_LAT_BBOX, URN_EXPERIMENTAL_SRSNAME), 0,
                 null, null);
@@ -283,6 +299,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC URN srsName.
      */
+    @Test
     public void testUrn() throws Exception {
         runTest(URN_SRSNAME, null, 5, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -291,6 +308,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC URN srsName and a latitude/longitude (correct
      * axis order) native four-parameter bounding box.
      */
+    @Test
     public void testUrnNativeBbox() throws Exception {
         runTest(URN_SRSNAME, LAT_LON_BBOX, 1, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -299,6 +317,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC URN srsName and a longitude/latitude (incorrect axis order) native four-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testUrnNativeBboxWrongAxisOrder() throws Exception {
         runTest(URN_SRSNAME, LON_LAT_BBOX, 0, null, null);
     }
@@ -307,6 +326,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC URN srsName and a latitude/longitude (correct
      * axis order) five-parameter bounding box.
      */
+    @Test
     public void testUrnBbox() throws Exception {
         runTest(URN_SRSNAME, buildBbox(LAT_LON_BBOX, URN_SRSNAME), 1, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -314,6 +334,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test that a request with an OGC URN srsName and a longitude/latitude (incorrect axis order) five-parameter bounding box returns no features.
      */
+    @Test
     public void testUrnBboxWrongAxisOrder() throws Exception {
         runTest(URN_SRSNAME, buildBbox(LON_LAT_BBOX, URN_SRSNAME), 0, null, null);
     }
@@ -321,6 +342,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
     /**
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC HTTP URI srsName.
      */
+    @Test
     public void testHttpUri() throws Exception {
         runTest(HTTP_URI_SRSNAME, null, 5, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -329,6 +351,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC HTTP URI srsName and a latitude/longitude
      * (correct axis order) native four-parameter bounding box.
      */
+    @Test
     public void testHttpUriNativeBbox() throws Exception {
         runTest(HTTP_URI_SRSNAME, LAT_LON_BBOX, 1, URN_SRSNAME, LAT_LON_DATA);
     }
@@ -337,6 +360,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC HTTP URI srsName and a longitude/latitude (incorrect axis order) native four-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testHttpUriNativeBboxWrongAxisOrder() throws Exception {
         runTest(HTTP_URI_SRSNAME, LON_LAT_BBOX, 0, null, null);
     }
@@ -345,6 +369,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test response numberReturned, feature identity, srsName, and axis order for a request with an OGC HTTP URI srsName and a latitude/longitude
      * (correct axis order) five-parameter bounding box.
      */
+    @Test
     public void testHttpUriBbox() throws Exception {
         runTest(HTTP_URI_SRSNAME, buildBbox(LAT_LON_BBOX, HTTP_URI_SRSNAME), 1, URN_SRSNAME,
                 LAT_LON_DATA);
@@ -354,6 +379,7 @@ public class SrsNameRequestTest extends WFS20TestSupport {
      * Test that a request with an OGC HTTP URI srsName and a longitude/latitude (incorrect axis order) five-parameter bounding box returns no
      * features.
      */
+    @Test
     public void testHttpUriBboxWrongAxisOrder() throws Exception {
         runTest(HTTP_URI_SRSNAME, buildBbox(LON_LAT_BBOX, HTTP_URI_SRSNAME), 0, null, null);
     }

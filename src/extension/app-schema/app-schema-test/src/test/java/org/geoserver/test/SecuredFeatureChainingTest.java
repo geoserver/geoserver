@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,58 +15,40 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import junit.framework.Test;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
-import org.geoserver.wfs.WFSInfo;
-import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.factory.CommonFactoryFinder;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * WFS GetFeature to test secured feature with GeoServer.
  * 
  * @author Victor Tey (CSIRO Earth Science and Resource Engineering)
  */
-public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SecuredFeatureChainingTest());
-    }
+public class SecuredFeatureChainingTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
-        NamespaceTestData dataDirectory = new FeatureChainingMockData();
-        try {
-            populateDataDirectory(dataDirectory);
-        } catch (IOException e) {
-            // Test will fail if an exception is thrown on populateDataDirectory()
-            LOGGER.warning("IOException while trying to populateDataDirectory:" + e.getMessage());
-        }
-        return dataDirectory;
+    protected FeatureChainingMockData createTestData() {
+        return new FeatureChainingMockData();
     }
-
-    protected String[] getSpringContextLocations() {
-        String[] base = super.getSpringContextLocations();
-        String[] extended = new String[base.length + 1];
-        System.arraycopy(base, 0, extended, 0, base.length);
-        extended[base.length] = "classpath:/test-data/ResourceAccessManagerContext.xml";
-        return extended;
+    
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        
+        springContextLocations.add("classpath:/test-data/ResourceAccessManagerContext.xml");
     }
-
+    
     /**
      * Enable the Spring Security auth filters
      */
@@ -74,20 +58,13 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport 
                 .bean("filterChainProxy"));
     }
 
-    private void populateDataDirectory(NamespaceTestData dataDirectory) throws IOException {
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-        security.mkdir();
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("cite_readfilter", "cite,ROLE_DUMMY");
-        props.put("cite_readatts", "cite,ROLE_DUMMY");
-        props.store(new FileOutputStream(users), "");
-
-    }
-
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+        addUser("cite_readfilter", "cite", null, Arrays.asList("ROLE_DUMMY"));
+        addUser("cite_readatts", "cite", null, Arrays.asList("ROLE_DUMMY"));
+        
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
         // populate the access manager
@@ -111,8 +88,9 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport 
     /**
      * Test that denormalized data reports the correct number of features
      */
+    @Test
     public void testDenormalisedFeaturesCount() {
-        authenticate("cite_readatts", "cite");
+        setRequestAuth("cite_readatts", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit" +
             "&maxFeatures=3&resultType=hits");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&maxFeatures=3 response:\n"
@@ -124,8 +102,9 @@ public class SecuredFeatureChainingTest extends AbstractAppSchemaWfsTestSupport 
     /**
      * Test that denormalized data reports the right output
      */
+    @Test
     public void testSecureFeatureContent() {
-        authenticate("cite_readatts", "cite");
+        setRequestAuth("cite_readatts", "cite");
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&maxFeatures=3");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&maxFeatures=3 response:\n"
                 + prettyString(doc));

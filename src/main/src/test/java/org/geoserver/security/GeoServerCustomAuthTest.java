@@ -1,7 +1,7 @@
 package org.geoserver.security;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import static org.junit.Assert.*;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,15 +21,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
-public class GeoServerCustomAuthTest extends GeoServerSecurityTestSupport {
+@Category(SystemTest.class)
+public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getSpringContextLocations()));
-        list.add(getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
-        return list.toArray(new String[list.size()]);
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add(
+            getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
     }
 
+    @Test 
     public void testInactive() throws Exception {
         UsernamePasswordAuthenticationToken upAuth = 
             new UsernamePasswordAuthenticationToken("foo", "bar");
@@ -37,6 +42,7 @@ public class GeoServerCustomAuthTest extends GeoServerSecurityTestSupport {
         catch(ProviderNotFoundException e) {}
     }
 
+    @Test
     public void testActive() throws Exception {
         GeoServerSecurityManager secMgr = getSecurityManager();
         UsernamePasswordAuthenticationProviderConfig config = 

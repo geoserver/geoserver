@@ -1,13 +1,17 @@
 package org.geoserver.web.demo;
 
+import static org.junit.Assert.*;
+
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
 
+    @Test
     public void testNonAdvertisedLayer() throws Exception {
         String layerId = getLayerId(MockData.BUILDINGS);
         LayerInfo layer = getCatalog().getLayerByName(layerId);

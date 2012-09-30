@@ -4,30 +4,35 @@
  */
 package org.geoserver.gwc.config;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.junit.Before;
+import org.junit.Test;
 
-public class GWCConfigPersisterTest extends TestCase {
+public class GWCConfigPersisterTest {
 
     private GeoServerResourceLoader resourceLoader;
 
     private GWCConfigPersister persister;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         resourceLoader = mock(GeoServerResourceLoader.class);
 
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);
     }
 
+    @Test
     public void testPrecondition() throws Exception {
         // gwc-gs.xml shall exists, it's GWCInitializer responsibility
         when(resourceLoader.find(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(null);
@@ -39,6 +44,7 @@ public class GWCConfigPersisterTest extends TestCase {
         }
     }
 
+    @Test
     public void testSaveLoad() throws Exception {
         final File baseDirectory = new File("target");
         baseDirectory.mkdirs();

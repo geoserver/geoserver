@@ -1,5 +1,7 @@
 package org.geoserver.ows.kvp;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -10,16 +12,20 @@ import junit.framework.TestCase;
 
 import org.geoserver.ows.kvp.NamespaceKvpParser;
 import org.geoserver.platform.ServiceException;
+import org.junit.Before;
+import org.junit.Test;
 import org.xml.sax.helpers.NamespaceSupport;
 
-public class NamespaceKvpParserTest extends TestCase {
+public class NamespaceKvpParserTest {
 
     private NamespaceKvpParser parser;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         parser = new NamespaceKvpParser("namespace");
     }
 
+    @Test
     public void testEmpty() throws Exception {
         NamespaceSupport ctx = parser.parse("");
         assertNotNull(ctx);
@@ -28,6 +34,7 @@ public class NamespaceKvpParserTest extends TestCase {
         assertEquals(1, prefixes.size());
     }
 
+    @Test
     public void testFormatError() throws Exception {
         try {
             parser.parse("xmlns[bad=format]");
@@ -56,11 +63,13 @@ public class NamespaceKvpParserTest extends TestCase {
         assertEquals(parser.getKey(), e.getLocator());
     }
 
+    @Test
     public void testSingle() throws Exception {
         NamespaceSupport ctx = parser.parse("xmlns(foo=http://bar)");
         assertEquals("http://bar", ctx.getURI("foo"));
     }
 
+    @Test
     public void testMultiple() throws Exception {
         NamespaceSupport ctx = parser
                 .parse("xmlns(foo=http://bar), xmlns(ex=http://example.com),xmlns(gs=http://geoserver.org)");
@@ -69,6 +78,7 @@ public class NamespaceKvpParserTest extends TestCase {
         assertEquals("http://geoserver.org", ctx.getURI("gs"));
     }
 
+    @Test
     public void testDefaultNamespace() throws Exception{
         NamespaceSupport ctx = parser.parse("xmlns(http://default.namespace.com)");
         assertEquals("http://default.namespace.com", ctx.getURI(XMLConstants.DEFAULT_NS_PREFIX));

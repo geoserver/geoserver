@@ -2,7 +2,6 @@ package org.geoserver.wps.gs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,12 @@ import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class VectorZonalStatsTest extends WPSTestSupport {
@@ -23,29 +27,22 @@ public class VectorZonalStatsTest extends WPSTestSupport {
     public static QName RESTRICTED = new QName(MockData.SF_URI, "restricted", MockData.SF_PREFIX);
 
     @Override
-    protected void setUpInternal() throws Exception {
-        // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
-        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("feature", "http://cite.opengeospatial.org/gmlsf");
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
+        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        props.put(LayerProperty.ENVELOPE, new ReferencedEnvelope(181985.7630, 818014.2370, 1973809.4640, 8894102.4298, CRS.decode("EPSG:26713", true)));
 
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        testData.addVectorLayer(BUGSITES, props, "bugsites.properties", getClass(), getCatalog());
+        testData.addVectorLayer(RESTRICTED, props, "restricted.properties", getClass(), getCatalog());
     }
-
+    
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addPropertiesType(BUGSITES, getClass().getResource("bugsites.properties"),
-                Collections.singletonMap(MockData.KEY_SRS_NUMBER, "EPSG:26713"));
-        dataDirectory.addPropertiesType(RESTRICTED,
-                getClass().getResource("restricted.properties"), Collections.singletonMap(
-                        MockData.KEY_SRS_NUMBER, "EPSG:26713"));
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("feature", "http://cite.opengeospatial.org/gmlsf");
     }
-
+    
+    @Test
     public void testStatistics() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"

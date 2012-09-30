@@ -4,7 +4,15 @@
  */
 package org.geoserver.security.web.role;
 
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+
 import org.apache.wicket.Component;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.SecurityRoleServiceConfig;
+import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.web.AbstractSecurityNamedServicePanelTest;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
@@ -12,6 +20,8 @@ import org.geoserver.security.web.SecurityNamedServiceNewPage;
 import org.geoserver.security.web.UserGroupRoleServicesPage;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLRoleServiceConfig;
+import org.junit.Before;
+import org.junit.Test;
 
 public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServicePanelTest {
 
@@ -74,8 +84,17 @@ public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedService
         String temp= formTester.getForm().get("details:config.validating").getDefaultModelObjectAsString();
         return Boolean.valueOf(temp);
     }
-        
-                                    
+
+    @Before
+    public void removeRoleService2() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        if (secMgr.listRoleServices().contains("default2")) {
+            SecurityRoleServiceConfig roleService = secMgr.loadRoleServiceConfig("default2");
+            secMgr.removeRoleService(roleService);
+        }
+    }
+
+    @Test
     public void testAddModifyRemove() throws Exception{
         initializeForXML();
         
@@ -214,6 +233,7 @@ public  class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedService
         //doRemove("tabbedPanel:panel:removeSelected");
     }
 
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         

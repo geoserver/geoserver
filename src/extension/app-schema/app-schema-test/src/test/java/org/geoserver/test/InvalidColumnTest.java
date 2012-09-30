@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * Tests whether we get an exception thrown when an invalid column name is used
@@ -15,25 +15,17 @@ import junit.framework.Test;
  * @author Niels Charlier, Curtin University of Technology
  * 
  */
-public class InvalidColumnTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new InvalidColumnTest());
-    }
+public class InvalidColumnTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected InvalidColumnTestData createTestData() {
         return new InvalidColumnTestData();
     }
 
     /**
      * Test whether GetFeature returns ows:ExceptionReport.
      */
+    @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));

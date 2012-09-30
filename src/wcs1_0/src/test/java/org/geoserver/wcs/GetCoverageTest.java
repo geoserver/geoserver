@@ -1,6 +1,7 @@
 package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
+import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -16,7 +17,6 @@ import javax.imageio.ImageReader;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
 import junit.textui.TestRunner;
 import net.opengis.wcs10.GetCoverageType;
 
@@ -26,6 +26,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
@@ -40,6 +41,8 @@ import org.geotools.metadata.iso.spatial.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.wcs.WCSConfiguration;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.referencing.datum.PixelInCell;
@@ -67,43 +70,24 @@ public class GetCoverageTest extends WCSTestSupport {
     
     private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCoverageTest());
-    }
-
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setUp() {
         kvpreader = (Wcs10GetCoverageRequestReader) applicationContext.getBean("wcs100GetCoverageRequestReader");
         service = (WebCoverageService100) applicationContext.getBean("wcs100ServiceTarget");
         configuration = new WCSConfiguration();
         catalog=(Catalog)applicationContext.getBean("catalog");
         xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
-        
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
         // enable dimensions on the water temperature layer
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
     }
-    
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
-        // this also adds the raster style
-        dataDirectory.addCoverageFromZip(MOSAIC, 
-                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
-    }
 
-
-
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-    
     private Map<String, Object> baseMap() {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "WCS");
@@ -112,6 +96,7 @@ public class GetCoverageTest extends WCSTestSupport {
         return raw;
     }
     
+    @Test
     public void testDomainSubsetRxRy() throws Exception {
     	// get base  coverage
         final GridCoverage baseCoverage = catalog.getCoverageByName(TASMANIA_BM.getLocalPart()).getGridCoverage(null, null);
@@ -174,6 +159,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("translatey",tx.getTranslateY(), expectedTx.getTranslateY(), 1E-6);
 	}
 
+    @Test
     public void testWorkspaceQualified() throws Exception {
         String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
             "&crs=EPSG:4326&width=150&height=150";
@@ -187,6 +173,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
 
+    @Test
     public void testLayerQualified() throws Exception {
         String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
             "&crs=EPSG:4326&width=150&height=150";
@@ -219,6 +206,7 @@ public class GetCoverageTest extends WCSTestSupport {
         return service.getCoverage(getCoverage);
     }
     
+    @Test
     public void testInputLimits() throws Exception {
         try {
             // ridicolous limit, just one byte
@@ -238,6 +226,7 @@ public class GetCoverageTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testOutputLimits() throws Exception {
         try {
             // ridicolous limit, just one byte
@@ -257,6 +246,7 @@ public class GetCoverageTest extends WCSTestSupport {
         }
     }
     
+    @Test
     public void testReproject() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         		"<GetCoverage version=\"1.0.0\" service=\"WCS\" " +
@@ -300,6 +290,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals(CRS.decode("EPSG:3857"), reader.getOriginalEnvelope().getCoordinateReferenceSystem());
     }
     
+    @Test
     public void testRasterFilterGreen() throws Exception {
         String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
                 "&service=wcs&version=1.0.0&&format=image/tiff&crs=EPSG:4326" + 
@@ -330,6 +321,7 @@ public class GetCoverageTest extends WCSTestSupport {
         return reader.read(0);
     }
     
+    @Test
     public void testTimeFirstPOST() throws Exception {
         String request = getWaterTempTimeRequest("2008-10-31T00:00:00.000Z");
      
@@ -337,6 +329,7 @@ public class GetCoverageTest extends WCSTestSupport {
         checkTimeFirst(response);
     }
     
+    @Test
     public void testTimeFirstKVP() throws Exception {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
@@ -401,6 +394,7 @@ public class GetCoverageTest extends WCSTestSupport {
         tiffFile.delete();
     }
     
+    @Test
     public void testTimeSecond() throws Exception {
         String request = getWaterTempTimeRequest("2008-11-01T00:00:00.000Z");
      
@@ -409,6 +403,7 @@ public class GetCoverageTest extends WCSTestSupport {
         checkTimeCurrent(response);
     }
     
+    @Test
     public void testTimeKVPNow() throws Exception {
         String queryString ="request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff" +
                         "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=now" +
@@ -418,6 +413,7 @@ public class GetCoverageTest extends WCSTestSupport {
         checkTimeCurrent(response);
     }
     
+    @Test
     public void testElevationFirst() throws Exception {
         String request = getWaterTempElevationRequest("0.0");
      
@@ -428,6 +424,7 @@ public class GetCoverageTest extends WCSTestSupport {
         checkTimeCurrent(response);
     }
     
+    @Test
     public void testElevationSecond() throws Exception {
         String request = getWaterTempElevationRequest("100.0");
      
@@ -536,6 +533,7 @@ public class GetCoverageTest extends WCSTestSupport {
         return request;
     }
     
+    @Test
     public void testRasterFilterRed() throws Exception {
         String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
                 "&service=wcs&version=1.0.0&format=image/tiff&crs=EPSG:4326" + 
@@ -567,9 +565,5 @@ public class GetCoverageTest extends WCSTestSupport {
         info.setMaxOutputMemory(kbytes);
         gs.save(info);
     } 
-
-    public static void main(String[] args) {
-        TestRunner.run(suite());
-    }
 
 }

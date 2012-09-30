@@ -1,18 +1,23 @@
 package org.geoserver.security.impl;
+import static org.junit.Assert.*;
+
 import org.springframework.security.core.Authentication;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
+import org.junit.Test;
 
 
 public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest {
 
+    @Test 
     public void testWideOpen() throws Exception {
         DataAccessManager manager = buildLegacyAccessManager("wideOpen.properties");
         checkUserAccessFlat(manager, anonymous, true, true);
     }
 
+    @Test
     public void testLockedDown() throws Exception {
         DataAccessManager manager = buildLegacyAccessManager("lockedDown.properties");
         checkUserAccessFlat(manager, anonymous, false, false);
@@ -21,6 +26,7 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
         checkUserAccessFlat(manager, root, true, true);
     }
     
+    @Test
     public void testPublicRead() throws Exception {
         DataAccessManager manager = buildLegacyAccessManager("publicRead.properties");
         checkUserAccessFlat(manager, anonymous, true, false);
@@ -42,6 +48,7 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
         assertEquals(expectedWrite, manager.canAccess(user, toppWs, AccessMode.WRITE));
     }
     
+    @Test
     public void testComplex() throws Exception {
         DataAccessManager wo = buildLegacyAccessManager("complex.properties");
         
@@ -101,26 +108,31 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
         assertTrue(wo.canAccess(milUser, arcGridLayer, AccessMode.WRITE));
     }
     
+    @Test
     public void testDefaultMode() throws Exception {
         DataAccessManager wo = buildLegacyAccessManager("lockedDown.properties");
         assertEquals(CatalogMode.HIDE, wo.getMode());
     }
     
+    @Test
     public void testHideMode() throws Exception {
         DataAccessManager wo = buildLegacyAccessManager("lockedDownHide.properties");
         assertEquals(CatalogMode.HIDE, wo.getMode());
     }
     
+    @Test
     public void testChallengeMode() throws Exception {
         DataAccessManager wo = buildLegacyAccessManager("lockedDownChallenge.properties");
         assertEquals(CatalogMode.CHALLENGE, wo.getMode());
     }
     
+    @Test
     public void testMixedMode() throws Exception {
         DataAccessManager wo = buildLegacyAccessManager("lockedDownMixed.properties");
         assertEquals(CatalogMode.MIXED, wo.getMode());
     }
     
+    @Test
     public void testUnknownMode() throws Exception {
         DataAccessManager wo = buildLegacyAccessManager("lockedDownUnknown.properties");
         // should fall back on the default and complain in the logger

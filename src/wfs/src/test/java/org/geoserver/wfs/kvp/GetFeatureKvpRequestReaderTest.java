@@ -1,5 +1,8 @@
 package org.geoserver.wfs.kvp;
 
+import static org.junit.Assert.*;
+
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,18 +13,19 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
 
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.GetFeature;
 import org.geoserver.wfs.WFSException;
 import org.geotools.factory.CommonFactoryFinder;
+import org.junit.Test;
 
-public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport {
+public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
 
-    private GetFeatureKvpRequestReader reader;
+    private static GetFeatureKvpRequestReader reader;
 
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Override
+    protected void onSetUp(SystemTestData data) throws Exception {
         reader = new GetFeatureKvpRequestReader(GetFeatureType.class, getCatalog(),
                 CommonFactoryFinder.getFilterFactory(null));
     }
@@ -29,6 +33,7 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
     /**
      * http://jira.codehaus.org/browse/GEOS-1875
      */
+    @Test
     @SuppressWarnings("unchecked")
     public void testInvalidTypeNameBbox() throws Exception {
         Map raw = new HashMap();
@@ -58,6 +63,7 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testInvalidTypeName() throws Exception {
         Map raw = new HashMap();
         raw.put("service", "WFS");
@@ -82,9 +88,10 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testUserProvidedNamespace() throws Exception {
-        final String localPart = MockData.MLINES.getLocalPart();
-        final String namespace = MockData.MLINES.getNamespaceURI();
+        final String localPart = SystemTestData.MLINES.getLocalPart();
+        final String namespace = SystemTestData.MLINES.getNamespaceURI();
         final String alternamePrefix = "ex";
         final String alternameTypeName = alternamePrefix + ":" + localPart;
 
@@ -103,7 +110,7 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
         QueryType query = (QueryType) parsedReq.getQuery().get(0);
         List<QName> typeNames = query.getTypeName();
         assertEquals(1, typeNames.size());
-        assertEquals(MockData.MLINES, typeNames.get(0));
+        assertEquals(SystemTestData.MLINES, typeNames.get(0));
     }
 
     /**
@@ -112,8 +119,9 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testUserProvidedDefaultNamespace() throws Exception {
-        final QName qName = MockData.STREAMS;
+        final QName qName = SystemTestData.STREAMS;
         final String typeName = qName.getLocalPart();
         final String defaultNamespace = qName.getNamespaceURI();
 
@@ -135,12 +143,13 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
         assertEquals(qName, typeNames.get(0));
     }
     
+    @Test
     public void testViewParams() throws Exception {
         Map<String, String> raw = new HashMap<String, String>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
-        raw.put("typeName", getLayerId(MockData.STREAMS));
+        raw.put("typeName", getLayerId(SystemTestData.STREAMS));
         raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD");
 
         Map<String, Object> parsed = parseKvp(raw);
@@ -156,12 +165,13 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
         assertEquals("ABCD", vp1.get("str"));
     }
     
+    @Test
     public void testViewParamsMulti() throws Exception {
         Map<String, String> raw = new HashMap<String, String>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
-        raw.put("typeName", getLayerId(MockData.STREAMS) + "," + getLayerId(MockData.BASIC_POLYGONS));
+        raw.put("typeName", getLayerId(SystemTestData.STREAMS) + "," + getLayerId(SystemTestData.BASIC_POLYGONS));
         raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD,where:WHERE PERSONS > 10;str:FOO");
 
         Map<String, Object> parsed = parseKvp(raw);
@@ -180,12 +190,13 @@ public class GetFeatureKvpRequestReaderTest extends KvpRequestReaderTestSupport 
         assertEquals("FOO", vp2.get("str"));
     }
     
+    @Test
     public void testViewParamsFanOut() throws Exception {
         Map<String, String> raw = new HashMap<String, String>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
-        raw.put("typeName", getLayerId(MockData.STREAMS) + "," + getLayerId(MockData.BASIC_POLYGONS));
+        raw.put("typeName", getLayerId(SystemTestData.STREAMS) + "," + getLayerId(SystemTestData.BASIC_POLYGONS));
         raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD");
 
         Map<String, Object> parsed = parseKvp(raw);

@@ -1,8 +1,9 @@
 package org.geoserver.web.wicket;
 
-import java.util.ArrayList;
+import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.TestCase;
+import java.util.ArrayList;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
@@ -12,16 +13,16 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
+public class KeywordsEditorTest {
 
-public class KeywordsEditorTest extends TestCase {
-    
     WicketTester tester;
     ArrayList<KeywordInfo> keywords;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         tester = new WicketTester();
         initResourceSettings(tester);
         keywords = new ArrayList<KeywordInfo>();
@@ -29,13 +30,13 @@ public class KeywordsEditorTest extends TestCase {
         keywords.add(new Keyword("two"));
         keywords.add(new Keyword("three"));
         tester.startPage(new FormTestPage(new ComponentBuilder() {
-        
             public Component buildComponent(String id) {
                 return new KeywordsEditor(id, new Model(keywords));
             }
         }));
     }
     
+    @Test
     public void testRemove() throws Exception {
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
         FormTester ft = tester.newFormTester("form");
@@ -46,6 +47,7 @@ public class KeywordsEditorTest extends TestCase {
         assertEquals("two", keywords.get(0).getValue());
     }
     
+    @Test
     public void testAdd() throws Exception {
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
         FormTester ft = tester.newFormTester("form");

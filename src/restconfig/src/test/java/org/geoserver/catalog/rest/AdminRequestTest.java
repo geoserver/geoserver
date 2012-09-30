@@ -1,35 +1,32 @@
 package org.geoserver.catalog.rest;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+
+import java.util.Arrays;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
+import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
+import org.junit.After;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-
 public class AdminRequestTest extends CatalogRESTTestSupport {
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+    
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName( "global" );
         lg.getLayers().add( catalog.getLayerByName( "sf:PrimitiveGeoFeature" ) );
@@ -63,60 +60,40 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         s.setWorkspace(cat.getWorkspaceByName("cite"));
         s.setFilename("cite.sld");
         cat.add(s);
+
+        addUser("cite", "cite", null, Arrays.asList("ROLE_CITE_ADMIN"));
+        addUser("sf", "sf", null, Arrays.asList("ROLE_SF_ADMIN"));
+
+        addLayerAccessRule("*", "*", AccessMode.ADMIN, "ROLE_ADMINISTRATOR");
+        addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");
+        addLayerAccessRule("sf", "*", AccessMode.ADMIN, "ROLE_SF_ADMIN");
     }
 
-    @Override
-    protected void setUpUsers(Properties props) {
-        super.setUpUsers(props);
-
-        //add a new user with only admin privileges to a single workspace
-        props.put("cite", "cite,ROLE_CITE_ADMIN");
-        props.put("sf", "sf,ROLE_SF_ADMIN");
-    }
-
-    @Override
-    protected void setUpLayerRoles(Properties props) {
-        super.setUpLayerRoles(props);
-
-        props.put("*.*.a", "ROLE_ADMINISTRATOR");
-        props.put("cite.*.a", "ROLE_CITE_ADMIN");
-        props.put("sf.*.a", "ROLE_SF_ADMIN");
-    }
-
-    @Override
-    protected void tearDownInternal() throws Exception {
+    @After
+    public void clearAdminRequest() {
         AdminRequest.finish();
-        super.tearDownInternal();
+    }
+
+    @Override
+    public void login() throws Exception {
+        //skip the login by default
     }
 
     void loginAsCite() {
-        SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
-        l.add(new GrantedAuthorityImpl("ROLE_CITE_ADMIN"));
-        
-        SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken("cite","cite",l));
+        login("cite", "cite","ROLE_CITE_ADMIN");
     }
 
     void loginAsSf() {
-        SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
-        l.add(new GrantedAuthorityImpl("ROLE_SF_ADMIN"));
-        
-        SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken("sf","sf",l));
+        login("sf", "sf","ROLE_SF_ADMIN");
     }
 
-    @Override
-    protected void doLogin() throws Exception {
-    }
-
+    @Test
     public void testWorkspaces() throws Exception {
         assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatusCode());
         Document dom = getAsDOM("/rest/workspaces.xml");
         assertEquals(0, dom.getElementsByTagName("workspace").getLength());
         
-        super.doLogin();
+        super.login();
         dom = getAsDOM("/rest/workspaces.xml");
         assertEquals(getCatalog().getWorkspaces().size(), 
                 dom.getElementsByTagName("workspace").getLength());
@@ -128,6 +105,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         
     }
 
+    @Test
     public void testWorkspace() throws Exception {
         assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatusCode());
         assertEquals(404, getAsServletResponse("/rest/workspaces/cite.xml").getStatusCode());
@@ -137,6 +115,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertEquals(200, getAsServletResponse("/rest/workspaces/cite.xml").getStatusCode());
     }
 
+    @Test
     public void testGlobalLayerGroupReadOnly() throws Exception {
         loginAsSf();
 
@@ -175,6 +154,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertEquals(405, response.getStatusCode());
     }
 
+    @Test
     public void testLocalLayerGroupHidden() throws Exception {
         loginAsSf();
 
@@ -199,6 +179,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testGlobalStyleReadOnly() throws Exception {
         loginAsSf();
 
@@ -228,6 +209,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertEquals(405, response.getStatusCode());
     }
    
+    @Test
     public void testLocalStyleHidden() throws Exception {
         loginAsCite();
 

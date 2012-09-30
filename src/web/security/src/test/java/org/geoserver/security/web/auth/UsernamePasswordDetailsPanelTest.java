@@ -4,13 +4,20 @@
  */
 package org.geoserver.security.web.auth;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.Component;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
+import org.geoserver.security.config.SecurityAuthFilterConfig;
+import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.web.AbstractSecurityNamedServicePanelTest;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
 import org.geoserver.security.web.SecurityNamedServiceNewPage;
+import org.junit.Before;
+import org.junit.Test;
 
 public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServicePanelTest {
 
@@ -47,8 +54,17 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         return formTester.getForm().get("details:config.userGroupServiceName").getDefaultModelObjectAsString();
     }
     
-    
-                                
+    @Before
+    public void clearAuthProvider() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        if (secMgr.listAuthenticationProviders().contains("default2")) {
+            SecurityAuthProviderConfig config = 
+                    secMgr.loadAuthenticationProviderConfig("default2");
+            secMgr.removeAuthenticationProvider(config);
+        }
+    }
+
+    @Test
     public void testAddModifyRemove() throws Exception{
         initializeForXML();
         
@@ -149,6 +165,7 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
         assertEquals("test",authConfig.getUserGroupServiceName());
     }
 
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         UsernamePasswordAuthenticationProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();

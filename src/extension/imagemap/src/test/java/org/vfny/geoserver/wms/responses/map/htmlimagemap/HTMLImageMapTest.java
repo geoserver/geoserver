@@ -1,5 +1,7 @@
 package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 
+import static org.junit.Assert.*;
+
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +31,9 @@ import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.test.TestData;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
@@ -45,7 +50,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  * @author Mauro Bartolomeoli
  */
-public class HTMLImageMapTest extends TestCase {
+public class HTMLImageMapTest {
 
     private static final StyleFactory sFac = CommonFactoryFinder.getStyleFactory(null);
 
@@ -64,6 +69,7 @@ public class HTMLImageMapTest extends TestCase {
 
     private int mapHeight = 600;
 
+    @Before
     public void setUp() throws Exception {
         // initializes GeoServer Resource Loading (is needed by some tests to not produce
         // exceptions)
@@ -87,6 +93,7 @@ public class HTMLImageMapTest extends TestCase {
         this.response = new HTMLImageMapResponse(); 
     }
 
+    @After
     public void tearDown() throws Exception {
         this.mapProducer = null;
         this.response = null;
@@ -155,6 +162,7 @@ public class HTMLImageMapTest extends TestCase {
         assertEquals(testText.toString(), s);
     }
 
+    @Test
     public void testStates() throws Exception {
         File shapeFile = TestData.file(this, "featureTypes/states.shp");
         ShapefileDataStore ds = new ShapefileDataStore(shapeFile.toURL());
@@ -176,6 +184,7 @@ public class HTMLImageMapTest extends TestCase {
         assertTestResult("States", imageMap);
     }
 
+    @Test
     public void testMapProduceBasicPolygons() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -198,6 +207,7 @@ public class HTMLImageMapTest extends TestCase {
 
     }
 
+    @Test
     public void testMapProducePolygonsWithHoles() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -219,6 +229,7 @@ public class HTMLImageMapTest extends TestCase {
         assertTestResult("PolygonWithHoles", result);
     }
 
+    @Test
     public void testMapProducePolygonsWithSkippedHoles() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -240,6 +251,7 @@ public class HTMLImageMapTest extends TestCase {
         assertTestResult("PolygonWithSkippedHoles", result);
     }
 
+    @Test
     public void testMapProduceReproject() throws Exception {
         final DataStore ds = getProjectedTestDataStore();
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = ds
@@ -273,6 +285,7 @@ public class HTMLImageMapTest extends TestCase {
         assertTestResult("ProjectedPolygon", result);
     }
 
+    @Test
     public void testMapProduceLines() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -296,6 +309,7 @@ public class HTMLImageMapTest extends TestCase {
 
     }
 
+    @Test
     public void testMapRuleWithFilters() throws Exception {
         /*
          * Filter
@@ -324,6 +338,7 @@ public class HTMLImageMapTest extends TestCase {
 
     }
 
+    @Test
     public void testMapProducePoints() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -347,6 +362,7 @@ public class HTMLImageMapTest extends TestCase {
 
     }
 	
+    @Test
 	public void testMapProducePointsWithSize() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -369,6 +385,8 @@ public class HTMLImageMapTest extends TestCase {
         assertTestResult("BuildingCenters2", result);
 
     }
+    
+    @Test
 	public void testMapProducePointsWithDifferenSizeInScale1() throws Exception {
 		
         final FeatureSource<SimpleFeatureType,SimpleFeature> fs = testDS.getFeatureSource("BuildingCenters");
@@ -390,6 +408,8 @@ public class HTMLImageMapTest extends TestCase {
         assertTestResult("BuildingCenters3", result);
 
 	}
+    
+    @Test
 	public void testMapProducePointsWithDifferenSizeInScale2() throws Exception {
 		
         final FeatureSource<SimpleFeatureType,SimpleFeature> fs = testDS.getFeatureSource("BuildingCenters");
@@ -414,6 +434,7 @@ public class HTMLImageMapTest extends TestCase {
 
 	}
 
+    @Test
     public void testMapProduceMultiPoints() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -437,6 +458,7 @@ public class HTMLImageMapTest extends TestCase {
 
     }
 
+    @Test
     public void testMapProduceCollection() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
@@ -460,6 +482,7 @@ public class HTMLImageMapTest extends TestCase {
 
     }
 
+    @Test
     public void testMapProduceNoCoords() throws Exception {
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
                 .getFeatureSource("NoCoords");
@@ -479,10 +502,6 @@ public class HTMLImageMapTest extends TestCase {
 
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("NoCoords", result);
-    }
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(HTMLImageMapTest.class);
     }
 
     static class MyPropertyDataStore extends PropertyDataStore {

@@ -4,19 +4,25 @@
  */
 package org.geoserver.wms.legendgraphic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.Test;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.styling.Style;
+import org.junit.Before;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
+
 
 public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /**
@@ -40,12 +46,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /** mock config object */
     WMS wms;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetLegendGraphicKvpReaderTest());
-    }
+  
 
     /**
      * Remainder:
@@ -65,8 +66,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * <li>EXCEPTIONS/Optional
      * </ul>
      */
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setParameters() throws Exception { 
         requiredParameters = new HashMap<String, String>();
         requiredParameters.put("VERSION", "1.0.0");
         requiredParameters.put("REQUEST", "GetLegendGraphic");
@@ -99,6 +100,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    
+    @org.junit.Test
     public void testRemoteSLDMultipleStyles() throws Exception {
         final URL remoteSldUrl = getClass().getResource("MultipleStyles.sld");
         this.allParameters.put("SLD", remoteSldUrl.toExternalForm());
@@ -124,7 +127,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         assertNotNull(selectedStyle);
         assertEquals("Lakes", selectedStyle.getName());
     }
-
+    
+    @org.junit.Test
     public void testMissingLayerParameter() throws Exception {
         requiredParameters.remove("LAYER");
         try {
@@ -135,7 +139,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
             assertEquals("LayerNotDefined", e.getCode());
         }
     }
-
+    
+    @org.junit.Test
     public void testMissingFormatParameter() throws Exception {
         requiredParameters.remove("FORMAT");
         try {
@@ -146,7 +151,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
             assertEquals("MissingFormat", e.getCode());
         }
     }
-
+    @org.junit.Test
     public void testStrictParameter() throws Exception {
         GetLegendGraphicRequest request;
 

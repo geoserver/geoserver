@@ -4,14 +4,20 @@ import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.group.NewGroupPage;
 import org.geoserver.security.web.group.NewGroupPageTest;
+import org.junit.Test;
 
 public class JDBCNewGroupPageTest extends NewGroupPageTest {
 
     NewGroupPage page;
 
+    @Test
     public void testFill() throws Exception{
-        initializeForJDBC();
         doTestFill();
+    }
+
+    @Override
+    protected void doInitialize() throws Exception {
+        initializeForJDBC();
     }
 
     void initializeForJDBC() throws Exception {

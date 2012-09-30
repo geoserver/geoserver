@@ -26,7 +26,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletResponse;
 
-import org.geoserver.data.test.LiveData;
+import org.geoserver.data.test.LiveSystemTestData;
 import org.geotools.util.logging.Logging;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -40,7 +40,7 @@ import com.sun.net.httpserver.HttpsServer;
  * @author christian
  * 
  */
-public class LiveCasData extends LiveData {
+public class LiveCasData extends LiveSystemTestData {
     private static final Logger LOGGER = Logging.getLogger(LiveCasData.class);
     private static final String CAS_SERVER_PROPERTY = "casserverurlprefix";
     private static final String CAS_SERVICE_PROPERTY = "service";
@@ -95,7 +95,7 @@ public class LiveCasData extends LiveData {
      */
     protected String fixtureId="cas";
 
-    public LiveCasData(File dataDirSourceDirectory ) {
+    public LiveCasData(File dataDirSourceDirectory ) throws IOException {
         super(dataDirSourceDirectory);
         this.fixture = lookupFixture(fixtureId);
     }

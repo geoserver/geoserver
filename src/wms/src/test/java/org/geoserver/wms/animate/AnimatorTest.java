@@ -4,17 +4,16 @@
  */
 package org.geoserver.wms.animate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
-import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
-
-import junit.framework.Test;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
@@ -23,6 +22,7 @@ import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RenderedImageMap;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
 
 /**
  * Some functional tests for animator
@@ -35,18 +35,13 @@ public class AnimatorTest extends WMSTestSupport {
     /** default 'format' value */
     public static final String GIF_ANIMATED_FORMAT = "image/gif;subtype=animated";
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new AnimatorTest());
-    }
 
     /**
      * Testing FrameCatalog constructor from a generic WMS request.
      * 
      * @throws Exception
      */
+    @org.junit.Test
     public void testFrameCatalog() throws Exception {
     	final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
     	final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
@@ -80,6 +75,7 @@ public class AnimatorTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @org.junit.Test
     public void testFrameVisitor() throws Exception {
     	final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
     	final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
@@ -112,6 +108,7 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Produce animated gif through the WMS request.
      */
+    @org.junit.Test
     public void testAnimator() throws Exception {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
             MockData.BASIC_POLYGONS.getLocalPart();
@@ -126,6 +123,7 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Animate layers
      */
+    @org.junit.Test
     public void testAnimatorLayers() throws Exception {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
             MockData.BASIC_POLYGONS.getLocalPart();

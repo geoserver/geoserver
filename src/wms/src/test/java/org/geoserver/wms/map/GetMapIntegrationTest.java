@@ -1,6 +1,8 @@
 package org.geoserver.wms.map;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -16,11 +18,15 @@ import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -28,28 +34,60 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
-        // this also adds the raster style
-        dataDirectory.addWcs10Coverages();
-
-        
-        dataDirectory.addStyle("indexed",
-                GetMapIntegrationTest.class.getResource("indexed.sld"));
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "indexed", MockData.SF_PREFIX),
-                GetMapIntegrationTest.class.getResource("indexed.tif"), "tif", "indexed");
-        dataDirectory.addCoverage(new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX),
-                GetMapIntegrationTest.class.getResource("paletted.tif"), "tif", "raster");
-        // a filterable mosaic
-        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
-        // a 4 bits world image
-        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
-                MockData.class.getResource("fourbits.zip"), null, "raster");
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpWcs10RasterLayers();
     }
     
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog=getCatalog();
+        testData.addStyle("indexed","indexed.sld",getClass(),catalog);
+ 
+        Map props = new HashMap();
+        props.put(LayerProperty.STYLE, "indexed");
+        
+        testData.addRasterLayer(new QName(MockData.SF_URI, "indexed", MockData.SF_PREFIX), 
+                "indexed.tif", "tif", props,getClass(),catalog);
+
+        props.put(LayerProperty.STYLE, "raster");
+        
+        testData.addRasterLayer(new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX), 
+                "paletted.tif", "tif", props,getClass(),catalog);
+
+        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+                "raster-filter-test.zip",null, props,SystemTestData.class, catalog);
+
+        testData.addRasterLayer(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX), 
+                "fourbits.zip", null, props,SystemTestData.class,catalog);
+        
+    }
     
+//    @Override
+//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+//        super.populateDataDirectory(dataDirectory);
+//        
+//        // this also adds the raster style
+//        dataDirectory.addWcs10Coverages();
+//
+//        
+//        dataDirectory.addStyle("indexed",
+//                GetMapIntegrationTest.class.getResource("indexed.sld"));
+//        dataDirectory.addCoverage(new QName(MockData.SF_URI, "indexed", MockData.SF_PREFIX),
+//                GetMapIntegrationTest.class.getResource("indexed.tif"), "tif", "indexed");
+//        dataDirectory.addCoverage(new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX),
+//                GetMapIntegrationTest.class.getResource("paletted.tif"), "tif", "raster");
+//        // a filterable mosaic
+//        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+//                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
+//        // a 4 bits world image
+//        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
+//                MockData.class.getResource("fourbits.zip"), null, "raster");
+//    }
+    
+    
+    @Test
     public void testIndexed() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?LAYERS=sf:indexed&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
                 + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150");
@@ -62,6 +100,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "src/test/resources/org/geoserver/wms/map/indexed-expected.png"), image, 0);
     }
 
+    @Test
     public void testIndexedBlackBG() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:indexed&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
                 + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=100,78,104,80&WIDTH=300&HEIGHT=150&transparent=false");
@@ -73,6 +112,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "src/test/resources/org/geoserver/wms/map/indexed-bg-expected.png"), image, 0);
     }
     
+    @Test
     public void testRasterFilterRed() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
         "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false&CQL_FILTER=location like 'red%25'");
@@ -88,6 +128,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, pixel[2]);
     }
     
+    @Test
     public void testRasterFilterGreen() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
         "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false&CQL_FILTER=location like 'green%25'");
@@ -102,6 +143,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, pixel[2]);
     }
     
+    @Test
     public void testMosaicTwice() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1" +
         "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
@@ -114,6 +156,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
     
+    @Test
     public void testIndexedTransparency() throws Exception {
         String request = "wms?LAYERS=sf:paletted&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS" +
         		"&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3174" +
@@ -134,6 +177,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(255, (int) rgba[3]);
     }
     
+    @Test
     public void testFourBits() throws Exception {
         String request = "wms?LAYERS=sf:fourbits&STYLES=&FORMAT=image/png" +
         		"&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4269" +
@@ -149,6 +193,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
      * with WMS 1.3 as well
      * @throws Exception 
      */
+    @Test
     public void testMetaWMS13() throws Exception {
         String wms11 = "wms?LAYERS=cite%3ALakes&STYLES=&FORMAT=image%2Fpng&TILED=true&TILESORIGIN=0.0006%2C-0.0018" +
         		"&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=0.0006,-0.0018,0.0031,0.0007&WIDTH=256&HEIGHT=256";
@@ -173,6 +218,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         }
     }
     
+    @Test
     public void testOpenLayersProxy() throws Exception {
         NamespaceContext oldContext = XMLUnit.getXpathNamespaceContext();
         try {

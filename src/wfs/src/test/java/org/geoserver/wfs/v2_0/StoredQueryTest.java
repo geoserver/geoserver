@@ -1,22 +1,34 @@
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.StoredQuery;
+import org.geoserver.wfs.StoredQueryProvider;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class StoredQueryTest extends WFS20TestSupport {
 
+    @Before
+    public void clearQueries() {
+        new StoredQueryProvider(getCatalog()).removeAll();
+    }
+
+    @Test
     public void testListStoredQueries() throws Exception {
         Document dom = getAsDOM("wfs?request=ListStoredQueries&service=wfs&version=2.0.0");
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = '" + StoredQuery.DEFAULT.getName() + "']", dom);
     }
 
+    @Test
     public void testListStoredQueries2() throws Exception {
         testCreateStoredQuery();
         
@@ -26,11 +38,13 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = 'myStoredQuery']", dom);
     }
 
+    @Test
     public void testCreateStoredQuery() throws Exception {
         String xml = 
             "<wfs:ListStoredQueries service='WFS' version='2.0.0' " +
             " xmlns:wfs='" + WFS.NAMESPACE + "'/>";
         Document dom = postAsDOM("wfs", xml);
+        print(dom);
         assertEquals("wfs:ListStoredQueriesResponse", dom.getDocumentElement().getNodeName());
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
         
@@ -69,6 +83,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:ReturnFeatureType[text() = 'sf:PrimitiveGeoFeature']", dom);
     }
     
+    @Test
     public void testCreateStoredQueryMismatchingTypes() throws Exception {
         String xml = 
             "<wfs:ListStoredQueries service='WFS' version='2.0.0' " +
@@ -108,6 +123,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:StoredQuery)", dom);
     }
     
+    @Test
     public void testDescribeStoredQueries() throws Exception {
         Document dom = getAsDOM("wfs?request=DescribeStoredQueries&storedQueryId=myStoredQuery");
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -125,6 +141,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:StoredQueryDescription[@id='myStoredQuery']", dom);
     }
     
+    @Test
     public void testDescribeStoredQueries2() throws Exception {
         Document dom = getAsDOM("wfs?request=DescribeStoredQueries&storedQuery_Id=myStoredQuery");
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -136,6 +153,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:StoredQueryDescription[@id='myStoredQuery']", dom);
     }
 
+    @Test
     public void testDescribeDefaultStoredQuery() throws Exception {
         Document dom = getAsDOM("wfs?request=DescribeStoredQueries&storedQueryId=" + StoredQuery.DEFAULT.getName());
         assertEquals("wfs:DescribeStoredQueriesResponse", dom.getDocumentElement().getNodeName());
@@ -147,6 +165,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathNotExists("//wfs:QueryExpressionText/*", dom);
     }
 
+    @Test
     public void testDropStoredQuery() throws Exception {
         Document dom = getAsDOM("wfs?request=DropStoredQuery&id=myStoredQuery");
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -164,6 +183,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());   
     }
     
+    @Test
     public void testDropStoredQuery2() throws Exception {
         Document dom = getAsDOM("wfs?request=DropStoredQuery&storedQuery_id=myStoredQuery");
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
@@ -177,6 +197,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
     }
 
+    @Test
     public void testCreateStoredQuerySOAP() throws Exception {
         String xml = 
            "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> " + 
@@ -216,6 +237,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals(1, dom.getElementsByTagName("wfs:CreateStoredQueryResponse").getLength());
     }
     
+    @Test
     public void testDescribeStoredQueriesSOAP() throws Exception {
         testCreateStoredQuery();
         
@@ -237,6 +259,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals(1, dom.getElementsByTagName("wfs:DescribeStoredQueriesResponse").getLength());
     }
     
+    @Test
     public void testListStoredQueriesSOAP() throws Exception {
         testCreateStoredQuery();
         
@@ -257,6 +280,7 @@ public class StoredQueryTest extends WFS20TestSupport {
         assertEquals(1, dom.getElementsByTagName("wfs:ListStoredQueriesResponse").getLength());
     }
 
+    @Test
     public void testDropStoredQuerySOAP() throws Exception {
         testCreateStoredQuery();
         

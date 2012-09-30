@@ -1,20 +1,24 @@
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
 import junit.framework.TestCase;
 
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.SecureTreeNode;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 
-public class SecureTreeNodeTest extends TestCase {
+public class SecureTreeNodeTest {
 
     private TestingAuthenticationToken anonymous;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         anonymous = new TestingAuthenticationToken("anonymous", null);
     }
 
+    @Test
     public void testEmptyRoot() {
         SecureTreeNode root = new SecureTreeNode();
 

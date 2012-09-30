@@ -1,5 +1,7 @@
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -11,16 +13,19 @@ import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         populateCatalog();
     }
 
+    @Test 
     public void testWideOpen() throws Exception {
         ResourceAccessManager manager = buildManager("wideOpen.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -40,6 +45,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @Test
     public void testLockedDown() throws Exception {
         ResourceAccessManager manager = buildManager("lockedDown.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -73,6 +79,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
     
+    @Test
     public void testLockedChallenge() throws Exception {
         ResourceAccessManager manager = buildManager("lockedDownChallenge.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -154,6 +161,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
     
+    @Test
     public void testLockedMixed() throws Exception {
         ResourceAccessManager manager = buildManager("lockedDownMixed.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -251,6 +259,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @Test
     public void testPublicRead() throws Exception {
         ResourceAccessManager manager = buildManager("publicRead.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -291,6 +300,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @Test
     public void testComplex() throws Exception {
         ResourceAccessManager manager = buildManager("complex.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);

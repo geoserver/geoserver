@@ -2,6 +2,8 @@ package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,33 +13,24 @@ import javax.imageio.ImageReader;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
-
-import junit.framework.Test;
 
 import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCoverageMultipartEncodingTest());
-    }
 
     // @Override
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
 
+    @Test
     public void testKvpBasic() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
                 + getLayerId(TASMANIA_BM)
@@ -55,27 +48,28 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // now check the first part is a proper description
         BodyPart coveragesPart = multipart.getBodyPart(0);
         assertEquals("text/xml", coveragesPart.getContentType());
-//        System.out.println("Coverages part: " + coveragesPart.getContent());
+        // System.out.println("Coverages part: " + coveragesPart.getContent());
         assertEquals("<urn:ogc:wcs:1.1:coverages>", coveragesPart.getHeader("Content-ID")[0]);
         // read the xml document into a dom
         Document dom = dom(coveragesPart.getDataHandler().getInputStream());
         checkValidationErrors(dom, WCS11_SCHEMA);
-        assertXpathEvaluatesTo(TASMANIA_BM.getLocalPart(),
-                "wcs:Coverages/wcs:Coverage/ows:Title", dom);
+        assertXpathEvaluatesTo(TASMANIA_BM.getLocalPart(), "wcs:Coverages/wcs:Coverage/ows:Title",
+                dom);
 
         // the second part is the actual coverage
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE, coveragePart.getContentType());
+        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
+                coveragePart.getContentType());
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
     }
 
     /**
-     * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a
-     * garbled mime multipart instead of a service exception. This makes sure an
-     * exception is returned instead.
+     * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a garbled mime multipart instead of a service exception. This makes
+     * sure an exception is returned instead.
      * 
      * @throws Exception
      */
+    @Test
     public void testArcgridException() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage&identifier="
                 + getLayerId(TASMANIA_BM) + "&format=application/arcgrid"
@@ -91,6 +85,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         return coverage;
     }
 
+    @Test
     public void testTiffOutput() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
                 + getLayerId(TASMANIA_BM)
@@ -111,6 +106,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         reader.read(0);
     }
 
+    @Test
     public void testPngOutput() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
                 + getLayerId(TASMANIA_BM)
@@ -131,6 +127,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         reader.read(0);
     }
 
+    @Test
     public void testGeotiffNamesGalore() throws Exception {
         String requestBase = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
                 + getLayerId(TASMANIA_BM)
@@ -153,6 +150,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // parse the multipart, check the second part is a geotiff
         Multipart multipart = getMultipart(response);
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE, coveragePart.getContentType());
+        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
+                coveragePart.getContentType());
     }
 }

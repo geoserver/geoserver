@@ -13,6 +13,7 @@ import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
@@ -32,6 +33,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         target.add(identifier);
     }
 
+    @Test
     public void testRootLayer() throws Exception {
         WMSInfo serviceInfo = getWMS().getServiceInfo();
         addAuthUrl("rootAuth1", "http://geoserver/wms/auth1", serviceInfo.getAuthorityURLs());
@@ -66,7 +68,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         assertXpathEvaluatesTo("rootId2",
                 "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']", doc);
     }
-
+    @Test
     public void testLayer() throws Exception {
 
         String layerId = getLayerId(MockData.PRIMITIVEGEOFEATURE);

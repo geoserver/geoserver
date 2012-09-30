@@ -1,5 +1,7 @@
 package org.geoserver.web.demo;
 
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 
 import org.apache.wicket.MarkupContainer;
@@ -12,13 +14,17 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class MapPreviewPageTest extends GeoServerWicketTestSupport {
+    @Test
     public void testValues() throws Exception {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
     }
 
+    @Test
     public void testLayerGroupNamesPrefixed() throws Exception {
         Catalog cat = getCatalog();
 
@@ -51,7 +57,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         assertTrue(exists);
     }
     
-    public void XtestLayerNamesPrefixed() throws Exception {
+    @Test
+    @Ignore
+    public void testLayerNamesPrefixed() throws Exception {
         Catalog cat = getCatalog();
 
         LayerInfo ly = cat.getLayerByName(getLayerId(MockData.STREAMS));

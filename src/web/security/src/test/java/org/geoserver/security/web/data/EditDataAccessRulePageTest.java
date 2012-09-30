@@ -1,5 +1,7 @@
 package org.geoserver.security.web.data;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -11,6 +13,9 @@ import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.security.web.role.NewRolePage;
+import org.geoserver.test.RunTestSetup;
+import org.junit.Before;
+import org.junit.Test;
 
 public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSupport {
 
@@ -18,11 +23,14 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
     String ruleName = MockData.CITE_PREFIX+
             "."+MockData.LAKES.getLocalPart()+"."+AccessMode.WRITE.getAlias();
     
-    public void testFill() throws Exception {
-        
+    @Before
+    public void init() throws Exception {
         initializeForXML();
-        //insertValues();        
-        
+        clearServices();
+    }
+
+    @Test
+    public void testFill() throws Exception {
         
         tester.startPage(page=new EditDataAccessRulePage(getRule(ruleName)));        
         tester.assertRenderedPage(EditDataAccessRulePage.class);
@@ -59,15 +67,18 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
     }
     
     
+    @Test
+    @RunTestSetup
     public void testEmptyRoles() throws Exception {
-        initializeForXML();
+        //initializeForXML();
         initializeServiceRules();
         tester.startPage(page=new EditDataAccessRulePage(getRule(ruleName)));
                 
         FormTester form = tester.newFormTester("form");
         form.setValue("roles:palette:recorder", "");
                         
-        form.submit("save");   
+        form.submit("save");
+        tester.assertRenderedPage(EditDataAccessRulePage.class);
         //print(tester.getLastRenderedPage(),true,true);
         assertTrue(testErrorMessagesWithRegExp(".*no role.*"));
         tester.assertRenderedPage(EditDataAccessRulePage.class);
@@ -75,8 +86,9 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
 
 
     
+    @Test
     public void testReadOnlyRoleService() throws Exception{
-        initializeForXML();
+        //initializeForXML();
         activateRORoleService();
         tester.startPage(page=new EditDataAccessRulePage(getRule(ruleName)));
         tester.assertInvisible("form:roles:addRole");

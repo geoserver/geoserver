@@ -8,30 +8,22 @@ import junit.framework.Test;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormatTest;
+import org.junit.Before;
 
 public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
 
 	private String mapFormat = "image/dds";
 	protected RenderedImageMapOutputFormat rasterMapProducer;
 
-	/**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DDSMapProducerTest());
-    }
-
     protected RenderedImageMapOutputFormat getProducerInstance() {
         return new RenderedImageMapOutputFormat(this.mapFormat, getWMS());
     }
-    
+
+    @Before
     public void setUpInternal() throws Exception {
-	    super.setUpInternal();
 	    this.rasterMapProducer = this.getProducerInstance();
 	}
     
-    
-	
 	public String getMapFormat()
 	{
 		return this.mapFormat;

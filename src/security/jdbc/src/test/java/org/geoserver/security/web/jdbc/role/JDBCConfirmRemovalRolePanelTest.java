@@ -7,11 +7,13 @@ package org.geoserver.security.web.jdbc.role;
 import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.role.ConfirmRemovalRolePanelTest;
+import org.junit.Test;
 
 public class JDBCConfirmRemovalRolePanelTest extends ConfirmRemovalRolePanelTest {
  
     private static final long serialVersionUID = -7197515540318374854L;
-    
+
+    @Test
     public void testRemoveRole() throws Exception {
         initializeForJDBC();
         removeObject();

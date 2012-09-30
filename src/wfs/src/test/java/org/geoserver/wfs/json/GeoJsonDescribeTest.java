@@ -1,18 +1,24 @@
 package org.geoserver.wfs.json;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import javax.xml.namespace.QName;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Test;
 
 public class GeoJsonDescribeTest extends WFSTestSupport {
 
+    @Test
     public void testDescribePrimitiveGeoFeatureJSON() throws Exception {
         String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.json+"&typeName="
-                + getLayerId(MockData.PRIMITIVEGEOFEATURE));
+                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         testOutput(output);
     }
 
@@ -22,7 +28,7 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
 
         assertEquals(1, array.size());
         JSONObject description = array.getJSONObject(0);
-        basicSchemaChecks(description, MockData.PRIMITIVEGEOFEATURE);
+        basicSchemaChecks(description, SystemTestData.PRIMITIVEGEOFEATURE);
 
         // it's a Polygon
         JSONObject topProperties = description.getJSONObject("properties");
@@ -58,9 +64,10 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals(new Integer(0), props.getJSONObject("dateProperty").get("minimum"));
     }
 
+    @Test
     public void testDescribePrimitiveGeoFeatureJSONP() throws Exception {
         String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.jsonp+"&typeName="
-                + getLayerId(MockData.PRIMITIVEGEOFEATURE));
+                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
 
         // removing specific parts
         output = output.substring(0, output.length() - 2);
@@ -69,9 +76,10 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         testOutput(output);
     }
     
+    @Test
     public void testDescribePrimitiveGeoFeatureJSONPCustom() throws Exception {
         String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.jsonp+"&typeName="
-                + getLayerId(MockData.PRIMITIVEGEOFEATURE) + "&format_options=callback:custom");
+                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE) + "&format_options=callback:custom");
 
         // removing specific parts
         assertTrue(output.startsWith("custom("));

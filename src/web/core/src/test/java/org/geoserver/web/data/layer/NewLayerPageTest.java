@@ -1,8 +1,8 @@
 package org.geoserver.web.data.layer;
 
-import java.util.Arrays;
+import static org.junit.Assert.*;
 
-import junit.framework.Test;
+import java.util.Arrays;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -11,19 +11,13 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.data.DataStore;
+import org.junit.Test;
 
 public class NewLayerPageTest extends GeoServerWicketTestSupport {
 
-    
     private static final String TABLE_PATH = "selectLayersContainer:selectLayers:layers";
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new NewLayerPageTest());
-    }
-    
+    @Test
     public void testKnownStore() {
         login();
         DataStoreInfo store = getCatalog().getStoreByName(MockData.CDF_PREFIX, DataStoreInfo.class); 
@@ -35,6 +29,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         assertEquals(getCatalog().getResourcesByStore(store, FeatureTypeInfo.class).size(), table.getDataProvider().size());
     }
     
+    @Test
     public void testAjaxChooser() {
         login();
         tester.startPage(new NewLayerPage());
@@ -59,6 +54,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         assertNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));
     }
     
+    @Test
     public void testAddLayer() throws Exception {
         login();
         DataStoreInfo store = getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);

@@ -1,5 +1,7 @@
 package org.geoserver.security.web.group;
 
+import static org.junit.Assert.*;
+
 import java.util.SortedSet;
 
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -11,14 +13,25 @@ import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
 import org.geoserver.security.web.role.NewRolePage;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
 
     NewGroupPage page;
     
-    
-    public void testFill() throws Exception{
+    @Before
+    public void init() throws Exception {
+        doInitialize();
+        clearServices();
+    }
+
+    protected void doInitialize() throws Exception {
         initializeForXML();
+    }
+
+    @Test
+    public void testFill() throws Exception{
         doTestFill();
     }
 
@@ -75,8 +88,8 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
         
     }
     
+    @Test
     public void testGroupNameConflict() throws Exception {
-        initializeForXML();
         insertValues();
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
         tester.startPage(page=(NewGroupPage) 
@@ -91,8 +104,8 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
         tester.assertRenderedPage(NewGroupPage.class);
     }
 
+    @Test
     public void testInvalidWorkflow() throws Exception{
-        initializeForXML();
         activateROUGService();
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getROUserGroupServiceName());
         boolean fail = true;
@@ -106,8 +119,8 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
             fail("No runtime exception for read only UserGroupService");
     }
     
+    @Test
     public void testReadOnlyRoleService() throws Exception{
-        initializeForXML();
         activateRORoleService();
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
         tester.startPage(page=(NewGroupPage) 

@@ -1,5 +1,7 @@
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +15,10 @@ import javax.servlet.ServletResponse;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -23,8 +29,10 @@ import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GeoServerAnonymousAuthTest extends GeoServerSecurityTestSupport {
+@Category(SystemTest.class)
+public class GeoServerAnonymousAuthTest extends GeoServerSystemTestSupport {
 
+    @Test
     public void testFilterChainWithEnabled() throws Exception {
         MockHttpServletRequest request = createRequest("/foo");
         
@@ -48,6 +56,7 @@ public class GeoServerAnonymousAuthTest extends GeoServerSecurityTestSupport {
         chain.doFilter(request, response);
     }
 
+    @Test
     public void testFilterChainWithDisabled() throws Exception {
         disableAnonymousAuth();
 
@@ -78,6 +87,7 @@ public class GeoServerAnonymousAuthTest extends GeoServerSecurityTestSupport {
 //            (List) Arrays.asList(new GrantedAuthorityImpl("ROLE_ANONYMOUS"))));
 //    }
 
+    @Test
     public void testAuthProviderWithDisabledEnabled() throws Exception {
         disableAnonymousAuth();
         GeoServerSecurityManager secMgr = getSecurityManager();

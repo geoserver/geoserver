@@ -1,19 +1,22 @@
 package org.geoserver.web.data.layergroup;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Test;
 
 public class LayerGroupPageTest extends LayerGroupBaseTest {
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         login();
         tester.startPage(LayerGroupPage.class);
-        
-        // print(tester.getLastRenderedPage(), true, true);
     }
-    
+
+    @Test
     public void testLoad() {
         tester.assertRenderedPage(LayerGroupPage.class);
         tester.assertNoErrorMessage();

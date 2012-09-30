@@ -4,6 +4,7 @@
  */
 package org.geoserver.feature;
 
+import static org.junit.Assert.*;
 import junit.framework.TestCase;
 
 import org.geotools.feature.DefaultFeatureCollection;
@@ -11,13 +12,15 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class ReprojectingFeatureCollectionTest extends TestCase {
+public class ReprojectingFeatureCollectionTest {
 
+    @Test
     public void testPerserveUserData() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("foo");

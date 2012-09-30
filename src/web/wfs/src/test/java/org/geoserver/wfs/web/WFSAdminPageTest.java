@@ -2,8 +2,10 @@ package org.geoserver.wfs.web;
 
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wfs.WFSInfo;
+import org.junit.Test;
 
 public class WFSAdminPageTest extends GeoServerWicketTestSupport {
+    @Test
     public void testValues() throws Exception {
         WFSInfo wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
 

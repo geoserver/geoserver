@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.web.usergroup;
 
+import static org.junit.Assert.*;
+
 import java.lang.reflect.Method;
 
 import org.apache.wicket.Component;
@@ -19,6 +21,7 @@ import org.geoserver.security.web.SecurityNamedServiceNewPage;
 import org.geoserver.security.web.UserGroupRoleServicesPage;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
+import org.junit.Test;
 
 public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedServicePanelTest {
 
@@ -94,6 +97,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     }
         
                                     
+    @Test
     public void testAddModify() throws Exception{
         initializeForXML();
         
@@ -243,6 +247,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
 
     }
 
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();

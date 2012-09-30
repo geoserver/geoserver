@@ -1,15 +1,23 @@
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.junit.Assert.*;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class CapabilitiesModifyingTest extends GeoServerTestSupport {
+@TestSetup(run=TestSetupFrequency.REPEAT)
+public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
+    
+    @Test
     public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig() throws Exception {
         for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
             ft.setLatLonBoundingBox(null);
@@ -22,6 +30,7 @@ public class CapabilitiesModifyingTest extends GeoServerTestSupport {
                 response.getOutputStreamContent().endsWith("</ServiceExceptionReport>"));
     }
     
+    @Test
     public void testMisconfiguredLayerIsSkippedWhenWMSServiceIsConfiguredThatWay() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
@@ -40,6 +49,7 @@ public class CapabilitiesModifyingTest extends GeoServerTestSupport {
         XMLAssert.assertXpathEvaluatesTo("", "//Layer/Name/text()", caps);
     }
     
+    @Test
     public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig_1_3_0() throws Exception {
         for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
             ft.setLatLonBoundingBox(null);
@@ -52,6 +62,7 @@ public class CapabilitiesModifyingTest extends GeoServerTestSupport {
                 response.getOutputStreamContent().endsWith("</ServiceExceptionReport>"));
     }
     
+    @Test
     public void testMisconfiguredLayerIsSkippedWhenWMSServiceIsConfiguredThatWay_1_3_0() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);

@@ -1,17 +1,21 @@
 package org.geoserver.filter.function;
 
+import static org.junit.Assert.*;
+
 import java.util.Collection;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
+import org.junit.Test;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Function;
 
-public class QueryLayerFunctionTest extends GeoServerTestSupport {
+public class QueryLayerFunctionTest extends GeoServerSystemTestSupport {
 
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
 
+    @Test
     public void testQuerySingle() {
         Function function = ff.function("querySingle", // 
                 ff.literal(getLayerId(MockData.BUILDINGS)), // 
@@ -23,6 +27,7 @@ public class QueryLayerFunctionTest extends GeoServerTestSupport {
         assertEquals("123 Main Street", result);
     }
     
+    @Test
     public void testQueryCollection() {
         Function function = ff.function("queryCollection", // 
                 ff.literal(getLayerId(MockData.BUILDINGS)), // 
@@ -36,6 +41,7 @@ public class QueryLayerFunctionTest extends GeoServerTestSupport {
         assertTrue(result.contains("215 Main Street"));
     }
     
+    @Test
     public void testQueryTooMany() throws Exception {
         try {
             // force the reload, otherwise the changed properties won't be noticed

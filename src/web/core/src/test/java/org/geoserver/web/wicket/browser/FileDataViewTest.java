@@ -12,11 +12,13 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
-import org.geoserver.web.wicket.WicketHierarchyPrinter;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
+import static org.junit.Assert.*;
 
-public class FileDataViewTest extends TestCase {
+public class FileDataViewTest{
 
     private WicketTester tester;
 
@@ -30,8 +32,8 @@ public class FileDataViewTest extends TestCase {
 
     FileProvider fileProvider;
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         tester = new WicketTester();
         initResourceSettings(tester);
         
@@ -62,7 +64,8 @@ public class FileDataViewTest extends TestCase {
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
-    
+
+    @Test
     public void testLoad() throws Exception {
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
@@ -71,14 +74,16 @@ public class FileDataViewTest extends TestCase {
         tester.assertLabel("form:panel:fileTable:fileContent:files:2:nameLink:name", "two.sld");
         assertEquals(2, ((DataView) tester.getComponentFromLastRenderedPage("form:panel:fileTable:fileContent:files")).size());
     }
-    
+
+    @Test
     public void testClick() throws Exception {
         tester.clickLink("form:panel:fileTable:fileContent:files:1:nameLink");
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
         assertEquals(one, lastClicked);
     }
-    
+
+    @Test
     public void testFilter() throws Exception {
         fileProvider.setFileFilter(new Model(new ExtensionFileFilter(".txt")));
         tester.startPage(tester.getLastRenderedPage());

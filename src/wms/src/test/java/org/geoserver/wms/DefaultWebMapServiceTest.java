@@ -4,31 +4,29 @@
  */
 package org.geoserver.wms;
 
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.geoserver.data.test.MockData;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class DefaultWebMapServiceTest extends WMSTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new DefaultWebMapServiceTest());
-    }
-
+   
     /**
      * This is just a very basic test, mostly testing defaults
      * 
      * @throws Exception
      */
+    @Test 
     public void test1() throws Exception {
         GetMapRequest mockGMR = createGetMapRequest(MockData.BASIC_POLYGONS);
 
@@ -66,6 +64,7 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test 
     public void test2() throws Exception {
         GetMapRequest mockGMR = createGetMapRequest(MockData.BASIC_POLYGONS);
 
@@ -108,6 +107,7 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void test3() throws Exception {
         GetMapRequest mockStreams = createGetMapRequest(MockData.BRIDGES);
         GetMapRequest mockBridges = createGetMapRequest(MockData.STREAMS);

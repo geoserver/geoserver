@@ -1,5 +1,7 @@
 package org.geoserver.web.demo;
 
+import static org.junit.Assert.*;
+
 import java.io.Serializable;
 
 import org.apache.wicket.PageParameters;
@@ -7,16 +9,19 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.junit.Test;
 
 public class ReprojectPageTest extends GeoServerWicketTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+    protected void setUpTestData(SystemTestData testData) throws Exception {
         // we don't need data configured in the catalog
     }
 
+    @Test
     public void testReprojectPoint() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -32,6 +37,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals("736446.0261038465 4987329.504699742", tx);
     }
     
+    @Test
     public void testInvalidPoint() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -48,6 +54,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals(expected, message);
     }
     
+    @Test
     public void testReprojectLinestring() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -63,6 +70,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals("LINESTRING (736446.0261038465 4987329.504699742, 815261.4271666661 4990738.261612577)", tx);
     }
     
+    @Test
     public void testInvalidGeometry() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -79,6 +87,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals(expected, message);
     }
     
+    @Test
     public void testPageParams() {
         tester.startPage(ReprojectPage.class, new PageParameters("fromSRS=EPSG:4326,toSRS=EPSG:32632"));
         String source = tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();

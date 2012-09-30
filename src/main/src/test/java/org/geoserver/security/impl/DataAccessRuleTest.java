@@ -1,12 +1,16 @@
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DataAccessRule;
+import org.junit.Test;
 
 import junit.framework.TestCase;
 
-public class DataAccessRuleTest extends TestCase {
+public class DataAccessRuleTest {
 
+    @Test
     public void testEqualRoot() {
         DataAccessRule rule1 = new DataAccessRule("*", "*", AccessMode.READ);
         DataAccessRule rule2 = new DataAccessRule("*", "*", AccessMode.READ);
@@ -15,6 +19,7 @@ public class DataAccessRuleTest extends TestCase {
         assertEquals(rule1.hashCode(), rule2.hashCode());
     }
     
+    @Test
     public void testDifferentRoot() {
         DataAccessRule rule1 = new DataAccessRule("*", "*", AccessMode.READ);
         DataAccessRule rule2 = new DataAccessRule("*", "*", AccessMode.WRITE);
@@ -22,6 +27,7 @@ public class DataAccessRuleTest extends TestCase {
         assertFalse(rule1.equals(rule2));
     }
     
+    @Test
     public void testDifferenPath() {
         DataAccessRule rule1 = new DataAccessRule("topp", "layer1", AccessMode.READ);
         DataAccessRule rule2 = new DataAccessRule("topp", "layer2", AccessMode.READ);

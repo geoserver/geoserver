@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.junit.Assert.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -16,11 +17,13 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.map.GIFMapResponse;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
 
+    @Test
     public void testNoDimension() throws Exception {
         BufferedImage image = getAsImage(
                 "wms?service=WMS&version=1.1.1&request=GetMap&bbox=-180,-90,180,90"
@@ -34,6 +37,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test 
     public void testElevationDefault() throws Exception {
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
                 null, UNITS, UNIT_SYMBOL);
@@ -48,6 +52,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.WHITE);
     }
 
+    @Test
     public void testElevationSingle() throws Exception {
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
                 null, UNITS, UNIT_SYMBOL);
@@ -62,6 +67,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.WHITE);
     }
 
+    @Test
     public void testElevationListMulti() throws Exception {
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
                 null, UNITS, UNIT_SYMBOL);
@@ -76,6 +82,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test
     public void testElevationListExtra() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
@@ -91,6 +98,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test
     public void testElevationInterval() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
@@ -106,6 +114,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test 
     public void testElevationIntervalResolution() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, 
@@ -121,6 +130,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.WHITE);
     }
 
+    @Test
     public void testTimeDefault() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
@@ -134,6 +144,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test
     public void testTimeCurrent() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
@@ -147,6 +158,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test
     public void testTimeSingle() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
@@ -160,6 +172,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.WHITE);
     }
 
+    @Test
     public void testTimeListMulti() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
@@ -174,6 +187,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test
     public void testTimeListExtra() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
@@ -189,6 +203,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
     
+    @Test
     public void testTimeListAnimated() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
@@ -207,6 +222,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertEquals(3, reader.getNumImages(true));
     }
 
+    @Test
     public void testTimeInterval() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
@@ -222,6 +238,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 30, Color.BLACK);
     }
 
+    @Test
     public void testTimeIntervalResolution() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);

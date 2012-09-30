@@ -1,36 +1,28 @@
 package org.geoserver.wps.gs;
 
+import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.FeatureCollection;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class QueryProcessTest extends WPSTestSupport {
+    
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("feature", SystemTestData.BUILDINGS.getNamespaceURI());
+    }
 
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();        
-        
-        // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
-        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("feature", "http://www.opengis.net/cite");
-
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    };
-
+    @Test
     public void testNoOp() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -70,6 +62,7 @@ public class QueryProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("1", "count(" + base + "/feature:ADDRESS)", d);
     }
 
+    @Test
     public void testFilter() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -115,6 +108,7 @@ public class QueryProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("1", "count(" + base + "/feature:ADDRESS)", d);
     }
 
+    @Test
     public void testAttribute() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -153,7 +147,7 @@ public class QueryProcessTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n" + "</wps:Execute>";
 
         Document d = postAsDOM(root(), request);
-        print(d);
+        // print(d);
 
         // the expected number of features
         assertXpathEvaluatesTo("2",

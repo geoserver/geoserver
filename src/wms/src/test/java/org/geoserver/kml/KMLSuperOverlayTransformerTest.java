@@ -4,6 +4,8 @@
  */
 package org.geoserver.kml;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
@@ -14,14 +16,16 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.Test;
-
+import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
@@ -33,39 +37,32 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
 
     Layer Layer;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new KMLSuperOverlayTransformerTest());
-    }
-
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-
+ 
+    @Before
+    public void prepare() throws Exception {
+        
         Layer = createMapLayer(DISPERSED_FEATURES);
 
         mapContent = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         mapContent.addLayer(Layer);
     }
-
+    
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("allsymbolizers", getClass().getResource("allsymbolizers.sld"));
-        dataDirectory.addStyle("SingleFeature", getClass().getResource("singlefeature.sld"));
-        dataDirectory.addStyle("Bridge", getClass().getResource("bridge.sld"));
-
-        dataDirectory.addPropertiesType(DISPERSED_FEATURES,
-                getClass().getResource("Dispersed.properties"), Collections.EMPTY_MAP);
-
-        dataDirectory.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog =getCatalog();
+        testData.addStyle("allsymbolizers","allsymbolizers.sld",getClass(), catalog);
+        testData.addStyle("SingleFeature","singlefeature.sld",getClass(), catalog);
+        testData.addStyle("Bridge","bridge.sld",getClass(), catalog);
+        testData.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
+        testData.addVectorLayer(DISPERSED_FEATURES,Collections.EMPTY_MAP,"Dispersed.properties",
+                getClass(),catalog);
     }
 
     /**
      * Verify that two overlay tiles are produced for a request that encompasses the world.
      */
+    @Test
     public void testWorldBoundsSuperOverlay() throws Exception {
         KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
                 mapContent);
@@ -90,6 +87,7 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
      * Verify that when a tile smaller than one hemisphere is requested, then subtiles are included 
      * in the result (but only the ones necessary for the data at hand)
      */
+    @Test
     public void testSubtileSuperOverlay() throws Exception {
         KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
                 mapContent);
@@ -112,6 +110,7 @@ public class KMLSuperOverlayTransformerTest extends WMSTestSupport {
         assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
     }
 
+    @Test
     public void testKmltitleFormatOption() throws Exception {
         KMLSuperOverlayTransformer transformer = new KMLSuperOverlayTransformer(getWMS(),
                 mapContent);

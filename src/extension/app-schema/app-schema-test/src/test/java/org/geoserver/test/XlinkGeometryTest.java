@@ -7,7 +7,7 @@ package org.geoserver.test;
 
 import org.w3c.dom.Document;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * 
@@ -17,25 +17,17 @@ import junit.framework.Test;
  * 
  */
 
-public class XlinkGeometryTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new XlinkGeometryTest());
-    }
+public class XlinkGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected XlinkGeometryMockData createTestData() {
         return new XlinkGeometryMockData();
     }
 
     /**
      * Tests whether automatic and manual xlink:href is encoded in all Geometry Types
      */
+    @Test
     public void testGeometry() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));

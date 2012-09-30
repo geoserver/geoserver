@@ -6,7 +6,9 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import org.geotools.wfs.v2_0.WFS;
 import org.w3c.dom.Document;
@@ -16,28 +18,20 @@ import org.w3c.dom.Document;
  * 
  * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
  */
-public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
+public class Gsml30WfsTest extends AbstractAppSchemaTestSupport {
 
     /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new Gsml30WfsTest());
-    }
-
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaWfsTestSupport#buildTestData()
+     * @see org.geoserver.test.AbstractAppSchemaTestSupport#buildTestData()
      */
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected Gsml30MockData createTestData() {
         return new Gsml30MockData();
     }
 
     /**
      * Test DescribeFeatureType response.
      */
+    @Test
     public void testDescribeFeatureType() {
         String path = "wfs?request=DescribeFeatureType&typename=gsml:MappedFeature&version=1.1.0";
         String newline = System.getProperty("line.separator");
@@ -61,6 +55,7 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
+    @Test
     public void testGetFeature() {
         String path = "wfs?request=GetFeature&typename=gsml:MappedFeature&outputFormat=gml32";
         String newline = System.getProperty("line.separator");
@@ -73,6 +68,7 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test whether GetFeature response is schema-valid.
      */
+    @Test
     public void testGetFeatureValid() {
         String path = "wfs?request=GetFeature&typename=gsml:MappedFeature&outputFormat=gml32";
         String newline = System.getProperty("line.separator");
@@ -84,6 +80,7 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test content of GetFeature response.
      */
+    @Test
     public void testGetFeatureContent() throws Exception {
         String path = "wfs?request=GetFeature&typename=gsml:MappedFeature&outputFormat=gml32";
         String newline = System.getProperty("line.separator");
@@ -106,6 +103,7 @@ public class Gsml30WfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test namespace of GetFeature response.
      */
+    @Test
     public void testNamespace() throws Exception {
         String path = "wfs?request=GetFeature&typename=gsml:MappedFeature&outputFormat=gml32";
         String newline = System.getProperty("line.separator");

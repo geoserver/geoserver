@@ -4,6 +4,8 @@
  */
 package org.geoserver.web.demo;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +21,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.test.TestData;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -29,8 +33,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
 
     private File demoDir;
 
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         demoDir = TestData.file(this, "demo-requests");
         tester.startPage(new DemoRequestsPage(demoDir));
     }
@@ -38,6 +42,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
     /**
      * Kind of smoke test to make sure the page structure was correctly set up once loaded
      */
+    @Test
     public void testStructure() {
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -55,6 +60,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testDemoListLoaded() {
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -71,6 +77,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertEquals(expectedList, choices);
     }
 
+    @Test
     public void testUrlLinkUnmodified() {
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -105,6 +112,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertNull(requestBody);
     }
 
+    @Test
     public void testUrlLinkSelected() {
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -141,6 +149,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         assertNull(requestBody);
     }
 
+    @Test
     public void testUrlLinkModified() {
         // print(tester.getLastRenderedPage(), true, true);
 

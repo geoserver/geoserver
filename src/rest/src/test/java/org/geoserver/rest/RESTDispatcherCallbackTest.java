@@ -4,25 +4,24 @@
  */
 package org.geoserver.rest;
 
+import static org.easymock.EasyMock.*;
+
 import org.easymock.EasyMock;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
-public class RESTDispatcherCallbackTest extends GeoServerTestSupport {
+public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
 
     DispatcherCallback callback;
     
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void prepareCallback() throws Exception {
         callback = EasyMock.createMock(DispatcherCallback.class);
         applicationContext.getBeanFactory().addBeanPostProcessor(new BeanPostProcessor() {
             
@@ -44,6 +43,7 @@ public class RESTDispatcherCallbackTest extends GeoServerTestSupport {
         
     }
     
+    @Test
     public void testCallback() throws Exception {
         callback.init((Request)anyObject(), (Response)anyObject());
         expectLastCall();
@@ -57,6 +57,7 @@ public class RESTDispatcherCallbackTest extends GeoServerTestSupport {
         verify(callback);
     }
     
+    @Test
     public void testCallbackException() throws Exception {
         
         callback.init((Request)anyObject(), (Response)anyObject());

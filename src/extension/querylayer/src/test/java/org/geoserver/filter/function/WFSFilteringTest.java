@@ -1,8 +1,9 @@
 package org.geoserver.filter.function;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class WFSFilteringTest extends WFSTestSupport {
@@ -49,10 +50,12 @@ public class WFSFilteringTest extends WFSTestSupport {
             "  </wfs:Query>\n" + //
             "</wfs:GetFeature>";
 
+    @Test
     public void testSingleSmallDistance10() throws Exception {
         _testSingleSmallDistance("1.0.0");
     }
     
+    @Test
     public void testSingleSmallDistance11() throws Exception {
         _testSingleSmallDistance("1.1.0");
     }
@@ -66,10 +69,12 @@ public class WFSFilteringTest extends WFSTestSupport {
         assertXpathEvaluatesTo("0", "count(cite:Buildings)", doc);
     }
 
+    @Test
     public void testSingleLargeDistance10() throws Exception {
         _testSingleLargeDistance("1.0.0");
     }
     
+    @Test
     public void testSingleLargeDistance11() throws Exception {
         _testSingleLargeDistance("1.1.0");
     }
@@ -83,10 +88,12 @@ public class WFSFilteringTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//cite:Buildings)", doc);
     }
     
+    @Test
     public void testMultiple10() throws Exception {
         _testMultiple("1.0.0");
     }
     
+    @Test
     public void testMultiple11() throws Exception {
         _testMultiple("1.1.0");
     }

@@ -2,9 +2,11 @@ package org.geoserver.web.data.resource;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     
+    @Test
     public void testBasic() {
         LayerInfo layer = getGeoServerApplication().getCatalog().getLayers().get(0);
 

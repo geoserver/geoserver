@@ -4,18 +4,15 @@
  */
 package org.geoserver.kml;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -27,6 +24,9 @@ import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -35,7 +35,7 @@ import com.vividsolutions.jts.geom.Point;
 /**
  * Unit test suite for {@link KMLNetworkLinkTransformer}
  */
-public class KMLNetworkLinkTransformerTest extends TestCase {
+public class KMLNetworkLinkTransformerTest {
 
     private WMSMockData mockData;
 
@@ -50,8 +50,8 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
     @SuppressWarnings("rawtypes")
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         mockData = new WMSMockData();
         mockData.setUp();
 
@@ -76,8 +76,8 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
     /**
      * @see junit.framework.TestCase#tearDown()
      */
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         new GeoServerExtensions().setApplicationContext(null);
     }
 
@@ -86,6 +86,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
      * 
      * @see KMLNetworkLinkTransformer#setEncodeAsRegion(boolean)
      */
+    @Test
     public void testEncodeAsRegion() throws Exception {
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
@@ -144,6 +145,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testEncodeAsOverlay() throws Exception {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         WMS wms = mockData.getWMS();
@@ -187,6 +189,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
     /**
      * @see KMLLookAt
      */
+    @Test
     public void testEncodeLookAtVendorSpecificParameters() throws Exception {
         WMS wms = mockData.getWMS();
         KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
@@ -218,6 +221,7 @@ public class KMLNetworkLinkTransformerTest extends TestCase {
         assertXpathEvaluatesTo("absolute", "//kml/Folder/LookAt/altitudeMode", dom);
     }
     
+    @Test
     public void testKmltitleFormatOption() throws Exception {
         WMS wms = mockData.getWMS();
         KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);

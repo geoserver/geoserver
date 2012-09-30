@@ -1,11 +1,16 @@
 package org.geoserver.web.data.layer;
 
+import static org.junit.Assert.*;
+import static org.geoserver.data.test.SystemTestData.*;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,8 +23,11 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.junit.Test;
 
 public class LayerPageTest extends GeoServerWicketTestSupport {
 
@@ -27,16 +35,22 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
             MockData.DEFAULT_PREFIX);
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        dataDirectory.addWellKnownType(MockData.BUILDINGS, null);
-
-        // add a second layer, same name, different workspace
-        String buildings = MockData.BUILDINGS.getLocalPart();
-        URL properties = MockData.class.getResource(buildings + ".properties");
-        dataDirectory.addPropertiesType(GS_BUILDINGS, properties,
-                Collections.singletonMap(MockData.KEY_STYLE, buildings));
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        //we don't want any of the defaults
     }
-    
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        testData.addVectorLayer(BUILDINGS, getCatalog());
+
+        Map<LayerProperty,Object> props = new HashMap();
+        props.put(LayerProperty.STYLE, BUILDINGS.getLocalPart());
+        testData.addVectorLayer(GS_BUILDINGS, props, getCatalog());
+    }
+
+    @Test
     public void testBasicActions() {
         login();
 

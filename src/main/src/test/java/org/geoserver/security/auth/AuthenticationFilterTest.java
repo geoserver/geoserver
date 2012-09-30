@@ -6,11 +6,14 @@
 
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
+
 import java.security.Principal;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
@@ -19,6 +22,7 @@ import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
+import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
@@ -30,17 +34,24 @@ import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilt
 import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.test.RunTestSetup;
+import org.geoserver.test.SystemTest;
 import org.geotools.data.Base64;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@Category(SystemTest.class)
 public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest {
     
     public final static String testFilterName = "basicAuthTestFilter";
@@ -53,19 +64,39 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     public final static String testFilterName8 = "x509TestFilter";
     public final static String testFilterName9 = "logoutTestFilter";
 
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
+        LogoutFilterConfig loConfig = new LogoutFilterConfig();
+        loConfig.setClassName(GeoServerLogoutFilter.class.getName());
+        loConfig.setName(testFilterName9);
+        getSecurityManager().saveFilter(loConfig);
+        
+        BasicAuthenticationFilterConfig bconfig = new BasicAuthenticationFilterConfig();
+        bconfig.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
+        bconfig.setUseRememberMe(false);
+        bconfig.setName(testFilterName);
+        getSecurityManager().saveFilter(bconfig);
+    }
 
-    
-    
-     
+    @Before
+    public void revertFilters() throws Exception {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        if (secMgr.listFilters().contains(testFilterName2)) {
+            SecurityFilterConfig config = secMgr.loadFilterConfig(testFilterName2);
+            secMgr.removeFilter(config);
+        }
+    }
+
+    @Test
     public void testBasicAuth() throws Exception{
+//        BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
+//        config.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
+//        config.setUseRememberMe(false);
+//        config.setName(testFilterName);
         
-                
-        BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
-        config.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
-        config.setUseRememberMe(false);
-        config.setName(testFilterName);
-        
-        getSecurityManager().saveFilter(config);
+//        getSecurityManager().saveFilter(config);
         prepareFilterChain(pattern,
             GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER,    
             testFilterName,
@@ -221,6 +252,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
     }
     
+    @Test
     public void testJ2eeProxy() throws Exception{
 
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
@@ -343,6 +375,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 
     }
     
+    @Test
     public void testRequestHeaderProxy() throws Exception{
 
         RequestHeaderAuthenticationFilterConfig config = 
@@ -454,6 +487,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     }        
 
 
+    @Test
     public void testDigestAuth() throws Exception{
 
         DigestAuthenticationFilterConfig config = new DigestAuthenticationFilterConfig();
@@ -616,6 +650,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         removeAnonymousFilter();
     }
 
+    @Test
     public void testBasicAuthWithRememberMe() throws Exception{
     
         BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
@@ -744,6 +779,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         
     }
 
+    @Test
     public void testFormLogin() throws Exception {
             
             
@@ -754,10 +790,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setName(testFilterName6);
         getSecurityManager().saveFilter(config);
         
-        LogoutFilterConfig loConfig = new LogoutFilterConfig();
-        loConfig.setClassName(GeoServerLogoutFilter.class.getName());
-        loConfig.setName(testFilterName9);
-        getSecurityManager().saveFilter(loConfig);
+//        LogoutFilterConfig loConfig = new LogoutFilterConfig();
+//        loConfig.setClassName(GeoServerLogoutFilter.class.getName());
+//        loConfig.setName(testFilterName9);
+//        getSecurityManager().saveFilter(loConfig);
         
         prepareFilterChain(pattern,
             GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER,
@@ -939,6 +975,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     }
 
     
+    @Test
     public void testFormLoginWithRememberMe() throws Exception{
         
         
@@ -949,10 +986,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setName(testFilterName7);
         getSecurityManager().saveFilter(config);
         
-        LogoutFilterConfig loConfig = new LogoutFilterConfig();
-        loConfig.setClassName(GeoServerLogoutFilter.class.getName());
-        loConfig.setName(testFilterName9);
-        getSecurityManager().saveFilter(loConfig);
+//        LogoutFilterConfig loConfig = new LogoutFilterConfig();
+//        loConfig.setClassName(GeoServerLogoutFilter.class.getName());
+//        loConfig.setName(testFilterName9);
+//        getSecurityManager().saveFilter(loConfig);
         
         prepareFilterChain(pattern,
             GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER,
@@ -1076,6 +1113,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
     }
 
+    @Test
     public void testX509Auth() throws Exception{
 
         X509CertificateAuthenticationFilterConfig config = 
@@ -1188,13 +1226,15 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 
     }      
     
+    @Test
+    @RunTestSetup
     public void testCascadingFilters() throws Exception{
 
-        BasicAuthenticationFilterConfig bconfig = new BasicAuthenticationFilterConfig();
-        bconfig.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
-        bconfig.setUseRememberMe(false);
-        bconfig.setName(testFilterName);
-        getSecurityManager().saveFilter(bconfig);
+//        BasicAuthenticationFilterConfig bconfig = new BasicAuthenticationFilterConfig();
+//        bconfig.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
+//        bconfig.setUseRememberMe(false);
+//        bconfig.setName(testFilterName);
+//        getSecurityManager().saveFilter(bconfig);
 
         
         DigestAuthenticationFilterConfig config = new DigestAuthenticationFilterConfig();

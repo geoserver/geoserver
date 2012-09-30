@@ -4,6 +4,10 @@
  */
 package org.geoserver.gwc;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
@@ -13,19 +17,19 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.util.ServletUtils;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.google.common.collect.ImmutableList;
@@ -38,20 +42,16 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * Integration test for GeoServer cached layers using the GWC REST API
  * 
  */
-public class RESTIntegrationTest extends GeoServerTestSupport {
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new RESTIntegrationTest());
-    }
+public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected void setUpInternal() {
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
     }
 
+    @Test
     public void testGetLayersList() throws Exception {
         final String url = "gwc/rest/layers.xml";
         MockHttpServletResponse sr = getAsServletResponse(url);
@@ -77,6 +77,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         }
     }
 
+    @Test
     public void testGetLayer() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/layers/" + layerName + ".xml";
@@ -102,6 +103,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
     /**
      * PUT creates a new layer, shall fail if the layer id is provided and not found in the catalog
      */
+    @Test
     public void testPutBadId() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/layers/" + layerName + ".xml";
@@ -119,6 +121,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
      * PUT creates a new layer, shall fail if the layer id is not provided, the layer name is, but
      * no such layer is found in the {@link Catalog}
      */
+    @Test
     public void testPutNoIdBadLayerName() throws Exception {
 
         final String url = "gwc/rest/layers/badLayerName.xml";
@@ -130,6 +133,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         assertEquals(expected, response.getOutputStreamContent());
     }
 
+    @Test
     public void testPutGoodIdBadLayerName() throws Exception {
 
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
@@ -149,6 +153,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
     /**
      * Id is optional, layer name mandatory
      */
+    @Test
     public void testPutGoodIdNoLayerName() throws Exception {
 
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
@@ -164,6 +169,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         assertEquals(expected, response.getOutputStreamContent());
     }
 
+    @Test
     public void testPutOverExistingTileLayerFails() throws Exception {
 
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
@@ -181,6 +187,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
 
     }
 
+    @Test
     public void testPutBadLayerEndpoint() throws Exception {
 
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
@@ -197,6 +204,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
 
     }
 
+    @Test
     public void testPutSuccess() throws Exception {
 
         final String layerName = getLayerId(MockData.FORESTS);
@@ -216,6 +224,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         assertTrue(mediator.tileLayerExists(layerName));
     }
 
+    @Test
     public void testPutParameterFilters() throws Exception {
         final String layerName = getLayerId(MockData.LAKES);
 
@@ -319,6 +328,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         return response;
     }
 
+    @Test
     public void testDelete() throws Exception {
         final String layerName = getLayerId(MockData.BRIDGES);
         final GWC mediator = GWC.get();
@@ -331,6 +341,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         assertFalse(mediator.tileLayerExists(layerName));
     }
 
+    @Test
     public void testDeleteNonExistentLayer() throws Exception {
 
         final String url = "gwc/rest/layers/badLayerName.xml";
@@ -340,6 +351,7 @@ public class RESTIntegrationTest extends GeoServerTestSupport {
         assertEquals("Unknown layer: badLayerName", response.getOutputStreamContent());
     }
 
+    @Test
     public void testPost() throws Exception {
         final String layerName = getLayerId(MockData.ROAD_SEGMENTS);
 

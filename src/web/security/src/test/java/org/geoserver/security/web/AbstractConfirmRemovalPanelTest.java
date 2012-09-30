@@ -2,10 +2,9 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-
-
 package org.geoserver.security.web;
 
+import static org.junit.Assert.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,8 +14,10 @@ import java.util.Locale;
 
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.list.ListView;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.FormTestPage;
+import org.junit.Before;
 
 public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurityWicketTestSupport implements Serializable{
     private static final long serialVersionUID = 1L;
@@ -29,17 +30,16 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
     protected abstract String getProblematicObjectRegExp() throws Exception;
     protected abstract String getRemoveableObjectRegExp() throws Exception;
     
-    
+
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         // disable url parameter encoding for these tests
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         config.setEncryptingUrlParams(false);
         getSecurityManager().saveSecurityConfig(config);
     }
 
-    
     protected void removeObject() throws Exception {
         
         insertValues();

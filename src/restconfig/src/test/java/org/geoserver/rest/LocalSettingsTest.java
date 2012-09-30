@@ -1,6 +1,8 @@
 package org.geoserver.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -9,36 +11,29 @@ import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.SettingsInfoImpl;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.platform.GeoServerExtensions;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class LocalSettingsTest extends CatalogRESTTestSupport {
 
-    protected GeoServer geoServer;
-
-    @Override
-    public void setUpInternal() throws Exception {
-        super.setUpInternal();
-        geoServer = GeoServerExtensions.bean(GeoServer.class, applicationContext);
-        WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName("sf");
-        LocalWorkspace.set(ws);
-        SettingsInfo original = geoServer.getSettings();
-        SettingsInfo settingsInfo = new SettingsInfoImpl();
-        OwsUtils.copy(original, settingsInfo, SettingsInfo.class);
-        settingsInfo.setWorkspace(ws);
-        geoServer.add(settingsInfo);
+    @Before
+    public void revertSettings() {
+        revertSettings("sf");
     }
 
-    @Override
-    public void tearDownInternal() throws Exception {
-        super.tearDownInternal();
-        LocalWorkspace.remove();
+    @After
+    public void clearLocalWorkspace() throws Exception {
+        LocalWorkspace.remove();   
     }
 
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON("/rest/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
@@ -57,6 +52,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM("/rest/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
@@ -68,7 +64,9 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Andrea Aime", "/settings/contact/contactPerson", dom);
     }
 
+    @Test
     public void testCreateAsJSON() throws Exception {
+        GeoServer geoServer = getGeoServer();
         geoServer.remove(geoServer.getSettings(geoServer.getCatalog().getWorkspaceByName("sf")));
         String json = "{'settings':{'workspace':{'name':'sf'},"
                 + "'contact':{'addressCity':'Alexandria','addressCountry':'Egypt','addressType':'Work',"
@@ -98,7 +96,9 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
 
     }
 
+    @Test
     public void testCreateAsXML() throws Exception {
+        GeoServer geoServer = getGeoServer();
         geoServer.remove(geoServer.getSettings(geoServer.getCatalog().getWorkspaceByName("sf")));
         String xml = "<settings>" + "<workspace><name>sf</name></workspace>" + "<contact>"
                 + "<addressCity>Alexandria</addressCity>"
@@ -130,6 +130,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Egypt","/settings/contact/addressCountry",dom);
     }
 
+    @Test
     public void testPutAsJSON() throws Exception {
         String inputJson = "{'settings':{'workspace':{'name':'sf'},"
                 + "'contact':{'addressCity':'Cairo','addressCountry':'Egypt','addressType':'Work',"
@@ -160,6 +161,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
         assertEquals("Cairo", contact.get("addressCity"));
     }
 
+    @Test
     public void testPutAsXML() throws Exception {
         String xml =  "<settings>" + "<workspace><name>sf</name></workspace>" + "<contact>"
                 + "<addressCity>Cairo</addressCity>"
@@ -190,6 +192,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Cairo","/settings/contact/addressCity",dom);
     }
 
+    @Test
     public void testDelete() throws Exception {
         JSON json = getAsJSON("/rest/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;

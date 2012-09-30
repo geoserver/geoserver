@@ -1,5 +1,7 @@
 package org.geoserver.config.hib;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.catalog.Keyword;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerImplTest;
@@ -10,6 +12,9 @@ import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.hibernate.HibUtil;
 import org.h2.tools.DeleteDbFiles;
 import org.hibernate.SessionFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 public class HibGeoServerImplTest extends GeoServerImplTest {
@@ -31,8 +36,8 @@ public class HibGeoServerImplTest extends GeoServerImplTest {
         return (GeoServerImpl) ctx.getBean("geoServer");
     }
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         DeleteDbFiles.execute("target", "geoserver", true);
         super.setUp();
         
@@ -49,10 +54,8 @@ public class HibGeoServerImplTest extends GeoServerImplTest {
         HibUtil.setUpSession(sessionFactory);
     }
     
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        
+    @After
+    public void tearDown() throws Exception {
         HibUtil.tearDownSession(sessionFactory, new Exception());
     }
     
@@ -62,6 +65,7 @@ public class HibGeoServerImplTest extends GeoServerImplTest {
     //
     
     @Override
+    @Test
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal( global );
@@ -75,6 +79,7 @@ public class HibGeoServerImplTest extends GeoServerImplTest {
     }
     
     @Override
+    @Test
     public void testAddService() throws Exception {
         ServiceInfo service = geoServer.getFactory().createService();
         service.setName( "foo" );
@@ -104,6 +109,7 @@ public class HibGeoServerImplTest extends GeoServerImplTest {
     }
     
     @Override
+    @Test
     public void testModifyService() throws Exception {
         ServiceInfo service = geoServer.getFactory().createService();
         ((ServiceInfoImpl)service).setId( "id" );

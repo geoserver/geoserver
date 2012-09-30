@@ -20,12 +20,6 @@
 
     <!-- Test depedencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.7</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>main</artifactId>
       <version>${project.version}</version>

@@ -4,14 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
@@ -20,22 +18,18 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
 import com.vividsolutions.jts.io.WKTReader;
 
 public class GetFeatureJoinTest extends WFS20TestSupport {
-
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetFeatureJoinTest());
-    }
     
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void setUpInternal(SystemTestData data) throws Exception {
         
-        //setup an H2 datastore for the purpose of doing joins
+    	//setup an H2 datastore for the purpose of doing joins
         //run all the tests against a store that can do native paging (h2) and one that 
         // can't (property)
         Catalog cat = getCatalog();
@@ -48,9 +42,9 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath()+"/foo");
         cat.add(ds);
         
-        FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
-        FeatureSource fs2 = getFeatureSource(MockData.LAKES);
-        FeatureSource fs3 = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+        FeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);
+        FeatureSource fs2 = getFeatureSource(SystemTestData.LAKES);
+        FeatureSource fs3 = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
         
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
@@ -139,10 +133,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         store.addFeatures(features);
     }
     
+    @Test
     public void testSpatialJoinPOST() throws Exception {
         String xml = 
          "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-           " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+           " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
             "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>" +
              "<fes:Filter> " + 
                "<fes:Intersects> " + 
@@ -163,6 +158,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
     }
     
+    @Test
     public void testSpatialJoinGET() throws Exception {
         Document dom = 
             getAsDOM("wfs?service=WFS&version=2.0.0&request=getFeature&typenames=gs:Forests,gs:Lakes&aliases=a,b&filter=%3CFilter%3E%3CIntersects%3E%3CValueReference%3Ea%2Fthe_geom%3C%2FValueReference%3E%3CValueReference%3Eb%2Fthe_geom%3C%2FValueReference%3E%3C%2FIntersects%3E%3C%2FFilter%3E");
@@ -176,10 +172,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
     }
     
+    @Test
     public void testSpatialJoinPOSTWithPrimaryFilter() throws Exception {
         String xml = 
          "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-           " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+           " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
             "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>" +
              "<fes:Filter> " +
                "<fes:And>" +
@@ -203,10 +200,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
     }
     
+    @Test
     public void testSpatialJoinPOSTWithSecondaryFilter() throws Exception {
         String xml = 
          "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-           " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+           " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
             "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>" +
              "<fes:Filter> " +
                "<fes:And>" +
@@ -230,10 +228,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
     }
     
+    @Test
     public void testSpatialJoinWithBothFilters() throws Exception {
         String xml = 
             "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-              " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
                "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>" +
                 "<fes:Filter> " +
                   "<fes:And>" +
@@ -265,10 +264,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
     
+    @Test
     public void testStandardJoin() throws Exception {
         String xml = 
             "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-              " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
                "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>" +
                 "<fes:Filter> " +
                     "<PropertyIsEqualTo>" +
@@ -286,10 +286,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
+    @Test
     public void testStandardJoin2() throws Exception {
         String xml = 
             "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-              " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
                "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>" +
                 "<fes:Filter> " +
                     "<PropertyIsEqualTo>" +
@@ -307,10 +308,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
     
+    @Test
     public void testStandardJoinNoAliases() throws Exception {
         String xml = 
             "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-              " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
                "<wfs:Query typeNames='gs:Forests gs:Lakes'>" +
                 "<fes:Filter> " +
                     "<PropertyIsEqualTo>" +
@@ -328,10 +330,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
     
+    @Test
     public void testSelfJoin() throws Exception {
         String xml = 
             "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-              " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
                "<wfs:Query typeNames='gs:Forests gs:Forests' aliases='a b'>" +
                 "<fes:Filter> " +
                     "<Disjoint>" +
@@ -347,10 +350,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            XMLAssert.assertXpathEvaluatesTo("6", "count(//wfs:Tuple)", dom);
     }
     
+    @Test
     public void testTemporalJoin() throws Exception {
         String xml = 
              "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
-                  " xmlns:gs='" + MockData.DEFAULT_URI + "' version='2.0.0'>" + 
+                  " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
                    "<wfs:Query typeNames='gs:PrimitiveGeoFeature gs:TimeFeature' aliases='a b'>" +
                     "<fes:Filter> " +
                       "<And>" +

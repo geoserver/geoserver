@@ -12,8 +12,6 @@ import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.wms.WMSMapContent;
@@ -25,6 +23,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.styling.Style;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
@@ -37,15 +36,10 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class SVGMapProducerTest extends WMSTestSupport {
+public class SVGMapProducerTest extends WMSTestSupport{
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new SVGMapProducerTest());
-    }
-
+  
+    @Test
     public void testHeterogeneousGeometry() throws Exception {
         GeometryFactory gf = new GeometryFactory();
         Point point = gf.createPoint(new Coordinate(10, 10));

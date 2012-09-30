@@ -4,6 +4,8 @@
  */
 package org.geoserver.filters;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,11 +17,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.geoserver.test.GeoServerTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GZIPResponseStreamTest extends GeoServerTestSupport {
+public class GZIPResponseStreamTest  {
+    
+    @Test
     public void testStream() throws Exception {
         ByteStreamCapturingHttpServletResponse response = 
             new ByteStreamCapturingHttpServletResponse(new MockHttpServletResponse());

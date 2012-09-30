@@ -1,24 +1,23 @@
 package org.geoserver.service.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
-import org.geoserver.config.GeoServer;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wcs.WCSInfo;
+import org.junit.After;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class WCSSettingsTest extends CatalogRESTTestSupport {
-
-    protected GeoServer geoServer;
-
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        geoServer = GeoServerExtensions.bean(GeoServer.class, applicationContext);
+    
+    @After 
+    public void revertChanges() {
+        revertService(WCSInfo.class, null);
     }
 
     public void testGetASJSON() throws Exception {
@@ -32,15 +31,17 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
         assertEquals("false", wcsinfo.get("verbose").toString().trim());
     }
 
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM("/rest/services/wcs/settings.xml");
         assertEquals("wcs", dom.getDocumentElement().getLocalName());
         assertEquals(1, dom.getElementsByTagName("name").getLength());
         assertXpathEvaluatesTo("true", "/wcs/enabled", dom);
-        assertXpathEvaluatesTo("My GeoServer WCS", "/wcs/name", dom);
+        assertXpathEvaluatesTo("WCS", "/wcs/name", dom);
         assertXpathEvaluatesTo("false", "/wcs/verbose", dom);
     }
 
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wcs': {'id':'wcs','enabled':'false','name':'WCS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings/",
@@ -50,11 +51,11 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wcsinfo = (JSONObject) jsonObject.get("wcs");
-        assertEquals("wcs", wcsinfo.get("id"));
         assertEquals("false", wcsinfo.get("enabled").toString().trim());
         assertEquals("WCS", wcsinfo.get("name"));
     }
 
+    @Test
     public void testPutASXML() throws Exception {
         String xml = "<wcs>"
                 + "<id>wcs</id>"
@@ -70,6 +71,7 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("WCS", "/wcs/name", dom);
     }
 
+    @Test
     public void testDelete() throws Exception {
         assertEquals(405, deleteAsServletResponse("/rest/services/wcs/settings").getStatusCode());
     }

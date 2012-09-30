@@ -4,20 +4,25 @@
  */
 package org.geoserver.config;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class GeoServerPropertyConfigurerTest extends TestCase {
+public class GeoServerPropertyConfigurerTest {
 
     ClassPathXmlApplicationContext ctx;
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         File f = new File("target/foo.properties");
         if (f.exists()) f.delete();
         
@@ -26,11 +31,12 @@ public class GeoServerPropertyConfigurerTest extends TestCase {
         ctx.refresh();
     }
     
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ctx.destroy();
     }
  
+    @Test 
     public void testDefaults() {
         
         Foo f = (Foo) ctx.getBean("myBean");
@@ -38,6 +44,7 @@ public class GeoServerPropertyConfigurerTest extends TestCase {
         assertEquals("value2", f.getBaz());
     }
     
+    @Test 
     public void testUserSpecified() throws Exception {
         Properties p = new Properties();
         p.put("prop1", "foobar");

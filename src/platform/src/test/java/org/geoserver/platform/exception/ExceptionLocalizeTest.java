@@ -1,16 +1,20 @@
 package org.geoserver.platform.exception;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class ExceptionLocalizeTest extends TestCase {
+public class ExceptionLocalizeTest {
 
+    @Test
     public void test() throws Exception {
         GeoServerException e = new TestException().id("hi");
         assertEquals("hello", GeoServerExceptions.localize(e));
     }
 
+    @Test
     public void testFallback() throws Exception {
         GeoServerException e = new TestException2().id("hi");
         //assertEquals("hello", GeoServerExceptions.localize(e));
@@ -18,22 +22,26 @@ public class ExceptionLocalizeTest extends TestCase {
         assertEquals("hello", GeoServerExceptions.localize(e, Locale.FRENCH));
     }
 
+    @Test
     public void testLocale() throws Exception {
         GeoServerException e = new TestException().id("hi");
         assertEquals("bonjour", GeoServerExceptions.localize(e, Locale.FRENCH));
     }
 
+    @Test
     public void testUnknownLocale() throws Exception {
         GeoServerException e = new TestException().id("hi");
         assertEquals("hello", GeoServerExceptions.localize(e, Locale.GERMAN));
     }
 
+    @Test
     public void testWithArgs() throws Exception {
         GeoServerException e = new TestException().id("hey").args("neo");
         assertEquals("hello neo", GeoServerExceptions.localize(e));
         assertEquals("bonjour neo", GeoServerExceptions.localize(e, Locale.FRENCH));
     }
 
+    @Test
     public void testWithNewDefault() throws Exception {
         Locale old = Locale.getDefault();
         Locale.setDefault(Locale.FRENCH);

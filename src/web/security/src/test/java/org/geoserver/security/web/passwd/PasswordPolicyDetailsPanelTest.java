@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.web.passwd;
 
+import static org.junit.Assert.*;
+
 import java.lang.reflect.Method;
 
 import org.apache.wicket.Component;
@@ -15,6 +17,7 @@ import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
 import org.geoserver.security.web.SecurityNamedServiceNewPage;
 import org.geoserver.security.web.SecuritySettingsPage;
+import org.junit.Test;
 
 public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServicePanelTest {
 
@@ -94,6 +97,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
     }
     
                                 
+    @Test
     public void testAddModify() throws Exception{
         initializeForXML();
         
@@ -238,6 +242,7 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
         //doRemove("tabbedPanel:panel:removeSelected");
     }
 
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         PasswordPolicyConfig config = new PasswordPolicyConfig();

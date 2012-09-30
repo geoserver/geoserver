@@ -3,15 +3,14 @@ package org.geoserver.wps.gs;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.Transaction;
@@ -19,6 +18,8 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 
 public abstract class BaseRasterToVectorTest extends WPSTestSupport {
@@ -34,30 +35,17 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
 	}
 
 	@Override
-	protected void setUpInternal() throws Exception {
-	    // init xmlunit
-	    Map<String, String> namespaces = new HashMap<String, String>();
-	    namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
-	    namespaces.put("ows", "http://www.opengis.net/ows/1.1");
-	    namespaces.put("gml", "http://www.opengis.net/gml");
-	    namespaces.put("wfs", "http://www.opengis.net/wfs");
-	    namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-	    namespaces.put("feature", "http://cite.opengeospatial.org/gmlsf");
-	
-	    XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-	}
+	protected void onSetUp(SystemTestData testData) throws Exception {
+	    super.onSetUp(testData);
+	    
+	    addWcs11Coverages(testData);
+	    testData.addRasterLayer(DEM, "sfdem.tiff", TIFF, null, getClass(), getCatalog());
+	    
+	    Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+	    props.put(LayerProperty.ENVELOPE, new ReferencedEnvelope(181985.7630, 818014.2370, 1973809.4640, 8894102.4298, CRS.decode("EPSG:26713", true)));
 
-	@Override
-	protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-	    super.populateDataDirectory(dataDirectory);
-	    dataDirectory.addWcs11Coverages();
-	    dataDirectory.addPropertiesType(RESTRICTED,
-	            getClass().getResource("restricted.properties"), Collections.singletonMap(
-	                    MockData.KEY_SRS_NUMBER, "EPSG:26713"));
-	    dataDirectory.addPropertiesType(TASMANIA_BM_ZONES, getClass().getResource(
-	            "tazdem_zones.properties"), Collections.singletonMap(MockData.KEY_SRS_NUMBER,
-	            "EPSG:26713"));
-	    dataDirectory.addCoverage(DEM, getClass().getResource("sfdem.tiff"), MockData.TIFF, null);
+	    testData.addVectorLayer(RESTRICTED, props, "restricted.properties", getClass(), getCatalog());
+            testData.addVectorLayer(TASMANIA_BM_ZONES, props, "tazdem_zones.properties", getClass(), getCatalog());
 	}
 
 	/**

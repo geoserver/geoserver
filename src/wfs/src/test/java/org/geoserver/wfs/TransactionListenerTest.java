@@ -1,10 +1,17 @@
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.UpdateElementType;
 
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.CiteTestData;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.w3c.dom.Document;
 
@@ -19,21 +26,19 @@ public class TransactionListenerTest extends WFSTestSupport {
     
     TransactionListenerTester listener;
 
-    protected String[] getSpringContextLocations() {
-        String[] base = super.getSpringContextLocations();
-        String[] extended = new String[base.length + 1];
-        System.arraycopy(base, 0, extended, 0, base.length);
-        extended[base.length] = "classpath:/org/geoserver/wfs/TransactionListenerTestContext.xml";
-        return extended;
-    }
-    
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void setUpSpring(List<String> springContextLocations) {    	
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath:/org/geoserver/wfs/TransactionListenerTestContext.xml");
+    }
+        
+    @Before
+    public void clearState() throws Exception {
         listener = (TransactionListenerTester) applicationContext.getBean("transactionListenerTester");
         listener.clear();
     }
-    
+
+    @Test
     public void testDelete() throws Exception {
         // perform a delete
         String delete = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
@@ -52,12 +57,13 @@ public class TransactionListenerTest extends WFSTestSupport {
         TransactionEvent event = (TransactionEvent) listener.events.get(0);
         assertTrue(event.getSource() instanceof DeleteElementType);
         assertEquals(TransactionEventType.PRE_DELETE, event.getType());
-        assertEquals(MockData.POINTS, event.getLayerName());
+        assertEquals(CiteTestData.POINTS, event.getLayerName());
         assertEquals(1, listener.features.size());
         Feature deleted = (Feature) listener.features.get(0);
         assertEquals("t0000", deleted.getProperty("id").getValue());
     }
 
+    @Test
     public void testInsert() throws Exception {
         // perform an insert
         String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
@@ -81,7 +87,7 @@ public class TransactionListenerTest extends WFSTestSupport {
         TransactionEvent firstEvent = (TransactionEvent) listener.events.get(0);
         assertTrue(firstEvent.getSource() instanceof InsertElementType);
         assertEquals(TransactionEventType.PRE_INSERT, firstEvent.getType());
-        assertEquals(MockData.LINES, firstEvent.getLayerName());
+        assertEquals(CiteTestData.LINES, firstEvent.getLayerName());
         // one feature from the pre-insert hook, one from the post-insert hook
         assertEquals(2, listener.features.size());
         
@@ -109,6 +115,7 @@ public class TransactionListenerTest extends WFSTestSupport {
         assertEquals(fid, inserted.getIdentifier().getID());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         // perform an update
         String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
@@ -130,14 +137,14 @@ public class TransactionListenerTest extends WFSTestSupport {
         TransactionEvent firstEvent = (TransactionEvent) listener.events.get(0);
         assertTrue(firstEvent.getSource() instanceof UpdateElementType);
         assertEquals(TransactionEventType.PRE_UPDATE, firstEvent.getType());
-        assertEquals(MockData.POLYGONS, firstEvent.getLayerName());
+        assertEquals(CiteTestData.POLYGONS, firstEvent.getLayerName());
         Feature updatedBefore = (Feature) listener.features.get(0);
         assertEquals("t0002", updatedBefore.getProperty("id").getValue());
         
         TransactionEvent secondEvent = (TransactionEvent) listener.events.get(1);
         assertTrue(secondEvent.getSource() instanceof UpdateElementType);
         assertEquals(TransactionEventType.POST_UPDATE, secondEvent.getType());
-        assertEquals(MockData.POLYGONS, secondEvent.getLayerName());
+        assertEquals(CiteTestData.POLYGONS, secondEvent.getLayerName());
         Feature updatedAfter = (Feature) listener.features.get(1);
         assertEquals("t0003", updatedAfter.getProperty("id").getValue());
         

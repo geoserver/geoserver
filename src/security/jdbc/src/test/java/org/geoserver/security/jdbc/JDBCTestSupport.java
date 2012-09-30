@@ -13,9 +13,13 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.config.SecurityRoleServiceConfig;
+import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.Util;
 import org.geoserver.security.jdbc.config.JDBCRoleServiceConfig;
@@ -29,7 +33,7 @@ public class JDBCTestSupport {
     
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
     
-    protected static void dropExistingTables(AbstractJDBCService service) throws IOException {
+    public static void dropExistingTables(AbstractJDBCService service) throws IOException {
         Connection con = null;
         try {
             con = service.getDataSource().getConnection();
@@ -87,6 +91,20 @@ public class JDBCTestSupport {
     
     protected static GeoServerUserGroupService createH2UserGroupService(String serviceName, 
         GeoServerSecurityManager securityManager) throws Exception {        
+
+        if (securityManager.listUserGroupServices().contains(serviceName)) {
+            GeoServerUserGroupService service = securityManager.loadUserGroupService(serviceName);
+            if (service.canCreateStore()) {
+                GeoServerUserGroupStore store = service.createStore();
+                store.clear();
+                store.store();
+            }
+            SecurityUserGroupServiceConfig old = 
+                    securityManager.loadUserGroupServiceConfig(serviceName);
+            securityManager.removeUserGroupService(old);
+
+        }
+
         securityManager.saveUserGroupService(createConfigObjectH2(serviceName, securityManager));
         return securityManager.loadUserGroupService(serviceName);
     }
@@ -116,7 +134,24 @@ public class JDBCTestSupport {
 
     protected static GeoServerRoleService createH2RoleService(
         String serviceName, GeoServerSecurityManager securityManager) throws Exception {
-        
+
+        if (securityManager.listRoleServices().contains(serviceName)) {
+            if (securityManager.getActiveRoleService().getName().equals(serviceName)) {
+                GeoServerRoleService roleService = securityManager.loadRoleService("default");
+                securityManager.setActiveRoleService(roleService);
+            }
+
+            GeoServerRoleService service = securityManager.loadRoleService(serviceName);
+            if (service.canCreateStore()) {
+                GeoServerRoleStore store = service.createStore();
+                store.clear();
+                store.store();
+            }
+
+            SecurityRoleServiceConfig old = securityManager.loadRoleServiceConfig(serviceName);
+            securityManager.removeRoleService(old);
+           
+        }
         JDBCRoleServiceConfig config = new JDBCRoleServiceConfig();
         
         config.setName(serviceName);

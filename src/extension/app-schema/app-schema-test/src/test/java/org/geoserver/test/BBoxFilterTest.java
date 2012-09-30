@@ -6,10 +6,9 @@
 
 package org.geoserver.test;
 
-import junit.framework.Test;
-
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -28,7 +27,7 @@ import com.vividsolutions.jts.geom.Point;
  * @author Derrick Wong, Curtin University of Technology
  */
 
-public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
+public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     private final String WFS_GET_FEATURE = "wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer";
 
     private final String WFS_GET_FEATURE_LOG = "WFS GetFeature&typename=ex:geomContainerresponse:\n";
@@ -41,15 +40,7 @@ public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
 
     private final String EPSG_4283 = "urn:x-ogc:def:crs:EPSG:4283";
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new BBoxFilterTest());
-    }
-
-    protected NamespaceTestData buildTestData() {
+    protected BBoxMockData createTestData() {
         return new BBoxMockData();
     }
 
@@ -57,6 +48,7 @@ public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
      * The following performs a WFS request and obtains all features specified in
      * BBoxTestPropertyfile.properties
      */
+    @Test
     public void testQuery() {
         Document doc = getAsDOM(WFS_GET_FEATURE);
         LOGGER.info(WFS_GET_FEATURE_LOG + prettyString(doc));
@@ -69,6 +61,7 @@ public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
      * The following performs a WFS request specifying a BBOX parameter of axis ordering longitude
      * latitude.
      */
+    @Test
     public void testQueryBboxLongLat() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT);
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
@@ -81,6 +74,7 @@ public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
      * longitude. This test should return features if the axis ordering behaves similar to queries
      * to Simple features.
      */
+    @Test
     public void testQueryBboxLatLong() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG);
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
@@ -92,6 +86,7 @@ public class BBoxFilterTest extends AbstractAppSchemaWfsTestSupport {
      * The following performs a WFS request specifying a BBOX parameter of axis ordering longitude
      * latitude along with srs reprojection.
      */
+    @Test
     public void testQueryBboxLatLongSrs4283() throws NoSuchAuthorityCodeException,
             FactoryException, MismatchedDimensionException, TransformException {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + "&srsName=urn:x-ogc:def:crs:EPSG:4283");

@@ -1,5 +1,9 @@
 package org.geoserver.sfs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -7,8 +11,10 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.geojson.GeoJSON;
+import org.junit.Test;
 import org.restlet.data.MediaType;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -16,18 +22,20 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class GetFeatureTest extends GeoServerTestSupport {
+public class GetFeatureTest extends GeoServerSystemTestSupport {
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpWcs11RasterLayers();
     }
     
     protected String root() {
         return "rest/sfs/";
     }
+
     
+    @Test
     public void testGetMissingLayer() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/abc:notThere");
         assertEquals(404, response.getStatusCode());
@@ -35,6 +43,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals("No such layer: abc:notThere", response.getOutputStreamContent());
     }
     
+    @Test
     public void testGetCoverage() throws Exception {
         final String tasmania = getLayerId(MockData.TASMANIA_BM);
         MockHttpServletResponse response = getAsServletResponse(root() + "data/" + tasmania);
@@ -43,6 +52,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals("No such layer: " + tasmania, response.getOutputStreamContent());
     }
     
+    @Test
     public void testGetAll() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/sf:PrimitiveGeoFeature");
         assertEquals(200, response.getStatusCode());
@@ -54,6 +64,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals(5 , features.getJSONArray("features").size());
     }
     
+    @Test
     public void testGetAllCount() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/sf:PrimitiveGeoFeature?mode=count");
         assertEquals(200, response.getStatusCode());
@@ -62,6 +73,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals("5", response.getOutputStreamContent());
     }
     
+    @Test
     public void testGetAllBounds() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/sf:PrimitiveGeoFeature?mode=bounds");
         assertEquals(200, response.getStatusCode());
@@ -76,6 +88,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals(30.899, bbox.getDouble(3), EPS);
     }
     
+    @Test
     public void testEqualityFilter() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?queryable=FID&FID__eq=113");
         assertEquals(200, response.getStatusCode());
@@ -85,6 +98,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         testFirstBuilding(collection);
     }
     
+    @Test
     public void testRestrictAttributes() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?queryable=FID&FID__eq=113&attrs=FID");
         assertEquals(200, response.getStatusCode());
@@ -103,6 +117,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertFalse(properties.has("ADDRESS"));
     }
     
+    @Test
     public void testNoGeometry() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?queryable=FID&FID__eq=113&no_geom=true");
         assertEquals(200, response.getStatusCode());
@@ -121,6 +136,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals("123 Main Street", properties.getString("ADDRESS"));
     }
     
+    @Test
     public void testILikeFilter() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?queryable=ADDRESS&ADDRESS__ilike=123%20m%25");
         assertEquals(200, response.getStatusCode());
@@ -140,6 +156,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals("113", feature.getJSONObject("properties").getString("FID"));
     }
     
+    @Test
     public void testLimit() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?limit=1");
         assertEquals(200, response.getStatusCode());
@@ -149,6 +166,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         testFirstBuilding(collection);
     }
     
+    @Test
     public void testLimitOffset() throws Exception {
         // property data store does not support offset        
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?limit=1&offset=2");
@@ -156,6 +174,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals(MediaType.TEXT_PLAIN.getName(), response.getContentType());
     }
     
+    @Test
     public void testSort() throws Exception {
         // property data store does not support sorting        
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?order_by=ADDRESS");
@@ -163,6 +182,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals(MediaType.TEXT_PLAIN.getName(), response.getContentType());
     }
     
+    @Test
     public void testPointFilter() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?lon=0.0008&lat=0.0005&tolerance=0.0001");
         assertEquals(200, response.getStatusCode());
@@ -172,6 +192,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         testFirstBuilding(collection);
     }
     
+    @Test
     public void testPointFilterLarge() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?lon=0.0008&lat=0.0005&tolerance=0.01");
         assertEquals(200, response.getStatusCode());
@@ -194,18 +215,21 @@ public class GetFeatureTest extends GeoServerTestSupport {
         assertEquals("114", feature.getJSONObject("properties").getString("FID"));
     }
     
+    @Test
     public void testBBoxFilter() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?bbox=0.0008,0.0005,0.00012,0.0007");
         JSONObject collection = (JSONObject) json(response);
         testFirstBuilding(collection);
     }
     
+    @Test
     public void testBBoxFilterTolerance() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(root() + "data/cite:Buildings?bbox=0.0008,0.0005,0.00012,0.0007&tolerance=0.01");
         JSONObject collection = (JSONObject) json(response);
         testAllBuildings(collection);
     }
     
+    @Test
     public void testGeometryFilter() throws Exception {
         String jsonGeometry = buildJSONLineString();
         
@@ -214,6 +238,7 @@ public class GetFeatureTest extends GeoServerTestSupport {
         testFirstBuilding(collection);
     }
     
+    @Test
     public void testGeometryFilterTolerance() throws Exception {
         String jsonGeometry = buildJSONLineString();
         

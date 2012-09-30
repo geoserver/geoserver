@@ -4,6 +4,11 @@
  */
 package org.geoserver.wms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -28,14 +33,18 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.sf.cglib.transform.impl.AddStaticInitTransformer;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -60,7 +69,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
  */
-public abstract class WMSTestSupport extends GeoServerTestSupport {
+public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final String NATURE_GROUP = "nature";
 
@@ -81,9 +90,8 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
     }
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -93,10 +101,15 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
         namespaces.put("sf", "http://cite.opengeospatial.org/gmlsf");
         namespaces.put("kml", "http://www.opengis.net/kml/2.2");
 
-        getTestData().registerNamespaces(namespaces);
+        testData.registerNamespaces(namespaces);
         registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         
+
+    }
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         // setup a layer group
         Catalog catalog = getCatalog();
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
@@ -110,12 +123,11 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
             cb.calculateLayerGroupBounds(group);
             catalog.add(group);
         }
+        testData.addStyle("default", "Default.sld",MockData.class, catalog);
+        //"default", MockData.class.getResource("Default.sld")
+
     }
     
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-    }
 
     /**
      * subclass hook to register additional namespaces.
@@ -123,11 +135,7 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
     protected void registerNamespaces(Map<String, String> namespaces) {
     }
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("default", MockData.class.getResource("Default.sld"));
-    }
+ 
 
     /**
      * Convenience method for subclasses to create a map layer from a layer name.
@@ -464,6 +472,22 @@ public abstract class WMSTestSupport extends GeoServerTestSupport {
             actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), 255);
         }
         return actual;
+    }
+    /**
+     * Sets up a template in a feature type directory.
+     * 
+     * @param featureTypeName The name of the feature type.
+     * @param template The name of the template.
+     * @param body The content of the template.
+     * 
+     * @throws IOException
+     */
+    protected void setupTemplate(QName featureTypeName,String template,String body)
+        throws IOException {
+        
+        ResourceInfo info = getCatalog().getResourceByName(toName(featureTypeName), ResourceInfo.class);
+        getDataDirectory().copyToResourceDir(info, new ByteArrayInputStream(body.getBytes()),template);
+        
     }
 
 }

@@ -4,89 +4,164 @@
  */
 package org.geoserver.template;
 
+import static org.easymock.EasyMock.*;
+import static org.easymock.classextension.EasyMock.*;
+import static org.junit.Assert.*;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.data.DataUtilities;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-public class GeoServerTemplateLoader2Test extends GeoServerTestSupport {
+public class GeoServerTemplateLoader2Test {
 
-    GeoServerDataDirectory dd;
-    Catalog cat;
-    GeoServerTemplateLoader tl;
-    
-    @Override
-    protected boolean useLegacyDataDirectory() {
-        return false;
+    static File root;
+
+    @BeforeClass
+    public static void createTmpDir() throws Exception {
+        root = File.createTempFile("template", "tmp", new File("target"));
+        root.delete();
+        root.mkdir();
     }
-    
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
-        dd = getDataDirectory();
-        cat = getCatalog();
-        tl = new GeoServerTemplateLoader(getClass(),getResourceLoader());
+
+    GeoServerDataDirectory createDataDirectoryMock() {
+        GeoServerDataDirectory dd = createNiceMock(GeoServerDataDirectory.class);
+        expect(dd.root()).andReturn(root).anyTimes();
+        return dd;
     }
-    
+
+    @Test
     public void testRelativeToFeatureType() throws IOException {
-       
+        
+        GeoServerDataDirectory dd = createDataDirectoryMock();
+        replay(dd);
+
+        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
         Object source = tl.findTemplateSource( "dummy.ftl");
         assertNull(source);
-        
-        FeatureTypeInfo ft = cat.getFeatureTypeByName( "PrimitiveGeoFeature");
-        dd.copyToResourceDir( ft, template(), "dummy.ftl");
+
+        reset(dd);
+
+        FeatureTypeInfo ft = createMock(FeatureTypeInfo.class);
+        expect(dd.findSuppResourceFile(ft, "dummy.ftl")).andReturn(new File("foo")).once();
+        replay(ft, dd);
+
         tl.setFeatureType( ft );
         
         source = tl.findTemplateSource( "dummy.ftl");
         assertNotNull(source);
+
+        verify(ft, dd);
     }
-    
+
+    @Test
     public void testRelativeToStore() throws IOException {
-        assertNull(tl.findTemplateSource( "dummy.ftl"));
-        
-        FeatureTypeInfo ft = cat.getFeatureTypeByName( "PrimitiveGeoFeature");
-        tl.setFeatureType( ft );
-        assertNull(tl.findTemplateSource( "dummy.ftl"));
-        
-        dd.copyToStoreDir( ft.getStore(), template(), "dummy.ftl");
-        assertNotNull(tl.findTemplateSource( "dummy.ftl"));
-    }
-    
-    public void testRelativeToWorkspace() throws IOException {
-        assertNull(tl.findTemplateSource( "dummy.ftl"));
-        
-        FeatureTypeInfo ft = cat.getFeatureTypeByName( "PrimitiveGeoFeature");
-        tl.setFeatureType( ft );
-        assertNull(tl.findTemplateSource( "dummy.ftl"));
-        
-        dd.copyToWorkspaceDir( ft.getStore().getWorkspace(), template(), "dummy.ftl");
-        assertNotNull(tl.findTemplateSource( "dummy.ftl"));
-    }
-    
-    public void testGlobal() throws IOException {
-        assertNull(tl.findTemplateSource( "dummy.ftl"));
-        
-        FeatureTypeInfo ft = cat.getFeatureTypeByName( "PrimitiveGeoFeature");
-        tl.setFeatureType( ft );
-        assertNull(tl.findTemplateSource( "dummy.ftl"));
-        
-        dd.copyToWorkspacesDir( template(), "dummy.ftl" );
-        assertNotNull(tl.findTemplateSource( "dummy.ftl"));
-    }
-    
-    public void testRemoteType() throws Exception {
-        SimpleFeatureType ft = DataUtilities.createType("remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
+        GeoServerDataDirectory dd = createDataDirectoryMock();
+        replay(dd);
+
+        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
+        Object source = tl.findTemplateSource( "dummy.ftl");
+        assertNull(source);
+
+        reset(dd);
+
+        DataStoreInfo s = createNiceMock(DataStoreInfo.class);
+        FeatureTypeInfo ft = createNiceMock(FeatureTypeInfo.class);
+        expect(ft.getStore()).andReturn(s).anyTimes();
         tl.setFeatureType(ft);
-        tl.findTemplateSource("header.ftl");
+
+        replay(ft, s, dd);
+
+        assertNull(tl.findTemplateSource( "dummy.ftl"));
+
+        reset(dd);
+        expect(dd.findSuppStoreFile(s, "dummy.ftl")).andReturn(new File("foo")).once();
+        replay(dd);
+
+        assertNotNull(tl.findTemplateSource( "dummy.ftl"));
+        verify(dd);
     }
+
+    @Test
+    public void testRelativeToWorkspace() throws IOException {
+        GeoServerDataDirectory dd = createDataDirectoryMock();
+        
+        DataStoreInfo s = createNiceMock(DataStoreInfo.class);
+        FeatureTypeInfo ft = createNiceMock(FeatureTypeInfo.class);
+        WorkspaceInfo ws = createNiceMock(WorkspaceInfo.class);
+
+        expect(ft.getStore()).andReturn(s).anyTimes();
+        expect(s.getWorkspace()).andReturn(ws).anyTimes();
+        
+        replay(ft, s, ws, dd);
+
+        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
+        tl.setFeatureType(ft);
+        Object source = tl.findTemplateSource( "dummy.ftl");
+        assertNull(source);
+
+        reset(dd);
+        expect(dd.findSuppWorkspaceFile(ws, "dummy.ftl")).andReturn(new File("foo")).once();
+        replay(dd);
+
+        assertNotNull(tl.findTemplateSource( "dummy.ftl"));
+        verify(dd);
+    }
+
+    @Test
+    public void testGlobal() throws IOException {
+        GeoServerDataDirectory dd = createDataDirectoryMock();
+        
+        DataStoreInfo s = createNiceMock(DataStoreInfo.class);
+        FeatureTypeInfo ft = createNiceMock(FeatureTypeInfo.class);
+        WorkspaceInfo ws = createNiceMock(WorkspaceInfo.class);
+
+        expect(ft.getStore()).andReturn(s).anyTimes();
+        expect(s.getWorkspace()).andReturn(ws).anyTimes();
+        replay(ft, s, ws, dd);
+
+        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
+        tl.setResource(ft);
+        assertNull(tl.findTemplateSource( "dummy.ftl"));
+
+        reset(dd);
+
+        expect(dd.findSuppWorkspacesFile(ws, "dummy.ftl")).andReturn(new File("foo")).once();
+        replay(dd);
+
+        assertNotNull(tl.findTemplateSource( "dummy.ftl"));
+        verify(dd);
+    }
+
+    @Test
+    public void testRemoteType() throws Exception {
+        SimpleFeatureType ft = 
+            DataUtilities.createType("remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
+
+        GeoServerDataDirectory dd = createDataDirectoryMock();
+        Catalog cat = createNiceMock(Catalog.class);
+        expect(cat.getFeatureTypeByName(ft.getName())).andReturn(null).once();
+        replay(dd, cat);
+        
+        org.vfny.geoserver.global.GeoserverDataDirectory.setCatalog(cat);
+        try {
+            GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
+            tl.setCatalog(cat);
+            tl.setFeatureType(ft);
+            tl.findTemplateSource("header.ftl");
     
-    InputStream template() throws IOException {
-        return getClass().getResourceAsStream( "dummy.ftl.disabled");
+            verify(cat);
+        }
+        finally {
+            org.vfny.geoserver.global.GeoserverDataDirectory.setCatalog(null);
+        }
     }
 }

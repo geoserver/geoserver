@@ -1,11 +1,11 @@
 package org.geoserver.config;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -13,14 +13,15 @@ import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
+import org.junit.Before;
+import org.junit.Test;
 
-public class GeoServerImplTest extends TestCase {
+public class GeoServerImplTest {
 
     protected GeoServerImpl geoServer;
     
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         geoServer = createGeoServer();
     }
     
@@ -30,6 +31,7 @@ public class GeoServerImplTest extends TestCase {
         return gs;
     }
     
+    @Test 
     public void testGlobal() throws Exception {
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal( global );
@@ -37,6 +39,7 @@ public class GeoServerImplTest extends TestCase {
         assertEquals( global, geoServer.getGlobal() );
     }
     
+    @Test 
     public void testModifyGlobal() throws Exception {
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal( global );
@@ -52,6 +55,7 @@ public class GeoServerImplTest extends TestCase {
         assertEquals( "newAdminPassword", g2.getAdminPassword() );
     }
     
+    @Test
     public void testAddService() throws Exception {
         ServiceInfo service = geoServer.getFactory().createService();
         service.setName( "foo" );
@@ -71,6 +75,7 @@ public class GeoServerImplTest extends TestCase {
         assertEquals( service, s );
     }
     
+    @Test
     public void testModifyService() throws Exception {
         ServiceInfo service = geoServer.getFactory().createService();
         ((ServiceInfoImpl)service).setId( "id" );
@@ -90,6 +95,7 @@ public class GeoServerImplTest extends TestCase {
         assertEquals( "changed", s2.getTitle() );
     }
     
+    @Test
     public void testGlobalEvents() throws Exception {
         
         TestListener tl = new TestListener();
@@ -139,6 +145,7 @@ public class GeoServerImplTest extends TestCase {
     }
     
 
+    @Test
     public void testSetClientPropsHasEffect() throws Exception {
         GeoServerInfoImpl gsii = new GeoServerInfoImpl(geoServer);
         Map<Object, Object> before = gsii.getClientProperties();
@@ -150,6 +157,7 @@ public class GeoServerImplTest extends TestCase {
 		assertFalse(before.equals(newProps));
     }
 
+    @Test
     public void testGetSettings() throws Exception {
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal( global );

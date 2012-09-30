@@ -1,11 +1,15 @@
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import junit.framework.TestCase;
 
-public class LRUAuthenticationCacheTest extends TestCase {
+public class LRUAuthenticationCacheTest {
 
+    @Test
     public void testLRUCache() {
         
         LRUCache<String, String> cache = new LRUCache<String, String> (3);
@@ -20,6 +24,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         assertNull(cache.get("key1"));        
     }
     
+    @Test
     public void testAuthenticationKey() {
         AuthenticationCacheKey key11 = new AuthenticationCacheKey("f1","k1");
         assertTrue(key11.equals(key11));
@@ -38,6 +43,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         assertFalse(key11.hashCode()==key22.hashCode());
     }
     
+    @Test
     public void testAuthenticationEntry() {
         
         UsernamePasswordAuthenticationToken t1 = new UsernamePasswordAuthenticationToken("user1", "password1");
@@ -89,6 +95,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         }
     }
     
+    @Test
     public void testLRUAuthenticationCache() {
         // test max entries
         LRUAuthenticationCacheImpl cache = new LRUAuthenticationCacheImpl(5,10,3);        

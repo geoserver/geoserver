@@ -4,17 +4,20 @@
  */
 package org.geoserver.wms.legendgraphic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
@@ -24,7 +27,10 @@ import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.junit.After;
+import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
+
 
 /**
  * Tets the functioning of the abstract legend producer for raster formats, which relies on
@@ -42,30 +48,33 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
     GetLegendGraphic service;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new AbstractLegendGraphicOutputFormatTest());
-    }
-
+    
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-
-        dataDirectory.addCoverage(new QName("http://www.geo-solutions.it", "world", "gs"),
-                MockData.class.getResource("world.tiff"), "tiff", "raster");
-        dataDirectory.addStyle("rainfall", MockData.class.getResource("rainfall.sld"));
-        dataDirectory.addStyle("rainfall_ramp", MockData.class.getResource("rainfall_ramp.sld"));
-        dataDirectory.addStyle("rainfall_classes",
-                MockData.class.getResource("rainfall_classes.sld"));
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addRasterLayer(new QName("http://www.geo-solutions.it", "world", "gs")
+            , "world.tiff", "tiff", new HashMap(), MockData.class,catalog);
+        testData.addStyle("rainfall",MockData.class,catalog);
+        testData.addStyle("rainfall_ramp",MockData.class,catalog);
+        testData.addStyle("rainfall_classes",MockData.class,catalog);
     }
+    
+//    @Override
+//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+//        super.populateDataDirectory(dataDirectory);
+//
+//        dataDirectory.addCoverage(new QName("http://www.geo-solutions.it", "world", "gs"),
+//                MockData.class.getResource("world.tiff"), "tiff", "raster");
+//        dataDirectory.addStyle("rainfall", MockData.class.getResource("rainfall.sld"));
+//        dataDirectory.addStyle("rainfall_ramp", MockData.class.getResource("rainfall_ramp.sld"));
+//        dataDirectory.addStyle("rainfall_classes",
+//                MockData.class.getResource("rainfall_classes.sld"));
+//    }
 
-    @Override
-    public void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setLegendProducer() throws Exception {
         this.legendProducer = new BufferedImageLegendGraphicBuilder() {
-
             public String getContentType() {
                 return "image/png";
             }
@@ -75,16 +84,16 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         service = new GetLegendGraphic(getWMS());
     }
 
-    @Override
-    public void tearDownInternal() throws Exception {
+    @After 
+    public void resetLegendProducer() throws Exception {
         this.legendProducer = null;
-        super.tearDownInternal();
     }
 
     /**
      * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
      * has more than one rule, and one of them is requested by the RULE parameter.
      */
+    @org.junit.Test
     public void testUserSpecifiedRule() throws Exception {
         // load a style with 3 rules
         Style multipleRulesStyle = getCatalog().getStyleByName(
@@ -126,6 +135,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      * has more than one rule, and one of them is requested by the RULE parameter.
      * 
      */
+    @org.junit.Test
     public void testRainfall() throws Exception {
         // load a style with 3 rules
         Style multipleRulesStyle = getCatalog().getStyleByName("rainfall").getStyle();
@@ -163,6 +173,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      * Tests that the legend graphic is still produced when the request's strict parameter is set to
      * false and a layer is not specified
      */
+    @org.junit.Test
     public void testNoLayerProvidedAndNonStrictRequest() throws Exception {
         Style style = getCatalog().getStyleByName("rainfall").getStyle();
         assertNotNull(style);

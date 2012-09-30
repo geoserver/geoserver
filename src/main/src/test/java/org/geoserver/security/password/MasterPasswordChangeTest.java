@@ -1,36 +1,47 @@
 package org.geoserver.security.password;
 
-import static org.geoserver.security.GeoServerSecurityManager.MASTER_PASSWD_DEFAULT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
 import org.geoserver.security.validation.MasterPasswordChangeException;
+import org.geoserver.test.SystemTest;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataUtilities;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+@TestSetup(run=TestSetupFrequency.REPEAT)
+@Category(SystemTest.class)
 public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add(
+            getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         applicationContext.getBeanFactory()
             .registerSingleton("testMasterPasswordProvider", new TestMasterPasswordProvider());
     }
 
-    @Override
-    protected String[] getSpringContextLocations() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getSpringContextLocations()));
-        list.add(getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
-        return list.toArray(new String[list.size()]);
-    }
-
+    @Test
     public void testMasterPasswordChange() throws Exception {
         // keytool -storepasswd -new geoserver1 -storepass geoserver -storetype jceks -keystore geoserver.jks
         
@@ -108,6 +119,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         getSecurityManager().getKeyStoreProvider().getConfigPasswordKey();
     }
 
+    @Test
     public void testRootLoginAfterMasterPasswdChange() throws Exception {
         String masterPWAsString = getMasterPassword();
 

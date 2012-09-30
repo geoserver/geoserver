@@ -4,6 +4,7 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,9 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.identity.FeatureIdImpl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -44,7 +48,7 @@ import org.opengis.filter.identity.FeatureId;
 
 import com.vividsolutions.jts.io.WKTReader;
 
-public class RetypingDataStoreTest extends TestCase {
+public class RetypingDataStoreTest {
 
     static final String RENAMED = "houses";
 
@@ -56,8 +60,8 @@ public class RetypingDataStoreTest extends TestCase {
 
     private String fid;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         data = File.createTempFile("retype", "data", new File("./target"));
         data.delete();
         data.mkdir();
@@ -83,11 +87,12 @@ public class RetypingDataStoreTest extends TestCase {
         fidFilter = ff.id(Collections.singleton(ff.featureId(fid)));
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         IOUtils.delete(data);
     }
 
+    @Test
     public void testLookupFeatureType() throws Exception {
         try {
             rts.getSchema(MockData.BUILDINGS.getLocalPart());
@@ -101,6 +106,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertEquals(RENAMED, schema.getName().getLocalPart());
     }
 
+    @Test
     public void testGetFeaturesFeatureSource() throws Exception {
         // check the schemas in feature source and feature collection
         SimpleFeatureSource fs = rts.getFeatureSource(RENAMED);
@@ -121,6 +127,7 @@ public class RetypingDataStoreTest extends TestCase {
                 .startsWith(RENAMED));
     }
 
+    @Test
     public void testGetFeaturesReader() throws Exception {
         FeatureReader<SimpleFeatureType, SimpleFeature> fr;
         fr = rts.getFeatureReader(new Query(RENAMED), Transaction.AUTO_COMMIT);
@@ -134,6 +141,7 @@ public class RetypingDataStoreTest extends TestCase {
                 .startsWith(RENAMED));
     }
 
+    @Test
     public void testFeautureSourceFidFilter() throws Exception {
         // grab the last feature in the collection (there are more than one)
         SimpleFeatureSource fs = rts.getFeatureSource(RENAMED);
@@ -154,6 +162,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertEquals(fid, sf.getID());
     }
 
+    @Test
     public void testFeautureReaderFidFilter() throws Exception {
         FeatureReader<SimpleFeatureType, SimpleFeature> fr;
         fr = rts.getFeatureReader(new Query(RENAMED, fidFilter), Transaction.AUTO_COMMIT);
@@ -165,6 +174,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertEquals(fid, sf.getID());
     }
 
+    @Test
     public void testDelete() throws Exception {
         final Query queryAll = new Query(RENAMED);
 
@@ -176,6 +186,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertEquals(count - 1, store.getCount(queryAll));
     }
 
+    @Test
     public void testModify() throws Exception {
         final Query queryAll = new Query(RENAMED);
 
@@ -197,6 +208,7 @@ public class RetypingDataStoreTest extends TestCase {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testAppend() throws Exception {
         SimpleFeatureType type = DataUtilities.createType("trees",
                 "the_geom:Point,FID:String,NAME:String");
@@ -234,6 +246,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertTrue("Id does not start with " + "oaks" + " it's " + id, id.startsWith("oaks"));
     }
 
+    @Test
     public void testLockUnlockFilter() throws Exception {
         SimpleFeatureLocking fl;
         fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
@@ -255,6 +268,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertEquals(1, fl2.lockFeatures(fidFilter));
     }
     
+    @Test
     public void testLockUnlockQuery() throws Exception {
         SimpleFeatureLocking fl;
         fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
@@ -277,6 +291,7 @@ public class RetypingDataStoreTest extends TestCase {
         assertEquals(1, fl2.lockFeatures(q));
     }
 
+    @Test
     public void testQueryWithPropertyNames() throws Exception {
         // check the schemas in feature source and feature collection
         SimpleFeatureSource fs = rts.getFeatureSource(RENAMED);

@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.map;
 
-import static org.geoserver.data.test.MockData.STREAMS;
+import static org.geoserver.data.test.SystemTestData.STREAMS;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -289,7 +289,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             }
         };
 
-        StyleInfo someStyle = getCatalog().getStyles().get(0);
+        StyleInfo someStyle = getCatalog().getStyleByName("line");
         map.addLayer(new FeatureLayer(source, someStyle.getStyle()));
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);

@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -19,7 +20,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     protected WMSLayerInfoImpl() {
     }
     
-    public WMSLayerInfoImpl(CatalogImpl catalog) {
+    public WMSLayerInfoImpl(Catalog catalog) {
         super(catalog);
     }
 

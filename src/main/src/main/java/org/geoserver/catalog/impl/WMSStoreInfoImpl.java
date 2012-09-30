@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geotools.data.wms.WebMapServer;
@@ -30,7 +31,7 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     protected WMSStoreInfoImpl() {
     }
     
-    public WMSStoreInfoImpl(CatalogImpl catalog) {
+    public WMSStoreInfoImpl(Catalog catalog) {
         super(catalog);
     }
 

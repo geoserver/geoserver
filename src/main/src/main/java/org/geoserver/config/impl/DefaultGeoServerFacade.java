@@ -51,6 +51,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     
     public void setGlobal(GeoServerInfo global) {
         resolve(global);
+        setId(global.getSettings());
         this.global = global;
     }
     
@@ -79,6 +80,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     @Override
     public void add(SettingsInfo s) {
         s = unwrap(s);
+        setId(s);
         settings.add(s);
     }
 

@@ -24,12 +24,15 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import static org.geoserver.ows.util.OwsUtils.resolveCollections;
 
 public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     
@@ -109,7 +112,8 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
 
     public void add(SettingsInfo settings) {
         validate(settings);
-
+        resolve(settings);
+        
         WorkspaceInfo workspace = settings.getWorkspace();
         if (facade.getSettings(workspace) != null) {
             throw new IllegalArgumentException("Settings already exist for workspace '" + 
@@ -138,6 +142,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
         if (workspace == null) {
             throw new IllegalArgumentException("Settings must be part of a workspace");
         }
+    }
+
+    void resolve(SettingsInfo settings) {
+        resolveCollections(settings);
     }
 
     void fireSettingsAdded(SettingsInfo settings) {
@@ -206,6 +214,7 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
             throw new IllegalArgumentException( "service with id '" + service.getId() + "' already exists" );
         }
 
+        resolve(service);
         WorkspaceInfo workspace = service.getWorkspace(); 
         if (workspace != null) {
             if (facade.getServiceByName(service.getName(), workspace, ServiceInfo.class) != null) {
@@ -217,6 +226,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
         
         //fire post modification event
         firePostServiceModified(service);
+    }
+
+    void resolve(ServiceInfo service) {
+        resolveCollections(service);
     }
 
     public static <T> T unwrap(T obj) {

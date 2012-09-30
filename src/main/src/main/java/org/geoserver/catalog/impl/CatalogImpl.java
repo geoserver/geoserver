@@ -97,6 +97,11 @@ public class CatalogImpl implements Catalog {
     protected ResourcePool resourcePool;
     protected GeoServerResourceLoader resourceLoader;
 
+    /**
+     * extended validation switch
+     */
+    protected boolean extendedValidation = true;
+
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
         resourcePool = new ResourcePool(this);
@@ -104,6 +109,21 @@ public class CatalogImpl implements Catalog {
     
     public CatalogFacade getFacade() {
         return facade;
+    }
+
+    /**
+     * Turn on/off extended validation switch.
+     * <p>
+     * This is not part of the public api, it is used for testing purposes where we have to 
+     * bootstrap catalog contents. 
+     * </p>
+     */
+    public void setExtendedValidation(boolean extendedValidation) {
+        this.extendedValidation = extendedValidation;
+    }
+
+    public boolean isExtendedValidation() {
+        return extendedValidation;
     }
 
     public Iterable<CatalogValidator> getValidators() {
@@ -1269,9 +1289,9 @@ public class CatalogImpl implements Catalog {
         this.resourceLoader = resourceLoader;
     }
     public void dispose() {
-        facade.dispose();
         if ( listeners != null ) listeners.clear();
         if ( resourcePool != null ) resourcePool.dispose();
+        facade.dispose();
     }
     
     protected void added(CatalogInfo object) {
@@ -1492,6 +1512,11 @@ public class CatalogImpl implements Catalog {
     
     protected List<RuntimeException> postValidate(CatalogInfo info, boolean isNew) {
         List<RuntimeException> errors = new ArrayList<RuntimeException>();
+
+        if (!extendedValidation) {
+            return errors; 
+        }
+
         for (CatalogValidator constraint : getValidators()) {
             try {
                 info.accept(new CatalogValidatorVisitor(constraint, isNew));

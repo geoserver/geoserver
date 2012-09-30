@@ -128,8 +128,14 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      * @throws IOException
      */
     public GeoServerTemplateLoader(Class caller, GeoServerResourceLoader rl) throws IOException {
+        this(caller, new GeoServerDataDirectory(rl));
+    }
+
+    public GeoServerTemplateLoader(Class caller, GeoServerDataDirectory dd) throws IOException {
+        this.dd = dd;
+
         //create a file template loader to delegate to
-        fileTemplateLoader = new FileTemplateLoader(rl.getBaseDirectory());
+        fileTemplateLoader = new FileTemplateLoader(dd.root());
 
         //grab the catalog and store a reference
         catalog = (Catalog)GeoServerExtensions.bean("catalog");
@@ -138,8 +144,10 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         if (caller != null) {
             classTemplateLoader = new ClassTemplateLoader(caller, "");
         }
-        
-        dd = new GeoServerDataDirectory(rl);
+    }
+
+    public void setCatalog(Catalog catalog) {
+        this.catalog = catalog;
     }
 
     /**

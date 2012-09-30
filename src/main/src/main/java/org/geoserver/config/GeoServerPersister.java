@@ -390,8 +390,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeWorkspace( WorkspaceInfo ws ) throws IOException {
         LOGGER.fine( "Removing workspace " + ws.getName() );
-        File dir = dir( ws );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir(ws));
     }
     
     File dir( WorkspaceInfo ws ) throws IOException {
@@ -465,8 +464,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeDataStore( DataStoreInfo ds ) throws IOException {
         LOGGER.fine( "Removing datastore " + ds.getName() );
-        File dir = dir( ds );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( ds ));
     }
     
     File dir( StoreInfo s ) throws IOException {
@@ -497,8 +495,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeFeatureType( FeatureTypeInfo ft ) throws IOException {
         LOGGER.fine( "Removing feature type " + ft.getName() );
-        File dir = dir( ft );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( ft ));
     }
     
     File dir( ResourceInfo r ) throws IOException {
@@ -525,8 +522,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeCoverageStore( CoverageStoreInfo cs ) throws IOException {
         LOGGER.fine( "Removing coverage store " + cs.getName() );
-        File dir = dir( cs );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( cs ));
     }
     
     File file( CoverageStoreInfo cs ) throws IOException {
@@ -549,8 +545,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeCoverage( CoverageInfo c ) throws IOException {
         LOGGER.fine( "Removing coverage " + c.getName() );
-        File dir = dir( c );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( c ));
     }
     
     //wms stores
@@ -569,8 +564,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeWMSStore( WMSStoreInfo ds ) throws IOException {
         LOGGER.fine( "Removing datastore " + ds.getName() );
-        File dir = dir( ds );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( ds ));
     }
     
     File file( WMSStoreInfo ds ) throws IOException {
@@ -593,8 +587,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeWMSLayer( WMSLayerInfo c ) throws IOException {
         LOGGER.fine( "Removing wms layer " + c.getName() );
-        File dir = dir( c );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( c ));
     }
     
     //layers
@@ -612,8 +605,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void removeLayer( LayerInfo l ) throws IOException {
         LOGGER.fine( "Removing layer " + l.getName() );
-        File dir = dir( l );
-        FileUtils.deleteDirectory( dir );
+        rmdir(dir( l ));
     }
     
     File dir( LayerInfo l ) throws IOException {
@@ -802,4 +794,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         }
     }
 
+    void rmdir(File dir) throws IOException {
+        if (dir != null) {
+            FileUtils.deleteDirectory( dir );
+        }
+    }
 }

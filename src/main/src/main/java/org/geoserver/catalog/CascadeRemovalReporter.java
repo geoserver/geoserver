@@ -142,8 +142,13 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         List<ResourceInfo> resources = catalog.getResourcesByStore(dataStore, ResourceInfo.class);
         for (ResourceInfo ri : resources) {
             List<LayerInfo> layers = catalog.getLayers(ri);
-            for (LayerInfo li : layers) {
-                li.accept(this);
+            if (!layers.isEmpty()) {
+                for (LayerInfo li : layers) {
+                    li.accept(this);
+                }
+            }
+            else {
+                ri.accept(this);
             }
         }
 

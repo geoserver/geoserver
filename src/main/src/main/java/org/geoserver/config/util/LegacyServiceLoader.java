@@ -118,5 +118,9 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
     public void save(T service, GeoServer gs) throws Exception {
         //do nothing, saving implemented elsewhere
     }
-    
+
+    @Override
+    public T create(GeoServer gs) throws Exception {
+        throw new UnsupportedOperationException("Use xstream loader equivalent instead");
+    }
 }

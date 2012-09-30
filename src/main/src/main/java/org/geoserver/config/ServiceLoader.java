@@ -44,4 +44,13 @@ public interface ServiceLoader<T extends ServiceInfo> {
      * @throws Exception Any errors that occur while saving the service.
      */
     void save( T service, GeoServer gs ) throws Exception;
+
+    /**
+     * Creates a new service from scratch.
+     * 
+     * @param gs The GeoServer configuration.
+     * 
+     * @throws Exception Any errors that occur while saving the service.
+     */
+    T create(GeoServer gs) throws Exception;
 }

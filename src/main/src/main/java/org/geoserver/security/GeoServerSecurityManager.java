@@ -98,10 +98,12 @@ import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.filter.GeoServerSecurityInterceptorFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
+import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.GroupAdminProperty;
+import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
@@ -290,7 +292,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     public void setApplicationContext(ApplicationContext appContext) throws BeansException {
         this.appContext = appContext;
     }
-    
+
+    public ApplicationContext getApplicationContext() {
+        return appContext;
+    }
+
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextLoadedEvent) {
@@ -543,6 +549,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     RememberMeServices lookupRememberMeService() {
         return (RememberMeServices) GeoServerExtensions.bean("rememberMeServices");
+    }
+
+    public DataAccessRuleDAO getDataAccessRuleDAO() {
+        return DataAccessRuleDAO.get();
+    }
+
+    public ServiceAccessRuleDAO getServiceAccessRuleDAO() {
+        return ServiceAccessRuleDAO.get();
     }
 
     /**

@@ -41,17 +41,12 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         super(resourceLoader, "wps");
     }
 
-    public String getServiceId() {
-        return "wps";
-    }
-    
     public Class<WPSInfo> getServiceClass() {
         return WPSInfo.class;
     }
 
     protected WPSInfo createServiceFromScratch(GeoServer gs) {
         WPSInfoImpl wps = new WPSInfoImpl();
-        wps.setId(getServiceId());
         wps.setGeoServer( gs );
         return wps;
     }

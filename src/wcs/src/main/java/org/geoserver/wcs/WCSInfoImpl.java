@@ -24,7 +24,6 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
     OverviewPolicy overviewPolicy;
 
     public WCSInfoImpl() {
-        setId("wcs");
     }
 
     public boolean isGMLPrefixing() {

@@ -15,7 +15,6 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean encodeFeatureMember = false;    
     
     public WFSInfoImpl() {
-        setId( "wfs" );
     }
     
     public Map<Version, GMLInfo> getGML() {

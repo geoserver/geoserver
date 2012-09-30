@@ -28,7 +28,6 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
     protected WCSInfo createServiceFromScratch(GeoServer gs) {
 
         WCSInfoImpl wcs = new WCSInfoImpl();
-        wcs.setId("wcs");
         wcs.setName("WCS");
 
         return wcs;

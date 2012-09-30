@@ -50,7 +50,6 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private String capabilitiesErrorHandling;
 
     public WMSInfoImpl() {
-        setId("wms");
         authorityURLs = new ArrayList<AuthorityURLInfo>(2);
         identifiers = new ArrayList<LayerIdentifierInfo>(2);
     }

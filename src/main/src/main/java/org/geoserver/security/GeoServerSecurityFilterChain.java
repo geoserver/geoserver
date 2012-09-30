@@ -371,6 +371,17 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return false;
     }
 
+    /**
+     * Removes a filter by name from all filter request chains.
+     */
+    public boolean remove(String filterName) {
+        boolean removed = false;
+        for (RequestFilterChain requestChain : requestChains) {
+            removed |= requestChain.getFilterNames().remove(filterName);
+        }
+        return removed;
+    }
+
     RequestFilterChain findAndCheck(String pattern, String filterName) {
         RequestFilterChain requestChain = requestChain(pattern);
         if (requestChain == null) {

@@ -7,7 +7,9 @@ package org.geoserver.security.validation;
 import java.io.File;
 import java.io.IOException;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 public abstract class AbstractSecurityValidator {
 
@@ -23,6 +25,17 @@ public abstract class AbstractSecurityValidator {
 
     protected boolean isNotEmpty(char[] aString) {
         return aString !=null && aString.length> 0;
+    }
+
+    /*
+     * Helper for looking up a named spring bean in application context.
+     */
+    protected Object lookupBean(String name) throws NoSuchBeanDefinitionException {
+        Object bean = GeoServerExtensions.bean(name, manager.getApplicationContext());
+        if (bean == null) {
+            throw new NoSuchBeanDefinitionException(name);
+        }
+        return bean;
     }
 
     /**

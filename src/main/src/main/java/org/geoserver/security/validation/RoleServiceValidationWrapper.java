@@ -126,10 +126,14 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
         if (checkAgainstRules==false)
             return;
         
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        
         List<String> keys = new ArrayList<String>();
-        for (ServiceAccessRule rule : ServiceAccessRuleDAO.get().getRulesAssociatedWithRole(role.getAuthority()))
+        for (ServiceAccessRule rule : 
+            secMgr.getServiceAccessRuleDAO().getRulesAssociatedWithRole(role.getAuthority()))
             keys.add(rule.getKey());
-        for (DataAccessRule rule : DataAccessRuleDAO.get().getRulesAssociatedWithRole(role.getAuthority()))
+        for (DataAccessRule rule : 
+            secMgr.getDataAccessRuleDAO().getRulesAssociatedWithRole(role.getAuthority()))
             keys.add(rule.getKey());
         
         if (keys.size()>0) {

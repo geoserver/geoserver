@@ -8,7 +8,6 @@ package org.geoserver.security.validation;
 
 import java.io.IOException;
 
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
@@ -148,7 +147,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         if (isNotEmpty(config.getSecurityMetadataSource())==false)
                 throw createFilterException(FilterConfigException.SECURITY_METADATA_SOURCE_NEEDED);
         try {
-            GeoServerExtensions.bean(config.getSecurityMetadataSource());
+            lookupBean(config.getSecurityMetadataSource());
         } catch (NoSuchBeanDefinitionException ex) {
             throw createFilterException(FilterConfigException.UNKNOWN_SECURITY_METADATA_SOURCE,
                     config.getSecurityMetadataSource());
@@ -169,7 +168,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
         if (isNotEmpty(config.getRoleConverterName())) {
             try {
-                GeoServerExtensions.bean(config.getRoleConverterName());
+                lookupBean(config.getRoleConverterName());
             } catch (NoSuchBeanDefinitionException ex) {
                 throw createFilterException(FilterConfigException.UNKNOWN_ROLE_CONVERTER,
                         config.getRoleConverterName());
@@ -217,7 +216,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
                 throw createFilterException(FilterConfigException.ROLES_HEADER_ATTRIBUTE_NEEDED);
             if (isNotEmpty(config.getRoleConverterName())) {
                 try {
-                    GeoServerExtensions.bean(config.getRoleConverterName());
+                    lookupBean(config.getRoleConverterName());
                 } catch (NoSuchBeanDefinitionException ex) {
                     throw createFilterException(FilterConfigException.UNKNOWN_ROLE_CONVERTER,
                             config.getRoleConverterName());

@@ -16,6 +16,15 @@ public class XMLRoleServiceConfig extends XMLSecurityServiceConfig
     protected String adminRoleName;
     protected String groupAdminRoleName;
 
+    public XMLRoleServiceConfig() {
+    }
+    
+    public XMLRoleServiceConfig(XMLRoleServiceConfig other) {
+        super(other);
+        adminRoleName = other.getAdminRoleName();
+        groupAdminRoleName = other.getGroupAdminRoleName();
+    }
+    
     public String getGroupAdminRoleName() {
         return groupAdminRoleName;
     }

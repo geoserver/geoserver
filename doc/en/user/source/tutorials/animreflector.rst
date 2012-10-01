@@ -28,7 +28,7 @@ To define the appearance of the animation additional parameters are provided:
   Nested parameters (such as required by the ``format_options``, ``env`` and ``view_params`` parameters), 
   are supported using the syntax of ``param:name`` (for example, ``view_params:year``).
 * **avalues** is a comma-separated list of the values the animation parameter has for each frame.  
-  If a value contain commas these must be escaped using "\".
+  If a value contain commas these must be escaped using a backslash.
   (For instance, this occurs when providing BBOX values.)
 
 The Animator parses the input values and uses string replacement to generate the sequence of WMS requests to be executed. 
@@ -36,7 +36,8 @@ Each generated request is executed to produce one frame.
 It is up to the caller to ensure the provided animation parameters result in valid WMS requests.
 
 For example, to generate an animation of a layer with the viewport scrolling towards the east,
-the WMS BBOX parameter is given the series of values ``-90,40,-60,70``, ``-80\,40\,-60\,70`` and ``-70,40,-50,70``:
+the WMS BBOX parameter is given the series of values ``-90,40,-60,70``, ``-80,40,-60,70`` and ``-70,40,-50,70``
+(note the escaping of the commas in the BBOX values):
 
 .. code-block:: html 
 

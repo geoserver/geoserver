@@ -67,9 +67,9 @@ The ``<Rule>`` element can contain the following elements:
 Scale Selection
 ---------------
 
-Rules support **scale selection**,
+Rules support **scale selection**
 to allow specifying the scale range in which a rule may be applied
-(assuming the filter condition is satisfied as well, if it is present). 
+(assuming the filter condition is satisfied as well, if present). 
 Scale selection allows for varying portrayal of features at different map scales.
 In particular, at smaller scales it is common to use simpler styling for features, 
 or even prevent the display of some features altogether.
@@ -82,7 +82,7 @@ In other words:
 * **large scale** maps cover *less* area and have a *smaller* scale denominator
 * **small scale** maps cover *more* area and have a *larger* scale denominator
 
-Two elements specify the scale range for a rule:
+Two optional elements specify the scale range for a rule:
 
 .. list-table::
    :widths: 30 15 55 
@@ -100,6 +100,12 @@ Two elements specify the scale range for a rule:
      - Specifies the maximum scale denominator (exclusive) for the scale range 
        in which this rule applies.
        If present, the rule applies at scales larger than the given scale.
+
+.. note:: 
+
+    The current scale can also be obtained via the ``wms_scale_denominator`` 
+    :ref:`SLD environment variable <sld_variable_substitution>`.
+    This allows including scale dependency in :ref:`sld_filter_expression`.
 
        
 The following example shows the use of scale selection in a pair of rules.
@@ -144,9 +150,9 @@ The rules specify that:
 Evaluation Order
 ----------------
     
-Within an SLD document, each ``<FeatureTypeStyle>`` can contain many rules. 
+Within an SLD document each ``<FeatureTypeStyle>`` can contain many rules. 
 Multiple-rule SLDs are the basis for thematic styling.
-In GeoServer, each ``<FeatureTypeStyle>`` 
+In GeoServer each ``<FeatureTypeStyle>`` 
 is evaluated once for each feature processed.
 The rules within it are evaluated in the order they occur.
 A rule is applied when its filter condition (if any) is true for a feature 
@@ -157,14 +163,14 @@ The rendering is performed into the image buffer
 for the parent ``<FeatureTypeStyle>``.
 Thus symbolizers earlier in a ``FeatureTypeStyle`` and ``Rule`` are rendered 
 *before* symbolizers occuring later in the document
-(this is the so-called "Painter's Model" of rendering).
+(this is the "Painter's Model" method of rendering).
 
        
 Examples
 --------
 
-The following rule applies only to features which have a ``POPULATION`` attribute greater than ``100,000``,
-and symbolizes then with red points. 
+The following rule applies only to features which have a ``POPULATION`` attribute greater than 100,000,
+and symbolizes the features as red points. 
 
 .. code-block:: xml 
 

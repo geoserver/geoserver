@@ -195,9 +195,9 @@ Using expressions in parameter values
 Many SLD parameters allow their values to be of **mixed type**. 
 This means that the element content can be:
 
-* a constant string value,
-* an OGC Filter expression,
-* any combination of strings and expressions.
+* a constant value expressed as a string
+* a :ref:`filter expression <sld_filter_expression>`
+* any combination of strings and filter expressions.
 
 Using expressions in parameter values provides the ability to determine styling dynamically
 on a per-feature basis,

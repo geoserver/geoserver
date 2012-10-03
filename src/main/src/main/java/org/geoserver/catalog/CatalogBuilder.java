@@ -44,6 +44,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.image.ImageUtilities;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
@@ -1023,16 +1024,23 @@ public class CatalogBuilder {
                 label.append(")".intern());
             }
 
+            GridSampleDimension sd = sampleDimensions[i];
             label.append("[".intern());
-            label.append(sampleDimensions[i].getMinimumValue());
+            label.append(sd.getMinimumValue());
             label.append(",".intern());
-            label.append(sampleDimensions[i].getMaximumValue());
+            label.append(sd.getMaximumValue());
             label.append("]".intern());
 
             dim.setDescription(label.toString());
-            dim.setRange(sampleDimensions[i].getRange());
 
-            final List<Category> categories = sampleDimensions[i].getCategories();
+            if (sd.getRange() != null) {
+                dim.setRange(sd.getRange());    
+            }
+            else {
+                dim.setRange(NumberRange.create(sd.getMinimumValue(), sd.getMaximumValue()));
+            }
+            
+            final List<Category> categories = sd.getCategories();
             if (categories != null) {
                 for (Category cat : categories) {
 

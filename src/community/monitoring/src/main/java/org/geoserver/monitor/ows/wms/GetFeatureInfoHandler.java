@@ -48,7 +48,7 @@ public class GetFeatureInfoHandler extends RequestObjectHandler {
         int width = (Integer) OwsUtils.get(gmr, "width");
         int height = (Integer) OwsUtils.get(gmr, "height");
        
-        Coordinate coord = org.geoserver.wms.GetFeatureInfo.pixelToWorld(x, y, mapBbox, width, height);
+        Coordinate coord = org.geoserver.wms.WMS.pixelToWorld(x, y, mapBbox, width, height);
         
         return new ReferencedEnvelope(new Envelope(coord), crs);
     }

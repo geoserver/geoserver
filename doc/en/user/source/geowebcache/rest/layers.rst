@@ -3,9 +3,9 @@
 Managing Layers
 ===============
 
-The GeoWebCache REST API provides a RESTful interface through which clients can add, modify, or remove cached layers.
+The GeoWebCache REST API provides a RESTful interface through which users can add, modify, or remove cached layers.
 
-.. note:: JSON representation is not recommended as the library used for JSON has issues with multi-valued properties such as "parameterFilters".
+.. note:: JSON is not recommended for managing layers as the JSON library has a number of issues with multi-valued properties such as "parameterFilters".
 
 Layer list
 ----------
@@ -64,7 +64,7 @@ Layer Operations
 
 URL: ``/gwc/rest/seed/layers/<layer>.xml``
 
-.. note:: JSON representation is not recommended as the library used for JSON has issues with multi-valued properties such as "parameterFilters".
+.. note:: JSON is not recommended for managing layers as the JSON library has a number of issues with multi-valued properties such as "parameterFilters".
 
 .. list-table::
    :header-rows: 1
@@ -90,7 +90,7 @@ URL: ``/gwc/rest/seed/layers/<layer>.xml``
      - 200
      -
 
-.. note:: There are two different representations for cached layers, depending on whether the tile layer is created from the GeoServer WMS layer or layer group (``GeoServerLayer``), or is configured in ``geowebcache.xml`` as a regular GWC layer (``wmsLayer``).  A GeoServer layer is referred to as a  ``GeoServerLayer`` and contains no image data source information such as origin WMS URL. 
+.. note:: There are two different representations for cached layers, depending on whether the tile layer is created from the GeoServer WMS layer or layer group (``GeoServerLayer``), or is configured in ``geowebcache.xml`` as a regular GWC layer (``wmsLayer``). A GeoServer layer is referred to as a  ``GeoServerLayer`` and contains no image data source information such as origin WMS URL. 
 
 **Representations**:
 
@@ -100,7 +100,7 @@ URL: ``/gwc/rest/seed/layers/<layer>.xml``
 * GeoServer (``GeoServerLayer``) :download:`XML <representations/geoserverlayer.xml.txt>`
 
 
-The examples below use the `cURL <http://curl.haxx.se/>`_ utility, though the examples apply to any HTTP-capable tool or library.
+The examples below use the `cURL <http://curl.haxx.se/>`_ tool, though the examples apply to any HTTP-capable tool or library.
 
 Adding a GeoWebCache layer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,7 +111,7 @@ The following example will add a new layer to GeoWebCache:
 
    curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @layer.xml  "http://localhost:8080/geoserver/gwc/rest/layers/newlayer.xml"
 
-where the :file:`layer.xml` file is defined as the following:
+The :file:`layer.xml` file is defined as the following:
 
 .. code-block:: xml
 
@@ -131,7 +131,7 @@ where the :file:`layer.xml` file is defined as the following:
      <wmsLayers>topp:states</wmsLayers>
    </wmsLayer>
 
-.. note:: The addressed resource ``newlayer.xml``, without the ``.xml`` extension, must match the name of the layer in the XML representation.
+.. note:: The addressed resource (``newlayer`` in this example) must match the name of the layer in the XML representation.
 
 Adding a GeoServer layer
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,7 +142,7 @@ The following example will add a new layer to both GeoServer and GeoWebCache:
 
    curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @poi.xml  "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"
 
-where the :file:`poi.xml` file is defined as the following:
+The :file:`poi.xml` file is defined as the following:
 
 .. code-block:: xml
 
@@ -170,7 +170,7 @@ where the :file:`poi.xml` file is defined as the following:
      <autoCacheStyles>true</autoCacheStyles>
    </GeoServerLayer>
 
-.. note:: The addressed resource ``tiger:poi.xml``, without the ``poi.xml`` extension, must match the name of the layer in the XML representation, as well as the name of an *existing* GeoServer layer or layer group.
+.. note:: The addressed resource ( ``tiger:poi`` in this example) must match the name of the layer in the XML representation, as well as the name of an *existing* GeoServer layer or layer group.
 
 Modifying a layer
 ~~~~~~~~~~~~~~~~~
@@ -237,7 +237,7 @@ Instead of PUT, use the HTTP POST method instead:
 Deleting a layer
 ~~~~~~~~~~~~~~~~
 
-Deleting a GeoWebCache tile layer deletes the layer configuration *as well as the layer's disk cache*. No tile images will remain on the cache directory after deleting a tile layer.
+Deleting a GeoWebCache tile layer deletes the layer configuration *as well as the layer's disk cache*. No tile images will remain in the cache directory after deleting a tile layer.
 
 To delete a layer, use the HTTP DELETE method against the layer resource:
 
@@ -247,6 +247,6 @@ To delete a layer, use the HTTP DELETE method against the layer resource:
 
 .. note::
 
-   If trying to delete a tile layer that is an integrated ``GeoServerLayer``, only the GeoWebCache layer definition will be deleted; the GeoServer definition is left untouched. To delete a layer in GeoServer, you will need to use the GeoServer :ref:`REST API <rest_extension>` to manipulate GeoServer resources. 
+   If trying to delete a tile layer that is an integrated ``GeoServerLayer``, only the GeoWebCache layer definition will be deleted; the GeoServer definition is left untouched. To delete a layer in GeoServer, use the :ref:`GeoServer REST API <rest_extension>` to manipulate GeoServer resources. 
 
    On the other hand, deleting a GeoServer layer via the GeoServer REST API *will* automatically delete the associated tile layer.

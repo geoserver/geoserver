@@ -10,7 +10,7 @@ The Caching Defaults page shows the global configuration options for the tile ca
 GWC Provided Services
 ---------------------
 
-GeoWebCache provides additional endpoints for OGC services in addition to the GeoServer endpoints. For example, the GeoServer WMS endpoint is available at::
+In addition to the GeoServer endpoints, GeoWebCache provides other endpoints for OGC services. For example, the GeoServer WMS endpoint is available at::
 
   http://GEOSERVER_URL/wms?...
 
@@ -27,9 +27,9 @@ The following settings describe the different services that can be enabled with 
 Enable direct integration with GeoServer WMS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Direct integration allows WMS requests served through GeoServer to be cached as if they were received and processed by GeoWebCache. This gives all the advantages of using a tile server while still employing the more-flexible GeoServer WMS as a fallback. See the section on :ref:`gwc_using` for more details about this feature.
+Direct integration allows WMS requests served through GeoServer to be cached as if they were received and processed by GeoWebCache. This provides all the advantages of using a tile server while still employing the more-flexible GeoServer WMS as a fallback. See the section on :ref:`gwc_using` for more details about this feature.
 
-When this setting is enabled, tile caching will be enabled for all standard WMS requests that contain the ``tiled=true`` parameter and conform to all required parameters.
+With direct integration, tile caching is enabled for all standard WMS requests that contain the ``tiled=true`` parameter and conform to all required parameters.
 
 This setting is disabled by default. When enabling this option, it is a good idea to also turn on :ref:`webadmin_tilecaching_diskquotas` as well, to prevent unbounded growth of the stored tiles.
 
@@ -45,7 +45,7 @@ When the service is disabled, calls to the capabilities document will return a `
 Enable TMS Service
 ~~~~~~~~~~~~~~~~~~
 
-Enables the Tiled Map Service (TMS) endpoint in GeoWebCache. When this setting is enabled, GeoWebCache will respond to its own TMS endpoint::
+Enables the Tiled Map Service (TMS) endpoint in GeoWebCache. With the TMS service, GeoWebCache will respond to its own TMS endpoint::
 
   http://GEOSERVER/URL/gwc/service/tms/1.0.0
 
@@ -64,7 +64,7 @@ When the service is disabled, calls to the capabilities document will return a `
 Default Caching Options for GeoServer Layers
 --------------------------------------------
 
-This section allows for the configuration of the various defaults and other global options for the tile cache in GeoServer.
+This section describes the configuration of the various defaults and other global options for the tile cache in GeoServer.
 
 .. figure:: img/defaults_options.png
    :align: center
@@ -74,7 +74,7 @@ This section allows for the configuration of the various defaults and other glob
 Automatically configure a GeoWebCache layer for each new layer or layer group
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This setting affects how layers in GeoServer are handled via the embedded GeoWebCache. When this setting is enabled, an entry in the GeoWebCache layer listing will be created whenever a new layer or layer group is published in GeoServer. Use this setting to keep the GeoWebCache catalog in sync. (This is enabled by default.)
+This setting, enabled by default, determines how layers in GeoServer are handled via the embedded GeoWebCache. When this setting is enabled, an entry in the GeoWebCache layer listing will be created whenever a new layer or layer group is published in GeoServer. Use this setting to keep the GeoWebCache catalog in sync. (This is enabled by default.)
 
 Automatically cache non-default styles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,7 +84,7 @@ By default, only requests using the default style for a given layer will be cach
 Default metatile size
 ~~~~~~~~~~~~~~~~~~~~~
 
-A metatile is several tiles combined into a larger one. This larger metatile is generated and then sliced up before being served back (and cached) as standard tiles. The advantage of using metatiling is in situations where a label or geometry lies on a boundary of a tile, which might get cut off or altered. With metatiling, these tile edge issues are greatly reduced.
+A metatile is several tiles combined into a larger one. This larger metatile is generated and then subdivided before being served back (and cached) as standard tiles. The advantage of using metatiling is in situations where a label or geometry lies on a boundary of a tile, which may be truncated or altered. With metatiling, these tile edge issues are greatly reduced.
 
 Moreover, with metatiling, the overall time it takes to seed the cache is reduced in most cases, when compared with rendering a full map with single tiles. In fact, using larger metatiling factors is a good way to reduce the time spent in seeding the cache. 
 
@@ -121,10 +121,10 @@ These defaults can be overwritten on a per-layer basis when :ref:`editing the la
 Default Cached Gridsets
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-This section shows the gridsets that will be automatically configured for cached layers. While there are a few pre-configured gridsets available by default, there are only two gridsets enabled by default. These correspond to the most common and universal cases:
+This section shows the gridsets that will be automatically configured for cached layers. While there are some pre-configured gridsets available, only two are enabled by default. These correspond to the most common and universal cases:
 
 * EPSG:4326 (geographic) with 22 maximum zoom levels and 256x256 pixel tiles
-* EPSG:900913 (spherical Mercator) with 31 maximum zoom levels and 256x256 pixel tiles.
+* EPSG:900913 (spherical Mercator) with 31 maximum zoom levels and 256x256 pixel tiles
 
 .. figure:: img/defaults_gridsets.png
    :align: center

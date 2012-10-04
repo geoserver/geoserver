@@ -3,7 +3,8 @@
 Tile Layers
 ===========
 
-This page shows a listing of all of the layers known to the integrated GeoWebCache. It is similar to the :ref:`layerpreview` page for GeoWebCache, and has many of the same options.
+This page shows a listing of all of the layers known to the integrated GeoWebCache. It is similar to the :ref:`layerpreview` for GeoWebCache, with many of the same options.
+
 
 .. figure:: img/tilelayers.png
    :align: center
@@ -13,13 +14,13 @@ This page shows a listing of all of the layers known to the integrated GeoWebCac
 Layer information
 -----------------
 
-For each layer being cached by GeoWebCache, the following information is available:
+For each layer cached by GeoWebCache, the following information is available.
 
 
 Disk Quota
 ~~~~~~~~~~
 
-The maximum amount of disk space that can be used for this layer. Will be set to :guilabel:`N/A` (unbounded) by default, unless :ref:`webadmin_tilecaching_diskquotas` are enabled.
+The maximum amount of disk space that can be used for this layer. By default, this will be set to :guilabel:`N/A` (unbounded) unless :ref:`webadmin_tilecaching_diskquotas` are enabled.
 
 Disk Used
 ~~~~~~~~~
@@ -47,11 +48,10 @@ Empty
 Will remove all saved tiles from the cache. This is identical to a full truncate operation for the layer.
 
 
-
 Add or remove cached layers
 ---------------------------
 
-The list of layers displayed on this page is typically the same ,or similar, to the full list of layers known to GeoServer. However, it may not be desirable to have every layer published in GeoServer have a cached layer component. In this case, simply select the box next to the layer to remove, and click :guilabel:`Remove selected cached layers`. The layer will be removed from GeoWebCache, and the disk cache for this layer will be entirely removed.
+The list of layers displayed on this page is typically the same as, or similar to, the full list of layers known to GeoServer. However, it may not be desirable to have every layer published in GeoServer have a cached layer component. In this case, simply select the box next to the layer to remove, and click :guilabel:`Remove selected cached layers`. The layer will be removed from GeoWebCache, and the disk cache for this layer will be entirely removed.
 
 .. warning:: Deleting the tile cache cannot be undone.
 

@@ -3,7 +3,7 @@
 Gridsets
 ========
 
-A gridset specifies a spatial reference system, bounding box (extent), a list of zoom levels (resolutions or scale denominators), and tile dimensions. Tile requests must conform to the gridset matrix, otherwise caching will not occur.
+A gridset defines a spatial reference system, bounding box (extent), a list of zoom levels (resolutions or scale denominators), and tile dimensions. Tile requests must conform to the gridset matrix, otherwise caching will not occur.
 
 This page allows you to edit existing saved gridsets or create new ones. There are five preconfuigred gridsets, all in one of two coordinate reference systems: EPSG:4326 and EPSG:900913. For additional CRS support, new gridsets can be created. Another reason to create a new gridset would be to set a different tile size or different number of zoom levels.
 
@@ -15,7 +15,7 @@ This page allows you to edit existing saved gridsets or create new ones. There a
 Creating a new gridset
 ----------------------
 
-To create a new gridset, click the :guilabel:`Create new gridset`. You will then be asked to enter a range of parameters.
+To create a new gridset, click :guilabel:`Create new gridset`. You will then be asked to enter a range of parameters.
 
 .. figure:: img/gridsets_new.png
    :align: center
@@ -35,7 +35,7 @@ Metadata on the gridset.
 Coordinate Reference System
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The CRS to use in the gridset. You can select from any CRS that GeoServer recognizes. After selection, both the units (meters, feet, degrees, etc.) and the number of meters per unit will be displayed.
+The Coordinate Reference System (CRS) to use in the gridset. You can select from any CRS that GeoServer recognizes. After selection, both the units (meters, feet, degrees, etc.) and the number of meters per unit will be displayed.
 
 Gridset bounds
 ~~~~~~~~~~~~~~
@@ -67,7 +67,7 @@ When finished, click :guilabel:`Save`. Before you will be able to use this new g
 Editing a gridset
 -----------------
 
-Clicking on an existing gridset will open it for editing. Please note that the built-in gridsets cannot be edited. They can, however, be copied.
+Click an existing gridset to open it for editing. Please note that the built-in gridsets cannot be edited. They can, however, be copied.
 
 .. figure:: img/editgridset.png
    :align: center
@@ -84,12 +84,12 @@ Clicking on an existing gridset will open it for editing. Please note that the b
 Copying a gridset
 -----------------
 
-As there are many configuration options to a gridset, it is often more convenient to copy an existing gridset. For any of the existing gridsets, click the :guilabel:`Create a copy` link to copy the gridset information to a new gridset.
+As there are many configuration options for a gridset, it is often more convenient to copy an existing gridset. For any of the existing gridsets, click the :guilabel:`Create a copy` link to copy the gridset information to a new gridset.
 
 Removing a gridset
 ------------------
 
-To remove a gridset, check the box next to the entry or entries, and click :guilabel:`Remove selected gridsets`.
+To remove a gridset, select the check box next to the gridset or gridsets, and click :guilabel:`Remove selected gridsets`.
 
 .. warning:: Removing a gridset definition will remove not only the gridset definition, but also any tiles on any layers generated with this gridset.
 

@@ -3,7 +3,7 @@
 Seeding and Truncating
 ======================
 
-The GeoWebCache REST API provides a RESTful interface through which clients can add or remove tiles from the cache on a per-layer basis.
+The GeoWebCache REST API provides a RESTful interface through which users can add or remove tiles from the cache on a per-layer basis.
 
 Operations
 ----------
@@ -39,7 +39,7 @@ URL: ``/gwc/rest/seed/<layer>.<format>``
 * :download:`XML <representations/seed_xml.txt>`
 * :download:`JSON <representations/seed_json.txt>`
 
-The examples below use the `cURL <http://curl.haxx.se/>`_ utility, though the examples apply to any HTTP-capable tool or library.
+The examples below use the `cURL <http://curl.haxx.se/>`_ tool, though the examples apply to any HTTP-capable tool or library.
 
 Seeding
 ~~~~~~~
@@ -191,7 +191,7 @@ The meaning of each long value in each thread array is::
 
   [tiles processed, total # of tiles to process, # of remaining tiles, Task ID, Task status]
 
-The meaning of the ``Task status`` field is one of the following::
+The returned ``Task Status`` value will be one of the following::
 
   -1 = ABORTED 
    0 = PENDING
@@ -251,11 +251,11 @@ URL: ``/gwc/rest/seed[/<layer>]``
      - 405
      -
 
-A POST request to the ``/gwc/rest/seed`` resource terminates pending and/or running tasks for **all layers**.  A POST request to the ``/gwc/rest/seed/<layername>`` resource terminates pending and/or running tasks for a specific layer.
+A POST request to the ``/gwc/rest/seed`` resource terminates pending and/or running tasks for **all layers**. A POST request to the ``/gwc/rest/seed/<layername>`` resource terminates pending and/or running tasks for a specific layer.
 
-It is possible to specify whether to terminate pending and/or running tasks specifically.  This is done via the parameter ``kill_all``.  This parameter can have one of the following values:  ``running``, and ``pending``, and ``all``.
+It is possible to terminate individual or all pending and/or running tasks. Use the parameter ``kill_all`` with one of the following values: ``running``, ``pending``, or ``all``.
 
-.. note::  For backward compatibility, the kill_all parameter value ``1`` is also accepted and is equivalent to ``running``.
+.. note::  For backward compatibility, the ``kill_all`` parameter value ``1`` is also accepted and is equivalent to ``running``.
 
 The following request terminates all running seed and truncate tasks.
 

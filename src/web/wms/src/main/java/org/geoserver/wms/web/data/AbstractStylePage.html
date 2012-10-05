@@ -12,6 +12,35 @@
             <select wicket:id="workspace"></select>
         </li>
         <li>
+            <br/>
+            <fieldset>
+                <legend>
+                    <span><wicket:message key="legend">Legend</wicket:message></span>
+                </legend>
+                <ul>
+                    <li>
+                        <label for="onlineResource"><wicket:message key="legend.onlineResource">onlineResource</wicket:message></label>
+                        <input wicket:id="onlineResource" class="text"></input>
+                    </li>
+                    <li>
+                        <label for="format"><wicket:message key="legend.format">format</wicket:message></label>
+                        <input wicket:id="format" class="text"></input>
+                    </li>
+                    <li>
+                        <label for="width"><wicket:message key="legend.width">width</wicket:message></label>
+                        <input wicket:id="width" class="text"></input>
+                    </li>
+                    <li>
+                        <label for="height"><wicket:message key="legend.height">height</wicket:message></label>
+                        <input wicket:id="height" class="text"></input>
+                    </li>
+                    <li>
+                        <a href="#" wicket:id="verifyImage"><wicket:message key="legend.verifyImage">Auto-detect image size and type</wicket:message></a>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+        <li>
             <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
             <select wicket:id="existingStyles"></select>
             <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>

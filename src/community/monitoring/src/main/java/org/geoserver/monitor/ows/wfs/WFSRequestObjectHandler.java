@@ -4,14 +4,22 @@
  */
 package org.geoserver.monitor.ows.wfs;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.monitor.ows.RequestObjectHandler;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
 
-    protected WFSRequestObjectHandler(String reqObjClassName) {
+    Catalog catalog;
+    
+    protected WFSRequestObjectHandler(String reqObjClassName, Catalog catalog) {
         super(reqObjClassName);
+        this.catalog = catalog;
     }
 
     protected String toString(Object name) {
@@ -31,6 +39,15 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
             return name.toString();
         }
          
+    }
+    
+    /**
+     * Look up the CRS of the specified FeatureType
+     */
+    protected CoordinateReferenceSystem crsFromTypeNames(QName typeName) {
+            FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+            
+            return featureType.getCRS();
     }
 
 }

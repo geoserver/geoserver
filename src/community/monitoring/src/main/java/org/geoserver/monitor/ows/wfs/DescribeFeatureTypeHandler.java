@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.Catalog;
 import org.geotools.xml.EMFUtils;
 
 public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 
-    public DescribeFeatureTypeHandler() {
-        super("net.opengis.wfs.DescribeFeatureTypeType");
+    public DescribeFeatureTypeHandler(Catalog catalog) {
+        super("net.opengis.wfs.DescribeFeatureTypeType", catalog);
     }
 
     @Override

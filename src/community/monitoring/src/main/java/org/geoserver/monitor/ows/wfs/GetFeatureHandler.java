@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
@@ -16,8 +17,8 @@ import org.opengis.geometry.BoundingBox;
 
 public class GetFeatureHandler extends WFSRequestObjectHandler {
 
-    public GetFeatureHandler() {
-        super("net.opengis.wfs.GetFeatureType");
+    public GetFeatureHandler(Catalog catalog) {
+        super("net.opengis.wfs.GetFeatureType", catalog);
     }
 
     @Override

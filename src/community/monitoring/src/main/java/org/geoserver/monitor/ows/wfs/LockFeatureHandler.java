@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 import org.opengis.filter.Filter;
@@ -15,8 +16,8 @@ import org.opengis.geometry.BoundingBox;
 
 public class LockFeatureHandler extends WFSRequestObjectHandler {
 
-    public LockFeatureHandler() {
-        super("net.opengis.wfs.LockFeatureType");
+    public LockFeatureHandler(Catalog catalog) {
+        super("net.opengis.wfs.LockFeatureType", catalog);
     }
 
     @Override

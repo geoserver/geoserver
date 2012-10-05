@@ -34,31 +34,30 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class MonitorCallback implements DispatcherCallback {
 
-    static List<RequestObjectHandler> HANDLERS = new ArrayList();
-    static {
-        //wfs
-        HANDLERS.add(new DescribeFeatureTypeHandler());
-        HANDLERS.add(new GetFeatureHandler());
-        HANDLERS.add(new LockFeatureHandler());
-        HANDLERS.add(new TransactionHandler());
-        
-        //wms
-        HANDLERS.add(new GetFeatureInfoHandler());
-        HANDLERS.add(new GetMapHandler());
-        HANDLERS.add(new GetLegendGraphicHandler());
-        
-        //wcs
-        HANDLERS.add(new DescribeCoverageHandler());
-        HANDLERS.add(new GetCoverageHandler());
-        
-        HANDLERS.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler());
-        HANDLERS.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler());
-    }
+    static List<RequestObjectHandler> handlers = new ArrayList();
     
     Monitor monitor;
     
     public MonitorCallback(Monitor monitor) {
         this.monitor = monitor;
+        
+        //wfs
+        handlers.add(new DescribeFeatureTypeHandler(monitor.getServer().getCatalog()));
+        handlers.add(new GetFeatureHandler(monitor.getServer().getCatalog()));
+        handlers.add(new LockFeatureHandler(monitor.getServer().getCatalog()));
+        handlers.add(new TransactionHandler(monitor.getServer().getCatalog()));
+        
+        //wms
+        handlers.add(new GetFeatureInfoHandler());
+        handlers.add(new GetMapHandler());
+        handlers.add(new GetLegendGraphicHandler());
+        
+        //wcs
+        handlers.add(new DescribeCoverageHandler());
+        handlers.add(new GetCoverageHandler());
+        
+        handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler());
+        handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler());
     }
     
     public Request init(Request request) {
@@ -89,7 +88,7 @@ public class MonitorCallback implements DispatcherCallback {
         if (operation.getParameters().length > 0) {
             //TODO: a better check for the request object
             Object reqObj = operation.getParameters()[0];
-            for (RequestObjectHandler h : HANDLERS) {
+            for (RequestObjectHandler h : handlers) {
                 if (h.canHandle(reqObj)) {
                     h.handle(reqObj, data);
                     break;

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
@@ -22,8 +23,8 @@ import org.opengis.geometry.BoundingBox;
 
 public class TransactionHandler extends WFSRequestObjectHandler {
 
-    public TransactionHandler() {
-        super("net.opengis.wfs.TransactionType");
+    public TransactionHandler(Catalog catalog) {
+        super("net.opengis.wfs.TransactionType", catalog);
     }
 
     @Override

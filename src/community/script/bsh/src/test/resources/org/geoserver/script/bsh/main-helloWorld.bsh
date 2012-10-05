@@ -1,0 +1,4 @@
+import org.restlet.data.*;
+run(request,response) {
+  response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
+}

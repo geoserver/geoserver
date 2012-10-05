@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <parent>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>script</artifactId>
+  <version>2.2-SNAPSHOT</version>
+ </parent>
+ <groupId>org.geoserver.script</groupId>
+ <artifactId>script-core</artifactId>
+ <packaging>jar</packaging>
+ <name>Core Scripting Extension</name>
+ 
+ <dependencies>
+   
+   <dependency>
+     <groupId>com.google.guava</groupId>
+     <artifactId>guava</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.easymock</groupId>
+     <artifactId>easymockclassextension</artifactId>
+     <scope>test</scope>
+   </dependency>
+   <dependency>
+     <groupId>cglib</groupId>
+     <artifactId>cglib-nodep</artifactId>
+     <version>2.2</version>
+     <scope>test</scope>
+   </dependency>
+ </dependencies>
+
+</project>

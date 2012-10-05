@@ -1,0 +1,5 @@
+import org.geoserver.wfs.WFSException;
+
+before(req, context) {
+  throw new WFSException("before exception"); 
+}

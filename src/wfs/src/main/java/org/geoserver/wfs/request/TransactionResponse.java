@@ -16,6 +16,16 @@ import org.opengis.filter.identity.FeatureId;
 
 public abstract class TransactionResponse extends RequestObject {
 
+    public static TransactionResponse adapt(Object request) {
+        if (request instanceof TransactionResponseType) {
+            return new WFS11((EObject) request);
+        }
+        else if (request instanceof net.opengis.wfs20.TransactionResponseType) {
+            return new WFS20((EObject) request);
+        }
+        return null;
+    }
+
     protected TransactionResponse(EObject adaptee) {
         super(adaptee);
     }

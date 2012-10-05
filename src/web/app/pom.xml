@@ -771,6 +771,71 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>script-py</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.script</groupId>
+          <artifactId>script-py</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>script-js</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.script</groupId>
+          <artifactId>script-js</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>script-bsh</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.script</groupId>
+          <artifactId>script-bsh</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>script-rb</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.script</groupId>
+          <artifactId>script-rb</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>script-groovy</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.script</groupId>
+          <artifactId>script-groovy</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 
 </project>

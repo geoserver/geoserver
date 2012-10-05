@@ -1,0 +1,11 @@
+#!/bin/bash
+
+pushd ../../.. > /dev/null
+
+cp=''
+for d in `find . -name classes -type d`; do
+  cp=$cp:"`pwd`/`echo $d | sed 's/^\.\///g'`"
+done
+
+export CLASSPATH=$CLASSPATH:$cp
+popd > /dev/null

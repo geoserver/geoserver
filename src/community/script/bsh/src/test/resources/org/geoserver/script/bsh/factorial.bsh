@@ -1,0 +1,10 @@
+factorial(n) {
+  if (n < 2) {
+    return 1;
+  }
+  return factorial(n-1)*n;
+}
+
+run(value, args) {
+   return factorial(value);
+}

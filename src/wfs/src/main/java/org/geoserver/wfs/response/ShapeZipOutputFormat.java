@@ -474,7 +474,14 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
 
         if (file != null && file.exists()) {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(file));
+            FileInputStream fis = null;
+            try {
+            	fis = new FileInputStream(file);
+            	properties.load(fis);
+            } finally {
+            	org.apache.commons.io.IOUtils.closeQuietly(fis);
+            }
+			
 
             String data = (String) properties.get(epsgCode.toString());
 

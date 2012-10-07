@@ -5,21 +5,31 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Logger;
 
-import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
+import org.geoserver.test.GeoServerMockTestSupport;
 import org.geotools.util.logging.Logging;
+import org.junit.Before;
 import org.junit.Test;
 
-public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
+public class CasFilterConfigValidatorTest extends GeoServerMockTestSupport {
 
     
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
+    CasFilterConfigValidator validator;
+    
+    @Before
+    public void setValidator() {
+        validator=new CasFilterConfigValidator(getSecurityManager());
+    }
+    
+    
+    
     @Test
     public void testCasProxiedFilterConfigValidation() throws Exception{
         CasProxiedAuthenticationFilterConfig config = new CasProxiedAuthenticationFilterConfig();
@@ -28,7 +38,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
        
         check((PreAuthenticatedUserNameFilterConfig)config);
         check((CasAuthenticationProperties)config);
-        getSecurityManager().saveFilter(config);
+        validator.validateFilterConfig(config);
     }
         
 
@@ -42,7 +52,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setService(null);
         boolean failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_SERVICE_URL_REQUIRED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -55,7 +65,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setService("blabal");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_SERVICE_URL_MALFORMED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -68,7 +78,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setProxyCallbackUrlPrefix("https://myhost/callback");        
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -83,7 +93,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setUrlInCasLogoutPage("blbalba");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_URL_IN_LOGOUT_PAGE_MALFORMED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -96,7 +106,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setUserGroupServiceName("unkown");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE,ex.getId());
             assertEquals("unkown",ex.getArgs()[0]);
@@ -117,7 +127,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setCasServerUrlPrefix(null);        
         boolean failed = false;                                        
         try {
-            getSecurityManager().saveFilter(fconfig);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_SERVER_URL_REQUIRED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -130,7 +140,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setCasServerUrlPrefix("blabal");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(fconfig);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_SERVER_URL_MALFORMED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -144,7 +154,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setProxyCallbackUrlPrefix("blabal");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(fconfig);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_PROXYCALLBACK_MALFORMED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -156,7 +166,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setProxyCallbackUrlPrefix("http://localhost/callback");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(fconfig);
+            validator.validateFilterConfig(config);
         } catch (CasFilterConfigException ex){
             assertEquals(CasFilterConfigException.CAS_PROXYCALLBACK_NOT_HTTPS,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -166,7 +176,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         assertTrue(failed);
         
         config.setProxyCallbackUrlPrefix("https://localhost/callback");
-        getSecurityManager().saveFilter(fconfig);
+        validator.validateFilterConfig(config);
                                         
     }
 
@@ -175,7 +185,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         
         boolean failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.ROLE_SOURCE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -189,7 +199,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.UserGroupService);
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -202,7 +212,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setUserGroupServiceName("blabla");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE,ex.getId());
             assertEquals(1,ex.getArgs().length);
@@ -218,7 +228,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setRoleServiceName("blabla");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE,ex.getId());
             assertEquals(1,ex.getArgs().length);
@@ -233,7 +243,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.Header);
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.ROLES_HEADER_ATTRIBUTE_NEEDED,ex.getId());
             assertEquals(0,ex.getArgs().length);
@@ -247,7 +257,7 @@ public class CasFilterConfigValidatorTest extends GeoServerSecurityTestSupport {
         config.setRoleConverterName("unknown");
         failed = false;                                        
         try {
-            getSecurityManager().saveFilter(config);
+            validator.validateFilterConfig(config);
         } catch (FilterConfigException ex){
             assertEquals(FilterConfigException.UNKNOWN_ROLE_CONVERTER,ex.getId());
             assertEquals(1,ex.getArgs().length);

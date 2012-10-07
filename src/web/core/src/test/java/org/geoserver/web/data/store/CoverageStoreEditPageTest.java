@@ -2,6 +2,7 @@ package org.geoserver.web.data.store;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.wicket.util.tester.FormTester;
@@ -27,22 +28,23 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     }
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         login();
         
         coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(),
                 CoverageStoreInfo.class);
-        tester.startPage(new CoverageStoreEditPage(coverageStore.getId()));
-    }
-
-    @Before
-    public void revertBlueMarbleModified() {
-        Catalog cat = getCatalog();
-        CoverageStoreInfo c = cat.getCoverageStoreByName("BlueMarbleModified");
-        if (c != null) {
-            c.setName("BlueMarble");
-            cat.save(c);
+        if(coverageStore == null) {
+        	// revert the bluemable modified change
+            Catalog cat = getCatalog();
+            CoverageStoreInfo c = cat.getCoverageStoreByName("BlueMarbleModified");
+            if (c != null) {
+                c.setName("BlueMarble");
+                cat.save(c);
+            }
+            coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(),
+                    CoverageStoreInfo.class);
         }
+        tester.startPage(new CoverageStoreEditPage(coverageStore.getId()));
     }
 
     @Test

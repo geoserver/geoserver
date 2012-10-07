@@ -13,6 +13,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.featureinfo.dummy.Dummy;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
@@ -94,14 +95,18 @@ public class FeatureTemplateTest extends WMSTestSupport {
     
     @Test
     public void testAlternateLookup() throws Exception {
-        
         SimpleFeatureSource source = getFeatureSource( MockData.PRIMITIVEGEOFEATURE );
         SimpleFeatureCollection fc = source.getFeatures();
-        SimpleFeature f = fc.features().next();
-        
-        FeatureTemplate template = new FeatureTemplate();
-        String result = template.template(f, "dummy.ftl", Dummy.class );
-        
-        assertEquals( "dummy", result );
+        SimpleFeatureIterator features = fc.features();
+        try {
+			SimpleFeature f = features.next();
+	        
+	        FeatureTemplate template = new FeatureTemplate();
+	        String result = template.template(f, "dummy.ftl", Dummy.class );
+	        
+	        assertEquals( "dummy", result );
+        } finally {
+        	features.close();
+        }
     }
 }

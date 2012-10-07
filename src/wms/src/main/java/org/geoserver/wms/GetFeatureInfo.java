@@ -9,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.media.jai.PlanarImage;
 
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
@@ -66,6 +69,7 @@ import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.geometry.XRectangle2D;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
@@ -394,6 +398,12 @@ public class GetFeatureInfo {
         } catch (PointOutsideCoverageException e) {
             // it's fine, users might legitimately query point outside, we just don't
             // return anything
+        } finally {
+        	RenderedImage ri = coverage.getRenderedImage();
+        	coverage.dispose(true);
+        	if(ri instanceof PlanarImage) {
+        		ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        	}
         }
         return pixel;
     }

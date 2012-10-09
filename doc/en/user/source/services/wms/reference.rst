@@ -161,7 +161,7 @@ The standard parameters for the GetMap operation are:
      - Styles in which layers are to be rendered.  
        Value is a comma-separated list of style names,
        or empty if default styling is required.
-       Style names may be empty in the list.
+       Style names may be empty in the list, to use default layer styling.
    * - ``srs`` *or* ``crs``
      - Yes
      - Spatial Reference System for map output.
@@ -202,12 +202,12 @@ The standard parameters for the GetMap operation are:
        See :ref:`wms_time` for more information.
    * - ``sld``
      - No
-     - A URL referencing a StyledLayerDescriptor XML file
-       which is used to control or enhance map layers and styling
+     - A URL referencing a :ref:`StyledLayerDescriptor <styling>` XML file
+       which controls or enhances map layers and styling
    * - ``sld_body``
      - No
-     - A URL-encoded StyledLayerDescriptor
-       which is used to control or enhance map layers and styling     
+     - A URL-encoded :ref:`StyledLayerDescriptor <styling>` XML document
+       which controls or enhances map layers and styling     
 
        
 GeoServer provides a number of useful vendor-specific parameters for the GetMap operation.  
@@ -215,9 +215,9 @@ These are documented in the :ref:`wms_vendor_parameters` section.
 
 Although the standard specifies many of the parameters as being mandatory,
 GeoServer provides the :ref:`tutorials_wmsreflector` to allow many of them to be optionally specified.
-Experimenting with this is also a good way to get to know the GetMap parameters.  
+Experimenting with this feature is a good way to get to know the GetMap parameters.  
 
-An example request for a PNG map image showing the ``topp:states`` layer using default styling is:
+An example request for the ``topp:states`` layer to be output as a PNG map image in SRS EPGS:4326 and using default styling is:
 
 .. code-block:: xml
 
@@ -248,8 +248,8 @@ GetFeatureInfo
 
 The **GetFeatureInfo** operation requests the spatial and attribute data for the features
 at a given location on a map.  
-It is similar to the WFS **GetFeature** operation, but that operation provides more flexibility in both input and output.
-Since GeoServer provides a WFS we recommend using it instead of ``GetFeatureInfo`` whenever possible.  
+It is similar to the WFS :ref:`wfs_getfeature` operation, but less flexible in both input and output.
+Since GeoServer provides a WFS service we recommend using it instead of ``GetFeatureInfo`` whenever possible.  
  
 The one advantage of ``GetFeatureInfo`` is that the request uses an (x,y) pixel value from a returned WMS image.  
 This is easier to use for a naive client that is not able to perform true geographic referencing.

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestData.Category;
@@ -29,6 +30,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -40,12 +42,13 @@ public class MonitorCallback implements DispatcherCallback {
     
     public MonitorCallback(Monitor monitor) {
         this.monitor = monitor;
-        
+        CoordinateReferenceSystem logCrs = monitor.getConfig().getBboxLogCrs();
+        Catalog catalog = monitor.getServer().getCatalog();
         //wfs
-        handlers.add(new DescribeFeatureTypeHandler(monitor.getServer().getCatalog()));
-        handlers.add(new GetFeatureHandler(monitor.getServer().getCatalog()));
-        handlers.add(new LockFeatureHandler(monitor.getServer().getCatalog()));
-        handlers.add(new TransactionHandler(monitor.getServer().getCatalog()));
+        handlers.add(new DescribeFeatureTypeHandler(logCrs, catalog));
+        handlers.add(new GetFeatureHandler(logCrs, catalog));
+        handlers.add(new LockFeatureHandler(logCrs, catalog));
+        handlers.add(new TransactionHandler(logCrs, catalog));
         
         //wms
         handlers.add(new GetFeatureInfoHandler());

@@ -27,6 +27,8 @@ import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.filter.temporal.TOverlaps;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -39,18 +41,38 @@ import com.vividsolutions.jts.geom.Geometry;
 public class BBoxFilterVisitor extends DefaultFilterVisitor implements
     FilterVisitor {
     
-    BoundingBox bbox=new ReferencedEnvelope();
+    BoundingBox bbox;
+    CoordinateReferenceSystem defaultCrs;
+    
+    public BBoxFilterVisitor(CoordinateReferenceSystem crs, CoordinateReferenceSystem defaultCrs) {
+        this.bbox = new ReferencedEnvelope(crs);
+        this.defaultCrs = defaultCrs;
+    }
+    
+    public BBoxFilterVisitor(BoundingBox bbox, CoordinateReferenceSystem defaultCrs) {
+        this.bbox = new ReferencedEnvelope(bbox);
+        this.defaultCrs = defaultCrs;
+    }
     
     public BoundingBox getBbox() {
         return bbox;
     }
     
     void addBbox(BoundingBox bbox) {
-        this.bbox.include(bbox);
+        try {
+            if(this.bbox!=null){
+                if (bbox.getCoordinateReferenceSystem() == null) {
+                    bbox = ReferencedEnvelope.reference(bbox, defaultCrs);
+                }
+                this.bbox.include(bbox.toBounds(this.bbox.getCoordinateReferenceSystem()));
+            }
+        } catch (TransformException e) {
+            this.bbox=null;
+        }
     }
     
     @Override
-    public Object visit(BBOX filter, Object data) {
+    public Object visit(BBOX filter, Object data)  {
         addBbox(filter.getBounds());
         return data;
     }

@@ -13,11 +13,12 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LockFeatureHandler extends WFSRequestObjectHandler {
 
-    public LockFeatureHandler(Catalog catalog) {
-        super("net.opengis.wfs.LockFeatureType", catalog);
+    public LockFeatureHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
+        super("net.opengis.wfs.LockFeatureType", logCrs, catalog);
     }
 
     @Override
@@ -35,14 +36,10 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
         return layers;
     }
     
+
     @Override
-    protected BoundingBox getBBox(Object request) {
-        List locks = (List) OwsUtils.get(request, "lock");
-        BBoxFilterVisitor visitor = new BBoxFilterVisitor();
-        for(Object l : locks){
-            Filter f = (Filter) OwsUtils.get(l, "filter");
-            if(f!=null) f.accept(visitor, null);
-        }
-        return visitor.getBbox();
+    protected List<Object> getElements(Object request) {
+        return (List) OwsUtils.get(request, "lock");
     }
+
 }

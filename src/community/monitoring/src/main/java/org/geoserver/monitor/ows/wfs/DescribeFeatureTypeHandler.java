@@ -10,11 +10,12 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geotools.xml.EMFUtils;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 
-    public DescribeFeatureTypeHandler(Catalog catalog) {
-        super("net.opengis.wfs.DescribeFeatureTypeType", catalog);
+    public DescribeFeatureTypeHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
+        super("net.opengis.wfs.DescribeFeatureTypeType", logCrs, catalog);
     }
 
     @Override
@@ -29,6 +30,12 @@ public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
             layers.add(toString(o));
         }
         return layers;
+    }
+
+    @Override
+    protected List<Object> getElements(Object request) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

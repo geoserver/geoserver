@@ -7,6 +7,8 @@ package org.geoserver.monitor.ows.wfs;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.OwsUtils;
@@ -14,11 +16,12 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetFeatureHandler extends WFSRequestObjectHandler {
 
-    public GetFeatureHandler(Catalog catalog) {
-        super("net.opengis.wfs.GetFeatureType", catalog);
+    public GetFeatureHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
+        super("net.opengis.wfs.GetFeatureType", logCrs, catalog);
     }
 
     @Override
@@ -41,14 +44,18 @@ public class GetFeatureHandler extends WFSRequestObjectHandler {
     }
 
     @Override
-    protected BoundingBox getBBox(Object request) {
-        List queries = (List) OwsUtils.get(request, "query");
-        BBoxFilterVisitor visitor = new BBoxFilterVisitor();
-        for(Object q : queries){
-            Filter f = (Filter) OwsUtils.get(q, "filter");
-            if(f!=null) f.accept(visitor, null);
+    protected List<Object> getElements(Object request) {
+        return (List) OwsUtils.get(request, "query");
+    }
+
+    @Override
+    protected CoordinateReferenceSystem getCrsFromElement(Object element) {
+        List<Object> types = (List<Object>) OwsUtils.get(element, "typeName");
+        if(types.size()==1){
+            return crsFromTypeName((QName) types.get(0));
+        } else {
+            return null;
         }
-        return visitor.getBbox();
     }
 
 }

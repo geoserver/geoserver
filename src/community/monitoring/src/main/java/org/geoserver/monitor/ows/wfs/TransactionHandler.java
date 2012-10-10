@@ -20,11 +20,12 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class TransactionHandler extends WFSRequestObjectHandler {
 
-    public TransactionHandler(Catalog catalog) {
-        super("net.opengis.wfs.TransactionType", catalog);
+    public TransactionHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
+        super("net.opengis.wfs.TransactionType", logCrs, catalog);
     }
 
     @Override
@@ -101,21 +102,17 @@ public class TransactionHandler extends WFSRequestObjectHandler {
         
         return layers;
     }
+    
+    
     @Override
-    protected BoundingBox getBBox(Object request) {
-        FeatureMap elements = (FeatureMap) OwsUtils.get(request, "group");
-        
-        BBoxFilterVisitor visitor = new BBoxFilterVisitor();
-        if (elements == null) {
-            return visitor.getBbox();
-        }
-        
-        for(Object e : elements){
-            // It's wrapped up inside some UMF object
-            Object subOperation = OwsUtils.get(e, "value");
-            Filter f = (Filter) OwsUtils.get(subOperation, "filter");
-            if(f!=null) f.accept(visitor, null);
-        }
-        return visitor.getBbox();
+    protected List<Object> getElements(Object request) {
+        return (List) OwsUtils.get(request, "group");
+    }
+    
+    @Override
+    protected Object unwrapElement(Object element){
+        // For some reason it's wrapped inside an extra EMF object here but not in the other 
+        // request types 
+        return OwsUtils.get(element, "value");
     }
 }

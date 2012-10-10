@@ -822,25 +822,25 @@ public class WMS implements ApplicationContextAware {
                     fixedElevations, "ELEVATION", "Elevation");
         }
 
-        if (layerFilter != null) {
-        	// test for default [empty is replaced with INCLUDE filter] ]filter
-    		for (int i=0; i<readParameters.length; i++){
-    			
-    			GeneralParameterValue param = readParameters[i];
-    			GeneralParameterDescriptor pd=param.getDescriptor();
-    			
-    			if (pd.getName().getCode().equalsIgnoreCase("FILTER")){
-    				final ParameterValue pv = (ParameterValue) pd.createValue();
-    				// if something different from the default INCLUDE filter is specified
-                    if (layerFilter!=Filter.INCLUDE) {
-                    	// override the default filter
-                    	pv.setValue(layerFilter);
-                    	readParameters[i] = pv;
+        if (layerFilter != null && readParameters != null) {
+            // test for default [empty is replaced with INCLUDE filter] ]filter
+            for (int i = 0; i < readParameters.length; i++) {
+
+                GeneralParameterValue param = readParameters[i];
+                GeneralParameterDescriptor pd = param.getDescriptor();
+
+                if (pd.getName().getCode().equalsIgnoreCase("FILTER")) {
+                    final ParameterValue pv = (ParameterValue) pd.createValue();
+                    // if something different from the default INCLUDE filter is specified
+                    if (layerFilter != Filter.INCLUDE) {
+                        // override the default filter
+                        pv.setValue(layerFilter);
+                        readParameters[i] = pv;
                     }
-    				break;
-    			}
-    		}
-    	}
+                    break;
+                }
+            }
+        }
         return readParameters;
     }
 

@@ -225,13 +225,14 @@ public class MonitorCallbackTest {
         gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
         
         Envelope env = new Envelope(100,110,70,80);
-        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326", true);
+        CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326");
         gm.setBbox(env);
         gm.setCrs(crs);
         callback.operationDispatched(new Request(), op("GetMap", "WMS", "1.1.1", gm));
         
         assertEquals("acme:foo", data.getResources().get(0));
-        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(env,crs), data.getBbox(), 0.1);
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(env,crs).toBounds(logCrs), data.getBbox(), 0.1);
     }
     
     @Test
@@ -417,6 +418,26 @@ public class MonitorCallbackTest {
         
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.1.0", gc));
         assertEquals("acme:bar", data.getResources().get(0));
+        BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
+    }
+    @Test
+    public void testWMSGetMapDifferentCrs() throws Exception {
+        //xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01
+        //xMin,yMin -95.1193,42.2802 : xMax,yMax -71.295,53.73
+        GetMapRequest gm = new GetMapRequest();
+        
+        gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
+        
+        Envelope env = new Envelope(5988504.35, 7585113.55, 851278.90, 1950872.01);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", true);
+        gm.setBbox(env);
+        gm.setCrs(crs);
+        callback.operationDispatched(new Request(), op("GetMap", "WMS", "1.1.1", gm));
+        
+        CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
+        BoundingBox bbox = new ReferencedEnvelope(42.2802, 53.73, -95.1193, -71.295, logCrs);
+        
+        assertEquals("acme:foo", data.getResources().get(0));
         BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
 

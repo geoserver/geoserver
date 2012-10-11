@@ -12,6 +12,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -41,6 +42,12 @@ public class GetMapHandler extends RequestObjectHandler {
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) OwsUtils.get(request, "crs");
         Envelope env = (Envelope) OwsUtils.get(request, "bbox");
         BoundingBox bbox = new ReferencedEnvelope(env, crs);
-        return bbox;
+        
+        try{
+            return bbox.toBounds(logCrs);
+        } catch (TransformException e) {
+            // TODO: Log This
+            return null;
+        }
     }
 }

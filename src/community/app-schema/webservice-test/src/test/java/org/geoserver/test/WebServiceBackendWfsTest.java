@@ -6,16 +6,15 @@
 
 package org.geoserver.test;
 
-import java.io.File;
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
-import junit.framework.Test;
-
-import org.geoserver.test.AbstractAppSchemaWfsTestSupport;
 import org.geoserver.test.WebServiceBackendMockData;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.complex.AppSchemaDataAccess;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
@@ -24,24 +23,17 @@ import org.w3c.dom.Document;
  * 
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
-public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new WebServiceBackendWfsTest());
-    }
+public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {    
 
-    @Override
-    protected WebServiceBackendMockData buildTestData() {
-        return new WebServiceBackendMockData();
-    }
+	@Override
+	protected AbstractAppSchemaMockData createTestData() {
+		return new WebServiceBackendMockData();
+	}
 
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
+	@Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
@@ -69,6 +61,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * 
      * @throws IOException
      */
+	@Test
     public void testDescribeFeatureType() throws IOException {
         /**
          * gsml:MappedFeature
@@ -115,6 +108,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * data access with property files backend, but it chains GeologicUnit from a web service
      * backend.
      */
+	@Test
     public void testMappedFeature() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
@@ -161,6 +155,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
      * chains observationMethod which is a normal app-schema data access with property files backend.
      * It also feature chains CompositionPart which is another app-schema data access with web service.
      */
+	@Test
     public void testGeologicUnit() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
@@ -522,4 +517,5 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaWfsTestSupport {
                 + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
                 + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']", doc);
     }
+
 }

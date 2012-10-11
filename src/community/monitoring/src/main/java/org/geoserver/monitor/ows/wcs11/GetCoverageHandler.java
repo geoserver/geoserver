@@ -17,6 +17,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
 
@@ -53,10 +54,14 @@ public class GetCoverageHandler extends RequestObjectHandler {
         double maxX =  upperCorner.get(0);
         double minY =  lowerCorner.get(1);
         double maxY =  upperCorner.get(1);
-        	
-        // Turn into a class that implements BoundingBox
-        return new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
         
+        try{
+            // Turn into a class that implements BoundingBox
+            return new ReferencedEnvelope(minX, maxX, minY, maxY, crs).toBounds(logCrs);
+        } catch (TransformException e) {
+            // TODO: log this
+            return null;
+        }
     }
 
 }

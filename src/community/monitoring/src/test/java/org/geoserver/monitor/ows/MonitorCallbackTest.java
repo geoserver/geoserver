@@ -394,5 +394,30 @@ public class MonitorCallbackTest {
         BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
     
+    @Test
+    public void testWCS11GetCoverageDifferentCrs() throws Exception {
+        net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
+        //xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01
+        //xMin,yMin -95.1193,42.2802 : xMax,yMax -71.295,53.73
+        
+        CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
+        BoundingBox bbox = new ReferencedEnvelope(42.2802, 53.73, -95.1193, -71.295, logCrs);
+        net.opengis.ows11.BoundingBoxType wcsBbox = net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
+        wcsBbox.setLowerCorner(Arrays.asList(5988504.35d,851278.90d));
+        wcsBbox.setUpperCorner(Arrays.asList(7585113.55d,1950872.01d));
+        wcsBbox.setCrs("urn:ogc:def:crs:EPSG:3348");
+        net.opengis.wcs11.DomainSubsetType domainSubset = Wcs11Factory.eINSTANCE.createDomainSubsetType();
+        domainSubset.setBoundingBox(wcsBbox);
+        
+        gc.setDomainSubset(domainSubset);
+        
+        CodeType c = Ows11Factory.eINSTANCE.createCodeType();
+        c.setValue("acme:bar");
+        gc.setIdentifier(c);
+        
+        callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.1.0", gc));
+        assertEquals("acme:bar", data.getResources().get(0));
+        BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
+    }
 
 }

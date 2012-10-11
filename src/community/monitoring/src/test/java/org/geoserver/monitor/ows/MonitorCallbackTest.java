@@ -43,6 +43,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.monitor.BBoxAsserts;
 import org.geoserver.monitor.MemoryMonitorDAO;
 import org.geoserver.monitor.Monitor;
+import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.monitor.MonitorConfig.BBoxLogLevel;
 import org.geoserver.monitor.MonitorDAO;
 import org.geoserver.monitor.MonitorInitializer;
 import org.geoserver.monitor.MonitorTestData;
@@ -87,7 +89,27 @@ public class MonitorCallbackTest {
     public static void setUpData() throws Exception {
         MonitorDAO dao = new MemoryMonitorDAO();
         new MonitorTestData(dao).setup();
-        monitor = new Monitor(dao);
+        
+        MonitorConfig mc = new MonitorConfig() {
+            
+            @Override
+            public MonitorDAO createDAO() {
+                MonitorDAO dao = new MemoryMonitorDAO();
+                try {
+                    new MonitorTestData(dao).setup();
+                    return dao;
+                } catch (java.text.ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            
+            @Override
+            public BBoxLogLevel getBboxLogLevel() {
+                return BBoxLogLevel.FULL;
+            }
+        };
+        
+        monitor = new Monitor(mc);
         
         GeoServer gs = createMock(GeoServer.class);
         catalog=new CatalogImpl();

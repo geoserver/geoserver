@@ -41,7 +41,9 @@ public abstract class RequestObjectHandler {
     
     public void handle(Object request, RequestData data) {
         data.setResources(getLayers(request));
-        data.setBbox(getBBox(request));
+        if(monitorConfig.getBboxLogLevel()!=MonitorConfig.BBoxLogLevel.NONE){
+            data.setBbox(getBBox(request));
+        }
     }
     
     protected abstract List<String> getLayers(Object request);

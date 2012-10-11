@@ -67,6 +67,9 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
     
     @Override
     protected BoundingBox getBBox(Object request) {
+        if(monitorConfig.getBboxLogLevel()!=MonitorConfig.BBoxLogLevel.FULL){
+            return null;
+        }
         List<Object> elements = getElements(request);
         if (elements==null) return null;
 

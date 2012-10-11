@@ -12,6 +12,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -50,6 +51,11 @@ public class GetFeatureInfoHandler extends RequestObjectHandler {
        
         Coordinate coord = org.geoserver.wms.WMS.pixelToWorld(x, y, mapBbox, width, height);
         
-        return new ReferencedEnvelope(new Envelope(coord), crs);
+        try{
+            return new ReferencedEnvelope(new Envelope(coord), crs).toBounds(logCrs);
+        } catch (TransformException e) {
+            // TODO: Log This
+            return null;
+        }
     }
 }

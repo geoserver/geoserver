@@ -244,6 +244,7 @@ public class MonitorCallbackTest {
         gm.setWidth(780);
         Envelope env = new ReferencedEnvelope(-126.81851,-115.818992,44.852958,49.5066,null);
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326",true);
+        CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326",false);
         gm.setBbox(env);
         gm.setCrs(crs);
         gfi.setGetMapRequest(gm);
@@ -256,7 +257,7 @@ public class MonitorCallbackTest {
         
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(-123.15,-123.15, 48.62,48.62,crs),data.getBbox(), 0.01);
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(48.62,48.62,-123.15,-123.15,logCrs),data.getBbox(), 0.01);
     }
     
     @Test
@@ -420,6 +421,7 @@ public class MonitorCallbackTest {
         assertEquals("acme:bar", data.getResources().get(0));
         BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
+    
     @Test
     public void testWMSGetMapDifferentCrs() throws Exception {
         //xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01
@@ -439,6 +441,53 @@ public class MonitorCallbackTest {
         
         assertEquals("acme:foo", data.getResources().get(0));
         BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
+    }
+    
+    @Test
+    public void testWMSGetFeatureInfoDifferentCrs() throws Exception {
+        /*
+         * BBOX 3833170.221556,1841755.690829, 4083455.358596,2048534.231783
+         * EXCEPTIONS      application/vnd.ogc.se_xml
+         * FEATURE_COUNT   50
+         * HEIGHT  423
+         * INFO_FORMAT     text/html
+         * Layers  monitor-test:prov3348
+         * QUERY_LAYERS    monitor-test:prov3348
+         * REQUEST GetFeatureInfo
+         * SERVICE WMS
+         * WIDTH   512
+         * format  image/png
+         * srs     EPSG:3348
+         * styles  
+         * version 1.1.1
+         * x       259
+         * y       241
+         */
+        /*
+         * -123.34927,48.44669,3960017.648,1933344.872
+         */
+        
+        GetFeatureInfoRequest gfi = new GetFeatureInfoRequest();
+        
+        GetMapRequest gm = new GetMapRequest();
+        gm.setHeight(423);
+        gm.setWidth(512);
+        Envelope env = new ReferencedEnvelope(3833170.221556,4083455.358596,1841755.690829,2048534.231783,null);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3348",true);
+        CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
+        gm.setBbox(env);
+        gm.setCrs(crs);
+        gfi.setGetMapRequest(gm);
+        gfi.setXPixel(259);
+        gfi.setYPixel(241);
+        gfi.setVersion("1.1.1");
+        
+        gfi.setQueryLayers(Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
+        callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", gfi));
+        
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(48.4,48.4,-123.3,-123.3,logCrs),data.getBbox(), 0.1);
     }
 
 }

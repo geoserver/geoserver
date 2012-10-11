@@ -41,7 +41,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
         }
         
         @SuppressWarnings("unchecked")
-		List<Envelope> envelopes = (List<Envelope>) OwsUtils.get(spatialSubset, "envelope");
+            List<Envelope> envelopes = (List<Envelope>) OwsUtils.get(spatialSubset, "envelope");
         
         // According to the WCS spec there should be exactly one
         Envelope env = envelopes.get(0);

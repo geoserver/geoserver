@@ -20,7 +20,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
-
+    
     public GetCoverageHandler(CoordinateReferenceSystem logCrs) {
         super("net.opengis.wcs11.GetCoverageType", logCrs);
     }
@@ -30,7 +30,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
         CodeType id = (CodeType)EMFUtils.get((EObject)request, "identifier");
         return id != null ? Arrays.asList(id.getValue()) : null; 
     }
-
+    
     @Override
     protected BoundingBox getBBox(Object request) {
         
@@ -38,18 +38,18 @@ public class GetCoverageHandler extends RequestObjectHandler {
         Object wcsBbox = OwsUtils.get(domainSubset, "boundingBox");
         
         @SuppressWarnings("unchecked")
-		List<Double> upperCorner = (List<Double>) OwsUtils.get(wcsBbox, "upperCorner");
+            List<Double> upperCorner = (List<Double>) OwsUtils.get(wcsBbox, "upperCorner");
         @SuppressWarnings("unchecked")
-		List<Double> lowerCorner = (List<Double>) OwsUtils.get(wcsBbox, "lowerCorner");
+            List<Double> lowerCorner = (List<Double>) OwsUtils.get(wcsBbox, "lowerCorner");
         
         CoordinateReferenceSystem crs = null;
-        	try {
-				crs= CRS.decode((String) OwsUtils.get(wcsBbox, "crs"));
-			} catch (Exception e) {
-				// TODO: Log this or something.
-			}
+        try {
+            crs= CRS.decode((String) OwsUtils.get(wcsBbox, "crs"));
+        } catch (Exception e) {
+            // TODO: Log this or something.
+        }
         
-
+        
         double minX =  lowerCorner.get(0);
         double maxX =  upperCorner.get(0);
         double minY =  lowerCorner.get(1);

@@ -231,7 +231,7 @@ public class MonitorCallbackTest {
         callback.operationDispatched(new Request(), op("GetMap", "WMS", "1.1.1", gm));
         
         assertEquals("acme:foo", data.getResources().get(0));
-        assertEquals(new ReferencedEnvelope(env,crs),data.getBbox());
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(env,crs), data.getBbox(), 0.1);
     }
     
     @Test
@@ -305,7 +305,7 @@ public class MonitorCallbackTest {
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.0.0", gc));
         
         assertEquals("acme:foo", data.getResources().get(0));
-        assertEquals(bbox, data.getBbox());
+        BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
     
     @Test
@@ -343,7 +343,7 @@ public class MonitorCallbackTest {
         
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.1.0", gc));
         assertEquals("acme:bar", data.getResources().get(0));
-        assertEquals(bbox, data.getBbox());
+        BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
     
     MapLayerInfo createMapLayer(String name, String ns) {
@@ -374,9 +374,9 @@ public class MonitorCallbackTest {
         GetCoverageType gc = Wcs10Factory.eINSTANCE.createGetCoverageType();
         net.opengis.wcs10.SpatialSubsetType spatialSubset = Wcs10Factory.eINSTANCE.createSpatialSubsetType();
         
-        CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", true);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", false);
         CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
-        GeneralEnvelope env = new GeneralEnvelope(new double[]{5988504.35, 7585113.55}, new double[]{851278.90,1950872.01});
+        GeneralEnvelope env = new GeneralEnvelope(new double[]{5988504.35, 851278.90}, new double[]{7585113.55,1950872.01});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(42.2802, 53.73, -95.1193, -71.295, logCrs);
 
@@ -391,7 +391,7 @@ public class MonitorCallbackTest {
         callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.0.0", gc));
         
         assertEquals("acme:foo", data.getResources().get(0));
-        assertEquals(bbox, data.getBbox());
+        BBoxAsserts.assertEqualsBbox(bbox, data.getBbox(), 0.1);
     }
     
 

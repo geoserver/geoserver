@@ -15,6 +15,7 @@ import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
 
@@ -45,8 +46,14 @@ public class GetCoverageHandler extends RequestObjectHandler {
         // According to the WCS spec there should be exactly one
         Envelope env = envelopes.get(0);
         
+        BoundingBox result=null;
         // Turn into a class that implements BoundingBox
-        return new ReferencedEnvelope(env);
+        try{
+            result=new ReferencedEnvelope(env).toBounds(logCrs);
+        } catch(TransformException e) {
+            // TODO: Should probably log this
+        }
+        return result;
     }
 
 }

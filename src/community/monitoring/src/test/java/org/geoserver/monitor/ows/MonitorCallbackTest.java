@@ -324,12 +324,12 @@ public class MonitorCallbackTest {
         net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
         
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
-        GeneralEnvelope env = new GeneralEnvelope(new double[]{-123.4, 48.2}, new double[]{-120.9, 50.1});
+        GeneralEnvelope env = new GeneralEnvelope(new double[]{48.2, -123.4}, new double[]{50.1, -120.9});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(env);
         net.opengis.ows11.BoundingBoxType wcsBbox = net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
-        wcsBbox.setLowerCorner(Arrays.asList(-123.4d, 48.2d));
-        wcsBbox.setUpperCorner(Arrays.asList(-120.9d, 50.1d));
+        wcsBbox.setLowerCorner(Arrays.asList(48.2d, -123.4d));
+        wcsBbox.setUpperCorner(Arrays.asList(50.1d, -120.9d));
         //wcsBbox.setCrs("urn:ogc:def:crs:OGC:1.3:CRS84");
         wcsBbox.setCrs("urn:ogc:def:crs:EPSG:4326");
         net.opengis.wcs11.DomainSubsetType domainSubset = Wcs11Factory.eINSTANCE.createDomainSubsetType();

@@ -22,6 +22,7 @@ import org.junit.Test;
 public class BBoxFilterVisitorTest {
     
     static CoordinateReferenceSystem logCrs;
+    static CoordinateReferenceSystem differentCrs;
     
     BoundingBox getResult(BBoxFilterVisitor visitor, Filter filter, Object data) {
         filter.accept(visitor, data);
@@ -31,6 +32,7 @@ public class BBoxFilterVisitorTest {
     @BeforeClass
     public static void setUpData() throws Exception {
         logCrs=CRS.decode("EPSG:4326");
+        differentCrs=CRS.decode("EPSG:3348");
     }
 
     public void standardTest(String cql, BoundingBox expected){
@@ -71,24 +73,24 @@ public class BBoxFilterVisitorTest {
     @Test
     public void testSimpleBbox() {
         standardTest(
-                "BBOX(the_geom, -90, 40, -60, 45)", 
-                new ReferencedEnvelope(-90, -60, 40, 45, logCrs)
+                "BBOX(the_geom, 40, -90, 45, -60)", 
+                new ReferencedEnvelope(40, 45, -90, -60, logCrs)
                 );
     }
     
     @Test
     public void testTwoBboxOr() {
         standardTest(
-                "BBOX(the_geom, -90, 40, -60, 45) or BBOX(the_geom, -30, 50, -10, 60)", 
-                new ReferencedEnvelope(-90, -10, 40, 60, logCrs)
+                "BBOX(the_geom, 40, -90, 45, -60) or BBOX(the_geom, 50, -30, 60, -10)", 
+                new ReferencedEnvelope(40, 60, -90, -10, logCrs)
                 );
      }
     
     @Test
     public void testTwoBboxAndDistinctFields() {
         standardTest(
-                "BBOX(geom1, -90, 40, -60, 45) and BBOX(geom2, -30, 50, -10, 60)",
-                new ReferencedEnvelope(-90, -10, 40, 60, logCrs)
+                "BBOX(geom1, 40, -90, 45, -60) and BBOX(geom2, 50, -30, 60, -10)",
+                new ReferencedEnvelope(40, 60, -90, -10, logCrs)
                 );
         
         }
@@ -96,8 +98,8 @@ public class BBoxFilterVisitorTest {
 /*    @Test
     public void testIgnoreWithinNot() {
         standardTest(
-                "BBOX(geom1, -90, 40, -60, 45) and not BBOX(geom1, -30, 50, -10, 60)",
-                new ReferencedEnvelope(-90, -60, 40, 45, null)
+                "BBOX(geom1, 40, -90, 45, 60) and not BBOX(geom1, 50, -30, 60, -10)",
+                new ReferencedEnvelope(40, 45, -90, -60, null)
                 );
         }
 */    
@@ -112,11 +114,22 @@ public class BBoxFilterVisitorTest {
     @Test
     public void testTwoBboxOrSpecificCrs() {
         FilterFactory ff = CommonFactoryFinder.getFilterFactory( null );
-        Filter bboxF1 = ff.bbox("the_geom", 40, -90, 45, -60, null); // min, min, max, max; lat lon
+        Filter bboxF1 = ff.bbox("the_geom", 40, -90, 45, -60, null);
         Filter bboxF2 = ff.bbox("the_geom", 5988504.35,851278.90, 7585113.55,1950872.01, "EPSG:3348");
         Filter filter = ff.or(bboxF1, bboxF2);
         BoundingBox expected = new ReferencedEnvelope(40, 53.73, -95.1193,-60 ,logCrs);
         BBoxFilterVisitor visitor = new BBoxFilterVisitor(logCrs, logCrs);
+        BoundingBox result = getResult(visitor, filter, null);
+        BBoxAsserts.assertEqualsBbox(expected, result, 0.01);
+     }
+    
+    @Test
+    public void testBboxDifferentDefaultCrs() {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory( null );
+        Filter filter = ff.bbox("the_geom", 5988504.35,851278.90, 7585113.55,1950872.01, null);
+        // xMin,yMin -95.1193,42.2802 : xMax,yMax -71.295,53.73
+        BoundingBox expected = new ReferencedEnvelope(42.2802, 53.73, -95.1193,-71.295 ,logCrs);
+        BBoxFilterVisitor visitor = new BBoxFilterVisitor(logCrs, differentCrs);
         BoundingBox result = getResult(visitor, filter, null);
         BBoxAsserts.assertEqualsBbox(expected, result, 0.01);
      }

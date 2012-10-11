@@ -51,16 +51,16 @@ public class MonitorCallback implements DispatcherCallback {
         handlers.add(new TransactionHandler(logCrs, catalog));
         
         //wms
-        handlers.add(new GetFeatureInfoHandler());
-        handlers.add(new GetMapHandler());
-        handlers.add(new GetLegendGraphicHandler());
+        handlers.add(new GetFeatureInfoHandler(logCrs));
+        handlers.add(new GetMapHandler(logCrs));
+        handlers.add(new GetLegendGraphicHandler(logCrs));
         
         //wcs
-        handlers.add(new DescribeCoverageHandler());
-        handlers.add(new GetCoverageHandler());
+        handlers.add(new DescribeCoverageHandler(logCrs));
+        handlers.add(new GetCoverageHandler(logCrs));
         
-        handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler());
-        handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler());
+        handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler(logCrs));
+        handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler(logCrs));
     }
     
     public Request init(Request request) {

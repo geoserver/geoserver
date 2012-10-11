@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.geoserver.monitor.RequestData;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Class that extracts information from an ows request.
@@ -18,9 +19,11 @@ import org.opengis.geometry.BoundingBox;
 public abstract class RequestObjectHandler {
 
     String reqObjClassName;
+    protected CoordinateReferenceSystem logCrs;
     
-    protected RequestObjectHandler(String reqObjClassName) {
+    protected RequestObjectHandler(String reqObjClassName, CoordinateReferenceSystem logCrs) {
         this.reqObjClassName = reqObjClassName;
+        this.logCrs = logCrs;
     }
     
     public boolean canHandle(Object request) {

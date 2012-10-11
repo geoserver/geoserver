@@ -367,4 +367,32 @@ public class MonitorCallbackTest {
             null, new Object[]{request});
     }
     
+    @Test
+    public void testWCS10GetCoverageDifferentCrs() throws Exception {
+        //xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01
+        //xMin,yMin -95.1193,42.2802 : xMax,yMax -71.295,53.73
+        GetCoverageType gc = Wcs10Factory.eINSTANCE.createGetCoverageType();
+        net.opengis.wcs10.SpatialSubsetType spatialSubset = Wcs10Factory.eINSTANCE.createSpatialSubsetType();
+        
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", true);
+        CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
+        GeneralEnvelope env = new GeneralEnvelope(new double[]{5988504.35, 7585113.55}, new double[]{851278.90,1950872.01});
+        env.setCoordinateReferenceSystem(crs);
+        BoundingBox bbox = new ReferencedEnvelope(42.2802, 53.73, -95.1193, -71.295, logCrs);
+
+        spatialSubset.getEnvelope().clear();
+        spatialSubset.getEnvelope().add(env);
+        net.opengis.wcs10.DomainSubsetType domainSubset = Wcs10Factory.eINSTANCE.createDomainSubsetType();
+        domainSubset.setSpatialSubset(spatialSubset);
+        
+        gc.setSourceCoverage("acme:foo");
+        gc.setDomainSubset(domainSubset);
+        
+        callback.operationDispatched(new Request(), op("GetCoverage", "WCS", "1.0.0", gc));
+        
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals(bbox, data.getBbox());
+    }
+    
+
 }

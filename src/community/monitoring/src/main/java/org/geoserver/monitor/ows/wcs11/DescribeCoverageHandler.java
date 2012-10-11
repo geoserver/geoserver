@@ -10,11 +10,12 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geotools.xml.EMFUtils;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class DescribeCoverageHandler extends RequestObjectHandler {
 
-    public DescribeCoverageHandler() {
-        super("net.opengis.wcs11.DescribeCoverageType");
+    public DescribeCoverageHandler(CoordinateReferenceSystem logCrs) {
+        super("net.opengis.wcs11.DescribeCoverageType", logCrs);
     }
 
     @Override

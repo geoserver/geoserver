@@ -20,8 +20,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetCoverageHandler extends RequestObjectHandler {
 
-    public GetCoverageHandler() {
-        super("net.opengis.wcs11.GetCoverageType");
+    public GetCoverageHandler(CoordinateReferenceSystem logCrs) {
+        super("net.opengis.wcs11.GetCoverageType", logCrs);
     }
     
     @Override

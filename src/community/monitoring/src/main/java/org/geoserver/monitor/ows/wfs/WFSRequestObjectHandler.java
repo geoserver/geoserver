@@ -20,11 +20,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
 
     Catalog catalog;
-    CoordinateReferenceSystem logCrs;
-    
     protected WFSRequestObjectHandler(String reqObjClassName, CoordinateReferenceSystem logCrs, Catalog catalog) {
-        super(reqObjClassName);
-        this.logCrs = logCrs;
+        super(reqObjClassName, logCrs);
         this.catalog = catalog;
     }
 

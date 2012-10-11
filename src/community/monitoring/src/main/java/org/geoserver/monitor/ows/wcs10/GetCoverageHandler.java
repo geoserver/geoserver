@@ -14,11 +14,12 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.Envelope;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetCoverageHandler extends RequestObjectHandler {
 
-    public GetCoverageHandler() {
-        super("net.opengis.wcs10.GetCoverageType");
+    public GetCoverageHandler(CoordinateReferenceSystem logCrs) {
+        super("net.opengis.wcs10.GetCoverageType", logCrs);
     }
 
     @Override

@@ -17,8 +17,8 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class GetMapHandler extends RequestObjectHandler {
 
-    public GetMapHandler() {
-        super("org.geoserver.wms.GetMapRequest");
+    public GetMapHandler(CoordinateReferenceSystem logCrs) {
+        super("org.geoserver.wms.GetMapRequest", logCrs);
     }
 
     @Override

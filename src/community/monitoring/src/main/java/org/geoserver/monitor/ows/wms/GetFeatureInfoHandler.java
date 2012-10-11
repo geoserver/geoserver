@@ -18,8 +18,8 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class GetFeatureInfoHandler extends RequestObjectHandler {
 
-    public GetFeatureInfoHandler() {
-        super("org.geoserver.wms.GetFeatureInfoRequest");
+    public GetFeatureInfoHandler(CoordinateReferenceSystem logCrs) {
+        super("org.geoserver.wms.GetFeatureInfoRequest", logCrs);
     }
 
     @Override

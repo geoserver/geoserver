@@ -17,7 +17,7 @@ Request limits
 
 The request limit options allow the administrator to limit the resources consumed by each WMS ``GetMap`` request.
 
-The following table shows each option name, a description, and the minimum GeoServer version at which the option is available (old versions will just ignore it if set).
+The following table shows the option names, a description, and the minimum GeoServer version at which the option is available (older versions will ignore it if set).
 
 .. list-table::
    :widths: 10 80 10
@@ -26,20 +26,23 @@ The following table shows each option name, a description, and the minimum GeoSe
      - **Description**
      - **Version**
    * - **maxRequestMemory**
-     - Sets the maximum amount of memory, in kilobytes, a single GetMap request is allowed to use. Each output format will make a best effort attempt to respect the maximum using the highest consuming portion of the request processing as a reference. For example, the PNG output format will take into consideration the memory used to prepare the image rendering surface in memory, usually proportional to the image size multiplied by the number of bytes per pixel
+     - Sets the maximum amount of memory a single GetMap request is allowed to use (in kilobytes). The limit is checked before request execution by estimating how much memory would be required to produce the output in the format requested.  For example, for an image format the estimate is based on the size of the required rendering memory (which is determined by the image size, the pixel bit depth, and the number of active FeatureTypeStyles at the requested scale).  If the estimated memory size is below the limit, the request is executed; otherwise it is cancelled.
      - 1.7.5
    * - **maxRenderingTime**
-     - Sets the maximum amount of time, in seconds, GeoServer will use to process the request. This time limits the "blind processing" portion of the request serving, that is, the part in which GeoServer is computing the results before writing them out to the client. The portion that     is writing results back to the client is not under the control of this parameter, since this time is also controlled by how fast the network between the server and the client is. So, for example, in the case of PNG/JPEG image generation, this option will control the pure rendering time, but not the time used to write the results back.
+     - Sets the maximum amount of time GeoServer will spend processing a request (in seconds). This time limits the "blind processing" portion of the request, that is, the time taken to read data and compute the output result (which may occur concurrently). If the execution time reaches the limit, the request is cancelled.  The time required to write results back to the client is not limited by this parameter, since this is determined by the (unknown) network latency between the server and the client. For example, in the case of PNG/JPEG image generation, this option limits the data reading and rendering time, but not the time taken to write the image out.
      - 1.7.5
    * - **maxRenderingErrors**
-     - Sets the maximum amount of rendering errors tolerated by a GetMap. Usually GetMap skips over faulty features, reprojection errors and the like in an attempt to serve the results anyways. This makes for a best effort rendering, but also makes it harder to spot issues, and consumes CPU cycles as each error is handled and logged
+     - Sets the maximum amount of rendering errors tolerated by a GetMap request. By default GetMap makes a best-effort attempt to serve the result, ignoring invalid features, reprojection errors and the like. Setting a limit on the number of errors ignored can make it easier to notice issues, and conserves CPU cycles by reducing the errors which must be handled and logged
      - 1.7.5
      
-The default value of each limit is ``0``, in this case the limit won't be applied.
+The default value of each limit is ``0``, which specifies that the limit is not applied.
 
-Once any of the set limits is exceeded, the GetMap operation will stop and a ``ServiceException`` will be returned to the client.
+If any of the request limits is exceeded, the GetMap operation is cancelled and a ``ServiceException`` is returned to the client.
 
-It is suggested that the administrator sets all of the above limits taking into consideration peak conditions. For example, while a GetMap request under normal circumstance may take less than a second, under high load it is acceptable for it to take longer, but usually, it's not sane that a request goes on for 30 minutes straight. The following table shows an example or reasonable values for the configuration options above:
+When setting the above limits it is suggested that peak conditions be taken into consideration. 
+For example, under normal circumstances a GetMap request may take less than a second.  Under high load it is acceptable for it to take longer, but it's usually not desirable to allow a request to go on for 30 minutes. 
+
+The following table shows examples of reasonable values for the request limits:
 
 .. list-table::
    :widths: 20 10 70
@@ -49,11 +52,11 @@ It is suggested that the administrator sets all of the above limits taking into 
      - **Rationale**
    * - maxRequestMemory
      - 16384
-     - 16MB are sufficient to render a 2048x2048 image at 4 bytes per pixel (full color and transparency), or a 8x8 meta-tile if you are using GeoWebCache or TileCache. Mind the rendering process will use an extra in memory buffer for each subsequent FeatureTypeStyle in your SLD, so this will also limit the size of the image. For example, if the SLD contains two FeatureTypeStyle element in order to draw cased lines for an highway the maximum image size will be limited to 1448x1448 (the memory goes like the square of the image size, so halving the memory does not halve the image size)
+     - 16MB are sufficient to render a 2048x2048 image at 4 bytes per pixel (full color and transparency), or a 8x8 meta-tile when using GeoWebCache or TileCache. Note that the rendering process uses a separate memory buffer for each FeatureTypeStyle in an SLD, so this also affects the maximum image size. For example, if an SLD contains two FeatureTypeStyle elements in order to draw cased lines for a highway, the maximum image size will be limited to 1448x1448 (the memory requirement increases with the product of the image dimensions, so halving the memory decreases image dimensions by only about 30%)
    * - maxRenderingTime
      - 120
-     - A request that processes for two minutes straight is probably drawing a lot of features independent of the current load. It might be the result of a client making a GetMap against a big layer using a custom style that does not have the proper scale dependencies
+     - A request that processes for a full two minutes is probably rendering too many features, regardless of the current server load. This may be caused by a request against a big layer using a style that does not have suitable scale dependencies
    * - maxRenderingErrors
      - 100
-     - Encountering 100 errors is probably the result of a request that is trying to reproject a big data set into a projection that is not suited to area it covers, resulting in many reprojection failures.
+     - Encountering 100 errors is probably the result of a request trying to reproject a big data set into a projection that is not appropriate for the output extent, resulting in many reprojection failures.
 

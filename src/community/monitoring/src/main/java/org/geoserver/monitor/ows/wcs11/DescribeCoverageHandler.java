@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.monitor.MonitorConfig;
 import org.geotools.xml.EMFUtils;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class DescribeCoverageHandler extends RequestObjectHandler {
 
@@ -19,9 +18,10 @@ public class DescribeCoverageHandler extends RequestObjectHandler {
         super("net.opengis.wcs11.DescribeCoverageType", config);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getLayers(Object request) {
-        return new ArrayList((List)EMFUtils.get((EObject)request, "identifier"));
+        return new ArrayList<String>((List<String>)EMFUtils.get((EObject)request, "identifier"));
     }
 
 }

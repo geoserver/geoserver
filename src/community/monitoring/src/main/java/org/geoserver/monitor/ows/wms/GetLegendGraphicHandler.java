@@ -12,7 +12,6 @@ import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
 
 import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetLegendGraphicHandler extends RequestObjectHandler {
 

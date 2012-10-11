@@ -9,7 +9,6 @@ import java.util.List;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.RequestData;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Class that extracts information from an ows request.
@@ -28,7 +27,7 @@ public abstract class RequestObjectHandler {
     }
     
     public boolean canHandle(Object request) {
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(reqObjClassName);
         } 

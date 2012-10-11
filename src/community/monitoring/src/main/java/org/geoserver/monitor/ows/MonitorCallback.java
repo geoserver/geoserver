@@ -30,13 +30,11 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
 
 public class MonitorCallback implements DispatcherCallback {
 
-    List<RequestObjectHandler> handlers = new ArrayList();
+    List<RequestObjectHandler> handlers = new ArrayList<RequestObjectHandler>();
     
     Monitor monitor;
     
@@ -129,9 +127,9 @@ public class MonitorCallback implements DispatcherCallback {
         if (OPS == null) {
             synchronized (this) {
                 if (OPS == null) {
-                    OPS = new HashMap();
+                    OPS = new HashMap<String,Map<String,String>>();
                     for (Service s : GeoServerExtensions.extensions(Service.class)) {
-                        HashMap map = new HashMap();
+                        HashMap<String,String> map = new HashMap<String,String>();
                         OPS.put(s.getId().toUpperCase(), map);
                         
                         for (String o : s.getOperations()) {

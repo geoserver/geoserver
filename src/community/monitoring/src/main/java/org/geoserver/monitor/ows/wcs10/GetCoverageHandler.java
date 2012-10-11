@@ -15,7 +15,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.Envelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {

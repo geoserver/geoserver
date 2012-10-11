@@ -12,9 +12,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LockFeatureHandler extends WFSRequestObjectHandler {
 
@@ -24,12 +21,13 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
 
     @Override
     public List<String> getLayers(Object request) {
-        List locks = (List) EMFUtils.get((EObject)request, "lock");
+        @SuppressWarnings("unchecked")
+        List<String> locks = (List<String>) EMFUtils.get((EObject)request, "lock");
         if (locks == null) {
             return null;
         }
         
-        List<String> layers = new ArrayList();
+        List<String> layers = new ArrayList<String>();
         for (Object lock : locks) {
             layers.add(toString(EMFUtils.get((EObject)lock, "typeName")));
         }
@@ -38,9 +36,10 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
     }
     
 
+    @SuppressWarnings("unchecked")
     @Override
     protected List<Object> getElements(Object request) {
-        return (List) OwsUtils.get(request, "lock");
+        return (List<Object>) OwsUtils.get(request, "lock");
     }
 
 }

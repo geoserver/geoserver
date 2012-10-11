@@ -19,9 +19,6 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class TransactionHandler extends WFSRequestObjectHandler {
 
@@ -39,7 +36,7 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             return;
         }
         
-        ListIterator i = elements.valueListIterator();
+        ListIterator<Object> i = elements.valueListIterator();
         int flag = 0;
         while(i.hasNext()) {
             Object e = i.next();
@@ -65,6 +62,7 @@ public class TransactionHandler extends WFSRequestObjectHandler {
         data.setSubOperation(sb.toString());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getLayers(Object request) {
         FeatureMap elements = (FeatureMap) EMFUtils.get((EObject)request, "group");
@@ -72,8 +70,8 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             return null;
         }
         
-        List<String> layers = new ArrayList();
-        ListIterator i = elements.valueListIterator();
+        List<String> layers = new ArrayList<String>();
+        ListIterator<Object> i = elements.valueListIterator();
         while(i.hasNext()) {
             Object e = i.next();
             if (EMFUtils.has((EObject)e, "typeName")) {
@@ -85,8 +83,8 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             else {
                 //this is most likely an insert, determine layers from feature collection
                 if (e.getClass().getSimpleName().startsWith("InsertElementType")) {
-                    List<Feature> features = (List) EMFUtils.get((EObject)e, "feature");
-                    Set<String> set = new LinkedHashSet();
+                    List<Feature> features = (List<Feature>) EMFUtils.get((EObject)e, "feature");
+                    Set<String> set = new LinkedHashSet<String>();
                     for (Feature f : features) {
                         if (f instanceof SimpleFeature) {
                             set.add(((SimpleFeature)f).getType().getTypeName());
@@ -105,9 +103,10 @@ public class TransactionHandler extends WFSRequestObjectHandler {
     }
     
     
+    @SuppressWarnings("unchecked")
     @Override
     protected List<Object> getElements(Object request) {
-        return (List) OwsUtils.get(request, "group");
+        return (List<Object>) OwsUtils.get(request, "group");
     }
     
     @Override

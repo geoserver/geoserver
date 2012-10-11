@@ -25,12 +25,13 @@ public class GetMapHandler extends RequestObjectHandler {
 
     @Override
     public List<String> getLayers(Object request) {
-        List mapLayers = (List) OwsUtils.get(request, "layers");
+        @SuppressWarnings("unchecked")
+        List<Object> mapLayers = (List<Object>) OwsUtils.get(request, "layers");
         if (mapLayers == null) {
             return null;
         }
         
-        List<String> layers = new ArrayList();
+        List<String> layers = new ArrayList<String>();
         for (int i = 0; i < mapLayers.size(); i++) {
             layers.add((String) OwsUtils.get(mapLayers.get(i), "name"));
         }

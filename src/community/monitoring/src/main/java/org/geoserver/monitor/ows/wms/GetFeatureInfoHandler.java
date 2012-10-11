@@ -24,14 +24,15 @@ public class GetFeatureInfoHandler extends RequestObjectHandler {
         super("org.geoserver.wms.GetFeatureInfoRequest", config);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getLayers(Object request) {
-        List queryLayers = (List) OwsUtils.get(request, "queryLayers");
+        List<Object> queryLayers = (List<Object>) OwsUtils.get(request, "queryLayers");
         if (queryLayers == null) {
             return null;
         }
         
-        List<String> layers = new ArrayList();
+        List<String> layers = new ArrayList<String>();
         for (int i = 0; i < queryLayers.size(); i++) {
             layers.add((String) OwsUtils.get(queryLayers.get(i), "name"));
         }

@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.MonitorConfig;
 import org.geotools.xml.EMFUtils;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 
@@ -21,7 +20,8 @@ public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 
     @Override
     public List<String> getLayers(Object request) {
-        List typeNames = (List) EMFUtils.get((EObject)request, "typeName");
+        @SuppressWarnings("unchecked")
+        List<String> typeNames = (List<String>) EMFUtils.get((EObject)request, "typeName");
         if (typeNames == null) {
             return null;
         }

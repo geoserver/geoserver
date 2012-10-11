@@ -42,6 +42,10 @@ public class MonitorConfig implements ApplicationContextAware {
         SYNC, ASYNC, ASYNC_UPDATE;
     }
     
+    public static enum BBoxLogLevel {
+        NONE, NO_WFS, FULL;
+    }
+    
     Properties props;
     PropertyFileWatcher fw;
     ApplicationContext context;
@@ -54,6 +58,7 @@ public class MonitorConfig implements ApplicationContextAware {
         props.put("sync", "async");
         props.put("maxBodySize", "1024");
         props.put("bboxLogCrs", "EPSG:4326");
+        props.put("bboxLogLevel", "no_wfs");
     }
     
     public MonitorConfig(GeoServerResourceLoader loader) throws IOException {
@@ -87,6 +92,10 @@ public class MonitorConfig implements ApplicationContextAware {
             LOGGER.log(Level.FINER, e.getMessage(), e);
         }
         return null;
+    }
+    
+    public BBoxLogLevel getBboxLogLevel() {
+        return BBoxLogLevel.valueOf(props().getProperty("bboxLogLevel", "no_wfs").toUpperCase());
     }
     
     public boolean isEnabled() {

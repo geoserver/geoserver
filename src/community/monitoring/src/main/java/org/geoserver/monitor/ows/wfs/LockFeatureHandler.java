@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 import org.opengis.filter.Filter;
@@ -17,8 +18,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LockFeatureHandler extends WFSRequestObjectHandler {
 
-    public LockFeatureHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
-        super("net.opengis.wfs.LockFeatureType", logCrs, catalog);
+    public LockFeatureHandler(MonitorConfig config, Catalog catalog) {
+        super("net.opengis.wfs.LockFeatureType", config, catalog);
     }
 
     @Override

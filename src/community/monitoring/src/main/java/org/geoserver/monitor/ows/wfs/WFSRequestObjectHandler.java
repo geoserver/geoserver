@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.monitor.ows.RequestObjectHandler;
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
@@ -20,8 +21,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
 
     Catalog catalog;
-    protected WFSRequestObjectHandler(String reqObjClassName, CoordinateReferenceSystem logCrs, Catalog catalog) {
-        super(reqObjClassName, logCrs);
+    protected WFSRequestObjectHandler(String reqObjClassName, MonitorConfig config, Catalog catalog) {
+        super(reqObjClassName, config);
         this.catalog = catalog;
     }
 
@@ -69,14 +70,14 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
         List<Object> elements = getElements(request);
         if (elements==null) return null;
 
-        BoundingBox result = new ReferencedEnvelope(logCrs);
+        BoundingBox result = new ReferencedEnvelope(monitorConfig.getBboxLogCrs());
         for(Object e : elements){
             e = unwrapElement(e);
             CoordinateReferenceSystem defaultCrs = getCrsFromElement(e);
             
             if (defaultCrs==null) return null;
             
-            BBoxFilterVisitor visitor = new BBoxFilterVisitor(logCrs, defaultCrs);
+            BBoxFilterVisitor visitor = new BBoxFilterVisitor(monitorConfig.getBboxLogCrs(), defaultCrs);
             Filter f = (Filter) OwsUtils.get(e, "filter");
             if(f!=null) f.accept(visitor, null);
             result.include(visitor.getBbox());

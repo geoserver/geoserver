@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
@@ -19,8 +20,8 @@ import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
 
-    public GetCoverageHandler(CoordinateReferenceSystem logCrs) {
-        super("net.opengis.wcs10.GetCoverageType", logCrs);
+    public GetCoverageHandler(MonitorConfig config) {
+        super("net.opengis.wcs10.GetCoverageType", config);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
         BoundingBox result=null;
         // Turn into a class that implements BoundingBox
         try{
-            result=new ReferencedEnvelope(env).toBounds(logCrs);
+            result=new ReferencedEnvelope(env).toBounds(monitorConfig.getBboxLogCrs());
         } catch(TransformException e) {
             // TODO: Should probably log this
         }

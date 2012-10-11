@@ -7,6 +7,7 @@ package org.geoserver.monitor.ows.wms;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -18,8 +19,8 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class GetMapHandler extends RequestObjectHandler {
 
-    public GetMapHandler(CoordinateReferenceSystem logCrs) {
-        super("org.geoserver.wms.GetMapRequest", logCrs);
+    public GetMapHandler(MonitorConfig config) {
+        super("org.geoserver.wms.GetMapRequest", config);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class GetMapHandler extends RequestObjectHandler {
         BoundingBox bbox = new ReferencedEnvelope(env, crs);
         
         try{
-            return bbox.toBounds(logCrs);
+            return bbox.toBounds(monitorConfig.getBboxLogCrs());
         } catch (TransformException e) {
             // TODO: Log This
             return null;

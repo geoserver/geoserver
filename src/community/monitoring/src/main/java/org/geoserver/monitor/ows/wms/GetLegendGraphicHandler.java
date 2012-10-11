@@ -7,6 +7,7 @@ package org.geoserver.monitor.ows.wms;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
 
@@ -15,8 +16,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetLegendGraphicHandler extends RequestObjectHandler {
 
-    public GetLegendGraphicHandler(CoordinateReferenceSystem logCrs) {
-        super("org.geoserver.wms.GetLegendGraphicRequest", logCrs);
+    public GetLegendGraphicHandler(MonitorConfig config) {
+        super("org.geoserver.wms.GetLegendGraphicRequest", config);
     }
 
     @Override

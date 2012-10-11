@@ -9,13 +9,14 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.monitor.MonitorConfig;
 import org.geotools.xml.EMFUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 
-    public DescribeFeatureTypeHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
-        super("net.opengis.wfs.DescribeFeatureTypeType", logCrs, catalog);
+    public DescribeFeatureTypeHandler(MonitorConfig config, Catalog catalog) {
+        super("net.opengis.wfs.DescribeFeatureTypeType", config, catalog);
     }
 
     @Override

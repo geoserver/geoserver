@@ -36,31 +36,30 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class MonitorCallback implements DispatcherCallback {
 
-    static List<RequestObjectHandler> handlers = new ArrayList();
+    List<RequestObjectHandler> handlers = new ArrayList();
     
     Monitor monitor;
     
     public MonitorCallback(Monitor monitor) {
         this.monitor = monitor;
-        CoordinateReferenceSystem logCrs = monitor.getConfig().getBboxLogCrs();
         Catalog catalog = monitor.getServer().getCatalog();
         //wfs
-        handlers.add(new DescribeFeatureTypeHandler(logCrs, catalog));
-        handlers.add(new GetFeatureHandler(logCrs, catalog));
-        handlers.add(new LockFeatureHandler(logCrs, catalog));
-        handlers.add(new TransactionHandler(logCrs, catalog));
+        handlers.add(new DescribeFeatureTypeHandler(monitor.getConfig(), catalog));
+        handlers.add(new GetFeatureHandler(monitor.getConfig(), catalog));
+        handlers.add(new LockFeatureHandler(monitor.getConfig(), catalog));
+        handlers.add(new TransactionHandler(monitor.getConfig(), catalog));
         
         //wms
-        handlers.add(new GetFeatureInfoHandler(logCrs));
-        handlers.add(new GetMapHandler(logCrs));
-        handlers.add(new GetLegendGraphicHandler(logCrs));
+        handlers.add(new GetFeatureInfoHandler(monitor.getConfig()));
+        handlers.add(new GetMapHandler(monitor.getConfig()));
+        handlers.add(new GetLegendGraphicHandler(monitor.getConfig()));
         
         //wcs
-        handlers.add(new DescribeCoverageHandler(logCrs));
-        handlers.add(new GetCoverageHandler(logCrs));
+        handlers.add(new DescribeCoverageHandler(monitor.getConfig()));
+        handlers.add(new GetCoverageHandler(monitor.getConfig()));
         
-        handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler(logCrs));
-        handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler(logCrs));
+        handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler(monitor.getConfig()));
+        handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler(monitor.getConfig()));
     }
     
     public Request init(Request request) {

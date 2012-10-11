@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.RequestData;
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 import org.opengis.feature.Feature;
@@ -24,8 +25,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class TransactionHandler extends WFSRequestObjectHandler {
 
-    public TransactionHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
-        super("net.opengis.wfs.TransactionType", logCrs, catalog);
+    public TransactionHandler(MonitorConfig config, Catalog catalog) {
+        super("net.opengis.wfs.TransactionType", config, catalog);
     }
 
     @Override

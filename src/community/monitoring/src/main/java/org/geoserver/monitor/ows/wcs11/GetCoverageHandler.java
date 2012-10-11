@@ -11,6 +11,7 @@ import net.opengis.ows11.CodeType;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -21,8 +22,8 @@ import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
     
-    public GetCoverageHandler(CoordinateReferenceSystem logCrs) {
-        super("net.opengis.wcs11.GetCoverageType", logCrs);
+    public GetCoverageHandler(MonitorConfig config) {
+        super("net.opengis.wcs11.GetCoverageType", config);
     }
     
     @Override
@@ -57,7 +58,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
         
         try{
             // Turn into a class that implements BoundingBox
-            return new ReferencedEnvelope(minX, maxX, minY, maxY, crs).toBounds(logCrs);
+            return new ReferencedEnvelope(minX, maxX, minY, maxY, crs).toBounds(monitorConfig.getBboxLogCrs());
         } catch (TransformException e) {
             // TODO: log this
             return null;

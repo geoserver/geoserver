@@ -6,6 +6,7 @@ package org.geoserver.monitor.ows;
 
 import java.util.List;
 
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.RequestData;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -19,11 +20,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public abstract class RequestObjectHandler {
 
     String reqObjClassName;
-    protected CoordinateReferenceSystem logCrs;
+    protected MonitorConfig monitorConfig;
     
-    protected RequestObjectHandler(String reqObjClassName, CoordinateReferenceSystem logCrs) {
+    protected RequestObjectHandler(String reqObjClassName, MonitorConfig config) {
         this.reqObjClassName = reqObjClassName;
-        this.logCrs = logCrs;
+        this.monitorConfig = config;
     }
     
     public boolean canHandle(Object request) {

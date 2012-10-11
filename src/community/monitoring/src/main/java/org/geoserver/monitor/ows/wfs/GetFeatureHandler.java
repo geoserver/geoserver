@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.xml.EMFUtils;
@@ -20,8 +21,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetFeatureHandler extends WFSRequestObjectHandler {
 
-    public GetFeatureHandler(CoordinateReferenceSystem logCrs, Catalog catalog) {
-        super("net.opengis.wfs.GetFeatureType", logCrs, catalog);
+    public GetFeatureHandler(MonitorConfig config, Catalog catalog) {
+        super("net.opengis.wfs.GetFeatureType", config, catalog);
     }
 
     @Override

@@ -6,6 +6,8 @@ package org.geoserver.monitor.ows.wcs11;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.opengis.ows11.CodeType;
 
@@ -15,12 +17,15 @@ import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
+
+    static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
     
     public GetCoverageHandler(MonitorConfig config) {
         super("net.opengis.wcs11.GetCoverageType", config);
@@ -44,10 +49,12 @@ public class GetCoverageHandler extends RequestObjectHandler {
             List<Double> lowerCorner = (List<Double>) OwsUtils.get(wcsBbox, "lowerCorner");
         
         CoordinateReferenceSystem crs = null;
+        String crsName= (String) OwsUtils.get(wcsBbox, "crs");
         try {
-            crs= CRS.decode((String) OwsUtils.get(wcsBbox, "crs"));
+            crs= CRS.decode(crsName);
         } catch (Exception e) {
-            // TODO: Log this or something.
+            LOGGER.log(Level.WARNING, String.format("Could not decode CRS ID: %s", crsName), e);
+            return null;
         }
         
         
@@ -60,7 +67,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
             // Turn into a class that implements BoundingBox
             return new ReferencedEnvelope(minX, maxX, minY, maxY, crs).toBounds(monitorConfig.getBboxLogCrs());
         } catch (TransformException e) {
-            // TODO: log this
+            LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);
             return null;
         }
     }

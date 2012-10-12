@@ -6,18 +6,23 @@ package org.geoserver.monitor.ows.wcs10;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.operation.TransformException;
 
 public class GetCoverageHandler extends RequestObjectHandler {
+
+    static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
 
     public GetCoverageHandler(MonitorConfig config) {
         super("net.opengis.wcs10.GetCoverageType", config);
@@ -51,7 +56,8 @@ public class GetCoverageHandler extends RequestObjectHandler {
         try{
             result=new ReferencedEnvelope(env).toBounds(monitorConfig.getBboxLogCrs());
         } catch(TransformException e) {
-            // TODO: Should probably log this
+            LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);
+            return null;
         }
         return result;
     }

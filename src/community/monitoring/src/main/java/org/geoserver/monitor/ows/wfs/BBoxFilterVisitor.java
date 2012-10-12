@@ -1,7 +1,11 @@
 package org.geoserver.monitor.ows.wfs;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.Not;
 import org.opengis.filter.expression.Expression;
@@ -31,6 +35,8 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class BBoxFilterVisitor extends DefaultFilterVisitor implements
     FilterVisitor {
+
+    static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
     
     BoundingBox bbox;
     CoordinateReferenceSystem defaultCrs;
@@ -51,13 +57,14 @@ public class BBoxFilterVisitor extends DefaultFilterVisitor implements
     
     void addBbox(BoundingBox bbox) {
         try {
-            if(this.bbox!=null){
+            if(this.bbox!=null){ // If there was an error and it was set to null
                 if (bbox.getCoordinateReferenceSystem() == null) {
                     bbox = ReferencedEnvelope.reference(bbox, defaultCrs);
                 }
                 this.bbox.include(bbox.toBounds(this.bbox.getCoordinateReferenceSystem()));
             }
         } catch (TransformException e) {
+            LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);
             this.bbox=null;
         }
     }

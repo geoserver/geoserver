@@ -296,6 +296,11 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             final ParameterValue<GeneralGridGeometry> requestedGridGeometryParam = new DefaultParameterDescriptor<GeneralGridGeometry>(
                     AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                     GeneralGridGeometry.class, null, requestedGridGeometry).createValue();
+            GeneralParameterValue[] tmpArray = new GeneralParameterValue[readParameters.length+1];
+            System.arraycopy(readParameters, 0, tmpArray, 0, readParameters.length);
+            tmpArray[tmpArray.length-1]=requestedGridGeometryParam;
+            readParameters=tmpArray;
+            
             
             /*
              * Test if the parameter "TIME" is present in the WMS request, and by the way in the

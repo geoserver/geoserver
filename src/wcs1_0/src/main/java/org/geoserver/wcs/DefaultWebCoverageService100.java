@@ -268,9 +268,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 destinationG2W = new AffineTransform2D(resX, 0d, 0d, resY, (Double) origin_
                         .getValue().get(0), (Double) origin_.getValue().get(1));
 
-            } else
+            } else {
                 throw new WcsException("Invalid Grid value:" + grid.toString(),
                         InvalidParameterValue, null);
+            }
 
             //
             // SETTING COVERAGE READING PARAMS
@@ -519,10 +520,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
             return coverageResults.toArray(new GridCoverage2D[] {});
         } catch (Exception e) {
-            if (e instanceof WcsException)
+        	CoverageCleanerCallback.addCoverages(coverage);
+            if (e instanceof WcsException) {
                 throw (WcsException) e;
-            else
+            } else {
                 throw new WcsException(e);
+            }
         }
 
     }

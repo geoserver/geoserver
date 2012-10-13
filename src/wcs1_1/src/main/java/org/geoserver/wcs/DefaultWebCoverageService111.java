@@ -1,6 +1,6 @@
 package org.geoserver.wcs;
 
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.*;
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
@@ -534,10 +534,12 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 return new GridCoverage[] { bandSelectedCoverage };
             }
         } catch (Throwable e) {
-            if (e instanceof WcsException)
+        	CoverageCleanerCallback.addCoverages(coverage);
+            if (e instanceof WcsException) {
                 throw (WcsException) e;
-            else
+            } else {
                 throw new WcsException(e);
+            }
         }
 
     }

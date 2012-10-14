@@ -18,7 +18,9 @@ GeoServer development environment. This guide assumes that all the necessary
 Check out source code
 ---------------------
 
-Clone the GeoServer git repository::
+Check out the source code from the git repository.::
+  
+   git clone git://github.com/geoserver/geoserver.git geoserver
 
 To list the available branches.::
 

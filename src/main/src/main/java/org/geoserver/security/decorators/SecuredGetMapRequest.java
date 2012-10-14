@@ -168,7 +168,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
         return delegate.requiresPost();
     }
 
-    public void setBBox(BoundingBox box) {
+    public void setBBox(org.opengis.geometry.Envelope box) {
         delegate.setBBox(box);
     }
 

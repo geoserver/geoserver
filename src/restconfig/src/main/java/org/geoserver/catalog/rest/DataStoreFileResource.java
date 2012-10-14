@@ -186,7 +186,14 @@ public class DataStoreFileResource extends StoreFileResource {
                 for ( File f : directory.listFiles() ) {
                     ZipEntry entry = new ZipEntry( f.getName() );
                     zout.putNextEntry(entry);
-                    IOUtils.copy( new FileInputStream( f ), zout );
+                    FileInputStream fis = null;
+                    try {
+                        fis = new FileInputStream(f);
+                        IOUtils.copy(fis, zout);
+                    } finally {
+                        IOUtils.closeQuietly(fis);
+                    }
+                    
                     zout.closeEntry();
                 }
                 zout.flush();

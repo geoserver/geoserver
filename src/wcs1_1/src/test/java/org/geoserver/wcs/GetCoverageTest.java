@@ -171,10 +171,10 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
         Envelope envelope = coverages[0].getEnvelope();
-        assertEquals(-45d, envelope.getMinimum(0));
-        assertEquals(-40d, envelope.getMaximum(0));
-        assertEquals(146d, envelope.getMinimum(1));
-        assertEquals(151d, envelope.getMaximum(1));
+        assertEquals(-45d, envelope.getMinimum(0), 1e-6);
+        assertEquals(-42d, envelope.getMaximum(0), 1e-6);
+        assertEquals(146d, envelope.getMinimum(1), 1e-6);
+        assertEquals(149d, envelope.getMaximum(1), 1e-6);
     }
 
     public void testWrongGridOrigin() throws Exception {
@@ -209,18 +209,24 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         raw.put("GridBaseCRS", "EPSG:3857");
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
         
+        // check the envelope
         Envelope envelope = coverages[0].getEnvelope();
-        System.out.println(envelope);
+        // System.out.println(envelope);
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
         assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
         
         ReferencedEnvelope nativeBounds = ci.getNativeBoundingBox();
         ReferencedEnvelope expected = nativeBounds.transform(targetCRS, true);
+
+        assertEquals(0, Double.compare(expected.getMinimum(0), envelope.getMinimum(0)));
+        assertEquals(0, Double.compare(expected.getMaximum(0), envelope.getMaximum(0)));
+        assertEquals(0, Double.compare(expected.getMinimum(1), envelope.getMinimum(1)));
+        assertEquals(0, Double.compare(expected.getMaximum(1), envelope.getMaximum(1)));
         
-        assertEquals(expected.getMinimum(0), envelope.getMinimum(0));
-        assertEquals(expected.getMaximum(0), envelope.getMaximum(0));
-        assertEquals(expected.getMinimum(1), envelope.getMinimum(1));
-        assertEquals(expected.getMaximum(1), envelope.getMaximum(1));
+        // check we did not get a massive raster out (GEOS-5346)
+        GridEnvelope range = coverages[0].getGridGeometry().getGridRange();
+        assertEquals(360, range.getSpan(0));
+        assertEquals(499, range.getSpan(1));
     }
 
     public void testWorkspaceQualified() throws Exception {

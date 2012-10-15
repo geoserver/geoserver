@@ -45,6 +45,4 @@
     <bean id="imgCoverageResponseDelegate" class="org.geoserver.wcs.responses.IMGCoverageResponseDelegate"/>
     <bean id="debugCoverageResponseDelegate" class="org.geoserver.wcs.responses.DebugCoverageResponseDelegate"/>
     
-    <!-- disposes of all coverages created during GetCoverage calls -->
-    <bean id="coverageCleaner" class="org.geoserver.wcs.CoverageCleanerCallback"/>
 </beans>

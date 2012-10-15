@@ -45,9 +45,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     protected GridCoverage[] executeGetCoverageKvp(Map<String, Object> raw) throws Exception {
         GetCoverageType getCoverage = (GetCoverageType) kvpreader.read(kvpreader.createRequest(),
                 parseKvp(raw), raw);
-        GridCoverage[] result = service.getCoverage(getCoverage);
-        CoverageCleanerCallback.addCoverages(result);
-        return result;
+        return service.getCoverage(getCoverage);
     }
 
     /**

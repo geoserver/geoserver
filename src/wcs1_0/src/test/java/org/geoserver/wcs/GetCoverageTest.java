@@ -141,8 +141,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("grid envelope",expectedGridEnvelope, gridEnvelope);
         
         // dispose
-        CoverageCleanerCallback.disposeCoverage(baseCoverage);
-        CoverageCleanerCallback.disposeCoverage(coverages[0]);
+        ((GridCoverage2D)coverages[0]).dispose(true);
     }
     
     /**

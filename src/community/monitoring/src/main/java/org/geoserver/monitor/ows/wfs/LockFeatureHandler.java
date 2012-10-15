@@ -22,7 +22,7 @@ public class LockFeatureHandler extends WFSRequestObjectHandler {
     @Override
     public List<String> getLayers(Object request) {
         @SuppressWarnings("unchecked")
-        List<String> locks = (List<String>) EMFUtils.get((EObject)request, "lock");
+        List<Object> locks = (List<Object>) EMFUtils.get((EObject)request, "lock");
         if (locks == null) {
             return null;
         }

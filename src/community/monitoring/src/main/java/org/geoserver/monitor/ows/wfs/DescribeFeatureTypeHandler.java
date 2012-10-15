@@ -21,7 +21,7 @@ public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
     @Override
     public List<String> getLayers(Object request) {
         @SuppressWarnings("unchecked")
-        List<String> typeNames = (List<String>) EMFUtils.get((EObject)request, "typeName");
+        List<Object> typeNames = (List<Object>) EMFUtils.get((EObject)request, "typeName");
         if (typeNames == null) {
             return null;
         }

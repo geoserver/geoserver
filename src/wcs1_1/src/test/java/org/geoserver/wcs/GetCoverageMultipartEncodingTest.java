@@ -10,7 +10,6 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -19,7 +18,6 @@ import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -31,7 +29,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
-	
+
     @Test
     public void testKvpBasic() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
@@ -104,10 +102,8 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
         // make sure we can read the coverage back
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
-        ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream());
-		reader.setInput(iis);
+        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
         reader.read(0);
-        iis.close();
     }
 
     @Test
@@ -137,6 +133,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
                 + getLayerId(TASMANIA_BM)
                 + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
                 + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326";
+        ensureTiffFormat(getAsServletResponse(requestBase + "&format=geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=GEotIFF"));

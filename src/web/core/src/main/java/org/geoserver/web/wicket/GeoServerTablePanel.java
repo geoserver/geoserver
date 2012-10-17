@@ -472,6 +472,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             dataProvider.setKeywords(keywords);
             dataView.setCurrentPage(0);
         }
+        pagerDelegate.updateMatched();
         navigatorTop.updateMatched();
         navigatorBottom.updateMatched();
         setSelection(false);

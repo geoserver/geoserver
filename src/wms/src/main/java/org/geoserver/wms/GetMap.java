@@ -451,8 +451,9 @@ public class GetMap {
         EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
         EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
         try {
-            EnvFunction.setLocalValue("wms_scale_denominator", RendererUtilities.calculateScale(mapContent.getRenderingArea(),
-                    mapContent.getMapWidth(), mapContent.getMapHeight(), null));
+            double scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
+                    mapContent.getMapWidth(), null);
+            EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
         } catch(Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to compute the scale denominator, wms_scale_denominator env variable is unset", e);
         }

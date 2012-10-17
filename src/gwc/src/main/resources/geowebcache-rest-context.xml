@@ -20,6 +20,7 @@
   <bean id="gwcTileLayerRestlet" class="org.geowebcache.rest.layers.TileLayerRestlet">
     <property name="XMLConfiguration" ref="gwcXmlConfig"/>
     <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
+    <property name="urlMangler" ref="gwcURLMangler"/>
   </bean>
   <bean id="gwcBoundsRestlet" class="org.geowebcache.rest.bounds.BoundsRestlet">
     <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>

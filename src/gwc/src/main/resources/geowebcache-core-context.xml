@@ -134,4 +134,6 @@
   <bean id="gwcProxyDispatcher"
 	class="org.geowebcache.proxy.ProxyDispatcher"/>
 
+  <bean id="gwcURLMangler" class="org.geoserver.gwc.ResponseUtilsURLMangler" />
+
 </beans>

@@ -963,7 +963,11 @@ public class WMS implements ApplicationContextAware {
         FeatureCollection collection = getDimensionCollection(typeInfo, time);
         final MaxVisitor max = new MaxVisitor(time.getAttribute());
         collection.accepts(max, null);
-        return (Date) max.getMax();
+        if (max.getResult() != CalcResult.NULL_RESULT) {
+            return (Date) max.getMax();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -1000,7 +1004,7 @@ public class WMS implements ApplicationContextAware {
         FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
         final MinVisitor min = new MinVisitor(elevation.getAttribute());
         collection.accepts(min, null);
-        if (min.getMin() == null) {
+        if (min.getResult() == CalcResult.NULL_RESULT) {
             return null;
         } else {
             return ((Number) min.getMin()).doubleValue();
@@ -1065,7 +1069,9 @@ public class WMS implements ApplicationContextAware {
      */
     Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
         Filter filter;
-        if (value instanceof Range) {
+        if (value == null) {
+            filter = Filter.INCLUDE;
+        } else if (value instanceof Range) {
             Range range = (Range) value;
             if (endAttribute == null) {
                 filter = ff.between(attribute, ff.literal(range.getMinValue()),

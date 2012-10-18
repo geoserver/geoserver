@@ -157,6 +157,19 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 20, 30, Color.WHITE);
         assertPixel(image, 60, 30, Color.BLACK);
     }
+    
+    public void testTimeCurrentForEmptyLayer() throws Exception {
+        setupVectorDimension("TimeElevationEmpty", ResourceInfo.TIME, "time", DimensionPresentation.LIST, null);
+        BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
+                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&layers=" + getLayerId(V_TIME_ELEVATION_EMPTY) + "&time=CURRENT", "image/png");
+
+        // we should get only the last one (current)
+        assertPixel(image, 20, 10, Color.WHITE);
+        assertPixel(image, 60, 10, Color.WHITE);
+        assertPixel(image, 20, 30, Color.WHITE);
+        assertPixel(image, 60, 30, Color.WHITE);
+    }
 
     @Test
     public void testTimeSingle() throws Exception {

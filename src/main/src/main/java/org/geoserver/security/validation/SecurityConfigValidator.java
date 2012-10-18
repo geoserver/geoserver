@@ -402,7 +402,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
             return USERGROUP_SERVICE_ALREADY_EXISTS_$1;
         if (GeoServerSecurityFilter.class==extPoint)
             return AUTH_FILTER_ALREADY_EXISTS_$1;
-        throw new RuntimeException("Unkonw extension point: "+extPoint.getName());
+        throw new RuntimeException("Unknown extension point: "+extPoint.getName());
     }
 
     protected String notFoundErrorCode(Class<?> extPoint) {
@@ -416,7 +416,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
             return USERGROUP_SERVICE_NOT_FOUND_$1;
         if (GeoServerSecurityFilter.class==extPoint)
             return AUTH_FILTER_NOT_FOUND_$1;
-        throw new RuntimeException("Unkonw extension point: "+extPoint.getName());
+        throw new RuntimeException("Unknown extension point: "+extPoint.getName());
     }
 
     /**

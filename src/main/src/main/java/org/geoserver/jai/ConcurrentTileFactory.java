@@ -119,7 +119,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
                 Object array = PropertyUtils.getProperty(db, "bankData");
                 return new SoftReference<Object>(array);
             } catch (Exception e) {
-                throw new UnsupportedOperationException("Unkonwn data buffer type " + db);
+                throw new UnsupportedOperationException("Unknown data buffer type " + db);
             }
         }
 

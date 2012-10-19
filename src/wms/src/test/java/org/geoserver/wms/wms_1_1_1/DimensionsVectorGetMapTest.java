@@ -159,7 +159,7 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
     }
     
     public void testTimeCurrentForEmptyLayer() throws Exception {
-        setupVectorDimension("TimeElevationEmpty", ResourceInfo.TIME, "time", DimensionPresentation.LIST, null);
+        setupVectorDimension("TimeElevationEmpty", ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetMap"
                 + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
                 + "&layers=" + getLayerId(V_TIME_ELEVATION_EMPTY) + "&time=CURRENT", "image/png");

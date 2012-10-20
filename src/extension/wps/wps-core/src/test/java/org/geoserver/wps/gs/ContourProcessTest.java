@@ -26,82 +26,79 @@ import org.opengis.geometry.Envelope;
  */
 public class ContourProcessTest extends BaseRasterToVectorTest {
 
-	/**
-	 * Test basic capabilities for the contour process. It works on the DEM tiff
-	 * and produces a shapefile. Nothing more nothing less.
-	 * 
-	 * @throws Exception
-	 */
+    /**
+     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile. Nothing more nothing less.
+     * 
+     * @throws Exception
+     */
     @Test
-	public void testProcessStandaloneBasicValues() throws Exception {
-		GridCoverage2D gc = extractCoverageSubset();
+    public void testProcessStandaloneBasicValues() throws Exception {
+        GridCoverage2D gc = extractCoverageSubset();
 
-		// extract just two isolines
-		final double levels[] = new double[2];
-		levels[0] = 1500;
-		levels[1] = 1700;
-		final ContourProcess process = new ContourProcess();
-		final SimpleFeatureCollection fc = process.execute(gc, 0, levels, null,
-				false, false, null, new NullProgressListener());
+        // extract just two isolines
+        final double levels[] = new double[2];
+        levels[0] = 1500;
+        levels[1] = 1700;
+        final ContourProcess process = new ContourProcess();
+        final SimpleFeatureCollection fc = process.execute(gc, 0, levels, null, false, false, null,
+                new NullProgressListener());
 
-		assertNotNull(fc);
-		assertTrue(fc.size() > 0);
+        assertNotNull(fc);
+        assertTrue(fc.size() > 0);
 
-		SimpleFeatureIterator fi = fc.features();
-		while (fi.hasNext()) {
-			SimpleFeature sf = fi.next();
-			Double value = (Double) sf.getAttribute("value");
-			assertTrue(value == 1500.0 || value == 1700.0);
-		}
-		fi.close();
-	}
+        SimpleFeatureIterator fi = fc.features();
+        while (fi.hasNext()) {
+            SimpleFeature sf = fi.next();
+            Double value = (Double) sf.getAttribute("value");
+            assertTrue(value == 1500.0 || value == 1700.0);
+        }
+        fi.close();
+    }
 
-	private GridCoverage2D extractCoverageSubset() throws IOException {
-		// get the coverage
-		CoverageInfo dem = getCatalog().getCoverageByName(DEM.getLocalPart());
-		GridCoverage2D gc = (GridCoverage2D) dem.getGridCoverage(null,
-				GeoTools.getDefaultHints());
+    private GridCoverage2D extractCoverageSubset() throws IOException {
+        // get the coverage
+        CoverageInfo dem = getCatalog().getCoverageByName(DEM.getLocalPart());
+        GridCoverage2D gc = (GridCoverage2D) dem.getGridCoverage(null, GeoTools.getDefaultHints());
 
-		// extract only a small part of it
-		Envelope fullEnvelope = gc.getEnvelope();
-		GeneralEnvelope subset = new GeneralEnvelope(
-				fullEnvelope.getCoordinateReferenceSystem());
-		double minX = fullEnvelope.getMinimum(0);
-		double minY = fullEnvelope.getMinimum(1);
-		double offsetX = fullEnvelope.getSpan(0) / 5;
-		double offsetY = fullEnvelope.getSpan(1) / 5;
-		subset.setEnvelope(minX + offsetX, minY + offsetY, minX + offsetX * 2,
-				minY + offsetY * 2);
-		gc = (GridCoverage2D) new Operations(null).crop(gc, subset);
-		return gc;
-	}
-	
- 	/**
-	 * Test basic capabilities for the contour process. It works on the DEM tiff
-	 * and produces a shapefile. Nothing more nothing less.
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void testProcessStandaloneBasicInterval() throws Exception {
-		final GridCoverage2D gc = extractCoverageSubset();
+        // extract only a small part of it
+        Envelope fullEnvelope = gc.getEnvelope();
+        GeneralEnvelope subset = new GeneralEnvelope(fullEnvelope.getCoordinateReferenceSystem());
+        double minX = fullEnvelope.getMinimum(0);
+        double minY = fullEnvelope.getMinimum(1);
+        double offsetX = fullEnvelope.getSpan(0) / 5;
+        double offsetY = fullEnvelope.getSpan(1) / 5;
+        subset.setEnvelope(minX + offsetX, minY + offsetY, minX + offsetX * 2, minY + offsetY * 2);
+        gc = (GridCoverage2D) new Operations(null).crop(gc, subset);
+        
+        scheduleForDisposal(gc);
+        
+        return gc;
+    }
 
-		final double step = 100;
-		final ContourProcess process = new ContourProcess();
-		final SimpleFeatureCollection fc = process.execute(gc, 0, null,
-				Double.valueOf(step), false, false, null,
-				new NullProgressListener());
+    /**
+     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile. Nothing more nothing less.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testProcessStandaloneBasicInterval() throws Exception {
+        final GridCoverage2D gc = extractCoverageSubset();
 
-		assertNotNull(fc);
-		assertTrue(fc.size() > 0);
+        final double step = 100;
+        final ContourProcess process = new ContourProcess();
+        final SimpleFeatureCollection fc = process.execute(gc, 0, null, Double.valueOf(step),
+                false, false, null, new NullProgressListener());
 
-		SimpleFeatureIterator fi = fc.features();
-		while (fi.hasNext()) {
-			SimpleFeature sf = fi.next();
-			Double value = (Double) sf.getAttribute("value");
-			assertTrue(value > 0);
-		}
-		fi.close();
-	}
+        assertNotNull(fc);
+        assertTrue(fc.size() > 0);
+
+        SimpleFeatureIterator fi = fc.features();
+        while (fi.hasNext()) {
+            SimpleFeature sf = fi.next();
+            Double value = (Double) sf.getAttribute("value");
+            assertTrue(value > 0);
+        }
+        fi.close();
+    }
 
 }

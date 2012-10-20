@@ -30,6 +30,7 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
     @Test
     public void testProcessStandaloneBasic() throws Exception {
     	final GridCoverage2D gc = (GridCoverage2D) getCatalog().getCoverageByName(DEM.getLocalPart()).getGridCoverage(null, GeoTools.getDefaultHints());
+    	scheduleForDisposal(gc);
     	
     	final PolygonExtractionProcess process = new PolygonExtractionProcess();
 		final SimpleFeatureCollection fc = process.execute(

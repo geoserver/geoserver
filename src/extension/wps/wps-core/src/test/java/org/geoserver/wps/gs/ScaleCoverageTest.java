@@ -90,6 +90,7 @@ public class ScaleCoverageTest extends WPSTestSupport {
         GridCoverage gc = format.getReader(is).read(null);
         
         GridCoverage original = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM)).getGridCoverage(null, null);
+        scheduleForDisposal(original);
         
         // check the envelope did not change
         assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);

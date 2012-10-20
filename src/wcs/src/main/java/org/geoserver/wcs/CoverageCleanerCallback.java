@@ -18,63 +18,64 @@ import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverage;
 
 public class CoverageCleanerCallback extends AbstractDispatcherCallback {
-	
-	static final Logger LOGGER = Logging.getLogger(CoverageCleanerCallback.class);
 
-	static final ThreadLocal<List<GridCoverage>> COVERAGES = new ThreadLocal<List<GridCoverage>>();
-	
-	@Override
-	public Object operationExecuted(Request request, Operation operation,
-			Object result) {
-		// collect the grid coverages that we'll have to dispose of at the
-		// end of the request
-		if(result instanceof GridCoverage) {
-			addCoverages((GridCoverage) result);
-		} else if(result instanceof GridCoverage[]) {
-			addCoverages((GridCoverage[]) result);
-		}
-		
-		return result;
-	}
-	
-	@Override
-	public void finished(Request request) {
-		try {
-			List<GridCoverage> coverages = COVERAGES.get();
-			if(coverages != null) {
-				for (GridCoverage coverage : coverages) {
-					try {
-						disposeCoverage(coverage);
-					} catch(Exception e) {
-						LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage, e);
-					}
-				}
-			}
-		} finally {
-			COVERAGES.remove();
-		}
-	}
-	
-	public static void addCoverages(GridCoverage... coverages) {
-		List<GridCoverage> list = COVERAGES.get();
-		if(list == null) {
-			list = new ArrayList<GridCoverage>();
-			COVERAGES.set(list);
-		}
-		list.addAll(Arrays.asList(coverages));
-	}
+    static final Logger LOGGER = Logging.getLogger(CoverageCleanerCallback.class);
 
-	/**
-	 * Cleans up a coverage and its internal rendered image
-	 * @param coverage
-	 */
-	public static void disposeCoverage(GridCoverage coverage) {
-		RenderedImage ri = coverage.getRenderedImage();
-		if(coverage instanceof GridCoverage2D) {
-			((GridCoverage2D) coverage).dispose(true);
-		}
-		if(ri instanceof PlanarImage) {
-			ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-		}	
-	}
+    static final ThreadLocal<List<GridCoverage>> COVERAGES = new ThreadLocal<List<GridCoverage>>();
+
+    @Override
+    public Object operationExecuted(Request request, Operation operation, Object result) {
+        // collect the grid coverages that we'll have to dispose of at the
+        // end of the request
+        if (result instanceof GridCoverage) {
+            addCoverages((GridCoverage) result);
+        } else if (result instanceof GridCoverage[]) {
+            addCoverages((GridCoverage[]) result);
+        }
+
+        return result;
+    }
+
+    @Override
+    public void finished(Request request) {
+        try {
+            List<GridCoverage> coverages = COVERAGES.get();
+            if (coverages != null) {
+                for (GridCoverage coverage : coverages) {
+                    try {
+                        disposeCoverage(coverage);
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage,
+                                e);
+                    }
+                }
+            }
+        } finally {
+            COVERAGES.remove();
+        }
+    }
+
+    public static void addCoverages(GridCoverage... coverages) {
+        List<GridCoverage> list = COVERAGES.get();
+        if (list == null) {
+            list = new ArrayList<GridCoverage>();
+            COVERAGES.set(list);
+        }
+        list.addAll(Arrays.asList(coverages));
+    }
+
+    /**
+     * Cleans up a coverage and its internal rendered image
+     * 
+     * @param coverage
+     */
+    public static void disposeCoverage(GridCoverage coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+        if (coverage instanceof GridCoverage2D) {
+            ((GridCoverage2D) coverage).dispose(true);
+        }
+        if (ri instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        }
+    }
 }

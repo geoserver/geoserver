@@ -67,8 +67,11 @@ public class StoreCoverageTest extends WPSTestSupport {
         // read and check
         GeoTiffFormat format = new GeoTiffFormat();
         GridCoverage2D gc = format.getReader(tiffFile).read(null);
+        scheduleForDisposal(gc);
         GridCoverage original = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
                 .getGridCoverage(null, null);
+        scheduleForDisposal(original);
+        
         //
         // check the envelope did not change
         assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);

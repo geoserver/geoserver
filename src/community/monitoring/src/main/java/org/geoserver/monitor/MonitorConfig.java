@@ -12,12 +12,18 @@ import org.geoserver.monitor.hib.HibernateMonitorDAO2;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.factory.Hints;
+import org.geotools.referencing.CRS;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * Configuration object for monitor subsystem.
  * 
@@ -26,12 +32,18 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class MonitorConfig implements ApplicationContextAware {
 
+    private static final Logger LOGGER = Logging.getLogger(MonitorConfig.class);
+    
     public static enum Mode {
         LIVE, HISTORY, HYBRID;
     }
     
     public static enum Sync {
         SYNC, ASYNC, ASYNC_UPDATE;
+    }
+    
+    public static enum BBoxLogLevel {
+        NONE, NO_WFS, FULL;
     }
     
     Properties props;
@@ -45,6 +57,8 @@ public class MonitorConfig implements ApplicationContextAware {
         props.put("mode", "history");
         props.put("sync", "async");
         props.put("maxBodySize", "1024");
+        props.put("bboxLogCrs", "EPSG:4326");
+        props.put("bboxLogLevel", "no_wfs");
     }
     
     public MonitorConfig(GeoServerResourceLoader loader) throws IOException {
@@ -67,6 +81,21 @@ public class MonitorConfig implements ApplicationContextAware {
     
     public long getMaxBodySize() {
         return Long.parseLong(props.getProperty("maxBodySize", String.valueOf(1024)));
+    }
+    
+    public CoordinateReferenceSystem getBboxLogCrs() {
+        try {
+            return CRS.decode(props.getProperty("bboxLogCrs", "EPSG:4326"));
+        } catch (NoSuchAuthorityCodeException e) {
+            LOGGER.log(Level.FINER, e.getMessage(), e);
+        } catch (FactoryException e) {
+            LOGGER.log(Level.FINER, e.getMessage(), e);
+        }
+        return null;
+    }
+    
+    public BBoxLogLevel getBboxLogLevel() {
+        return BBoxLogLevel.valueOf(props().getProperty("bboxLogLevel", "no_wfs").toUpperCase());
     }
     
     public boolean isEnabled() {

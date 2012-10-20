@@ -208,6 +208,7 @@ public class MonitorFilter implements GeoServerFilter {
     // Get the body and trim to the maximum allowable size if necessary
     byte[] getBody(HttpServletRequest req) {
         long maxBodyLength = monitor.config.getMaxBodySize();
+        if (maxBodyLength == 0) return null;
         try {
             byte[] body=((MonitorServletRequest)req).getBodyContent(); // TODO: trimming at this point may now be redundant
             if(body!=null && maxBodyLength!=MonitorServletRequest.BODY_SIZE_UNBOUNDED && body.length>maxBodyLength)

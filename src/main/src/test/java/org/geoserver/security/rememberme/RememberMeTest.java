@@ -143,7 +143,7 @@ public class RememberMeTest extends GeoServerTestSupport {
     }
 
     void assertLoginOk(MockHttpServletResponse resp) {
-        assertEquals("/geoserver/", resp.getHeader("Location"));
+        assertEquals("/geoserver/web", resp.getHeader("Location"));
     }
 
     void assertLoginFailed(MockHttpServletResponse resp) {

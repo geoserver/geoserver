@@ -5,8 +5,6 @@
 package org.geoserver.security.filter;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,9 +31,10 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
     implements GeoServerAuthenticationFilter {
 
     public static final String URL_FOR_LOGIN = "/j_spring_security_check";
-    public static final String URL_LOGIN_SUCCCESS = "/";
-    public static final String URL_LOGIN_FAILURE = "/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true";
-    public static final String URL_LOGIN_FORM="/admin/login.do";
+    public static final String URL_LOGIN_SUCCCESS = "/web";
+    public static final String URL_LOGIN_FAILURE = "/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=true";
+    public static final String URL_LOGIN_FORM="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=false";
+    //public static final String URL_LOGIN_FORM="/admin/login.do";
     
     
     private LoginUrlAuthenticationEntryPoint aep;

@@ -10,3 +10,4 @@ Tutorials
    digest/index
    cert/index
    j2ee/index
+   httpheaderproxy/index

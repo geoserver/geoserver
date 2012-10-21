@@ -1556,6 +1556,27 @@ public class CatalogImplTest extends TestCase {
         assertNull(catalog.getLayerGroupByName("cite", "layerGroup2"));
     }
 
+    public void testGetLayerGroupByNameWithColon() {
+        addLayer();
+        CatalogFactory factory = catalog.getFactory();
+        LayerGroupInfo lg = factory.createLayerGroup();
+
+        String lgName = "MyFakeWorkspace:layerGroup";
+        lg.setName(lgName);
+        lg.setWorkspace(ws);
+        lg.getLayers().add(l);
+        lg.getStyles().add(s);
+        catalog.add(lg);
+
+        // lg is not global, should not be found at least we specify a prefixed name
+        assertNull("MyFakeWorkspace:layerGroup is not global, should not be found",
+                catalog.getLayerGroupByName(lgName));
+
+        assertEquals(lg, catalog.getLayerGroupByName(ws.getName(), lgName));
+        assertEquals(lg, catalog.getLayerGroupByName(ws, lgName));
+        assertEquals(lg, catalog.getLayerGroupByName(ws.getName() + ":" + lgName));
+    }
+
     public void testGetLayerGroupByNameWithWorkspace() {
         addLayer();
         

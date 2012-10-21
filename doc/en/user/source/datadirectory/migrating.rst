@@ -84,7 +84,7 @@ Files renamed
   * ``security/users.properties`` renamed to ``security/users.properties.old``
 
 
-Reverting from GeoServer 2.1.x and 2.1.x
+Reverting from GeoServer 2.2.x and 2.1.x
 ----------------------------------------
 
 In order to restore the GeoServer 2.1 configuration:
@@ -107,3 +107,55 @@ In order to restore the GeoServer 2.1 configuration:
        pwpolicy/
        role/
        usergroup/
+
+Migrating between GeoServer 2.2.x and 2.3.x
+-------------------------------------------
+
+The security improvements that ship with GeoServer 2.3 require modifications to the ``security`` directory of the 
+GeoServer data directory.
+
+Files and directories added
+```````````````````````````
+
+::
+
+  security/filter/roleFilter/config.xml
+  
+Files modified
+``````````````
+::
+
+    security/filter/formLogout/config.xml
+    security/config.xml
+  
+Backup files
+````````````
+::
+
+    security/filter/formLogout/config.xml.2.2.x
+    security/config.xml.2.2.x
+
+  
+Reverting from GeoServer 2.3.x
+------------------------------
+
+In order to restore the GeoServer 2.2 configuration:
+
+#. Stop GeoServer.
+
+#. Copy ``security/config.xml.2.2.x`` to ``security/config.xml``.
+
+#. Copy ``security/filter/formLogout/config.xml.2.2.x`` to ``security/filter/formLogout/config.xml``.
+
+#. Additionally (although not mandatory) delete the following files and directories::
+
+
+     security/
+       filter/
+         roleFilter/
+            config.xml
+         formLogout/
+            config.xml.2.2.x
+       config.xml.2.2.x        
+
+       

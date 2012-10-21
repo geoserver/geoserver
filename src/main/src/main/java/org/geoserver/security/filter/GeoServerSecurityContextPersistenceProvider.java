@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerSecurityContextPersistenceProvider extends AbstractFilterP
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("contextPersistence", GeoServerSecurityContextPersistenceFilter.class);
+        xp.getXStream().alias("contextPersistence", SecurityContextPersistenceFilterConfig.class);
     }
 
     @Override

@@ -115,6 +115,7 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 
         if (!securityManager.isInitialized()) {
             //nothing to do
+            return;
         }
 
         SecurityManagerConfig config = securityManager.getSecurityConfig(); 
@@ -139,11 +140,6 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
                     if (filter == null) {
                         throw new NullPointerException("No filter named " + filterName +" could " +
                             "be found");
-                    }
-
-                    //check for anonymous auth flag
-                    if (filter instanceof GeoServerAnonymousAuthenticationFilter && !config.isAnonymousAuth()) {
-                        continue;
                     }
                     filters.add(filter);
                 }

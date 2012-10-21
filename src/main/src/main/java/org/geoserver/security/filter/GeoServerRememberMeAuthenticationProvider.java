@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerRememberMeAuthenticationProvider extends AbstractFilterPro
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("rememberMeAuthentication", GeoServerRememberMeAuthenticationFilter.class);
+        xp.getXStream().alias("rememberMeAuthentication", RememberMeAuthenticationFilterConfig.class);
     }
 
     @Override

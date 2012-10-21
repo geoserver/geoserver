@@ -1,18 +1,31 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:wicket="http://wicket.apache.org/">
+	xmlns:wicket="http://wicket.apache.org/">
 <body>
-<wicket:panel>
-  <ul>
-    <li>
-        <label><wicket:message key="requestChain"></wicket:message></label>
-        <select wicket:id="requestChain"></select>
-    </li>
-    <li>
-       <div wicket:id="authFilterChain"></div>
-    </li>
-  </ul>
-</wicket:panel>
+	<wicket:panel>
+		<ul>
+			<li><label><wicket:message key="requestChain"></wicket:message></label>
+				<select wicket:id="requestChain"></select></li>
+			<li>
+				<label for="antPatterns" ><wicket:message
+						key="antPatterns"></wicket:message>
+			    </label>			
+				<input id="antPatterns" class="text" type="text" wicket:id="antPatterns" />
+			</li>					
+			<li><input id="disabled" type="checkbox" wicket:id="disabled"
+				class="field checkbox" /> <label for="disabled" class="choice"><wicket:message
+						key="disabled"></wicket:message></label></li>
+			<li><input id="allowSessionCreation" type="checkbox"
+				wicket:id="allowSessionCreation" class="field checkbox" /> <label
+				for="allowSessionCreation" class="choice"><wicket:message
+						key="allowSessionCreation"></wicket:message></label></li>
+			<li><label><wicket:message key="roleFilterChoice"></wicket:message></label>
+				<select wicket:id="roleFilterChoice"></select></li>
+			<li>
+				<div wicket:id="authFilterChain"></div>
+			</li>
+		</ul>
+	</wicket:panel>
 </body>
 </html>

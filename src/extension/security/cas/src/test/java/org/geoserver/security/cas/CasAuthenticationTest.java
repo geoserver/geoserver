@@ -259,9 +259,10 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
         pattern = "/web/**";
 
-        prepareFilterChain(pattern, GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER,
-                casExceptionTranslationFilter,
-                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+        prepareFilterChain(pattern, 
+                casExceptionTranslationFilter);
+
+        modifyChain(pattern, false, true,null);    
 
         SecurityContextHolder.getContext().setAuthentication(null);
 
@@ -398,7 +399,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         updateUser("ug1", username, true);
         helper.ssoLogout();
 
-        insertAnonymousFilter(casExceptionTranslationFilter);
+        insertAnonymousFilter();
         request = createRequest("foo/bar");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
@@ -490,9 +491,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         config.setUrlInCasLogoutPage("http://localhost/afterlogout");
         getSecurityManager().saveFilter(config);
 
-        prepareFilterChain("/j_spring_cas_security_check",
-                GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER, casFilterName);
-
+        prepareFilterChain("/j_spring_cas_security_check",casFilterName);
+        modifyChain("/j_spring_cas_security_check", false, true,null);
+        
         SecurityContextHolder.getContext().setAuthentication(null);
 
         // logout triggered by geoserver
@@ -589,10 +590,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         pconfig1.setCreateHTTPSessionForValidTicket(true);
         getSecurityManager().saveFilter(pconfig1);
 
-        prepareFilterChain(pattern, GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,
-                casProxyFilterName,
-                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+        prepareFilterChain(pattern, 
+                casProxyFilterName);
 
         SecurityContextHolder.getContext().setAuthentication(null);
 
@@ -704,7 +703,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         helper.ssoLogout();
 
         // Test anonymous
-        insertAnonymousFilter(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter();
         request = createRequest("wms");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
@@ -784,10 +783,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         pconfig1.setUserGroupServiceName("ug1");
         getSecurityManager().saveFilter(pconfig1);
 
-        prepareFilterChain(pattern, GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,
-                casProxyFilterName,
-                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+        prepareFilterChain(pattern, 
+                casProxyFilterName);
 
         // prepareFilterChain(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN,
         // casFilterName);
@@ -893,7 +890,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         helper.ssoLogout();
 
         // Test anonymous
-        insertAnonymousFilter(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter();
         request = createRequest("wms");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();

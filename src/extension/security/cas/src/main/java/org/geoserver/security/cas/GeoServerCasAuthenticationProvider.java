@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
@@ -65,7 +66,7 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
     @Override
     public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {
         RequestFilterChain casChain = 
-            new RequestFilterChain(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN);
+            new ConstantFilterChain(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN);
         casChain.setFilterNames(pgtCallback.getName());
         filterChain.getRequestChains().add(0,casChain);
     }

@@ -7,7 +7,7 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
-import org.geoserver.security.config.GeoServerRoleFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
@@ -74,7 +74,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
     @Test
     public void testRoleFilterConfigValidation() throws Exception{
-        GeoServerRoleFilterConfig config = new GeoServerRoleFilterConfig();
+        RoleFilterConfig config = new RoleFilterConfig();
         config.setClassName(GeoServerRoleFilter.class.getName());
         config.setName("testRoleFilter");
         

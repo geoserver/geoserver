@@ -263,6 +263,16 @@ public class GeoServerCasAuthenticationFilter extends GeoServerSecurityFilter im
     public void destroy() {
     }
 
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+    @Override
+    public boolean applicableForServices() {
+        return true;
+    }
+
 
     
 }

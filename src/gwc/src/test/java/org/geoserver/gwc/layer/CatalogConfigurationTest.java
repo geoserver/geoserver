@@ -77,9 +77,9 @@ public class CatalogConfigurationTest {
         defaults.setCacheLayersByDefault(false);
         defaults.setCacheNonDefaultStyles(true);
 
-        layer1 = mockLayer("layer1");
-        layer2 = mockLayer("layer2");
-        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer");
+        layer1 = mockLayer("layer1", new String[]{}, LayerInfo.Type.RASTER);
+        layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
+        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, LayerInfo.Type.RASTER);
 
         group1 = mockGroup("group1", layer1, layer2);
         group2 = mockGroup("group2", layer2, layer1);

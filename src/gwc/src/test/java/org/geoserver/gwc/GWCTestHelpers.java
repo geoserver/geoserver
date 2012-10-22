@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -23,7 +24,7 @@ import com.google.common.collect.Lists;
 public class GWCTestHelpers {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static LayerInfoImpl mockLayer(String resourceName, String... extraStyles) {
+    public static LayerInfoImpl mockLayer(String resourceName, String[] extraStyles, Type type) {
         StoreInfo store = new DataStoreInfoImpl(null);
         store.setName(resourceName + "-store");
         store.setEnabled(true);
@@ -60,6 +61,8 @@ public class GWCTestHelpers {
             layer.setStyles(styles);
         }
 
+        layer.setType(type);
+        
         return layer;
     }
 

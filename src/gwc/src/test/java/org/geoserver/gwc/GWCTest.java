@@ -145,7 +145,7 @@ public class GWCTest {
     @Before
     public void setUp() throws Exception {
         catalog = mock(Catalog.class);
-        layer = mockLayer("testLayer", "style1", "style2");
+        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfo.Type.RASTER);
         layerGroup = mockGroup("testGroup", layer);
         mockCatalog();
 
@@ -491,7 +491,7 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        LayerInfo layer2 = mockLayer("layer2");
+        LayerInfo layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
         LayerGroupInfo group2 = mockGroup("group2", layer, layer2);
 
         when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);

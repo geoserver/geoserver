@@ -84,7 +84,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
     @Test
     public void testMarshallingDefaults() {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer");
+        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         testMarshaling(info);
     }

@@ -1,4 +1,10 @@
-package org.geoserver.wfs.response;
+/*
+ * Copyright (c) 2001 - 2010 TOPP - www.openplans.org.  All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
+package org.geoserver.wfs.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,8 +21,13 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+/**
+ * 
+ * @author carlo cancellieri - GeoSolutions
+ *
+ */
 public class GeoJSONTest extends WFSTestSupport {
-         
+       
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
         File security = new File(getTestData().getDataDirectoryRoot(), "security");
@@ -24,7 +35,7 @@ public class GeoJSONTest extends WFSTestSupport {
         File layers = new File(security, "layers.properties");
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
     }
-	    
+	
     @Test
     public void testFeatureBoundingDisabledCollection() throws Exception {
     	/* In GML we have the option not to compute the bounds in the response, 
@@ -48,7 +59,7 @@ public class GeoJSONTest extends WFSTestSupport {
         try {
             gs.save( wfs );
              
-        	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:AggregateGeoFeature&maxfeatures=3&outputformat=json");
+        	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:AggregateGeoFeature&maxfeatures=3&outputformat="+JSONType.json);
         	JSONObject rootObject = JSONObject.fromObject( out );
          	
         	JSONObject bbox = rootObject.getJSONObject("bbox");
@@ -62,7 +73,7 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testGet() throws Exception {	
-    	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat=json");
+    	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json);
     	
     	JSONObject rootObject = JSONObject.fromObject( out );
     	assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -73,7 +84,7 @@ public class GeoJSONTest extends WFSTestSupport {
 
     @Test
     public void testPost() throws Exception {
-        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\"json\" "
+        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "
                 + "version=\"1.0.0\" "
                 + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
                 + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
@@ -92,7 +103,7 @@ public class GeoJSONTest extends WFSTestSupport {
 
     @Test
     public void testGeometryCollection() throws Exception {
-    	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:AggregateGeoFeature&maxfeatures=3&outputformat=json");
+    	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:AggregateGeoFeature&maxfeatures=3&outputformat="+JSONType.json);
     	
     	JSONObject rootObject = JSONObject.fromObject( out );
     	assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -108,7 +119,7 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testMixedCollection() throws Exception {
-        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\"json\" "
+        String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "
         + "version=\"1.0.0\" "
         + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
         + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
@@ -139,23 +150,25 @@ public class GeoJSONTest extends WFSTestSupport {
         //System.out.println(aGeometry.getString("type"));
         assertEquals(aGeometry.getString("type"),"MultiLineString");
     }
-    
+
     @Test
-    public void testCallbackFunction() throws Exception {    
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat=json&format_options=callback:myFunc");
+    public void testCallbackFunction() throws Exception {
+        JSONType.setJsonpEnabled(true);
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="
+                + JSONType.jsonp + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY + ":myFunc");
+        JSONType.setJsonpEnabled(false);
         String out = resp.getOutputStreamContent();
 
-        assertEquals("text/javascript", resp.getContentType());
+        assertEquals(JSONType.jsonp, resp.getContentType());
         assertTrue(out.startsWith("myFunc("));
         assertTrue(out.endsWith(")"));
 
         // extract the json and check it
         out = out.substring(7, out.length() - 1);
-        JSONObject rootObject = JSONObject.fromObject( out );
-        assertEquals(rootObject.get("type"),"FeatureCollection");
+        JSONObject rootObject = JSONObject.fromObject(out);
+        assertEquals(rootObject.get("type"), "FeatureCollection");
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+        assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
     }
-    
 }

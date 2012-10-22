@@ -26,10 +26,10 @@ where ``<format>`` is any of the following options:
      - Created in a ZIP archive
    * - JSON
      - ``outputFormat=application/json``
-     - 
+     - Returns a GeoJson or a Json
    * - JSONP
      - ``outputFormat=text/javascript``
-     - See :ref:`wfs_vendor_parameters` for callback option
+     - Returns a JsonP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
    * - CSV
      - ``outputFormat=csv``
      - 

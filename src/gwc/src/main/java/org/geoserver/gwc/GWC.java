@@ -1629,6 +1629,30 @@ public class GWC implements DisposableBean, InitializingBean {
         }
     }
 
+    private boolean isLayerExposable(LayerInfo layer) {
+        assert layer!=null;
+        // TODO: this was copied from WMS 1.1 GetCapabilitesTransformer.handleLayerTree and is
+        // replicated again in the WMS 1.3 implementation.  Should be refactored to eliminate
+        // duplication
+        
+        // no sense in exposing a geometryless layer through wms...
+        boolean wmsExposable = false;
+        if (layer.getType() == LayerInfo.Type.RASTER || layer.getType() == LayerInfo.Type.WMS) {
+            wmsExposable = true;
+        } else {
+            try {
+                wmsExposable = layer.getType() == LayerInfo.Type.VECTOR
+                        && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
+                                .getGeometryDescriptor() != null;
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "An error occurred trying to determine if"
+                        + " the layer is geometryless", e);
+            }
+        }
+        
+        return wmsExposable;
+    }
+    
     /**
      * Creates new tile layers for the layers and layergroups given by their names using the
      * settings of the given default config options
@@ -1647,8 +1671,13 @@ public class GWC implements DisposableBean, InitializingBean {
 
             GeoServerTileLayer tileLayer = null;
             LayerInfo layer = catalog.getLayerByName(name);
+            
             if (layer != null) {
-                tileLayer = new GeoServerTileLayer(layer, saneConfig, gridSetBroker);
+                if(isLayerExposable(layer)){
+                    tileLayer = new GeoServerTileLayer(layer, saneConfig, gridSetBroker);
+                } else {
+                    log.warning("Requested layer " + name + " has no geometry. Won't create TileLayer");
+                }
             } else {
                 LayerGroupInfo layerGroup = catalog.getLayerGroupByName(name);
                 if (layerGroup != null) {

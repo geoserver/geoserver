@@ -36,7 +36,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
     @Test
     public void testLoadLayerInfo() {
-        LayerInfoImpl layer = mockLayer("testLayer");
+        LayerInfoImpl layer = mockLayer("testLayer", new String[]{}, LayerInfoImpl.Type.RASTER);
 
         assertNull(LegacyTileLayerInfoLoader.load(layer));
 
@@ -55,7 +55,7 @@ public class LegacyTileLayerInfoLoaderTest {
         info.setAutoCacheStyles(false);
         TileLayerInfoUtil.setCachedStyles(info, "default", ImmutableSet.of("style1"));
 
-        LayerInfoImpl layer = mockLayer("testLayer", "style1", "style2");
+        LayerInfoImpl layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfoImpl.Type.RASTER);
 
         assertNull(LegacyTileLayerInfoLoader.load(layer));
 
@@ -80,7 +80,7 @@ public class LegacyTileLayerInfoLoaderTest {
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setAutoCacheStyles(true);
 
-        LayerInfoImpl layer = mockLayer("testLayer", "style1", "style2");
+        LayerInfoImpl layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfoImpl.Type.RASTER);
         assertNull(LegacyTileLayerInfoLoader.load(layer));
 
         LegacyTileLayerInfoLoader.save(info, layer.getMetadata());
@@ -103,7 +103,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
     @Test
     public void testLoadLayerGroup() {
-        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1"), mockLayer("L2"));
+        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1", new String[]{}, LayerInfoImpl.Type.RASTER), mockLayer("L2", new String[]{}, LayerInfoImpl.Type.RASTER));
 
         assertNull(LegacyTileLayerInfoLoader.load(lg));
         GeoServerTileLayerInfo info = defaultVectorInfo;
@@ -122,7 +122,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
     @Test
     public void testClear() {
-        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1"), mockLayer("L2"));
+        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1", new String[]{}, LayerInfoImpl.Type.RASTER), mockLayer("L2", new String[]{}, LayerInfoImpl.Type.RASTER));
 
         assertNull(LegacyTileLayerInfoLoader.load(lg));
         GeoServerTileLayerInfo info = defaultVectorInfo;

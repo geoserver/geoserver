@@ -70,7 +70,7 @@ public class GWCInitializerTest {
         when(geoServer.getService(eq(WMSInfo.class))).thenReturn(null);
 
         // let the catalog have something to initialize
-        LayerInfo layer = mockLayer("testLayer");
+        LayerInfo layer = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
         LayerGroupInfo group = mockGroup("testGroup", layer);
         when(rawCatalog.getLayers()).thenReturn(Lists.newArrayList(layer));
         when(rawCatalog.getLayerGroups()).thenReturn(Lists.newArrayList(group));
@@ -128,7 +128,7 @@ public class GWCInitializerTest {
         when(configPersister.getConfig()).thenReturn(defaults);
 
         // let the catalog have something to initialize
-        LayerInfo layer = mockLayer("testLayer");
+        LayerInfo layer = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
         LayerGroupInfo group = mockGroup("testGroup", layer);
         when(rawCatalog.getLayers()).thenReturn(Lists.newArrayList(layer));
         when(rawCatalog.getLayerGroups()).thenReturn(Lists.newArrayList(group));

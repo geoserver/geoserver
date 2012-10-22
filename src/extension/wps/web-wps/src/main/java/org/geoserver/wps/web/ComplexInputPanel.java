@@ -117,6 +117,8 @@ public class ComplexInputPanel extends Panel {
             if (!(valueModel.getObject() instanceof VectorLayerConfiguration)) {
                 valueModel.setObject(new VectorLayerConfiguration());
             }
+
+            new PropertyModel(getDefaultModel(), "mime").setObject("text/xml");
             Fragment f = new Fragment("editor", "vectorLayer", this);
             DropDownChoice layer = new DropDownChoice("layer", new PropertyModel(valueModel,
                     "layerName"), getVectorLayerNames());

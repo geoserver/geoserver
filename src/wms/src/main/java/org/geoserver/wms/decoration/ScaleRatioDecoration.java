@@ -12,33 +12,33 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+
 
 public class ScaleRatioDecoration implements MapDecoration {
-    /** A logger for this class. */
-    private static final Logger LOGGER = 
-        org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
     public void loadOptions(Map<String, String> options) {
     }
 
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws TransformException, FactoryException{
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
         return new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
     }
 
-    public String getScaleText(WMSMapContent mapContent) {
+    public String getScaleText(WMSMapContent mapContent) throws TransformException, FactoryException {
+        double dpi = RendererUtilities.getDpi(mapContent.getRequest().getFormatOptions());
         return String.format(
             "1 : %0$1.0f", 
-            RendererUtilities.calculateOGCScale(
+            RendererUtilities.calculateScale(
                 mapContent.getRenderingArea(),
                 mapContent.getRequest().getWidth(),
-                new HashMap()
+                mapContent.getRequest().getHeight(),
+                dpi
             )
         );
     }

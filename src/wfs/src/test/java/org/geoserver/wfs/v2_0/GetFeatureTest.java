@@ -618,6 +618,7 @@ public class GetFeatureTest extends WFS20TestSupport {
             "   </wfs:StoredQuery> " + 
             "</wfs:GetFeature>";
         dom = postAsDOM("wfs", xml);
+        print(dom);
         assertGML32(dom);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//cdf:Other)", dom);
         XMLAssert.assertXpathExists("//cdf:Other/cdf:integers[text() = '7']", dom);

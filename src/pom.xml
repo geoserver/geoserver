@@ -574,39 +574,9 @@
      <version>1.8.5</version>
    </dependency>    
    <dependency>
-    <groupId>xml-apis</groupId>
-    <artifactId>xml-apis</artifactId>
-    <version>1.3.04</version>
-   </dependency>
-   <dependency>
-    <groupId>xml-apis</groupId>
-    <artifactId>xml-apis-xerces</artifactId>
-    <version>2.7.1</version>
-   </dependency>
-   <dependency>
-    <groupId>xml-apis</groupId>
-    <artifactId>xmlParserAPIs</artifactId>
-    <version>2.0.2</version>
-   </dependency>
-   <dependency>
-    <groupId>xerces</groupId>
-    <artifactId>xmlParserAPIs</artifactId>
-    <version>2.6.2</version>
-   </dependency>
-   <dependency>
-    <groupId>xerces</groupId>
-    <artifactId>xercesImpl</artifactId>
-    <version>2.7.1</version>
-   </dependency>
-   <dependency>
-    <groupId>xalan</groupId>
-    <artifactId>xalan</artifactId>
-    <version>2.7.0</version>
-   </dependency>
-   <dependency>
-    <groupId>javax.xml</groupId>
-    <artifactId>jaxp-api</artifactId>
-    <version>1.3.1</version>
+     <groupId>xalan</groupId>
+     <artifactId>xalan</artifactId>
+     <version>2.7.0</version>
    </dependency>
    <dependency>
     <groupId>xpp3</groupId>
@@ -1138,7 +1108,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image}</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone}</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>

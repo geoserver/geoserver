@@ -7,9 +7,12 @@ package org.geoserver.wps.ppio;
 import java.io.OutputStream;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.xml.sax.ContentHandler;
 
 /**
@@ -57,8 +60,10 @@ public abstract class XMLPPIO extends ComplexPPIO {
      */
     public void encode( Object value, OutputStream os) throws Exception {
         // create the document serializer
-        XMLSerializer serializer = new XMLSerializer(os, new OutputFormat());
-        serializer.setNamespaces(true);
+        TransformerHandler serializer = 
+            ((SAXTransformerFactory)SAXTransformerFactory.newInstance()).newTransformerHandler();
+        serializer.setResult(new StreamResult(os));
+        
         // cascade on the other encode method
         encode(value, serializer);
     }

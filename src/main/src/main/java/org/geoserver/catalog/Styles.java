@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamSource;
 
 import org.geoserver.ows.util.RequestUtils;
 import org.geotools.factory.CommonFactoryFinder;

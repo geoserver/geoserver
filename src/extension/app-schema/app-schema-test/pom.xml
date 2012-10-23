@@ -197,6 +197,7 @@
 						        <exclude>**/DataReferenceWmsPostgisTest.java</exclude>
                                 <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
                                 <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>
+                                <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>
 			        </plugin>
@@ -217,4 +218,7 @@
 	        </build>
 	    </profile>
 	</profiles>
+    <properties>
+      <test.exclude.pattern>**/SecondaryNamespaceExceptionTest.*</test.exclude.pattern>
+    </properties>
 </project>

@@ -121,6 +121,12 @@
           <groupId>org.jaitools</groupId>
           <artifactId>jt-contour</artifactId>
           <version>${jt.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>xerces</groupId>
+              <artifactId>xercesImpl</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>    
         <dependency>
           <groupId>org.jaitools</groupId>

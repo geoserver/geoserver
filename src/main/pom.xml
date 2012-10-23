@@ -40,10 +40,6 @@
    <classifier>jdk15</classifier>
   </dependency>
   <dependency>
-   <groupId>xml-apis</groupId>
-   <artifactId>xml-apis</artifactId>
-  </dependency>
-  <dependency>
    <groupId>commons-beanutils</groupId>
    <artifactId>commons-beanutils</artifactId>
   </dependency>

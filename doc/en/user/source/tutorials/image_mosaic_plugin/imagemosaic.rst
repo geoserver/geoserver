@@ -165,6 +165,11 @@ The Coverage Editor gives users the possibility to set a few control parameters 
      - Set the maximum number of the tiles that can be load simulatenously for a request. In case of a large mosaic this parameter should be opportunely set to not saturating the server with too many granules loaded at  the same  time.
    * - *BackgroundValues*
      - Set the value of the mosaic background. Depending on the nature of the mosaic it is wise to set a value for the 'no data' area (usually -9999). This value is repeated on all the mosaic bands.
+   * - *Filter* 
+     - Set the default mosaic filter. It should be a valid ECQL query which will be used as default if no 'cql_filter' are specified (instead of Filter.INCLUDE). If the cql_filter is specified in the request it will be overriden.
+
+.. note:: Do not use this filter to change time or elevation dimensions defaults. It will be added as AND condition with CURRENT for 'time' and LOWER for 'elevation'.
+
    * - *OutputTransparentColor*
      - Set the transparent color for the created mosaic. See below for an example:
 

@@ -210,7 +210,7 @@ public abstract class Response {
                 name = name + "-" + opName;
             }
             String[] typeParts = mimeType.split(";");
-            String extension = typeParts[0].split("/")[0];
+            String extension = typeParts[0].split("/")[1];
             name = name + "." + extension;
         }
         return name;

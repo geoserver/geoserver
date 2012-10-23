@@ -30,17 +30,18 @@ public class ScaleRatioDecoration implements MapDecoration {
         return new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
     }
 
-    public String getScaleText(WMSMapContent mapContent) throws TransformException, FactoryException {
+    public double getScale(WMSMapContent mapContent) throws TransformException, FactoryException {
         double dpi = RendererUtilities.getDpi(mapContent.getRequest().getFormatOptions());
-        return String.format(
-            "1 : %0$1.0f", 
-            RendererUtilities.calculateScale(
+        return RendererUtilities.calculateScale(
                 mapContent.getRenderingArea(),
                 mapContent.getRequest().getWidth(),
                 mapContent.getRequest().getHeight(),
                 dpi
-            )
         );
+    }
+    
+    public String getScaleText(WMSMapContent mapContent) throws TransformException, FactoryException {
+        return String.format("1 : %0$1.0f", getScale(mapContent));
     }
 
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 

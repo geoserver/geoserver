@@ -28,7 +28,7 @@ The following are necessary to perform a GeoServer release:
 #. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
 #. Build access to `Hudson <http://hudson.opengeo.org/hudson>`_
 #. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
-#. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`_
+#. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
 
 Versions and revisions
@@ -37,20 +37,45 @@ Versions and revisions
 When performing a release we don't require a "code freeze" in which no developers can commit to the repository. Instead we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.
 
 To obtain the GeoServer and Geotools revisions that have passed the `CITE test <http://hudson.opengeo.org/hudson/view/cite/>`_, navigate to the latest Hudson run of the CITE test  and view it's console output and select to view its full log. For example::
-	
-	 http://hudson.opengeo.org/hudson/view/cite/job/cite-wfs-1.1-master/526/consoleFull
-	
+  
+   http://hudson.opengeo.org/hudson/view/cite/job/cite-wfs-1.1/813/consoleFull
+  
 Perform a search on the log for 'Git revision' and you should obtain the following.::
 
-	version = 2.3-SNAPSHOT
-	Git revision = 68cbe445ca378e0dd04405870ef95c852189c1b0
-	Git branch = 68cbe445ca378e0dd04405870ef95c852189c1b0
-	build date = 08-Jul-2012 03:36
-	geotools version = 9-SNAPSHOT
-	geotools revision = 9517eebf412ce5cda354e7945672293c37cddcc4
+  version = 2.2-SNAPSHOT
+  Git revision = 4ea8d3fdcdbb130892a03f27ab086068b95a3b01
+  Git branch = 4ea8d3fdcdbb130892a03f27ab086068b95a3b01
+  build date = 03-Aug-2012 03:39
+  geotools version = 8-SNAPSHOT
+  geotools revision = 73e8d0746a4527e46a46e5e8bc778ca92ca89130
+  
+Since we don't make any release from master, ensure you select the right CITE test that passed to obtain the right revision.  
 
-Since most GeoServer releases require an official GeoTools release the GEoTools revision is usually not needed. But if performing a beta release it is
+Since most GeoServer releases require an official GeoTools release the GeoTools revision is usually not needed. But if performing a beta release it is
 allowed to release directly from a specific GeoTools revision. 
+
+Release in JIRA
+---------------
+
+Run the `geoserver-release-jira <http://hudson.opengeo.org/hudson/job/geoserver-release-jira/>`_ job in Hudson. The job takes the following parameters:
+
+**VERSION**
+
+  The version to release, same as in the previous section. This version must match a version in JIRA.
+
+**NEXT_VERSION**
+
+  The next version in the series. All unresolved issues currently fils against ``VERSION`` will be transitioned to this version.
+
+**JIRA_USER** 
+
+  A JIRA user name that has release privileges. This user  will be used to perform the release in JIRA, via the SOAP api.
+
+**JIRA_PASSWD**
+
+  The password for the ``JIRA_USER``.
+     
+This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`_ and verify that the version has actually been released.
 
 Build the Release
 -----------------
@@ -83,7 +108,7 @@ Run the `geoserver-release <http://hudson.opengeo.org/hudson/job/geoserver-relea
 
 **GIT_EMAIL**
 
-  The Git email to use for the release.	 
+  The Git email to use for the release.  
      
 This job will checkout the specified branch/revision and build the GeoServer
 release artifacts against the GeoTools/GeoWebCache versions specified. When 
@@ -103,30 +128,6 @@ Test the Artifacts
 Download and try out some of the artifacts from the above location and do a 
 quick smoke test that there are no issues. Engage other developers to help 
 test on the developer list.
-
-Release in JIRA
----------------
-
-Run the `geoserver-release-jira <http://hudson.opengeo.org/hudson/job/geoserver-release-jira/>`_ job in Hudson. The job takes the following parameters:
-
-**VERSION**
-
-  The version to release, same as in the previous section. This version must match a version in JIRA.
-
-**NEXT_VERSION**
-
-  The next version in the series. All unresolved issues currently fils against ``VERSION`` will be transitioned to this version.
-
-**JIRA_USER** 
-
-  A JIRA user name that has release privileges. This user  will be used to perform the release in JIRA, via the SOAP api.
-
-**JIRA_PASSWD**
-
-  The password for the ``JIRA_USER``.
-     
-This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <http://jira.codehaus.org/browse/GEOS>`_ and verify that the version has actually been released.
-
  
 Publish the Release
 -------------------
@@ -146,7 +147,66 @@ This job will rsync all the artifacts located at::
      http://gridlock.opengeo.org/geoserver/release/<RELEASE>
 
 to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. Set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
-   
+
+Create the download page
+------------------------
+
+Get the JIRA version for this release:
+
+* Go to `JIRA <http://jira.codehaus.org/display/GEOS/>`_
+* Select "Change log"
+* Open the release notes for the version being released
+* The version will be in the url, e.g. ``http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=18700`` -> 18700
+
+Create the new download page:
+
+* Go to `GeoServer web site <http://geoserver.org/>`_ and make sure you are logged in.
+* Select the "New page" link in the menu
+* Click "select a page template to start from"
+* Choose the "Download" template
+* Fill in the version, release date (e.g., May 17th, 2012) and the jira version
+* Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
+* Save and check all the links are working
+
+If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and make it include the newly created release page.
+If you are instead releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and make it include the newly created release page.
+
+Post the Documentation
+----------------------
+
+.. note:: For now, this requires a user account on the OpenGeo server ``wedge.opengeo.org``.
+
+.. note:: This content will likely move to GitHub in the near future.
+
+#. Open a connection to ``wedge.opengeo.org``.
+
+#. Create the following new directories::
+
+     /var/www/docs.geoserver.org/htdocs/a.b.c
+     /var/www/docs.geoserver.org/htdocs/a.b.c/developer
+     /var/www/docs.geoserver.org/htdocs/a.b.c/user
+
+   where ``a.b.c`` is the full release number.
+
+#. Download the HTML documentation archive from the GeoServer download page, and extract the contents of both user manuals to the appropriate directory::
+
+    cd /var/www/docs.geoserver.org/htdocs/a.b.c/
+    sudo wget http://downloads.sourceforge.net/geoserver/geoserver-a.b.c-htmldoc.zip
+    sudo unzip geoserver-a.b.c-htmldoc.zip
+    sudo rm geoserver-a.b.c-htmldoc.zip
+
+#. Open the file :file:`/var/www/docs.geoserver.org/htdocs/index.html` in a text editor.
+
+#. Add a new entry in the table for the most recent release::
+
+    <tr>
+      <td><strong><a href="http://geoserver.org/display/GEOS/GeoServer a.b.c">a.b.c</a></strong></td>
+      <td><a href="a.b.c/user/">User Manual</a></td>
+      <td><a href="a.b.c/developer/">Developer Manual</a></td>
+    </tr>
+
+#. Save and close this file. 
+
 Announce the Release
 --------------------
 
@@ -223,6 +283,37 @@ GeoServer Blog
 
 #. Do not publish the post. Instead present it to the GeoServer outreach 
    team for review, and they will publish it.
+   
+.. note:: GeoServer wiki has to be updated as well.
+      
+#. Go to http://geoserver.org/display/GEOS/Download :
+
+  * Click on Add Page on the right.
+  * Copy the wiki source from an existing page and update the reference link to your released artifact.  
+  * Edit the page location to correctly reflect where the page should reside.
+
+#. Finally, update the wiki link on http://geoserver.org/display/GEOS/Latest to your new page.
+
+Update GeoServer homepage
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Navigate to http://geoserver.org.
+
+#. Click :guilabel:`Log In` in the top right corner.
+
+#. Enter your Confluence user name and password and click :guilabel:`Log In`.
+
+#. Navigate back to http://geoserver.org.
+
+#. At the bottom of the page, click :guilabel:`Edit`.
+
+#. Change the links at the top of the page to include the new GeoServer download page and the blog post.  For example::
+
+      h6. December 32, 2086: [GeoServer 3.1.1] released\!  [See what's new...|http://blog.geoserver.org/2086/12/32/geoserver-3.1.1-released/]
+
+#. When finished, click :guilabel:`Save`.
+
+#. Verify that the links work on the homepage.
 
 SlashGeo
 ^^^^^^^^

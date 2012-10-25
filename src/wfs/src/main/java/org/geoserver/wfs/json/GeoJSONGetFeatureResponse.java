@@ -70,7 +70,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
      * capabilities output format string.
      */
     public String getCapabilitiesElementName() {
-        return getOutputFormat().replaceAll("/", "&#47;");
+        return JSONType.getJSONType(getOutputFormat()).toString();
     }
 
     /**

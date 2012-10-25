@@ -217,7 +217,7 @@ public abstract class Response {
             } else {
                 final String message =
                     "Cannot guess file extension for invalid MIME type: '" +
-                    name + "'";
+                    mimeType + "'";
                 throw new IllegalStateException(message);
             }
         }

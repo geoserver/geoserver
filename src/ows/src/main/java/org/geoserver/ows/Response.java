@@ -210,7 +210,16 @@ public abstract class Response {
                 name = name + "-" + opName;
             }
             String[] typeParts = mimeType.split(";");
-            name = name + "." + typeParts[0].split("/")[0];
+            String[] typeAndSubtype = typeParts[0].split("/");
+            if (typeAndSubtype.length == 2) {
+                String extension = typeAndSubtype[1].split("[^\\p{Alnum}]")[0];
+                name = name + "." + extension;
+            } else {
+                final String message =
+                    "Cannot guess file extension for invalid MIME type: '" +
+                    mimeType + "'";
+                throw new IllegalStateException(message);
+            }
         }
         return name;
     }

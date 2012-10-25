@@ -66,6 +66,8 @@ The following retrieves the created data store as XML::
 
   curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads.xml
 
+The response should look like:
+
 .. code-block:: xml
 
    <dataStore>
@@ -88,6 +90,8 @@ See :ref:`webadmin_layers` page for details on how to control this behaviour. Th
 retrieves the created feature type as XML:: 
 
   curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/featuretypes/roads.xml
+
+The response is:
 
 .. code-block:: xml
    
@@ -115,7 +119,7 @@ shapefile::
      -d 'file:///data/shapefiles/roads/roads.shp' \
      http://localhost:8080/geoserver/rest/workspaces/acme/datastores/roads/external.shp
 
-Note the ``external.shp`` part of the request uri.
+Note the ``external.shp`` part of the request URI.
 
 Adding a directory of existing shapefiles
 -----------------------------------------
@@ -134,10 +138,12 @@ Changing a feature type style
 -----------------------------
 
 In the previous example a shapefile was uploaded, and in the process a feature 
-type was created. Whenever a feature type is created an layer is implicitly 
+type was created. Whenever a feature type is created a layer is implicitly 
 created for it. The following retrieves the layer as XML::
 
   curl  -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/layers/acme:roads.xml
+
+The layer XML is:
 
 .. code-block:: xml
 
@@ -163,22 +169,22 @@ created for it. The following retrieves the layer as XML::
    </layer>
 
 When the layer is created a default style named ``polygon`` is assigned to 
-it. This style can viewed with a WMS GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:roads)
+it. The styling can viewed with a WMS GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:roads)
 
 In this example a new style will be created and assigned to the layer 
-created in the previous example. The following creates a new style named
+created previously. The following creates a new style on the server named
 ``roads_style``::
 
   curl -u admin:geoserver -XPOST -H 'Content-type: text/xml' \
     -d '<style><name>roads_style</name><filename>roads.sld</filename></style>' 
     http://localhost:8080/geoserver/rest/styles
 
-Uploading the file ``roads.sld``::
+The style can be defined by uploading the file ``roads.sld``::
 
   curl -u admin:geoserver -XPUT -H 'Content-type: application/vnd.ogc.sld+xml' \
     -d @roads.sld http://localhost:8080/geoserver/rest/styles/roads_style
 
-The following applies the newly created style to the layer created in the 
+The following command sets the new style to be the default style for the ``roads`` layer created in the 
 previous example::
 
   curl -u admin:geoserver -XPUT -H 'Content-type: text/xml' \
@@ -187,20 +193,20 @@ previous example::
 
 The new style can be viewed with the same GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:roads) as above.
 
-Adding a PostGIS database
--------------------------
+Adding a PostGIS datastore
+--------------------------
 
 .. note::
 
    This section assumes that a PostGIS database named ``nyc`` is present on the
-   local system and is accessible by the user ``bob``.
+   local system and is accessible by the user ``bob``, who has password ``pwd``.
 
 In this example a PostGIS database named ``nyc`` will be added as a new 
-data store. In preparation create the database and import the nyc.sql file::
+datastore. In preparation create the database and import the nyc.sql file::
 
   psql nyc < nyc.sql
 
-The following represents the new data store:
+The following XML defines the new datastore:
 
 .. code-block:: xml
 
@@ -210,13 +216,15 @@ The following represents the new data store:
        <host>localhost</host>
        <port>5432</port>
        <database>nyc</database> 
+       <schema>public</schema>
        <user>bob</user>
+       <password>pwd</password>
        <dbtype>postgis</dbtype>
      </connectionParameters>
    </dataStore> 
 
-Save the above xml into a file named ``nycDataStore.xml``. The following adds 
-the new datastore::
+Save the above XML into a file named ``nycDataStore.xml``. 
+The following command adds the datastore to GeoServer::
 
   curl -u admin:geoserver -XPOST -T nycDataStore.xml -H 'Content-type: text/xml' \
     http://localhost:8080/geoserver/rest/workspaces/acme/datastores
@@ -236,7 +244,7 @@ The following retrieves the created feature type::
 
   curl  -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes/buildings.xml
 
-This GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:buildings) 
+The GetMap request http://localhost:8080/geoserver/wms/reflect?layers=acme:buildings
 shows the rendered buildings layer.
 
 The following adds the table ``parks`` as a new feature type::
@@ -245,7 +253,7 @@ The following adds the table ``parks`` as a new feature type::
     -d '<featureType><name>parks</name></featureType>' \
     http://localhost:8080/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes
 
-This GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=acme:parks) 
+The GetMap request http://localhost:8080/geoserver/wms/reflect?layers=acme:parks
 shows the rendered parks layer.
 
 Creating a PostGIS table
@@ -301,7 +309,7 @@ The following adds a style for the parks layer::
   curl -u admin:geoserver -XPUT -H 'Content-type: application/vnd.ogc.sld+xml' -d @parks.sld \ 
    http://localhost:8080/geoserver/rest/styles/parks_style
 
-The following represents the new layer group:
+The following XML represents the new layer group:
 
 .. code-block:: xml
 
@@ -319,12 +327,12 @@ The following represents the new layer group:
     </styles>
   </layerGroup>
 
-Save the following in a file named ``nycLayerGroup.xml``. The following creates
-the new layer group::
+Save the above in a file named ``nycLayerGroup.xml``. 
+The following command creates the new layer group::
 
   curl -u admin:geoserver -XPOST -d @nycLayerGroup.xml -H 'Content-type: text/xml' \
      http://localhost:8080/geoserver/rest/layergroups
 
-This GetMap request (http://localhost:8080/geoserver/wms/reflect?layers=nyc)
+The GetMap request http://localhost:8080/geoserver/wms/reflect?layers=nyc
 shows the rendered layer group. 
 

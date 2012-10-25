@@ -1,7 +1,7 @@
 .. _comitting:
 
-Comitting
-=========
+Committing
+==========
 
 Getting commit access
 ---------------------
@@ -17,7 +17,7 @@ be obtained quite easily.
 
 The second allows a developer to make commits to the core modules of geoserver.
 Being granted this stage of access takes time, and is obtained only after the 
-developer has gained the trust of the other core comitters.
+developer has gained the trust of the other core committers.
 
 Community commit access
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -66,7 +66,7 @@ developer will be granted core commit access.
 
 There is no magic number of patches that make the criteria, it is based mostly
 on the nature of the patches, how in depth the they are, etc... Basically it 
-boils down the developer being able to show that they understand the code base
+boils down to the developer being able to show that they understand the code base
 well enough to not seriously break anything.
 
 Commit Guidelines
@@ -95,7 +95,7 @@ in GeoServer. But over time some rules and conventions have emerged:
 
    In general never commit a depending library directly into the repository, this is
    what we use Maven for. If you have a jar that is not present in any maven 
-   repositories ask on the developer list to get it uploaded to one of the project
+   repositories, ask on the developer list to get it uploaded to one of the project
    maven repositories.
 
 #. **Ensure code is properly formatted**

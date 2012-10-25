@@ -39,7 +39,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
-import org.geotools.styling.visitor.RescaleStyleVisitor;
+import org.geotools.styling.visitor.DpiRescaleStyleVisitor;
 import org.geotools.styling.visitor.UomRescaleStyleVisitor;
 import org.geotools.util.NumberRange;
 import org.opengis.feature.Feature;
@@ -161,7 +161,7 @@ public class BufferedImageLegendGraphicBuilder {
             double scaleFactor = dpi / standardDpi;
             w = (int) Math.round(w * scaleFactor);
             h = (int) Math.round(h * scaleFactor);
-            RescaleStyleVisitor dpiVisitor = new RescaleStyleVisitor(scaleFactor);
+            DpiRescaleStyleVisitor dpiVisitor = new DpiRescaleStyleVisitor(scaleFactor);
             dpiVisitor.visit(gt2Style);
             gt2Style = (Style) dpiVisitor.getCopy();
         }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns="http://www.opengis.net/wfs"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:tiger="http://www.census.gov"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <gml:boundedBy>
+    <gml:null>unknown</gml:null>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <tiger:poi fid="poi.1">
+      <tiger:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+            decimal="." cs="," ts=" ">-74.0104611,40.70758763</gml:coordinates>
+        </gml:Point>
+      </tiger:the_geom>
+      <tiger:NAME>museum</tiger:NAME>
+      <tiger:THUMBNAIL>pics/22037827-Ti.jpg</tiger:THUMBNAIL>
+    </tiger:poi>
+  </gml:featureMember>
+  <gml:featureMember>
+    <tiger:poi fid="poi.2">
+      <tiger:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+            decimal="." cs="," ts=" ">-74.01083751,40.70754684</gml:coordinates>
+        </gml:Point>
+      </tiger:the_geom>
+      <tiger:NAME>stock</tiger:NAME>
+      <tiger:THUMBNAIL>pics/22037829-Ti.jpg</tiger:THUMBNAIL>
+    </tiger:poi>
+  </gml:featureMember>
+  <gml:featureMember>
+    <tiger:poi fid="poi.3">
+      <tiger:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+            decimal="." cs="," ts=" ">-74.01053024,40.70938712</gml:coordinates>
+        </gml:Point>
+      </tiger:the_geom>
+      <tiger:NAME>art</tiger:NAME>
+      <tiger:THUMBNAIL>pics/22037856-Ti.jpg</tiger:THUMBNAIL>
+    </tiger:poi>
+  </gml:featureMember>
+  <gml:featureMember>
+    <tiger:poi fid="poi.4">
+      <tiger:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+            decimal="." cs="," ts=" ">-74.00857344,40.71194565</gml:coordinates>
+        </gml:Point>
+      </tiger:the_geom>
+      <tiger:NAME>lox</tiger:NAME>
+      <tiger:THUMBNAIL>pics/22037884-Ti.jpg</tiger:THUMBNAIL>
+    </tiger:poi>
+  </gml:featureMember>
+  <gml:featureMember>
+    <tiger:poi fid="poi.5">
+      <tiger:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+            decimal="." cs="," ts=" ">-74.01183158,40.70852996</gml:coordinates>
+        </gml:Point>
+      </tiger:the_geom>
+      <tiger:NAME>church</tiger:NAME>
+      <tiger:THUMBNAIL>pics/22037839-Ti.jpg</tiger:THUMBNAIL>
+    </tiger:poi>
+  </gml:featureMember>
+  <gml:featureMember>
+    <tiger:poi fid="poi.6">
+      <tiger:the_geom>
+        <gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coordinates xmlns:gml="http://www.opengis.net/gml"
+            decimal="." cs="," ts=" ">-74.00153046,40.71988512</gml:coordinates>
+        </gml:Point>
+      </tiger:the_geom>
+      <tiger:NAME>fire</tiger:NAME>
+      <tiger:THUMBNAIL>pics/28640984-Ti.jpg</tiger:THUMBNAIL>
+    </tiger:poi>
+  </gml:featureMember>
+</wfs:FeatureCollection>

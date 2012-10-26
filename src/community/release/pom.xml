@@ -60,12 +60,17 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>simpleFeatureService</artifactId>
+     <artifactId>sfs</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>feature-aggregate</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>xslt</artifactId>
      <version>${project.version}</version>
    </dependency>
  </dependencies>

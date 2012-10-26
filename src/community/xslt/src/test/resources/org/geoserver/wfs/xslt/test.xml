@@ -1,0 +1,9 @@
+<transform>
+  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>
+  <outputFormat>text/html; subtype=xslt</outputFormat>
+  <fileExtension>html</fileExtension>
+  <xslt>test.xslt</xslt>
+  <featureType>
+    <id>cite:Bridges</id>
+  </featureType>
+</transform>

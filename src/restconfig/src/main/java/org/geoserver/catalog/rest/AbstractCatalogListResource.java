@@ -82,7 +82,7 @@ public abstract class AbstractCatalogListResource extends CatalogResourceBase {
     @Override
     protected void configureXStream(XStream xstream) {
         XStreamPersister xp = xpf.createXMLPersister();
-        final String name = xp.getClassAliasingMapper().serializedClass( clazz );
+        final String name = getItemName(xp);
         xstream.alias( name, clazz );
         
         xstream.registerConverter( 
@@ -136,6 +136,15 @@ public abstract class AbstractCatalogListResource extends CatalogResourceBase {
             }
         );
     }
+
+    /**
+     * Returns the name of the items in the list, subclasses can override
+     * @param xp
+     * @return
+     */
+    protected String getItemName(XStreamPersister xp) {
+        return xp.getClassAliasingMapper().serializedClass( clazz );
+    }
     
     /**
      * Template method to alias the type of the collection.
@@ -146,7 +155,7 @@ public abstract class AbstractCatalogListResource extends CatalogResourceBase {
      */
     protected void aliasCollection( Object data, XStream xstream ) {
         XStreamPersister xp = xpf.createXMLPersister();
-        final String alias = xp.getClassAliasingMapper().serializedClass( clazz );
+        final String alias = getItemName(xp);
         xstream.alias(alias + "s", Collection.class, data.getClass());
     }
 }

@@ -1,0 +1,6 @@
+<transform>
+  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>
+  <outputFormat>text/html; subtype=xslt</outputFormat>
+  <fileExtension>html</fileExtension>
+  <xslt>general.xslt</xslt>
+</transform>

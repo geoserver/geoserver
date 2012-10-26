@@ -77,9 +77,10 @@ public class CatalogConfigurationTest {
         defaults.setCacheLayersByDefault(false);
         defaults.setCacheNonDefaultStyles(true);
 
-        layer1 = mockLayer("layer1");
-        layer2 = mockLayer("layer2");
-        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer");
+        layer1 = mockLayer("layer1", new String[]{}, LayerInfo.Type.RASTER);
+        layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
+        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, LayerInfo.Type.RASTER);
+
 
         group1 = mockGroup("group1", layer1, layer2);
         group2 = mockGroup("group2", layer2, layer1);
@@ -94,7 +95,7 @@ public class CatalogConfigurationTest {
         layerInfo2 = TileLayerInfoUtil.loadOrCreate(layer2, defaults);
         layerInfo2.setMetaTilingX(2);
         layerInfo2.setMetaTilingY(2);
-
+        
         groupInfo1 = TileLayerInfoUtil.loadOrCreate(group1, defaults);
         groupInfo1.setMetaTilingX(3);
         groupInfo1.setMetaTilingY(3);
@@ -383,5 +384,29 @@ public class CatalogConfigurationTest {
         verify(mockMediator, times(1)).layerRenamed(eq(layerInfo1.getName()), eq("newName"));
         verify(mockMediator, times(1)).layerAdded(eq(addedState1.getName()));
         verify(mockMediator, times(1)).layerAdded(eq(addedState2.getName()));
+    }
+
+    @Test  public void testNoGeometry() throws Exception {
+        org.opengis.feature.type.FeatureType featureTypeWithNoGeometry = mock(org.opengis.feature.type.FeatureType.class);
+        when(featureTypeWithNoGeometry.getGeometryDescriptor()).thenReturn(null);
+        org.geoserver.catalog.FeatureTypeInfo resourceWithNoGeometry = mock(org.geoserver.catalog.FeatureTypeInfo.class);
+        when(resourceWithNoGeometry.getFeatureType()).thenReturn(featureTypeWithNoGeometry);
+        LayerInfo layerWithNoGeometry = mockLayer("layerWithNoGeometry", new String[]{}, LayerInfo.Type.VECTOR);
+        layerWithNoGeometry.setResource(resourceWithNoGeometry);
+        GeoServerTileLayer tl = mock(GeoServerTileLayer.class);
+        GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
+        info.setId("layerWithNoGeometry");
+        info.setName("layerWithNoGeometry");
+        when(tl.getId()).thenReturn("layerWithNoGeometry");
+        when(tl.getInfo()).thenReturn(info);
+        when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
+        when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);
+        when(catalog.getLayerByName(eq(tileLayerName(layerWithNoGeometry)))).thenReturn(
+                layerWithNoGeometry);
+        
+        config.addLayer(tl);
+        config.save();
+        
+        verify(this.tileLayerCatalog, never()).save(info);
     }
 }

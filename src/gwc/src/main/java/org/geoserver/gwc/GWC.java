@@ -1629,6 +1629,7 @@ public class GWC implements DisposableBean, InitializingBean {
         }
     }
 
+   
     /**
      * Creates new tile layers for the layers and layergroups given by their names using the
      * settings of the given default config options
@@ -1647,6 +1648,7 @@ public class GWC implements DisposableBean, InitializingBean {
 
             GeoServerTileLayer tileLayer = null;
             LayerInfo layer = catalog.getLayerByName(name);
+            
             if (layer != null) {
                 tileLayer = new GeoServerTileLayer(layer, saneConfig, gridSetBroker);
             } else {

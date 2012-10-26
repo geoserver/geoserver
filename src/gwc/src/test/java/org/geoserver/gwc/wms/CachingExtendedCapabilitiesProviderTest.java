@@ -11,10 +11,14 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
+import java.util.List;
+
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -80,7 +84,17 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
 
     @Test
     public void testTileSets() throws Exception {
-        final int numLayers = getCatalog().getLayers().size();
+        final int numLayers;
+        {
+            int validLayers = 0;
+            List<LayerInfo> layers = getCatalog().getLayers();
+            for (LayerInfo l : layers) {
+                if (CatalogConfiguration.isLayerExposable(l)) {
+                    ++validLayers;
+                }
+            }
+            numLayers = validLayers;
+        }
         final int numCRSs = 2; // 4326 and 900913
         final int numFormats = 2; // png, jpeg
         final int numTileSets = numLayers * numCRSs * numFormats;

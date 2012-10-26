@@ -435,7 +435,7 @@ public class CatalogConfiguration implements Configuration {
         return tl instanceof GeoServerTileLayer;
     }
     
-    static boolean isLayerExposable(LayerInfo layer) {
+    public static boolean isLayerExposable(LayerInfo layer) {
         assert layer!=null;
         // TODO: this was copied from WMS 1.1 GetCapabilitesTransformer.handleLayerTree and is
         // replicated again in the WMS 1.3 implementation.  Should be refactored to eliminate

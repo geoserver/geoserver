@@ -224,5 +224,14 @@
         <module>script</module>
       </modules>
     </profile>
+    <profile>
+      <id>xslt</id>
+      <activation>
+        <property><name>xslt</name></property>
+      </activation> 
+      <modules>
+        <module>xslt</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

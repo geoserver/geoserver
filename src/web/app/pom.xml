@@ -836,6 +836,19 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>xslt</id>
+      <activation>
+        <property><name>xslt</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>xslt</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 
 </project>

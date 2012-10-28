@@ -16,11 +16,14 @@ import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
 
+import org.junit.Test;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -30,8 +33,14 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
-import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
@@ -626,5 +635,37 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.1.1&x=135&y=223");
        assertTrue(result.contains("2.0"));
    }
-    
+
+   @Test 
+   public void testGMLWithPostFilter() throws Exception {
+       //we need to create a situation where a post filter is setup, simple way is to change the 
+       // style so that its filter is an or with more than 20 children
+       Catalog cat = getCatalog();
+       LayerInfo l = cat.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+
+       StyleInfo style = l.getDefaultStyle(); 
+       Style s = style.getStyle();
+
+       FeatureTypeStyle fts = s.featureTypeStyles().get(0);
+       FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+       StyleFactory sf = CommonFactoryFinder.getStyleFactory();
+       for (int i = 0; i < 21; i++) {
+           Filter f = ff.equals(ff.literal(1), ff.literal(1));
+           Rule r = sf.createRule();
+           r.setFilter(f);
+           r.symbolizers().add(sf.createPolygonSymbolizer());
+           fts.rules().add(r);
+       }
+
+       cat.getResourcePool().writeStyle(style, s);
+       cat.save(style);
+
+       String layer = getLayerId(MockData.NAMED_PLACES);
+       
+       String request = "wms?service=wms&request=GetFeatureInfo&version=1.1.1" +
+                       "&layers=" + layer + "&styles=&bbox=0.000004,-0.00285,0.005596,0.00415&width=409&height=512" + 
+                       "&info_format=application/vnd.ogc.gml&query_layers=" + layer + "&x=194&y=229&srs=EPSG:4326";
+       Document dom = getAsDOM(request);
+       assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
+   }
 }

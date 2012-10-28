@@ -140,6 +140,10 @@ public class TimeKvpParser extends KvpParser {
                 final boolean o1Date= o1 instanceof Date;
                 final boolean o2Date= o2 instanceof Date;
                 
+                if(o1 == o2) {
+                    return 0;
+                }
+                
                 // o1 date
                 if(o1Date){
                     final Date dateLeft=(Date) o1;

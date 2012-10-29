@@ -19,6 +19,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.LegacyTileLayerInfoLoader;
@@ -112,6 +113,9 @@ public class GWCInitializer implements GeoServerInitializer {
     private void moveTileLayerInfosToTileLayerCatalog() {
 
         for (LayerInfo layer : rawCatalog.getLayers()) {
+            if (!CatalogConfiguration.isLayerExposable(layer)) {
+                continue;
+            }
             try {
                 GeoServerTileLayerInfo tileLayerInfo;
                 tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
@@ -152,6 +156,9 @@ public class GWCInitializer implements GeoServerInitializer {
     private void createDefaultTileLayerInfos(final GWCConfig defaultSettings) {
         checkArgument(defaultSettings.isSane());
         for (LayerInfo layer : rawCatalog.getLayers()) {
+            if (!CatalogConfiguration.isLayerExposable(layer)) {
+                continue;
+            }
             try {
                 GeoServerTileLayerInfo tileLayerInfo;
                 tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);

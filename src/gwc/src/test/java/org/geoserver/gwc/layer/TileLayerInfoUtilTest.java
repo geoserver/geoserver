@@ -38,7 +38,7 @@ public class TileLayerInfoUtilTest extends TestCase {
     }
 
     public void testCreateLayerInfo() {
-        LayerInfoImpl layer = mockLayer("testLayer");
+        LayerInfoImpl layer = mockLayer("testLayer",new String[]{}, LayerInfoImpl.Type.RASTER);
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         defaultVectorInfo.setId(layer.getId());
         defaultVectorInfo.setName(tileLayerName(layer));
@@ -47,7 +47,7 @@ public class TileLayerInfoUtilTest extends TestCase {
     }
 
     public void testCreateLayerGroupInfo() {
-        LayerGroupInfoImpl group = mockGroup("testGroup", mockLayer("testLayer"));
+        LayerGroupInfoImpl group = mockGroup("testGroup", mockLayer("testLayer",new String[]{}, LayerInfoImpl.Type.RASTER));
 
         defaults.getDefaultOtherCacheFormats().clear();
         defaults.getDefaultOtherCacheFormats().add("image/png8");
@@ -68,7 +68,7 @@ public class TileLayerInfoUtilTest extends TestCase {
 
         defaults.setCacheNonDefaultStyles(true);
 
-        LayerInfoImpl layer = mockLayer("testLayer", "style1", "style2");
+        LayerInfoImpl layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfoImpl.Type.RASTER);
 
         GeoServerTileLayerInfo actual;
         actual = TileLayerInfoUtil.loadOrCreate(layer, defaults);
@@ -84,7 +84,7 @@ public class TileLayerInfoUtilTest extends TestCase {
     }
 
     public void testCreateLayerGroup() {
-        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1"), mockLayer("L2"));
+        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1",new String[]{}, LayerInfoImpl.Type.RASTER), mockLayer("L2",new String[]{}, LayerInfoImpl.Type.RASTER));
 
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setId(lg.getId());

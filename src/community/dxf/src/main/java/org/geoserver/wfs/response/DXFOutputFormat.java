@@ -128,7 +128,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
     /**
      * Gets output filename.
      * If the handle attribute is defined on the GetFeature tag it
-     * will be used, else the name is obtained concatenating lauer names
+     * will be used, else the name is obtained concatenating layer names
      * with underscore as a separator (up to a maximum name length).
      */
     private String getFileName(Operation operation) {

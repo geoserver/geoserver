@@ -46,10 +46,18 @@ abstract class FileItemCache<T> {
 
         // if not, load and cache
         T item = loadItem(file);
+        if(item == null) {
+            return null;
+        }
         ci = new CacheItem<T>(item, file);
         cache.put(key, ci);
 
         return item;
+    }
+    
+    public boolean removeItem(File file) {
+        String key = getFileKey(file);
+        return cache.remove(key) != null;
     }
 
     /**
@@ -83,5 +91,7 @@ abstract class FileItemCache<T> {
         String key = getFileKey(file);
         cache.put(key, ci);
     }
+
+    
 
 }

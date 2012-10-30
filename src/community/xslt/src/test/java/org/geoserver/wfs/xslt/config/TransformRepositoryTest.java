@@ -5,11 +5,17 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.easymock.EasyMock;
@@ -72,7 +78,7 @@ public class TransformRepositoryTest {
         original.setSourceFormat("application/xml");
         original.setOutputFormat("text/plain");
         original.setFileExtension("txt");
-        original.setTransform("test-tx.xslt");
+        original.setXslt("test-tx.xslt");
 
         repo.putTransformInfo(original);
 
@@ -90,7 +96,7 @@ public class TransformRepositoryTest {
                 + "  <sourceFormat>application/xml</sourceFormat>\n" //
                 + "  <outputFormat>text/plain</outputFormat>\n" //
                 + "  <fileExtension>txt</fileExtension>\n" //
-                + "  <transform>test-tx.xslt</transform>\n"//
+                + "  <xslt>test-tx.xslt</xslt>\n"//
                 + "</transform>";
 
         testRoot.mkdirs();
@@ -103,7 +109,7 @@ public class TransformRepositoryTest {
         assertEquals("application/xml", info.getSourceFormat());
         assertEquals("text/plain", info.getOutputFormat());
         assertEquals("txt", info.getFileExtension());
-        assertEquals("test-tx.xslt", info.getTransform());
+        assertEquals("test-tx.xslt", info.getXslt());
     }
 
     @Test
@@ -113,7 +119,7 @@ public class TransformRepositoryTest {
                 + "  <sourceFormat>application/xml</sourceFormat>\n" //
                 + "  <outputFormat>text/plain</outputFormat>\n" //
                 + "  <fileExtension>txt</fileExtension>\n" //
-                + "  <transform>test-tx.xslt</transform>\n"//
+                + "  <xslt>test-tx.xslt</xslt>\n"//
                 + "</transform>";
 
         testRoot.mkdirs();
@@ -131,7 +137,7 @@ public class TransformRepositoryTest {
                 + "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" //
                 + "  <outputFormat>application/json</outputFormat>\n" //
                 + "  <fileExtension>json</fileExtension>\n" //
-                + "  <transform>json-tx.xslt</transform>\n"//
+                + "  <xslt>json-tx.xslt</xslt>\n"//
                 + "</transform>";
         FileUtils.writeStringToFile(file, xml2);
 
@@ -142,7 +148,7 @@ public class TransformRepositoryTest {
         assertEquals("text/xml; subtype=gml/2.1.2", info2.getSourceFormat());
         assertEquals("application/json", info2.getOutputFormat());
         assertEquals("json", info2.getFileExtension());
-        assertEquals("json-tx.xslt", info2.getTransform());
+        assertEquals("json-tx.xslt", info2.getXslt());
     }
     
     @Test
@@ -152,7 +158,7 @@ public class TransformRepositoryTest {
                 + "  <sourceFormat>application/xml</sourceFormat>\n" //
                 + "  <outputFormat>text/plain</outputFormat>\n" //
                 + "  <fileExtension>txt</fileExtension>\n" //
-                + "  <transform>test-tx.xslt</transform>\n"//
+                + "  <xslt>test-tx.xslt</xslt>\n"//
                 + "</transform>";
 
         testRoot.mkdirs();
@@ -180,7 +186,7 @@ public class TransformRepositoryTest {
         original.setSourceFormat("application/xml");
         original.setOutputFormat("text/plain");
         original.setFileExtension("txt");
-        original.setTransform("test-tx.xslt");
+        original.setXslt("test-tx.xslt");
         original.setFeatureType(ft1);
         
         repo.putTransformInfo(original);
@@ -231,6 +237,100 @@ public class TransformRepositoryTest {
         assertTrue(names.contains("c3"));
     }
     
+    @Test
+    public void testWriteXSLT() throws Exception {
+        TransformInfo original = new TransformInfo();
+        original.setName("test");
+        original.setSourceFormat("application/xml");
+        original.setOutputFormat("text/plain");
+        original.setFileExtension("txt");
+        original.setXslt("test-tx.xslt");
+
+        repo.putTransformInfo(original);
+
+        File info = new File(testRoot, "test.xml");
+        assertTrue(info.exists());
+        
+        repo.putTransformSheet(original, getClass().getResourceAsStream("test.xslt"));
+        
+        File xslt = new File(testRoot, "test-tx.xslt");
+        assertTrue(xslt.exists());
+        
+        String expected = IOUtils.toString(getClass().getResourceAsStream("test.xslt"));
+        String actual = FileUtils.readFileToString(xslt);
+        assertEquals(expected, actual);
+        
+        repo.removeTransformInfo(original);
+        assertFalse(info.exists());
+        assertFalse(xslt.exists());
+    }
+    
+    @Test
+    public void testWriteXSLTShared() throws Exception {
+        TransformInfo info1 = new TransformInfo();
+        info1.setName("test1");
+        info1.setSourceFormat("application/xml");
+        info1.setOutputFormat("text/plain");
+        info1.setFileExtension("txt");
+        info1.setXslt("test-tx.xslt");
+
+        repo.putTransformInfo(info1);
+        
+        File infoFile1 = new File(testRoot, "test1.xml");
+        assertTrue(infoFile1.exists());
+        
+        TransformInfo info2 = new TransformInfo();
+        info2.setName("test2");
+        info2.setSourceFormat("application/xml");
+        info2.setOutputFormat("text/plain");
+        info2.setFileExtension("txt");
+        info2.setXslt("test-tx.xslt");
+
+        repo.putTransformInfo(info2);
+
+        File infoFile2 = new File(testRoot, "test2.xml");
+        assertTrue(infoFile2.exists());
+        
+        repo.putTransformSheet(info1, getClass().getResourceAsStream("test.xslt"));
+        
+        File xslt = new File(testRoot, "test-tx.xslt");
+        assertTrue(xslt.exists());
+        
+        repo.removeTransformInfo(info1);
+        assertFalse(infoFile1.exists());
+        // shared, not deleted
+        assertTrue(xslt.exists());
+        assertTrue(infoFile2.exists());
+        
+        // remote the other too
+        repo.removeTransformInfo(info2);
+        assertFalse(xslt.exists());
+        assertFalse(infoFile2.exists());
+    }
+    
+    @Test
+    public void testTransform() throws Exception {
+        TransformInfo info = new TransformInfo();
+        info.setName("test");
+        info.setSourceFormat("application/xml");
+        info.setOutputFormat("text/plain");
+        info.setFileExtension("txt");
+        info.setXslt("test-tx.xslt");
+
+        repo.putTransformInfo(info);
+        repo.putTransformSheet(info, getClass().getResourceAsStream("test.xslt"));
+        
+        Transformer transformer = repo.getTransformer(info);
+        InputStream is = getClass().getResourceAsStream("sample.xml");
+        StreamSource source = new StreamSource(is);
+        DOMResult result = new DOMResult();
+        transformer.transform(source, result);
+        Document dom = (Document) result.getNode();
+        XMLAssert.assertXpathEvaluatesTo("12", "count(/html/body/table/tr/td)", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr[td='museum'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr[td='-74.0104611,40.70758763'])", dom);
+    }
+    
     private Set<String> getConfigurationNames(List<TransformInfo> configs) {
         Set<String> result = new HashSet<String>();
         for (TransformInfo ti : configs) {
@@ -246,11 +346,13 @@ public class TransformRepositoryTest {
         ti.setSourceFormat("application/xml");
         ti.setOutputFormat("text/plain");
         ti.setFileExtension("txt");
-        ti.setTransform("test-tx.xslt");
+        ti.setXslt("test-tx.xslt");
         ti.setFeatureType(ft);
         String xml = repo.xs.toXML(ti);
         
         FileUtils.writeStringToFile(new File(testRoot, name + ".xml"), xml);
     }
+    
+    
     
 }

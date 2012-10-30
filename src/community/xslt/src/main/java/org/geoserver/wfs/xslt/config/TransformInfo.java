@@ -13,7 +13,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
  */
 public class TransformInfo {
 
-    transient String name;
+    String name;
 
     String sourceFormat;
 
@@ -21,9 +21,22 @@ public class TransformInfo {
 
     String fileExtension;
 
-    String transform;
+    String xslt;
 
     FeatureTypeInfo featureType;
+    
+    public TransformInfo() {
+        
+    }
+    
+    public TransformInfo(TransformInfo other) {
+        this.name = other.name;
+        this.sourceFormat = other.sourceFormat;
+        this.outputFormat = other.outputFormat;
+        this.fileExtension = other.fileExtension;
+        this.xslt = other.xslt;
+        this.featureType = other.featureType;
+    }
 
     /**
      * The transform name (same as the file used to persist the transform configuration)
@@ -83,12 +96,12 @@ public class TransformInfo {
     /**
      * The XLST file name
      */
-    public String getTransform() {
-        return transform;
+    public String getXslt() {
+        return xslt;
     }
 
-    public void setTransform(String fileName) {
-        this.transform = fileName;
+    public void setXslt(String fileName) {
+        this.xslt = fileName;
     }
 
     /**
@@ -114,7 +127,7 @@ public class TransformInfo {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((outputFormat == null) ? 0 : outputFormat.hashCode());
         result = prime * result + ((sourceFormat == null) ? 0 : sourceFormat.hashCode());
-        result = prime * result + ((transform == null) ? 0 : transform.hashCode());
+        result = prime * result + ((xslt == null) ? 0 : xslt.hashCode());
         return result;
     }
 
@@ -152,10 +165,10 @@ public class TransformInfo {
                 return false;
         } else if (!sourceFormat.equals(other.sourceFormat))
             return false;
-        if (transform == null) {
-            if (other.transform != null)
+        if (xslt == null) {
+            if (other.xslt != null)
                 return false;
-        } else if (!transform.equals(other.transform))
+        } else if (!xslt.equals(other.xslt))
             return false;
         return true;
     }
@@ -164,7 +177,7 @@ public class TransformInfo {
     public String toString() {
         return "TransformInfo [name=" + name + ", sourceFormat="
                 + sourceFormat + ", outputFormat=" + outputFormat + ", fileExtension="
-                + fileExtension + ", transform=" + transform + ", featureType=" + featureType + "]";
+                + fileExtension + ", transform=" + xslt + ", featureType=" + featureType + "]";
     }
 
 }

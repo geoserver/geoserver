@@ -6,7 +6,6 @@ package org.geoserver.catalog;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -28,6 +27,26 @@ public interface LayerGroupInfo extends CatalogInfo {
      * Sets the name of the layer group.
      */
     void setName( String name );
+    
+    /**
+     * The title of the layer group.
+     */
+    String getTitle();
+    
+    /**
+     * Sets the title of the layer group.
+     */
+    void setTitle(String title);
+    
+    /**
+     * The abstract of the layer group.
+     */
+    String getAbstract();
+    
+    /**
+     * Sets the abstract of the layer group.
+     */
+    void setAbstract(String abstractTxt);
     
     /**
      * The workspace the layer group is part of, or <code>null</code> if the layer group is global.

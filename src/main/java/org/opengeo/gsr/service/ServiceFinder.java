@@ -12,6 +12,8 @@ import org.geoserver.catalog.rest.AbstractCatalogFinder;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
+import org.opengeo.gsr.ms.resource.MapResource;
+import org.opengeo.gsr.ms.service.MapService;
 import org.opengeo.gsr.resource.CatalogResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -59,6 +61,7 @@ public class ServiceFinder extends AbstractCatalogFinder {
                         geoServer);
                 break;
             case MapServer:
+            	resource = new MapResource(null, request, response, MapService.class, geoServer, format);
                 break;
             case FeatureServer:
                 break;

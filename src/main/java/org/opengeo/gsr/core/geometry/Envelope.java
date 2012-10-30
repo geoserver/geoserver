@@ -4,6 +4,8 @@
  */
 package org.opengeo.gsr.core.geometry;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
+
 /**
  * 
  * @author Juan Marin - OpenGeo
@@ -79,6 +81,15 @@ public class Envelope implements Geometry {
         this.ymax = ymax;
         this.spatialReference = spatialReference;
         this.geometryType = GeometryTypeEnum.ENVELOPE;
+    }
+    
+    public Envelope(ReferencedEnvelope envelope)
+    {
+    	this.xmin = envelope.getMinX();
+    	this.xmax = envelope.getMaxX();
+    	this.ymin = envelope.getMinY();
+    	this.ymax = envelope.getMaxY();
+//    	this.spatialReference = new SpatialReferenceWKID(envelope.getCoordinateReferenceSystem().getIdentifiers().)
     }
 
     public boolean isValid() {

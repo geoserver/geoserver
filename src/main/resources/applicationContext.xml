@@ -51,7 +51,7 @@
                 </entry>
                 <entry>
                     <key>
-                        <value>/services/{workspace}/{params}</value>
+                        <value>/services/{workspace}/{serviceType}?{params}</value>
                     </key>
                     <value>jsonpFilter</value>
                 </entry>

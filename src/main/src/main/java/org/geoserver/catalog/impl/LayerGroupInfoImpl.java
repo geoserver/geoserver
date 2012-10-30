@@ -23,12 +23,12 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String name;
     
     /**
-     * This property in 2.1.x series is stored under the metadata map with key 'title'.
+     * This property in 2.2.x series is stored under the metadata map with key 'title'.
      */
     protected String title;
     
     /**
-     * This property in 2.1.x series is stored under the metadata map with key 'abstract'.
+     * This property in 2.2.x series is stored under the metadata map with key 'abstract'.
      */    
     protected String abstractTxt;
     

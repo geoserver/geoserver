@@ -1743,7 +1743,7 @@ public class XStreamPersister {
             MetadataMap metadata = lgi.getMetadata();
             
             /**
-             * If we're upgrading from a 2.1.x server we have to read
+             * If we're upgrading from a 2.2.x server we have to read
              * property 'title' from metadata
              */
             if (lgi.getTitle() == null && metadata != null) {
@@ -1755,7 +1755,7 @@ public class XStreamPersister {
             }
 
             /**
-             * If we're upgrading from a 2.1.x server we have to read
+             * If we're upgrading from a 2.2.x server we have to read
              * property 'abstract' from metadata
              */
             if (lgi.getAbstract() == null && metadata != null) {

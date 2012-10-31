@@ -243,7 +243,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(foudAGF);
 
         // 3) Basic get
-        LayerInfo li = cat.getLayers().get(1);
+        LayerInfo li = cat.getLayerByName(super.getLayerId(MockData.MPOINTS));
         String layerName = tileLayerName(li);
 
         TileLayer tl = tld.getTileLayer(layerName);

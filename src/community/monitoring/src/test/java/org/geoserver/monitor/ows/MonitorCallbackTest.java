@@ -5,6 +5,7 @@
 package org.geoserver.monitor.ows;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
@@ -194,7 +195,7 @@ public class MonitorCallbackTest {
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
         BoundingBox expected = new ReferencedEnvelope(53.73,40, -60,-95.1193,CRS.decode("EPSG:4326"));
-        // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73        
+        // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73
         BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
     }
     

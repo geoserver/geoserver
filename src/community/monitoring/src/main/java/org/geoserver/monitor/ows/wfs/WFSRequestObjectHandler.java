@@ -13,12 +13,42 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
+import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
+
+    // TODO: this should probably be handled as an update or extension to ExtractBoundsFilterVisitor
+    ExtractBoundsFilterVisitor visitor = new ExtractBoundsFilterVisitor() {
+        public Object visit( BBOX filter, Object data ) {
+            if(data == null) {
+                return null;
+            }
+            
+            BoundingBox bbox = (BoundingBox) data;
+                    
+            BoundingBox bounds;
+            try {
+                bounds = filter.getBounds();
+                if(bounds.getCoordinateReferenceSystem()==null){
+                    bounds = ReferencedEnvelope.reference(bounds, bbox.getCoordinateReferenceSystem());
+                }
+                bounds.toBounds(monitorConfig.getBboxLogCrs());
+            } catch (TransformException ex) {
+                // We're stuck so give up.
+                return null;
+            }
+            
+            bbox.include(bounds);
+            return bbox;
+        }
+
+    };
 
     Catalog catalog;
     protected WFSRequestObjectHandler(String reqObjClassName, MonitorConfig config, Catalog catalog) {
@@ -73,19 +103,28 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
         List<Object> elements = getElements(request);
         if (elements==null) return null;
 
-        BoundingBox result = new ReferencedEnvelope(monitorConfig.getBboxLogCrs());
-        for(Object e : elements){
-            e = unwrapElement(e);
-            CoordinateReferenceSystem defaultCrs = getCrsFromElement(e);
-            
-            if (defaultCrs==null) return null;
-            
-            BBoxFilterVisitor visitor = new BBoxFilterVisitor(monitorConfig.getBboxLogCrs(), defaultCrs);
-            Filter f = (Filter) OwsUtils.get(e, "filter");
-            if(f!=null) f.accept(visitor, null);
-            result.include(visitor.getBbox());
+        try {
+            BoundingBox result = new ReferencedEnvelope(monitorConfig.getBboxLogCrs());
+            for(Object e : elements){
+                e = unwrapElement(e);
+                
+                // This is the default CRS for the layer being queried
+                CoordinateReferenceSystem defaultCrs = getCrsFromElement(e);
+                
+                if (defaultCrs==null) return null;
+                Filter f = (Filter) OwsUtils.get(e, "filter");
+                if(f!=null) {
+                    ReferencedEnvelope startingBbox = new ReferencedEnvelope(defaultCrs);
+                    ReferencedEnvelope filterBbox = (ReferencedEnvelope) f.accept(visitor, startingBbox);
+                    
+                    result.include(filterBbox.toBounds(monitorConfig.getBboxLogCrs()));
+                }
+            }
+            return result;
+        } catch (TransformException ex) {
+            // TODO: Log me
+            return null;
         }
-        return result;
     }
 
 }

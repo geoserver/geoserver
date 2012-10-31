@@ -11,6 +11,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.GeoServer;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.exception.ServiceException;
+import org.opengeo.gsr.core.geometry.Envelope;
 import org.opengeo.gsr.ms.service.MapService;
 import org.opengeo.gsr.resource.GeoServicesResource;
 import org.restlet.Context;
@@ -49,7 +50,7 @@ public class MapResource extends GeoServicesResource {
     protected Object handleObjectGet() throws Exception {
     	try {
     		LayerGroupInfo layerGroupInfo = catalog.getFacade().getLayerGroupByName(workspace);
-    		return new MapService(workspace, currentVersion);
+    		return new MapService(workspace, currentVersion, new Envelope(layerGroupInfo.getBounds()));
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();
             details.add(e.getMessage());

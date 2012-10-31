@@ -4,7 +4,12 @@
  */
 package org.opengeo.gsr.core.geometry;
 
+import java.util.Set;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.referencing.ReferenceIdentifier;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * 
@@ -89,7 +94,21 @@ public class Envelope implements Geometry {
     	this.xmax = envelope.getMaxX();
     	this.ymin = envelope.getMinY();
     	this.ymax = envelope.getMaxY();
-//    	this.spatialReference = new SpatialReferenceWKID(envelope.getCoordinateReferenceSystem().getIdentifiers().)
+    	
+    	Set<ReferenceIdentifier> ids = envelope.getCoordinateReferenceSystem().getIdentifiers();
+    	int EPSGid = -1;
+    	for(ReferenceIdentifier id : ids) {
+    		if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
+    			EPSGid = Integer.parseInt(id.getCode());
+    		}
+    	}
+    	
+    	if(EPSGid < 0) {
+    		this.spatialReference = new SpatialReferenceWKID(EPSGid);
+    	}
+    	else {
+    		this.spatialReference = new SpatialReferenceWKT(envelope.getCoordinateReferenceSystem().toWKT());
+    	}
     }
 
     public boolean isValid() {

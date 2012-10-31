@@ -31,7 +31,17 @@ public class MapService implements AbstractService {
     
     private Envelope fullExtent;
     
-    public double getCurrentVersion() {
+    private Envelope initialExtent;
+    
+    public Envelope getInitialExtent() {
+		return initialExtent;
+	}
+
+	public void setInitialExtent(Envelope intialExtent) {
+		this.initialExtent = intialExtent;
+	}
+
+	public double getCurrentVersion() {
 		return currentVersion;
 	}
 
@@ -79,10 +89,21 @@ public class MapService implements AbstractService {
 		this.fullExtent = fullExtent;
 	}
 
-    public MapService(String name, double currentVersion) {
+    public MapService(String name, double currentVersion, Envelope extent) {
         mapName = name;
         this.currentVersion = currentVersion;
-//        this.fullExtent = fullExtent;
+        this.fullExtent = extent;
+        this.initialExtent = extent;
+        serviceDescription = "N/A";
+        description = "N/A";
+        copyright = "N/A";
+    }
+    
+    public MapService(String name, double currentVersion, Envelope fullExtent, Envelope initialExtent) {
+        mapName = name;
+        this.currentVersion = currentVersion;
+        this.fullExtent = fullExtent;
+        this.initialExtent = initialExtent;
         serviceDescription = "N/A";
         description = "N/A";
         copyright = "N/A";

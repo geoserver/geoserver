@@ -119,7 +119,6 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
             }
             json.endArray();
             json.endObject();
-
         } catch (JSONException jsonException) {
             ServiceException serviceException = new ServiceException("Error: "
                     + jsonException.getMessage());

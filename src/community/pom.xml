@@ -84,12 +84,6 @@
       </modules>
     </profile>
     <profile>
-      <id>scriptlet</id>
-      <modules>
-        <module>scriptlet</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dbconfig</id>
       <modules>
         <module>dbconfig</module>
@@ -123,18 +117,12 @@
         <module>release</module>
         <module>ftp</module>
         <module>monitoring</module>
-        <module>python</module>
         <!--module>spatialite</module-->
         <module>dbconfig</module>
         <module>inspire</module>
         <module>sfs</module>
         <module>feature-aggregate</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>python</id>
-      <modules>
-        <module>python</module>
+        <module>script</module>
       </modules>
     </profile>
     <profile>

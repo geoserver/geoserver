@@ -84,12 +84,6 @@
       </modules>
     </profile>
     <profile>
-      <id>scriptlet</id>
-      <modules>
-        <module>scriptlet</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dbconfig</id>
       <modules>
         <module>dbconfig</module>
@@ -129,12 +123,7 @@
         <module>inspire</module>
         <module>sfs</module>
         <module>feature-aggregate</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>python</id>
-      <modules>
-        <module>python</module>
+        <module>script</module>
       </modules>
     </profile>
     <profile>

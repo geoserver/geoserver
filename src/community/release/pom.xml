@@ -39,8 +39,8 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>python</artifactId>
+     <groupId>org.geoserver.script</groupId>
+     <artifactId>script-py</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>

@@ -117,7 +117,6 @@
         <module>release</module>
         <module>ftp</module>
         <module>monitoring</module>
-        <module>python</module>
         <module>spatialite</module>
         <module>dbconfig</module>
         <module>inspire</module>

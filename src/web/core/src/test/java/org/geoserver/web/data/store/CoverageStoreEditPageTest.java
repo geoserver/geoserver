@@ -139,10 +139,10 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("rasterStoreForm:save");
         tester.assertNoErrorMessage();
 
-        assertNull(store.getId());
+        assertNotNull(store.getId());
         assertEquals("foo", store.getName());
         assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
-        assertNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
+        assertNotNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
 
     }
 }

@@ -12,6 +12,7 @@ import static junit.framework.Assert.fail;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
+import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -43,6 +45,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
         
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
+    }
+    
+    @Before
+    public void resetLayers() throws IOException {
+        revertLayer(BASIC_POLYGONS);
     }
 
     @Test 

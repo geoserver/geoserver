@@ -1009,7 +1009,9 @@ public class ResourcePool {
             reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
         } else {
             key = info.getId();
-            reader = (GridCoverageReader) coverageReaderCache.get( key );
+            if(key != null) {
+                reader = (GridCoverageReader) coverageReaderCache.get( key );
+            }
         }
         
         if (reader != null) {
@@ -1017,13 +1019,13 @@ public class ResourcePool {
         }
         
         synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
-        	if(key != null) {
-	            if (hints != null) {
-	                reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
-	            } else {
-	                reader = (GridCoverageReader) coverageReaderCache.get(key);
-	            }
-        	}
+            if (key != null) {
+                if (hints != null) {
+                    reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
+                } else {
+                    reader = (GridCoverageReader) coverageReaderCache.get(key);
+                }
+            }
             if (reader == null) {
                 /////////////////////////////////////////////////////////
                 //
@@ -1033,10 +1035,12 @@ public class ResourcePool {
                 final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
     
                 reader = gridFormat.getReader(obj,hints);
-                if(hints != null) {
-                    hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
-                } else {
-                    coverageReaderCache.put((String) key, reader);
+                if(key != null) {
+                    if(hints != null) {
+                        hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                    } else {
+                        coverageReaderCache.put((String) key, reader);
+                    }
                 }
             }
         }

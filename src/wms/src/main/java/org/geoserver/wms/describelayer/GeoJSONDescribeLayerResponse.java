@@ -125,7 +125,7 @@ public class GeoJSONDescribeLayerResponse extends DescribeLayerResponse {
                 jsonWriter.endNode();
             }
             jsonWriter.endNode();
-
+            jsonWriter.flush();
         } catch (JSONException jsonException) {
             ServiceException serviceException = new ServiceException("Error: "
                     + jsonException.getMessage());

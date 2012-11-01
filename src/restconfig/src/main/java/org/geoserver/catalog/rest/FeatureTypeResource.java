@@ -286,7 +286,6 @@ public class FeatureTypeResource extends AbstractCatalogResource {
 
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
-        persister.setHideFeatureTypeAttributes();
         persister.setCallback( new XStreamPersister.Callback() {
             @Override
             protected void postEncodeReference(Object obj, String ref, String prefix,
@@ -299,18 +298,6 @@ public class FeatureTypeResource extends AbstractCatalogResource {
                     DataStoreInfo ds = (DataStoreInfo) obj;
                     encodeLink( "/workspaces/" + encode(ds.getWorkspace().getName()) + 
                         "/datastores/" + encode(ds.getName()), writer );
-                }
-            }
-            
-            @Override
-            protected void postEncodeFeatureType(FeatureTypeInfo ft,
-                    HierarchicalStreamWriter writer, MarshallingContext context) {
-                try {
-                    writer.startNode("attributes");
-                    context.convertAnother(ft.attributes());
-                    writer.endNode();
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not get native attributes", e);
                 }
             }
         });

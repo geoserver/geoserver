@@ -244,7 +244,7 @@ public enum JSONType {
             jsonWriter.endNode();
             jsonWriter.endNode();
             jsonWriter.endNode();
-
+            jsonWriter.flush();
         } catch (JSONException jsonException) {
             ServiceException serviceException = new ServiceException("Error: "
                     + jsonException.getMessage());

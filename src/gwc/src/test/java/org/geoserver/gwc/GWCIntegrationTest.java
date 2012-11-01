@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -44,7 +45,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
     
     @Before
-    public void resetLayers() throws IOException {
+    public void resetLayers() throws Exception {
+        final String layerName = getLayerId(BASIC_POLYGONS);
+        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
+        if(layerInfo != null) {
+            getCatalog().remove(layerInfo);
+            getGeoServer().reload();
+            
+        }
+        
         revertLayer(BASIC_POLYGONS);
         revertLayer(MPOINTS);
     }

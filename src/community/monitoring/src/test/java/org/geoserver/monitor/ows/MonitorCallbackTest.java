@@ -50,7 +50,6 @@ import org.geoserver.monitor.MonitorDAO;
 import org.geoserver.monitor.MonitorInitializer;
 import org.geoserver.monitor.MonitorTestData;
 import org.geoserver.monitor.RequestData;
-import org.geoserver.monitor.ows.wfs.BBoxFilterVisitorTest;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -63,6 +62,8 @@ import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.factory.FactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.spatial.BBOXImpl;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -71,10 +72,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.sun.net.httpserver.Filter;
 import com.vividsolutions.jts.geom.Envelope;
 
 
@@ -85,6 +86,15 @@ public class MonitorCallbackTest {
     MonitorCallback callback;
     RequestData data;
     static Catalog catalog;
+    
+    static public Filter parseFilter(String cql) {
+        try {
+            return CQL.toFilter(cql);
+        } catch (CQLException ex){
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
     
     @BeforeClass
     public static void setUpData() throws Exception {
@@ -176,9 +186,9 @@ public class MonitorCallbackTest {
     public void testWFSGetFeature() throws Exception {
         GetFeatureType gf = WfsFactory.eINSTANCE.createGetFeatureType();
         org.opengis.filter.Filter f1 = 
-                BBoxFilterVisitorTest.parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
+                parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
         org.opengis.filter.Filter f2 = 
-                BBoxFilterVisitorTest.parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
+                parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
         QueryType q = WfsFactory.eINSTANCE.createQueryType();
         q.setTypeName(Arrays.asList(new QName("http://acme.org", "foo", "acme")));
         q.setFilter(f1);
@@ -217,9 +227,9 @@ public class MonitorCallbackTest {
     public void testWFSTransaction() throws Exception {
         TransactionType t = WfsFactory.eINSTANCE.createTransactionType();
         org.opengis.filter.Filter f1 = 
-                BBoxFilterVisitorTest.parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
+                parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
         org.opengis.filter.Filter f2 = 
-                BBoxFilterVisitorTest.parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
+                parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
 
         UpdateElementType ue = WfsFactory.eINSTANCE.createUpdateElementType();
         ue.setTypeName(new QName("http://acme.org", "foo", "acme"));

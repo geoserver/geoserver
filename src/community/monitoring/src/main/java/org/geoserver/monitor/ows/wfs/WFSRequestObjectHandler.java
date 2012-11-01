@@ -5,6 +5,7 @@
 package org.geoserver.monitor.ows.wfs;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
@@ -15,6 +16,7 @@ import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.BoundingBox;
@@ -23,6 +25,8 @@ import org.opengis.referencing.operation.TransformException;
 
 public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
 
+    private static final Logger LOGGER = Logging.getLogger(WFSRequestObjectHandler.class);
+    
     // TODO: this should probably be handled as an update or extension to ExtractBoundsFilterVisitor
     ExtractBoundsFilterVisitor visitor = new ExtractBoundsFilterVisitor() {
         public Object visit( BBOX filter, Object data ) {
@@ -122,7 +126,7 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
             }
             return result;
         } catch (TransformException ex) {
-            // TODO: Log me
+            LOGGER.warning("Could not Transform bounds to desired CRS");
             return null;
         }
     }

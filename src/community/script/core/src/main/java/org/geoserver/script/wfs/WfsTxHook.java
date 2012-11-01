@@ -84,9 +84,9 @@ public class WfsTxHook extends ScriptHook {
     //
 
     public final void handlePreUpdate(ScriptEngine engine, FeatureCollection updated, 
-        TransactionRequest tx, Map<?, ?> context) throws ScriptException {
+        Map<String,Object> changed, TransactionRequest tx, Map<?, ?> context) throws ScriptException {
         try {
-            doHandlePreUpdate(engine, updated, tx, context);
+            doHandlePreUpdate(engine, updated, changed, tx, context);
         }
         catch(ScriptException e) {
             unWrapAndThrowWfsException(e);
@@ -94,8 +94,8 @@ public class WfsTxHook extends ScriptHook {
     }
 
     protected void doHandlePreUpdate(ScriptEngine engine, FeatureCollection updated, 
-            TransactionRequest tx, Map<?, ?> context) throws ScriptException {
-        invokeOptional(engine, "preUpdate", updated, tx, context);
+        Map<String,Object> props, TransactionRequest tx, Map<?, ?> context) throws ScriptException {
+        invokeOptional(engine, "preUpdate", updated, props, tx, context);
     }
 
     //
@@ -103,9 +103,9 @@ public class WfsTxHook extends ScriptHook {
     //
 
     public final void handlePostUpdate(ScriptEngine engine, FeatureCollection updated, 
-        TransactionRequest tx, Map<?, ?> context) throws ScriptException {
+        Map<String,Object> props, TransactionRequest tx, Map<?, ?> context) throws ScriptException {
         try {
-            doHandlePostUpdate(engine, updated, tx, context);
+            doHandlePostUpdate(engine, updated, props, tx, context);
         }
         catch(ScriptException e) {
             unWrapAndThrowWfsException(e);
@@ -113,8 +113,8 @@ public class WfsTxHook extends ScriptHook {
     }
 
     protected void doHandlePostUpdate(ScriptEngine engine, FeatureCollection updated, 
-            TransactionRequest tx, Map<?, ?> context) throws ScriptException {
-        invokeOptional(engine, "postUpdate", updated, tx, context);
+        Map<String,Object> props, TransactionRequest tx, Map<?, ?> context) throws ScriptException {
+        invokeOptional(engine, "postUpdate", updated, props, tx, context);
     }
 
     //

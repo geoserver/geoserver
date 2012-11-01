@@ -1,14 +1,18 @@
     package org.geoserver.script.wfs;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 
+import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
+import net.opengis.wfs.UpdateElementType;
 
 import org.geoserver.script.ScriptFileWatcher;
 import org.geoserver.script.ScriptManager;
@@ -16,6 +20,7 @@ import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
+import org.geoserver.wfs.request.Update;
 import org.geotools.util.logging.Logging;
 
 public class ScriptTxDelegate {
@@ -72,10 +77,12 @@ public class ScriptTxDelegate {
 
     public void preUpdate(TransactionEvent event) throws WFSException {
         TransactionRequest request = TransactionRequest.adapt(event.getRequest());
+
+        Map<String,Object> props = updateProperties(event);
         Map context = request.getExtendedProperties();
 
         try {
-            hook.handlePreUpdate(fw.read(), event.getAffectedFeatures(), request, context);
+            hook.handlePreUpdate(fw.read(), event.getAffectedFeatures(), props, request, context);
         } catch (WFSException e) {
             throw e;
         } catch (Exception e) {
@@ -85,10 +92,12 @@ public class ScriptTxDelegate {
 
     public void postUpdate(TransactionEvent event) throws WFSException {
         TransactionRequest request = TransactionRequest.adapt(event.getRequest());
+
+        Map<String,Object> props = updateProperties(event);
         Map context = request.getExtendedProperties();
 
         try {
-            hook.handlePostUpdate(fw.read(), event.getAffectedFeatures(), request, context);
+            hook.handlePostUpdate(fw.read(), event.getAffectedFeatures(), props, request, context);
         } catch (WFSException e) {
             throw e;
         } catch (Exception e) {
@@ -140,5 +149,15 @@ public class ScriptTxDelegate {
         catch(Exception e) {
             LOGGER.log(Level.WARNING, "Error occured in post commit hook", e);
         }
+    }
+
+    Map<String, Object> updateProperties(TransactionEvent event) {
+        //get the map of properties changed
+        UpdateElementType update = (UpdateElementType) event.getSource();
+        Map<String,Object> props = new HashMap();
+        for (PropertyType p : (List<PropertyType>)update.getProperty()) {
+            props.put(p.getName().getLocalPart(), p.getValue());
+        }
+        return props;
     }
 }

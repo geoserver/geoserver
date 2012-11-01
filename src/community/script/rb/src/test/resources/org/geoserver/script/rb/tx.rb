@@ -10,11 +10,11 @@ def postInsert(inserted, req, context)
   context["postInsert"] = true;
 end
 
-def preUpdate(updated, req, context)
+def preUpdate(updated, props, req, context)
   context["preUpdate"] = true;
 end
 
-def postUpdate(inserted, req, context)
+def postUpdate(inserted, props, req, context)
   context["postUpdate"] = true;
 end
 

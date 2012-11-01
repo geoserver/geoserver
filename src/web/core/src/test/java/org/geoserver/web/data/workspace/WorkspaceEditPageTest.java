@@ -32,6 +32,9 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         if (s != null) {
             gs.remove(s);
         }
+        NamespaceInfo citeNS = getCatalog().getNamespaceByPrefix(MockData.CITE_PREFIX);
+        citeNS.setURI(MockData.CITE_URI);
+        getCatalog().save(citeNS);
 
         tester.startPage(new WorkspaceEditPage(citeWorkspace));
     }

@@ -18,21 +18,11 @@ public class GeometryArrayTest {
         SpatialReference spatialRef = new SpatialReferenceWKID(4326);
         Point point1 = new Point(coord1[0], coord1[1], spatialRef);
         Point point2 = new Point(coord2[0], coord2[1], spatialRef);
-        double[][] coords = new double[4][2];
-        coords[0] = coord1;
-        coords[1] = coord2;
-        coords[2] = coord3;
-        coords[3] = coord1;
-        double[][][] rings = new double[1][4][2];
-        rings[0] = coords;
+        double[][] coords = { coord1, coord2, coord3, coord1 };
+        double[][][] rings = { coords };
         Polygon polygon = new Polygon(rings, spatialRef);
-        Geometry[] geometries1 = new Geometry[2];
-        geometries1[0] = point1;
-        geometries1[1] = point2;
-        Geometry[] geometries2 = new Geometry[3];
-        geometries2[0] = point1;
-        geometries2[1] = point2;
-        geometries2[2] = polygon;
+        Geometry[] geometries1 = { point1, point2 };
+        Geometry[] geometries2 = { point1, point2, polygon };
         GeometryArray geometryArray1 = new GeometryArray(GeometryTypeEnum.POINT, geometries1,
                 spatialRef);
         GeometryArray geometryArray2 = new GeometryArray(GeometryTypeEnum.POINT, geometries2,
@@ -40,6 +30,5 @@ public class GeometryArrayTest {
 
         assertEquals(true, geometryArray1.isValidGeometryTypes());
         assertEquals(false, geometryArray2.isValidGeometryTypes());
-
     }
 }

@@ -9,15 +9,13 @@ import com.thoughtworks.xstream.XStream;
 
 public abstract class JsonSchemaTest {
 
-    protected static XStream xstream;
+    final protected static XStream xstream = new GeoServicesJsonFormat().getXStream();
 
     public JsonSchemaTest() {
-        GeoServicesJsonFormat jsonFormat = new GeoServicesJsonFormat();
-        JsonSchemaTest.xstream = jsonFormat.getXStream();
     }
 
     public static String getJson(Object obj) {
-        return JsonSchemaTest.xstream.toXML(obj);
+        return xstream.toXML(obj);
     }
 
     protected boolean validateJSON(String json, String schemaPath) {

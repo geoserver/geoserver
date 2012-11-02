@@ -7,7 +7,7 @@ import org.opengeo.gsr.validation.JSONValidator;
 
 import com.thoughtworks.xstream.XStream;
 
-public class JsonSchemaTest {
+public abstract class JsonSchemaTest {
 
     protected static XStream xstream;
 

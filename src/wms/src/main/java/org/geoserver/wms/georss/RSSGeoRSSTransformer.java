@@ -103,7 +103,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
                     }
                 } finally {
                     if (iterator != null) {
-                        features.close(iterator);
+                        iterator.close();
                     }
                 }
                 

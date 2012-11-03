@@ -12,6 +12,7 @@ import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.collection.DelegateSimpleFeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -40,22 +41,8 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
         return target;
     }
 
-    public Iterator<SimpleFeature> iterator() {
-        return new RetypingIterator(delegate.iterator(), target);
-    }
-
-    public void close(Iterator<SimpleFeature> iterator) {
-        RetypingIterator retyping = (RetypingIterator) iterator;
-        delegate.close(retyping.delegate);
-    }
-
     public SimpleFeatureIterator features() {
-        return new DelegateSimpleFeatureIterator(this, iterator());
-    }
-
-    public void close(SimpleFeatureIterator iterator) {
-        DelegateSimpleFeatureIterator delegate = (DelegateSimpleFeatureIterator) iterator;
-        delegate.close();
+        return new RetypingIterator(delegate.features(), target);
     }
 
     static SimpleFeature retype(SimpleFeature source, SimpleFeatureBuilder builder)
@@ -102,11 +89,11 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
             return sourceId;
     }
 
-    public static class RetypingIterator implements Iterator<SimpleFeature> {
+    public static class RetypingIterator implements SimpleFeatureIterator {
         SimpleFeatureBuilder builder;
-        Iterator<SimpleFeature> delegate;
+        SimpleFeatureIterator delegate;
 
-        public RetypingIterator(Iterator<SimpleFeature> delegate, SimpleFeatureType target) {
+        public RetypingIterator(SimpleFeatureIterator delegate, SimpleFeatureType target) {
             this.delegate = delegate;
             this.builder = new SimpleFeatureBuilder(target);
         }
@@ -123,8 +110,9 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
             }
         }
 
-        public void remove() {
-            delegate.remove();
+        @Override
+        public void close() {
+            delegate.close();
         }
     }
 

@@ -1,5 +1,6 @@
 package org.geoserver.security.decorators;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -12,7 +13,7 @@ import org.opengis.feature.simple.SimpleFeature;
  * 
  * @author Josh Vote, CSIRO Earth Science and Resource Engineering
  */
-public class SecuredSimpleFeatureIterator implements SimpleFeatureIterator {
+public class SecuredSimpleFeatureIterator implements SimpleFeatureIterator, Iterator<SimpleFeature> {
 
     SimpleFeatureIterator wrapped;
 
@@ -32,4 +33,8 @@ public class SecuredSimpleFeatureIterator implements SimpleFeatureIterator {
         return wrapped.next();
     }
 
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
 }

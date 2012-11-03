@@ -195,9 +195,10 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         } catch (NoSuchElementException ex) {
             throw new DataSourceException(ex.getMessage(), ex);
         } finally {
-			if(iter!=null)
-            //make sure we always close
-            fColl.close(iter);
+            if(iter!=null) {
+                //make sure we always close
+                iter.close();
+            }
         }
     }
 

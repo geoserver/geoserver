@@ -236,7 +236,7 @@ public class KMLVectorTransformer extends KMLMapTransformer {
                 }
             } finally {
                 // make sure we always close
-                features.close(reader);
+                reader.close();
             }
         }
     }

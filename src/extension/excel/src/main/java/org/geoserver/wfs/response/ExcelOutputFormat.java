@@ -167,7 +167,7 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                     }
                 }
             } finally {
-                fc.close(i);
+                i.close();
             }
         }
 

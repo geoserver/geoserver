@@ -200,7 +200,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
                     }
                 } // catch an exception here?
                 finally {
-                    collection.close(iterator);
+                    iterator.close();
                 }
 
             }

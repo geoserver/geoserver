@@ -5,13 +5,11 @@
 package org.geoserver.wfs.response;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
-import org.geotools.feature.collection.DelegateSimpleFeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeature;
@@ -69,25 +67,10 @@ public class RemappingFeatureCollection extends DecoratingSimpleFeatureCollectio
         return builder.buildFeatureType();
     }
 
-    public Iterator<SimpleFeature> iterator() {
-        return new RemappingIterator(delegate.iterator(), attributesMapping,getSchema());
-    }
-
-    public void close(Iterator<SimpleFeature> iterator) {
-        RemappingIterator remapping = (RemappingIterator) iterator;
-        delegate.close(remapping.delegate);
-    }
-
     public SimpleFeatureIterator features() {
-        return new DelegateSimpleFeatureIterator(this, iterator());
+        return new RemappingIterator(delegate.features(), attributesMapping, getSchema());
     }
 
-    public void close(SimpleFeatureIterator iterator) {
-        DelegateSimpleFeatureIterator delegate = (DelegateSimpleFeatureIterator) iterator;
-        delegate.close();
-    }
-
-        
     /**
      * Remaps a SimpleFeature, using the given mappings (oldname -> mappedname).
      * The builder uses the mapped schema.
@@ -114,12 +97,12 @@ public class RemappingFeatureCollection extends DecoratingSimpleFeatureCollectio
     }
 
     
-    public static class RemappingIterator implements Iterator<SimpleFeature> {
+    public static class RemappingIterator implements SimpleFeatureIterator {
         Map<String,String> attributesMapping;
-        Iterator<SimpleFeature> delegate;
+        SimpleFeatureIterator delegate;
         SimpleFeatureBuilder builder;
 
-        public RemappingIterator(Iterator<SimpleFeature> delegate, Map attributesMapping,SimpleFeatureType schema) {
+        public RemappingIterator(SimpleFeatureIterator delegate, Map attributesMapping,SimpleFeatureType schema) {
             this.delegate = delegate;
             this.attributesMapping = RemappingFeatureCollection.invertMappings(attributesMapping);
             this.builder = new SimpleFeatureBuilder(schema);
@@ -133,8 +116,9 @@ public class RemappingFeatureCollection extends DecoratingSimpleFeatureCollectio
             return RemappingFeatureCollection.remap(delegate.next(), attributesMapping,builder);
         }
 
-        public void remove() {
-            delegate.remove();
+        @Override
+        public void close() {
+            delegate.close();
         }
     }
 

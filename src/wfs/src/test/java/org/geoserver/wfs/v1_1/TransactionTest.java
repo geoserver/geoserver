@@ -20,6 +20,7 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Before;
@@ -710,7 +711,10 @@ public class TransactionTest extends WFSTestSupport {
        SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
        b.add("one");
        b.add(new WKTReader().read("POINT(1 1)"));
-       fs.getFeatures().add(b.buildFeature(null));
+
+       DefaultFeatureCollection fc = new DefaultFeatureCollection();
+       fc.add(b.buildFeature(null));
+       fs.addFeatures(fc);
 
        FeatureTypeInfo ft = cb.buildFeatureType(fs);
        cat.add(ft);

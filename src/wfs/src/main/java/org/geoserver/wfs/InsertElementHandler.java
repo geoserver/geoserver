@@ -93,8 +93,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             for (Iterator f = featureList.iterator(); f.hasNext();) {
                 SimpleFeature feature = (SimpleFeature) f.next();
                 SimpleFeatureType schema = feature.getFeatureType();
-                SimpleFeatureCollection collection;
-                collection = (SimpleFeatureCollection) schema2features.get(schema);
+                DefaultFeatureCollection collection = 
+                    (DefaultFeatureCollection) schema2features.get(schema);
 
                 if (collection == null) {
                     collection = new DefaultFeatureCollection(null, schema);

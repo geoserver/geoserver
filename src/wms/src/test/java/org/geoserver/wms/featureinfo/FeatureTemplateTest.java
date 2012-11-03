@@ -7,8 +7,6 @@ package org.geoserver.wms.featureinfo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.Iterator;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.featureinfo.dummy.Dummy;
@@ -26,7 +24,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
 
         SimpleFeatureSource source = getFeatureSource( MockData.PRIMITIVEGEOFEATURE );
         SimpleFeatureCollection fc = source.getFeatures();
-        Iterator i = fc.iterator();
+        SimpleFeatureIterator i = fc.features();
         try {
             SimpleFeature f = (SimpleFeature) i.next();
             
@@ -40,7 +38,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
             }
         }
         finally {
-            fc.close( i );
+            i.close();
         }
     }
      
@@ -48,7 +46,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
     public void testRawValue() throws Exception {
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         SimpleFeatureCollection fc = source.getFeatures();
-        Iterator i = fc.iterator();
+        SimpleFeatureIterator i = fc.features();
         try {
             SimpleFeature f = (SimpleFeature) i.next();
 
@@ -60,7 +58,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
                 throw(e);
             }
         } finally {
-            fc.close(i);
+            i.close();
         }
     }
 
@@ -69,7 +67,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         
         SimpleFeatureSource source = getFeatureSource( MockData.BASIC_POLYGONS );
         SimpleFeatureCollection fc = source.getFeatures();
-        Iterator i = fc.iterator();
+        SimpleFeatureIterator i = fc.features();
         try {
             SimpleFeature f = (SimpleFeature) i.next();
             
@@ -88,7 +86,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
             
         }
         finally {
-            fc.close( i );
+            i.close();
         }
       
     }

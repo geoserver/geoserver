@@ -41,6 +41,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.junit.Before;
@@ -513,7 +514,7 @@ public class ShapeZipTest extends WFSTestSupport {
         SimpleFeatureCollection fc = fs.getFeatures();
         SimpleFeatureType schema = fc.getSchema();
 
-        Iterator<SimpleFeature> iter = fc.iterator();
+        SimpleFeatureIterator iter = fc.features();
         try {
             // check that every field has a not null or "empty" value
             while (iter.hasNext()) {
@@ -529,7 +530,7 @@ public class ShapeZipTest extends WFSTestSupport {
 
             }
         } finally {
-            fc.close(iter);
+            iter.close();
             tempFolder.delete();
         }
 

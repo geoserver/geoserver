@@ -35,7 +35,7 @@ public class FeatureTimeTemplateTest extends WMSTestSupport {
                 break;
             }
         }
-        features.close(iterator);
+        iterator.close();
     }
     
     @Test 

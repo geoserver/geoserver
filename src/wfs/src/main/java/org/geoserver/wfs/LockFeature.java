@@ -14,12 +14,6 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.AllSomeType;
-import net.opengis.wfs.LockFeatureResponseType;
-import net.opengis.wfs.LockFeatureType;
-import net.opengis.wfs.LockType;
-import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,7 +22,6 @@ import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.LockFeatureResponse;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
-import org.geotools.data.Query;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureLock;
 import org.geotools.data.FeatureLockFactory;
@@ -37,8 +30,8 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.LockingManager;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
@@ -175,11 +168,11 @@ public class LockFeature {
                     throw new WFSException(request, e);
                 }
 
-                Iterator reader = null;
+                FeatureIterator reader = null;
                 int numberLocked = -1;
 
                 try {
-                    for (reader = features.iterator(); reader.hasNext();) {
+                    for (reader = features.features(); reader.hasNext();) {
                         SimpleFeature feature = (SimpleFeature) reader.next();
 
                         FeatureId fid = fid(feature.getID());
@@ -229,7 +222,7 @@ public class LockFeature {
                     throw new WFSException(request, ioe);
                 } finally {
                     if (reader != null) {
-                        features.close(reader);
+                        reader.close();
                     }
                 }
 

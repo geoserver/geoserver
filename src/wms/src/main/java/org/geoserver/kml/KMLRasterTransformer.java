@@ -13,6 +13,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
@@ -185,36 +186,41 @@ public class KMLRasterTransformer extends KMLMapTransformer {
                     FeatureTypeStyle[] fts = KMLUtils.filterFeatureTypeStyles(layer.getStyle(),
                             featureType);
 
-                    Iterator<SimpleFeature> iter = features.iterator();
-                    while (iter.hasNext()) {
-                        SimpleFeature ftr = iter.next();
-                        geom = (Geometry) ftr.getDefaultGeometry();
-
-                        List<Symbolizer> symbolizers = filterSymbolizers(ftr, fts);
-                        if (symbolizers.size() != 0)
-                            encodeStyle(ftr, symbolizers);
-
-                        // if this is a multipolygon, get the largest polygon
-                        // that intersects the AOI
-                        if (geom instanceof MultiPolygon) {
-                            double maxSize = -1;
-                            int numGeoms = geom.getNumGeometries();
-                            for (int i = 0; i < numGeoms; i++) {
-                                Polygon poly = (Polygon) geom.getGeometryN(i);
-                                if (poly.getArea() > maxSize) {
-                                    if (displayGeom.intersects(poly)) {
-                                        geom = poly;
-                                        maxSize = poly.getArea();
+                    SimpleFeatureIterator iter = features.features();
+                    try {
+                        while (iter.hasNext()) {
+                            SimpleFeature ftr = iter.next();
+                            geom = (Geometry) ftr.getDefaultGeometry();
+    
+                            List<Symbolizer> symbolizers = filterSymbolizers(ftr, fts);
+                            if (symbolizers.size() != 0)
+                                encodeStyle(ftr, symbolizers);
+    
+                            // if this is a multipolygon, get the largest polygon
+                            // that intersects the AOI
+                            if (geom instanceof MultiPolygon) {
+                                double maxSize = -1;
+                                int numGeoms = geom.getNumGeometries();
+                                for (int i = 0; i < numGeoms; i++) {
+                                    Polygon poly = (Polygon) geom.getGeometryN(i);
+                                    if (poly.getArea() > maxSize) {
+                                        if (displayGeom.intersects(poly)) {
+                                            geom = poly;
+                                            maxSize = poly.getArea();
+                                        }
                                     }
                                 }
                             }
+                            Geometry g1 = displayGeom.intersection(geom);
+                            // skip if the geometry is not in the AOI
+                            if (g1.isEmpty())
+                                continue;
+                            centroidGeom = g1.getCentroid();
+                            encodePlacemark(ftr, symbolizers, centroidGeom, lookAtOpts);
                         }
-                        Geometry g1 = displayGeom.intersection(geom);
-                        // skip if the geometry is not in the AOI
-                        if (g1.isEmpty())
-                            continue;
-                        centroidGeom = g1.getCentroid();
-                        encodePlacemark(ftr, symbolizers, centroidGeom, lookAtOpts);
+                    }
+                    finally {
+                        iter.close();
                     }
                 }
             }

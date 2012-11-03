@@ -29,6 +29,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.DefaultFeatureCollections;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -246,8 +248,7 @@ class CRSAreaOfValidityMapBuilder {
     }
 
     private Layer createCrsLayer(Geometry geom, CoordinateReferenceSystem crs) {
-        SimpleFeatureCollection collection = FeatureCollections
-                .newCollection();
+        DefaultFeatureCollection collection = new DefaultFeatureCollection();
         collection.add(createCrsBoundsFeature(geom, crs));
 
         Style style = getStyle("crs.sld");

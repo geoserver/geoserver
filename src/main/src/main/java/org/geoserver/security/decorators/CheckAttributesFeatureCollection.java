@@ -43,11 +43,6 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
         return new CheckAttributesFeatureIterator(delegate.features(), writableAttributes);
     }
 
-    @Override
-    public Iterator iterator() {
-        return new FeatureIteratorIterator<SimpleFeature>(features());
-    }
-
     public class CheckAttributesFeatureIterator implements SimpleFeatureIterator {
 
         SimpleFeatureIterator delegate;

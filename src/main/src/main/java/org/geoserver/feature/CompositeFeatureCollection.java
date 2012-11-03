@@ -13,6 +13,7 @@ import java.util.List;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.store.DataFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.identity.FeatureId;
@@ -64,7 +65,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
 
     class CompositeIterator implements Iterator {
         int index;
-        Iterator iterator;
+        FeatureIterator iterator;
 
         public CompositeIterator() {
             index = 0;
@@ -83,11 +84,11 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
             while (index < collections.size()) {
                 //close current before we move to next
                 if (iterator != null) {
-                    ((FeatureCollection) collections.get(index - 1)).close(iterator);
+                    iterator.close();
                 }
 
                 //grap next
-                iterator = ((FeatureCollection) collections.get(index++)).iterator();
+                iterator = ((FeatureCollection) collections.get(index++)).features();
 
                 if (iterator.hasNext()) {
                     return true;
@@ -97,7 +98,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
             //no more
             if (iterator != null) {
                 //close the last iterator
-                ((FeatureCollection) collections.get(collections.size() - 1)).close(iterator);
+                iterator.close();
             }
 
             return false;
@@ -108,43 +109,17 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
         }
     }
 
-    public boolean addAll(Collection arg0) {
-        throw new RuntimeException("Can't add to a composite featurecollection; you need to add to one of the constituent collections direclty.");
-    }
-
-    public boolean removeAll(Collection arg0) {
-        Iterator it = collections.iterator();
-        boolean result = false;
-        while (it.hasNext()){
-            FeatureCollection col = (FeatureCollection)it.next();
-            result |= col.removeAll(arg0);
-        }
-        return result;
-    }
-
-    public boolean retainAll(Collection arg0) {
-        boolean result = false;
-        
-        Iterator it = collections.iterator();
-        while (it.hasNext()){
-            FeatureCollection col = (FeatureCollection)it.next();
-            result |= col.removeAll(arg0);
-        }
-        
-        return result;
-    }
-
     public Object[] toArray(Object[] arg0) {
         List list = new ArrayList();
         
         Iterator it = collections.iterator();
         while(it.hasNext()){
             FeatureCollection col = (FeatureCollection)it.next();
-            Iterator it2 = col.iterator();
+            FeatureIterator it2 = col.features();
             while (it2.hasNext()){
                 list.add(it.next());
             }
-            col.close(it2);
+            it2.close();
         }
         
         return list.toArray(arg0);

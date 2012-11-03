@@ -203,7 +203,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                     }
                 } // catch an exception here?
                 finally {
-                    collection.close(iterator);
+                    iterator.close();
                 }
             }
             jsonWriter.endArray(); // end features

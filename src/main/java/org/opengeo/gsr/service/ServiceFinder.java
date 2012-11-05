@@ -29,8 +29,10 @@ public class ServiceFinder extends AbstractCatalogFinder {
 
     private GeoServer geoServer;
 
+    @SuppressWarnings("unused")
     private WMS wms;
 
+    @SuppressWarnings("unused")
     private Dispatcher dispatcher;
 
     protected ServiceFinder(GeoServer geoServer, WMS wms, Dispatcher dispatcher) {
@@ -48,13 +50,15 @@ public class ServiceFinder extends AbstractCatalogFinder {
             if (attributes.get("serviceType") != null) {
                 serviceType = attributes.get("serviceType").toString();
             }
-            String operation = "";
             String params = attributes.get("params").toString();
             Map<String, String> paramsMap = getParamsMap(params);
             String format = paramsMap.get("f");
-            if (attributes.get("operation") != null) {
-                operation = attributes.get("operation").toString();
-            }
+            
+//            String operation = "";
+//            if (attributes.get("operation") != null) {
+//                operation = attributes.get("operation").toString();
+//            }
+            
             switch (ServiceType.valueOf(serviceType)) {
             case CatalogServer:
                 resource = new CatalogResource(null, request, response, CatalogService.class,

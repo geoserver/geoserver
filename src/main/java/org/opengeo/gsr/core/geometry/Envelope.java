@@ -9,8 +9,6 @@ import java.util.Set;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.referencing.ReferenceIdentifier;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * 
  * @author Juan Marin - OpenGeo

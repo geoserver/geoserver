@@ -27,22 +27,23 @@ import org.restlet.data.Status;
 
 public class MapResource extends GeoServicesResource {
 
-    protected Class clazz;
-    
-    private String formatValue;
+    @SuppressWarnings("unused")
+    private final String format;
     
     private String workspace;
+    
+    @SuppressWarnings("unused")
+    private static final String productName = "OpenGeo Suite";
 
-    private final String productName = "OpenGeo Suite";
-
-    private final String specVersion = "1.0";
+    @SuppressWarnings("unused")
+    private static final String specVersion = "1.0";
 
     private final double currentVersion = 10.1;
 
     public MapResource(Context context, Request request, Response response,
-			Class clazz, GeoServer geoServer, String format) {
+			Class<?> clazz, GeoServer geoServer, String format) {
 		super(context, request, response, clazz, geoServer);
-		formatValue = format;
+		this.format = format;
 		workspace = getAttribute("workspace");
 	}
     

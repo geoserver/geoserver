@@ -7,10 +7,9 @@ package org.opengeo.gsr.core.format;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
 /**
- * 
  * @author Juan Marin, OpenGeo
- * 
  */
+@SuppressWarnings("rawtypes")
 public class EnumTypeConverter extends AbstractSingleValueConverter {
 
     private final Class enumType;
@@ -25,6 +24,7 @@ public class EnumTypeConverter extends AbstractSingleValueConverter {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object fromString(String value) {
         return Enum.valueOf(enumType, value);
     }

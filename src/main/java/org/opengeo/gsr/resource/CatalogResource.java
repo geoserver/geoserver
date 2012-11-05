@@ -5,7 +5,6 @@
 package org.opengeo.gsr.resource;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,8 +29,6 @@ import org.restlet.data.Status;
  */
 public class CatalogResource extends GeoServicesResource {
 
-    protected Class clazz;
-
     private String formatValue;
 
     private String workspace;
@@ -42,7 +39,7 @@ public class CatalogResource extends GeoServicesResource {
 
     private final double currentVersion = 10.1;
 
-    public CatalogResource(Context context, Request request, Response response, Class clazz,
+    public CatalogResource(Context context, Request request, Response response, Class<?> clazz,
             GeoServer geoServer) {
         super(context, request, response, clazz, geoServer);
         this.formatValue = getRequest().getResourceRef().getQueryAsForm().getFirstValue("f");

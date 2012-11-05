@@ -20,6 +20,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 public class AttributeListConverter implements Converter {
 
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean canConvert(Class clazz) {
         return clazz.equals(AttributeList.class);
     }

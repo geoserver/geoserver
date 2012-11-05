@@ -7,26 +7,26 @@ On occasion one might need to style a geometry column whose geometry type can be
 (some are polygons, some are points, etc), and use different styling for different geometry types.
 
 SLD 1.0 does not provide a clean solution for dealing with this situation. 
-Point, Line, and Polygon symbolizers do not select geometry by type, since they can each apply to all geometry types:
+Point, Line, and Polygon symbolizers do not select geometry by type, since each can apply to all geometry types:
 
 *  Point symbolizers apply to any kind of geometry. If the geometry is not a point, the centroid of the geometry is used.
-*  Line symbolizers apply to both lines and polygons.  For polyogns the boundary is styled..
+*  Line symbolizers apply to both lines and polygons.  For polygons the boundary is styled.
 *  Polygon symbolizers apply to lines, by adding a closing segment connecting the first and last points of the line.
 
-There is also no standard filter to identify the type of a geometry which could be used in rules.
+There is also no standard filter predicate to identify geometry type which could be used in rules.
 
-There are a number of possible ways to accomplish styling by geometry type.  
+This section suggests a number of ways to accomplish styling by geometry type.  
 They require either data restructuring or the use of non-standard filter functions.
 
 Restructuring the data
 ----------------------
 
-There are a few ways to restructure the data so that it can be rendered without difficulties using only standard SLD constructs.
+There are a few ways to restructure the data so that it can be styled by geometry type using only standard SLD constructs.
 
 Split the table
 ^^^^^^^^^^^^^^^
 
-The first and obvious one is to split the table into a set of separate ones, each one containing a single geometry type. For example, if table ``findings`` has a geometry column that can contain point, lines, and polygons, three tables will be generated, each one containing a single geometry type.
+The first and obvious one is to split the original table into a set of separate tables, each one containing a single geometry type. For example, if table ``findings`` has a geometry column that can contain point, lines, and polygons, three tables can be created, each one containing a single geometry type.
 
 Separate geometry columns
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -82,20 +82,21 @@ A third way is to add a geometry type column allowing standard filtering constru
       </PolygonSymbolizer>
    </Rule>
    
-All of the above suggestions do work under the assumption that restructuring the data is technically possible, which is usually true in spatial databases that provide functions that allow to recognize the geometry type.
+The above suggestions assume that restructuring the data is technically possible.
+This is usually true in spatial databases that provide functions that allow determining the geometry type.
 
 Create views
-````````````
+^^^^^^^^^^^^
 
-A less invasive way to get the same results without changing the structure of the table is to create views that have the required structure. This allows the original data to be kept intact, and the views to be used only for rendering sake.
+A less invasive way to get the same results without changing the structure of the table is to create views that have the required structure. This allows the original data to be kept intact, and the views may be used for rendering.
 
 
 Using SLD rules and filter functions
 ------------------------------------
 
-SLD 1.0 uses the OGC Filter 1.0 specification for filtering out the data to be renderered by each rule.
-Filters can contain :ref:`filter_function` to compute many different properties of geometric values.
-In GeoServer, filtering by geometry type can be done using the ``geometryType`` or ``dimension`` filter functions,
+SLD 1.0 uses the OGC Filter 1.0 specification for filtering out the data to be styled by each rule.
+Filters can contain :ref:`filter_function` to compute properties of geometric values.
+In GeoServer, filtering by geometry type can be done using the ``geometryType`` or ``dimension`` filter functions.
 
 .. note:: The Filter Encoding specification provides a standard syntax for filter functions, but does not mandate a specific set of functions.
           SLDs using these functions may not be portable to other styling software.

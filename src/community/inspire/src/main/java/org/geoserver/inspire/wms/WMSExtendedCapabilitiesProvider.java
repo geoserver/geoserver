@@ -2,6 +2,7 @@ package org.geoserver.inspire.wms;
 
 import static org.geoserver.inspire.wms.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.wms.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.wms.InspireMetadata.SERVICE_METADATA_TYPE;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -86,8 +87,14 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
             tx.chars(metadataURL);
         }
         tx.end("inspire_common:URL");
+
+        String metadataMediaType = (String) wms.getMetadata().get(SERVICE_METADATA_TYPE.key);
+        if (metadataMediaType == null) {
+            //default
+            metadataMediaType = "application/vnd.iso.19139+xml";
+        }
         tx.start("inspire_common:MediaType");
-        tx.chars("application/vnd.iso.19139+xml");
+        tx.chars(metadataMediaType);
         tx.end("inspire_common:MediaType");
         tx.end("inspire_common:MetadataUrl");
 

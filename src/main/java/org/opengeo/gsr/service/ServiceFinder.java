@@ -4,6 +4,9 @@
  */
 package org.opengeo.gsr.service;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -80,7 +83,12 @@ public class ServiceFinder extends AbstractCatalogFinder {
             }
 
         } catch (Exception e) {
-            response.setEntity("NOT IMPLEMENTED", MediaType.TEXT_HTML);
+            Writer w = new StringWriter();
+            PrintWriter pw = new PrintWriter(w);
+            pw.println("Unsupported request: " + request.getResourceRef());
+            e.printStackTrace(pw);
+            pw.close();
+            response.setEntity(w.toString(), MediaType.TEXT_HTML);
             resource = new Resource(getContext(), request, response);
         }
         return resource;

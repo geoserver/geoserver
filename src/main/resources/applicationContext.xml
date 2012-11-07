@@ -55,6 +55,18 @@
                     </key>
                     <value>jsonpFilter</value>
                 </entry>
+                <entry>
+                    <key>
+                        <value>/services/{workspace}/{serviceType}/{layerOrTable}?{params}</value>
+                    </key>
+                    <value>jsonpFilter</value>
+                </entry>
+                <entry>
+                    <key>
+                        <value>/services/{workspace}/{serviceType}/{layerOrTable}/{operation}?{params}</value>
+                    </key>
+                    <value>jsonpFilter</value>
+                </entry>
             </map>
     </property>
     </bean>

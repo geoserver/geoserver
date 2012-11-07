@@ -16,6 +16,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
 import org.opengeo.gsr.ms.resource.MapResource;
+import org.opengeo.gsr.ms.resource.QueryResource;
 import org.opengeo.gsr.ms.service.MapService;
 import org.opengeo.gsr.resource.CatalogResource;
 import org.restlet.data.MediaType;
@@ -57,10 +58,10 @@ public class ServiceFinder extends AbstractCatalogFinder {
             Map<String, String> paramsMap = getParamsMap(params);
             String format = paramsMap.get("f");
             
-//            String operation = "";
-//            if (attributes.get("operation") != null) {
-//                operation = attributes.get("operation").toString();
-//            }
+            String operation = "";
+            if (attributes.get("operation") != null) {
+                operation = attributes.get("operation").toString();
+            }
             
             switch (ServiceType.valueOf(serviceType)) {
             case CatalogServer:
@@ -68,7 +69,11 @@ public class ServiceFinder extends AbstractCatalogFinder {
                         geoServer);
                 break;
             case MapServer:
-            	resource = new MapResource(null, request, response, MapService.class, geoServer, format);
+                if (null == operation) {
+                    resource = new MapResource(null, request, response, MapService.class, geoServer, format);
+                } else if ("query".equals(operation)) {
+                    resource = new QueryResource(null, request, response, catalog, format);
+                }
                 break;
             case FeatureServer:
                 break;
@@ -81,7 +86,6 @@ public class ServiceFinder extends AbstractCatalogFinder {
             case ImageServer:
                 break;
             }
-
         } catch (Exception e) {
             Writer w = new StringWriter();
             PrintWriter pw = new PrintWriter(w);

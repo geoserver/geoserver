@@ -45,7 +45,7 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json = getAsJSON("/rest/services/wms/sf/settings.json");
+        JSON json = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -61,7 +61,7 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM("/rest/services/wms/sf/settings.xml");
+        Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wms/workspace/name", dom);
@@ -73,10 +73,10 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
         String input = "{'wms': {'id' : 'wms_sf', 'workspace':{'name':'sf'},'name' : 'WMS', 'enabled': 'true'}}";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/sf/settings/",
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings/",
                 input, "text/json");
         assertEquals(200, response.getStatusCode());
-        JSON json = getAsJSON("/rest/services/wms/sf/settings.json");
+        JSON json = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -94,11 +94,11 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
         String xml = "<wms>" + "<id>wms_sf</id>" + "<workspace>" + "<name>sf</name>"
                 + "</workspace>" + "<name>OGC:WMS</name>" + "<enabled>false</enabled>"
                 + "<interpolation>Nearest</interpolation>" + "</wms>";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/sf/settings",
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
         assertEquals(200, response.getStatusCode());
 
-        Document dom = getAsDOM("/rest/services/wms/sf/settings.xml");
+        Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wms/workspace/name", dom);
@@ -110,10 +110,10 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
     @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','workspace':{'name':'sf'},'enabled':'false','name':'WMS'}}";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/sf/settings/",
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings/",
                 json, "text/json");
         assertEquals(200, response.getStatusCode());
-        JSON jsonMod = getAsJSON("/rest/services/wms/sf/settings.json");
+        JSON jsonMod = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -125,19 +125,19 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
     public void testPutAsXML() throws Exception {
         String xml = "<wms>" + "<id>wms</id>" + "<workspace>" + "<name>sf</name>"
                 + "</workspace>" + "<enabled>false</enabled>" + "</wms>";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/sf/settings",
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
         assertEquals(200, response.getStatusCode());
-        Document dom = getAsDOM("/rest/services/wms/sf/settings.xml");
+        Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
     }
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(200, deleteAsServletResponse("/rest/services/wms/sf/settings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/services/wms/workspaces/sf/settings").getStatusCode());
         boolean thrown = false;
         try {
-            JSON json = getAsJSON("/rest/services/wms/sf/settings.json");
+            JSON json = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");
         } catch (JSONException e) {
             thrown = true;
         }

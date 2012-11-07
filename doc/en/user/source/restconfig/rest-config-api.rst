@@ -1705,7 +1705,7 @@ Operations
 - :download:`JSON <representations/wcs_json.txt>`
 
 
-``/services/wcs/<ws>/settings[.<format>]``
+``/services/wcs/workspaces/<ws>/settings[.<format>]``
 
 
 .. list-table::
@@ -1782,7 +1782,7 @@ Operations
 - :download:`JSON <representations/wfs_json.txt>`
 
 
-``/services/wfs/<ws>/settings[.<format>]``
+``/services/wfs/workspaces/<ws>/settings[.<format>]``
 
 
 .. list-table::
@@ -1859,7 +1859,7 @@ Operations
 - :download:`JSON <representations/wms_json.txt>`
 
 
-``/services/wms/<ws>/settings[.<format>]``
+``/services/wms/workspaces/<ws>/settings[.<format>]``
 
 
 .. list-table::

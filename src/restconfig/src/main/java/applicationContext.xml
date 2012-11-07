@@ -353,11 +353,11 @@
         </entry>
 
         <entry>
-            <key><value>/services/wms/{workspace}/settings</value></key>
+            <key><value>/services/wms/workspaces/{workspace}/settings</value></key>
             <value>wmsSettingsFinder</value>
         </entry>
         <entry>
-            <key><value>/services/wms/{workspace}/settings.{format}</value></key>
+            <key><value>/services/wms/workspaces/{workspace}/settings.{format}</value></key>
             <value>wmsSettingsFinder</value>
         </entry>
 
@@ -371,11 +371,11 @@
         </entry>
 
         <entry>
-            <key><value>/services/wfs/{workspace}/settings</value></key>
+            <key><value>/services/wfs/workspaces/{workspace}/settings</value></key>
             <value>wfsSettingsFinder</value>
         </entry>
         <entry>
-            <key><value>/services/wfs/{workspace}/settings.{format}</value></key>
+            <key><value>/services/wfs/workspaces/{workspace}/settings.{format}</value></key>
             <value>wfsSettingsFinder</value>
         </entry>
 
@@ -389,11 +389,11 @@
         </entry>
 
         <entry>
-            <key><value>/services/wcs/{workspace}/settings</value></key>
+            <key><value>/services/wcs/workspaces/{workspace}/settings</value></key>
             <value>wcsSettingsFinder</value>
         </entry>
         <entry>
-            <key><value>/services/wcs/{workspace}/settings.{format}</value></key>
+            <key><value>/services/wcs/workspaces/{workspace}/settings.{format}</value></key>
             <value>wcsSettingsFinder</value>
         </entry>
 

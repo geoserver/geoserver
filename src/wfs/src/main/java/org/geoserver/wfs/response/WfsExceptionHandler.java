@@ -12,20 +12,22 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.DefaultServiceExceptionHandler;
+import org.geoserver.ows.OWS10ServiceExceptionHandler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.json.JSONType;
 
 /**
  * Handles a wfs service exception by producing an exception report.
  *
  * @author Justin Deoliveira, The Open Planning Project
+ * @author Carlo Cancellieri - GeoSolutions
  *
  */
-public class WfsExceptionHandler extends DefaultServiceExceptionHandler {
+public class WfsExceptionHandler extends OWS10ServiceExceptionHandler {
 
     GeoServer gs;
     
@@ -44,12 +46,41 @@ public class WfsExceptionHandler extends DefaultServiceExceptionHandler {
     /**
      * Encodes a ogc:ServiceExceptionReport to output.
      */
-    public void handleServiceException(ServiceException e, Request request) {
-        verboseExceptions = getInfo().getGeoServer().getSettings().isVerboseExceptions();
-        if ("1.0.0".equals(request.getVersion())) {
-            handle1_0(e, request.getHttpResponse());
+    public void handleServiceException(ServiceException exception, Request request) {
+
+        boolean verbose = gs.getSettings().isVerboseExceptions();
+        String charset = gs.getSettings().getCharset();
+        // first of all check what kind of exception handling we must perform
+        final String exceptions;
+        try {
+            exceptions = (String) request.getKvp().get("EXCEPTIONS");
+            if (exceptions == null) {
+                // use default
+                handleDefault(exception, request, charset, verbose);
+                return;
+            }
+        } catch (Exception e) {
+            // width and height might be missing
+            handleDefault(exception, request, charset, verbose);
+            return;
+        }
+        if (JSONType.isJsonMimeType(exceptions)) {
+            // use Json format
+            JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, false);
+        } else if (JSONType.useJsonp(exceptions)) {
+            // use JsonP format
+            JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, true);
         } else {
-            super.handleServiceException(e, request);
+            handleDefault(exception, request, charset, verbose);
+        }
+    }
+    
+    private void handleDefault(ServiceException exception, Request request, String charset,
+            boolean verbose) {
+        if ("1.0.0".equals(request.getVersion())) {
+            handle1_0(exception, request.getHttpResponse());
+        } else {
+            super.handleServiceException(exception, request);
         }
     }
 
@@ -65,8 +96,8 @@ public class WfsExceptionHandler extends DefaultServiceExceptionHandler {
             s.append(tab + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
             s.append(tab);
             s.append("xsi:schemaLocation=\"http://www.opengis.net/ogc ");
-            s.append(ResponseUtils.appendPath(getInfo().getSchemaBaseURL(), "wfs/1.0.0/OGC-exception.xsd")
-                + "\">\n");
+            s.append(ResponseUtils.appendPath(getInfo().getSchemaBaseURL(),
+                    "wfs/1.0.0/OGC-exception.xsd") + "\">\n");
 
             s.append(tab + "<ServiceException");
 
@@ -84,12 +115,12 @@ public class WfsExceptionHandler extends DefaultServiceExceptionHandler {
                 s.append("\n" + tab + tab);
                 OwsUtils.dumpExceptionMessages(e, s, true);
 
-                if(verboseExceptions) {
-                  ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
-                  e.printStackTrace(new PrintStream(stackTrace));
+                if (verboseExceptions) {
+                    ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
+                    e.printStackTrace(new PrintStream(stackTrace));
 
-                  s.append("\nDetails:\n");
-                  s.append(ResponseUtils.encodeXML(new String(stackTrace.toByteArray())));
+                    s.append("\nDetails:\n");
+                    s.append(ResponseUtils.encodeXML(new String(stackTrace.toByteArray())));
                 }
             }
 

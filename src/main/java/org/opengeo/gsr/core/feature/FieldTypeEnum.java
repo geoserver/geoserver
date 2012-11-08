@@ -24,4 +24,12 @@ public enum FieldTypeEnum {
         this.fieldType = fieldType;
     }
 
+    public static FieldTypeEnum forClass(Class<?> binding) {
+        if (String.class.equals(binding)) {
+            return STRING;
+        } else {
+            throw new RuntimeException("No FieldType equivalent known for " + binding);
+        }
+    }
+
 }

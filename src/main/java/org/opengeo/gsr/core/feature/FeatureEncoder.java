@@ -7,9 +7,15 @@ import net.sf.json.util.JSONBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
+import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
+import org.opengeo.gsr.core.geometry.SpatialReference;
+import org.opengeo.gsr.core.geometry.SpatialReferenceEncoder;
+import org.opengeo.gsr.core.geometry.SpatialReferences;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.referencing.FactoryException;
 
 public class FeatureEncoder {
     private FeatureEncoder() {
@@ -22,7 +28,33 @@ public class FeatureEncoder {
     throws IOException
     {
         FeatureIterator<F> iterator = collection.features();
+        
+        T schema = collection.getSchema();
+        GeometryTypeEnum geometryType = GeometryTypeEnum.forJTSClass(schema.getGeometryDescriptor().getType().getBinding());
+        
+        json.object()
+          .key("objectIdFieldName").value("")
+          .key("globalIdFieldName").value("")
+          .key("geometryType").value(geometryType.getGeometryType());
+        
         try {
+            SpatialReference sr = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
+            json.key("spatialReference");
+            SpatialReferenceEncoder.toJson(sr, json);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+        
+        json.key("fields").array();
+        for (PropertyDescriptor desc : schema.getDescriptors()) {
+            if (!desc.getName().equals(schema.getGeometryDescriptor().getName())) {
+                descriptorToJson(desc, json);
+            }
+        }
+        json.endArray();
+        
+        try {
+            json.key("features");
             json.array();
             while (iterator.hasNext()) {
                 F feature = iterator.next();
@@ -32,6 +64,7 @@ public class FeatureEncoder {
         } finally {
             iterator.close();
         }
+        json.endObject();
     }
     
     public static void featureToJson(org.opengis.feature.Feature feature, JSONBuilder json) {
@@ -50,5 +83,18 @@ public class FeatureEncoder {
         
         json.endObject();
         json.endObject();
+    }
+    
+    private static void descriptorToJson(PropertyDescriptor desc, JSONBuilder json) {
+        String name = desc.getName().getLocalPart();
+        FieldTypeEnum type = FieldTypeEnum.forClass(desc.getType().getBinding());
+        String alias = name;
+        // TODO: For text fields we are expected to include a "length" field.
+        
+        json.object()
+          .key("name").value(name)
+          .key("type").value(type.getFieldType())
+          .key("alias").value(alias)
+        .endObject();
     }
 }

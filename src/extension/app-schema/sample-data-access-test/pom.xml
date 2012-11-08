@@ -32,12 +32,6 @@
 			<groupId>org.geoserver</groupId>
 			<artifactId>wfs</artifactId>
 		</dependency>
-        <dependency>
-            <!-- required for complex feature WFS output (see GML3OutputFormat) -->
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <scope>test</scope>
-        </dependency>
 		<dependency>
 			<!-- text-feature-list runtime dependency -->
 			<groupId>com.mockrunner</groupId>

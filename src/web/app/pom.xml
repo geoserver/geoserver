@@ -399,11 +399,6 @@
             <artifactId>gt-app-schema</artifactId>
             <version>${gt.version}</version>
         </dependency>
-        <dependency>
-            <!-- required for complex feature WFS output (see GML3OutputFormat) -->
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-        </dependency>
       </dependencies>
     </profile>
     <profile>

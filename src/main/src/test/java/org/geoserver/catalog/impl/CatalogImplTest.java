@@ -58,15 +58,19 @@ import com.google.common.collect.Sets;
 public class CatalogImplTest {
 
     protected Catalog catalog;
+
     protected WorkspaceInfo ws;
     protected WorkspaceInfo wsA;
     protected WorkspaceInfo wsB;
+
     protected NamespaceInfo ns;
     protected NamespaceInfo nsA;
     protected NamespaceInfo nsB;
+
     protected DataStoreInfo ds;
     protected DataStoreInfo dsA;
     protected DataStoreInfo dsB;
+
     protected CoverageStoreInfo cs;
     protected WMSStoreInfo wms;
     protected FeatureTypeInfo ft;
@@ -105,11 +109,9 @@ public class CatalogImplTest {
         
         wsA = factory.createWorkspace();
         wsA.setName( "aaa");
-        wsA.setDefault(false);
         
         wsB = factory.createWorkspace();
         wsB.setName( "bbb");
-        wsB.setDefault(true);
         
         ds = factory.createDataStore();
         ds.setEnabled(true);
@@ -1135,6 +1137,9 @@ public class CatalogImplTest {
         catalog.add(wsA);
         catalog.add(wsB);
         
+        catalog.setDefaultNamespace( nsA );
+        catalog.setDefaultWorkspace( wsB );
+        
         catalog.add(dsA);
         catalog.add(dsB); 
         
@@ -1187,14 +1192,14 @@ public class CatalogImplTest {
         catalog.add(lB);
         catalog.add(lC);
 
-        LayerInfo _l = catalog.getLayerByName( "bar" );
-        assertNotNull( _l );
-        assertNotSame( _l, lA );
-        assertEquals( _l, lB );
+        LayerInfo searchResult = catalog.getLayerByName( "bar" );
+        assertNotNull( searchResult );
+        assertNotSame( searchResult, lA );
+        assertEquals( searchResult, lB );
 
-        _l = catalog.getLayerByName( "bar2" );
-        assertNotNull( _l );
-        assertNotSame( _l, lC );
+        searchResult = catalog.getLayerByName( "bar2" );
+        assertNotNull( searchResult );
+        assertNotSame( searchResult, lC );
     }
 
     @Test

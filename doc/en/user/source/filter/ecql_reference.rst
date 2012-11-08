@@ -141,7 +141,7 @@ OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ spe
    * - ``RELATE(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *pattern* ``)``
      - Tests whether geometries have the spatial relationship specified by a DE-9IM matrix *pattern*.
        A DE-9IM pattern is a string of length 9 specified using the characters ``*TF012``.
-       Example: ``"1*T***T**"``
+       Example: ``'1*T***T**'``
    * - ``DWITHIN(`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` ``,`` *distance* ``,`` *units* ``)``
      - Tests whether the distance between two geometries is no more than the specified distance.
        *distance* is an unsigned numeric value for the distance tolerance.
@@ -153,7 +153,9 @@ OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ spe
        [ ``,`` *CRS* ] ``)``
      - Tests whether a geometry intersects a bounding box 
        specified by its minimum and maximum X and Y values.  
-       The optional *CRS* is a string containing an SRS code (the default is *EPSG:4326*)
+       The optional *CRS* is a string containing an SRS code
+       (For example, ``'EPSG:1234'``.  
+       The default is to use the CRS of the queried layer)
    * - ``BBOX (`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` **|** :ref:`Geometry <ecql_literal>` ``)``
      - Tests whether a geometry intersects a bounding box 
        specified by a geometric value computed by a function

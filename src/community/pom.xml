@@ -37,8 +37,9 @@
           <descriptor>release/ext-dbconfig.xml</descriptor>
           <descriptor>release/ext-inspire.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
-    	  <descriptor>release/ext-dds.xml</descriptor>
+       	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
+          <descriptor>release/ext-xslt.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -123,6 +124,7 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
+        <module>xslt</module>
       </modules>
     </profile>
     <profile>

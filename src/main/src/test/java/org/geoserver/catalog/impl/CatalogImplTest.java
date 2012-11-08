@@ -1137,7 +1137,7 @@ public class CatalogImplTest {
         catalog.add(wsA);
         catalog.add(wsB);
         
-        catalog.setDefaultNamespace( nsA );
+        catalog.setDefaultNamespace( nsB );
         catalog.setDefaultWorkspace( wsB );
         
         catalog.add(dsA);
@@ -1192,14 +1192,17 @@ public class CatalogImplTest {
         catalog.add(lB);
         catalog.add(lC);
 
-        LayerInfo searchResult = catalog.getLayerByName( "bar" );
-        assertNotNull( searchResult );
-        assertNotSame( searchResult, lA );
-        assertEquals( searchResult, lB );
+        LayerInfo searchedResult = catalog.getLayerByName( "bar" );
+        assertNotNull( searchedResult );
+        assertNotSame( lA, searchedResult );
+        assertEquals( lB, searchedResult );
 
-        searchResult = catalog.getLayerByName( "bar2" );
-        assertNotNull( searchResult );
-        assertNotSame( searchResult, lC );
+        searchedResult = catalog.getLayerByName( "bar2" );
+        assertNull( searchedResult );
+        
+        searchedResult = catalog.getLayerByName( "aaa:bar2" );
+        assertNotNull( searchedResult );
+        assertNotSame( lC, searchedResult );
     }
 
     @Test

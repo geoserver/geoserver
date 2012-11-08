@@ -4,14 +4,17 @@
  */
 package org.geoserver.wms.describelayer;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
 import net.sf.json.JSONException;
+import net.sf.json.util.JSONBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Dispatcher;
@@ -23,17 +26,15 @@ import org.geoserver.wms.WMS;
 import org.geotools.data.ows.LayerDescription;
 import org.geotools.util.logging.Logging;
 
-import com.thoughtworks.xstream.io.json.JsonWriter;
-
 /**
  * A DescribeLayer response specialized in producing Json or JsonP data for a DescribeLayer request.
  * 
  * @author carlo cancellieri - GeoSolutions
  */
-public class GeoJSONDescribeLayerResponse extends DescribeLayerResponse {
+public class JSONDescribeLayerResponse extends DescribeLayerResponse {
 
     /** A logger for this class. */
-    protected static final Logger LOGGER = Logging.getLogger(GeoJSONDescribeLayerResponse.class);
+    protected static final Logger LOGGER = Logging.getLogger(JSONDescribeLayerResponse.class);
 
     /**
      * The MIME type of the format this response produces, supported formats see {@link JSONType}
@@ -45,7 +46,7 @@ public class GeoJSONDescribeLayerResponse extends DescribeLayerResponse {
     /**
      * Constructor for subclasses
      */
-    public GeoJSONDescribeLayerResponse(final WMS wms, final String outputFormat) {
+    public JSONDescribeLayerResponse(final WMS wms, final String outputFormat) {
         super(outputFormat);
         this.wms = wms;
         this.type = JSONType.getJSONType(outputFormat);
@@ -61,18 +62,16 @@ public class GeoJSONDescribeLayerResponse extends DescribeLayerResponse {
 
         switch (type) {
         case JSON:
-            OutputStreamWriter outWriter = null;
+            OutputStreamWriter osw = null;
+            Writer outWriter = null;
             try {
-                outWriter = new OutputStreamWriter(output, wms.getGeoServer().getSettings()
-                        .getCharset());
+                osw = new OutputStreamWriter(output, wms.getGeoServer().getSettings().getCharset());
+                outWriter = new BufferedWriter(osw);
 
                 writeJSON(outWriter, layers);
             } finally {
-
-                if (outWriter != null) {
-                    outWriter.flush();
-                    IOUtils.closeQuietly(outWriter);
-                }
+                IOUtils.closeQuietly(outWriter);
+                IOUtils.closeQuietly(osw);
             }
         case JSONP:
             writeJSONP(output, layers);
@@ -81,50 +80,45 @@ public class GeoJSONDescribeLayerResponse extends DescribeLayerResponse {
 
     private void writeJSONP(OutputStream out, DescribeLayerModel layers) throws IOException {
 
-        OutputStreamWriter outWriter = null;
+        // prepare to write out
+        OutputStreamWriter osw = null;
+        Writer outWriter = null;
         try {
-            outWriter = new OutputStreamWriter(out, wms.getGeoServer().getSettings().getCharset());
+            osw = new OutputStreamWriter(out, wms.getGeoServer().getSettings().getCharset());
+            outWriter = new BufferedWriter(osw);
 
             outWriter.write(getCallbackFunction() + "(");
 
             writeJSON(outWriter, layers);
-        } finally {
 
-            if (outWriter != null) {
-                outWriter.write(")");
-                outWriter.flush();
-                IOUtils.closeQuietly(outWriter);
-            }
+            outWriter.write(")");
+            outWriter.flush();
+        } finally {
+            IOUtils.closeQuietly(outWriter);
+            IOUtils.closeQuietly(osw);
         }
     }
 
-    private void writeJSON(OutputStreamWriter outWriter, DescribeLayerModel description)
-            throws IOException {
+    private void writeJSON(Writer outWriter, DescribeLayerModel description) throws IOException {
 
         try {
-            final JsonWriter jsonWriter = new JsonWriter(outWriter);
+            JSONBuilder json = new JSONBuilder(outWriter);
             final List<LayerDescription> layers = description.getLayerDescriptions();
-
-            jsonWriter.startNode("WMS_DescribeLayerResponse", String.class);
-            jsonWriter.startNode("version", String.class);
-            jsonWriter.setValue(description.getVersion());
-            jsonWriter.endNode();
-
+            json.object();
+            json.key("version").value(description.getVersion());
+            json.key("layerDescriptions");
+            json.array();
             for (LayerDescription layer : layers) {
-                jsonWriter.startNode("LayerDescription", LayerDescription.class);
-                jsonWriter.startNode("name", String.class);
-                jsonWriter.setValue(layer.getName());
-                jsonWriter.endNode();
-                jsonWriter.startNode("owsURL", URL.class);
+                json.object();
+                json.key("layerName").value(layer.getName());
                 URL url = layer.getOwsURL();
-                jsonWriter.setValue(url != null ? url.toString() : "");
-                jsonWriter.endNode();
-                jsonWriter.startNode("owsType", String.class);
-                jsonWriter.setValue(layer.getOwsType());
-                jsonWriter.endNode();
-                jsonWriter.endNode();
+                json.key("owsURL").value(url != null ? url.toString() : "");
+                json.key("owsType").value(layer.getOwsType());
+                json.key("typeName").value(layer.getName());
+                json.endObject();
             }
-            jsonWriter.endNode();
+            json.endArray();
+            json.endObject();
 
         } catch (JSONException jsonException) {
             ServiceException serviceException = new ServiceException("Error: "

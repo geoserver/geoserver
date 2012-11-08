@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.response;
+package org.geoserver.wfs.json;
 
 import static org.junit.Assert.assertEquals;
 

@@ -77,16 +77,23 @@
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
     </bean>
-    
-    <bean id="wmsGetFeatureInfoGeoJSON" class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-      <constructor-arg value="application/json" />
-    </bean>   
-    
-    <bean id="wmsGetFeatureInfoGeoJSONP" class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-      <constructor-arg value="text/javascript" />
-    </bean>
+
+	<!-- GetFeatureInfo JSONP -->
+	<bean id="geoJSONPFeatureInfoResponse"
+		class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
+		<constructor-arg ref="wms" />
+		<constructor-arg value="text/javascript" />
+	</bean>
+	<!-- GetFeatureInfo JSONP filter -->
+	<bean id="geoJSONPFeatureInfoResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+		<constructor-arg value="geoJSONPFeatureInfoResponse" />
+	</bean>
+	<!-- GetFeatureInfo JSON -->
+	<bean id="geoJSONFeatureInfoResponse"
+		class="org.geoserver.wms.featureinfo.GeoJSONFeatureInfoResponse">
+		<constructor-arg ref="wms" />
+		<constructor-arg value="application/json" />
+	</bean>
         
 	<!-- wms service + descriptor -->
  	<bean id="wmsServiceTarget" class="org.geoserver.wms.DefaultWebMapService">
@@ -335,16 +342,6 @@
     <bean id="wms_1_3_0_GetCapabilitiesResponse"
       class="org.geoserver.wms.capabilities.Capabilities_1_3_0_Response">
     </bean>
-  
-    <bean id="wmsDescribeLayerGeoJSON" class="org.geoserver.wms.describelayer.GeoJSONDescribeLayerResponse">
-      <constructor-arg ref="wms" />
-      <constructor-arg value="application/json" />
-    </bean>   
-    
-    <bean id="wmsDescribeLayerGeoJSONP" class="org.geoserver.wms.describelayer.GeoJSONDescribeLayerResponse">
-      <constructor-arg ref="wms" />
-      <constructor-arg value="text/javascript" />
-    </bean>
     
     <!-- DescribeLayer output formats -->
     <bean id="wmsDescribeLayerXML" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
@@ -356,6 +353,23 @@
     <bean id="wmsDescribeLayerResponse" class="org.geoserver.wms.describelayer.XMLDescribeLayerResponse">
       <constructor-arg ref="wms" />
     </bean>
+
+	<!-- DescribeLayer JSONP -->
+	<bean id="jsonPDescribeLayerResponse"
+		class="org.geoserver.wms.describelayer.JSONDescribeLayerResponse">
+		<constructor-arg ref="wms" />
+		<constructor-arg value="text/javascript" />
+	</bean>
+	<!-- DescribeLayer JSONP Filter -->
+	<bean id="jsonPDescribeLayerResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+		<constructor-arg value="jsonPDescribeLayerResponse" />
+	</bean>
+	<!-- DescribeLayer JSON -->
+	<bean id="jsonDescribeLayerResponse"
+		class="org.geoserver.wms.describelayer.JSONDescribeLayerResponse">
+		<constructor-arg ref="wms" />
+		<constructor-arg value="application/json" />
+	</bean>
     
 	<!--bean id="getMapResponse"
 		class="org.geoserver.wms.response.GetMapResponse">
@@ -366,6 +380,7 @@
 		<constructor-arg ref="wms"/>
         <constructor-arg ref="wmsGetFeatureInfoPlainText"/> <!-- default output format -->
 	</bean>
+	
 	<bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
 	
 	<!-- Wrapping the PutStyles servlet in a controller while we wait to rewrite it for good -->

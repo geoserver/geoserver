@@ -18,6 +18,8 @@ public class TransformInfo {
     String sourceFormat;
 
     String outputFormat;
+    
+    String outputMimeType;
 
     String fileExtension;
 
@@ -117,6 +119,26 @@ public class TransformInfo {
     public void setFeatureType(FeatureTypeInfo featureType) {
         this.featureType = featureType;
     }
+    
+    public String mimeType() {
+        if(outputMimeType != null) {
+            return outputMimeType;
+        } else {
+            return outputFormat;
+        }
+    }
+
+    /**
+     * Returns the output mime type
+     * @return
+     */
+    public String getOutputMimeType() {
+        return outputMimeType;
+    }
+
+    public void setOutputMimeType(String outputMime) {
+        this.outputMimeType = outputMime;
+    }
 
     @Override
     public int hashCode() {
@@ -126,6 +148,7 @@ public class TransformInfo {
         result = prime * result + ((fileExtension == null) ? 0 : fileExtension.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((outputFormat == null) ? 0 : outputFormat.hashCode());
+        result = prime * result + ((outputMimeType == null) ? 0 : outputMimeType.hashCode());
         result = prime * result + ((sourceFormat == null) ? 0 : sourceFormat.hashCode());
         result = prime * result + ((xslt == null) ? 0 : xslt.hashCode());
         return result;
@@ -160,6 +183,11 @@ public class TransformInfo {
                 return false;
         } else if (!outputFormat.equals(other.outputFormat))
             return false;
+        if (outputMimeType == null) {
+            if (other.outputMimeType != null)
+                return false;
+        } else if (!outputMimeType.equals(other.outputMimeType))
+            return false;
         if (sourceFormat == null) {
             if (other.sourceFormat != null)
                 return false;
@@ -175,9 +203,10 @@ public class TransformInfo {
 
     @Override
     public String toString() {
-        return "TransformInfo [name=" + name + ", sourceFormat="
-                + sourceFormat + ", outputFormat=" + outputFormat + ", fileExtension="
-                + fileExtension + ", transform=" + xslt + ", featureType=" + featureType + "]";
+        return "TransformInfo [name=" + name + ", sourceFormat=" + sourceFormat + ", outputFormat="
+                + outputFormat + ", outputMimeType=" + outputMimeType + ", fileExtension="
+                + fileExtension + ", xslt=" + xslt + ", featureType=" + featureType + "]";
     }
 
+    
 }

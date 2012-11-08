@@ -2,6 +2,7 @@ package org.geoserver.wfs.xslt;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
@@ -16,6 +17,12 @@ import org.w3c.dom.Document;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetFeatureXSLTTest extends WFSTestSupport {
+    
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // TODO Auto-generated method stub
+        super.setUpTestData(testData);
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -29,6 +36,22 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         }
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);
+    }
+    
+    @Test
+    public void testGetCapabilities() throws Exception {
+        // force the list of output formats provided by the xslt output format to be updated 
+        XSLTOutputFormatUpdater updater = (XSLTOutputFormatUpdater) applicationContext.getBean("xsltOutputFormatUpdater");
+        updater.run();
+
+        // now we can run the request
+        Document dom = getAsDOM("wfs?service=wfs&version=1.1.0&request=GetCapabilities");
+        // print(dom);
+        
+        XMLAssert.assertXpathEvaluatesTo("1", 
+                "count(//ows:Operation[@name='GetFeature']/ows:Parameter[@name = 'outputFormat']/ows:Value[text() = 'HTML'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", 
+                "count(//ows:Operation[@name='GetFeature']/ows:Parameter[@name = 'outputFormat' and ows:Value = 'text/html; subtype=xslt'])", dom);
     }
 
     @Test
@@ -86,6 +109,29 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ul[li = 'FID: 110'])", d);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ul[li = 'Name: Cam Bridge'])", d);
     }
+    
+    @Test
+    public void testMimeType() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&typename=" + getLayerId(MockData.BRIDGES)
+                + "&version=1.0.0&service=wfs&outputFormat=HTML");
+        assertEquals("text/html", response.getContentType());
+        
+        Document d = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+
+        // just one features
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ul)", d);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ul[li = 'ID: Bridges.1107531599613'])", d);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ul[li = 'FID: 110'])", d);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ul[li = 'Name: Cam Bridge'])", d);
+    }
+    
+    @Test
+    public void testLayerSpecificOnOtherLayer() throws Exception {
+        Document d = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BASIC_POLYGONS)
+                + "&version=1.1.0&service=wfs&outputFormat=HTML");
+        
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeName");
+    }
 
     @Test
     public void testIncompatibleMix() throws Exception {
@@ -94,6 +140,6 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
                 + "&version=1.1.0&service=wfs&outputFormat=text/html; subtype=xslt");
         // print(d);
 
-        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeNames");
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeName");
     }
 }

@@ -33,6 +33,7 @@ public class XSLTOutputFormatUpdater extends TimerTask {
 
     public XSLTOutputFormatUpdater(TransformRepository repository) {
         this.repository = repository;
+        run();
     }
 
     @Override

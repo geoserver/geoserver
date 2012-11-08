@@ -68,7 +68,7 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         Document d = getAsDOM("rest/services/wfs/transforms.xml");
         // print(d);
         
-        assertEquals("2", xpath.evaluate("count(//transform)", d));
+        assertEquals("3", xpath.evaluate("count(//transform)", d));
         assertEquals("http://localhost/geoserver/rest/services/wfs/transforms/general.xml", 
                 xpath.evaluate("//transform[name='general']/atom:link/@href", d));
     }
@@ -125,7 +125,7 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         assertEquals(400, response.getStatusCode());
         
         // now pass all
-        response = postAsServletResponse("rest/services/wfs/transforms?name=general2&sourceFormat=gml&outputFormat=text/html", xslt, "application/xslt+xml");
+        response = postAsServletResponse("rest/services/wfs/transforms?name=general2&sourceFormat=gml&outputFormat=HTML&outputMimeType=text/html", xslt, "application/xslt+xml");
         assertEquals(201, response.getStatusCode());
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/rest/services/wfs/transforms/general2" ) );
@@ -133,7 +133,8 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         TransformInfo info = repository.getTransformInfo("general2");
         assertNotNull(info);
         assertEquals("gml", info.getSourceFormat());
-        assertEquals("text/html", info.getOutputFormat());
+        assertEquals("HTML", info.getOutputFormat());
+        assertEquals("text/html", info.getOutputMimeType());
     }
     
     @Test

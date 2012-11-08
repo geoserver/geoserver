@@ -100,7 +100,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         try {
             TransformInfo info = locateTransformation((FeatureCollectionResponse) value, operation);
-            return info.getOutputFormat();
+            return info.mimeType();
         } catch(IOException e) {
             throw new WFSException("Failed to load the required transformation", e);
         }
@@ -248,14 +248,14 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
             TransformInfo curr = locateTransform(outputFormat, ft);
             if (curr == null) {
                 throw new WFSException("Could not find a XSLT transformation generating "
-                        + outputFormat + " for feature type " + ft.getName());
+                        + outputFormat + " for feature type " + ft.getName(), ServiceException.INVALID_PARAMETER_VALUE, "typeName");
             } else if (result == null) {
                 reference = ft;
                 result = curr;
             } else if (!result.equals(curr)) {
                 throw new WFSException(
                         "Multiple feature types are mapped to different XLST transformations, cannot proceed: "
-                                + result.getXslt() + ", " + curr.getXslt(), ServiceException.INVALID_PARAMETER_VALUE, "typeNames");
+                                + result.getXslt() + ", " + curr.getXslt(), ServiceException.INVALID_PARAMETER_VALUE, "typeName");
 
             }
         }

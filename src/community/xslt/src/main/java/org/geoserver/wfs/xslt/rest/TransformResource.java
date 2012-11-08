@@ -127,6 +127,7 @@ public class TransformResource extends CatalogResourceBase {
         String transform = getQueryStringValue("name");
         String sourceFormat = getQueryStringValue("sourceFormat");
         String outputFormat = getQueryStringValue("outputFormat");
+        String outputMimeType = getQueryStringValue("outputMimeType");
         String fileExtension = getQueryStringValue("fileExtension");
 
         TransformInfo info;
@@ -147,6 +148,7 @@ public class TransformResource extends CatalogResourceBase {
                 info.setName(transform);
                 info.setSourceFormat(sourceFormat);
                 info.setOutputFormat(outputFormat);
+                info.setOutputMimeType(outputMimeType);
                 info.setFileExtension(fileExtension);
                 info.setXslt(transform + ".xslt");
                 validate(info);

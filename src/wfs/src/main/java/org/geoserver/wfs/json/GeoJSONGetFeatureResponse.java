@@ -1,24 +1,30 @@
-package org.geoserver.wfs.response;
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.wfs.json;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.json.JSONException;
 
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -32,87 +38,85 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
-    private final Logger LOGGER = org.geotools.util.logging.Logging
-    .getLogger(this.getClass().toString());
+/**
+ * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo request.
+ * 
+ * @author Simone Giannecchini, GeoSolutions
+ * @author Carlo Cancellieri - GeoSolutions
+ * 
+ */
+public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
+    private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
-    public static final String FORMAT = "json";
+    // store the response type
+    private final boolean jsonp;
 
-    public GeoJSONOutputFormat(GeoServer gs) {
-        super(gs, FORMAT);
-    }
-
-    public String getMimeType(Object value, Operation operation)
-    throws ServiceException {
-        GetFeatureRequest gft = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        String callback = (String) gft.getFormatOptions().get("CALLBACK");
-        if(callback != null && !"".equals(callback)) {
-            return "text/javascript";
+    public GeoJSONGetFeatureResponse(GeoServer gs, String format) {
+        super(gs, format);
+        if (JSONType.isJsonMimeType(format)) {
+            jsonp = false;
+        } else if (JSONType.isJsonpMimeType(format)) {
+            jsonp = true;
         } else {
-            return "application/json";
+            throw new IllegalArgumentException(
+                    "Unable to create the JSON Response handler using format: " + format
+                            + " supported mymetype are: "
+                            + Arrays.toString(JSONType.getSupportedTypes()));
         }
+
     }
 
+    /**
+     * capabilities output format string.
+     */
     public String getCapabilitiesElementName() {
-        return "GEOJSON";
+        return JSONType.getJSONType(getOutputFormat()).toString();
     }
 
-    protected String getContentDisposition(FeatureCollectionResponse featureCollection) {
-
-        StringBuffer sb = new StringBuffer();
-        for (Iterator f = featureCollection.getFeature().iterator(); f
-        .hasNext();) {
-            FeatureCollection fc = (FeatureCollection) f.next();
-            sb.append(fc.getSchema().getName().getLocalPart() + "_");
-        }
-        sb.setLength(sb.length() - 1);
-        return "inline; filename=" + sb.toString() + ".txt";
-
+    /**
+     * Returns the mime type
+     */
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        return getOutputFormat();
     }
 
-    protected void write(FeatureCollectionResponse featureCollection,
-            OutputStream output, Operation getFeature) throws IOException,
-            ServiceException {
+    @Override
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
+            Operation describeFeatureType) throws IOException {
 
-        WFSInfo wfs = getInfo();
-        
-        // TODO: investigate setting proper charsets in this
-        // it's part of the constructor, just need to hook it up.
-        Writer outWriter = new BufferedWriter(
-            new OutputStreamWriter(output,wfs.getGeoServer().getSettings().getCharset()));
-        
-        // let's check if a callback has been set
-        GetFeatureRequest gft = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
-        String callback = (String) gft.getFormatOptions().get("CALLBACK");
-        if(callback != null && !"".equals(callback)) {
-            outWriter.write(callback + "(");
-        }
-
-        GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
-
-        // execute should of set all the header information
-        // including the lockID
-        //
-        // execute should also fail if all of the locks could not be aquired
-        List resultsList = featureCollection.getFeature();
-
-        // FeatureResults[] featureResults = (FeatureResults[]) resultsList
-        // .toArray(new FeatureResults[resultsList.size()]);
-        LOGGER.info("about to encode JSON");
+        if (LOGGER.isLoggable(Level.INFO))
+            LOGGER.info("about to encode JSON");
 
         // Generate bounds for every feature?
+        WFSInfo wfs = getInfo();
         boolean featureBounding = wfs.isFeatureBounding();
+
+        // prepare to write out
+        OutputStreamWriter osw = null;
+        Writer outWriter = null;
         boolean hasGeom = false;
 
         try {
+            osw = new OutputStreamWriter(output, gs.getSettings().getCharset());
+            outWriter = new BufferedWriter(osw);
+
+            if (jsonp) {
+                outWriter.write(getCallbackFunction() + "(");
+            }
+
+            final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
             jsonWriter.object().key("type").value("FeatureCollection");
             jsonWriter.key("features");
             jsonWriter.array();
 
+            // execute should of set all the header information
+            // including the lockID
+            //
+            // execute should also fail if all of the locks could not be aquired
+            List resultsList = featureCollection.getFeature();
             CoordinateReferenceSystem crs = null;
             for (int i = 0; i < resultsList.size(); i++) {
-                FeatureCollection collection = (FeatureCollection) resultsList
-                .get(i);
+                FeatureCollection collection = (FeatureCollection) resultsList.get(i);
                 FeatureIterator iterator = collection.features();
 
                 try {
@@ -154,8 +158,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
                             jsonWriter.value(null);
                         }
                         if (defaultGeomType != null)
-                            jsonWriter.key("geometry_name").value(
-                                    defaultGeomType.getLocalName());
+                            jsonWriter.key("geometry_name").value(defaultGeomType.getLocalName());
 
                         jsonWriter.key("properties");
                         jsonWriter.object();
@@ -167,10 +170,10 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
                             if (value != null) {
                                 if (value instanceof Geometry) {
                                     // This is an area of the spec where they
-                                    // decided to 'let convention evolve', 
+                                    // decided to 'let convention evolve',
                                     // that is how to handle multiple
                                     // geometries. My take is to print the
-                                    // geometry here if it's not the default. 
+                                    // geometry here if it's not the default.
                                     // If it's the default that you already
                                     // printed above, so you don't need it here.
                                     if (ad.equals(defaultGeomType)) {
@@ -202,9 +205,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
                 finally {
                     collection.close(iterator);
                 }
-
             }
-
             jsonWriter.endArray(); // end features
 
             // Coordinate Referense System, currently only if the namespace is
@@ -212,10 +213,10 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
             if (crs != null) {
                 Set<ReferenceIdentifier> ids = crs.getIdentifiers();
                 // WKT defined crs might not have identifiers at all
-                if(ids != null && ids.size() > 0) {
+                if (ids != null && ids.size() > 0) {
                     NamedIdentifier namedIdent = (NamedIdentifier) ids.iterator().next();
                     String csStr = namedIdent.getCodeSpace().toUpperCase();
-    
+
                     if (csStr.equals("EPSG")) {
                         jsonWriter.key("crs");
                         jsonWriter.object();
@@ -234,8 +235,7 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
             if (hasGeom && featureBounding) {
                 ReferencedEnvelope e = null;
                 for (int i = 0; i < resultsList.size(); i++) {
-                    FeatureCollection collection = (FeatureCollection) resultsList
-                    .get(i);
+                    FeatureCollection collection = (FeatureCollection) resultsList.get(i);
                     if (e == null) {
                         e = collection.getBounds();
                     } else {
@@ -250,11 +250,12 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
             }
 
             jsonWriter.endObject(); // end featurecollection
-            outWriter.flush();
-            if(callback != null && !"".equals(callback)) {
+
+            if (jsonp) {
                 outWriter.write(")");
-                outWriter.flush();
             }
+
+            outWriter.flush();
 
         } catch (JSONException jsonException) {
             ServiceException serviceException = new ServiceException("Error: "
@@ -262,7 +263,13 @@ public class GeoJSONOutputFormat extends WFSGetFeatureOutputFormat {
             serviceException.initCause(jsonException);
             throw serviceException;
         }
-
     }
 
+    private String getCallbackFunction() {
+        Request request = Dispatcher.REQUEST.get();
+        if (request == null) {
+            return JSONType.CALLBACK_FUNCTION;
+        }
+        return JSONType.getCallbackFunction(request.getKvp());
+    }
 }

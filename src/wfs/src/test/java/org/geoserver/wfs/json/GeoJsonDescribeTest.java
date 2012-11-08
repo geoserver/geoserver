@@ -1,11 +1,14 @@
+/*
+ * Copyright (c) 2001 - 2010 TOPP - www.openplans.org.  All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geoserver.wfs.json;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import javax.xml.namespace.QName;
-
+import static org.junit.Assert.assertTrue;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -13,87 +16,171 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 
+/**
+ * 
+ * @author carlo cancellieri - GeoSolutions
+ * 
+ */
 public class GeoJsonDescribeTest extends WFSTestSupport {
 
     @Test
     public void testDescribePrimitiveGeoFeatureJSON() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.json+"&typeName="
-                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
+                + JSONType.json + "&typeName=" + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         testOutput(output);
     }
 
     private void testOutput(String output) {
-        JSONArray array = JSONArray.fromObject(output);
+        JSONObject description = JSONObject.fromObject(output);
+        assertEquals(description.get("elementFormDefault"), "qualified");
+        assertEquals(description.get("targetNamespace"), "http://cite.opengeospatial.org/gmlsf");
+        assertEquals(description.get("targetPrefix"), "sf");
+        JSONArray array = description.getJSONArray("featureTypes");
         // print(array);
 
         assertEquals(1, array.size());
-        JSONObject description = array.getJSONObject(0);
-        basicSchemaChecks(description, SystemTestData.PRIMITIVEGEOFEATURE);
+        JSONObject feature = array.getJSONObject(0);
 
-        // it's a Polygon
-        JSONObject topProperties = description.getJSONObject("properties");
-        assertEquals("Polygon", topProperties.getJSONObject("geometry").get("type"));
+        assertEquals(feature.get("typeName"), "PrimitiveGeoFeature");
 
-        // check some of the non geometric properties
-        JSONObject props = topProperties.getJSONObject("properties").getJSONObject("properties");
+        JSONArray props = feature.getJSONArray("properties");
+        assertNotNull(props);
 
         // description
-        assertEquals("string", props.getJSONObject("description").get("type"));
-        assertEquals(new Integer(0), props.getJSONObject("description").get("minimum"));
+        int i = 0;
+        assertEquals("description", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:string", props.getJSONObject(i).get("type"));
+        assertEquals("string", props.getJSONObject(i).get("localType"));
 
+        ++i;
         // point property (second geometry)
-        assertEquals("Point", props.getJSONObject("pointProperty").get("type"));
-        assertEquals(new Integer(0), props.getJSONObject("pointProperty").get("minimum"));
+        assertEquals("name", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:string", props.getJSONObject(i).get("type"));
+        assertEquals("string", props.getJSONObject(i).get("localType"));
 
+        ++i;
+        // surfaceProperty property
+        assertEquals("surfaceProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("gml:Polygon", props.getJSONObject(i).get("type"));
+        assertEquals("Polygon", props.getJSONObject(i).get("localType"));
+
+        ++i;
+        // point property (second geometry)
+        assertEquals("pointProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:Point", props.getJSONObject(i).get("type"));
+        assertEquals("Point", props.getJSONObject(i).get("localType"));
+
+        ++i;
+        // curve property (second geometry)
+        assertEquals("curveProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:LineString", props.getJSONObject(i).get("type"));
+        assertEquals("LineString", props.getJSONObject(i).get("localType"));
+
+        ++i;
         // int property
-        assertEquals("integer", props.getJSONObject("intProperty").get("type"));
-        assertEquals(new Integer(0), props.getJSONObject("intProperty").get("minimum"));
+        assertEquals("intProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:int", props.getJSONObject(i).get("type"));
+        assertEquals("int", props.getJSONObject(i).get("localType"));
 
-        // date time
-        assertEquals("string", props.getJSONObject("dateTimeProperty").get("type"));
-        assertEquals(new Integer(0), props.getJSONObject("dateTimeProperty").get("minimum"));
-        assertEquals("date-time", props.getJSONObject("dateTimeProperty").get("format"));
+        ++i;
+        // Uri property
+        assertEquals("uriProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:string", props.getJSONObject(i).get("type"));
+        assertEquals("string", props.getJSONObject(i).get("localType"));
 
-        // date
-        assertEquals("string", props.getJSONObject("dateProperty").get("type"));
-        assertEquals(new Integer(0), props.getJSONObject("dateProperty").get("minimum"));
-        assertEquals("date", props.getJSONObject("dateProperty").get("format"));
+        ++i;
+        // measurand property
+        assertEquals("measurand", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:string", props.getJSONObject(i).get("type"));
+        assertEquals("string", props.getJSONObject(i).get("localType"));
 
+        ++i;
+        // dateProperty time
+        assertEquals("dateTimeProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:date-time", props.getJSONObject(i).get("type"));
+        assertEquals("date-time", props.getJSONObject(i).get("localType"));
+
+        ++i;
+        // dateProperty time
+        assertEquals("dateProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:date", props.getJSONObject(i).get("type"));
+        assertEquals("date", props.getJSONObject(i).get("localType"));
+
+        ++i;
         // boolean
-        assertEquals("boolean", props.getJSONObject("booleanProperty").get("type"));
-        assertEquals(new Integer(0), props.getJSONObject("dateProperty").get("minimum"));
+        assertEquals("decimalProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:number", props.getJSONObject(i).get("type"));
+        assertEquals("number", props.getJSONObject(i).get("localType"));
+
+        ++i;
+        // boolean
+        assertEquals("booleanProperty", props.getJSONObject(i).get("name"));
+        assertEquals(new Integer(0), props.getJSONObject(i).get("minOccurs"));
+        assertEquals(new Integer(1), props.getJSONObject(i).get("maxOccurs"));
+        assertEquals(true, props.getJSONObject(i).get("nillable"));
+        assertEquals("xsd:boolean", props.getJSONObject(i).get("type"));
+        assertEquals("boolean", props.getJSONObject(i).get("localType"));
+
     }
 
     @Test
     public void testDescribePrimitiveGeoFeatureJSONP() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.jsonp+"&typeName="
-                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
-
+        JSONType.setJsonpEnabled(true);
+        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
+                + JSONType.jsonp + "&typeName=" + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        JSONType.setJsonpEnabled(false);
         // removing specific parts
         output = output.substring(0, output.length() - 2);
-        output = output.substring(JSONType.CALLBACK_FUNCTION.length() + 1,
-                output.length());
+        output = output.substring(JSONType.CALLBACK_FUNCTION.length() + 1, output.length());
         testOutput(output);
     }
-    
+
     @Test
     public void testDescribePrimitiveGeoFeatureJSONPCustom() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="+JSONType.jsonp+"&typeName="
-                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE) + "&format_options=callback:custom");
-
+        JSONType.setJsonpEnabled(true);
+        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
+                + JSONType.jsonp
+                + "&typeName="
+                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE)
+                + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY + ":custom");
+        JSONType.setJsonpEnabled(false);
         // removing specific parts
         assertTrue(output.startsWith("custom("));
         output = output.substring(0, output.length() - 2);
-        output = output.substring("custom".length() + 1,
-                output.length());
+        output = output.substring("custom".length() + 1, output.length());
         testOutput(output);
-    }
-
-    private void basicSchemaChecks(JSONObject description, QName name) {
-        assertEquals(getLayerId(name), description.get("name"));
-        assertEquals("object", description.get("type"));
-        assertEquals("Feature", description.get("extends"));
-        assertNotNull(description.getJSONObject("properties").get("geometry"));
-        assertNotNull(description.get("properties"));
     }
 }

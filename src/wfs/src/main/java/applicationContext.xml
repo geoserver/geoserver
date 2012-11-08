@@ -590,9 +590,7 @@
 		<constructor-arg ref="xmlConfiguration-1.1"/>
 	</bean>
 	<bean id="shapezipOutputFormat" class="org.geoserver.wfs.response.ShapeZipOutputFormat" />
-    <bean id="geojsonOutputFormat" class="org.geoserver.wfs.response.GeoJSONOutputFormat">
-		<constructor-arg ref="geoServer"/>
-	</bean>
+
     <bean id="CSVOutputFormat" class="org.geoserver.wfs.response.CSVOutputFormat">
         <constructor-arg index="0" ref="geoServer"/>
     </bean>
@@ -600,17 +598,33 @@
     <bean id="hits20OutputFormat" class="org.geoserver.wfs.response.v2_0.HitsOutputFormat">
         <constructor-arg ref="geoServer"/>
     </bean>
-    
-    <bean id="geojsonpDescribeOutput" 
-		class="org.geoserver.wfs.json.GeoJsonDescribeOutputFormat">
-		<constructor-arg ref="geoServer"/>
-		<constructor-arg value="text/javascript"/>
+
+	<!-- GetFeature JSONP -->
+	<bean id="geoJSONPGetFeatureResponse" class="org.geoserver.wfs.json.GeoJSONGetFeatureResponse">
+		<constructor-arg ref="geoServer" />
+		<constructor-arg value="text/javascript" />
 	</bean>
-	
-	<bean id="geojsonDescribeOutput" 
-		class="org.geoserver.wfs.json.GeoJsonDescribeOutputFormat">
-		<constructor-arg ref="geoServer"/>
-		<constructor-arg value="application/json"/>
+	<bean id="geoJSONPGetFeatureResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+		<constructor-arg value="geoJSONPGetFeatureResponse" />
+	</bean>
+	<!-- GetFeature JSON -->
+	<bean id="geoJSONGetFeatureResponse" class="org.geoserver.wfs.json.GeoJSONGetFeatureResponse">
+		<constructor-arg ref="geoServer" />
+		<constructor-arg value="application/json" />
+	</bean>
+
+	<!-- DescribeFeatureType JSONP -->
+	<bean id="jsonPDescribeFeatureTypeResponse" class="org.geoserver.wfs.json.JSONDescribeFeatureTypeResponse">
+		<constructor-arg ref="geoServer" />
+		<constructor-arg value="text/javascript" />
+	</bean>
+	<bean id="jsonPDescribeFeatureTypeResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+		<constructor-arg value="jsonPDescribeFeatureTypeResponse" />
+	</bean>
+	<!-- DescribeFeatureType JSON -->
+	<bean id="jsonDescribeFeatureTypeResponse" class="org.geoserver.wfs.json.JSONDescribeFeatureTypeResponse">
+		<constructor-arg ref="geoServer" />
+		<constructor-arg value="application/json" />
 	</bean>
     
     <!-- workspace qualifier -->

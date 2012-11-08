@@ -728,6 +728,14 @@ public class CatalogImpl implements Catalog {
             }
         }
 
+        //search in default namespace first
+        NamespaceInfo ns = getDefaultNamespace();
+        if ( ns != null ) {
+            LayerInfo layerinfo = facade.getLayerByName( ns.getPrefix() + ":" + name );
+            if( layerinfo != null )
+                return layerinfo;
+        }
+
         return facade.getLayerByName(name);
 
     }

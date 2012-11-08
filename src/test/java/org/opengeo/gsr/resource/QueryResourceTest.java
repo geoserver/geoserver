@@ -10,7 +10,8 @@ public class QueryResourceTest extends ResourceTest {
     }
     
     public void testStreamsQuery() throws Exception {
-        JSON json = getAsJSON(query("cite", "Streams", "?f=json"));
+//        fail(getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90")));
+        JSON json = getAsJSON(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90"));
         assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);
         JSONObject jsonObject = (JSONObject) json;
         assertTrue("objectIdFieldName is not present", jsonObject.containsKey("objectIdFieldName"));
@@ -28,7 +29,7 @@ public class QueryResourceTest extends ResourceTest {
 // TODO: This test fails because I didn't understand from reading the spec how to encode MultiPolygon data.  Judging from 
 // 
 //    public void testBuildingsQuery() throws Exception {
-//        JSON json = getAsJSON(query("Buildings", "?f=json"));
+//        JSON json = getAsJSON(query("Buildings", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90"));
 //        assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);
 //        JSONObject jsonObject = (JSONObject) json;
 //        assertTrue("objectIdFieldName is not present", jsonObject.containsKey("objectIdFieldName"));
@@ -44,7 +45,7 @@ public class QueryResourceTest extends ResourceTest {
 //    }
     
     public void testPointsQuery() throws Exception {
-        JSON json = getAsJSON(query("cgf", "Points", "?f=json"));
+        JSON json = getAsJSON(query("cgf", "Points", "?f=json&geometryType=GeometryEnvelope&geometry=500000,500000,500100,500100"));
         assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);
         JSONObject jsonObject = (JSONObject) json;
         assertTrue("objectIdFieldName is not present", jsonObject.containsKey("objectIdFieldName"));

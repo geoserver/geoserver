@@ -6,15 +6,22 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.NoSuchElementException;
 
+import net.sf.json.JSONException;
+import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
+import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -22,6 +29,10 @@ import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class QueryResource extends Resource {
     public static Variant JSON = new Variant(MediaType.APPLICATION_JAVASCRIPT);
@@ -38,24 +49,43 @@ public class QueryResource extends Resource {
     @Override
     public Representation getRepresentation(Variant variant) {
         if (variant == JSON) {
-            if (!"json".equals(format));
+            if (!"json".equals(format)) throw new IllegalArgumentException("json is the only supported format");
             String workspace = (String) getRequest().getAttributes().get("workspace");
             String layerOrTableName = (String) getRequest().getAttributes().get("layerOrTable");
             FeatureTypeInfo featureType = catalog.getFeatureTypeByName(workspace, layerOrTableName);
             if (null == featureType) {
                 throw new NoSuchElementException("No known table or layer with qualified name \"" + workspace + ":" + layerOrTableName + "\"");
             }
-            return new JsonQueryRepresentation(featureType);
+
+            final String geometryProperty;
+            try {
+                geometryProperty = featureType.getFeatureType().getGeometryDescriptor().getName().getLocalPart();
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to determine geometry type for query request");
+            }
+            
+            Form form = getRequest().getResourceRef().getQueryAsForm();
+            if (!(form.getNames().contains("geometryType") && form.getNames().contains("geometry"))) {
+                throw new IllegalArgumentException("'geometry' and 'geometryType' parameters are mandatory");
+            }
+            
+            String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
+            String geometryText = form.getFirstValue("geometry");
+            Filter geometryFilter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText);
+            
+            return new JsonQueryRepresentation(featureType, geometryFilter);
         }
         return super.getRepresentation(variant);
     }
     
     private static class JsonQueryRepresentation extends OutputRepresentation {
         private final FeatureTypeInfo featureType;
+        private final Filter geometryFilter;
         
-        public JsonQueryRepresentation(FeatureTypeInfo featureType) {
+        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter) {
             super(MediaType.APPLICATION_JAVASCRIPT);
             this.featureType = featureType;
+            this.geometryFilter = geometryFilter;
         }
         
         @Override
@@ -64,9 +94,105 @@ public class QueryResource extends Resource {
             JSONBuilder json = new JSONBuilder(writer);
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
-            FeatureEncoder.featuresToJson(source.getFeatures(), json);
+            FeatureEncoder.featuresToJson(source.getFeatures(geometryFilter), json);
             writer.flush();
             writer.close();
+        }
+    }
+    
+    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText) {
+        FilterFactory2 filters = CommonFactoryFinder.getFilterFactory2();
+        
+        if ("GeometryEnvelope".equals(geometryType)) {
+            Envelope e = parseShortEnvelope(geometryText);
+            if (e == null) {
+                e = parseJsonEnvelope(geometryText);
+            }
+            if (e != null) {
+                return filters.bbox(geometryProperty, e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY(), null);
+            }
+        } else if ("GeometryPoint".equals(geometryType)) {
+            com.vividsolutions.jts.geom.Point p = parseShortPoint(geometryText);
+            if (p == null) {
+                p = parseJsonPoint(geometryText);
+            }
+            if (p != null) {
+                return filters.intersects(filters.property(geometryProperty), filters.literal(p));
+            } // else fall through to the catch-all exception at the end
+        } else {
+            try {
+                net.sf.json.JSON json = JSONSerializer.toJSON(geometryText);
+                com.vividsolutions.jts.geom.Geometry g = GeometryEncoder.jsonToGeometry(json);
+                return filters.intersects(filters.property(geometryProperty), filters.literal(g));
+            } catch (JSONException e) {
+                // fall through here to the catch-all exception at the end
+            }
+        }
+        throw new IllegalArgumentException(
+                "Can't determine geometry filter from GeometryType \""
+                        + geometryType + "\" and geometry \"" + geometryText
+                        + "\"");
+    }
+    
+    private static Envelope parseShortEnvelope(String text) {
+        String[] parts = text.split(",");
+        if (parts.length != 4)
+            return null;
+        double[] coords = new double[4];
+        for (int i = 0; i < 4; i++) {
+            String part = parts[i];
+            final double coord;
+            try {
+                coord = Double.valueOf(part);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            coords[i] = coord;
+        }
+        // Indices are non-sequential here - JTS and GeoServices disagree on the
+        // order of coordinates in an envelope.
+        return new Envelope(coords[0], coords[2], coords[1], coords[3]);
+    }
+    
+    private static Envelope parseJsonEnvelope(String text) {
+        net.sf.json.JSON json = JSONSerializer.toJSON(text);
+        try {
+            return GeometryEncoder.jsonToEnvelope(json);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+    
+    private static com.vividsolutions.jts.geom.Point parseShortPoint(String text) {
+        String[] parts = text.split(",");
+        if (parts.length != 2)
+            return null;
+        double[] coords = new double[2];
+        for (int i = 0; i < 4; i++) {
+            String part = parts[i];
+            final double coord;
+            try {
+                coord = Double.valueOf(part);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            coords[i] = coord;
+        }
+        GeometryFactory factory = new com.vividsolutions.jts.geom.GeometryFactory();
+        return factory.createPoint(new Coordinate(coords[0], coords[1]));
+    }
+    
+    private static com.vividsolutions.jts.geom.Point parseJsonPoint(String text) {
+        net.sf.json.JSON json = JSONSerializer.toJSON(text);
+        try {
+            com.vividsolutions.jts.geom.Geometry geometry = GeometryEncoder.jsonToGeometry(json);
+            if (geometry instanceof com.vividsolutions.jts.geom.Point) {
+                return (com.vividsolutions.jts.geom.Point) geometry;
+            } else {
+                return null;
+            }
+        } catch (JSONException e) {
+            return null;
         }
     }
 }

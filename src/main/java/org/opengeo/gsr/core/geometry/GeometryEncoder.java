@@ -1,5 +1,16 @@
 package org.opengeo.gsr.core.geometry;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.util.ArrayBuilders;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
 
@@ -132,6 +143,76 @@ public final class GeometryEncoder {
                 }
             }
             return type;
+        }
+    }
+
+    private static com.vividsolutions.jts.geom.Coordinate jsonArrayToCoordinate(JSONArray array) {
+        if (array.size() != 2) {
+            throw new JSONException("Coordinate JSON must be an array with exactly two elements");
+        }
+        return new com.vividsolutions.jts.geom.Coordinate(array.getDouble(0), array.getDouble(1));
+    }
+    
+    private static com.vividsolutions.jts.geom.Coordinate[] jsonArrayToCoordinates(JSONArray array) {
+        com.vividsolutions.jts.geom.Coordinate[] coordinates = new com.vividsolutions.jts.geom.Coordinate[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            coordinates[i] = jsonArrayToCoordinate(array.getJSONArray(i));
+        }
+        return coordinates;
+    }
+    
+    public static Envelope jsonToEnvelope(net.sf.json.JSON json) {
+        if (!(json instanceof JSONObject)) {
+            throw new JSONException("An envelope must be encoded as a JSON Object");
+        }
+        JSONObject obj = (JSONObject) json;
+        double minx = obj.getDouble("minx");
+        double miny = obj.getDouble("miny");
+        double maxx = obj.getDouble("maxx");
+        double maxy = obj.getDouble("maxx");
+        return new Envelope(minx, maxx, miny, maxy);
+    }
+
+    public static Geometry jsonToGeometry(net.sf.json.JSON json) {
+        if (!(json instanceof JSONObject)) {
+            throw new JSONException("A geometry must be encoded as a JSON Object");
+        }
+        JSONObject obj = (JSONObject) json;
+        GeometryFactory geometries = new GeometryFactory();
+        
+        if (obj.containsKey("x") && obj.containsKey("y")) {
+            double x = obj.getDouble("x");
+            double y = obj.getDouble("y");
+            return geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(x, y));
+        } else if (obj.containsKey("paths")) {
+            JSONArray paths = obj.getJSONArray("paths");
+            com.vividsolutions.jts.geom.LineString[] lines = new com.vividsolutions.jts.geom.LineString[paths.size()];
+            for (int i = 0; i < paths.size(); i++) {
+                com.vividsolutions.jts.geom.Coordinate[] coords = jsonArrayToCoordinates(paths.getJSONArray(i));
+                lines[i] = geometries.createLineString(coords);
+            }
+            return geometries.createMultiLineString(lines);
+        } else if (obj.containsKey("rings")) {
+            JSONArray rings = obj.getJSONArray("rings");
+            if (rings.size() < 1) {
+                throw new JSONException("Polygon must have at least one ring");
+            }
+            com.vividsolutions.jts.geom.LinearRing shell = 
+                    geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(0)));
+            com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[rings.size() - 1];
+            for (int i = 1; i < rings.size(); i++) {
+                holes[i] = geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(i)));
+            }
+            return geometries.createPolygon(shell, holes);
+        } else if (obj.containsKey("geometries")) {
+            JSONArray nestedGeometries = obj.getJSONArray("geometries");
+            com.vividsolutions.jts.geom.Geometry[] parsedGeometries = new com.vividsolutions.jts.geom.Geometry[nestedGeometries.size()];
+            for (int i = 0; i < nestedGeometries.size(); i++) {
+                parsedGeometries[i] = jsonToGeometry(nestedGeometries.getJSONObject(i));
+            }
+            return geometries.createGeometryCollection(parsedGeometries);
+        } else {
+            throw new JSONException("Could not parse Geometry from " + json);
         }
     }
 }

@@ -19,8 +19,6 @@
                 <!-- gt-app-schema and gt-app-schema-resolver jars-->
                 <include>gt-app-schema-*.jar</include>
                 <include>xml-commons-resolver-*.jar</include>
-                <!-- required for complex feature WFS output (see GML3OutputFormat) -->
-                <include>xalan-*.jar</include>
             </includes>
         </fileSet>
         <fileSet>

@@ -33,12 +33,6 @@
 			<artifactId>wfs</artifactId>
 		</dependency>
 		<dependency>
-			<!-- required for complex feature WFS output (see GML3OutputFormat) -->
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.geoserver.extension</groupId>
 			<artifactId>app-schema-test</artifactId>
 			<version>${project.version}</version>

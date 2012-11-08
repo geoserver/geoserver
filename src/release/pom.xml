@@ -46,10 +46,6 @@
    <artifactId>xmlParserAPIs</artifactId>
   </dependency>
   <dependency>
-   <groupId>xalan</groupId>
-   <artifactId>xalan</artifactId>
-  </dependency>
-  <dependency>
    <groupId>commons-el</groupId>
    <artifactId>commons-el</artifactId>
   </dependency>

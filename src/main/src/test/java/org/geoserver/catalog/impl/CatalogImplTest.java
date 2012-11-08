@@ -59,8 +59,14 @@ public class CatalogImplTest {
 
     protected Catalog catalog;
     protected WorkspaceInfo ws;
+    protected WorkspaceInfo wsA;
+    protected WorkspaceInfo wsB;
     protected NamespaceInfo ns;
+    protected NamespaceInfo nsA;
+    protected NamespaceInfo nsB;
     protected DataStoreInfo ds;
+    protected DataStoreInfo dsA;
+    protected DataStoreInfo dsB;
     protected CoverageStoreInfo cs;
     protected WMSStoreInfo wms;
     protected FeatureTypeInfo ft;
@@ -81,15 +87,47 @@ public class CatalogImplTest {
         //ns.setPrefix( "nsPrefix" );
         ns.setPrefix( "wsName" );
         ns.setURI( "nsURI" );
+
+        nsA = factory.createNamespace();
+        //ns prefix has to match workspace name, until we break that relationship
+        //nsA.setPrefix( "nsPrefix" );
+        nsA.setPrefix( "aaa" );
+        nsA.setURI( "nsURIaaa" );
+
+        nsB = factory.createNamespace();
+        //ns prefix has to match workspace name, until we break that relationship
+        //nsB.setPrefix( "nsPrefix" );
+        nsB.setPrefix( "bbb" );
+        nsB.setURI( "nsURIbbb" );
         
         ws = factory.createWorkspace();
         ws.setName( "wsName");
+        
+        wsA = factory.createWorkspace();
+        wsA.setName( "aaa");
+        wsA.setDefault(false);
+        
+        wsB = factory.createWorkspace();
+        wsB.setName( "bbb");
+        wsB.setDefault(true);
         
         ds = factory.createDataStore();
         ds.setEnabled(true);
         ds.setName( "dsName");
         ds.setDescription("dsDescription");
         ds.setWorkspace( ws );
+        
+        dsA = factory.createDataStore();
+        dsA.setEnabled(true);
+        dsA.setName( "dsNameA");
+        dsA.setDescription("dsDescription");
+        dsA.setWorkspace( wsA );
+        
+        dsB = factory.createDataStore();
+        dsB.setEnabled(true);
+        dsB.setName( "dsNameB");
+        dsB.setDescription("dsDescription");
+        dsB.setWorkspace( wsB );
         
         ft = factory.createFeatureType();
         ft.setEnabled(true);
@@ -1086,6 +1124,77 @@ public class CatalogImplTest {
         assertNotNull(l2);
         assertNotSame(l,l2);
         assertEquals( l, l2 );
+    }
+
+    @Test
+    public void testGetLayerByNameWithoutColon() {
+        
+        catalog.add(nsA);
+        catalog.add(nsB);
+        
+        catalog.add(wsA);
+        catalog.add(wsB);
+        
+        catalog.add(dsA);
+        catalog.add(dsB); 
+        
+        FeatureTypeInfo ftA = catalog.getFactory().createFeatureType();
+        ftA.setEnabled(true);
+        ftA.setName( "aaa:bar" );
+        ftA.setAbstract( "ftAbstract" );
+        ftA.setDescription( "ftDescription" );
+        ftA.setStore( dsA );
+        ftA.setNamespace( nsA );
+        
+        FeatureTypeInfo ftB = catalog.getFactory().createFeatureType();
+        ftB.setEnabled(true);
+        ftB.setName( "bbb:bar" );
+        ftB.setAbstract( "ftAbstract" );
+        ftB.setDescription( "ftDescription" );
+        ftB.setStore( dsB );
+        ftB.setNamespace( nsB );
+
+        FeatureTypeInfo ftC = catalog.getFactory().createFeatureType();
+        ftC.setEnabled(true);
+        ftC.setName( "aaa:bar2" );
+        ftC.setAbstract( "ftAbstract" );
+        ftC.setDescription( "ftDescription" );
+        ftC.setStore( dsA );
+        ftC.setNamespace( nsA );
+
+        catalog.add(ftA);
+        catalog.add(ftB);
+        catalog.add(ftC);
+
+        addStyle();
+        
+        LayerInfo lA = catalog.getFactory().createLayer();
+        lA.setEnabled(true);
+        lA.setResource(ftA);
+        lA.setDefaultStyle( s );
+        
+        LayerInfo lB = catalog.getFactory().createLayer();
+        lB.setEnabled(true);
+        lB.setResource(ftB);
+        lB.setDefaultStyle( s );
+        
+        LayerInfo lC = catalog.getFactory().createLayer();
+        lC.setEnabled(true);
+        lC.setResource(ftC);
+        lC.setDefaultStyle( s );
+        
+        catalog.add(lA);
+        catalog.add(lB);
+        catalog.add(lC);
+
+        LayerInfo _l = catalog.getLayerByName( "bar" );
+        assertNotNull( _l );
+        assertNotSame( _l, lA );
+        assertEquals( _l, lB );
+
+        _l = catalog.getLayerByName( "bar2" );
+        assertNotNull( _l );
+        assertNotSame( _l, lC );
     }
 
     @Test

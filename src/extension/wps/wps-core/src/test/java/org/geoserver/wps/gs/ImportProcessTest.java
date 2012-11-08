@@ -40,7 +40,7 @@ public class ImportProcessTest extends WPSTestSupport {
                 rawSource, CRS.decode("EPSG:4326"));
 
         ImportProcess importer = new ImportProcess(getCatalog());
-        String result = importer.execute(forced, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
+        String result = importer.execute(forced, null, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
                 "Buildings2", null, null, null);
 
         checkBuildings2(result);
@@ -56,7 +56,7 @@ public class ImportProcessTest extends WPSTestSupport {
                 null).getFeatures();
 
         ImportProcess importer = new ImportProcess(getCatalog());
-        String result = importer.execute(rawSource, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
+        String result = importer.execute(rawSource, null, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
                 "Buildings2", CRS.decode("EPSG:4326"), null, null);
 
         checkBuildings2(result);

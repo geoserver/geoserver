@@ -5,10 +5,13 @@
 package org.geoserver.wps.ppio;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
 import org.geotools.parameter.Parameter;
@@ -28,8 +31,19 @@ public class ArcGridPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        // ArcGrid files can be read directly from stream
-        return new ArcGridFormat().getReader(input).read(null);
+    	// in order to read a grid coverage we need to first store it on disk
+        File root = new File(System.getProperty("java.io.tmpdir", "."));
+        File f = File.createTempFile("wps", "asc", root);
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(f);
+            IOUtils.copy(input, os);
+        } finally {
+            IOUtils.closeQuietly(os);
+        }
+
+        // and then we try to read it as a asc
+        return new ArcGridFormat().getReader(f).read(null);
     }
     
     @Override
@@ -52,7 +66,7 @@ public class ArcGridPPIO extends CDataPPIO {
     
     @Override
     public String getFileExtension() {
-        return "zip";
+        return "asc";
     }
 
 }

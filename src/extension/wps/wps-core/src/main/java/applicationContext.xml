@@ -26,6 +26,8 @@
     <!-- The default process runner, others may be around -->
     <bean id="defaultProcessManager" class="org.geoserver.wps.executor.DefaultProcessManager">
       <constructor-arg ref="wpsResourceManager"/>
+      <property name="maxAsynchronousProcesses" value="10"/>
+      <property name="maxSynchronousProcesses" value="10"/>
     </bean>
 
     <!-- WPS Service -->

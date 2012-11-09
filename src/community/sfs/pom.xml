@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>simpleFeatureService</artifactId>
+  <artifactId>sfs</artifactId>
   <packaging>jar</packaging>
   <name>Simple Feature Service</name>
 

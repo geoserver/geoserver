@@ -13,15 +13,21 @@ import net.sf.json.util.JSONBuilder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.referencing.CRS;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
+import org.opengeo.gsr.core.geometry.SpatialReferenceEncoder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -101,7 +107,10 @@ public class QueryResource extends Resource {
                 throw new IllegalArgumentException("Unrecognized value for returnGeometry parameter: " + returnGeometryText);
             }
             
-            return new JsonQueryRepresentation(featureType, filter, returnGeometry);
+            String outSRText = form.getFirstValue("outSR");
+            final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
+            
+            return new JsonQueryRepresentation(featureType, filter, returnGeometry, outSR);
         }
         return super.getRepresentation(variant);
     }
@@ -110,12 +119,14 @@ public class QueryResource extends Resource {
         private final FeatureTypeInfo featureType;
         private final Filter geometryFilter;
         private final boolean returnGeometry;
+        private final CoordinateReferenceSystem outCRS;
         
-        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter, boolean returnGeometry) {
+        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter, boolean returnGeometry, CoordinateReferenceSystem outCRS) {
             super(MediaType.APPLICATION_JAVASCRIPT);
             this.featureType = featureType;
             this.geometryFilter = geometryFilter;
             this.returnGeometry = returnGeometry;
+            this.outCRS = outCRS;
         }
         
         @Override
@@ -124,6 +135,8 @@ public class QueryResource extends Resource {
             JSONBuilder json = new JSONBuilder(writer);
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
+            Query query = new Query(featureType.getName(), geometryFilter);
+            query.setCoordinateSystemReproject(outCRS);
             FeatureEncoder.featuresToJson(source.getFeatures(geometryFilter), json, returnGeometry);
             writer.flush();
             writer.close();
@@ -221,6 +234,30 @@ public class QueryResource extends Resource {
             }
         } catch (JSONException e) {
             return null;
+        }
+    }
+    
+    private static CoordinateReferenceSystem parseSpatialReference(String srText) {
+        if (srText == null) {
+            return null;
+        } else {
+            try {
+                int srid = Integer.parseInt(srText);
+                return CRS.decode("EPSG:" + srid);
+            } catch (NumberFormatException e) {
+                // fall through - it may be a JSON representation
+            } catch (FactoryException e) {
+                // this means we successfully parsed the integer, but it is not
+                // a valid SRID. Raise it up the stack.
+                throw new NoSuchElementException("Could not find spatial reference for ID " + srText);
+            }
+            
+            try {
+                net.sf.json.JSON json = JSONSerializer.toJSON(srText);
+                return SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(json);
+            } catch (JSONException e) {
+                throw new IllegalArgumentException("Failed to parse JSON spatial reference: " + srText);
+            }
         }
     }
 }

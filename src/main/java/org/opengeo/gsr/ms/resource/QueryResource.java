@@ -73,6 +73,10 @@ public class QueryResource extends Resource {
             String geometryText = form.getFirstValue("geometry");
             Filter geometryFilter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText);
             
+            if (form.getNames().contains("text")) {
+                throw new UnsupportedOperationException("Text filter not implemented");
+            }
+            
             return new JsonQueryRepresentation(featureType, geometryFilter);
         }
         return super.getRepresentation(variant);

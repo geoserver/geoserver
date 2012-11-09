@@ -21,6 +21,17 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected String id;
     protected String name;
+    
+    /**
+     * This property in 2.2.x series is stored under the metadata map with key 'title'.
+     */
+    protected String title;
+    
+    /**
+     * This property in 2.2.x series is stored under the metadata map with key 'abstract'.
+     */    
+    protected String abstractTxt;
+    
     protected WorkspaceInfo workspace;
     protected String path;
     protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
@@ -62,6 +73,23 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.name = name;
     }
 
+    public String getTitle() {
+        return title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public String getAbstract() {
+        return abstractTxt;
+    }
+    
+    public void setAbstract(String abstractTxt) {
+        this.abstractTxt = abstractTxt;
+    }
+    
+    
     public WorkspaceInfo getWorkspace() {
         return workspace;
     }
@@ -127,6 +155,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((layers == null) ? 0 : layers.hashCode());
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((title == null) ? 0 : title.hashCode());
+        result = prime * result + ((abstractTxt == null) ? 0 : abstractTxt.hashCode());
         result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
         result = prime * result + ((path == null) ? 0 : path.hashCode());
         result = prime * result + ((styles == null) ? 0 : styles.hashCode());
@@ -169,6 +199,18 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
                 return false;
         } else if (!name.equals(other.getName()))
             return false;
+        if (title == null) {
+            if (other.getTitle() != null) {
+                return false;
+            }
+        } else if (!title.equals(other.getTitle())) 
+            return false;
+        if (abstractTxt == null) {
+            if (other.getAbstract() != null) {
+                return false;
+            }
+        } else if (!abstractTxt.equals(other.getAbstract())) 
+            return false;        
         if (workspace == null) {
             if (other.getWorkspace() != null)
                 return false;

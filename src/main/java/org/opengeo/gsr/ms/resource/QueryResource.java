@@ -17,17 +17,20 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.geometry.SpatialReferenceEncoder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -67,8 +70,11 @@ public class QueryResource extends Resource {
             }
 
             final String geometryProperty;
+            final CoordinateReferenceSystem nativeCRS;
             try {
-                geometryProperty = featureType.getFeatureType().getGeometryDescriptor().getName().getLocalPart();
+                GeometryDescriptor geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
+                nativeCRS = geometryDescriptor.getCoordinateReferenceSystem();
+                geometryProperty = geometryDescriptor.getName().getLocalPart();
             } catch (IOException e) {
                 throw new RuntimeException("Unable to determine geometry type for query request");
             }
@@ -78,9 +84,14 @@ public class QueryResource extends Resource {
                 throw new IllegalArgumentException("'geometry' and 'geometryType' parameters are mandatory");
             }
             
+            String inSRText = form.getFirstValue("inSR");
+            String outSRText = form.getFirstValue("outSR");
+            final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText);
+            final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
+            
             String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
             String geometryText = form.getFirstValue("geometry");
-            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText);
+            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, inSR, nativeCRS);
             
             if (form.getNames().contains("text")) {
                 throw new UnsupportedOperationException("Text filter not implemented");
@@ -92,7 +103,7 @@ public class QueryResource extends Resource {
                 try {
                     whereFilter = ECQL.toFilter(whereClause);
                 } catch (CQLException e) {
-                    throw new IllegalArgumentException("where parameter must be valid CQL", e);
+                    throw new IllegalArgumentException("'where' parameter must be valid CQL", e);
                 }
                 filter = FILTERS.and(filter, whereFilter);
             }
@@ -106,9 +117,6 @@ public class QueryResource extends Resource {
             } else {
                 throw new IllegalArgumentException("Unrecognized value for returnGeometry parameter: " + returnGeometryText);
             }
-            
-            String outSRText = form.getFirstValue("outSR");
-            final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
             
             return new JsonQueryRepresentation(featureType, filter, returnGeometry, outSR);
         }
@@ -143,13 +151,31 @@ public class QueryResource extends Resource {
         }
     }
     
-    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText) {
+    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
+        final MathTransform mathTx;
+        if (requestCRS != null) {
+            try {
+                mathTx = CRS.findMathTransform(requestCRS, nativeCRS, true);
+            } catch (FactoryException e) {
+                throw new IllegalArgumentException("Unable to transform between input and native coordinate reference systems", e);
+            }
+        } else {
+            mathTx = null;
+        }
+        
         if ("GeometryEnvelope".equals(geometryType)) {
             Envelope e = parseShortEnvelope(geometryText);
             if (e == null) {
                 e = parseJsonEnvelope(geometryText);
             }
             if (e != null) {
+                if (mathTx != null) {
+                    try {
+                        e = JTS.transform(e, mathTx);
+                    } catch (TransformException e1) {
+                        throw new IllegalArgumentException("Error while converting envelope from input to native coordinate system", e1);
+                    }
+                }
                 return FILTERS.bbox(geometryProperty, e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY(), null);
             }
         } else if ("GeometryPoint".equals(geometryType)) {
@@ -158,15 +184,27 @@ public class QueryResource extends Resource {
                 p = parseJsonPoint(geometryText);
             }
             if (p != null) {
+                if (mathTx != null) {
+                    try {
+                        p = (com.vividsolutions.jts.geom.Point) JTS.transform(p, mathTx);
+                    } catch (TransformException e) {
+                        throw new IllegalArgumentException("Error while converting point from input to native coordinate system", e);
+                    }
+                }
                 return FILTERS.intersects(FILTERS.property(geometryProperty), FILTERS.literal(p));
             } // else fall through to the catch-all exception at the end
         } else {
             try {
                 net.sf.json.JSON json = JSONSerializer.toJSON(geometryText);
                 com.vividsolutions.jts.geom.Geometry g = GeometryEncoder.jsonToGeometry(json);
+                if (mathTx != null) {
+                    g = JTS.transform(g, mathTx);
+                }
                 return FILTERS.intersects(FILTERS.property(geometryProperty), FILTERS.literal(g));
             } catch (JSONException e) {
                 // fall through here to the catch-all exception at the end
+            } catch (TransformException e) {
+                throw new IllegalArgumentException("Error while converting geometry from input to native coordinate system", e);
             }
         }
         throw new IllegalArgumentException(

@@ -14,6 +14,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengis.feature.Feature;
@@ -45,6 +47,7 @@ public class QueryResource extends Resource {
     
     private final Catalog catalog;
     private final String format;
+    private static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
     
     @Override
     public Representation getRepresentation(Variant variant) {
@@ -71,13 +74,34 @@ public class QueryResource extends Resource {
             
             String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
             String geometryText = form.getFirstValue("geometry");
-            Filter geometryFilter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText);
+            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText);
             
             if (form.getNames().contains("text")) {
                 throw new UnsupportedOperationException("Text filter not implemented");
             }
             
-            return new JsonQueryRepresentation(featureType, geometryFilter);
+            if (form.getNames().contains("where")) {
+                String whereClause = form.getFirstValue("where");
+                final Filter whereFilter;
+                try {
+                    whereFilter = ECQL.toFilter(whereClause);
+                } catch (CQLException e) {
+                    throw new IllegalArgumentException("where parameter must be valid CQL", e);
+                }
+                filter = FILTERS.and(filter, whereFilter);
+            }
+            
+            String returnGeometryText = form.getFirstValue("returnGeometry");
+            final boolean returnGeometry;
+            if (null == returnGeometryText || "true".equalsIgnoreCase(returnGeometryText)) {
+                returnGeometry = true;
+            } else if ("false".equalsIgnoreCase(returnGeometryText)) {
+                returnGeometry = false;
+            } else {
+                throw new IllegalArgumentException("Unrecognized value for returnGeometry parameter: " + returnGeometryText);
+            }
+            
+            return new JsonQueryRepresentation(featureType, filter, returnGeometry);
         }
         return super.getRepresentation(variant);
     }
@@ -85,11 +109,13 @@ public class QueryResource extends Resource {
     private static class JsonQueryRepresentation extends OutputRepresentation {
         private final FeatureTypeInfo featureType;
         private final Filter geometryFilter;
+        private final boolean returnGeometry;
         
-        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter) {
+        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter, boolean returnGeometry) {
             super(MediaType.APPLICATION_JAVASCRIPT);
             this.featureType = featureType;
             this.geometryFilter = geometryFilter;
+            this.returnGeometry = returnGeometry;
         }
         
         @Override
@@ -98,22 +124,20 @@ public class QueryResource extends Resource {
             JSONBuilder json = new JSONBuilder(writer);
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
-            FeatureEncoder.featuresToJson(source.getFeatures(geometryFilter), json);
+            FeatureEncoder.featuresToJson(source.getFeatures(geometryFilter), json, returnGeometry);
             writer.flush();
             writer.close();
         }
     }
     
     private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText) {
-        FilterFactory2 filters = CommonFactoryFinder.getFilterFactory2();
-        
         if ("GeometryEnvelope".equals(geometryType)) {
             Envelope e = parseShortEnvelope(geometryText);
             if (e == null) {
                 e = parseJsonEnvelope(geometryText);
             }
             if (e != null) {
-                return filters.bbox(geometryProperty, e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY(), null);
+                return FILTERS.bbox(geometryProperty, e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY(), null);
             }
         } else if ("GeometryPoint".equals(geometryType)) {
             com.vividsolutions.jts.geom.Point p = parseShortPoint(geometryText);
@@ -121,13 +145,13 @@ public class QueryResource extends Resource {
                 p = parseJsonPoint(geometryText);
             }
             if (p != null) {
-                return filters.intersects(filters.property(geometryProperty), filters.literal(p));
+                return FILTERS.intersects(FILTERS.property(geometryProperty), FILTERS.literal(p));
             } // else fall through to the catch-all exception at the end
         } else {
             try {
                 net.sf.json.JSON json = JSONSerializer.toJSON(geometryText);
                 com.vividsolutions.jts.geom.Geometry g = GeometryEncoder.jsonToGeometry(json);
-                return filters.intersects(filters.property(geometryProperty), filters.literal(g));
+                return FILTERS.intersects(FILTERS.property(geometryProperty), FILTERS.literal(g));
             } catch (JSONException e) {
                 // fall through here to the catch-all exception at the end
             }

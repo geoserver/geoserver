@@ -24,7 +24,7 @@ public class FeatureEncoder {
     
     public static
     <T extends FeatureType, F extends org.opengis.feature.Feature>
-    void featuresToJson(FeatureCollection<T, F> collection, JSONBuilder json)
+    void featuresToJson(FeatureCollection<T, F> collection, JSONBuilder json, boolean returnGeometry)
     throws IOException
     {
         FeatureIterator<F> iterator = collection.features();
@@ -58,7 +58,7 @@ public class FeatureEncoder {
             json.array();
             while (iterator.hasNext()) {
                 F feature = iterator.next();
-                featureToJson(feature, json);
+                featureToJson(feature, json, returnGeometry);
             }
             json.endArray();
         } finally {
@@ -67,11 +67,13 @@ public class FeatureEncoder {
         json.endObject();
     }
     
-    public static void featureToJson(org.opengis.feature.Feature feature, JSONBuilder json) {
+    public static void featureToJson(org.opengis.feature.Feature feature, JSONBuilder json, boolean returnGeometry) {
         GeometryAttribute geometry = feature.getDefaultGeometryProperty();
         json.object();
-        json.key("geometry");
-        GeometryEncoder.toJson((com.vividsolutions.jts.geom.Geometry)geometry.getValue(), json);
+        if (returnGeometry) {
+            json.key("geometry");
+            GeometryEncoder.toJson((com.vividsolutions.jts.geom.Geometry)geometry.getValue(), json);
+        }
         json.key("attributes");
         json.object();
         

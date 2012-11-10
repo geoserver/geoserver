@@ -1764,4 +1764,11 @@ public interface Catalog extends CatalogInfo {
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
             @Nullable SortBy sortBy);
 
+    /**
+     * Removes all the listeners which are instances of the specified class
+     * 
+     * @param listenerClass
+     */
+    public void removeListeners(Class listenerClass);
+
 }

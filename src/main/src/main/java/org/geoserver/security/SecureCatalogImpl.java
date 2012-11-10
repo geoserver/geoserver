@@ -1459,4 +1459,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         }
         return false;
     }
+
+    public void removeListeners(Class listenerClass) {
+        delegate.removeListeners(listenerClass);
+    }
 }

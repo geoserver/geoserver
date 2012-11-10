@@ -283,5 +283,9 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         }
 
     }
+
+    public void removeListeners(Class listenerClass) {
+        delegate.removeListeners(listenerClass);
+    }
 }
 ;

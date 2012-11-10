@@ -8,6 +8,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.LegacyCatalogImporter;
+import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.test.GeoServerAbstractTestSupport;
@@ -15,6 +16,13 @@ import org.geoserver.test.GeoServerAbstractTestSupport;
 public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
 
     private static final QName typeName = MockData.BASIC_POLYGONS;
+    
+    @Override
+    protected void tearDownInternal() throws Exception {
+        super.tearDownInternal();
+        // reset the legacy flag so that other tests are not getting affected by it
+        GeoServerLoader.setLegacy(false);
+    }
 
     @Override
     protected TestData buildTestData() throws Exception {

@@ -31,8 +31,6 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
     final static String cql_filter = "elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'";
 
     public void testAsCQL() throws Exception {
-        // CASE 'MOSAIC WITH DEFAULT FILTERS'
-
         // setting the default filter
         super.setupMosaicFilter(cql_filter, layer);
 
@@ -45,23 +43,21 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
 
     }
 
-    public void testCaseDefault() throws Exception {
-        // CASE 'MOSAIC WITHOUT FILTERS'
-
-        // disable the default filter
-        super.setupMosaicFilter("", layer);
-
-        // get mosaic without the default filter
-        BufferedImage image = getAsImage(BASE_URL, "image/png");
-
-        // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(246, 246, 255));
-        assertPixel(image, 68, 72, new Color(255, 182, 182));
-    }
+//    public void testCaseDefault() throws Exception {
+//        // CASE 'MOSAIC WITHOUT FILTERS'
+//
+//        // disable the default filter
+//        super.setupMosaicFilter("", layer);
+//
+//        // get mosaic without the default filter
+//        BufferedImage image = getAsImage(BASE_URL, "image/png");
+//
+//        // at this elevation the pixel is black
+//        assertPixel(image, 36, 31, new Color(246, 246, 255));
+//        assertPixel(image, 68, 72, new Color(255, 182, 182));
+//    }
 
     public void testCaseElev100andIngestion31Oct() throws Exception {
-        // CASE 'MOSAIC WITH FILTERS'
-
         // overriding the default filter using cql_filter parameter
         BufferedImage image = getAsImage(BASE_URL
                 + "&cql_filter=elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'",
@@ -76,9 +72,6 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
     }
 
     public void testCaseElev100andIngestion01Nov() throws Exception {
-
-        // CASE 'MOSAIC WITH FILTERS'
-
         // overriding the default filter using cql_filter parameter
         BufferedImage image = getAsImage(BASE_URL
                 + "&cql_filter=elevation=100 AND ingestion=\'2008-11-01T00:00:00.000Z\'",
@@ -94,8 +87,6 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
     }
 
     public void testCaseElev0andIngestion31Oct() throws Exception {
-        // CASE 'MOSAIC WITH FILTERS'
-
         // overriding the default filter using cql_filter parameter
         BufferedImage image = getAsImage(BASE_URL
                 + "&cql_filter=elevation=0 AND ingestion=\'2008-10-31T00:00:00.000Z\'", "image/png");
@@ -109,8 +100,6 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
     }
 
     public void testCaseElev0andIngestion01Nov() throws Exception {
-        // CASE 'MOSAIC WITH FILTERS'
-
         // overriding the default filter using cql_filter parameter
         BufferedImage image = getAsImage(BASE_URL
                 + "&cql_filter=elevation=0 AND ingestion=\'2008-11-01T00:00:00.000Z\'", "image/png");

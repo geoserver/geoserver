@@ -1156,6 +1156,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     public void removeListener(CatalogListener listener) {
         delegate.removeListener(listener);
     }
+    
+    public void removeListeners(Class listenerClass) {
+        delegate.removeListeners(listenerClass);
+    }
 
     public void save(LayerGroupInfo layerGroup) {
         delegate.save(unwrap(layerGroup));

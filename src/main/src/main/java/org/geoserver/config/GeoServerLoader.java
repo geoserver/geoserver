@@ -31,16 +31,17 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.Wrapper;
+import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.LegacyCatalogImporter;
 import org.geoserver.catalog.util.LegacyCatalogReader;
 import org.geoserver.catalog.util.LegacyFeatureTypeInfoReader;
-import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.util.LegacyConfigurationImporter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -49,10 +50,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
@@ -214,18 +212,30 @@ public abstract class GeoServerLoader {
     }
 
     protected void readCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
+        // we are going to synch up the catalogs and need to preserve listeners,
+        // but these two fellas are attached to the new catalog as well
+        catalog.removeListeners(ResourcePool.CacheClearingListener.class);
+        catalog.removeListeners(GeoServerPersister.class);
+        List<CatalogListener> listeners = new ArrayList<CatalogListener>(catalog.getListeners());
+
         //look for catalog.xml, if it exists assume we are dealing with 
         // an old data directory
         File f = resourceLoader.find( "catalog.xml" );
         if ( f == null ) {
             //assume 2.x style data directory
             CatalogImpl catalog2 = (CatalogImpl) readCatalog( xp );
+            // make to remove the old resource pool catalog listener
             ((CatalogImpl)catalog).sync( catalog2 );
         } else {
             // import old style catalog, register the persister now so that we start 
             // with a new version of the catalog
             CatalogImpl catalog2 = (CatalogImpl) readLegacyCatalog( f, xp );
             ((CatalogImpl)catalog).sync( catalog2 );
+        }
+        
+        // attach back the old listeners
+        for (CatalogListener listener : listeners) {
+            catalog.addListener(listener);
         }
     }
     

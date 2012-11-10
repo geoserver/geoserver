@@ -661,4 +661,8 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     public void dispose() {
         delegate.dispose();
     }
+
+    public void removeListeners(Class listenerClass) {
+        delegate.removeListeners(listenerClass);
+    }
 }

@@ -1568,7 +1568,7 @@ public class ResourcePool {
     /**
      * Listens to catalog events clearing cache entires when resources are modified.
      */
-    class CacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+    public class CacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
 
         public void handleAddEvent(CatalogAddEvent event) {
         }

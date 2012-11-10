@@ -1548,4 +1548,11 @@ public interface Catalog extends CatalogInfo {
      * Disposes the catalog, freeing up any resources.
      */
     void dispose();
+    
+    /**
+     * Removes all the listeners which are instances of the specified class
+     * 
+     * @param listenerClass
+     */
+    public void removeListeners(Class listenerClass);
 }

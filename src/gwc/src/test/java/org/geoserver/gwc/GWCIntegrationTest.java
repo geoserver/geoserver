@@ -19,7 +19,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
     public static Test suite() {
         return new OneTimeTestSetup(new GWCIntegrationTest());
     }
-
+    
     @Override
     protected void setUpInternal() {
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
@@ -91,5 +91,4 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         MockHttpServletResponse response = postAsServletResponse(path, content, contentType);
         assertEquals(200, response.getStatusCode());
     }
-
 }

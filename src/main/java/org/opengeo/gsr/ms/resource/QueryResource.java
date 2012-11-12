@@ -97,6 +97,10 @@ public class QueryResource extends Resource {
                 throw new UnsupportedOperationException("Text filter not implemented");
             }
             
+            if (form.getNames().contains("maxAllowableOffsets")) {
+                throw new UnsupportedOperationException("Generalization (via 'maxAllowableOffsets' parameter) not implemented");
+            }
+            
             if (form.getNames().contains("where")) {
                 String whereClause = form.getFirstValue("where");
                 final Filter whereFilter;

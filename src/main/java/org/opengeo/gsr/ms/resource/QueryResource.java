@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import net.sf.json.JSONException;
 import net.sf.json.JSONSerializer;
@@ -28,6 +32,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -93,13 +98,13 @@ public class QueryResource extends Resource {
             String spatialRelText = form.getFirstValue("spatialRel", "SpatialRelIntersects");
             SpatialRelationship spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
             
-            if (form.getNames().contains("relationParam")) {
-                throw new IllegalArgumentException("'relationParam' is not implemented");
-            }
+            String objectIdsText = form.getFirstValue("objectIds");
+            Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
 
             String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
             String geometryText = form.getFirstValue("geometry");
-            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, inSR, nativeCRS);
+            String relatePattern = form.getFirstValue("relationParam");
+            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
 
             if (form.getNames().contains("text")) {
                 throw new UnsupportedOperationException("Text filter not implemented");
@@ -117,12 +122,13 @@ public class QueryResource extends Resource {
                 } catch (CQLException e) {
                     throw new IllegalArgumentException("'where' parameter must be valid CQL", e);
                 }
-                filter = FILTERS.and(filter, whereFilter);
+                List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
+                filter = FILTERS.and(children);
             }
             
-            String returnGeometryText = form.getFirstValue("returnGeometry");
+            String returnGeometryText = form.getFirstValue("returnGeometry", "true");
             final boolean returnGeometry;
-            if (null == returnGeometryText || "true".equalsIgnoreCase(returnGeometryText)) {
+            if ("true".equalsIgnoreCase(returnGeometryText)) {
                 returnGeometry = true;
             } else if ("false".equalsIgnoreCase(returnGeometryText)) {
                 returnGeometry = false;
@@ -130,23 +136,61 @@ public class QueryResource extends Resource {
                 throw new IllegalArgumentException("Unrecognized value for returnGeometry parameter: " + returnGeometryText);
             }
             
-            return new JsonQueryRepresentation(featureType, filter, returnGeometry, outSR);
+            String outFieldsText = form.getFirstValue("outFields", "*");
+            String[] properties = parseOutFields(outFieldsText);
+            
+            String returnIdsOnlyText = form.getFirstValue("returnIdsOnly", "false");
+            boolean returnIdsOnly;
+            if ("true".equalsIgnoreCase(returnIdsOnlyText)) {
+                returnIdsOnly = true;
+            } else if ("false".equalsIgnoreCase(returnIdsOnlyText)) {
+                returnIdsOnly = false;
+            } else {
+                throw new IllegalArgumentException("Unrecognized value for returnIdsOnly parameter: " + returnIdsOnlyText);
+            }
+
+            return new JsonQueryRepresentation(featureType, filter, returnIdsOnly, returnGeometry, properties, outSR);
         }
         return super.getRepresentation(variant);
     }
     
+    private String[] parseOutFields(String outFieldsText) {
+        if ("*".equals(outFieldsText)) {
+            return null;
+        } else {
+            return outFieldsText.split(",");
+        }
+    }
+
+    private Filter parseObjectIdFilter(String objectIdsText) {
+        if (null == objectIdsText) {
+            return Filter.INCLUDE;
+        } else {
+            String[] parts = objectIdsText.split(",");
+            Set<FeatureId> fids = new HashSet<FeatureId>();
+            for (String part : parts) {
+                fids.add(FILTERS.featureId(part));
+            }
+            return FILTERS.id(fids);
+        }
+    }
+
     private static class JsonQueryRepresentation extends OutputRepresentation {
         private final FeatureTypeInfo featureType;
         private final Filter geometryFilter;
+        private final boolean returnIdsOnly;
         private final boolean returnGeometry;
         private final CoordinateReferenceSystem outCRS;
+        private final String[] properties;
         
-        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter, boolean returnGeometry, CoordinateReferenceSystem outCRS) {
+        public JsonQueryRepresentation(FeatureTypeInfo featureType, Filter geometryFilter, boolean returnIdsOnly, boolean returnGeometry, String[] properties, CoordinateReferenceSystem outCRS) {
             super(MediaType.APPLICATION_JAVASCRIPT);
             this.featureType = featureType;
             this.geometryFilter = geometryFilter;
+            this.returnIdsOnly = returnIdsOnly;
             this.returnGeometry = returnGeometry;
             this.outCRS = outCRS;
+            this.properties = properties;
         }
         
         @Override
@@ -155,15 +199,21 @@ public class QueryResource extends Resource {
             JSONBuilder json = new JSONBuilder(writer);
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
-            Query query = new Query(featureType.getName(), geometryFilter);
+            Query query = properties == null ? new Query(featureType.getName(), geometryFilter) : new Query(featureType.getName(), geometryFilter, properties);
             query.setCoordinateSystemReproject(outCRS);
-            FeatureEncoder.featuresToJson(source.getFeatures(geometryFilter), json, returnGeometry);
+            
+            if (returnIdsOnly) {
+                FeatureEncoder.featureIdSetToJson(source.getFeatures(query), json);
+            } else {
+                final boolean reallyReturnGeometry = returnGeometry || properties == null;
+                FeatureEncoder.featuresToJson(source.getFeatures(query), json, reallyReturnGeometry);
+            }
             writer.flush();
             writer.close();
         }
     }
     
-    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, SpatialRelationship spatialRel, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
+    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, SpatialRelationship spatialRel, String relationPattern, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
         final MathTransform mathTx;
         if (requestCRS != null) {
             try {
@@ -188,7 +238,7 @@ public class QueryResource extends Resource {
                         throw new IllegalArgumentException("Error while converting envelope from input to native coordinate system", e1);
                     }
                 }
-                return spatialRel.createEnvelopeFilter(geometryProperty, e);
+                return spatialRel.createEnvelopeFilter(geometryProperty, e, relationPattern);
             }
         } else if ("GeometryPoint".equals(geometryType)) {
             com.vividsolutions.jts.geom.Point p = parseShortPoint(geometryText);
@@ -203,7 +253,7 @@ public class QueryResource extends Resource {
                         throw new IllegalArgumentException("Error while converting point from input to native coordinate system", e);
                     }
                 }
-                return spatialRel.createGeometryFilter(geometryProperty, p);
+                return spatialRel.createGeometryFilter(geometryProperty, p, relationPattern);
             } // else fall through to the catch-all exception at the end
         } else {
             try {
@@ -212,7 +262,7 @@ public class QueryResource extends Resource {
                 if (mathTx != null) {
                     g = JTS.transform(g, mathTx);
                 }
-                return spatialRel.createGeometryFilter(geometryProperty, g);
+                return spatialRel.createGeometryFilter(geometryProperty, g, relationPattern);
             } catch (JSONException e) {
                 // fall through here to the catch-all exception at the end
             } catch (TransformException e) {

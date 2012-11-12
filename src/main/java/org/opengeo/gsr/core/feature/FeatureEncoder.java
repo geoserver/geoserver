@@ -11,6 +11,7 @@ import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
 import org.opengeo.gsr.core.geometry.SpatialReference;
 import org.opengeo.gsr.core.geometry.SpatialReferenceEncoder;
 import org.opengeo.gsr.core.geometry.SpatialReferences;
+import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
@@ -98,5 +99,28 @@ public class FeatureEncoder {
           .key("type").value(type.getFieldType())
           .key("alias").value(alias)
         .endObject();
+    }
+
+    public static <T extends FeatureType, F extends Feature>
+    void featureIdSetToJson(FeatureCollection<T, F> features, JSONBuilder json)
+    {
+        json.object();
+        json.key("objectIdFieldName");
+        json.value("pk"); // TODO: Advertise "real" identifier property
+
+        FeatureIterator<F> iterator = features.features();
+        try {
+            json.key("objectIds");
+            json.array();
+            while (iterator.hasNext()) {
+                F feature = iterator.next();
+                json.value(feature.getIdentifier().getID());
+            }
+            json.endArray();
+        } finally {
+            iterator.close();
+        }
+
+        json.endObject();
     }
 }

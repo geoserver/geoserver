@@ -1273,6 +1273,16 @@ public class CatalogImpl implements Catalog {
     public void removeListener(CatalogListener listener) {
         listeners.remove(listener);
     }
+    
+    @Override
+    public void removeListeners(Class listenerClass) {
+        for (Iterator it = listeners.iterator(); it.hasNext();) {
+            CatalogListener listener = (CatalogListener) it.next();
+            if(listenerClass.isInstance(listener)) {
+                it.remove();
+            }
+        }
+    }
 
     public Iterator search(String cql) {
         // TODO Auto-generated method stub
@@ -1294,7 +1304,6 @@ public class CatalogImpl implements Catalog {
         this.resourceLoader = resourceLoader;
     }
     public void dispose() {
-        if ( listeners != null ) listeners.clear();
         if ( resourcePool != null ) resourcePool.dispose();
         facade.dispose();
     }

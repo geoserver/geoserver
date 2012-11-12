@@ -22,6 +22,7 @@ import org.geotools.referencing.CRS;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.geometry.SpatialReferenceEncoder;
+import org.opengeo.gsr.core.geometry.SpatialRelationship;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -89,10 +90,17 @@ public class QueryResource extends Resource {
             final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText);
             final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
             
+            String spatialRelText = form.getFirstValue("spatialRel", "SpatialRelIntersects");
+            SpatialRelationship spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
+            
+            if (form.getNames().contains("relationParam")) {
+                throw new IllegalArgumentException("'relationParam' is not implemented");
+            }
+
             String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
             String geometryText = form.getFirstValue("geometry");
-            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, inSR, nativeCRS);
-            
+            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, inSR, nativeCRS);
+
             if (form.getNames().contains("text")) {
                 throw new UnsupportedOperationException("Text filter not implemented");
             }
@@ -155,7 +163,7 @@ public class QueryResource extends Resource {
         }
     }
     
-    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
+    private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, SpatialRelationship spatialRel, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
         final MathTransform mathTx;
         if (requestCRS != null) {
             try {
@@ -180,7 +188,7 @@ public class QueryResource extends Resource {
                         throw new IllegalArgumentException("Error while converting envelope from input to native coordinate system", e1);
                     }
                 }
-                return FILTERS.bbox(geometryProperty, e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY(), null);
+                return spatialRel.createEnvelopeFilter(geometryProperty, e);
             }
         } else if ("GeometryPoint".equals(geometryType)) {
             com.vividsolutions.jts.geom.Point p = parseShortPoint(geometryText);
@@ -195,7 +203,7 @@ public class QueryResource extends Resource {
                         throw new IllegalArgumentException("Error while converting point from input to native coordinate system", e);
                     }
                 }
-                return FILTERS.intersects(FILTERS.property(geometryProperty), FILTERS.literal(p));
+                return spatialRel.createGeometryFilter(geometryProperty, p);
             } // else fall through to the catch-all exception at the end
         } else {
             try {
@@ -204,7 +212,7 @@ public class QueryResource extends Resource {
                 if (mathTx != null) {
                     g = JTS.transform(g, mathTx);
                 }
-                return FILTERS.intersects(FILTERS.property(geometryProperty), FILTERS.literal(g));
+                return spatialRel.createGeometryFilter(geometryProperty, g);
             } catch (JSONException e) {
                 // fall through here to the catch-all exception at the end
             } catch (TransformException e) {

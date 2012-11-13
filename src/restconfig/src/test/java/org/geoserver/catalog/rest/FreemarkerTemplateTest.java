@@ -30,23 +30,38 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
     }
 
     private String getIndexAsString(String childPath, String format) throws Exception {
-        String indexUrl = childPath.substring(0, childPath.lastIndexOf("/")) + "." + format;
+        String indexUrl = childPath.substring(0, childPath.lastIndexOf("/"));
+        if (format != null) {
+            indexUrl += "." + format;            
+        }
         String indexContent = getAsString(indexUrl);
         return indexContent;
     }
     
+    private static String getName(String path) {
+        return path.substring(path.lastIndexOf('/') + 1, path.length());
+    }
+    
     private void testGetPutGetDeleteGet(String path, String content) throws Exception {
+        String name = getName(path);
+        
+        String htmlIndexToken = "geoserver" + path + "\">" + name + "</a></li>";
+        String xmlIndexToken = "<name>" + name + "</name>";
+        String jsonIndexToken = "{\"name\":\"" + name + "\"";
+        
         // GET
         Assert.assertEquals("File Not Found", getAsString(path).trim());
-        Assert.assertFalse(getIndexAsString(path, "html").contains("<li>"));
-        Assert.assertFalse(getIndexAsString(path, "xml").contains("<name>"));
-        Assert.assertFalse(getIndexAsString(path, "json").contains("\"name\":"));        
+        Assert.assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));        
+        Assert.assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
+        Assert.assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
+        Assert.assertFalse(getIndexAsString(path, "json").contains(jsonIndexToken));        
                 
         // PUT
         put(path, content).close();
-        Assert.assertTrue(getIndexAsString(path, "html").contains("<li>"));
-        Assert.assertTrue(getIndexAsString(path, "xml").contains("<name>"));
-        Assert.assertTrue(getIndexAsString(path, "json").contains("\"name\":"));        
+        Assert.assertTrue(getIndexAsString(path, null).contains(htmlIndexToken));                
+        Assert.assertTrue(getIndexAsString(path, "html").contains(htmlIndexToken));
+        Assert.assertTrue(getIndexAsString(path, "xml").contains(xmlIndexToken));
+        Assert.assertTrue(getIndexAsString(path, "json").contains(jsonIndexToken));        
         
         // GET
         Assert.assertEquals(content, getAsString(path).trim());
@@ -56,9 +71,10 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         
         // GET
         Assert.assertEquals("File Not Found", getAsString(path).trim());
-        Assert.assertFalse(getIndexAsString(path, "html").contains("<li>"));
-        Assert.assertFalse(getIndexAsString(path, "xml").contains("<name>"));
-        Assert.assertFalse(getIndexAsString(path, "json").contains("\"name\":"));                
+        Assert.assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));        
+        Assert.assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
+        Assert.assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
+        Assert.assertFalse(getIndexAsString(path, "json").contains(jsonIndexToken));                
     }
     
     @Test

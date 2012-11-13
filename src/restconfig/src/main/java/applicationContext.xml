@@ -398,6 +398,10 @@
         </entry>    
 
         <entry>
+            <key><value>/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
             <key><value>/templates.{format}</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>                
@@ -405,6 +409,10 @@
             <key><value>/templates/{template}.ftl</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
         <entry>
             <key><value>/workspaces/{workspace}/templates.{format}</value></key>
             <value>freemarkerTemplateFinder</value>
@@ -414,6 +422,10 @@
             <value>freemarkerTemplateFinder</value>
         </entry>
         <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
             <key><value>/workspaces/{workspace}/datastores/{datastore}/templates.{format}</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>        
@@ -421,6 +433,10 @@
             <key><value>/workspaces/{workspace}/datastores/{datastore}/templates/{template}.ftl</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
         <entry>
             <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates.{format}</value></key>
             <value>freemarkerTemplateFinder</value>
@@ -430,6 +446,10 @@
             <value>freemarkerTemplateFinder</value>
         </entry>
         <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/templates.{format}</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>        
@@ -437,6 +457,10 @@
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/templates/{template}.ftl</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                            
         <entry>
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates.{format}</value></key>
             <value>freemarkerTemplateFinder</value>

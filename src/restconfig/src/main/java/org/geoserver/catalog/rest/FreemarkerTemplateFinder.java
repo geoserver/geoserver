@@ -5,7 +5,6 @@
 package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.rest.util.RESTUtils;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Resource;
@@ -19,7 +18,7 @@ public class FreemarkerTemplateFinder extends AbstractCatalogFinder {
 
     @Override
     public Resource findTarget(Request request, Response response) {
-        if (RESTUtils.getAttribute(request, "format") == null) {
+        if (request.getResourceRef().getLastSegment().endsWith(".ftl")) {
             return new FreemarkerTemplateResource(request, response, catalog);
         } else {
             return new FreemarkerTemplateListResource(getContext(), request, response, catalog);

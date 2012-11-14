@@ -49,7 +49,7 @@ public class SecurityHomePageContentProvider implements
         }
         return null;
     }
-
+   
     static  boolean  testAuthentication(String user, String passwd, GeoServerSecurityManager secMgr) {
         Authentication token = new UsernamePasswordAuthenticationToken(user, passwd);
         try {
@@ -99,7 +99,7 @@ public class SecurityHomePageContentProvider implements
             }
 
             // check for default master password
-            boolean visibility = testAuthentication(ROOT_USERNAME, DEFAULT_ADMIN_PASSWD, manager);
+            boolean visibility = manager.checkMasterPassword( DEFAULT_ADMIN_PASSWD);
 
             Label label=new Label("mpmessage", new StringResourceModel("changeMasterPassword", (Component)this, null));
             label.setEscapeModelStrings(false);

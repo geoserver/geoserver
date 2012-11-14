@@ -250,7 +250,9 @@ public class DeprecatedProcessFactory implements ProcessFactory, DisposableBean,
                     registerProcessMapping(new NameImpl("gs", "UnionFeatureCollection"), new NameImpl("vec", "UnionFeatureCollection"), map);
                     registerProcessMapping(new NameImpl("gs", "Unique"), new NameImpl("vec", "Unique"), map);
                     registerProcessMapping(new NameImpl("gs", "VectorZonalStatistics"), new NameImpl("vec", "VectorZonalStatistics"), map);
-
+                    registerProcessMapping(new NameImpl("gs", "Heatmap"), new NameImpl("vec", "Heatmap"), map);
+                    registerProcessMapping(new NameImpl("gs", "BarnesSurface"), new NameImpl("vec", "BarnesSurface"), map);
+                    
                     //gs raster processes
                     registerProcessMapping(new NameImpl("gs", "AddCoverages"), new NameImpl("ras", "AddCoverages"), map);
                     registerProcessMapping(new NameImpl("gs", "AreaGrid"), new NameImpl("ras", "AreaGrid"), map);

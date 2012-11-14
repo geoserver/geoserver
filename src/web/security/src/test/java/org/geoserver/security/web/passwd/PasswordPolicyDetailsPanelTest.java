@@ -246,12 +246,12 @@ public  class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedServic
     public void testRemove() throws Exception {
         initializeForXML();
         PasswordPolicyConfig config = new PasswordPolicyConfig();
-        config.setName("default2");
+        config.setName("default3");
         config.setClassName(PasswordValidatorImpl.class.getCanonicalName());
         getSecurityManager().savePasswordPolicy(config);
         
         activatePanel();
-        doRemove(null, "default2");
-        assertNull(getSecurityManager().loadPasswordPolicyConfig("default2"));
+        doRemove(null, "default3");
+        assertNull(getSecurityManager().loadPasswordPolicyConfig("default3"));
     }
 }

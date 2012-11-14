@@ -169,19 +169,15 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
      * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromRoleService(HttpServletRequest request, String principal) throws IOException{
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
         boolean useActiveService = getRoleServiceName()==null || 
                 getRoleServiceName().trim().length()==0;
       
         GeoServerRoleService service = useActiveService ?
               getSecurityManager().getActiveRoleService() :
               getSecurityManager().loadRoleService(getRoleServiceName());
-
-        roles.addAll(service.getRolesForUser(principal));       
-      
+              
         RoleCalculator calc = new RoleCalculator(service);
-        calc.addInheritedRoles(roles);
-        return roles;        
+        return calc.calculateRoles(principal);
     }
     
     /**

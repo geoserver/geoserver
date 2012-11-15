@@ -23,7 +23,9 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
+import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.geometry.SpatialReferenceEncoder;
 import org.opengeo.gsr.core.geometry.SpatialRelationship;
@@ -42,6 +44,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -67,91 +70,110 @@ public class QueryResource extends Resource {
     @Override
     public Representation getRepresentation(Variant variant) {
         if (variant == JSON) {
-            if (!"json".equals(format)) throw new IllegalArgumentException("json is the only supported format");
-            String workspace = (String) getRequest().getAttributes().get("workspace");
-            String layerOrTableName = (String) getRequest().getAttributes().get("layerOrTable");
-            FeatureTypeInfo featureType = catalog.getFeatureTypeByName(workspace, layerOrTableName);
-            if (null == featureType) {
-                throw new NoSuchElementException("No known table or layer with qualified name \"" + workspace + ":" + layerOrTableName + "\"");
-            }
-
-            final String geometryProperty;
-            final CoordinateReferenceSystem nativeCRS;
             try {
-                GeometryDescriptor geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
-                nativeCRS = geometryDescriptor.getCoordinateReferenceSystem();
-                geometryProperty = geometryDescriptor.getName().getLocalPart();
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to determine geometry type for query request");
+                return buildJsonRepresentation();
+            } catch (IllegalArgumentException e) {
+                return buildJsonError(new ServiceError(400, "Invalid arguments from client", Arrays.asList(e.getMessage())));
+            } catch (UnsupportedOperationException e) {
+                return buildJsonError(new ServiceError(500, "Requested operation is not implemented", Arrays.asList(e.getMessage())));
+            } catch (NoSuchElementException e) {
+                return buildJsonError(new ServiceError(404, "Requested element not found", Arrays.asList(e.getMessage())));
             }
-            
-            Form form = getRequest().getResourceRef().getQueryAsForm();
-            if (!(form.getNames().contains("geometryType") && form.getNames().contains("geometry"))) {
-                throw new IllegalArgumentException("'geometry' and 'geometryType' parameters are mandatory");
-            }
-            
-            String inSRText = form.getFirstValue("inSR");
-            String outSRText = form.getFirstValue("outSR");
-            final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText);
-            final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
-            
-            String spatialRelText = form.getFirstValue("spatialRel", "SpatialRelIntersects");
-            SpatialRelationship spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
-            
-            String objectIdsText = form.getFirstValue("objectIds");
-            Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
-
-            String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
-            String geometryText = form.getFirstValue("geometry");
-            String relatePattern = form.getFirstValue("relationParam");
-            Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
-
-            if (form.getNames().contains("text")) {
-                throw new UnsupportedOperationException("Text filter not implemented");
-            }
-            
-            if (form.getNames().contains("maxAllowableOffsets")) {
-                throw new UnsupportedOperationException("Generalization (via 'maxAllowableOffsets' parameter) not implemented");
-            }
-            
-            if (form.getNames().contains("where")) {
-                String whereClause = form.getFirstValue("where");
-                final Filter whereFilter;
-                try {
-                    whereFilter = ECQL.toFilter(whereClause);
-                } catch (CQLException e) {
-                    throw new IllegalArgumentException("'where' parameter must be valid CQL", e);
-                }
-                List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
-                filter = FILTERS.and(children);
-            }
-            
-            String returnGeometryText = form.getFirstValue("returnGeometry", "true");
-            final boolean returnGeometry;
-            if ("true".equalsIgnoreCase(returnGeometryText)) {
-                returnGeometry = true;
-            } else if ("false".equalsIgnoreCase(returnGeometryText)) {
-                returnGeometry = false;
-            } else {
-                throw new IllegalArgumentException("Unrecognized value for returnGeometry parameter: " + returnGeometryText);
-            }
-            
-            String outFieldsText = form.getFirstValue("outFields", "*");
-            String[] properties = parseOutFields(outFieldsText);
-            
-            String returnIdsOnlyText = form.getFirstValue("returnIdsOnly", "false");
-            boolean returnIdsOnly;
-            if ("true".equalsIgnoreCase(returnIdsOnlyText)) {
-                returnIdsOnly = true;
-            } else if ("false".equalsIgnoreCase(returnIdsOnlyText)) {
-                returnIdsOnly = false;
-            } else {
-                throw new IllegalArgumentException("Unrecognized value for returnIdsOnly parameter: " + returnIdsOnlyText);
-            }
-
-            return new JsonQueryRepresentation(featureType, filter, returnIdsOnly, returnGeometry, properties, outSR);
         }
         return super.getRepresentation(variant);
+    }
+    
+    private Representation buildJsonError(ServiceError error) {
+        getResponse().setStatus(new Status(error.getCode()));
+        
+        GeoServicesJsonFormat format = new GeoServicesJsonFormat();
+        return format.toRepresentation(error);
+    }
+
+    private Representation buildJsonRepresentation() {
+        if (!"json".equals(format)) throw new IllegalArgumentException("json is the only supported format");
+        String workspace = (String) getRequest().getAttributes().get("workspace");
+        String layerOrTableName = (String) getRequest().getAttributes().get("layerOrTable");
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(workspace, layerOrTableName);
+        if (null == featureType) {
+            throw new NoSuchElementException("No known table or layer with qualified name \"" + workspace + ":" + layerOrTableName + "\"");
+        }
+
+        final String geometryProperty;
+        final CoordinateReferenceSystem nativeCRS;
+        try {
+            GeometryDescriptor geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
+            nativeCRS = geometryDescriptor.getCoordinateReferenceSystem();
+            geometryProperty = geometryDescriptor.getName().getLocalPart();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to determine geometry type for query request");
+        }
+        
+        Form form = getRequest().getResourceRef().getQueryAsForm();
+        if (!(form.getNames().contains("geometryType") && form.getNames().contains("geometry"))) {
+            throw new IllegalArgumentException("'geometry' and 'geometryType' parameters are mandatory");
+        }
+        
+        String inSRText = form.getFirstValue("inSR");
+        String outSRText = form.getFirstValue("outSR");
+        final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText);
+        final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
+        
+        String spatialRelText = form.getFirstValue("spatialRel", "SpatialRelIntersects");
+        SpatialRelationship spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
+        
+        String objectIdsText = form.getFirstValue("objectIds");
+        Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
+
+        String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
+        String geometryText = form.getFirstValue("geometry");
+        String relatePattern = form.getFirstValue("relationParam");
+        Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
+
+        if (form.getNames().contains("text")) {
+            throw new UnsupportedOperationException("Text filter not implemented");
+        }
+        
+        if (form.getNames().contains("maxAllowableOffsets")) {
+            throw new UnsupportedOperationException("Generalization (via 'maxAllowableOffsets' parameter) not implemented");
+        }
+        
+        if (form.getNames().contains("where")) {
+            String whereClause = form.getFirstValue("where");
+            final Filter whereFilter;
+            try {
+                whereFilter = ECQL.toFilter(whereClause);
+            } catch (CQLException e) {
+                throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);
+            }
+            List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
+            filter = FILTERS.and(children);
+        }
+        
+        String returnGeometryText = form.getFirstValue("returnGeometry", "true");
+        final boolean returnGeometry;
+        if ("true".equalsIgnoreCase(returnGeometryText)) {
+            returnGeometry = true;
+        } else if ("false".equalsIgnoreCase(returnGeometryText)) {
+            returnGeometry = false;
+        } else {
+            throw new IllegalArgumentException("Unrecognized value for returnGeometry parameter: " + returnGeometryText);
+        }
+        
+        String outFieldsText = form.getFirstValue("outFields", "*");
+        String[] properties = parseOutFields(outFieldsText);
+        
+        String returnIdsOnlyText = form.getFirstValue("returnIdsOnly", "false");
+        boolean returnIdsOnly;
+        if ("true".equalsIgnoreCase(returnIdsOnlyText)) {
+            returnIdsOnly = true;
+        } else if ("false".equalsIgnoreCase(returnIdsOnlyText)) {
+            returnIdsOnly = false;
+        } else {
+            throw new IllegalArgumentException("Unrecognized value for returnIdsOnly parameter: " + returnIdsOnlyText);
+        }
+
+        return new JsonQueryRepresentation(featureType, filter, returnIdsOnly, returnGeometry, properties, outSR);
     }
     
     private String[] parseOutFields(String outFieldsText) {
@@ -309,7 +331,7 @@ public class QueryResource extends Resource {
         if (parts.length != 2)
             return null;
         double[] coords = new double[2];
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             String part = parts[i];
             final double coord;
             try {

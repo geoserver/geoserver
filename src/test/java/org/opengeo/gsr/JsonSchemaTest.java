@@ -18,8 +18,8 @@ public abstract class JsonSchemaTest {
         return xstream.toXML(obj);
     }
 
-    protected boolean validateJSON(String json, String schemaPath) {
-        String workingDir = System.getProperty("user.dir") + "/src/test/resources/schemas/";
-        return JSONValidator.isValidSchema(json, new File(workingDir + schemaPath));
+    public static boolean validateJSON(String json, String schemaPath) {
+        File schemaFile = new java.io.File(System.getProperty("user.dir") + "/src/test/resources/schemas" + schemaPath);
+        return JSONValidator.isValidSchema(json, schemaFile);
     }
 }

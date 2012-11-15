@@ -184,6 +184,9 @@ public final class GeometryEncoder {
             double x = obj.getDouble("x");
             double y = obj.getDouble("y");
             return geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(x, y));
+        } else if (obj.containsKey("points")) {
+            JSONArray points = obj.getJSONArray("points");
+            return geometries.createMultiPoint(jsonArrayToCoordinates(points));
         } else if (obj.containsKey("paths")) {
             JSONArray paths = obj.getJSONArray("paths");
             com.vividsolutions.jts.geom.LineString[] lines = new com.vividsolutions.jts.geom.LineString[paths.size()];

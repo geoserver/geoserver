@@ -1,0 +1,27 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+
+	"title":"feature collection",
+	"type":["null","object"],
+	
+	"properties":{ 
+		"displayFieldName":{
+			"title":"field with name of the feature",
+			"type":"string"},
+		"objectIdFieldName":{
+			"title":"field with id of the feature",
+			"type":"string"},
+		"fields":{
+			"$ref":"fields.json"},
+		"geometryType":{
+			"title":"the type of the geometry",
+ 			"description":"applicable for layers only; known values include: GeometryPoint, GeometryMultipoint, GeometryPolyline, GeometryPolygon, GeometryEnvelope",
+			"type":"string"},
+		"spatialReference":{
+			"description":"applicable for layers only",
+			"$ref":"spatialreference.json"},
+		"features":{
+			"title":"list of features",
+			"$ref":"features.json"}
+	}
+}

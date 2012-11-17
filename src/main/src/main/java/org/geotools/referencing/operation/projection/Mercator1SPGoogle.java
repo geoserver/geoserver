@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2012 TOPP - www.openplans.org. All rights reserved.
- *           (c) 2003-2004 Open Source Geospatial Foundation (LGPL)
+/* Copyright (c) 2011-2012 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */

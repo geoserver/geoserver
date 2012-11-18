@@ -1110,7 +1110,6 @@ public class CatalogImpl implements Catalog {
         listeners.remove(listener);
     }
     
-    @Override
     public void removeListeners(Class listenerClass) {
         for (Iterator it = listeners.iterator(); it.hasNext();) {
             CatalogListener listener = (CatalogListener) it.next();

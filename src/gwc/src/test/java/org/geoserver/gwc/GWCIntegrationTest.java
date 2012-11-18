@@ -38,10 +38,11 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
-        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+        final String layerName = getLayerId(BASIC_POLYGONS);
         String request;
         MockHttpServletResponse response;
 
+        assertNotNull(getCatalog().getLayerByName(layerName));
         request = buildGetMap(true, layerName, "EPSG:4326", null);
         response = getAsServletResponse(request);
 

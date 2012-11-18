@@ -16,14 +16,14 @@ import org.opengis.filter.sort.SortBy;
 
 public class CompositeFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
-    private List<FeatureCollection> collections;
+    private List<FeatureCollection<FeatureType, Feature>> collections;
 
-    protected CompositeFeatureCollection(List<FeatureCollection> collections) {
+    protected CompositeFeatureCollection(List<FeatureCollection<FeatureType, Feature>> collections) {
         super(collections.get(0).getSchema());
         this.collections = collections;
 
         // check consistency
-        for (FeatureCollection fc : collections) {
+        for (FeatureCollection<FeatureType, Feature> fc : collections) {
             if (!getSchema().equals(fc.getSchema())) {
                 throw new IllegalArgumentException(
                         "All feature collections must have the same type, found " + getSchema()
@@ -34,8 +34,8 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
 
     @Override
     public FeatureCollection<FeatureType, Feature> subCollection(Filter filter) {
-        List<FeatureCollection> filtered = new ArrayList<FeatureCollection>();
-        for (FeatureCollection fc : filtered) {
+        List<FeatureCollection<FeatureType, Feature>> filtered = new ArrayList<FeatureCollection<FeatureType, Feature>>();
+        for (FeatureCollection<FeatureType, Feature> fc : filtered) {
             filtered.add(fc.subCollection(filter));
         }
         
@@ -47,7 +47,7 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
         // being very lazy here, since I don't believe we need this method in CSW
         // TODO: create a SortMergeFeatureCollection instead
         MemoryFeatureCollection memory = new MemoryFeatureCollection(getSchema());
-        for (FeatureCollection fc : collections) {
+        for (FeatureCollection<FeatureType, Feature> fc : collections) {
             memory.addAll(fc);
         }
         return memory.sort(order);

@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.DelegateFeatureIterator;
@@ -31,11 +30,6 @@ import org.opengis.feature.type.FeatureType;
  */
 public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature> implements
         FeatureCollection<T, F> {
-    /**
-     * listeners
-     */
-    protected List<CollectionListener> listeners = new ArrayList<CollectionListener>();
-
     /**
      * id used when serialized to gml
      */
@@ -159,71 +153,6 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     }
 
     /**
-     * Implement to support modification.
-     * 
-     * @param o element whose presence in this collection is to be ensured.
-     * @return <tt>true</tt> if the collection changed as a result of the call.
-     * 
-     * @throws UnsupportedOperationException if the <tt>add</tt> method is not supported by this
-     *         collection.
-     * 
-     * @throws NullPointerException if this collection does not permit <tt>null</tt> elements, and
-     *         the specified element is <tt>null</tt>.
-     * 
-     * @throws ClassCastException if the class of the specified element prevents it from being added
-     *         to this collection.
-     * 
-     * @throws IllegalArgumentException if some aspect of this element prevents it from being added
-     *         to this collection.
-     */
-    public boolean add(F o) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds all of the elements in the specified collection to this collection (optional operation).
-     * 
-     * @param c collection whose elements are to be added to this collection.
-     * @return <tt>true</tt> if this collection changed as a result of the call.
-     * @throws UnsupportedOperationException if this collection does not support the <tt>addAll</tt>
-     *         method.
-     * @throws NullPointerException if the specified collection is null.
-     * 
-     * @see #add(Object)
-     */
-    @SuppressWarnings("unchecked")
-    public boolean addAll(Collection<? extends F> c) {
-        boolean modified = false;
-        Iterator<? extends F> e = c.iterator();
-        try {
-            while (e.hasNext()) {
-                if (add(e.next()))
-                    modified = true;
-            }
-        } finally {
-            if (c instanceof FeatureCollection) {
-                FeatureCollection other = (FeatureCollection) c;
-                other.close(e);
-            }
-        }
-        return modified;
-    }
-
-    public boolean addAll(FeatureCollection<? extends T, ? extends F> c) {
-        boolean modified = false;
-        FeatureIterator<? extends F> e = c.features();
-        try {
-            while (e.hasNext()) {
-                if (add(e.next()))
-                    modified = true;
-            }
-        } finally {
-            e.close();
-        }
-        return modified;
-    }
-
-    /**
      * Removes all of the elements from this collection (optional operation).
      * 
      * @throws UnsupportedOperationException if the <tt>clear</tt> method is not supported by this
@@ -339,106 +268,6 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     }
 
     /**
-     * Removes a single instance of the specified element from this collection, if it is present
-     * (optional operation).
-     * 
-     * @param o element to be removed from this collection, if present.
-     * @return <tt>true</tt> if the collection contained the specified element.
-     * @throws UnsupportedOperationException if the <tt>remove</tt> method is not supported by this
-     *         collection.
-     */
-    public boolean remove(Object o) {
-        Iterator<F> e = iterator();
-        try {
-            if (o == null) {
-                while (e.hasNext()) {
-                    if (e.next() == null) {
-                        e.remove();
-                        return true;
-                    }
-                }
-            } else {
-                while (e.hasNext()) {
-                    if (o.equals(e.next())) {
-                        e.remove();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } finally {
-            close(e);
-        }
-    }
-
-    /**
-     * Removes from this collection all of its elements that are contained in the specified
-     * collection (optional operation).
-     * <p>
-     * 
-     * @param c elements to be removed from this collection.
-     * @return <tt>true</tt> if this collection changed as a result of the call.
-     * @throws UnsupportedOperationException if the <tt>removeAll</tt> method is not supported by
-     *         this collection.
-     * @throws NullPointerException if the specified collection is null.
-     * 
-     * @see #remove(Object)
-     * @see #contains(Object)
-     */
-    @SuppressWarnings("unchecked")
-    final public boolean removeAll(Collection<?> c) {
-        boolean modified = false;
-        Iterator e = iterator();
-        try {
-            while (e.hasNext()) {
-                if (c.contains(e.next())) {
-                    e.remove();
-                    modified = true;
-                }
-            }
-            return modified;
-        } finally {
-            if (c instanceof FeatureCollection) {
-                FeatureCollection other = (FeatureCollection) c;
-                other.close(e);
-            }
-        }
-    }
-
-    /**
-     * Retains only the elements in this collection that are contained in the specified collection
-     * (optional operation).
-     * 
-     * @param c elements to be retained in this collection.
-     * @return <tt>true</tt> if this collection changed as a result of the call.
-     * @throws UnsupportedOperationException if the <tt>retainAll</tt> method is not supported by
-     *         this Collection.
-     * @throws NullPointerException if the specified collection is null.
-     * 
-     * @see #remove(Object)
-     * @see #contains(Object)
-     */
-    @SuppressWarnings("unchecked")
-    final public boolean retainAll(Collection<?> c) {
-        boolean modified = false;
-        Iterator e = iterator();
-        try {
-            while (e.hasNext()) {
-                if (!c.contains(e.next())) {
-                    e.remove();
-                    modified = true;
-                }
-            }
-            return modified;
-        } finally {
-            if (c instanceof FeatureCollection) {
-                FeatureCollection other = (FeatureCollection) c;
-                other.close(e);
-            }
-        }
-    }
-
-    /**
      * Array of all the elements.
      * 
      * @return an array containing all of the elements in this collection.
@@ -503,14 +332,6 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     public String getID() {
         return id;
-    }
-
-    public final void addListener(CollectionListener listener) throws NullPointerException {
-        listeners.add(listener);
-    }
-
-    public final void removeListener(CollectionListener listener) throws NullPointerException {
-        listeners.remove(listener);
     }
 
     public T getSchema() {

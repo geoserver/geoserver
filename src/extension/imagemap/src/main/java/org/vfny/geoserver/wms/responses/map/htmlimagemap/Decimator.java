@@ -1,7 +1,10 @@
-/**
+/* Copyright (c) 2011 - 2012 TOPP - www.openplans.org. All rights reserved.
+ *           (c) 2004-2008 Open Source Geospatial Foundation (LGPL)
+ * This code is licensed under the GPL 2.0 license, availible at the root
+ * application directory.
+ * 
  * A modified version of Decimator from Geotools renderer.lite.
  */
-
 package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 
 import java.awt.Rectangle;

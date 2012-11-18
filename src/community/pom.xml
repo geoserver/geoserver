@@ -186,12 +186,6 @@
         <module>feature-aggregate</module>
       </modules>
     </profile>
-    <profile>
-     <id>wfsv</id>
-     <modules>
-       <module>wfsv</module>
-     </modules>
-    </profile>
     <profile>      
       <id>authkey</id>
       <modules>

@@ -15,7 +15,7 @@ and the following license:
 DATA LICENSE
 ------------
 
-The data directory includes information provided by the Open Geospatial Consortium:
+The data directory includes information provided by the Open Geospatial Consortium::
 
     Copyright © 2012 Open Geospatial Consortium, Inc.
     All Rights Reserved. http://www.opengeospatial.org/ogc/legal

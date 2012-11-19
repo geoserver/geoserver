@@ -6,7 +6,6 @@ WMS
 The Web Map Service (WMS) page supports the configuration of raster rendering and SVG options. 
 
 .. figure:: ../images/services_WMS.png
-  :align: center
    
    *WMS configuration options*
 

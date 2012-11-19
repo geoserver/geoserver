@@ -48,9 +48,10 @@ Configure the HTTP header filter
 
    * Set ``Name`` to "proxy"
    * Set ``Request header attribute to`` to "sdf09rt2s"
-   * Set ``Role source`` to "User group service". Additional information about role services is here :ref:`sec_rolesystem_rolesource`
+   * Set ``Role source`` to "User group service"
    * Set the name of the user group service to "default"
 
+.. todo:: Add topic for 'rolesource' and reinstate ref: - Additional information about role services is here sec_rolesystem_rolesource
       
    .. figure:: images/digest4.jpg
       :align: center

@@ -7,8 +7,9 @@ GeoServer provides support for Open Geospatial Consortium (OGC) Web Feature Serv
 
 GeoServer is the reference implementation of both the 1.0 and 1.1 versions of the standard, completely implementing every part of the protocol.  This includes the Basic operations of GetCapabilities, DescribeFeatureType and GetFeature, as well as the more advanced Transaction, LockFeature and GetGmlObject operations.  GeoServer's WFS also is integrated with GeoServer's :ref:`security` system, to limit access to data and transactions.  It also supports a wide variety of :ref:`wfs_output_formats`, to make the raw data more widely available.  
 
-GeoServer additionally supports a special 'versioning' protocol in an extension: :ref:`wfsv_extension`.  This is not yet a part of the WFS specification, but is written to be compatible, extending it to provide a history of edits, differences between edits, and a rollback operation to take things to a previous state.  
+GeoServer additionally supports a special 'versioning' protocol in an extension.  This is not yet a part of the WFS specification, but is written to be compatible, extending it to provide a history of edits, differences between edits, and a rollback operation to take things to a previous state.  
 
+.. todo:: clarify the topic for the wfsv_extension reference.
 
 :ref:`wfs_reference`
 

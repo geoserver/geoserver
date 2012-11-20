@@ -4,11 +4,16 @@
  */
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.ResourceAccessManager;
@@ -16,9 +21,11 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
+import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
@@ -351,5 +358,35 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         // ... bases requires one to be in the military
         assertSame(bases, sc.getFeatureTypeByName("topp:bases"));
     }
-     
+
+    @Test
+    public void testLockedLayerInGroupMustNotHideGroup() throws Exception {        
+        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+        
+        SecurityContextHolder.getContext().setAuthentication(rwUser);
+        assertSame(states, sc.getFeatureTypeByName("topp:states"));
+        assertSame(roads, sc.getFeatureTypeByName("topp:roads"));
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");        
+        assertSame(layerGroupWithSomeLockedLayer, layerGroup);
+        assertEquals(2, layerGroup.getLayers().size());
+        
+        // try with read-only user, not empty LayerGroup should be returned
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNull(sc.getFeatureTypeByName("topp:states"));
+        assertSame(roads, sc.getFeatureTypeByName("topp:roads"));
+        layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");                
+        assertNotNull(layerGroup);
+        assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
+        assertEquals(1, layerGroup.getLayers().size());
+        
+        // try with anonymous user, empty LayerGroup should be returned
+        SecurityContextHolder.getContext().setAuthentication(anonymous);
+        assertNull(sc.getFeatureTypeByName("topp:states"));
+        assertNull(sc.getFeatureTypeByName("topp:roads"));
+        layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");                
+        assertNotNull(layerGroup);
+        assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
+        assertEquals(0, layerGroup.getLayers().size());
+    }        
 }

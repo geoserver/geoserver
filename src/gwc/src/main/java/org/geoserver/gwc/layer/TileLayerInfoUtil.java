@@ -68,7 +68,7 @@ public class TileLayerInfoUtil {
                 info.getMimeFormats().addAll(defaults.getDefaultCoverageCacheFormats());
             }
 
-            checkStyles(layerInfo, info);
+            checkAutomaticStyles(layerInfo, info);
         }
         info.setName(tileLayerName(layerInfo));
         info.setId(layerInfo.getId());
@@ -101,7 +101,7 @@ public class TileLayerInfoUtil {
         return info;
     }
 
-    private static void checkStyles(final LayerInfo layer, GeoServerTileLayerInfo layerInfo) {
+    public static void checkAutomaticStyles(final LayerInfo layer, GeoServerTileLayerInfo layerInfo) {
         if (layerInfo.isAutoCacheStyles() && layer.getStyles() != null
                 && layer.getStyles().size() > 0) {
 

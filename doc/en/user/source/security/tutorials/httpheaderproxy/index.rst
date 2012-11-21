@@ -51,7 +51,7 @@ Configure the HTTP header filter
    * Set ``Role source`` to "User group service"
    * Set the name of the user group service to "default"
 
-.. todo:: Add topic for 'rolesource' and reinstate ref: - Additional information about role services is here sec_rolesystem_rolesource
+Additional information about role services is here :ref:`sec_rolesystem_rolesource`
       
    .. figure:: images/digest4.jpg
       :align: center

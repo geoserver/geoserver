@@ -12,6 +12,5 @@ Security in GeoServer is based on a **role-based system**, with roles created to
    usergroupservices
    roles
    roleservices
+   rolesource
    interaction
-   
-.. todo:: add rolesource topic

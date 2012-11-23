@@ -4,12 +4,8 @@
  */
 package org.geoserver.wps.gs;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +29,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.ViewType;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -46,13 +41,10 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.gce.arcgrid.ArcGridFormat;
-import org.geotools.gce.arcgrid.ArcGridReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
-import org.geotools.parameter.Parameter;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -419,6 +411,9 @@ public class ImportProcess implements GSProcess {
                     catalog.add( cinfo );
                     
                     LayerInfo layerInfo = cb.buildLayer( cinfo );
+                    if ( styleName != null && targetStyle != null ) {
+                    	layerInfo.setDefaultStyle( targetStyle );
+                    }
                     //JD: commenting this out, these sorts of edits should be handled
                     // with a second PUT request on the created coverage
                     /*
@@ -460,6 +455,9 @@ public class ImportProcess implements GSProcess {
                     catalog.save( cinfo );
                     
                     LayerInfo layerInfo = catalog.getLayerByName(cinfo.getName());
+                    if ( styleName != null && targetStyle != null ) {
+                    	layerInfo.setDefaultStyle( targetStyle );
+                    }
                     
                     return layerInfo.prefixedName();
                 }

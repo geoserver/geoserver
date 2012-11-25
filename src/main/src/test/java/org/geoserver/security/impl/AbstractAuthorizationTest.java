@@ -87,6 +87,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected LayerGroupInfo layerGroupTopp;
     
+    protected LayerGroupInfo layerGroupWithSomeLockedLayer;
+    
     protected List<LayerInfo> layers;
 
     protected List<FeatureTypeInfo> featureTypes;
@@ -119,8 +121,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(nurcWs.getName()).andReturn("nurc").anyTimes();
         replay(nurcWs);
 
-        statesLayer = buildLayer("states", toppWs, FeatureTypeInfo.class);
-        roadsLayer = buildLayer("roads", toppWs, FeatureTypeInfo.class);
+        statesLayer = buildLayer("states", toppWs, FeatureTypeInfo.class, false);
+        roadsLayer = buildLayer("roads", toppWs, FeatureTypeInfo.class, false);
         landmarksLayer = buildLayer("landmarks", toppWs, FeatureTypeInfo.class);
         basesLayer = buildLayer("bases", toppWs, FeatureTypeInfo.class);
         // let's add one with a dot inside the name
@@ -141,12 +143,18 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         lineStyle = buildStyle("line", toppWs);
         
         // layer groups
-        layerGroupGlobal = buildLayerGroup("layerGroup", arcGridLayer, pointStyle, null);
-        layerGroupTopp = buildLayerGroup("layerGroupTopp", statesLayer, lineStyle, toppWs);
+        layerGroupGlobal = buildLayerGroup("layerGroup", pointStyle, null, arcGridLayer);
+        layerGroupTopp = buildLayerGroup("layerGroupTopp", lineStyle, toppWs, statesLayer);
+        layerGroupWithSomeLockedLayer = buildLayerGroup("layerGroupWithSomeLockedLayer", lineStyle, toppWs, statesLayer, roadsLayer);
     }
 
     protected LayerInfo buildLayer(String name, WorkspaceInfo ws,
             Class<? extends ResourceInfo> resourceClass) throws Exception {
+        return buildLayer(name, ws, resourceClass, true);
+    }
+    
+    protected LayerInfo buildLayer(String name, WorkspaceInfo ws,
+            Class<? extends ResourceInfo> resourceClass, boolean advertised) throws Exception {
         
         FeatureStore fs = createNiceMock(FeatureStore.class);
         replay(fs);
@@ -172,11 +180,13 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                     ((FeatureTypeInfo) resource).getFeatureSource((ProgressListener) anyObject(),
                             (Hints) anyObject())).andReturn(fs).anyTimes();
         }
+        if (!advertised) expect(resource.isAdvertised()).andReturn(advertised).anyTimes();
         replay(resource);
 
         LayerInfo layer = createNiceMock(LayerInfo.class);
         expect(layer.getName()).andReturn(name).anyTimes();
         expect(layer.getResource()).andReturn(resource).anyTimes();
+        if (!advertised) expect(layer.isAdvertised()).andReturn(advertised).anyTimes();
         replay(layer);
 
         return layer;
@@ -191,7 +201,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         return style;
     }
 
-    protected LayerGroupInfo buildLayerGroup(String name, LayerInfo layer, StyleInfo style, WorkspaceInfo ws) {
+    protected LayerGroupInfo buildLayerGroup(String name, StyleInfo style, WorkspaceInfo ws, LayerInfo... layer) {
         LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
         expect(layerGroup.getName()).andReturn(name).anyTimes();
         expect(layerGroup.getLayers()).andReturn(Arrays.asList(layer)).anyTimes();
@@ -240,6 +250,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                 (CoverageInfo) arcGrid).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:roads")).andReturn((FeatureTypeInfo) roads)
                 .anyTimes();
+        expect(catalog.getLayerByName("topp:roads")).andReturn(roadsLayer).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:landmarks")).andReturn(
                 (FeatureTypeInfo) landmarks).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:bases")).andReturn((FeatureTypeInfo) bases)
@@ -259,9 +270,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getStyles()).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
         expect(catalog.getStylesByWorkspace(toppWs)).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
         expect(catalog.getStylesByWorkspace(nurcWs)).andReturn(Arrays.asList(pointStyle)).anyTimes();
-        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(layerGroupGlobal, layerGroupTopp)).anyTimes();
-        expect(catalog.getLayerGroupsByWorkspace("topp")).andReturn(Arrays.asList(layerGroupTopp)).anyTimes();
+        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(layerGroupGlobal, layerGroupTopp, layerGroupWithSomeLockedLayer)).anyTimes();
+        expect(catalog.getLayerGroupsByWorkspace("topp")).andReturn(Arrays.asList(new LayerGroupInfo[] { layerGroupTopp, layerGroupWithSomeLockedLayer })).anyTimes();
         expect(catalog.getLayerGroupsByWorkspace("nurc")).andReturn(Arrays.asList(layerGroupGlobal)).anyTimes();
+        expect(catalog.getLayerGroupByName("topp", layerGroupWithSomeLockedLayer.getName())).andReturn(layerGroupWithSomeLockedLayer).anyTimes();
         replay(catalog);
     }
 }

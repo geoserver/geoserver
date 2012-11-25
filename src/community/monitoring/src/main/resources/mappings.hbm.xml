@@ -10,6 +10,10 @@
   </typedef>
   <typedef name="Error" class='org.geoserver.monitor.hib.ErrorUserType'>
   </typedef>
+  <typedef class="org.geoserver.monitor.hib.BoundingBoxType" name="BoundingBox"/>
+  <typedef class="org.geoserver.monitor.hib.BoundingBoxType" name="NativeBoundingBox">
+     <param name="storeCRSAsWKT">true</param>
+  </typedef>
 
   <!-- TODO specify which attributes are not null -->
   <class name="org.geoserver.monitor.RequestData" table="REQUEST">
@@ -58,6 +62,14 @@
     <property column="RESPONSE_STATUS" name="responseStatus" />
     
     <property column="HTTP_REFERER" name="httpReferer" length="4096"/>
+    
+    <property  name="bbox" type="BoundingBox">
+      <column name="MINX"/>
+      <column name="MINY"/>
+      <column name="MAXX"/>
+      <column name="MAXY"/>
+      <column name="CRS"/>
+    </property>
     
     <list name="resources" table="REQUEST_RESOURCES">
       <key column="REQUEST_ID" not-null="true"/>

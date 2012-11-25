@@ -23,6 +23,9 @@
    <ResponseStatus>${responseStatus!""}</ResponseStatus>
    <ResponseLength>${responseLength?c}</ResponseLength>
    <ResponseContentType>${responseContentType!""}</ResponseContentType>
+   <#if bbox?? && bbox.minX()<=bbox.maxX()>
+   <BoundingBox><Min x="${bbox.minX()}" y="${bbox.minY()}"><Max x="${bbox.maxX()}" y="${bbox.maxY()}"></BoundingBox>
+   </#if>
    <#if error??>
    <Failed>true</Failed>
    <ErrorMessage>${errorMessage!""}</ErrorMessage>

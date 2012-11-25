@@ -4,6 +4,9 @@
  */
 package org.geoserver.wms;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -54,6 +57,9 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.filter.Filters;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
@@ -68,9 +74,12 @@ import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * A facade providing access to the WMS configuration details
@@ -1169,6 +1178,80 @@ public class WMS implements ApplicationContextAware {
         }
 
         return result;
+    }
+
+    /**
+     * Converts a coordinate expressed on the device space back to real world coordinates. Stolen
+     * from LiteRenderer but without the need of a Graphics object
+     * 
+     * @param x
+     *            horizontal coordinate on device space
+     * @param y
+     *            vertical coordinate on device space
+     * @param map
+     *            The map extent
+     * @param width
+     *            image width
+     * @param height
+     *            image height
+     * 
+     * @return The correspondent real world coordinate
+     * 
+     * @throws RuntimeException
+     */
+    public static Coordinate pixelToWorld(double x, double y, ReferencedEnvelope map, double width, double height) {
+        // set up the affine transform and calculate scale values
+        AffineTransform at = worldToScreenTransform(map, width, height);
+    
+        Point2D result = null;
+    
+        try {
+            result = at.inverseTransform(new java.awt.geom.Point2D.Double(x, y),
+                    new java.awt.geom.Point2D.Double());
+        } catch (NoninvertibleTransformException e) {
+            throw new RuntimeException(e);
+        }
+    
+        Coordinate c = new Coordinate(result.getX(), result.getY());
+    
+        return c;
+    }
+
+    /**
+     * Sets up the affine transform. Stolen from liteRenderer code.
+     * 
+     * @param mapExtent
+     *            the map extent
+     * @param width
+     *            the screen size
+     * @param height
+     * 
+     * @return a transform that maps from real world coordinates to the screen
+     */
+    public static AffineTransform worldToScreenTransform(ReferencedEnvelope mapExtent, double width, double height) {
+        
+        //the transformation depends on an x/y ordering, if we have a lat/lon crs swap it
+        CoordinateReferenceSystem crs = mapExtent.getCoordinateReferenceSystem();
+        boolean swap = crs != null && CRS.getAxisOrder(crs) == AxisOrder.NORTH_EAST;
+        if (swap) {
+            mapExtent = new ReferencedEnvelope(mapExtent.getMinY(), mapExtent.getMaxY(), 
+                mapExtent.getMinX(), mapExtent.getMaxX(), null);
+        }
+        
+        double scaleX = (double) width / mapExtent.getWidth();
+        double scaleY = (double) height / mapExtent.getHeight();
+    
+        double tx = -mapExtent.getMinX() * scaleX;
+        double ty = (mapExtent.getMinY() * scaleY) + height;
+    
+        AffineTransform at = new AffineTransform(scaleX, 0.0d, 0.0d, -scaleY, tx, ty);
+    
+        //if we swapped concatenate a transform that swaps back
+        if (swap) {
+            at.concatenate(new AffineTransform(0, 1, 1, 0, 0, 0));
+        }
+    
+        return at;
     }
 
     public static WMS get() {

@@ -64,6 +64,13 @@ request history are desired. This mode is also most appropriate in a clustered
 server environment in which a user is interested in viewing real time request
 information about multiple nodes in a cluster.
 
+Bounding Box
+------------
+
+The Bounding Box of requests can be logged.  By default, the box requested by WMS and WCS requests is logged.  Optionally this can be disabled, or a bounding box can be estimated for WFS requests.
+
+The level of bounding box logging, and the CRS used for the log can both be set in the ``monitor.properties`` file.
+
 Monitor Database 
 ----------------
 
@@ -81,6 +88,7 @@ For example to store request data in an external PostgreSQL database, set ``db.p
    url=jdbc:postgresql://192.168.1.124:5432/monitoring
    username=bob
    password=foobar
+   defaultAutoCommit=false
 
 and ``hibernate.properties`` to::
 

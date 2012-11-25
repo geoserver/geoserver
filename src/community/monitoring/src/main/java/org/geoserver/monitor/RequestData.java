@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.geoserver.platform.ServiceException;
+import org.opengis.geometry.BoundingBox;
+
 
 /**
  * The request object, a simple java bean that gathers all the information and data that is 
@@ -210,6 +212,11 @@ public class RequestData implements Serializable {
      *  The Referer of the HTTP request, if any
      */
     private String httpReferer;
+    
+    /**
+     * A bounding box for the region the request covers if any (May be approximate)
+     */
+    private BoundingBox bbox;
 
     public long getId() {
         return id;
@@ -509,6 +516,7 @@ public class RequestData implements Serializable {
         clone.setError(error);
         clone.setResponseStatus(responseStatus);
         clone.setHttpReferer(httpReferer);
+        clone.setBbox(bbox);
      
         return clone;
     }
@@ -533,4 +541,14 @@ public class RequestData implements Serializable {
     public void setHttpReferer(String httpReferer){
         this.httpReferer = httpReferer;
     }
+
+    public BoundingBox getBbox() {
+        return bbox;
+    }
+
+    public void setBbox(BoundingBox bbox) {
+        this.bbox = bbox;
+    }
+    
+    
 }

@@ -8,27 +8,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.ows.util.OwsUtils;
 import org.geotools.xml.EMFUtils;
 
 public class LockFeatureHandler extends WFSRequestObjectHandler {
 
-    public LockFeatureHandler() {
-        super("net.opengis.wfs.LockFeatureType");
+    public LockFeatureHandler(MonitorConfig config, Catalog catalog) {
+        super("net.opengis.wfs.LockFeatureType", config, catalog);
     }
 
     @Override
     public List<String> getLayers(Object request) {
-        List locks = (List) EMFUtils.get((EObject)request, "lock");
+        @SuppressWarnings("unchecked")
+        List<Object> locks = (List<Object>) EMFUtils.get((EObject)request, "lock");
         if (locks == null) {
             return null;
         }
         
-        List<String> layers = new ArrayList();
+        List<String> layers = new ArrayList<String>();
         for (Object lock : locks) {
             layers.add(toString(EMFUtils.get((EObject)lock, "typeName")));
         }
         
         return layers;
+    }
+    
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected List<Object> getElements(Object request) {
+        return (List<Object>) OwsUtils.get(request, "lock");
     }
 
 }

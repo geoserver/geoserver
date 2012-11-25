@@ -248,7 +248,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
             (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         AdminRequest.start(new Object());
-        assertEquals(2, view.getItemCount());
+        assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
         for (Iterator<Item> it = view.getItems(); it.hasNext();) {
             String name = it.next().get("itemProperties:0:component:link:label")

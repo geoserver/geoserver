@@ -5,7 +5,7 @@
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
+ 
 <beans>
 
     <!--  
@@ -34,15 +34,22 @@
     <!-- configuration module -->
         <!-- note: we use depends to ensure that all datastore plugins are 
              loaded from the spring container before processing hte catalog -->
-    
+     
     <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="extensions">
          <property name="resourceLoader" ref="resourceLoader"/>  
     </bean>
     <bean id="secureCatalog" class="org.geoserver.security.SecureCatalogImpl" depends-on="accessRulesDao,extensions">
-        <constructor-arg ref="rawCatalog" />
+        <constructor-arg ref="rawCatalog" /> 
     </bean>
-    <bean id="localWorkspaceCatalog" class="org.geoserver.catalog.impl.LocalWorkspaceCatalog">
+    <bean id="advertisedCatalog" class="org.geoserver.catalog.impl.AdvertisedCatalog">
         <constructor-arg ref="secureCatalog" />
+        <property name="layerGroupVisibilityPolicy">
+        	<bean id="org.geoserver.catalog.LayerGroupVisibilityPolicy.HIDE_NEVER" 
+        		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+        </property>
+    </bean>    
+    <bean id="localWorkspaceCatalog" class="org.geoserver.catalog.impl.LocalWorkspaceCatalog">
+        <constructor-arg ref="advertisedCatalog" />
     </bean>
     
     <!-- Switch this when you want to enable the secure catalog by default -->
@@ -195,9 +202,7 @@
   <bean id="localWorkspaceFilter" class="org.geoserver.ows.LocalWorkspaceCatalogFilter">
     <constructor-arg ref="rawCatalog"/> 
   </bean>
-  <!-- Hides non advertised resources and layers -->
-  <bean id="advertisedResourceFilter" class="org.geoserver.catalog.AdvertisedResourceFilter"/>
-
+   
   <!-- Alllows to lock the config subsyste to that we serialize accesses to it -->
   <bean id="configurationLock" class="org.geoserver.GeoServerConfigurationLock"/>
   

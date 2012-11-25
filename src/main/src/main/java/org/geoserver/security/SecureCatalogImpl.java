@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -75,7 +75,7 @@ import com.google.common.collect.ImmutableList;
 public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Catalog {
 
     protected ResourceAccessManager accessManager;
-
+    
     public SecureCatalogImpl(Catalog catalog) throws Exception {
         this(catalog, lookupResourceAccessManager());
     }
@@ -83,7 +83,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     public String getId() {
         return delegate.getId();
     }
-
+    
     public ResourceAccessManager getResourceAccessManager() {
         return accessManager;
     }
@@ -607,24 +607,26 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return null;
         }
 
-        // scan thru the layers, if any cannot be accessed, we hide the group, otherwise
-        // we return the group back, eventually wrapping the read only layers
+        // scan thru the layers
         final List<LayerInfo> layers = group.getLayers();
         ArrayList<LayerInfo> wrapped = new ArrayList<LayerInfo>(layers.size());
         boolean needsWrapping = false;
         for (LayerInfo layer : layers) {
             LayerInfo checked = checkAccess(user, layer);
-            if(checked == null)
-                return null;
-            else if(checked != null && checked != layer) 
-                needsWrapping = true;
-            wrapped.add(checked);
+            if (checked != null) {
+                if (checked != layer) {
+                    needsWrapping = true;
+                }
+                wrapped.add(checked);
+            } else {
+                needsWrapping = true; 
+            }
         }
         
         if(needsWrapping)
             return new SecuredLayerGroupInfo(group, wrapped);
         else
-            return group;
+            return group;            
     }
 
     /**

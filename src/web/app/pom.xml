@@ -849,6 +849,19 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>wcs20</id>
+      <activation>
+        <property><name>wcs20</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>wcs2_0</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 
 </project>

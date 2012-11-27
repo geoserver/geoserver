@@ -222,5 +222,14 @@
         <module>xslt</module>
       </modules>
     </profile>
+    <profile>
+      <id>wcs20</id>
+      <activation>
+        <property><name>wcs20</name></property>
+      </activation> 
+      <modules>
+        <module>wcs2_0</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -52,7 +52,7 @@ A third way is to add a geometry type column allowing standard filtering constru
       <ogc:Filter>
          <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>gtype</ogc:PropertyName>
-            <ogc:Literal>Point</ogc:PropertyName>
+            <ogc:Literal>Point</ogc:Literal>
          </ogc:PropertyIsEqualTo>
       </ogc:Filter>
       <PointSymbolizer>
@@ -63,7 +63,7 @@ A third way is to add a geometry type column allowing standard filtering constru
       <ogc:Filter>
          <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>gtype</ogc:PropertyName>
-            <ogc:Literal>Line</ogc:PropertyName>
+            <ogc:Literal>Line</ogc:Literal>
          </ogc:PropertyIsEqualTo>
       </ogc:Filter>
       <LineSymbolizer>
@@ -74,7 +74,7 @@ A third way is to add a geometry type column allowing standard filtering constru
       <ogc:Filter>
          <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>gtype</ogc:PropertyName>
-            <ogc:Literal>Polygon</ogc:PropertyName>
+            <ogc:Literal>Polygon</ogc:Literal>
          </ogc:PropertyIsEqualTo>
       </ogc:Filter>
       <PolygonSymbolizer>

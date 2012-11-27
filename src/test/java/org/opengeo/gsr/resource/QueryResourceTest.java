@@ -1,12 +1,9 @@
 package org.opengeo.gsr.resource;
 
-import org.eel.kitchen.jsonschema.validator.JsonValidator;
 import org.opengeo.gsr.JsonSchemaTest;
-import org.opengeo.gsr.validation.JSONValidator;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 public class QueryResourceTest extends ResourceTest {
@@ -130,5 +127,81 @@ public class QueryResourceTest extends ResourceTest {
         assertTrue("Request with invalid where clause; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
         json = JSONObject.fromObject(result);
         assertTrue("Request with invalid where clause; returned " + result, json.containsKey("code"));
+    }
+    
+    public void testReturnGeometryAndOutFields() throws Exception {
+        String result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90"));
+        assertTrue("Request implicitly including geometries; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        JSONObject json = JSONObject.fromObject(result);
+        JSONArray features = json.getJSONArray("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            assertTrue("No geometry at index " + i + " in " + result, feature.containsKey("geometry"));   
+        }
+        
+        result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90&returnGeometry=true"));
+        assertTrue("Request explicitly including geometries; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        json = JSONObject.fromObject(result);
+        features = json.getJSONArray("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            assertTrue("No geometry at index " + i + " in " + result, feature.containsKey("geometry"));   
+        }
+
+        result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90&returnGeometry=false"));
+        assertTrue("Request excluding geometries, but don't specify fields. in this case the geometry should be returned anyway. JSON was " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        json = JSONObject.fromObject(result);
+        features = json.getJSONArray("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            assertTrue("No geometry at index " + i + " in " + result, feature.containsKey("geometry"));   
+        }
+        
+        result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90&returnGeometry=false&outFields=NAME"));
+        assertTrue("Request excluding geometries. JSON was " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        json = JSONObject.fromObject(result);
+        features = json.getJSONArray("features");
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            assertTrue("Found geometry at index " + i + " in " + result, !feature.containsKey("geometry"));   
+        }
+    }
+    
+    public void testInSRandOutSR() throws Exception {
+        String result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-170,-85,170,85&outSR=3857"));
+        assertFalse("Response should not be empty!", result.isEmpty());
+        assertTrue("Request explicitly including geometries; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        JSONObject json = JSONObject.fromObject(result);
+        assertTrue("Results not in requested spatial reference; json was " + result, json.getJSONObject("spatialReference").getInt("wkid") == 3857);
+        
+        result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90&outSR=2147483647"));
+        assertTrue("Request for unknown WKID produces error; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/exception.json"));
+        json = JSONObject.fromObject(result);
+        assertTrue("Exception report should have an error code; json is " + result, json.containsKey("code"));
+        
+        result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-45,265,-44,264&inSR=3785"));
+        assertTrue("Request explicitly including geometries; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        json = JSONObject.fromObject(result);
+        assertTrue("Results not in requested spatial reference; json was " + result, json.getJSONObject("spatialReference").getInt("wkid") == 4326);
+    }
+  
+// TODO: This is working, but fails validation because GeoServer doesn't only support numeric identifiers.
+//    public void testReturnIdsOnly() throws Exception {
+//        String result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90&returnIdsOnly=true"));
+//        assertTrue("Request for ids only; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureIdSet.json"));
+//    }
+    
+    public void testSpatialRel() throws Exception {
+        String result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryPolyLine&geometry={paths:[[[-0.001,0],[0,0.0015]]]}"));
+        assertTrue("Request with implicit spatialRel; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        JSONObject json = JSONObject.fromObject(result);
+        JSONArray features = json.getJSONArray("features");
+        assertTrue("There should be no results for this intersects query. JSON was: " + result, features.size() == 0);
+        
+        result = getAsString(query("cite", "Streams", "?f=json&geometryType=GeometryPolyLine&geometry={paths:[[[-0.001,0],[0,0.0015]]]}&spatialRel=SpatialRelEnvelopeIntersects"));
+        assertTrue("Request specifying spatialreference; returned " + result, JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
+        json = JSONObject.fromObject(result);
+        features = json.getJSONArray("features");
+       assertTrue("Should have results for envelope query at 0,0. JSON was: " + result, features.size() == 1);
     }
 }

@@ -31,24 +31,28 @@ public class FeatureEncoder {
         FeatureIterator<F> iterator = collection.features();
         
         T schema = collection.getSchema();
-        GeometryTypeEnum geometryType = GeometryTypeEnum.forJTSClass(schema.getGeometryDescriptor().getType().getBinding());
-        
         json.object()
           .key("objectIdFieldName").value("")
-          .key("globalIdFieldName").value("")
-          .key("geometryType").value(geometryType.getGeometryType());
+          .key("globalIdFieldName").value("");
         
-        try {
-            SpatialReference sr = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
-            json.key("spatialReference");
-            SpatialReferenceEncoder.toJson(sr, json);
-        } catch (FactoryException e) {
-            throw new RuntimeException(e);
+        if (returnGeometry) {
+            GeometryTypeEnum geometryType = GeometryTypeEnum.forJTSClass(schema.getGeometryDescriptor().getType().getBinding());
+            json.key("geometryType").value(geometryType.getGeometryType());
+        }
+        
+        if (schema.getCoordinateReferenceSystem() != null) {
+            try {
+                SpatialReference sr = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
+                json.key("spatialReference");
+                SpatialReferenceEncoder.toJson(sr, json);
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
         }
         
         json.key("fields").array();
         for (PropertyDescriptor desc : schema.getDescriptors()) {
-            if (!desc.getName().equals(schema.getGeometryDescriptor().getName())) {
+            if (schema.getGeometryDescriptor() != null && !desc.getName().equals(schema.getGeometryDescriptor().getName())) {
                 descriptorToJson(desc, json);
             }
         }
@@ -79,7 +83,7 @@ public class FeatureEncoder {
         json.object();
         
         for (Property prop : feature.getProperties()) {
-            if (!prop.getName().equals(geometry.getName())) {
+            if (geometry == null || !prop.getName().equals(geometry.getName())) {
                 json.key(prop.getName().getLocalPart()).value(prop.getValue());
             }
         }

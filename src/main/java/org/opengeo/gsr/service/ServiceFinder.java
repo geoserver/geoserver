@@ -17,7 +17,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
 import org.opengeo.gsr.ms.resource.MapResource;
 import org.opengeo.gsr.ms.resource.QueryResource;
-import org.opengeo.gsr.ms.service.MapService;
 import org.opengeo.gsr.resource.CatalogResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -69,8 +68,8 @@ public class ServiceFinder extends AbstractCatalogFinder {
                         geoServer);
                 break;
             case MapServer:
-                if (null == operation) {
-                    resource = new MapResource(null, request, response, MapService.class, geoServer, format);
+                if ("".equals(operation)) {
+                    resource = new MapResource(null, request, response, geoServer, format);
                 } else if ("query".equals(operation)) {
                     resource = new QueryResource(null, request, response, catalog, format);
                 }

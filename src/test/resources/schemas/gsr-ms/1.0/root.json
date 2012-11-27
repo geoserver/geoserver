@@ -1,0 +1,214 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "title":"Map Service Root resource",
+   "type":"object",
+   "properties":{
+      "serviceDescription":{
+         "title":"service description",
+         "description":"textual service description provided by the service author",
+         "type":"string"
+      },
+      "mapName":{
+         "title":"map name",
+         "description":"name of the map provided by the service author",
+         "type":"string",
+         "required":true
+      },
+      "description":{
+         "title":"description",
+         "description":"textual description of the maps provided by the service author",
+         "type":"string"
+      },
+      "copyrightText":{
+         "title":"copyright text",
+         "description":"copyright statement",
+         "type":"string"
+      },
+      "layers":{
+         "title":"layers",
+         "type":"array",
+         "items":{
+            "title":"layer",
+            "description":"information on each layer",
+            "type":"object",
+            "properties":{
+               "id":{
+                  "title":"layer id",
+                  "description":"unique layer/table id within the map service",
+                  "type":"integer",
+                  "required":true
+               },
+               "name":{
+                  "title":"layer name",
+                  "type":"string"
+               },
+               "defaultVisibility":{
+                  "title":"default visibility",
+                  "type":"boolean",
+                  "default":true
+               },
+               "parentLayerId":{
+                  "title":"parent layer id",
+                  "type":"integer"
+               },
+               "subLayerIds":{
+                  "title":"sub layer ids",
+                  "type":["null","array"],
+                  "items":{
+                     "type":"integer"
+                  }
+               }
+            }
+         }
+      },
+      "tables":{
+         "title":"tables",
+         "type":"array",
+         "items":{
+            "title":"table",
+            "type":"object",
+            "properties":{
+               "id":{
+                  "title":"table id",
+                  "description":"unique layer/table id within the map service",
+                  "type":"integer",
+                  "required":true
+               },
+               "name":{
+                  "title":"table name",
+                  "type":"string"
+               }
+            }
+         }
+      },
+      "spatialReference":{
+         "$ref":"../../gsr/1.0/spatialreference.json"
+      },
+      "singleFusedMapCache":{
+         "title":"single fused map cache",
+         "description":"Indicates whether the map service is cached",
+         "type":"boolean",
+         "default":true
+      },
+      "tileInfo":{
+         "title":"tile information",
+         "type":"object",
+         "properties":{
+            "rows":{
+               "title":"rows",
+               "type":"integer",
+               "required":true
+            },
+            "cols":{
+               "title":"cols",
+               "type":"integer",
+               "required":true
+            },
+            "dpi":{
+               "title":"dpi",
+               "type":"integer",
+               "required":true
+            },
+            "format":{
+               "title":"format",
+               "type":"string",
+               "required":true
+            },
+            "compressionQuality":{
+               "title":"compression quality",
+               "type":"number"
+            },
+            "origin":{
+               "$ref":"../../point.json"
+            },
+            "spatialReference":{
+               "$ref":"../../spatialreference.json"
+            },
+            "lods":{
+               "title":"levels of detail",
+               "type":"array",
+               "items":{
+                  "type":"object",
+                  "properties":{
+                     "level":{
+                        "title":"level",
+                        "description":"The top most level is 0, this level represents the finest level of detail",
+                        "type":"integer",
+                        "required":true
+                     },
+                     "resolution":{
+                        "title":"resolution",
+                        "description":"Resolution, in map units, of each pixel in a tile for the scale level",
+                        "type":"number",
+                        "required":true
+                     },
+                     "scale":{
+                        "title":"scale",
+                        "description":"Scale denominator for the level",
+                        "type":"number",
+                        "required":true
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "initialExtent":{
+         "$ref":"../../envelope.json"
+      },
+      "fullExtent":{
+         "$ref":"../../envelope.json"
+      },
+      "timeInfo":{
+         "title":"temporal information",
+         "type":"object",
+         "properties":{
+            "timeExtent":{
+               "title":"time extent",
+               "description":"Beginning and end of the extent",
+               "type":"array",
+               "items":{
+                  "type":"string",
+                  "format":"date-time",
+                  "minItems":2,
+                  "maxItems":2
+               }
+            },
+            "timeReference":{
+               "title":"time reference",
+               "type":"object",
+               "properties":{
+                  "timeZone":{
+                     "title":"time zone",
+                     "type":"string"
+                  },
+                  "respectsDaylightSaving":{
+                     "title":"respects daylight saving",
+                     "type":"boolean"
+                  }
+               }
+            }
+         }
+      },
+      "units":{
+         "title":"units of measure",
+         "description":"The units the map service is in",
+         "type":"string"
+      },
+      "supportedImageFormatTypes":{
+         "title":"supported image format types",
+         "description":"",
+         "type":"string"
+      },
+      "documentInfo":{
+         "title":"document information",
+         "description":"user-defined properties with string values that provide additional metadata about the service",
+         "$ref":"../../keyValuePairs.json"
+      },
+      "capabilities":{
+         "title":"capabilities",
+         "description":"provides hints about the capabilities of the service; pre-defined values are Map, Query, and Data",
+         "type":"string"
+      }
+   }
+}

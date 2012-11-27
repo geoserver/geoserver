@@ -3,10 +3,6 @@
 REST Security
 =============
 
-.. note::
-
-   RESTful security configuration is not available in GeoServer prior to version 2.0.1.
-
 In addition to providing the ability to secure OWS style services, GeoServer also supports securing RESTful services.
 
 As with layer and service security, RESTful security configuration is based on ``sec_roles``. The mapping of request URI to role is defined in a file named ``rest.properties``, located in the ``security`` directory of the GeoServer data directory.
@@ -41,7 +37,7 @@ Ant patterns are commonly used for pattern matching directory and file paths. Th
 Examples
 --------
 
-Most of the examples in this section are specific to the :ref:`rest configuration extension <rest_extension>` but any RESTful GeoServer service may be configured in the same manner.
+Most of the examples in this section are specific to the GeoServer :ref:`rest` but any RESTful GeoServer service may be configured in the same manner.
 
 Allowing only authenticated access
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -240,7 +240,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     }
                 }
             } finally {
-                coll.close(iter);
+                iter.close();
             }
         }
     }
@@ -300,7 +300,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                 }
             }
         } finally {
-            coll.close(iter);
+            iter.close();
         }
 
     }
@@ -556,7 +556,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     blockNames.put(f.getID(), (blockCounter++) + "");
             }
         } finally {
-            coll.close(iter);
+        	iter.close();
         }
     }
 

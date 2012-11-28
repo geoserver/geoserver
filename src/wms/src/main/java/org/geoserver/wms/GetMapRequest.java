@@ -234,33 +234,33 @@ public class GetMapRequest extends WMSRequest {
         return this.mandatoryParams.width;
     }
 
-    /**
-     * @return the KML/KMZ score value for image vs. vector response
-     * @deprecated use <code>getFormatOptions().get( "kmscore" )</code>
-     */
-    public int getKMScore() {
-        Integer kmscore = (Integer) getFormatOptions().get("kmscore");
+    // /**
+    // * @return the KML/KMZ score value for image vs. vector response
+    // * @deprecated use <code>getFormatOptions().get( "kmscore" )</code>
+    // */
+    // public int getKMScore() {
+    // Integer kmscore = (Integer) getFormatOptions().get("kmscore");
+    //
+    // if (kmscore != null) {
+    // return kmscore.intValue();
+    // }
+    //
+    // return 40; // old default
+    // }
 
-        if (kmscore != null) {
-            return kmscore.intValue();
-        }
-
-        return 40; // old default
-    }
-
-    /**
-     * @return true: return full attribution for placemark <description>
-     * @deprecated use <code>getFormatOptions().get( "kmattr" )</code>
-     */
-    public boolean getKMattr() {
-        Boolean kmattr = (Boolean) getFormatOptions().get("kmattr");
-
-        if (kmattr != null) {
-            return kmattr.booleanValue();
-        }
-
-        return true; // old default
-    }
+    // /**
+    // * @return true: return full attribution for placemark <description>
+    // * @deprecated use <code>getFormatOptions().get( "kmattr" )</code>
+    // */
+    // public boolean getKMattr() {
+    // Boolean kmattr = (Boolean) getFormatOptions().get("kmattr");
+    //
+    // if (kmattr != null) {
+    // return kmattr.booleanValue();
+    // }
+    //
+    // return true; // old default
+    // }
 
     // /**
     // * @return super overlay flag, <code>true</code> if super overlay requested.
@@ -276,19 +276,19 @@ public class GetMapRequest extends WMSRequest {
     // return false; //old default
     // }
 
-    /**
-     * @return kml legend flag, <code>true</code> if legend is enabled.
-     * @deprecated use <code>getFormatOptions().get( "legend" )</code>
-     */
-    public boolean getLegend() {
-        Boolean legend = (Boolean) getFormatOptions().get("legend");
-
-        if (legend != null) {
-            return legend.booleanValue();
-        }
-
-        return false; // old default
-    }
+    // /**
+    // * @return kml legend flag, <code>true</code> if legend is enabled.
+    // * @deprecated use <code>getFormatOptions().get( "legend" )</code>
+    // */
+    // public boolean getLegend() {
+    // Boolean legend = (Boolean) getFormatOptions().get("legend");
+    //
+    // if (legend != null) {
+    // return legend.booleanValue();
+    // }
+    //
+    // return false; // old default
+    // }
 
     /**
      * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects
@@ -516,42 +516,42 @@ public class GetMapRequest extends WMSRequest {
         this.mandatoryParams.width = width.intValue();
     }
 
-    /**
-     * @param score
-     *            the KML/KMZ score value for image vs. vector response, from 0 to 100
-     * @deprecated use <code>getFormatOptions().put( "kmscore", new Integer( score ) );</code>
-     */
-    public void setKMScore(int score) {
-        getFormatOptions().put("kmscore", new Integer(score));
-    }
+    // /**
+    // * @param score
+    // * the KML/KMZ score value for image vs. vector response, from 0 to 100
+    // * @deprecated use <code>getFormatOptions().put( "kmscore", new Integer( score ) );</code>
+    // */
+    // public void setKMScore(int score) {
+    // getFormatOptions().put("kmscore", new Integer(score));
+    // }
 
-    /**
-     * @param on
-     *            true: full attribution; false: no attribution
-     * @deprecated use <code>getFormatOptions().put( "kmattr", new Boolean( on ) );</code>
-     */
-    public void setKMattr(boolean on) {
-        getFormatOptions().put("kmattr", new Boolean(on));
-    }
+    // /**
+    // * @param on
+    // * true: full attribution; false: no attribution
+    // * @deprecated use <code>getFormatOptions().put( "kmattr", new Boolean( on ) );</code>
+    // */
+    // public void setKMattr(boolean on) {
+    // getFormatOptions().put("kmattr", new Boolean(on));
+    // }
 
-    /**
-     * Sets the super overlay parameter on the request.
-     * 
-     * @deprecated use
-     *             <code>getFormatOptions().put( "superoverlay", new Boolean( superOverlay ) );</code>
-     */
-    public void setSuperOverlay(boolean superOverlay) {
-        getFormatOptions().put("superoverlay", new Boolean(superOverlay));
-    }
+    // /**
+    // * Sets the super overlay parameter on the request.
+    // *
+    // * @deprecated use
+    // * <code>getFormatOptions().put( "superoverlay", new Boolean( superOverlay ) );</code>
+    // */
+    // public void setSuperOverlay(boolean superOverlay) {
+    // getFormatOptions().put("superoverlay", new Boolean(superOverlay));
+    // }
 
-    /**
-     * Sets the kml legend parameter of the request.
-     * 
-     * @deprecated use <code>getFormatOptions().put( "legend", new Boolean( legend ) );</code>
-     */
-    public void setLegend(boolean legend) {
-        getFormatOptions().put("legend", new Boolean(legend));
-    }
+    // /**
+    // * Sets the kml legend parameter of the request.
+    // *
+    // * @deprecated use <code>getFormatOptions().put( "legend", new Boolean( legend ) );</code>
+    // */
+    // public void setLegend(boolean legend) {
+    // getFormatOptions().put("legend", new Boolean(legend));
+    // }
 
     /**
      * Sets the time request parameter (a list of Date or DateRange objects)

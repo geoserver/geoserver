@@ -8,20 +8,36 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.TimeZone;
 
 import net.sf.json.util.JSONBuilder;
 
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.data.FeatureSource;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.CalcResult;
+import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.feature.visitor.MinVisitor;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -86,10 +102,10 @@ public class MapResource extends Resource {
         for (LayerInfo l : geoServer.getCatalog().getLayers()) {
             if (l.getResource().getStore().getWorkspace().equals(workspace)) {
                 layersInWorkspace.add(l);
-            } else {
-                System.out.println(l.getResource().getStore().getWorkspace());
             }
         }
+        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+
         return new MapRootRepresentation(service, Collections.unmodifiableList(layersInWorkspace));
     }
     
@@ -112,8 +128,24 @@ public class MapResource extends Resource {
             json.key("mapName").value(service.getTitle());
             json.key("layers");
             encodeLayers(json, layers);
+            
+            Date[] dateRange = getCumulativeDateRange(layers);
+            if (dateRange != null) {
+                json.key("timeInfo");
+                json.object();
+                json.key("timeExtent");
+                json.array();
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                format.setTimeZone(TimeZone.getTimeZone("UTC"));
+                json.value(format.format(dateRange[0]));
+                json.value(format.format(dateRange[1]));
+                json.endArray();
+                json.endObject();
+            }
+            
             json.key("singleFusedMapCache").value(false);
             json.key("capabilities").value("Query");
+            
             json.endObject();
             writer.flush();
             writer.close();
@@ -122,12 +154,54 @@ public class MapResource extends Resource {
     
     private static final void encodeLayers(JSONBuilder json, List<LayerInfo> layers) {
         json.array();
+        int count = 0;
         for (LayerInfo l : layers) {
             json.object();
-            json.key("id").value(l.getId());
+            json.key("id").value(count);
+            json.key("name").value(l.getName());
             json.endObject();
+            count ++;
         }
         json.endArray();
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static final Date[] getCumulativeDateRange(List<LayerInfo> layers) throws IOException {
+        Comparable overallMin = null;
+        Comparable overallMax = null;
+        for (LayerInfo l : layers) {
+            FeatureTypeInfo ftInfo = (FeatureTypeInfo) l.getResource();
+            DimensionInfo dimensionInfo = ftInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+            if (dimensionInfo != null && dimensionInfo.isEnabled()) {
+                String timeProperty = dimensionInfo.getAttribute();
+                FeatureSource<? extends FeatureType, ? extends Feature> source = ftInfo.getFeatureSource(null, null);
+                FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures();
+                MaxVisitor max = new MaxVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
+                MinVisitor min = new MinVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
+                features.accepts(min, null);
+                features.accepts(max, null);
+                if (min.getResult() != CalcResult.NULL_RESULT) {
+                    if (overallMin == null) {
+                        overallMin = min.getMin();
+                    } else {
+                        overallMin = min.getMin().compareTo(overallMin) < 0 ? min.getMin() : overallMin;
+                    }
+                }
+                
+                if (max.getResult() != CalcResult.NULL_RESULT) {
+                    if (overallMax == null) {
+                        overallMax = max.getMax();
+                    } else {
+                        overallMax = max.getMax().compareTo(overallMax) > 0 ? max.getMax() : overallMax;
+                    }
+                }
+            }
+        }
+        if (overallMin == null || overallMax == null) {
+            return null;
+        } else {
+            return new Date[] { (Date) overallMin, (Date) overallMax };
+        }
     }
      
 }

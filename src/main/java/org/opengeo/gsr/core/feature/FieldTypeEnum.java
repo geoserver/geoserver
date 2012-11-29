@@ -4,6 +4,8 @@
  */
 package org.opengeo.gsr.core.feature;
 
+import java.util.Date;
+
 /**
  * 
  * @author Juan Marin, OpenGeo
@@ -27,6 +29,10 @@ public enum FieldTypeEnum {
     public static FieldTypeEnum forClass(Class<?> binding) {
         if (String.class.equals(binding)) {
             return STRING;
+        } else if (Double.class.equals(binding)) {
+            return DOUBLE;
+        } else if (Date.class.equals(binding)) {
+            return DATE;
         } else {
             throw new RuntimeException("No FieldType equivalent known for " + binding);
         }

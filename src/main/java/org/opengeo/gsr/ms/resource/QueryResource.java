@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,7 +18,10 @@ import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -23,6 +29,9 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.geotools.temporal.object.DefaultInstant;
+import org.geotools.temporal.object.DefaultPeriod;
+import org.geotools.temporal.object.DefaultPosition;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.feature.FeatureEncoder;
 import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
@@ -39,6 +48,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.opengis.temporal.Instant;
+import org.opengis.temporal.Period;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -93,18 +104,36 @@ public class QueryResource extends Resource {
     private Representation buildJsonRepresentation() {
         if (!"json".equals(format)) throw new IllegalArgumentException("json is the only supported format");
         String workspace = (String) getRequest().getAttributes().get("workspace");
-        String layerOrTableName = (String) getRequest().getAttributes().get("layerOrTable");
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(workspace, layerOrTableName);
+        
+        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
+        for (LayerInfo l : catalog.getLayers()) {
+            if (l.getResource().getStore().getWorkspace().getName().equals(workspace)) {
+                layersInWorkspace.add(l);
+            }
+        }
+        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+        
+        String layerOrTableId = (String) getRequest().getAttributes().get("layerOrTable");
+        Integer layerOrTableIndex = Integer.valueOf(layerOrTableId);
+        LayerInfo l = layersInWorkspace.get(layerOrTableIndex);
+        FeatureTypeInfo featureType = (FeatureTypeInfo) l.getResource();
         if (null == featureType) {
-            throw new NoSuchElementException("No known table or layer with qualified name \"" + workspace + ":" + layerOrTableName + "\"");
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId + "\"");
         }
 
         final String geometryProperty;
+        final String temporalProperty;
         final CoordinateReferenceSystem nativeCRS;
         try {
             GeometryDescriptor geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
             nativeCRS = geometryDescriptor.getCoordinateReferenceSystem();
             geometryProperty = geometryDescriptor.getName().getLocalPart();
+            DimensionInfo timeInfo = featureType.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+            if (timeInfo == null || !timeInfo.isEnabled()) {
+                temporalProperty = null;
+            } else {
+                temporalProperty = timeInfo.getAttribute();
+            }
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to determine geometry type for query request");
         }
@@ -129,6 +158,10 @@ public class QueryResource extends Resource {
         String geometryText = form.getFirstValue("geometry");
         String relatePattern = form.getFirstValue("relationParam");
         Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
+        
+        if (form.getNames().contains("time")) {
+            filter = FILTERS.and(filter, parseTemporalFilter(temporalProperty, form.getFirstValue("time")));
+        }
 
         if (form.getNames().contains("text")) {
             throw new UnsupportedOperationException("Text filter not implemented");
@@ -379,6 +412,51 @@ public class QueryResource extends Resource {
                 return SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(json);
             } catch (JSONException e) {
                 throw new IllegalArgumentException("Failed to parse JSON spatial reference: " + srText);
+            }
+        }
+    }
+    
+    private static Filter parseTemporalFilter(String temporalProperty, String filterText) {
+        if (null == temporalProperty || null == filterText || filterText.equals("")) {
+            return Filter.INCLUDE;
+        } else {
+            String[] parts = filterText.split(",");
+            if (parts.length == 2) {
+                Date d1 = parseDate(parts[0]);
+                Date d2 = parseDate(parts[1]);
+                if (d1 == null && d2 == null) {
+                    throw new IllegalArgumentException("TIME may not have NULL for both start and end times");
+                } else if (d1 == null) {
+                    return FILTERS.before(FILTERS.property(temporalProperty), FILTERS.literal(d2));
+                } else if (d2 == null) {
+                    return FILTERS.after(FILTERS.property(temporalProperty), FILTERS.literal(d1));
+                } else {
+                    Instant start = new DefaultInstant(new DefaultPosition(d1));
+                    Instant end = new DefaultInstant(new DefaultPosition(d2));
+                    Period p = new DefaultPeriod(start, end);
+                    return FILTERS.toverlaps(FILTERS.property(temporalProperty), FILTERS.literal(p));
+                }
+            } else if (parts.length == 1) {
+                Date d = parseDate(parts[0]);
+                if (d == null) {
+                    throw new IllegalArgumentException("TIME may not have NULL for single-instant filter");
+                }
+                return FILTERS.tequals(FILTERS.property(temporalProperty), FILTERS.literal(d));
+            } else {
+                throw new IllegalArgumentException("TIME parameter must comply to POSINT/NULL (, POSINT/NULL)");
+            }
+        }
+    }
+    
+    private static Date parseDate(String timestamp) {
+        if ("NULL".equals(timestamp)) {
+            return null;
+        } else {
+            try {
+                Long time = Long.parseLong(timestamp);
+                return new Date(time);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("TIME parameter must be specified in milliseconds since Jan 1 1970 or NULL; was '" + timestamp + "' instead.");
             }
         }
     }

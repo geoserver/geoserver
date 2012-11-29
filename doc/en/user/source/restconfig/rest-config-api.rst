@@ -1649,6 +1649,74 @@ This operation provides the list of ``fonts`` available in GeoServer and can be 
 - :download:`JSON <representations/fonts_json.txt>`
 
 
+Freemarker Templates
+---------------------
+
+Freemarker is a simple yet powerful template engine that GeoServer uses whenever developer allowed user customization of outputs.
+
+Operations
+^^^^^^^^^^
+
+- ``/templates/<template>.ftl``
+- ``/workspaces/<ws>/templates/<template>.ftl``
+- ``/workspaces/<ws>/datastores/<ds>/templates/<template>.ftl``
+- ``/workspaces/<ws>/datastores/<ds>/featuretypes/<f>/templates/<template>.ftl``
+- ``/workspaces/<ws>/coveragestores/<cs>/templates/<template>.ftl``
+- ``/workspaces/<ws>/coveragestores/<cs>/coverages/<c>/templates/<template>.ftl``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return a template
+     - 200
+     - 
+     - 	
+   * - PUT
+     - Insert or update a template
+     - 405
+     - 
+     - 
+   * - DELETE
+     - Delete a template
+     - 405
+     - 
+     - 
+
+	 
+- ``/templates[.<format>]``
+- ``/workspaces/<ws>/templates[.<format>]``
+- ``/workspaces/<ws>/datastores/<ds>/templates[.<format>]``
+- ``/workspaces/<ws>/datastores/<ds>/featuretypes/<f>/templates[.<format>]``
+- ``/workspaces/<ws>/coveragestores/<cs>/templates[.<format>]``
+- ``/workspaces/<ws>/coveragestores/<cs>/coverages/<c>/templates[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+   * - GET
+     - Return templates 
+     - 200
+     - HTML, XML, JSON
+     - HTML
+ 
+*Representations*:
+
+- :download:`HTML <representations/templates_html.txt>`
+- :download:`XML <representations/templates_xml.txt>`
+- :download:`JSON <representations/templates_json.txt>`
+
+
 OWS Services
 -------------
 

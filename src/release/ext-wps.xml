@@ -18,6 +18,7 @@
         <include>net.opengis.wps*</include>
         <include>jt-*</include>
         <include>serializer*</include>
+        <include>json-simple-*</include>
       </includes>
     </fileSet>
   </fileSets>

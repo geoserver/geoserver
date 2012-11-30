@@ -8,8 +8,9 @@ import net.opengis.wcs20.DescribeCoverageType;
 import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs2_0.response.WCSDescribeCoverageTransformer;
-import org.geoserver.wcs2_0.response.WCSCapsTransformer;
+import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
+import org.geoserver.wcs2_0.response.WCS20GetCapabilitiesTransformer;
+import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
 
 /**
@@ -24,7 +25,9 @@ import org.opengis.coverage.grid.GridCoverage;
  *
  */
 public interface WebCoverageService20 {
-    
+
+//    public final static String VERSION = "2.0";
+
     /**
      * WCS service info.
      */
@@ -33,12 +36,12 @@ public interface WebCoverageService20 {
     /**
     * GetCapabilities operation.
     */
-    WCSCapsTransformer getCapabilities(GetCapabilitiesType request);
+    TransformerBase getCapabilities(GetCapabilitiesType request);
 
     /**
      * DescribeCoverage operation.
      */
-    WCSDescribeCoverageTransformer describeCoverage(DescribeCoverageType request);
+    WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request);
 
     /**
      * GetCoverage operation.

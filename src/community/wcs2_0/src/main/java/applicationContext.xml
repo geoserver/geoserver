@@ -44,6 +44,13 @@
     </constructor-arg>
   </bean>
 
+  <!-- GetCapabilities -->
+  <bean id="wcs20GetCapabilitiesKvpReader"
+    class="org.geoserver.wcs2_0.kvp.WCS20GetCapabilitiesRequestReader" />
+
+  <bean id="wcs20GetCapabilitiesResponse"
+    class="org.geoserver.wcs2_0.response.WCS20GetCapabilitiesResponse" singleton="false" />
+
   <!-- Exception handler, we need to output ows 1.1 exceptions -->
 <!--  <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
     <constructor-arg index="0">

@@ -8,6 +8,6 @@ package org.geoserver.wcs2_0.response;
  *
  * @author etj
  */
-public class WCSCapsTransformer {
+public class WCS20DescribeCoverageTransformer {
     
 }

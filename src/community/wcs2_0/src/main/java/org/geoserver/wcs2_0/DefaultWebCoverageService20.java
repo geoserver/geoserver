@@ -4,7 +4,10 @@
  */
 package org.geoserver.wcs2_0;
 
+import java.nio.charset.Charset;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.opengis.ows20.AcceptVersionsType;
 import net.opengis.wcs20.DescribeCoverageType;
 import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
@@ -13,10 +16,12 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
-import org.geoserver.wcs2_0.response.WCSDescribeCoverageTransformer;
-import org.geoserver.wcs2_0.response.WCSCapsTransformer;
+import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
+import org.geoserver.wcs2_0.response.WCS20GetCapabilitiesTransformer;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
+import org.vfny.geoserver.wcs.WcsException;
 
 public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
@@ -34,17 +39,20 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         this.responseFactory = responseFactory;
     }
     
+    @Override
     public WCSInfo getServiceInfo() {
         return geoServer.getService(WCSInfo.class);
     }
 
+
     @Override
-    public WCSCapsTransformer getCapabilities(GetCapabilitiesType request) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public TransformerBase getCapabilities(GetCapabilitiesType request) {
+
+        return new GetCapabilities(getServiceInfo(), catalog).run(request);
     }
 
     @Override
-    public WCSDescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
+    public WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

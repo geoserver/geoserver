@@ -17,7 +17,7 @@ import org.geotools.xml.EMFUtils;
 /**
  * Parses the OWS 2.0 capabilities negotiation related AcceptVersion parameter
  * 
- * @author ETj - GeoSolutions
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  * 
  */
 public class WCS20AcceptVersionsKvpParser extends AcceptVersionsKvpParser {

@@ -23,6 +23,10 @@ import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
 
+/**
+ *
+ * @author Emanuele Tajariol (etj) - GeoSolutions
+ */
 public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
     protected Logger LOGGER = Logging.getLogger(DefaultWebCoverageService20.class);

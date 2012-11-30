@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author etj
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
@@ -462,13 +462,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
         private void handleCoverageSummary(CoverageInfo cv) {
             start("wcs:CoverageSummary");
-            element("wcs:CoverageId", cv.getId());
-            element("wcs:CoverageSubtype", cv.getNativeFormat()+":"+cv.getNativeName());
+            element("wcs:CoverageId", cv.prefixedName());
+            element("wcs:CoverageSubtype", "GridCoverage");
 
-//            elementIfNotEmpty("ows:Title", cv.getTitle());
-//            elementIfNotEmpty("ows:Abstract", cv.getDescription());
-//            handleKeywords(cv.getKeywords());
-//            handleMetadataLinks(cv.getMetadataLinks(), "simple");
             handleEnvelope(cv.getLatLonBoundingBox());
 
             end("wcs:CoverageSummary");

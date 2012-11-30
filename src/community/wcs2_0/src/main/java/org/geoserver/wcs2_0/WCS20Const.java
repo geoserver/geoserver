@@ -7,7 +7,7 @@ package org.geoserver.wcs2_0;
 /**
  * Some consts useful through the module.
  *
- * @author Emanuele Tajariol, GeoSolutions
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public interface WCS20Const {
     public static final String V20x = "2.0.1"; // current

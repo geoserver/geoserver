@@ -6,15 +6,10 @@
 package org.geoserver.wcs2_0;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.opengis.ows20.AcceptVersionsType;
 import net.opengis.wcs20.GetCapabilitiesType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.RequestUtils;
@@ -27,7 +22,7 @@ import org.vfny.geoserver.wcs.WcsException;
 
 /**
  *
- * @author ETj (etj at geo-solutions.it)
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class GetCapabilities {
 

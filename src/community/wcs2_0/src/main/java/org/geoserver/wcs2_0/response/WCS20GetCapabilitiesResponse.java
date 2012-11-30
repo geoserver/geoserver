@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -6,7 +6,6 @@ package org.geoserver.wcs2_0.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
@@ -17,13 +16,11 @@ import org.geoserver.ows.Response;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.wcs2_0.WCS20Const;
-import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geotools.xml.transform.TransformerBase;
 
 /**
  * Runs the transformer and outputs the capabilities
- * @author Andrea Aime, TOPP
- * TODO: This is a blatant copy of WFS GetCapabilities response. Find a way to share code.
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class WCS20GetCapabilitiesResponse extends Response {
     public WCS20GetCapabilitiesResponse() {

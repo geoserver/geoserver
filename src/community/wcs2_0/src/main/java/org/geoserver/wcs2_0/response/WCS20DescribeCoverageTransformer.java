@@ -6,7 +6,7 @@ package org.geoserver.wcs2_0.response;
 
 /**
  *
- * @author etj
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class WCS20DescribeCoverageTransformer {
     

@@ -9,6 +9,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
+
 
 import org.geoserver.wfs.WFSTestSupport;
 
@@ -49,7 +55,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testMultiLayer() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Points_MPoints");
         checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER","POINTS","LAYER","MPOINTS"});        
     }
@@ -59,7 +65,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testZipOutput() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=dxf-zip");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points&outputFormat=dxf-zip");
         // check mime type
         assertEquals("application/zip", resp.getContentType());
     }
@@ -69,7 +75,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testPoints() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Points");
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
@@ -81,7 +87,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testMultiPoints() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=MPoints&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MPoints&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MPoints");
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
@@ -94,7 +100,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testLines() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Lines&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Lines&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Lines");
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
@@ -106,7 +112,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testMultiLines() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=MLines&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MLines&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MLines");
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
@@ -119,7 +125,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testPolygons() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Polygons&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Polygons");
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
@@ -132,7 +138,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testMultiPolygons() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=MPolygons&outputFormat=dxf");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MPolygons&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MPolygons");
         int pos = getGeometrySearchStart(sResponse);
         assertTrue(pos != -1);
@@ -148,13 +154,13 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     public void testGeometryAsBlock() {
         try {
             // geometry as blocks false
-            MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Polygons&outputFormat=dxf");
+            MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf");
             String sResponse = resp.getOutputStreamContent();
             assertNotNull(sResponse);
             // no insert block generated
             assertFalse(sResponse.indexOf("INSERT") != -1);
             // geometry as blocks true
-            resp = getAsServletResponse("wfs?request=GetFeature&typeName=Polygons&outputFormat=dxf&format_options=asblocks:true");
+            resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=asblocks:true");
             sResponse = resp.getOutputStreamContent();
             assertNotNull(sResponse);
             // one insert block generated
@@ -172,12 +178,12 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     public void testVersion() throws Exception {
         try {
             // good request, version 14
-            MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Polygons&outputFormat=dxf&format_options=version:14");
+            MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=version:14");
             String sResponse = resp.getOutputStreamContent();
             assertNotNull(sResponse);
             assertTrue(sResponse.startsWith("  0"));
             // bad request, version 13: not supported
-            resp = getAsServletResponse("wfs?request=GetFeature&typeName=Polygons&outputFormat=dxf&format_options=version:13");
+            resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=version:13");
             sResponse = resp.getOutputStreamContent();
             assertNotNull(sResponse);
             // has to return an exception
@@ -215,7 +221,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testCustomLineTypes() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Lines&outputFormat=dxf&format_options=ltypes:DASHED!--_*_!0.5");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Lines&outputFormat=dxf&format_options=ltypes:DASHED!--_*_!0.5");
         String sResponse = testBasicResult(resp, "Lines");
         checkSequence(sResponse,new String[] {"DASHED"});
     }
@@ -224,7 +230,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testCustomColors() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=dxf&format_options=colors:1,2");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=colors:1,2");
         String sResponse = testBasicResult(resp, "Points_MPoints");
         checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER"," 62\n     1","LAYER"," 62\n     2"});        
     }
@@ -234,7 +240,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * @throws Exception
      */
     public void testLayerNames() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
         String sResponse = testBasicResult(resp, "Points_MPoints");
         checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER","MYLAYER1","LAYER","MYLAYER2"});        
     }

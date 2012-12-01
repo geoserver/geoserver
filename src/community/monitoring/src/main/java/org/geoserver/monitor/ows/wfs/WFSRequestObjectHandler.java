@@ -40,7 +40,7 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
             try {
                 bounds = filter.getBounds();
                 if(bounds.getCoordinateReferenceSystem()==null){
-                    bounds = ReferencedEnvelope.reference(bounds, bbox.getCoordinateReferenceSystem());
+                    bounds = ReferencedEnvelope.create(bounds, bbox.getCoordinateReferenceSystem());
                 }
                 bounds.toBounds(monitorConfig.getBboxLogCrs());
             } catch (TransformException ex) {

@@ -14,6 +14,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -26,11 +27,11 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class EnvelopePanel extends FormComponentPanel {
 
-    protected Label minXLabel, minYLabel, maxXLabel, maxYLabel;
+    protected Label minXLabel, minYLabel, maxXLabel, maxYLabel, minZLabel, maxZLabel;
 
-    protected Double minX,minY,maxX,maxY;
+    protected Double minX,minY,maxX,maxY,minZ,maxZ;
 
-    protected DecimalTextField minXInput, minYInput, maxXInput, maxYInput;
+    protected DecimalTextField minXInput, minYInput, maxXInput, maxYInput, minZInput, maxZInput;
 
     protected CoordinateReferenceSystem crs;
     protected WebMarkupContainer crsContainer;
@@ -74,11 +75,17 @@ public class EnvelopePanel extends FormComponentPanel {
         this.crsRequired = crsRequired;
     }
     
+    public boolean is3D(){
+    	return crs != null && crs.getCoordinateSystem().getDimension() >= 3;
+    }
+    
     public void setLabelsVisibility(boolean visible) {
         minXLabel.setVisible(visible);
         minYLabel.setVisible(visible);
         maxXLabel.setVisible(visible);
         maxYLabel.setVisible(visible);
+        minZLabel.setVisible(visible && is3D());
+        maxZLabel.setVisible(visible && is3D());
     }
 
     void initComponents() {
@@ -86,13 +93,24 @@ public class EnvelopePanel extends FormComponentPanel {
         
         add(minXLabel = new Label("minXL", new ResourceModel("minX")));
         add(minYLabel = new Label("minYL", new ResourceModel("minY")));
+        add(minZLabel = new Label("minZL", new ResourceModel("minZ")));
         add(maxXLabel = new Label("maxXL", new ResourceModel("maxX")));
         add(maxYLabel = new Label("maxYL", new ResourceModel("maxY")));
+        add(maxZLabel = new Label("maxZL", new ResourceModel("maxZ")));
 
+        
         add( minXInput = new DecimalTextField( "minX", new PropertyModel(this, "minX")) );
         add( minYInput = new DecimalTextField( "minY", new PropertyModel(this, "minY")) );
+        add( minZInput = new DecimalTextField( "minZ", new PropertyModel(this, "minZ")) );
         add( maxXInput = new DecimalTextField( "maxX", new PropertyModel(this, "maxX") ));
         add( maxYInput = new DecimalTextField( "maxY", new PropertyModel(this, "maxY")) );
+        add( maxZInput = new DecimalTextField( "maxZ", new PropertyModel(this, "maxZ")) );
+        
+        minZInput.setVisible(is3D());
+        minZLabel.setVisible(is3D());
+        maxZInput.setVisible(is3D());
+        maxZLabel.setVisible(is3D());
+        
         crsContainer = new WebMarkupContainer("crsContainer");
         crsContainer.setVisible(false);
         crsPanel = new CRSPanel("crs", new PropertyModel(this, "crs"));
@@ -114,6 +132,20 @@ public class EnvelopePanel extends FormComponentPanel {
             this.maxX = e.getMaxX();
             this.maxY = e.getMaxY();
             this.crs = e.getCoordinateReferenceSystem();
+            if( is3D() ){
+            	if( e instanceof ReferencedEnvelope3D ){
+	            	this.minZ = ((ReferencedEnvelope3D)e).getMinZ();
+	            	this.maxZ = ((ReferencedEnvelope3D)e).getMaxZ();
+            	}
+            	else {
+            		this.minZ = Double.NaN;
+            		this.maxZ = Double.NaN;
+            	}
+            }
+            else {
+            	this.minZ = Double.NaN;
+        		this.maxZ = Double.NaN;
+            }
         }
     }
    
@@ -147,7 +179,14 @@ public class EnvelopePanel extends FormComponentPanel {
             if(crsRequired && crs == null) {
                 setConvertedInput(null);
             } else {
-                setConvertedInput(new ReferencedEnvelope(minX, maxX, minY, maxY, crs));
+            	if( is3D() ){
+        			double minZsafe = minZ == null ? Double.NaN : minZ;
+        			double maxZsafe = maxZ == null ? Double.NaN : maxZ;
+    				setConvertedInput(new ReferencedEnvelope3D(minX, maxX, minY, maxY, minZsafe, maxZsafe,crs));
+        		}
+            	else {
+            		setConvertedInput(new ReferencedEnvelope(minX, maxX, minY, maxY, crs));
+            	}
             }
         } else {
             setConvertedInput(null);

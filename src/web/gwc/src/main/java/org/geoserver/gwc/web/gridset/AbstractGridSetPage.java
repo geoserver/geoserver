@@ -250,8 +250,11 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
                 minXInput.add(new UpdateTableBehavior());
                 minYInput.add(new UpdateTableBehavior());
+                minZInput.add(new UpdateTableBehavior());
                 maxXInput.add(new UpdateTableBehavior());
                 maxYInput.add(new UpdateTableBehavior());
+                maxZInput.add(new UpdateTableBehavior());
+                
             }
         }
 

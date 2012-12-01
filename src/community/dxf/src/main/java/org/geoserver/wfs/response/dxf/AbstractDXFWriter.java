@@ -129,7 +129,10 @@ public abstract class AbstractDXFWriter implements DXFWriter {
             this.encoding = encoding;
         // initialize number formats
         format = NumberFormat.getInstance(Locale.US);
-        format.setMaximumFractionDigits(2);
+        // this may not be enough for latlon. At the equator, 0.01° approx. 1100 m
+        // to have an accuracy of cm, 7 is needed
+        // TODO: use CRS information to adapt this value
+        format.setMaximumFractionDigits(7);
         format.setGroupingUsed(false);
         format.setMinimumFractionDigits(1);
         ltypeFormat = NumberFormat.getInstance(Locale.US);

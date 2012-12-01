@@ -26,7 +26,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>wfs</artifactId>
-	   <version>${project.version}</version>
+	  <version>${project.version}</version>
        
     </dependency>	
     <dependency>
@@ -36,7 +36,13 @@
        <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>	
-    
+
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>wps-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>	
+       
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>main</artifactId>

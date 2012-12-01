@@ -30,6 +30,8 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.response.dxf.DXFWriter;
 import org.geoserver.wfs.response.dxf.DXFWriterFinder;
 import org.geoserver.wfs.response.dxf.LineType;
@@ -98,7 +100,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      * @param operation
      * @return
      */
-    public String getExtension(Operation operation) {
+    public String getDxfExtension(Operation operation) {
         GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
                 GetFeatureType.class);
 
@@ -115,13 +117,18 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      */
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return "application/" + getExtension(operation);
+        return "application/" + getDxfExtension(operation);
     }
 
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
+    
     /**
      * Gets output filename.
      * If the handle attribute is defined on the GetFeature tag it
-     * will be used, else the name is obtained concatenating lauer names
+     * will be used, else the name is obtained concatenating layer names
      * with underscore as a separator (up to a maximum name length).
      */
     private String getFileName(Operation operation) {
@@ -147,16 +154,13 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
         return sb.toString();
     }
 
-    /**
-     * Add headers for automatic file save request in browsers.
-     */
     @Override
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
-
-        return (String[][]) new String[][] { { "Content-Disposition",
-                "attachment; filename=" + getFileName(operation) + "." + getExtension(operation) } };
+    public String getAttachmentFileName(Object value, Operation operation) {
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        return getFileName(operation) + '.' + getDxfExtension(operation);
     }
 
+    
     /**
      * Actually write the given featurecollection as a dxf file to
      * the output stream.
@@ -165,10 +169,10 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      *      java.io.OutputStream, org.geoserver.platform.Operation)
      */
     @Override
-    protected void write(FeatureCollectionType featureCollection, OutputStream output,
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation operation) throws IOException, ServiceException {
         // output format (zipped or not)
-        String format = getExtension(operation);
+        String format = getDxfExtension(operation);
         BufferedWriter w = null;
         ZipOutputStream zipStream = null;
         // DXF: use a simple buffered writer

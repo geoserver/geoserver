@@ -6,7 +6,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -62,14 +61,8 @@ public class ResourceTest extends CatalogRESTTestSupport {
         layer2.setResource(ft2);
         layer2.setName("layer2");
 
-        LayerGroupInfo layerGroup1 = catalogFactory.createLayerGroup();
-        layerGroup1.setName("layerGroup1");
-        layerGroup1.getLayers().add(layer1);
-        layerGroup1.getLayers().add(layer2);
-
         catalog.add(layer1);
         catalog.add(layer2);
-        catalog.add(layerGroup1);
     }
 
     public void testConfig() {

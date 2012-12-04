@@ -4,9 +4,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.geoserver.catalog.CatalogFactory;
-import org.geoserver.catalog.LayerGroupInfo;
-
 public class CatalogResourceTest extends ResourceTest {
 
     public void testServiceException() throws Exception {
@@ -36,9 +33,9 @@ public class CatalogResourceTest extends ResourceTest {
         JSONObject jsonObject = (JSONObject) json;
         JSONArray services = (JSONArray) jsonObject.get("services");
         JSONObject mapService = services.getJSONObject(0);
-        assertEquals("layerGroup1", mapService.get("name"));
+        assertEquals("cite", mapService.get("name"));
         assertEquals("MapServer", mapService.get("type"));
-        JSONObject geometryService = services.getJSONObject(1);
+        JSONObject geometryService = services.getJSONObject(services.size() - 1);
         assertEquals("Geometry", geometryService.get("name"));
         assertEquals("GeometryServer", geometryService.get("type"));
     }
@@ -54,21 +51,7 @@ public class CatalogResourceTest extends ResourceTest {
     // TODO: Set up ResourceTest to include Virtual Services and test that folders contain those virtual services
     // and that they validate as Catalog endpoints
 
-    /**
+    /*
      * A.1.2 catalog/uniqueServiceNames
      */
-    public void testUniqueServiceNames() {
-        boolean thrown = false;
-        try {
-            CatalogFactory catalogFactory = catalog.getFactory();
-            LayerGroupInfo layerGroup = catalogFactory.createLayerGroup();
-            layerGroup.setName(catalog.getLayerGroups().get(0).getName());
-            catalog.add(layerGroup);
-        } catch (IllegalArgumentException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
-    }
-    
-    
 }

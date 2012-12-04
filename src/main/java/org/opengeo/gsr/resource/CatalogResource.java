@@ -5,10 +5,9 @@
 package org.opengeo.gsr.resource;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.opengeo.gsr.core.exception.ServiceError;
@@ -23,15 +22,11 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * 
  * @author Juan Marin, OpenGeo
- * 
  */
 public class CatalogResource extends GeoServicesResource {
 
     private String formatValue;
-
-    private String workspace;
 
     private final String productName = "OpenGeo Suite";
 
@@ -43,7 +38,6 @@ public class CatalogResource extends GeoServicesResource {
             GeoServer geoServer) {
         super(context, request, response, clazz, geoServer);
         this.formatValue = getRequest().getResourceRef().getQueryAsForm().getFirstValue("f");
-        this.workspace = getAttribute("workspace");
     }
 
     @Override
@@ -57,36 +51,13 @@ public class CatalogResource extends GeoServicesResource {
                         details));
             }
             List<AbstractService> services = new ArrayList<AbstractService>();
-            List<String> folders = new ArrayList<String>();
-            List<LayerGroupInfo> layerGroupsInfo = null;
-            if (workspace != null) {
-                WorkspaceInfo workspaceInfo = catalog.getFacade().getWorkspaceByName(workspace);
-                if (workspaceInfo != null) {
-                    layerGroupsInfo = catalog.getFacade().getLayerGroupsByWorkspace(workspaceInfo);
-                    for (LayerGroupInfo layerGroupInfo : layerGroupsInfo) {
-                        MapService mapService = new MapService(layerGroupInfo.getName());
-                        services.add(mapService);
-                    }
-                    // TODO: get Suite version number at runtime
-                    return new CatalogService("services", specVersion, productName, currentVersion,
-                            folders, services);
-                }
+            for (WorkspaceInfo ws : catalog.getWorkspaces()) {
+                MapService ms = new MapService(ws.getName());
+                services.add(ms);
             }
-            GeometryService geometryService = new GeometryService("Geometry");
-            layerGroupsInfo = catalog.getFacade().getLayerGroups();
-            for (LayerGroupInfo layerGroupInfo : layerGroupsInfo) {
-                if (layerGroupInfo.getWorkspace() == null) {
-                    MapService mapService = new MapService(layerGroupInfo.getName());
-                    services.add(mapService);
-                } else {
-                    String folder = layerGroupInfo.getWorkspace().getName();
-                    folders.add(folder);
-                }
-            }
-            List<String> folderList = new ArrayList<String>(new HashSet<String>(folders));
-            services.add(geometryService);
+            services.add(new GeometryService("Geometry"));
             return new CatalogService("services", specVersion, productName, currentVersion,
-                    folderList, services);
+                    Collections.<String>emptyList(), services);
         } catch (Exception e) {
             List<String> details = new ArrayList<String>();
             details.add(e.getMessage());

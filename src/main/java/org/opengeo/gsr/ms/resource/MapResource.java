@@ -53,7 +53,7 @@ import org.restlet.resource.Variant;
  */
 
 public class MapResource extends Resource {
-    public static final Variant JSON = new Variant(MediaType.APPLICATION_JAVASCRIPT);
+    public static final Variant JSON = new Variant(new MediaType("application/json"));
     private final GeoServer geoServer;
     private final String format;
     

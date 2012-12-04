@@ -66,7 +66,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class QueryResource extends Resource {
-    public static final Variant JSON = new Variant(MediaType.APPLICATION_JAVASCRIPT);
+    public static final Variant JSON = new Variant(new MediaType("application/json"));
     public QueryResource(Context context, Request request, Response response, Catalog catalog, String format) {
         super(context, request, response);
         this.catalog = catalog;

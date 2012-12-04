@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+CORRECTIONS referenced 2012-07-13 #01
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Use of absolute path in xsi:schemaLocation
+DESCRIPTION:
+- ../gmx/gmx.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd
+- ../gmd/gmd.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd
+- ../gco/gco.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd
+- ../xlink/xlinks.xsd replaced by http://www.w3.org/1999/xlink.xsd
+- ../gml/gml.xsd replaced by http://schemas.opengis.net/gml/3.2.1/gml.xsd
+
+-->
+<CT_CodelistCatalogue xmlns="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+	<!--=====Catalogue description=====-->
+	<name>
+		<gco:CharacterString>ML_gmxCodelists</gco:CharacterString>
+	</name>
+	<scope xsi:type="gmd:PT_FreeText_PropertyType">
+		<gco:CharacterString>Codelists for description of metadata datasets compliant with ISO/TC 211 19115:2003 and 19139</gco:CharacterString>
+		<gmd:PT_FreeText>
+			<gmd:textGroup>
+				<gmd:LocalisedCharacterString locale="#xpointer(//*[@id='fra'])">Listes de codes pour la description de lots de métadonnées conforme ISO TC/211 19115:2003 et 19139</gmd:LocalisedCharacterString>
+			</gmd:textGroup>
+		</gmd:PT_FreeText>
+	</scope>
+	<fieldOfApplication>
+		<gco:CharacterString>GMX (and imported) namespace</gco:CharacterString>
+	</fieldOfApplication>
+	<versionNumber>
+		<gco:CharacterString>0.0</gco:CharacterString>
+	</versionNumber>
+	<versionDate>
+		<gco:Date>2005-03-18</gco:Date>
+	</versionDate>
+	<!--=== for Cultural and Linguistic Adaptability ===-->
+	<!--Default language-->
+	<language>
+		<gmd:LanguageCode codeList="#LanguageCode" codeListValue="eng">English</gmd:LanguageCode>
+	</language>
+	<characterSet>
+		<gmd:MD_CharacterSetCode codeList="#MD_CharacterSetCode" codeListValue="utf8">UTF 8</gmd:MD_CharacterSetCode>
+	</characterSet>
+	<!-- List of the 'locales' into which free text values can be translated-->
+	<locale>
+		<gmd:PT_Locale id="fra">
+			<gmd:languageCode>
+				<gmd:LanguageCode codeList="#LanguageCode" codeListValue="fra">French</gmd:LanguageCode>
+			</gmd:languageCode>
+			<gmd:country>
+				<gmd:Country codeList="#Country" codeListValue="FR">France</gmd:Country>
+			</gmd:country>
+			<gmd:characterEncoding>
+				<gmd:MD_CharacterSetCode codeList="#MD_CharacterSetCode" codeListValue="utf8">UTF 8</gmd:MD_CharacterSetCode>
+			</gmd:characterEncoding>
+		</gmd:PT_Locale>
+	</locale>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--============================= Codelists =======================================-->
+	<!--=== CI_DateTypeCode ===-->
+	<codelistItem>
+		<ML_CodeListDictionary gml:id="CI_DateTypeCode">
+			<gml:description>identification of when a given event occurred</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">CI_DateTypeCode</gml:identifier>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_DateTypeCode_creation">
+					<gml:description>date identifies when the resource was brought into existence</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">creation</gml:identifier>
+					<gml:name>creation</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_DateTypeCode_creation_fr" codeSpace="fra">
+							<gml:description>date identifiant la création de la ressource</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">creation</gml:identifier>
+							<gml:name>création</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_DateTypeCode_publication">
+					<gml:description>date identifies when the resource was issued</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">publication</gml:identifier>
+					<gml:name>publication</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_DateTypeCode_publication_fr" codeSpace="fra">
+							<gml:description>date identifiant la publication de la ressource</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">publication</gml:identifier>
+							<gml:name>publication</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_DateTypeCode_revision">
+					<gml:description>date identifies when the resource was examined or re-examined and imporved or amended</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">revision</gml:identifier>
+					<gml:name>revision</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_DateTypeCode_revision_fr" codeSpace="fra">
+							<gml:description>amélioration ou amendement de la ressource</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">revision</gml:identifier>
+							<gml:name>révision</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<alternativeExpression>
+				<ClAlternativeExpression gml:id="CI_DateTypeCode_fr" codeSpace="fra">
+					<gml:description>identification de quand un événement s'est produit</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">CI_DateTypeCode</gml:identifier>
+					<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+				</ClAlternativeExpression>
+			</alternativeExpression>
+		</ML_CodeListDictionary>
+	</codelistItem>
+	<!--=== CI_OnLineFunctionCode ===-->
+	<codelistItem>
+		<ML_CodeListDictionary gml:id="CI_OnLineFunctionCode">
+			<gml:description>function performed by the resource</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">CI_OnLineFunctionCode</gml:identifier>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_OnLineFunctionCode_download">
+					<gml:description>online instructions for transferring data from one storage device or system to another</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">download</gml:identifier>
+					<gml:name>Download</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_OnLineFunctionCode_download_fr" codeSpace="fra">
+							<gml:description>transfert de la ressource d'un système à un autre</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">download</gml:identifier>
+							<gml:name>Téléchargement</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_OnLineFunctionCode_information">
+					<gml:description>online information about the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">information</gml:identifier>
+					<gml:name>Information</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_OnLineFunctionCode_information_fr" codeSpace="fra">
+							<gml:description>description de la ressource en ligne</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">information</gml:identifier>
+							<gml:name>Information</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_OnLineFunctionCode_offlineAccess">
+					<gml:description>online instructions for requesting the resource from the provider</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">offlineAccess</gml:identifier>
+					<gml:name>Off line access</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_OnLineFunctionCode_offlineAccess_fr" codeSpace="fra">
+							<gml:description>information pour requérir la ressource</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">offlineAccess</gml:identifier>
+							<gml:name>Accès hors ligne</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_OnLineFunctionCode_order">
+					<gml:description>online order process for obtening the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">order</gml:identifier>
+					<gml:name>Order</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_OnLineFunctionCode_order_fr" codeSpace="fra">
+							<gml:description>formulaire pour obtenir la ressource</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">order</gml:identifier>
+							<gml:name>commande en ligne</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="CI_OnLineFunctionCode_search">
+					<gml:description>online search interface for seeking out information about the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">search</gml:identifier>
+					<gml:name>Search</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="CI_OnLineFunctionCode_search_fr" codeSpace="fra">
+							<gml:description>interface de recherche d'information sur la ressource</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">search</gml:identifier>
+							<gml:name>Moteur de recherche</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<alternativeExpression>
+				<ClAlternativeExpression gml:id="CI_OnLineFunctionCode_fr" codeSpace="fra">
+					<gml:description>Fonctionnalité offerte par la ressource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">CI_OnLineFunctionCode</gml:identifier>
+					<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+				</ClAlternativeExpression>
+			</alternativeExpression>
+		</ML_CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_CharacterSetCode ===-->
+	<codelistItem>
+		<ML_CodeListDictionary gml:id="MD_CharacterSetCode">
+			<gml:description>name of the character coding standard used in the resource</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_CharacterSetCode</gml:identifier>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_ucs2">
+					<gml:description>16-bit fixed size Universal Character Set, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">ucs2</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_ucs2_fr" codeSpace="fra">
+							<gml:description>16 bits ISO/IEC 10646</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">ucs2</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_ucs4">
+					<gml:description>32-bit fixed size Universal Character Set, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">ucs4</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_ucs4_fr" codeSpace="fra">
+							<gml:description>32 bits ISO/IEC 10646</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">ucs4</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_utf7">
+					<gml:description>7-bit variable size UCS Transfer Format, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utf7</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_utf7_fr" codeSpace="fra">
+							<gml:description>7 bits ISO/IEC 10646</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">utf7</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_utf8">
+					<gml:description>8-bit variable size UCS Transfer Format, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utf8</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_utf8_fr" codeSpace="fra">
+							<gml:description>8 bits ISO/IEC 10646</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">utf8</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_utf16">
+					<gml:description>16-bit variable size UCS Transfer Format, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utf16</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_utf16_fr" codeSpace="fra">
+							<gml:description>16 bits ISO/IEC 10646</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">utf16</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part1">
+					<gml:description>ISO/IEC 8859-1, Information technology - 8-bit single byte coded graphic character sets - Part 1 : Latin alphabet No.1</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part1</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part1_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-1, alphabet latin 1</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part1</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part2">
+					<gml:description>ISO/IEC 8859-2, Information technology - 8-bit single byte coded graphic character sets - Part 2 : Latin alphabet No.2</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part2</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part2_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-2, alphabet latin 2</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part2</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part3">
+					<gml:description>ISO/IEC 8859-3, Information technology - 8-bit single byte coded graphic character sets - Part 3 : Latin alphabet No.3</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part3</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part3_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-3, alphabet latin 3</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part3</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part4">
+					<gml:description>ISO/IEC 8859-4, Information technology - 8-bit single byte coded graphic character sets - Part 4 : Latin alphabet No.4</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part4</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part4_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-4, alphabet latin 4</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part4</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part5">
+					<gml:description>ISO/IEC 8859-5, Information technology - 8-bit single byte coded graphic character sets - Part 5 : Latin/Cyrillic alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part5</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part5_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-5, alphabet latin/cyrillique</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part5</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part6">
+					<gml:description>ISO/IEC 8859-6, Information technology - 8-bit single byte coded graphic character sets - Part 6 : Latin/Arabic alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part6</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part6_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-6, alphabet latin/arabe</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part6</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part7">
+					<gml:description>ISO/IEC 8859-7, Information technology - 8-bit single byte coded graphic character sets - Part 7 : Latin/Greek alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part7</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part7_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-7, alphabet latin/grec</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part7</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part8">
+					<gml:description>ISO/IEC 8859-8, Information technology - 8-bit single byte coded graphic character sets - Part 8 : Latin/Hebrew alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part8</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part8_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-8, alphabet latin/hébreu</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part8</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part9">
+					<gml:description>ISO/IEC 8859-9, Information technology - 8-bit single byte coded graphic character sets - Part 9 : Latin alphabet No.5</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part9</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part9_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-9, alphabet latin 5</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part9</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part10">
+					<gml:description>ISO/IEC 8859-10, Information technology - 8-bit single byte coded graphic character sets - Part 10 : Latin alphabet No.6</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part10</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part10_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-10, alphabet latin 6</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part10</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part11">
+					<gml:description>ISO/IEC 8859-11, Information technology - 8-bit single byte coded graphic character sets - Part 11 : Latin/Thai alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part11</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part11_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-11, alphabet latin/Thaï</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part11</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<!-- <codeEntry>
+<ML_CodeDefinition gml:id="(reserved)">
+<gml:description>a future ISO/IEC 8-bit single byte coded graphic character set (e.g. possibly 8859 part 12</gml:description><gml:identifier codeSpace="ISOTC211/19115">(reserved)</gml:identifier>
+<alternativeExpression><AlternativeExpression gml:id="(reserved)_fr" codeSpace="fra">
+<gml:description>ISO/IEC 8859-12 (éventuellement)</gml:description><gml:identifier codeSpace="ISOTC211/19115">(reserved)</gml:identifier><locale xlink:href="#xpointer(//*[@id='fra'])"/>
+</AlternativeExpression></alternativeExpression>
+</ML_CodeDefinition>
+</codeEntry> -->
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part13">
+					<gml:description>ISO/IEC 8859-13, Information technology - 8-bit single byte coded graphic character sets - Part 13 : Latin alphabet No.7</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part13</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part13_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-13, alphabet latin 7</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part13</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part14">
+					<gml:description>ISO/IEC 8859-14, Information technology - 8-bit single byte coded graphic character sets - Part 14 : Latin alphabet No.8 (Celtic)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part14</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part14_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-14, alphabet latin 8 (celtique)</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part14</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part15">
+					<gml:description>ISO/IEC 8859-15, Information technology - 8-bit single byte coded graphic character sets - Part 15 : Latin alphabet No.9</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part15</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part15_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-15, alphabet latin 9</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part15</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_8859part16">
+					<gml:description>ISO/IEC 8859-16, Information technology - 8-bit single byte coded graphic character sets - Part 16 : Latin alphabet No.10</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part16</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_8859part16_fr" codeSpace="fra">
+							<gml:description>ISO/IEC 8859-16, alphabet latin 10</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">8859part16</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_jis">
+					<gml:description>japanese code set used for electronic transmission</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">jis</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_jis_fr" codeSpace="fra">
+							<gml:description>Japonais</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">jis</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_shiftJIS">
+					<gml:description>japanese code set used on MS-DOS machines</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">shiftJIS</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_shiftJIS_fr" codeSpace="fra">
+							<gml:description>Japonais pour MS-DOS</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">shiftJIS</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_eucJP">
+					<gml:description>japanese code set used on UNIX based machines</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">eucJP</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_eucJP_fr" codeSpace="fra">
+							<gml:description>Japonais pour UNIX</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">eucJP</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_usAscii">
+					<gml:description>United States ASCII code set (ISO 646 US)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">usAscii</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_usAscii_fr" codeSpace="fra">
+							<gml:description>ISO 646 US</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">usAscii</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_ebcdic">
+					<gml:description>IBM mainframe code set</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">ebcdic</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_ebcdic_fr" codeSpace="fra">
+							<gml:description>IBM</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">ebcdic</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_eucKR">
+					<gml:description>Korean code set</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">eucKR</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_eucKR_fr" codeSpace="fra">
+							<gml:description>Koréen</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">eucKR</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_big5">
+					<gml:description>traditional Chinese code set used in Taiwan, Hong Kong of China and other areas</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">big5</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_big5_fr" codeSpace="fra">
+							<gml:description>Chinois traditionel (Taiwan, Hong Kong, Chine)</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">big5</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_CharacterSetCode_GB2312">
+					<gml:description>simplified Chinese code set</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">GB2312</gml:identifier>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_CharacterSetCode_GB2312_fr" codeSpace="fra">
+							<gml:description>Chinois simplifié</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">GB2312</gml:identifier>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<alternativeExpression>
+				<ClAlternativeExpression gml:id="MD_CharacterSetCode_fr" codeSpace="fra">
+					<gml:description>Jeu de caractères</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">MD_CharacterSetCode</gml:identifier>
+					<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+				</ClAlternativeExpression>
+			</alternativeExpression>
+		</ML_CodeListDictionary>
+	</codelistItem>
+	<!--===MD_ScopeCode===-->
+	<codelistItem>
+		<ML_CodeListDictionary gml:id="MD_ScopeCode">
+			<gml:description>class of information to which the referencing entity applies</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_ScopeCode</gml:identifier>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_attribute">
+					<gml:description>Information applies to the attribute class</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">attribute</gml:identifier>
+					<gml:name>Attribute</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_attribute_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à une classe d’attributs</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">attribute</gml:identifier>
+							<gml:name>Attribut</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_attributeType">
+					<gml:description>Information applies to the characteristic of a feature</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">attributeType</gml:identifier>
+					<gml:name>Attribute type</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_attributeType_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à la caractéristique d’une entité géographique</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">attributeType</gml:identifier>
+							<gml:name>Type d’attribut</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_dataset">
+					<gml:description>Information applies to the dataset</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dataset</gml:identifier>
+					<gml:name>Dataset</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_dataset_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique au jeu de données</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">dataset</gml:identifier>
+							<gml:name>Jeu de données</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_dataset_dc" codeSpace="domainCode">
+							<gml:description>Information applies to the dataset</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">dataset</gml:identifier>
+							<gml:name>005</gml:name>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_series">
+					<gml:description>Information applies to the series</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">series</gml:identifier>
+					<gml:name>Series</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_series_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à une série</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">series</gml:identifier>
+							<gml:name>Série</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_nonGeographicDataset">
+					<gml:description>Information applies to non-geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">nonGeographicDataset</gml:identifier>
+					<gml:name>Non geographic dataset</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_nonGeographicDataset_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à des données non-géographiques</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">nonGeographicDataset</gml:identifier>
+							<gml:name>Jeu de données non géographiques</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_feature">
+					<gml:description>Information applies to a feature</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">feature</gml:identifier>
+					<gml:name>Feature</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_feature_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à un élément (entité géographique)</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">feature</gml:identifier>
+							<gml:name>Elément</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_featureType">
+					<gml:description>Information applies to a feature type</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">featureType</gml:identifier>
+					<gml:name>Feature type</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_featureType_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à un type d’élément</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">featureType</gml:identifier>
+							<gml:name>Type d’élément</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_propertyType">
+					<gml:description>Information applies to a property type</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">propertyType</gml:identifier>
+					<gml:name>Property type</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_propertyType_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à un type de propriété</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">propertyType</gml:identifier>
+							<gml:name>Type de propriété</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="MD_ScopeCode_tile">
+					<gml:description>Information applies to a tile, a spatial subset of geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tile</gml:identifier>
+					<gml:name>Tile</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="MD_ScopeCode_tile_fr" codeSpace="fra">
+							<gml:description>Information qui s’applique à une tuile, un sous-ensemble spatial de données géographiques</gml:description>
+							<gml:identifier codeSpace="ISOTC211/19115">tile</gml:identifier>
+							<gml:name>Tuile</gml:name>
+							<locale xlink:href="#fra"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<alternativeExpression>
+				<ClAlternativeExpression gml:id="MD_ScopeCode_fr" codeSpace="fra">
+					<gml:description>information sur l'entité sur laquelle les métadonnées s'appliquent</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">MD_ScopeCode</gml:identifier>
+					<locale xlink:href="#fra"/>
+				</ClAlternativeExpression>
+			</alternativeExpression>
+		</ML_CodeListDictionary>
+	</codelistItem>
+	<!--================================================-->
+	<!--============= Language and Country ================-->
+	<codelistItem>
+		<ML_CodeListDictionary gml:id="LanguageCode">
+			<gml:description>Language : ISO 639-2 (3 characters)</gml:description>
+			<gml:identifier codeSpace="ISO 639-2">LanguageCode</gml:identifier>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="LanguageCode_eng">
+					<gml:description>English</gml:description>
+					<gml:identifier codeSpace="ISO 639-2">eng</gml:identifier>
+					<gml:name>English</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="LanguageCode_eng_fr" codeSpace="fra">
+							<gml:description>Anglais</gml:description>
+							<gml:identifier codeSpace="ISO 639-2">eng</gml:identifier>
+							<gml:name>Anglais</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="LanguageCode_fra">
+					<gml:description>French</gml:description>
+					<gml:identifier codeSpace="ISO 639-2">fra</gml:identifier>
+					<gml:name>French</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="LanguageCode_fra_fr" codeSpace="fra">
+							<gml:description>Français</gml:description>
+							<gml:identifier codeSpace="ISO 639-2">fra</gml:identifier>
+							<gml:name>Français</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<alternativeExpression>
+				<ClAlternativeExpression gml:id="LanguageCode_fr" codeSpace="fra">
+					<gml:description>Langue : ISO 639-2 (3 caractères)</gml:description>
+					<gml:identifier codeSpace="ISO 639-2">LanguageCode</gml:identifier>
+					<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+				</ClAlternativeExpression>
+			</alternativeExpression>
+		</ML_CodeListDictionary>
+	</codelistItem>
+	<!--...................................................................................................-->
+	<codelistItem>
+		<ML_CodeListDictionary gml:id="Country">
+			<gml:description>Country : ISO 3166-2 (2 characters)</gml:description>
+			<gml:identifier codeSpace="ISO 3166-2">Country</gml:identifier>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="Country_UK">
+					<gml:description>United Kingdom</gml:description>
+					<gml:identifier codeSpace="ISO 3166-2">UK</gml:identifier>
+					<gml:name>United Kingdom</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="Country_UK_fr" codeSpace="fra">
+							<gml:description>Royaume-Uni</gml:description>
+							<gml:identifier codeSpace="ISO 3166-2">UK</gml:identifier>
+							<gml:name>Royaume-Uni</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<ML_CodeDefinition gml:id="Country_FR">
+					<gml:description>France</gml:description>
+					<gml:identifier codeSpace="ISO 3166-2">FR</gml:identifier>
+					<gml:name>France</gml:name>
+					<alternativeExpression>
+						<CodeAlternativeExpression gml:id="Country_FR_fr" codeSpace="fra">
+							<gml:description>France</gml:description>
+							<gml:identifier codeSpace="ISO 3166-2">FR</gml:identifier>
+							<gml:name>France</gml:name>
+							<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+						</CodeAlternativeExpression>
+					</alternativeExpression>
+				</ML_CodeDefinition>
+			</codeEntry>
+			<alternativeExpression>
+				<ClAlternativeExpression gml:id="Country_fr" codeSpace="fra">
+					<gml:description>Pays : ISO 3166-2 (2 caractères)</gml:description>
+					<gml:identifier codeSpace="ISO 3166-2">Country</gml:identifier>
+					<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+				</ClAlternativeExpression>
+			</alternativeExpression>
+		</ML_CodeListDictionary>
+	</codelistItem>
+	<!--=========== EOF ===========-->
+</CT_CodelistCatalogue>

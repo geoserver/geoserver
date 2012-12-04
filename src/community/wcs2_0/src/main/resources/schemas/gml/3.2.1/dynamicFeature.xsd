@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:dynamicFeature:3.2.1">dynamicFeature.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 15.6.
+A number of types and relationships are defined to represent the time-varying properties of geographic features. 
+In a comprehensive treatment of spatiotemporal modeling, Langran (see Bibliography) distinguished three principal temporal entities: states, events, and evidence; the schema specified in the following Subclauses incorporates elements for each.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="feature.xsd"/>
+	<include schemaLocation="direction.xsd"/>
+	<element name="dataSource" type="gml:StringOrRefType">
+		<annotation>
+			<documentation>Evidence is represented by a simple gml:dataSource or gml:dataSourceReference property that indicates the source of the temporal data. The remote link attributes of the gml:dataSource element have been deprecated along with its current type.</documentation>
+		</annotation>
+	</element>
+	<element name="dataSourceReference" type="gml:ReferenceType">
+		<annotation>
+			<documentation>Evidence is represented by a simple gml:dataSource or gml:dataSourceReference property that indicates the source of the temporal data.</documentation>
+		</annotation>
+	</element>
+	<group name="dynamicProperties">
+		<annotation>
+			<documentation>A convenience group. This allows an application schema developer to include dynamic properties in a content model in a standard fashion.</documentation>
+		</annotation>
+		<sequence>
+			<element ref="gml:validTime" minOccurs="0"/>
+			<element ref="gml:history" minOccurs="0"/>
+			<element ref="gml:dataSource" minOccurs="0"/>
+			<element ref="gml:dataSourceReference" minOccurs="0"/>
+		</sequence>
+	</group>
+	<element name="DynamicFeature" type="gml:DynamicFeatureType" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<documentation>States are captured by time-stamped instances of a feature. The content model extends the standard gml:AbstractFeatureType with the gml:dynamicProperties model group.
+Each time-stamped instance represents a 'snapshot' of a feature. The dynamic feature classes will normally be extended to suit particular applications.  A dynamic feature bears either a time stamp or a history.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DynamicFeatureType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<group ref="gml:dynamicProperties"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="DynamicFeatureCollection" type="gml:DynamicFeatureCollectionType" substitutionGroup="gml:DynamicFeature">
+		<annotation>
+			<documentation>A gml:DynamicFeatureCollection is a feature collection that has a gml:validTime property (i.e. is a snapshot of the feature collection) or which has a gml:history property that contains one or more gml:AbstractTimeSlices each of which contain values of the time varying properties of the feature collection.  Note that the gml:DynamicFeatureCollection may be one of the following:
+1.	A feature collection which consists of static feature members (members do not change in time) but which has properties of the collection object as a whole that do change in time .  
+2.	A feature collection which consists of dynamic feature members (the members are gml:DynamicFeatures) but which also has properties of the collection as a whole that vary in time.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DynamicFeatureCollectionType">
+		<complexContent>
+			<extension base="gml:DynamicFeatureType">
+				<sequence>
+					<element ref="gml:dynamicMembers"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="dynamicMembers" type="gml:DynamicFeatureMemberType"/>
+	<complexType name="DynamicFeatureMemberType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureMemberType">
+				<sequence>
+					<element ref="gml:DynamicFeature" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractTimeSlice" type="gml:AbstractTimeSliceType" abstract="true" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<documentation>To describe an event — an action that occurs at an instant or over an interval of time — GML provides the gml:AbtractTimeSlice element. A timeslice encapsulates the time-varying properties of a dynamic feature -- it shall be extended to represent a time stamped projection of a specific feature. The gml:dataSource property describes how the temporal data was acquired.
+A gml:AbstractTimeSlice instance is a GML object that encapsulates updates of the dynamic—or volatile—properties that reflect some change event; it thus includes only those feature properties that have actually changed due to some process.
+gml:AbstractTimeSlice basically provides a facility for attribute-level time stamping, in contrast to the object-level time stamping of dynamic feature instances. 
+The time slice can thus be viewed as event or process-oriented, whereas a snapshot is more state or structure-oriented. A timeslice has richer causality, whereas a snapshot merely portrays the status of the whole. 
+</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractTimeSliceType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:validTime"/>
+					<element ref="gml:dataSource" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="history" type="gml:HistoryPropertyType">
+		<annotation>
+			<documentation>A generic sequence of events constitute a gml:history of an object.
+The gml:history element contains a set of elements in the substitution group headed by the abstract element gml:AbstractTimeSlice, representing the time-varying properties of interest. The history property of a dynamic feature associates a feature instance with a sequence of time slices (i.e. change events) that encapsulate the evolution of the feature.</documentation>
+		</annotation>
+	</element>
+	<complexType name="HistoryPropertyType">
+		<sequence>
+			<element ref="gml:AbstractTimeSlice" maxOccurs="unbounded"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+</schema>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/2.0"
+        xmlns:ows="http://www.opengis.net/ows/2.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        version="2.0.2"
+        xml:lang="en">
+  <annotation>
+    <appinfo>owsServiceProvider.xsd</appinfo>
+    <documentation>This XML Schema Document encodes the common
+    "ServiceProvider" section of the GetCapabilities operation response, known
+    as the Capabilities XML document. This section encodes the
+    SV_ServiceProvider class of ISO 19119 (OGC Abstract Specification Topic 12). 
+
+    OWS is an OGC Standard.
+    Copyright (c) 2009 Open Geospatial Consortium.
+    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+                includes and imports
+        ============================================================== -->
+  <include schemaLocation="owsAll.xsd"/>
+  <include schemaLocation="ows19115subset.xsd" />
+
+  <!-- ==============================================================
+                elements and types
+        ============================================================== -->
+  <element name="ServiceProvider">
+    <annotation>
+      <documentation>Metadata about the organization that provides this
+      specific service instance or server.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="ProviderName"
+                 type="string">
+          <annotation>
+            <documentation>A unique identifier for the service provider
+            organization.</documentation>
+          </annotation>
+        </element>
+        <element name="ProviderSite"
+                 type="ows:OnlineResourceType"
+                 minOccurs="0">
+          <annotation>
+            <documentation>Reference to the most relevant web site of the
+            service provider.</documentation>
+          </annotation>
+        </element>
+        <element name="ServiceContact"
+                 type="ows:ResponsiblePartySubsetType">
+          <annotation>
+            <documentation>Information for contacting the service provider.
+            The OnlineResource element within this ServiceContact element
+            should not be used to reference a web site of the service
+            provider.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

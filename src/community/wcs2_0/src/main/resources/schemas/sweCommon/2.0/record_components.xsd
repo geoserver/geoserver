@@ -1,0 +1,95 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" targetNamespace="http://www.opengis.net/swe/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.1">
+    <annotation>
+        <documentation>SWE Common Data Model schema for record data components. See requirements class http://www.opengis.net/spec/SWE/2.0/req/xsd-record-components/
+        
+        SWE Common is an OGC Standard.
+        Copyright (c) 2010 Open Geospatial Consortium. 
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <include schemaLocation="swe.xsd"/>
+    <include schemaLocation="simple_components.xsd"/>
+    <!-- ================================================= -->
+    <element name="DataRecord" substitutionGroup="swe:AbstractDataComponent" type="swe:DataRecordType">
+        <annotation>
+            <documentation>Implementation of ISO-11404 Record datatype. This allows grouping (sequence) of data components which can themselves be simple types, records, arrays or choices</documentation>
+        </annotation>
+    </element>
+    <complexType name="DataRecordType">
+        <complexContent>
+            <extension base="swe:AbstractDataComponentType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="1" name="field">
+                        <annotation>
+                            <documentation>Definition of the field provided as a nested data component. The field can be scalar or can itself be an aggregate such as a record, choice or array</documentation>
+                        </annotation>
+                        <complexType>
+                            <complexContent>
+                                <extension base="swe:AbstractDataComponentPropertyType">
+                                    <attribute name="name" type="NCName" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="DataRecordPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:DataRecord"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="DataRecordPropertyByValueType">
+        <sequence>
+            <element ref="swe:DataRecord"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="Vector" substitutionGroup="swe:AbstractDataComponent" type="swe:VectorType">
+        <annotation>
+            <documentation>Implementation of a mathematical vector composed of a list of scalar coordinates expressed in the mandatory reference frame.</documentation>
+        </annotation>
+    </element>
+    <complexType name="VectorType">
+        <complexContent>
+            <extension base="swe:AbstractDataComponentType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="1" name="coordinate">
+                        <annotation>
+                            <documentation>Definition of the coordinate provided as a data component with a numerical representation</documentation>
+                        </annotation>
+                        <complexType>
+                            <complexContent>
+                                <extension base="swe:AnyNumericalPropertyType">
+                                    <attribute name="name" type="NCName" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="referenceFrame" type="anyURI" use="required">
+                    <annotation>
+                        <documentation>Frame of reference (usually spatial) with respect to which the coordinates of this vector are expressed. A reference frame anchors a vector value to a real world datum.</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="localFrame" type="anyURI" use="optional">
+                    <annotation>
+                        <documentation>Frame of reference whose origin is located by the coordinates of this vector</documentation>
+                    </annotation>
+                </attribute>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="VectorPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:Vector"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="VectorPropertyByValueType">
+        <sequence>
+            <element ref="swe:Vector"/>
+        </sequence>
+    </complexType>
+</schema>

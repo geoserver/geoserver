@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:opengis:specification:gml:schema-xsd:dictionary:v3.2.1">dictionary.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 Clause 16.
+Many applications require definitions of terms which are used within instance documents as the values of certain properties or as reference information to tie properties to standard information values in some way.  Units of measure and descriptions of measurable phenomena are two particular examples. 
+It will often be convenient to use definitions provided by external authorities. These may already be packaged for delivery in various ways, both online and offline. In order that they may be referred to from GML documents it is generally necessary that a URI be available for each definition. Where this is the case then it is usually preferable to refer to these directly. 
+Alternatively, it may be convenient or necessary to capture definitions in XML, either embedded within an instance document containing features or as a separate document. The definitions may be transcriptions from an external source, or may be new definitions for a local purpose. In order to support this case, some simple components are provided in GML in the form of 
+-	a generic gml:Definition, which may serve as the basis for more specialized definitions
+-	a generic gml:Dictionary, which allows a set of definitions or references to definitions to be collected 
+These components may be used directly, but also serve as the basis for more specialised definition elements in GML, in particular: coordinate operations, coordinate reference systems, datums, temporal reference systems, and units of measure.  
+Note that the GML definition and dictionary components implement a simple nested hierarchy of definitions with identifiers. The latter provide handles which may be used in the description of more complex relationships between terms. However, the GML dictionary components are not intended to provide direct support for complex taxonomies, ontologies or thesauri.  Specialised XML tools are available to satisfy the more sophisticated requirements.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="gmlBase.xsd"/>
+	<element name="Definition" type="gml:DefinitionType" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<documentation>The basic gml:Definition element specifies a definition, which can be included in or referenced by a dictionary. 
+The content model for a generic definition is a derivation from gml:AbstractGMLType.  
+The gml:description property element shall hold the definition if this can be captured in a simple text string, or the gml:descriptionReference property element may carry a link to a description elsewhere.
+The gml:identifier element shall provide one identifier identifying this definition. The identifier shall be unique within the dictionaries using this definition. 
+The gml:name elements shall provide zero or more terms and synonyms for which this is the definition.
+The gml:remarks element shall be used to hold additional textual information that is not conceptually part of the definition but is useful in understanding the definition.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DefinitionBaseType">
+		<complexContent>
+			<restriction base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:metaDataProperty" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:description" minOccurs="0"/>
+					<element ref="gml:descriptionReference" minOccurs="0"/>
+					<element ref="gml:identifier"/>
+					<element ref="gml:name" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="gml:id" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="DefinitionType">
+		<complexContent>
+			<extension base="gml:DefinitionBaseType">
+				<sequence>
+					<element ref="gml:remarks" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="remarks" type="string"/>
+	<element name="Dictionary" type="gml:DictionaryType" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>Sets of definitions may be collected into dictionaries or collections.
+A gml:Dictionary is a non-abstract collection of definitions.
+The gml:Dictionary content model adds a list of gml:dictionaryEntry properties that contain or reference gml:Definition objects.  A database handle (gml:id attribute) is required, in order that this collection may be referred to. The standard gml:identifier, gml:description, gml:descriptionReference and gml:name properties are available to reference or contain more information about this dictionary. The gml:description and gml:descriptionReference property elements may be used for a description of this dictionary. The derived gml:name element may be used for the name(s) of this dictionary. for remote definiton references gml:dictionaryEntry shall be used. If a Definition object contained within a Dictionary uses the descriptionReference property to refer to a remote definition, then this enables the inclusion of a remote definition in a local dictionary, giving a handle and identifier in the context of the local dictionary.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DictionaryType">
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<choice minOccurs="0" maxOccurs="unbounded">
+					<element ref="gml:dictionaryEntry"/>
+					<element ref="gml:indirectEntry"/>
+				</choice>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="dictionaryEntry" type="gml:DictionaryEntryType">
+		<annotation>
+			<documentation>This property element contains or refers to the definitions which are members of a dictionary. 
+The content model follows the standard GML property pattern, so a gml:dictionaryEntry may either contain or refer to a single gml:Definition. Since gml:Dictionary is substitutable for gml:Definition, the content of an entry may itself be a lower level dictionary. 
+Note that if the value is provided by reference, this definition does not carry a handle (gml:id) in this context, so does not allow external references to this specific definition in this context.  When used in this way the referenced definition will usually be in a dictionary in the same XML document.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DictionaryEntryType">
+		<complexContent>
+			<extension base="gml:AbstractMemberType">
+				<sequence minOccurs="0">
+					<element ref="gml:Definition"/>
+				</sequence>
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

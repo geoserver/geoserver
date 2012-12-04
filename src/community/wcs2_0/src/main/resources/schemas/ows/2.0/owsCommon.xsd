@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/2.0"
+        xmlns:ows="http://www.opengis.net/ows/2.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        version="2.0.2"
+        xml:lang="en">
+  <annotation>
+    <appinfo>owsCommon.xsd</appinfo>
+    <documentation>This XML Schema Document encodes various parameters and
+    parameter types that can be used in OWS operation requests and responses.
+    
+    OWS is an OGC Standard.
+    Copyright (c) 2009 Open Geospatial Consortium.
+    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+                includes and imports
+        ============================================================== -->
+  <include schemaLocation="owsAll.xsd"/>
+  <import namespace="http://www.w3.org/1999/xlink"
+          schemaLocation="http://www.w3.org/1999/xlink.xsd" />
+
+  <!-- ==============================================================
+                elements and types
+        ============================================================== -->
+  <simpleType name="MimeType">
+    <annotation>
+      <documentation>XML encoded identifier of a standard MIME type, possibly
+      a parameterized MIME type.</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="(application|audio|image|text|video|message|multipart|model)/.+(;\s*.+=.+)*" />
+    </restriction>
+  </simpleType>
+  <!-- ========================================================= -->
+  <simpleType name="VersionType">
+    <annotation>
+      <documentation>Specification version for OWS operation. The string value
+      shall contain one x.y.z "version" value (e.g., "2.1.3"). A version
+      number shall contain three non-negative integers separated by decimal
+      points, in the form "x.y.z". The integers y and z shall not exceed 99.
+      Each version shall be for the Implementation Specification (document)
+      and the associated XML Schemas to which requested operations will
+      conform. An Implementation Specification version normally specifies XML
+      Schemas against which an XML encoded operation response must conform and
+      should be validated. See Version negotiation subclause for more
+      information.</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="\d+\.\d?\d\.\d?\d" />
+    </restriction>
+  </simpleType>
+  <!-- ========================================================== -->
+  <element name="Metadata"
+           type="ows:MetadataType" />
+  <!-- ========================================================== -->
+  <complexType name="MetadataType">
+    <annotation>
+      <documentation>This element either references or contains more metadata
+      about the element that includes this element. To reference metadata
+      stored remotely, at least the xlinks:href attribute in xlink:simpleAttrs
+      shall be included. Either at least one of the attributes in
+      xlink:simpleAttrs or a substitute for the AbstractMetaData element shall
+      be included, but not both. An Implementation Specification can restrict
+      the contents of this element to always be a reference or always contain
+      metadata. (Informative: This element was adapted from the
+      metaDataProperty element in GML 3.0.)</documentation>
+    </annotation>
+    <sequence>
+      <element ref="ows:AbstractMetaData"
+               minOccurs="0" />
+    </sequence>
+    <attributeGroup ref="xlink:simpleAttrs">
+      <annotation>
+        <documentation>Reference to metadata recorded elsewhere, either
+        external to this XML document or within it. Whenever practical, the
+        xlink:href attribute with type anyURI should include a URL from which
+        this metadata can be electronically retrieved.</documentation>
+      </annotation>
+    </attributeGroup>
+    <attribute name="about"
+               type="anyURI"
+               use="optional">
+      <annotation>
+        <documentation>Optional reference to the aspect of the element which
+        includes this "metadata" element that this metadata provides more
+        information about.</documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <!-- ========================================================== -->
+  <element name="AbstractMetaData"
+           abstract="true">
+    <annotation>
+      <documentation>Abstract element containing more metadata about the
+      element that includes the containing "metadata" element. A specific
+      server implementation, or an Implementation Specification, can define
+      concrete elements in the AbstractMetaData substitution
+      group.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <element name="BoundingBox"
+           type="ows:BoundingBoxType" />
+  <!-- =========================================================== -->
+  <complexType name="BoundingBoxType">
+    <annotation>
+      <documentation>XML encoded minimum rectangular bounding box (or region)
+      parameter, surrounding all the associated data.</documentation>
+      <documentation>This type is adapted from the EnvelopeType of GML 3.1,
+      with modified contents and documentation for encoding a MINIMUM size box
+      SURROUNDING all associated data.</documentation>
+    </annotation>
+    <sequence>
+      <element name="LowerCorner"
+               type="ows:PositionType">
+        <annotation>
+          <documentation>Position of the bounding box corner at which the
+          value of each coordinate normally is the algebraic minimum within
+          this bounding box. In some cases, this position is normally
+          displayed at the top, such as the top left for some image
+          coordinates. For more information, see Subclauses 10.2.5 and
+          C.13.</documentation>
+        </annotation>
+      </element>
+      <element name="UpperCorner"
+               type="ows:PositionType">
+        <annotation>
+          <documentation>Position of the bounding box corner at which the
+          value of each coordinate normally is the algebraic maximum within
+          this bounding box. In some cases, this position is normally
+          displayed at the bottom, such as the bottom right for some image
+          coordinates. For more information, see Subclauses 10.2.5 and
+          C.13.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute name="crs"
+               type="anyURI"
+               use="optional">
+      <annotation>
+        <documentation>Usually references the definition of a CRS, as
+        specified in [OGC Topic 2]. Such a CRS definition can be XML encoded
+        using the gml:CoordinateReferenceSystemType in [GML 3.1]. For well
+        known references, it is not required that a CRS definition exist at
+        the location the URI points to. If no anyURI value is included, the
+        applicable CRS must be either: a) Specified outside the bounding box,
+        but inside a data structure that includes this bounding box, as
+        specified for a specific OWS use of this bounding box type. b) Fixed
+        and specified in the Implementation Specification for a specific OWS
+        use of the bounding box type.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="dimensions"
+               type="positiveInteger"
+               use="optional">
+      <annotation>
+        <documentation>The number of dimensions in this CRS (the length of a
+        coordinate sequence in this use of the PositionType). This number is
+        specified by the CRS definition, but can also be specified
+        here.</documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <!-- =========================================================== -->
+  <simpleType name="PositionType">
+    <annotation>
+      <documentation>Position instances hold the coordinates of a position in
+      a coordinate reference system (CRS) referenced by the related "crs"
+      attribute or elsewhere. For an angular coordinate axis that is
+      physically continuous for multiple revolutions, but whose recorded
+      values can be discontinuous, special conditions apply when the bounding
+      box is continuous across the value discontinuity: a) If the bounding box
+      is continuous clear around this angular axis, then ordinate values of
+      minus and plus infinity shall be used. b) If the bounding box is
+      continuous across the value discontinuity but is not continuous clear
+      around this angular axis, then some non-normal value can be used if
+      specified for a specific OWS use of the BoundingBoxType. For more
+      information, see Subclauses 10.2.5 and C.13.</documentation>
+      <documentation>This type is adapted from DirectPositionType and
+      doubleList of GML 3.1. The adaptations include omission of all the
+      attributes, since the needed information is included in the
+      BoundingBoxType.</documentation>
+    </annotation>
+    <list itemType="double" />
+  </simpleType>
+  <!-- =========================================================== -->
+  <element name="WGS84BoundingBox"
+           type="ows:WGS84BoundingBoxType"
+           substitutionGroup="ows:BoundingBox" />
+  <!-- =========================================================== -->
+  <complexType name="WGS84BoundingBoxType">
+    <annotation>
+      <documentation>XML encoded minimum rectangular bounding box (or region)
+      parameter, surrounding all the associated data. This box is specialized
+      for use with the 2D WGS 84 coordinate reference system with decimal
+      values of longitude and latitude.</documentation>
+      <documentation>This type is adapted from the general BoundingBoxType,
+      with modified contents and documentation for use with the 2D WGS 84
+      coordinate reference system.</documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="ows:BoundingBoxType">
+        <sequence>
+          <element name="LowerCorner"
+                   type="ows:PositionType2D">
+            <annotation>
+              <documentation>Position of the bounding box corner at which the
+              values of longitude and latitude normally are the algebraic
+              minimums within this bounding box. For more information, see
+              Subclauses 10.4.5 and C.13.</documentation>
+            </annotation>
+          </element>
+          <element name="UpperCorner"
+                   type="ows:PositionType2D">
+            <annotation>
+              <documentation>Position of the bounding box corner at which the
+              values of longitude and latitude normally are the algebraic
+              minimums within this bounding box. For more information, see
+              Subclauses 10.4.5 and C.13.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+        <attribute name="crs"
+                   type="anyURI"
+                   use="optional"
+                   fixed="urn:ogc:def:crs:OGC:2:84">
+          <annotation>
+            <documentation>This attribute can be included when considered
+            useful. When included, this attribute shall reference the 2D WGS
+            84 coordinate reference system with longitude before latitude and
+            decimal values of longitude and latitude.</documentation>
+          </annotation>
+        </attribute>
+        <attribute name="dimensions"
+                   type="positiveInteger"
+                   use="optional"
+                   fixed="2">
+          <annotation>
+            <documentation>The number of dimensions in this CRS (the length of
+            a coordinate sequence in this use of the PositionType). This
+            number is specified by the CRS definition, but can also be
+            specified here.</documentation>
+          </annotation>
+        </attribute>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <!-- =========================================================== -->
+  <simpleType name="PositionType2D">
+    <annotation>
+      <documentation>Two-dimensional position instances hold the longitude and
+      latitude coordinates of a position in the 2D WGS 84 coordinate reference
+      system. The longitude value shall be listed first, followed by the
+      latitude value, both in decimal degrees. Latitude values shall range
+      from -90 to +90 degrees, and longitude values shall normally range from
+      -180 to +180 degrees. For the longitude axis, special conditions apply
+      when the bounding box is continuous across the +/- 180 degrees meridian
+      longitude value discontinuity: a) If the bounding box is continuous
+      clear around the Earth, then longitude values of minus and plus infinity
+      shall be used. b) If the bounding box is continuous across the value
+      discontinuity but is not continuous clear around the Earth, then some
+      non-normal value can be used if specified for a specific OWS use of the
+      WGS84BoundingBoxType. For more information, see Subclauses 10.4.5 and
+      C.13.</documentation>
+    </annotation>
+    <restriction base="ows:PositionType">
+      <length value="2" />
+    </restriction>
+  </simpleType>
+</schema>

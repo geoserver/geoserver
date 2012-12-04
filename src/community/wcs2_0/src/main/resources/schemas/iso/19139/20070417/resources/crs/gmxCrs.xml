@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+CORRECTIONS referenced 2012-07-13 #01
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Use of absolute path in xsi:schemaLocation
+DESCRIPTION:
+- ../gmx/gmx.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd
+- ../gmd/gmd.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd
+- ../gco/gco.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd
+- ../xlink/xlinks.xsd replaced by http://www.w3.org/1999/xlink.xsd
+- ../gml/gml.xsd replaced by http://schemas.opengis.net/gml/3.2.1/gml.xsd
+
+-->
+<CT_CrsCatalogue xmlns="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+	<!--=====Catalogue description=====-->
+	<name>
+		<gco:CharacterString>gmxCrs</gco:CharacterString>
+	</name>
+	<scope>
+		<gco:CharacterString>CRS parameters dictionary</gco:CharacterString>
+	</scope>
+	<fieldOfApplication>
+		<gco:CharacterString>GMX (and imported) namespace</gco:CharacterString>
+	</fieldOfApplication>
+	<versionNumber>
+		<gco:CharacterString>0.0</gco:CharacterString>
+	</versionNumber>
+	<versionDate>
+		<gco:Date>2005-03-18</gco:Date>
+	</versionDate>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--======================= Coordinate reference systems ============================-->
+	<!--*** WGS 84 - CRS ***-->
+	<crs>
+		<gml:GeodeticCRS gml:id="EPSG4326">
+			<gml:identifier codeSpace="EPSG_v65">4326</gml:identifier>
+			<gml:name codeSpace="IGN-F">WGS84G</gml:name>
+			<gml:name>World Geodetic System 1984</gml:name>
+			<gml:domainOfValidity>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicDescription>
+							<gmd:geographicIdentifier>
+								<gmd:MD_Identifier>
+									<gmd:code>
+										<gco:CharacterString>World: Afghanistan, Albania, Algeria, American Samoa, Andorra, Angola, Anguilla, Antarctica, Antigua and Barbuda, Argentina, Armenia, Aruba, Australia, 
+	Austria, Azerbaijan, Bahamas, Bahrain, Bangladesh, Barbados, Belgium, Belgium, Belize, Benin, Bermuda, Bhutan, Bolivia, Bosnia and Herzegowina, 
+	Botswana, Bouvet Island, Brazil, British Indian Ocean Territory, British Virgin Islands, Brunei Darussalam, Bulgaria, Burkina Faso, Burundi, Cambodia, 
+	Cameroon, Canada, Cape Verde, Cayman Islands, Central African Republic, Chad, Chile, China, Christmas Island, Cocos (Keeling) Islands, Comoros, 
+	Congo, Cook Islands, Costa Rica, Côte d'Ivoire (Ivory Coast), Croatia, Cuba, Cyprus, Czech Republic, Denmark, Djibouti, Dominica, Dominican Republic, 
+	East Timor, Ecuador, Egypt, El Salvador, Equatorial Guinea, Eritrea, Estonia, Ethiopia, Falkland Islands (Malvinas), Faroe Islands, Fiji, Finland, France, 
+	French Guiana, French Polynesia, French Southern Territories, Gabon, Gambia, Georgia, Germany, Ghana, Gibraltar, Greece, Greenland, Grenada, 
+	Guadeloupe, Guam, Guatemala, Guinea, Guinea-Bissau, Guyana, Haiti, Heard Island and McDonald Islands, Holy See (Vatican City State), Honduras, China 
+	- Hong Kong, Hungary, Iceland, India, Indonesia, Islamic Republic of Iran, Iraq, Ireland, Israel, Italy, Jamaica, Japan, Jordan, Kazakstan, Kenya, Kiribati, 
+	Democratic People's Republic of Korea (North Korea), Republic of Korea (South Korea), Kuwait, Kyrgyzstan, Lao People's Democratic Republic (Laos), 
+	Latvia, Lebanon, Lesotho, Liberia, Libyan Arab Jamahiriya, Liechtenstein, Lithuania, Luxembourg, China - Macau, The Former Yugoslav Republic of 
+	Macedonia, Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Marshall Islands, Martinique, Mauritania, Mauritius, Mayotte, Mexico, Federated States 
+	of Micronesia, Monaco, Mongolia, Montserrat, Morocco, Mozambique, Myanmar (Burma), Namibia, Nauru, Nepal, Netherlands, Netherlands Antilles, New 
+	Caledonia, New Zealand, Nicaragua, Niger, Nigeria, Niue, Norfolk Island, Northern Mariana Islands, Norway, Oman, Pakistan, Palau, Panama, Papua New 
+	Guinea (PNG), Paraguay, Peru, Philippines, Pitcairn, Poland, Portugal, Puerto Rico, Qatar, Reunion, Romania, Russian Federation, Rwanda, Saint Kitts and 
+	Nevis, Saint Lucia, Saint Vincent and the Grenadines, Samoa, San Marino, Sao Tome and Principe, Saudi Arabia, Senegal, Seychelles, Sierra Leone, 
+	Singapore, Slovakia (Slovak Republic), Slovenia, Solomon Islands, Somalia, South Africa, South Georgia and the South Sandwich Islands, Spain, Sri Lanka, 
+	Saint Helena, Saint Pierre and Miquelon, Sudan, Suriname, Svalbard and Jan Mayen, Swaziland, Sweden, Switzerland, Syrian Arab Republic, Taiwan, 
+	Tajikistan, United Republic of Tanzania, Thailand, The Democratic Republic of the Congo (Zaire), Togo, Tokelau, Tonga, Trinidad and Tobago, Tunisia, 
+	Turkey, Turkmenistan, Turks and Caicos Islands, Tuvalu, Uganda, Ukraine, United Arab Emirates (UAE), United Kingdom (UK), United States (USA), 
+	United States Minor Outlying Islands, Uruguay, Uzbekistan, Vanuatu, Venezuela, Vietnam, US Virgin Islands, Wallis and Futuna, Western Sahara, Yemen, 
+	Yugoslavia - Union of Serbia and Montenegro, Zambia, Zimbabwe.</gco:CharacterString>
+									</gmd:code>
+								</gmd:MD_Identifier>
+							</gmd:geographicIdentifier>
+						</gmd:EX_GeographicDescription>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gml:domainOfValidity>
+			<gml:scope>not known</gml:scope>
+			<gml:ellipsoidalCS xlink:href="#xpointer(//*[@gml:id='EPSG6422'])"/>
+			<gml:geodeticDatum xlink:href="#xpointer(//*[@gml:id='EPSG6326')]"/>
+		</gml:GeodeticCRS>
+	</crs>
+	<!--*** UTM 38 Nord ***-->
+	<crs>
+		<gml:ProjectedCRS gml:id="EPSG32638">
+			<gml:identifier codeSpace="EPSG_v65">32638</gml:identifier>
+			<gml:name codeSpace="IGN-F">UTM38W84</gml:name>
+			<gml:name>WGS 84 / UTM zone 38N</gml:name>
+			<gml:domainOfValidity>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicDescription>
+							<gmd:geographicIdentifier>
+								<gmd:MD_Identifier>
+									<gmd:code>
+										<gco:CharacterString>Between 42 and 48 deg East; northern hemisphere. Armenia. Azerbaijan. Djibouti. Eritrea. Ethiopia. Georgia. Islamic Republic of Iran. Iraq. Kazakstan. Kuwait. Russian Federation. Saudi Arabia. Somalia. Tukey. Yemen.</gco:CharacterString>
+									</gmd:code>
+								</gmd:MD_Identifier>
+							</gmd:geographicIdentifier>
+						</gmd:EX_GeographicDescription>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gml:domainOfValidity>
+			<gml:scope>not known</gml:scope>
+			<gml:conversion xlink:href="#xpointer(//*[@gml:id='EPSG16038'])"/>
+			<gml:baseGeodeticCRS xlink:href="#xpointer(//*[@gml:id='EPSG4326'])"/>
+			<!--WGS84 - CRS-->
+			<gml:cartesianCS xlink:href="#EPSG4400"/>
+		</gml:ProjectedCRS>
+	</crs>
+	<!--============================ Coordinate systems ===============================-->
+	<!--*** Ellipsoidal - 2D - degree ***-->
+	<coordinateSystem>
+		<gml:EllipsoidalCS gml:id="EPSG6422">
+			<gml:description>Ellipsoidal 2D CS. Axes: latitude, longitude. Orientations: north, east.  UoM: deg</gml:description>
+			<gml:identifier codeSpace="EPSG_v65">6422</gml:identifier>
+			<gml:name>CS ellipsoidal2D</gml:name>
+			<gml:axis xlink:href="#xpointer(//*[@gml:id='EPSG9901'])"/>
+			<gml:axis xlink:href="#xpointer(//*[@gml:id='EPSG9902'])"/>
+		</gml:EllipsoidalCS>
+	</coordinateSystem>
+	<!--*** Cartesian - 2D ***-->
+	<coordinateSystem>
+		<gml:CartesianCS gml:id="EPSG4400">
+			<gml:description>Cartesian 2D CS.  Axes: easting, northing (E,N). Orientations: east, north.  UoM: m.</gml:description>
+			<gml:identifier codeSpace="EPSG_v65">4400</gml:identifier>
+			<gml:name>Cs cartesian2D</gml:name>
+			<gml:axis xlink:href="#xpointer(//*[@gml:id='EPSG9907'])"/>
+			<gml:axis xlink:href="#xpointer(//*[@gml:id='EPSG9906'])"/>
+		</gml:CartesianCS>
+	</coordinateSystem>
+	<!--========================== Coordinate system axis ==============================-->
+	<!--*** Latitude ***-->
+	<axis>
+		<gml:CoordinateSystemAxis gml:id="EPSG9901" uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='deg'])">
+			<gml:identifier codeSpace="EPSG_v65">9901</gml:identifier>
+			<gml:name>Geodetic latitude</gml:name>
+			<gml:axisAbbrev>Lat</gml:axisAbbrev>
+			<gml:axisDirection codeSpace="EPSG">North</gml:axisDirection>
+		</gml:CoordinateSystemAxis>
+	</axis>
+	<!--*** Longitude ***-->
+	<axis>
+		<gml:CoordinateSystemAxis gml:id="EPSG9902" uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='deg'])">
+			<gml:identifier codeSpace="EPSG_v65">9902</gml:identifier>
+			<gml:name>Geodetic longitude</gml:name>
+			<gml:axisAbbrev>Lon</gml:axisAbbrev>
+			<gml:axisDirection codeSpace="EPSG">East</gml:axisDirection>
+		</gml:CoordinateSystemAxis>
+	</axis>
+	<!--*** Northing ***-->
+	<axis>
+		<gml:CoordinateSystemAxis gml:id="EPSG9907" uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='m'])">
+			<gml:identifier codeSpace="EPSG_v65">9907</gml:identifier>
+			<gml:name>Northing</gml:name>
+			<gml:axisAbbrev>N</gml:axisAbbrev>
+			<gml:axisDirection codeSpace="EPSG">North</gml:axisDirection>
+		</gml:CoordinateSystemAxis>
+	</axis>
+	<!--*** Easting ***-->
+	<axis>
+		<gml:CoordinateSystemAxis gml:id="EPSG9906" uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='m'])">
+			<gml:identifier codeSpace="EPSG_v65">9906</gml:identifier>
+			<gml:name>Easting</gml:name>
+			<gml:axisAbbrev>E</gml:axisAbbrev>
+			<gml:axisDirection codeSpace="EPSG">east</gml:axisDirection>
+		</gml:CoordinateSystemAxis>
+	</axis>
+	<!--================================ Datums =====================================-->
+	<!--*** WGS 84 - Datum ***-->
+	<datum>
+		<gml:GeodeticDatum gml:id="EPSG6326">
+			<gml:identifier codeSpace="EPSG_v65">6326</gml:identifier>
+			<gml:name>World Geodetic System 1984</gml:name>
+			<gml:scope>not known</gml:scope>
+			<gml:primeMeridian xlink:href="#xpointer(//*[@gml:id='EPSG8901'])"/>
+			<gml:ellipsoid xlink:href="#xpointer(//*[@gml:id='EPSG7030'])"/>
+		</gml:GeodeticDatum>
+	</datum>
+	<!--================================ Ellipsoids ====================================-->
+	<!--*** WGS 84 - Ellipsoid ***-->
+	<ellipsoid>
+		<gml:Ellipsoid gml:id="EPSG7030">
+			<gml:identifier codeSpace="EPSG_v65">7030</gml:identifier>
+			<gml:name>WGS 84</gml:name>
+			<gml:semiMajorAxis uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='m'])">6378137</gml:semiMajorAxis>
+			<gml:secondDefiningParameter>
+				<gml:SecondDefiningParameter>
+					<gml:inverseFlattening uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='m'])">298.2572</gml:inverseFlattening>
+				</gml:SecondDefiningParameter>
+			</gml:secondDefiningParameter>
+		</gml:Ellipsoid>
+	</ellipsoid>
+	<!--============================== Prime meridians =================================-->
+	<!--*** Greenwich ***-->
+	<primeMeridian>
+		<gml:PrimeMeridian gml:id="EPSG8901">
+			<gml:identifier codeSpace="EPSG_v65">8901</gml:identifier>
+			<gml:name>Greenwich</gml:name>
+			<gml:greenwichLongitude uom="../uom/gmxUom.xsd#xpointer(//*[@gml:id='deg'])">0</gml:greenwichLongitude>
+		</gml:PrimeMeridian>
+	</primeMeridian>
+	<!--================================ Operations ===================================-->
+	<operation>
+		<gml:Conversion gml:id="EPSG16038">
+			<gml:identifier codeSpace="EPSG_v65">16038</gml:identifier>
+			<gml:name>UTM Zone 38 N</gml:name>
+			<gml:scope>not known</gml:scope>
+			<gml:method xlink:href="EPSG9807"/>
+			<gml:parameterValue>
+				<gml:ParameterValue>
+					<gml:value uom="../uom/gmxUom.xm#xpointer(//*[@gml:id='deg'])">0</gml:value>
+					<gml:operationParameter xlink:href="EPSG8801"/>
+				</gml:ParameterValue>
+			</gml:parameterValue>
+			<gml:parameterValue>
+				<gml:ParameterValue>
+					<gml:value uom="../uom/gmxUom.xm#xpointer(//*[@gml:id='deg'])">45</gml:value>
+					<gml:operationParameter xlink:href="EPSG8802"/>
+				</gml:ParameterValue>
+			</gml:parameterValue>
+			<gml:parameterValue>
+				<gml:ParameterValue>
+					<gml:value uom="../uom/gmxUom.xm#xpointer(//*[@gml:id='unity'])">0.9996</gml:value>
+					<gml:operationParameter xlink:href="EPSG8805"/>
+				</gml:ParameterValue>
+			</gml:parameterValue>
+			<gml:parameterValue>
+				<gml:ParameterValue>
+					<gml:value uom="../uom/gmxUom.xm#xpointer(//*[@gml:id='m'])">500000</gml:value>
+					<gml:operationParameter xlink:href="EPSG8806"/>
+				</gml:ParameterValue>
+			</gml:parameterValue>
+			<gml:parameterValue>
+				<gml:ParameterValue>
+					<gml:value uom="../uom/gmxUom.xm#xpointer(//*[@gml:id='m'])">0</gml:value>
+					<gml:operationParameter xlink:href="EPSG8807"/>
+				</gml:ParameterValue>
+			</gml:parameterValue>
+		</gml:Conversion>
+	</operation>
+	<!--============================= Operation methods ================================-->
+	<operationMethod>
+		<gml:OperationMethod gml:id="EPSG9807">
+			<gml:identifier codeSpace="EPSG_v65">9807</gml:identifier>
+			<gml:name codeSpace="IGN-F">PRCM040</gml:name>
+			<gml:name>Transverse Mercator</gml:name>
+			<gml:formula>Transverse Mercator</gml:formula>
+			<gml:sourceDimensions>2</gml:sourceDimensions>
+			<gml:targetDimensions>2</gml:targetDimensions>
+			<gml:generalOperationParameter xlink:href="EPSG8801"/>
+			<gml:generalOperationParameter xlink:href="EPSG8802"/>
+			<gml:generalOperationParameter xlink:href="EPSG8805"/>
+			<gml:generalOperationParameter xlink:href="EPSG8806"/>
+			<gml:generalOperationParameter xlink:href="EPSG8807"/>
+		</gml:OperationMethod>
+	</operationMethod>
+	<!--=========================== Operation parameters ================================-->
+	<parameters>
+		<gml:OperationParameter gml:id="EPSG8801">
+			<gml:identifier codeSpace="EPSG_v65">8801</gml:identifier>
+			<gml:name>Latitude of natural origin</gml:name>
+		</gml:OperationParameter>
+	</parameters>
+	<parameters>
+		<gml:OperationParameter gml:id="EPSG8802">
+			<gml:identifier codeSpace="EPSG_v65">8802</gml:identifier>
+			<gml:name>Longitude of natural origin</gml:name>
+		</gml:OperationParameter>
+	</parameters>
+	<parameters>
+		<gml:OperationParameter gml:id="EPSG8805">
+			<gml:identifier codeSpace="EPSG_v65">8805</gml:identifier>
+			<gml:name>Scale factor at natural origin</gml:name>
+		</gml:OperationParameter>
+	</parameters>
+	<parameters>
+		<gml:OperationParameter gml:id="EPSG8806">
+			<gml:identifier codeSpace="EPSG_v65">8806</gml:identifier>
+			<gml:name>False Easting</gml:name>
+		</gml:OperationParameter>
+	</parameters>
+	<parameters>
+		<gml:OperationParameter gml:id="EPSG8807">
+			<gml:identifier codeSpace="EPSG_v65">8807</gml:identifier>
+			<gml:name>False Northing</gml:name>
+		</gml:OperationParameter>
+	</parameters>
+</CT_CrsCatalogue>

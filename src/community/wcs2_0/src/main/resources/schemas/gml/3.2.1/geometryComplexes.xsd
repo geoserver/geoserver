@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:geometryComplexes:3.2.1">geometryComplexes.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 12.2.
+Geometric complexes (i.e. instances of gml:GeometricComplexType) are closed collections of geometric primitives, i.e. they will contain their boundaries. 
+A geometric complex (gml:GeometricComplex) is defined by ISO 19107:2003, 6.6.1 as "a set of primitive geometric objects (in a common coordinate system) whose interiors are disjoint. Further, if a primitive is in a geometric complex, then there exists a set of primitives in that complex whose point-wise union is the boundary of this first primitive."
+A geometric composite (gml:CompositeCurve, gml:CompositeSurface and gml:CompositeSolid) represents a geometric complex with an underlying core geometry that is isomorphic to a primitive, i.e. it can be viewed as a primitive and as a complex. See ISO 19107:2003, 6.1 and 6.6.3 for more details on the nature of composite geometries.
+Geometric complexes and composites are intended to be used in application schemas where the sharing of geometry is important.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="geometryAggregates.xsd"/>
+	<complexType name="GeometricComplexType">
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<sequence>
+					<element name="element" type="gml:GeometricPrimitivePropertyType" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="GeometricComplex" type="gml:GeometricComplexType" substitutionGroup="gml:AbstractGeometry"/>
+	<complexType name="GeometricComplexPropertyType">
+		<annotation>
+			<documentation>A property that has a geometric complex as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<choice>
+				<element ref="gml:GeometricComplex"/>
+				<element ref="gml:CompositeCurve"/>
+				<element ref="gml:CompositeSurface"/>
+				<element ref="gml:CompositeSolid"/>
+			</choice>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<complexType name="CompositeCurveType">
+		<complexContent>
+			<extension base="gml:AbstractCurveType">
+				<sequence>
+					<element ref="gml:curveMember" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="CompositeCurve" type="gml:CompositeCurveType" substitutionGroup="gml:AbstractCurve">
+		<annotation>
+			<documentation>A gml:CompositeCurve is represented by a sequence of (orientable) curves such that each curve in the sequence terminates at the start point of the subsequent curve in the list. 
+curveMember references or contains inline one curve in the composite curve. 
+The curves are contiguous, the collection of curves is ordered. Therefore, if provided, the aggregationType attribute shall have the value "sequence".</documentation>
+		</annotation>
+	</element>
+	<complexType name="CompositeSurfaceType">
+		<complexContent>
+			<extension base="gml:AbstractSurfaceType">
+				<sequence>
+					<element ref="gml:surfaceMember" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="CompositeSurface" type="gml:CompositeSurfaceType" substitutionGroup="gml:AbstractSurface">
+		<annotation>
+			<documentation>A gml:CompositeSurface is represented by a set of orientable surfaces. It is geometry type with all the geometric properties of a (primitive) surface. Essentially, a composite surface is a collection of surfaces that join in pairs on common boundary curves and which, when considered as a whole, form a single surface.
+surfaceMember references or contains inline one surface in the composite surface. 
+The surfaces are contiguous.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CompositeSolidType">
+		<complexContent>
+			<extension base="gml:AbstractSolidType">
+				<sequence>
+					<element ref="gml:solidMember" maxOccurs="unbounded"/>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="CompositeSolid" type="gml:CompositeSolidType" substitutionGroup="gml:AbstractSolid">
+		<annotation>
+			<documentation>gml:CompositeSolid implements ISO 19107 GM_CompositeSolid (see ISO 19107:2003, 6.6.7) as specified in D.2.3.6. 
+A gml:CompositeSolid is represented by a set of orientable surfaces. It is a geometry type with all the geometric properties of a (primitive) solid. Essentially, a composite solid is a collection of solids that join in pairs on common boundary surfaces and which, when considered as a whole, form a single solid. 
+solidMember references or contains one solid in the composite solid. The solids are contiguous.</documentation>
+		</annotation>
+	</element>
+</schema>

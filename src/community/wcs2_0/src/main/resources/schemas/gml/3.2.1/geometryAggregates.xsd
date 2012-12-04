@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:geometryAggregates:3.2.1">geometryAggregates.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 12.3.
+Geometric aggregates (i.e. instances of a subtype of gml:AbstractGeometricAggregateType) are arbitrary aggregations of geometry elements. They are not assumed to have any additional internal structure and are used to "collect" pieces of geometry of a specified type. Application schemas may use aggregates for features that use multiple geometric objects in their representations.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="geometryPrimitives.xsd"/>
+	<complexType name="AbstractGeometricAggregateType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractGeometryType">
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractGeometricAggregate" type="gml:AbstractGeometricAggregateType" abstract="true" substitutionGroup="gml:AbstractGeometry">
+		<annotation>
+			<documentation>gml:AbstractGeometricAggregate is the abstract head of the substitution group for all geometric aggregates.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MultiGeometryType">
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:geometryMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:geometryMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="MultiGeometry" type="gml:MultiGeometryType" substitutionGroup="gml:AbstractGeometricAggregate">
+		<annotation>
+			<documentation>gml:MultiGeometry is a collection of one or more GML geometry objects of arbitrary type. 
+The members of the geometric aggregate may be specified either using the "standard" property (gml:geometryMember) or the array property (gml:geometryMembers). It is also valid to use both the "standard" and the array properties in the same collection.</documentation>
+		</annotation>
+	</element>
+	<element name="geometryMember" type="gml:GeometryPropertyType">
+		<annotation>
+			<documentation>This property element either references a geometry element via the XLink-attributes or contains the geometry element.</documentation>
+		</annotation>
+	</element>
+	<element name="geometryMembers" type="gml:GeometryArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of geometry elements. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MultiGeometryPropertyType">
+		<annotation>
+			<documentation>A property that has a geometric aggregate as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractGeometricAggregate"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="MultiPointType">
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:pointMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:pointMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="MultiPoint" type="gml:MultiPointType" substitutionGroup="gml:AbstractGeometricAggregate">
+		<annotation>
+			<documentation>A gml:MultiPoint consists of one or more gml:Points.
+The members of the geometric aggregate may be specified either using the "standard" property (gml:pointMember) or the array property (gml:pointMembers). It is also valid to use both the "standard" and the array properties in the same collection.</documentation>
+		</annotation>
+	</element>
+	<element name="pointMember" type="gml:PointPropertyType">
+		<annotation>
+			<documentation>This property element either references a Point via the XLink-attributes or contains the Point element.</documentation>
+		</annotation>
+	</element>
+	<element name="pointMembers" type="gml:PointArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of points. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MultiPointPropertyType">
+		<annotation>
+			<documentation>A property that has a collection of points as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiPoint"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="MultiCurveType">
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:curveMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:curveMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="MultiCurve" type="gml:MultiCurveType" substitutionGroup="gml:AbstractGeometricAggregate">
+		<annotation>
+			<documentation>A gml:MultiCurve is defined by one or more gml:AbstractCurves.
+The members of the geometric aggregate may be specified either using the "standard" property (gml:curveMember) or the array property (gml:curveMembers). It is also valid to use both the "standard" and the array properties in the same collection.</documentation>
+		</annotation>
+	</element>
+	<element name="curveMembers" type="gml:CurveArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of curves. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MultiCurvePropertyType">
+		<annotation>
+			<documentation>A property that has a collection of curves as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiCurve"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="MultiSurfaceType">
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:surfaceMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:surfaceMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="MultiSurface" type="gml:MultiSurfaceType" substitutionGroup="gml:AbstractGeometricAggregate">
+		<annotation>
+			<documentation>A gml:MultiSurface is defined by one or more gml:AbstractSurfaces.
+The members of the geometric aggregate may be specified either using the "standard" property (gml:surfaceMember) or the array property (gml:surfaceMembers). It is also valid to use both the "standard" and the array properties in the same collection.</documentation>
+		</annotation>
+	</element>
+	<element name="surfaceMembers" type="gml:SurfaceArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of surfaces. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MultiSurfacePropertyType">
+		<annotation>
+			<documentation>A property that has a collection of surfaces as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiSurface"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="MultiSolidType">
+		<complexContent>
+			<extension base="gml:AbstractGeometricAggregateType">
+				<sequence>
+					<element ref="gml:solidMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:solidMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="MultiSolid" type="gml:MultiSolidType" substitutionGroup="gml:AbstractGeometricAggregate">
+		<annotation>
+			<documentation>A gml:MultiSolid is defined by one or more gml:AbstractSolids.
+The members of the geometric aggregate may be specified either using the "standard" property (gml:solidMember) or the array property (gml:solidMembers). It is also valid to use both the "standard" and the array properties in the same collection.</documentation>
+		</annotation>
+	</element>
+	<element name="solidMember" type="gml:SolidPropertyType">
+		<annotation>
+			<documentation>This property element either references a solid via the XLink-attributes or contains the solid element. A solid element is any element, which is substitutable for gml:AbstractSolid.</documentation>
+		</annotation>
+	</element>
+	<element name="solidMembers" type="gml:SolidArrayPropertyType">
+		<annotation>
+			<documentation>This property element contains a list of solids. The order of the elements is significant and shall be preserved when processing the array.</documentation>
+		</annotation>
+	</element>
+	<complexType name="MultiSolidPropertyType">
+		<annotation>
+			<documentation>A property that has a collection of solids as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:MultiSolid"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+</schema>

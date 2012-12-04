@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+CORRECTIONS referenced 2012-07-13 #01
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Use of absolute path in xsi:schemaLocation
+DESCRIPTION:
+- ../gmx/gmx.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd
+- ../gco/gco.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd
+- ../xlink/xlinks.xsd replaced by http://www.w3.org/1999/xlink.xsd
+- ../gml/gml.xsd replaced by http://schemas.opengis.net/gml/3.2.1/gml.xsd
+
+-->
+<CT_CodelistCatalogue xmlns="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+	<!--=====Catalogue description=====-->
+	<name>
+		<gco:CharacterString>tcCodelists</gco:CharacterString>
+	</name>
+	<scope>
+		<gco:CharacterString>Codelists used in the type catalogue schema</gco:CharacterString>
+	</scope>
+	<fieldOfApplication>
+		<gco:CharacterString>Type catalogues</gco:CharacterString>
+	</fieldOfApplication>
+	<versionNumber>
+		<gco:CharacterString>0.1</gco:CharacterString>
+	</versionNumber>
+	<versionDate>
+		<gco:Date>2007-06-14</gco:Date>
+	</versionDate>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--============================= Codelists =======================================-->
+	<codelistItem>
+		<CodeListDictionary gml:id="TC_AggregationType">
+			<gml:description>specifies aggregation semantics: specifies whether the value of each property is a single value ("noAggregation") which is the default case or if a single property instance has an aggregate value in which case the value specifies the aggregation type ("bag", "set", "sequence"). Note that this value is independent from the cardinality.</gml:description>
+			<gml:identifier codeSpace="urn:x-nato:def:schema-xsd:NATO:0.1:tc">TC_AggregationType</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="TC_AggregationType_noAggregation">
+					<gml:description>single value - no aggregation (default)</gml:description>
+					<gml:identifier codeSpace="urn:x-nato:def:schema-xsd:NATO:0.1:tc">noAggregation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="TC_AggregationType_bag">
+					<gml:description>aggregation semantics: bag</gml:description>
+					<gml:identifier codeSpace="urn:x-nato:def:schema-xsd:NATO:0.1:tc">bag</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="TC_AggregationType_set">
+					<gml:description>aggregation semantics: set</gml:description>
+					<gml:identifier codeSpace="urn:x-nato:def:schema-xsd:NATO:0.1:tc">set</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="TC_AggregationType_sequence">
+					<gml:description>aggregation semantics: sequence (ordered bag)</gml:description>
+					<gml:identifier codeSpace="urn:x-nato:def:schema-xsd:NATO:0.1:tc">sequence</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+</CT_CodelistCatalogue>

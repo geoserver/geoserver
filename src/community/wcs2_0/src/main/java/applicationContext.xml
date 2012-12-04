@@ -43,6 +43,29 @@
        </list>
     </constructor-arg>
   </bean>
+  
+    <!-- the xml configuration -->
+  <bean id="wcs-2.0.1-configuration" class="org.geotools.wcs.v2_0.WCSConfiguration" />
+
+  <!--  xml request readers -->
+  <bean id="wcs201CapabilitiesRequestReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="GetCapabilities" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
+
+  <bean id="wcs201DescribeCoverageRequestReader"
+    class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="DescribeCoverage" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
+
+  <bean id="wcs201GetCoverageRequestXMLReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="GetCoverage" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
 
   <!-- GetCapabilities -->
   <bean id="wcs20GetCapabilitiesKvpReader"

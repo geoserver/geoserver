@@ -31,6 +31,8 @@ public enum FieldTypeEnum {
             return STRING;
         } else if (Double.class.equals(binding)) {
             return DOUBLE;
+        } else if (Long.class.equals(binding)) {
+            return INTEGER;
         } else if (Date.class.equals(binding)) {
             return DATE;
         } else {

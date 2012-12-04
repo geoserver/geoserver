@@ -92,6 +92,9 @@ public final class GeometryEncoder {
             }
             json.endArray();
             json.endObject();
+        } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
+            com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
+            toJson(mpoly.getGeometryN(0), json);
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
             String geometryType = determineGeometryType(collection);

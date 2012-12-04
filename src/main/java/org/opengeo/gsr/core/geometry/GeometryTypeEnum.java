@@ -36,6 +36,8 @@ public enum GeometryTypeEnum {
             return POLYLINE;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.Polygon.class)) {
             return POLYGON;
+        } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiPolygon.class)) {
+            return POLYGON;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.Envelope.class)) {
             return ENVELOPE;
         } else {

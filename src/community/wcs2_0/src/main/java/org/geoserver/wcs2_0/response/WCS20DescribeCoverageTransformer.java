@@ -28,7 +28,7 @@ import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
-import org.geoserver.wcs2_0.util.CoverageIdConverter;
+import org.geoserver.wcs2_0.util.NSNameResourceCodec;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.LinearTransform;
@@ -430,7 +430,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
         }
 
         private LayerInfo getLayer(String encodedCoverageId) throws WCS20Exception {
-            List<MapEntry<String, String>> decodedList = CoverageIdConverter.decode(encodedCoverageId);
+            List<MapEntry<String, String>> decodedList = NSNameResourceCodec.decode(encodedCoverageId);
             if(decodedList.isEmpty())
                 throw new WCS20Exception("Could not decode the requested coverage id: "
                         + encodedCoverageId, WCS20Exception.WCSExceptionCode.NoSuchCoverage, encodedCoverageId);

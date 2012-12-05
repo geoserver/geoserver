@@ -4,15 +4,40 @@
  */
 package org.geoserver.wcs2_0;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
+import static org.geoserver.ows.util.ResponseUtils.*;
+
 /**
  * Some consts useful through the module.
  *
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */
-public interface WCS20Const {
+public class WCS20Const {
     public static final String V20x = "2.0.1"; // current
     public static final String V20 = "2.0"; // for lenient parsing
     public static final String V111 = "1.1.1";
     public static final String V110 = "1.1.0";
+
+    static final String CUR_VERSION = WCS20Const.V20x;
+
+    protected static final String URI_WCS = "http://www.opengis.net/wcs/2.0";
+    protected static final String URI_OWS = "http://www.opengis.net/ows/2.0";
+
+    public static AttributesImpl getDefaultNamespaces() {
+
+            final AttributesImpl attributes = new AttributesImpl();
+
+            attributes.addAttribute("", "xmlns:wcs", "xmlns:wcs", "", URI_WCS);
+            attributes.addAttribute("", "xmlns:ows", "xmlns:ows", "", URI_OWS);
+
+            attributes.addAttribute("", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
+            attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
+
+            attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
+            attributes.addAttribute("", "xmlns:xsi", "xmlns:xsi", "", "http://www.w3.org/2001/XMLSchema-instance");
+
+            return attributes;
+    }
 
 }

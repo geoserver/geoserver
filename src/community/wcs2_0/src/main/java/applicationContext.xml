@@ -74,14 +74,14 @@
   <bean id="wcs20GetCapabilitiesResponse"
     class="org.geoserver.wcs2_0.response.WCS20GetCapabilitiesResponse" singleton="false" />
 
-  <!-- Exception handler, we need to output ows 1.1 exceptions -->
-<!--  <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
+  <!-- Exception handler, we need to output ows 2.1 exceptions -->
+<!--  <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS20ServiceExceptionHandler">-->
+  <bean id="wcs20ExceptionHandler" class="org.geoserver.wcs2_0.exception.OWS20ServiceExceptionHandler"> <!-- to be moved into ows package -->
     <constructor-arg index="0">
       <list>
-        <ref local="wcsService-1.1.0" />
-        <ref local="wcsService-1.1.1" />
+        <ref local="wcsService-2.0" />
       </list>
     </constructor-arg>
-  </bean>-->
+  </bean>
 
 </beans>

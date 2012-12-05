@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.logging.Logger;
 import net.opengis.wcs20.GetCapabilitiesType;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.response.WCSCapsTransformer;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.WCS20GetCapabilitiesTransformer;
+import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
-import org.vfny.geoserver.wcs.WcsException;
 
 /**
  *
@@ -43,7 +44,7 @@ public class GetCapabilities {
         this.catalog = catalog;
     }
 
-    TransformerBase run(GetCapabilitiesType request) {
+    TransformerBase run(GetCapabilitiesType request) throws WCS20Exception {
 //        String acceptedVersion = request.getAcceptVersions() == null ? null : request.getAcceptVersions().getVersion();
         List<String> acceptedVersions = request.getAcceptVersions() == null ? null : request.getAcceptVersions().getVersion();
 
@@ -59,7 +60,8 @@ public class GetCapabilities {
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;
         } else {
-            throw new WcsException("Internal error: Could not understand version:" + negotiatedVersion );
+            throw new WCS20Exception("Internal error: Could not understand version:" + negotiatedVersion, 
+                    OWS20Exception.OWSExceptionCode.VersionNegotiationFailed, negotiatedVersion);
         }
 
     }

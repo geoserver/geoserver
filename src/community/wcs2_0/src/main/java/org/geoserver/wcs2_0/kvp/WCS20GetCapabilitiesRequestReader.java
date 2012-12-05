@@ -17,7 +17,7 @@ import org.geoserver.ows.kvp.EMFKvpRequestReader;
 /**
  * Parses a GetCapabilities request for WCS into the correspondent model object
  * 
- * @author ETj - GeoSolutions
+ * @author Emanuele Tajariol (etj) - GeoSolutions
  * 
  */
 public class WCS20GetCapabilitiesRequestReader extends EMFKvpRequestReader {

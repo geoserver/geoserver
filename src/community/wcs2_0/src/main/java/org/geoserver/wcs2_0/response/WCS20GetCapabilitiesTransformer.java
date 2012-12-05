@@ -37,6 +37,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import static org.geoserver.ows.util.ResponseUtils.*;
 import org.geoserver.wcs2_0.WCS20Const;
+import org.geoserver.wcs2_0.util.CoverageIdConverter;
 import org.xml.sax.SAXException;
 
 /**
@@ -48,10 +49,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
     private static final Logger LOGGER = Logging.getLogger(WCS20GetCapabilitiesTransformer.class.getPackage()
             .getName());
 
-    protected static final String WCS_URI = "http://www.opengis.net/wcs/2.0";
     protected static final String CUR_VERSION = WCS20Const.V20x;
-    protected static final String XSI_PREFIX = "xsi";
-    protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
     private WCSInfo wcs;
 
@@ -165,27 +163,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             // Build the document
 
-            final AttributesImpl attributes = new AttributesImpl();
+            final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
-            attributes.addAttribute("", "xmlns:wcs", "xmlns:wcs", "", WCS_URI);
-
-            attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
-            attributes.addAttribute("", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
-            attributes.addAttribute("", "xmlns:ows", "xmlns:ows", "", "http://www.opengis.net/ows/2.0");
-            attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
-
-            final String prefixDef = new StringBuffer("xmlns:").append(XSI_PREFIX).toString();
-            attributes.addAttribute("", prefixDef, prefixDef, "", XSI_URI);
-
-            final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
-                    .toString();
-
-            final String locationDef = buildSchemaURL(baseUrl, "wcs/2.0/wcsGetCapabilities.xsd");
-//            final String locationDef = buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsGetCapabilities.xsd");
-
-            attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
-            attributes.addAttribute("", "updateSequence", "updateSequence", "", String
-                    .valueOf(updateSequence));
+//
+//            final String locationDef = buildSchemaURL(baseUrl, "wcs/2.0/wcsGetCapabilities.xsd");//
+//            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
+            
+            attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
 
             start("wcs:Capabilities", attributes);
 
@@ -218,6 +202,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
          */
         private void handleServiceIdentification() {
             start("ows:ServiceIdentification");
+
+            element("ows:Title", wcs.getTitle());
+            element("ows:Abstract", wcs.getAbstract());
+
             element("ows:ServiceType", "urn:ogc:service:wcs");
             element("ows:ServiceTypeVersion", WCS20Const.V20x);
             element("ows:ServiceTypeVersion", WCS20Const.V111);
@@ -226,9 +214,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
             //element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
-
-            element("ows:Title", wcs.getTitle());
-            element("ows:Abstract", wcs.getAbstract());
 
             handleKeywords(wcs.getKeywords());
 
@@ -462,7 +447,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
         private void handleCoverageSummary(CoverageInfo cv) {
             start("wcs:CoverageSummary");
-            element("wcs:CoverageId", cv.prefixedName());
+            String covId = CoverageIdConverter.encode(cv.getNamespace().getPrefix(), cv.getName());
+            element("wcs:CoverageId", covId);
             element("wcs:CoverageSubtype", "GridCoverage");
 
             handleEnvelope(cv.getLatLonBoundingBox());
@@ -510,9 +496,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
 
         private void handleLanguages() {
-            start("ows:Languages");
-            // TODO
-            end("ows:Languages");
+//            start("ows:Languages");
+//            // TODO
+//            end("ows:Languages");
         }
 
         /**

@@ -23,9 +23,9 @@ public class MonitorInitializer implements GeoServerInitializer {
     }
     
     public void initialize(GeoServer geoServer) throws Exception {
+        monitor.setServer(geoServer);
+
         if (!monitor.isEnabled()) return;
-        
-        monitor.server=geoServer;
 
         //special case for hibernate, we need to have a session in order to make this work
         SessionFactory sessionFactory = null;

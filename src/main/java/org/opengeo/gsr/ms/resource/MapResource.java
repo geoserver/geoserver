@@ -100,7 +100,7 @@ public class MapResource extends Resource {
         }
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : geoServer.getCatalog().getLayers()) {
-            if (l.getResource().getStore().getWorkspace().equals(workspace)) {
+            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().equals(workspace)) {
                 layersInWorkspace.add(l);
             }
         }

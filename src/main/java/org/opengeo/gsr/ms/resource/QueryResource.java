@@ -107,7 +107,7 @@ public class QueryResource extends Resource {
         
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.getResource().getStore().getWorkspace().getName().equals(workspace)) {
+            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspace)) {
                 layersInWorkspace.add(l);
             }
         }

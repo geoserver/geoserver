@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.opengeo</groupId>
+    <artifactId>geoserver-exts</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.opengeo.geoserver</groupId>
+  <artifactId>cluster</artifactId>
+  <packaging>jar</packaging>
+  <name>GeoServer Clustering Module</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>main</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast</artifactId>
+      <version>${hazelcast.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast-spring</artifactId>
+      <version>${hazelcast.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast-wm</artifactId>
+      <version>${hazelcast.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <!--dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast-cloud</artifactId>
+      <version>${hazelcast.version}</version>
+    </dependency-->
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <hazelcast.version>2.3.1</hazelcast.version>
+  </properties>
+</project>
+

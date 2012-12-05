@@ -84,7 +84,13 @@ public class FeatureEncoder {
         
         for (Property prop : feature.getProperties()) {
             if (geometry == null || !prop.getName().equals(geometry.getName())) {
-                json.key(prop.getName().getLocalPart()).value(prop.getValue());
+                final Object value;
+                if (prop.getValue() instanceof java.util.Date) {
+                    value = ((java.util.Date) prop.getValue()).getTime();
+                } else {
+                    value = prop.getValue();
+                }
+                json.key(prop.getName().getLocalPart()).value(value);
             }
         }
         

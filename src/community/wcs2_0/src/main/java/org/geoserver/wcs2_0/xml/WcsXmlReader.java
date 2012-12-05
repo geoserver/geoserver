@@ -32,9 +32,12 @@ public class WcsXmlReader extends XmlRequestReader {
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // create the parser instance
         Parser parser = new Parser(configuration);
-        parser.setValidating(true);
-        parser.setFailOnValidationError(true);
-        parser.setStrict(true);
+        
+        // uncomment this once we have a working validator (now it fails due to
+        // xlink issues)
+        //        parser.setValidating(true);
+        //        parser.setFailOnValidationError(true);
+        //        parser.setStrict(true);
 
         // parse
         Object parsed;

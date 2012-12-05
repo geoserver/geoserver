@@ -19,30 +19,44 @@ public class OWS20Exception extends ServiceException {
      */
     private static final long serialVersionUID = 7254349181794561724L;
 
-    public enum OWSExceptionCode {
+    public static class OWSExceptionCode {
 
-        OperationNotSupported(501, "Not Implemented"),
-        MissingParameterValue(400, "Bad request"),
-        InvalidParameterValue(400, "Bad request"),
-        VersionNegotiationFailed(400, "Bad request"),
-        InvalidUpdateSequence(400, "Bad request"),
-        OptionNotSupported(501, "Not Implemented"),
-        NoApplicableCode(500, "Not Implemented"); // code may be overwritten
+        public final static OWSExceptionCode OperationNotSupported = new OWSExceptionCode("OperationNotSupported", 501, "Not Implemented");
+        public final static OWSExceptionCode MissingParameterValue = new OWSExceptionCode("MissingParameterValue", 400, "Bad request");
+        public final static OWSExceptionCode InvalidParameterValue = new OWSExceptionCode("InvalidParameterValue", 400, "Bad request");
+        public final static OWSExceptionCode VersionNegotiationFailed = new OWSExceptionCode("VersionNegotiationFailed", 400, "Bad request");
+        public final static OWSExceptionCode InvalidUpdateSequence = new OWSExceptionCode("InvalidUpdateSequence", 400, "Bad request");
+        public final static OWSExceptionCode OptionNotSupported = new OWSExceptionCode("OptionNotSupported", 501, "Not Implemented");
+        public final static OWSExceptionCode NoApplicableCode = new OWSExceptionCode("NoApplicableCode", 500, "Not Implemented");   
+
+//        OperationNotSupported(501, "Not Implemented"),
+//        MissingParameterValue(400, "Bad request"),
+//        InvalidParameterValue(400, "Bad request"),
+//        VersionNegotiationFailed(400, "Bad request"),
+//        InvalidUpdateSequence(400, "Bad request"),
+//        OptionNotSupported(501, "Not Implemented"),
+//        NoApplicableCode(500, "Not Implemented"); // code may be overwritten
         
+        private final String exceptionCode;
         private final Integer httpCode;
         private final String httpMessage;
 
-        private OWSExceptionCode() {
-            this(null, null);
+        protected OWSExceptionCode(String exceptionCode) {
+            this(exceptionCode, null, null);
         }
 
-        private OWSExceptionCode(Integer httpCode) {
-            this(httpCode, null);
+        protected OWSExceptionCode(String exceptionCode, Integer httpCode) {
+            this(exceptionCode, httpCode, null);
         }
 
-        private OWSExceptionCode(Integer httpCode, String message) {
+        protected OWSExceptionCode(String exceptionCode, Integer httpCode, String message) {
+            this.exceptionCode = exceptionCode;
             this.httpCode = httpCode;
             this.httpMessage = message;
+        }
+
+        public String getExceptionCode() {
+            return exceptionCode;
         }
 
         public Integer getHttpCode() {
@@ -101,7 +115,7 @@ public class OWS20Exception extends ServiceException {
     }
 
     public OWS20Exception(String message, Throwable cause, OWSExceptionCode code, String locator) {
-        super(message, cause, code.name());
+        super(message, cause, code.getExceptionCode());
         setHttpCode(code.getHttpCode());
     }
 
@@ -116,7 +130,7 @@ public class OWS20Exception extends ServiceException {
     }
 
     public OWS20Exception(String message, OWSExceptionCode code) {
-        super(message, code.name());
+        super(message, code.getExceptionCode());
         setHttpCode(code.getHttpCode());
     }
 
@@ -132,7 +146,7 @@ public class OWS20Exception extends ServiceException {
     }
 
     public OWS20Exception(String message, OWSExceptionCode code, String locator) {
-        super(message, code.name(), locator);
+        super(message, code.getExceptionCode(), locator);
         setHttpCode(code.getHttpCode());
     }
 
@@ -167,7 +181,7 @@ public class OWS20Exception extends ServiceException {
     }
 
     public OWS20Exception(Throwable cause, OWSExceptionCode code, String locator) {
-        super(cause, code.name());
+        super(cause, code.getExceptionCode());
         setHttpCode(code.getHttpCode());
     }
 

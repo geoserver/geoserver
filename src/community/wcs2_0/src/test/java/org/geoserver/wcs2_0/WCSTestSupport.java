@@ -6,6 +6,7 @@ package org.geoserver.wcs2_0;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -123,6 +124,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+                System.out.println("---- WCSTestSupport::doSetup ---> " + new Date());
+//        System.out.println("---- GeoServerBaseTestSupport::setUpLogging --->  " + new Date());
+
         super.onSetUp(testData);
 
         // init xmlunit
@@ -132,6 +136,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
+
+        System.out.println("---- WCSTestSupport::doSetup ---< " + new Date());
     }
 
     @Override

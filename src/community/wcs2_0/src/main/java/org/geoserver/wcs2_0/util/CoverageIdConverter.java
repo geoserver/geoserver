@@ -5,6 +5,7 @@
 package org.geoserver.wcs2_0.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.geotools.util.MapEntry;
 
@@ -30,11 +31,16 @@ public class CoverageIdConverter {
         return workspace + DELIMITER + covName;
     }
 
+    /**
+     *
+     * @return a List of possibile workspace/name pairs, possibly empty if the input could not be decoded;
+     */
     public static List<MapEntry<String,String>> decode(String qualifiedName) {
         int lastPos = qualifiedName.lastIndexOf(DELIMITER);
 
         if( lastPos == -1)
-            throw new IllegalArgumentException("Delimiter not found in input string '"+qualifiedName+"'");
+            return Collections.EMPTY_LIST;
+//            throw new IllegalArgumentException("Delimiter not found in input string '"+qualifiedName+"'");
 
         List<MapEntry<String,String>> ret = new ArrayList<MapEntry<String, String>>();
         while (lastPos > -1) {

@@ -65,10 +65,10 @@ public class CoverageIdConverterTest {
         assertEquals("s2__s3", decode.get(1).getValue());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test // (expected=IllegalArgumentException.class)
     public void testDecodeBad() {
         String qualifiedName = "bad_qualified_name";
-
-        CoverageIdConverter.decode(qualifiedName);
+        List<MapEntry<String, String>> decode = CoverageIdConverter.decode(qualifiedName);
+        assertEquals(0, decode.size());
     }
 }

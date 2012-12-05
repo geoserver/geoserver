@@ -21,13 +21,18 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geoserver.wcs2_0.WCS20Const;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geoserver.wcs2_0.util.CoverageIdConverter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.LinearTransform;
+import org.geotools.util.MapEntry;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
@@ -35,8 +40,6 @@ import org.geotools.xml.transform.Translator;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.Matrix;
-import org.vfny.geoserver.wcs.WcsException;
-import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -50,11 +53,6 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
     private static final Logger LOGGER = Logging.getLogger(WCS20DescribeCoverageTransformer.class
             .getPackage().getName());
 
-    private static final String WCS_URI = "http://www.opengis.net/wcs/2.0";
-
-    private static final String XSI_PREFIX = "xsi";
-
-    private static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
     private static final Map<String, String> METHOD_NAME_MAP = new HashMap<String, String>();
 
@@ -118,39 +116,25 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
             this.request = (DescribeCoverageType) o;
 
-            final AttributesImpl attributes = new AttributesImpl();
-            attributes.addAttribute("", "xmlns:wcs", "xmlns:wcs", "", WCS_URI);
-
-            attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "",
-                    "http://www.w3.org/1999/xlink");
-            attributes.addAttribute("", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
-            attributes.addAttribute("", "xmlns:ows", "xmlns:ows", "",
-                    "http://www.opengis.net/ows/2.0");
-            attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
-
-            final String prefixDef = new StringBuffer("xmlns:").append(XSI_PREFIX).toString();
-            attributes.addAttribute("", prefixDef, prefixDef, "", XSI_URI);
-
-            final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
-                    .toString();
+            final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
 
              final String locationDef = buildSchemaURL(request.getBaseUrl(),  "wcs/2.0/wcsDescribeCoverage.xsd");
             
-            attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
+            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
 
             start("wcs:CoverageDescriptions", attributes);
-            for (String coverageId : (List<String>)request.getIdentifier()) {
-                
-                // check the coverage is known
-                LayerInfo layer = catalog.getLayerByName(coverageId);
-				if (layer == null || layer.getType() != LayerInfo.Type.RASTER) {
+            for (String encodedCoverageId : (List<String>)request.getIdentifier()) {
+
+                LayerInfo layer = getLayer(encodedCoverageId);
+
+				if ( layer.getType() != LayerInfo.Type.RASTER) {
                     // TODO: only the first id is returned, but specs say:
                     // "list of violating coverage identifiers"
-                    throw new WcsException("Could not find the specified coverage: "
-                            + coverageId, WcsExceptionCode.NoSuchCoverage, coverageId);
+                    throw new WCS20Exception("Could not find the requested coverage: "
+                            + encodedCoverageId, WCS20Exception.WCSExceptionCode.NoSuchCoverage, encodedCoverageId);
                 }
 
-                CoverageInfo ci = catalog.getCoverageByName(coverageId);
+                CoverageInfo ci = catalog.getCoverageByName(layer.prefixedName());
                 try {
                     handleCoverageDescription(ci);
                 } catch (Exception e) {
@@ -443,6 +427,27 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
         private void elementIfNotEmpty(String elementName, String content) {
             if (content != null && !"".equals(content.trim()))
                 element(elementName, content);
+        }
+
+        private LayerInfo getLayer(String encodedCoverageId) throws WCS20Exception {
+            List<MapEntry<String, String>> decodedList = CoverageIdConverter.decode(encodedCoverageId);
+            if(decodedList.isEmpty())
+                throw new WCS20Exception("Could not decode the requested coverage id: "
+                        + encodedCoverageId, WCS20Exception.WCSExceptionCode.NoSuchCoverage, encodedCoverageId);
+
+            for (MapEntry<String, String> mapEntry : decodedList) {
+                String namespace = mapEntry.getKey();
+                String covName = mapEntry.getValue();
+                NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
+                if(nsInfo != null) {
+                    LayerInfo layer = catalog.getLayerByName(namespace+":"+covName);
+                    if(layer != null)
+                        return layer;
+                }
+            }
+
+            throw new WCS20Exception("Could not find the requested coverage: "
+                    + encodedCoverageId, WCS20Exception.WCSExceptionCode.NoSuchCoverage, encodedCoverageId);
         }
     }
 

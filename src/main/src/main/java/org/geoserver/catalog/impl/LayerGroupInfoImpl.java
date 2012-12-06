@@ -63,7 +63,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
 
     public String getTitle() {
-        return metadata.get("title", String.class);
+        if(metadata != null) {
+            return metadata.get("title", String.class);
+        } else {
+            return null;
+        }
     }
     
     public void setTitle(String title) {
@@ -71,7 +75,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
     
     public String getAbstract() {
-        return metadata.get("abstract", String.class);
+        if(metadata != null) {
+            return metadata.get("abstract", String.class);
+        } else {
+            return null;
+        }
     }
     
     public void setAbstract(String abstractTxt) {

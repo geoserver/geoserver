@@ -32,6 +32,7 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -956,9 +957,19 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 // qatts.addAttribute("", "cascaded", "cascaded", "", "1");
                 start("Layer", qatts);
                 element("Name", layerName);
-                element("Title", layerName);
-                element("Abstract", "Layer-Group type layer: " + layerName);
+                
+                if (StringUtils.isEmpty(layerGroup.getTitle())) {
+                    element("Title", layerName);                    
+                } else {
+                    element("Title", layerGroup.getTitle());
+                }
 
+                if (StringUtils.isEmpty(layerGroup.getAbstract())) {
+                    element("Abstract", "Layer-Group type layer: " + layerName);
+                } else {
+                    element("Abstract", layerGroup.getAbstract());
+                } 
+                
                 final ReferencedEnvelope layerGroupBounds = layerGroup.getBounds();
                 final ReferencedEnvelope latLonBounds = layerGroupBounds.transform(
                         DefaultGeographicCRS.WGS84, true);

@@ -24,6 +24,7 @@ public class WCS20Exception extends OWS20Exception {
 
         public final static OWSExceptionCode NoSuchCoverage = new WCSExceptionCode("NoSuchCoverage", 404);
         public final static OWSExceptionCode EmptyCoverageIdList = new WCSExceptionCode("emptyCoverageIdList", 404);
+        public final static OWSExceptionCode InvalidEncodingSyntax = new WCSExceptionCode("InvalidEncodingSyntax", 400);
 
         protected WCSExceptionCode(String exceptionCode, Integer httpCode) {
             super(exceptionCode, httpCode);

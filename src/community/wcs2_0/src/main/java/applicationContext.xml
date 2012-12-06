@@ -44,16 +44,8 @@
     </constructor-arg>
   </bean>
   
-    <!-- the xml configuration -->
+  <!-- the xml configuration for xml readers -->
   <bean id="wcs-2.0.1-configuration" class="org.geotools.wcs.v2_0.WCSConfiguration" />
-
-  <!--  xml request readers -->
-
-  <bean id="wcs201GetCoverageRequestXMLReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
-    <constructor-arg value="GetCoverage" />
-    <constructor-arg value="2.0.1" />
-    <constructor-arg ref="wcs-2.0.1-configuration" />
-  </bean>
 
   <!-- GetCapabilities -->
   <bean id="wcs20GetCapabilitiesKvpReader" class="org.geoserver.wcs2_0.kvp.WCS20GetCapabilitiesRequestReader" />
@@ -77,6 +69,14 @@
     <constructor-arg ref="wcs-2.0.1-configuration" />
   </bean>
 
+  <!-- GetCoverage -->
+  <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser"/>
+  
+  <bean id="wcs201GetCoverageRequestReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="GetCoverage" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
 
   <!-- Exception handler, we need to output ows 2.1 exceptions -->
 <!--  <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS20ServiceExceptionHandler">-->

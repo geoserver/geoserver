@@ -63,13 +63,13 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                             put("http://www.opengis.net/gml/3.2", "./src/main/resources/schemas/gml/3.2.1/");
                             put("http://www.w3.org/1999/xlink", "./src/test/resources/schemas/xlink/");
                             put("http://www.w3.org/XML/1998/namespace", "./src/test/resources/schemas/xml/");
-                            put("http://www.isotc211.org/2005/gmd", "./src/main/resources/iso/19139/20070417/gmd/");
-                            put("http://www.isotc211.org/2005/gco", "./src/main/resources/iso/19139/20070417/gco/");
-                            put("http://www.isotc211.org/2005/gss", "./src/main/resources/iso/19139/20070417/gss/");
-                            put("http://www.isotc211.org/2005/gts", "./src/main/resources/iso/19139/20070417/gts/");
-                            put("http://www.isotc211.org/2005/gsr", "./src/main/resources/iso/19139/20070417/gsr/");
-                            put("http://www.opengis.net/swe/2.0", "./src/main/resources/sweCommon/2.0/");
-                            put("http://www.opengis.net/ows/2.0", "./src/main/resources/ows/2.0/");
+                            put("http://www.isotc211.org/2005/gmd", "./src/main/resources/schemas/iso/19139/20070417/gmd/");
+                            put("http://www.isotc211.org/2005/gco", "./src/main/resources/schemas/iso/19139/20070417/gco/");
+                            put("http://www.isotc211.org/2005/gss", "./src/main/resources/schemas/iso/19139/20070417/gss/");
+                            put("http://www.isotc211.org/2005/gts", "./src/main/resources/schemas/iso/19139/20070417/gts/");
+                            put("http://www.isotc211.org/2005/gsr", "./src/main/resources/schemas/iso/19139/20070417/gsr/");
+                            put("http://www.opengis.net/swe/2.0", "./src/main/resources/schemas/sweCommon/2.0/");
+                            put("http://www.opengis.net/ows/2.0", "./src/main/resources/schemas/ows/2.0/");
                         }
                     };
 

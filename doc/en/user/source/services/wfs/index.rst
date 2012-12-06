@@ -3,6 +3,8 @@
 Web Feature Service
 ===================
 
+This section describes the Web Feature Service.
+
 .. toctree::
    :maxdepth: 2
 

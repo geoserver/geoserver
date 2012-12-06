@@ -74,6 +74,9 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
 
     public String getTitle() {
+        if(title == null && metadata != null) {
+            title = metadata.get("title", String.class);
+        }
         return title;
     }
     
@@ -82,6 +85,9 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
     
     public String getAbstract() {
+        if(abstractTxt == null && metadata != null) {
+            abstractTxt = metadata.get("title", String.class);
+        }
         return abstractTxt;
     }
     

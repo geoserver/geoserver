@@ -49,6 +49,23 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static final Schema WCS20_SCHEMA;
 
     static {
+        final Map<String, String> namespaceMap = new HashMap<String, String>() {
+            {
+                put("http://www.opengis.net/wcs/2.0", "./src/main/resources/schemas/wcs/2.0/");
+                put("http://www.opengis.net/gmlcov/1.0", "./src/main/resources/schemas/gmlcov/1.0/");
+                put("http://www.opengis.net/gml/3.2", "./src/main/resources/schemas/gml/3.2.1/");
+                put("http://www.w3.org/1999/xlink", "./src/test/resources/schemas/xlink/");
+                put("http://www.w3.org/XML/1998/namespace", "./src/test/resources/schemas/xml/");
+                put("http://www.isotc211.org/2005/gmd", "./src/main/resources/schemas/iso/19139/20070417/gmd/");
+                put("http://www.isotc211.org/2005/gco", "./src/main/resources/schemas/iso/19139/20070417/gco/");
+                put("http://www.isotc211.org/2005/gss", "./src/main/resources/schemas/iso/19139/20070417/gss/");
+                put("http://www.isotc211.org/2005/gts", "./src/main/resources/schemas/iso/19139/20070417/gts/");
+                put("http://www.isotc211.org/2005/gsr", "./src/main/resources/schemas/iso/19139/20070417/gsr/");
+                put("http://www.opengis.net/swe/2.0", "./src/main/resources/schemas/sweCommon/2.0/");
+                put("http://www.opengis.net/ows/2.0", "./src/main/resources/schemas/ows/2.0/");
+            }
+        };
+
         try {
             final SchemaFactory factory = SchemaFactory
                     .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -56,22 +73,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 @Override
                 public LSInput resolveResource(String type, String namespaceURI, String publicId,
                         String systemId, String baseURI) {
-                    Map<String, String> namespaceMap = new HashMap<String, String>() {
-                        {
-                            put("http://www.opengis.net/wcs/2.0", "./src/main/resources/schemas/wcs/2.0/");
-                            put("http://www.opengis.net/gmlcov/1.0", "./src/main/resources/schemas/gmlcov/1.0/");
-                            put("http://www.opengis.net/gml/3.2", "./src/main/resources/schemas/gml/3.2.1/");
-                            put("http://www.w3.org/1999/xlink", "./src/test/resources/schemas/xlink/");
-                            put("http://www.w3.org/XML/1998/namespace", "./src/test/resources/schemas/xml/");
-                            put("http://www.isotc211.org/2005/gmd", "./src/main/resources/schemas/iso/19139/20070417/gmd/");
-                            put("http://www.isotc211.org/2005/gco", "./src/main/resources/schemas/iso/19139/20070417/gco/");
-                            put("http://www.isotc211.org/2005/gss", "./src/main/resources/schemas/iso/19139/20070417/gss/");
-                            put("http://www.isotc211.org/2005/gts", "./src/main/resources/schemas/iso/19139/20070417/gts/");
-                            put("http://www.isotc211.org/2005/gsr", "./src/main/resources/schemas/iso/19139/20070417/gsr/");
-                            put("http://www.opengis.net/swe/2.0", "./src/main/resources/schemas/sweCommon/2.0/");
-                            put("http://www.opengis.net/ows/2.0", "./src/main/resources/schemas/ows/2.0/");
-                        }
-                    };
 
                     String localPosition = namespaceMap.get(namespaceURI);
                     if (localPosition != null) {

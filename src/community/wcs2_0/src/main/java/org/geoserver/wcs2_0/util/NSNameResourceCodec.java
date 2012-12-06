@@ -35,8 +35,8 @@ import org.geotools.util.logging.Logging;
 public class NSNameResourceCodec {
     protected static Logger LOGGER = Logging.getLogger(NSNameResourceCodec.class);
 
-
-    private final static String DELIMITER = String.valueOf("__");
+    private final static String DELIMITER = "__";
+    
 
     public static String encode(ResourceInfo resource) {
         return encode(resource.getNamespace().getPrefix(), resource.getName());
@@ -62,24 +62,36 @@ public class NSNameResourceCodec {
 
         List<LayerInfo> ret = new ArrayList<LayerInfo>();
 
+        LOGGER.info(" Examining encoded name " + encodedResourceId);
+
         for (MapEntry<String, String> mapEntry : decodedList) {
+
             String namespace = mapEntry.getKey();
             String covName = mapEntry.getValue();
+
+            LOGGER.info(" Checking pair " + namespace + " : " + covName );
+
             NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
             if(nsInfo != null) {
+                LOGGER.info(" - Namespace found " + namespace);
                 LayerInfo layer = catalog.getLayerByName(namespace+":"+covName);
-                if(layer != null)
+                if(layer != null) {
+                    LOGGER.info(" - Collecting layer " + layer.prefixedName());
                     ret.add(layer);
+                } else {
+                    LOGGER.info(" - Ignoring layer " + layer.prefixedName());
+                }
+            } else {
+                LOGGER.info(" - Namespace not found " + namespace);
             }
         }
 
-        LOGGER.info("Could not find layer with id '"+encodedResourceId+"'");
         return ret;
     }
 
     /**
      *
-     * @return a List of possibile workspace/name pairs, possibly empty if the input could not be decoded;
+     * @return a List of possible workspace/name pairs, possibly empty if the input could not be decoded;
      */
     public static List<MapEntry<String,String>> decode(String qualifiedName) {
         int lastPos = qualifiedName.lastIndexOf(DELIMITER);

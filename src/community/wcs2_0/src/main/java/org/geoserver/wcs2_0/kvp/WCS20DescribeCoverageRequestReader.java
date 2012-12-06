@@ -4,13 +4,11 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import java.util.Map;
 import net.opengis.wcs20.DescribeCoverageType;
 
 import net.opengis.wcs20.Wcs20Factory;
 
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
-import org.geoserver.platform.OWS20Exception;
 
 /**
  * Parses a DescribeCoverage request for WCS into the correspondent model object
@@ -23,17 +21,4 @@ public class WCS20DescribeCoverageRequestReader extends EMFKvpRequestReader {
     public WCS20DescribeCoverageRequestReader() {
         super(DescribeCoverageType.class, Wcs20Factory.eINSTANCE);
     }
-
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        request = super.read(request, kvp, rawKvp);
-
-        DescribeCoverageType describeCoverage = (DescribeCoverageType) request;
-
-        if(describeCoverage.getCoverageId() == null) {
-            throw new OWS20Exception("Required parameter coverageId missing", OWS20Exception.OWSExceptionCode.MissingParameterValue, "coverageId");
-        }
-
-        return request;
-    }
-
 }

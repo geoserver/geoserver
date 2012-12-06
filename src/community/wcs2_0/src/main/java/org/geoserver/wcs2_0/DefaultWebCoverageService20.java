@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs2_0;
 
+import com.google.common.collect.Lists;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
 import net.opengis.wcs20.DescribeCoverageType;
@@ -12,6 +13,7 @@ import net.opengis.wcs20.GetCoverageType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -55,6 +57,9 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     @Override
     public WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
         checkVersion(request.getVersion());
+        if( request.getCoverageId() == null || request.getCoverageId().isEmpty() ) {
+            throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
+        }
 
         WCSInfo wcs = getServiceInfo();
 
@@ -70,6 +75,10 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     }
 
     private void checkVersion(String version) {
+        if(version == null) {
+            throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
+        }
+
         if ( ! WCS20Const.V20x.equals(version) && ! WCS20Const.V20.equals(version)) {
             throw new WCS20Exception("Could not understand version:" + version);
         }

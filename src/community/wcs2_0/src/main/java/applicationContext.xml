@@ -69,6 +69,9 @@
     <constructor-arg ref="wcs-2.0.1-configuration" />
   </bean>
 
+  <bean id="wcs20DescribeCoverageResponse"  class="org.geoserver.wcs2_0.response.WCS20DescribeCoverageResponse"
+        singleton="false" />
+
   <!-- GetCoverage -->
   <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser"/>
   

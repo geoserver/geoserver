@@ -186,7 +186,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
 
         ExceptionReportType report = Ows20Factory.eINSTANCE.createExceptionReportType();
 
-        version = version != null ? version : "2.0";
+        version = version != null ? version : "2.0.0";
         report.setVersion(version);
         report.getException().add(e);
 

@@ -31,6 +31,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
      * Makes sure this triggers only
      * </p>
      */
+    @Override
     public boolean canHandle(Operation operation) {
 
         return "GetCapabilities".equalsIgnoreCase(operation.getId()) && 
@@ -39,6 +40,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
                   operation.getService().getVersion().toString().equals(WCS20Const.V20) );
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         GetCapabilitiesType request = (GetCapabilitiesType) OwsUtils.parameter(operation
                 .getParameters(), GetCapabilitiesType.class);
@@ -57,6 +59,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
         return "application/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
         throws IOException {
         TransformerBase tx = (TransformerBase) value;

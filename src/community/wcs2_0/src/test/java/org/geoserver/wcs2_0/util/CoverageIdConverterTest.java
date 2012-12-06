@@ -65,6 +65,18 @@ public class CoverageIdConverterTest {
         assertEquals("s2__s3", decode.get(1).getValue());
     }
 
+    @Test
+    public void testDecode03() {
+        String qualifiedName = "s1___s2";
+
+        List<MapEntry<String, String>> decode = NSNameResourceCodec.decode(qualifiedName);
+        assertEquals(2, decode.size());
+        assertEquals("s1_", decode.get(0).getKey());
+        assertEquals("s2", decode.get(0).getValue());
+        assertEquals("s1", decode.get(1).getKey());
+        assertEquals("_s2", decode.get(1).getValue());
+    }
+
     @Test // (expected=IllegalArgumentException.class)
     public void testDecodeBad() {
         String qualifiedName = "bad_qualified_name";

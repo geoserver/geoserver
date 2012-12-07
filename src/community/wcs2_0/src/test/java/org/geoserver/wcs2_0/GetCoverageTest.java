@@ -41,6 +41,43 @@ public class GetCoverageTest extends WCSTestSupport {
         
         // TODO: add more checks, make sure we returned the whole thing
     }
+    
+    @Test 
+    public void testGeotiffExtension() throws Exception {
+        String request =  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+        		"<wcs:GetCoverage\n" + 
+        		"  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n" + 
+        		"  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n" + 
+        		"  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" + 
+        		"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+        		"  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n" + 
+        		"  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n" + 
+        		"  http://www.opengis.net/wcs/geotiff/1.0 \n" + 
+        		"  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n" + 
+        		"  service=\"WCS\"\n" + 
+        		"  version=\"2.0.1\">\n" + 
+        		"  <wcs:Extension>\n" + 
+        		"    <wcsgeotiff:compression>JPEG</wcsgeotiff:compression>\n" + 
+        		"    <wcsgeotiff:jpeg_quality>75</wcsgeotiff:jpeg_quality>\n" + 
+        		"    <wcsgeotiff:predictor>None</wcsgeotiff:predictor>\n" + 
+        		"    <wcsgeotiff:interleave>pixel</wcsgeotiff:interleave>\n" + 
+        		"    <wcsgeotiff:tiling>true</wcsgeotiff:tiling>\n" + 
+        		"    <wcsgeotiff:tileheight>256</wcsgeotiff:tileheight>\n" + 
+        		"    <wcsgeotiff:tilewidth>256</wcsgeotiff:tilewidth>\n" + 
+        		"  </wcs:Extension>\n" + 
+        		"  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n" + 
+        		"  <wcs:format>image/tiff</wcs:format>\n" + 
+        		"</wcs:GetCoverage>";
+        
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = new File("./target/bm_gtiff.tiff");
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+    }
 
 
     

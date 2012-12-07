@@ -173,6 +173,18 @@
     </profile>
 
     <profile>
+      <id>monitor</id>
+      <activation>
+        <property>
+          <name>monitoring</name>
+        </property>
+      </activation>
+      <modules>
+        <module>monitor</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>security</id>
       <modules>
         <module>security</module>
@@ -204,6 +216,7 @@
         <module>wps</module>
         <module>querylayer</module>
         <module>teradata</module>
+        <module>monitor</module>
         <module>security</module>
       </modules>
     </profile>
@@ -233,6 +246,7 @@
         <module>wps</module>
         <module>querylayer</module>
         <module>teradata</module>
+        <module>monitor</module>
         <module>security</module>
       </modules>
     </profile>

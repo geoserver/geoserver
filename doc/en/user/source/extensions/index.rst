@@ -22,5 +22,5 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    styler
    wfsv
    wps/index
-   
+   monitoring/index
 

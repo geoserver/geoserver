@@ -230,9 +230,64 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
          * </pre>
          */
         private void handleDomainSet(CoverageInfo ci) {
+            // retrieve info
+            final ReferencedEnvelope latLonBoundingBox = ci.getLatLonBoundingBox();
+            final CoordinateReferenceSystem crs = latLonBoundingBox.getCoordinateReferenceSystem();
+
+            // setup vars
+            final String gridId = "grid00__" + NSNameResourceCodec.encode(ci);
+            final String axisLabels = "Lat Long"; // should also add elev? time?
+            final int gridDimension = ci.getGrid().getGridRange().getDimension();
+
+            final StringBuilder lowSb = new StringBuilder();
+            for (int i : ci.getGrid().getGridRange().getLow().getCoordinateValues()) {
+                lowSb.append(i).append(' ');
+            }
+            final StringBuilder highSb = new StringBuilder();
+            for (int i : ci.getGrid().getGridRange().getHigh().getCoordinateValues()) {
+                highSb.append(i).append(' ');
+            }
+
+            // build the fragment
+            final AttributesImpl gridAttrs = new AttributesImpl();
+            gridAttrs.addAttribute("", "gml:id", "gml:id", "", gridId);
+            gridAttrs.addAttribute("", "dimension", "dimension", "", String.valueOf(gridDimension));
+
             start("gml:domainSet");
+            start("gml:Grid", gridAttrs);
+            start("gml:limits");
+            start("gml:GridEnvelope");
+            element("gml:low", lowSb.toString().trim());
+            element("gml:high", highSb.toString().trim());
+            end("gml:GridEnvelope");
+            end("gml:limits");
+            element("gml:axisLabels", axisLabels);
+            end("gml:Grid");
             end("gml:domainSet");
         }
+
+        /**
+         * e.g.:<pre> {@code
+         * <gmlcov:rangeType>
+         *    <swe:DataRecord>
+         *        <swe:field name="singleBand">
+         *           <swe:Quantity definition="http://www.opengis.net/def/property/OGC/0/Radiance">
+         *               <gml:description>Panchromatic Channel</gml:description>
+         *               <gml:name>single band</gml:name>
+         *               <swe:uom code="W/cm2"/>
+         *               <swe:constraint>
+         *                   <swe:AllowedValues>
+         *                       <swe:interval>0 255</swe:interval>
+         *                       <swe:significantFigures>3</swe:significantFigures>
+         *                   </swe:AllowedValues>
+         *               </swe:constraint>
+         *           </swe:Quantity>
+         *        </swe:field>
+         *    </swe:DataRecord>
+         * </gmlcov:rangeType>
+         * }
+         * </pre>
+         */
         private void handleRangeType(CoverageInfo ci) {
             start("gmlcov:rangeType");
             end("gmlcov:rangeType");

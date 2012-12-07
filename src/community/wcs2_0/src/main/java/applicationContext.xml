@@ -75,6 +75,8 @@
   <!-- GetCoverage -->
   <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser"/>
   
+  <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader"/>
+  
   <bean id="wcs201GetCoverageRequestReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
     <constructor-arg value="GetCoverage" />
     <constructor-arg value="2.0.1" />

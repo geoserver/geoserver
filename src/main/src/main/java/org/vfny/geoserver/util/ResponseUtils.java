@@ -12,7 +12,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +58,11 @@ public final class ResponseUtils {
                     //interpret no host as backreference to server
                     Map<String, String> kvp = null;
                     if (uri.getQuery() != null && !"".equals(uri.getQuery())) {
-                        kvp = KvpUtils.parseQueryString("?" + uri.getQuery());
+                        Map<String, Object> parsed = KvpUtils.parseQueryString("?" + uri.getQuery());
+                        kvp = new HashMap<String, String>();
+                        for (Entry<String, Object> entry : parsed.entrySet()) {
+                            kvp.put(entry.getKey(), (String) entry.getValue());
+                        }
                     }
 
                     content = buildURL(baseURL, uri.getPath(), kvp, URLType.RESOURCE);

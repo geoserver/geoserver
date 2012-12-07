@@ -1364,10 +1364,17 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * Helper method to create the kvp params from the query string.
      */
     private void kvp(MockHttpServletRequest request, String path) {
-         Map<String, String> params = KvpUtils.parseQueryString(path);
+         Map<String, Object> params = KvpUtils.parseQueryString(path);
          for (String key : params.keySet()) {
-            String value = params.get(key);
-            request.setupAddParameter(key, value);
+            Object value = params.get(key);
+            if(value instanceof String) {
+                request.setupAddParameter(key, (String) value);
+            } else {
+                String[] values = (String[]) value;
+                for (String v : values) {
+                    request.setupAddParameter(key, v);
+                }
+            }
         }
          
     }

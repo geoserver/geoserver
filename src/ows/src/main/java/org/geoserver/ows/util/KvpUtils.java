@@ -328,18 +328,26 @@ public class KvpUtils {
         for (Iterator itr = kvp.entrySet().iterator(); itr.hasNext();) {
             Map.Entry entry = (Map.Entry) itr.next();
             String key = (String) entry.getKey();
-            String value = null;
+            Object value = null;
 
             if (entry.getValue() instanceof String) {
-                value = (String) entry.getValue();
+                value = trim((String) entry.getValue());
             } else if (entry.getValue() instanceof String[]) {
-                //TODO: perhaps handle multiple values for a key
-                value = (String) ((String[]) entry.getValue())[0];
-            }
-
-            //trim the string
-            if ( value != null ) {
-                value = value.trim(); 
+                String[] values = (String[]) entry.getValue();
+                List<String> normalized = new ArrayList<String>();
+                for (String v : values) {
+                    v = trim(v);
+                    if(v != null) {
+                        normalized.add(v);
+                    }
+                }
+                if(normalized.size() == 0) {
+                    value = null;
+                } else if(normalized.size() == 1) {
+                    value = normalized.get(0);
+                } else {
+                    value = (String[]) normalized.toArray(new String[normalized.size()]);
+                }
             }
             
             //convert key to lowercase 
@@ -347,6 +355,14 @@ public class KvpUtils {
         }
         
         return normalizedKvp;
+    }
+
+    private static String trim(String value) {
+        // trim the string
+        if ( value != null ) {
+            value = value.trim(); 
+        }
+        return value;
     }
     
     /**
@@ -400,19 +416,15 @@ public class KvpUtils {
         for (Iterator itr = kvp.entrySet().iterator(); itr.hasNext();) {
             Map.Entry entry = (Map.Entry) itr.next();
             String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
             
-            //find the parser for this key value pair
-            Object parsed = null;
-
+            // find the parser for this key value pair
             KvpParser parser = null;
-            for (Iterator pitr = parsers.iterator(); pitr.hasNext() && parsed == null;) {
+            for (Iterator pitr = parsers.iterator(); pitr.hasNext();) {
                 KvpParser candidate = (KvpParser) pitr.next();
                 if (key.equalsIgnoreCase(candidate.getKey())) {
                     if (parser == null) {
                         parser = candidate;
-                    }
-                    else {
+                    } else {
                         String curService = parser.getService();
                         Version curVersion = parser.getVersion();
 
@@ -448,9 +460,21 @@ public class KvpUtils {
                 }
             }
 
+            // parse the value
+            Object parsed = null;
             if (parser != null) {
                 try {
-                    parsed = parser.parse(value);
+                    if(entry.getValue() instanceof String) {
+                        String value = (String) entry.getValue();
+                        parsed = parser.parse(value);
+                    } else {
+                        String[] values = (String[]) entry.getValue();
+                        List result = new ArrayList();
+                        for (String v : values) {
+                            result.add(parser.parse(v));
+                        }
+                        parsed = result;
+                    }
                 } catch (Throwable t) {
                     //dont throw any exceptions yet, befor the service is
                     // known
@@ -475,7 +499,7 @@ public class KvpUtils {
      * @param path a url in the form path?k1=v1&k2=v2&,,,
      * @return
      */
-    public static Map<String, String> parseQueryString(String path) {
+    public static Map<String, Object> parseQueryString(String path) {
         int index = path.indexOf('?');
 
         if (index == -1) {
@@ -484,7 +508,7 @@ public class KvpUtils {
 
         String queryString = path.substring(index + 1);
         StringTokenizer st = new StringTokenizer(queryString, "&");
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, Object> result = new HashMap<String, Object>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             String[] keyValuePair;
@@ -511,7 +535,25 @@ public class KvpUtils {
                 
             }
          
-            result.put(keyValuePair[0], keyValuePair.length > 1 ?  keyValuePair[1] : "");
+            String key = keyValuePair[0];
+            String value = keyValuePair.length > 1 ?  keyValuePair[1] : "";
+            if(result.get(key) == null) {
+                result.put(key, value);
+            } else {
+                String[] array;
+                Object oldValue = result.get(key);
+                if(oldValue instanceof String) {
+                    array = new String[2];
+                    array[0] = (String) oldValue;
+                    array[1] = value;
+                } else {
+                    String[] oldArray = (String[]) oldValue;
+                    array = new String[oldArray.length + 1];
+                    System.arraycopy(oldArray, 0, array, 0, oldArray.length);
+                    array[oldArray.length] = value;
+                }
+                result.put(key, array);
+            }
         }
         
         return result;

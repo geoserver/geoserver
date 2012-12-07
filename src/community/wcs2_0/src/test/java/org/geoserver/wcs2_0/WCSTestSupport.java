@@ -4,11 +4,16 @@
  */
 package org.geoserver.wcs2_0;
 
+import static junit.framework.Assert.*;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -24,16 +29,26 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.WebCoverageService111;
+import org.geoserver.wcs.kvp.GetCoverageRequestReader;
+import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.geotools.xml.XML;
+import org.junit.After;
+import org.junit.Before;
+import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXParseException;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
  * Base support class for wcs tests.
@@ -47,6 +62,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static final boolean IS_WINDOWS;
 
     protected static final Schema WCS20_SCHEMA;
+    
+    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
 
     static {
         final Map<String, String> namespaceMap = new HashMap<String, String>() {
@@ -121,6 +138,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
         testData.setUpWcs10RasterLayers();
+        testData.setUpWcs11RasterLayers();
     }
 
     @Override
@@ -166,5 +184,23 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
             Assert.fail("Document did not validate.");
         }
     }
+    
+    /**
+     * Marks the coverage to be cleaned when the test ends
+     * @param coverage
+     */
+    protected void scheduleForCleaning(GridCoverage coverage) {
+        if(coverage != null) {
+            coverages.add(coverage);
+        }
+    }
 
+    @After
+    public void cleanCoverages() {
+        for (GridCoverage coverage : coverages) {
+            CoverageCleanerCallback.disposeCoverage(coverage);
+        }
+    }
+
+    
 }

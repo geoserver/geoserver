@@ -37,7 +37,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import static org.geoserver.ows.util.ResponseUtils.*;
 import org.geoserver.wcs2_0.WCS20Const;
-import org.geoserver.wcs2_0.util.NSNameResourceCodec;
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.xml.sax.SAXException;
 
 /**
@@ -447,7 +447,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
         private void handleCoverageSummary(CoverageInfo cv) {
             start("wcs:CoverageSummary");
-            String covId = NSNameResourceCodec.encode(cv);
+            String covId = NCNameResourceCodec.encode(cv);
             element("wcs:CoverageId", covId);
             element("wcs:CoverageSubtype", "GridCoverage");
 

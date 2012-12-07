@@ -4,9 +4,9 @@
  */
 package org.geoserver.wcs2_0;
 
-import com.google.common.collect.Lists;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
+
 import net.opengis.wcs20.DescribeCoverageType;
 import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
@@ -23,7 +23,8 @@ import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
 
 /**
- *
+ * Default implementation of the Web Coverage Service 2.0
+ * 
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class DefaultWebCoverageService20 implements WebCoverageService20 {
@@ -69,9 +70,13 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     }
 
     @Override
-    public GridCoverage[] getCoverage(GetCoverageType request) {
+    public GridCoverage getCoverage(GetCoverageType request) {
         checkVersion(request.getVersion());
-        throw new UnsupportedOperationException("Not supported yet.");
+        if( request.getCoverageId() == null || "".equals(request.getCoverageId()) ) {
+            throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
+        }
+        
+        return new GetCoverage(getServiceInfo(), catalog).run(request);
     }
 
     private void checkVersion(String version) {

@@ -43,5 +43,5 @@ public interface WebCoverageService20 {
     /**
      * GetCoverage operation.
      */
-    GridCoverage[] getCoverage(GetCoverageType request);
+    GridCoverage getCoverage(GetCoverageType request);
 }

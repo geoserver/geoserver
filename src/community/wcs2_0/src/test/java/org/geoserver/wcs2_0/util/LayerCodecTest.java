@@ -22,18 +22,18 @@ public class LayerCodecTest extends GeoServerSystemTestSupport {
     @Test
     public void testBasicKVP() throws Exception {
         {
-            List<LayerInfo> list0 = NSNameResourceCodec.getLayers(getCatalog(), "pippo_topo");
+            List<LayerInfo> list0 = NCNameResourceCodec.getLayers(getCatalog(), "pippo_topo");
             assertNull(list0);
         }
 
         {
-            List<LayerInfo> list1 = NSNameResourceCodec.getLayers(getCatalog(), "pippo__topo");
+            List<LayerInfo> list1 = NCNameResourceCodec.getLayers(getCatalog(), "pippo__topo");
             assertNotNull(list1);
             assertEquals(0, list1.size());
         }
 
         {
-            List<LayerInfo> list = NSNameResourceCodec.getLayers(getCatalog(), "wcs__BlueMarble");
+            List<LayerInfo> list = NCNameResourceCodec.getLayers(getCatalog(), "wcs__BlueMarble");
             assertNotNull(list);
             assertEquals(1, list.size());
         }

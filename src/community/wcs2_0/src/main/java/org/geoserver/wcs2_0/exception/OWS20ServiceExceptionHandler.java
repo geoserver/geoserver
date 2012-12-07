@@ -85,8 +85,6 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
      * Writes out an OWS ExceptionReport document.
      */
     public void handleServiceException(ServiceException exception, Request request) {
-        Ows20Factory factory = Ows20Factory.eINSTANCE;
-
         String version = null;
         if (useServiceVersion && request.getServiceDescriptor() != null) {
             version = request.getServiceDescriptor().getVersion().toString();
@@ -123,9 +121,10 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
 
         try {
 
-            if(ows2ex != null && ows2ex.getHttpCode() != null) {
-                response.sendError(ows2ex.getHttpCode(), encoder.encodeAsString(report, OWS.ExceptionReport));
-            } else {
+            if(ows2ex != null) {
+                if(ows2ex.getHttpCode() != null) {
+                    response.setStatus(ows2ex.getHttpCode());
+                }
                 encoder.encode(report, OWS.ExceptionReport, response.getOutputStream());
             }
 

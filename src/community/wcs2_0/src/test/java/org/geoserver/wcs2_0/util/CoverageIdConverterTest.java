@@ -39,7 +39,7 @@ public class CoverageIdConverterTest {
      */
     @Test
     public void testEncode() {
-        String result = NSNameResourceCodec.encode("ws", "name");
+        String result = NCNameResourceCodec.encode("ws", "name");
         assertEquals("ws__name", result);
     }
 
@@ -47,7 +47,7 @@ public class CoverageIdConverterTest {
     public void testDecode01() {
         String qualifiedName = "ws__name";
 
-        List<MapEntry<String, String>> decode = NSNameResourceCodec.decode(qualifiedName);
+        List<MapEntry<String, String>> decode = NCNameResourceCodec.decode(qualifiedName);
         assertEquals(1, decode.size());
         assertEquals("ws", decode.get(0).getKey());
         assertEquals("name", decode.get(0).getValue());
@@ -57,7 +57,7 @@ public class CoverageIdConverterTest {
     public void testDecode02() {
         String qualifiedName = "s1__s2__s3";
 
-        List<MapEntry<String, String>> decode = NSNameResourceCodec.decode(qualifiedName);
+        List<MapEntry<String, String>> decode = NCNameResourceCodec.decode(qualifiedName);
         assertEquals(2, decode.size());
         assertEquals("s1__s2", decode.get(0).getKey());
         assertEquals("s3", decode.get(0).getValue());
@@ -69,7 +69,7 @@ public class CoverageIdConverterTest {
     public void testDecode03() {
         String qualifiedName = "s1___s2";
 
-        List<MapEntry<String, String>> decode = NSNameResourceCodec.decode(qualifiedName);
+        List<MapEntry<String, String>> decode = NCNameResourceCodec.decode(qualifiedName);
         assertEquals(2, decode.size());
         assertEquals("s1_", decode.get(0).getKey());
         assertEquals("s2", decode.get(0).getValue());
@@ -80,7 +80,7 @@ public class CoverageIdConverterTest {
     @Test // (expected=IllegalArgumentException.class)
     public void testDecodeBad() {
         String qualifiedName = "bad_qualified_name";
-        List<MapEntry<String, String>> decode = NSNameResourceCodec.decode(qualifiedName);
+        List<MapEntry<String, String>> decode = NCNameResourceCodec.decode(qualifiedName);
         assertEquals(0, decode.size());
     }
 }

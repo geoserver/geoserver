@@ -12,6 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.util.MapEntry;
 import org.geotools.util.logging.Logging;
 
@@ -24,7 +25,7 @@ import org.geotools.util.logging.Logging;
  * <p/>
  * We simply use a "__" as separator. This should reduce the conflicts with existing underscores.
  * This encoding is not unique, so the {@link #decode(java.lang.String) decode} method
- * return a list of possibile workspace,name combinations. You'll need to check which workspace
+ * return a list of possible workspace,name combinations. You'll need to check which workspace
  * is really existing.
  * <p/>
  * You may use the {@link #getLayer(org.geoserver.catalog.Catalog, java.lang.String) getLayer()} method
@@ -32,8 +33,8 @@ import org.geotools.util.logging.Logging;
  *
  * @author ETj (etj at geo-solutions.it)
  */
-public class NSNameResourceCodec {
-    protected static Logger LOGGER = Logging.getLogger(NSNameResourceCodec.class);
+public class NCNameResourceCodec {
+    protected static Logger LOGGER = Logging.getLogger(NCNameResourceCodec.class);
 
     private final static String DELIMITER = "__";
     
@@ -46,6 +47,28 @@ public class NSNameResourceCodec {
         return workspaceName + DELIMITER + resourceName;
     }
 
+    
+    public static LayerInfo getCoverage(Catalog catalog, String encodedCoverageId) throws WCS20Exception {
+        List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, encodedCoverageId);
+        if(layers == null)
+            return null;
+
+        LayerInfo ret = null;
+
+        for (LayerInfo layer : layers) {
+            if ( layer.getType() == LayerInfo.Type.RASTER) {
+                if(ret == null) {
+                    ret = layer;
+                } else {
+                    LOGGER.warning("Multiple coverages found for NSName '" + encodedCoverageId + "': "
+                            + ret.prefixedName() + " is selected, "
+                            + layer.prefixedName() + " will be ignored");
+                }
+            }
+        }
+
+        return ret;
+    }
 
     /**
      * Search in the catalog the Layers matching the encoded id.

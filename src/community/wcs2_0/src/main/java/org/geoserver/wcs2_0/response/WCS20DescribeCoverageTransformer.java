@@ -20,7 +20,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
-import org.geoserver.wcs2_0.util.NSNameResourceCodec;
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
@@ -96,7 +96,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             List<LayerInfo> coverages = new ArrayList<LayerInfo>();
 
             for (String encodedCoverageId : (List<String>)request.getCoverageId()) {
-                LayerInfo layer = getCoverage(encodedCoverageId);
+                LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, encodedCoverageId);
                 if(layer != null) {
                     coverages.add(layer);
                 } else {
@@ -127,7 +127,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
         void handleCoverageDescription(CoverageInfo ci) throws Exception {
             final AttributesImpl coverageAttributes = new AttributesImpl();
-            String encodedId = NSNameResourceCodec.encode(ci);
+            String encodedId = NCNameResourceCodec.encode(ci);
             coverageAttributes.addAttribute("", "gml:id", "gml:id",  "", encodedId);
 
             start("wcs:CoverageDescription", coverageAttributes);
@@ -256,9 +256,8 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             if ( isNotBlank(content) )
                 element(elementName, content);
         }
-
         private LayerInfo getCoverage(String encodedCoverageId) throws WCS20Exception {
-            List<LayerInfo> layers = NSNameResourceCodec.getLayers(catalog, encodedCoverageId);
+            List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, encodedCoverageId);
             if(layers == null)
                 return null;
 

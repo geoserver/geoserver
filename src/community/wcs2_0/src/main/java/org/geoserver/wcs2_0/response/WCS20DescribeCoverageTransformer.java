@@ -30,6 +30,10 @@ import org.xml.sax.helpers.AttributesImpl;
 
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Based on the <code>org.geotools.xml.transform</code> framework, does the
@@ -128,7 +132,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
             start("wcs:CoverageDescription", coverageAttributes);
 
-//            handleBound(ci);
+            handleBoundedBy(ci);
 
             element("wcs:CoverageId", encodedId);
 
@@ -141,30 +145,90 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             end("wcs:CoverageDescription");
         }
 
-        private void handleBound(CoverageInfo ci) {
+        /**
+         * e.g.:<pre> {@code
+         * <gml:boundedBy>
+         *    <gml:Envelope srsName="http://www.opengis.net/def/crs/EPSG/0/4326" axisLabels="Lat Long" uomLabels="deg deg" srsDimension="2">
+         *       <gml:lowerCorner>1 1</gml:lowerCorner>
+         *       <gml:upperCorner>5 3</gml:upperCorner>
+         *    </gml:Envelope>
+         * </gml:boundedBy>
+         * }
+         * </pre>
+        */
+        private void handleBoundedBy(CoverageInfo ci) {
+            // retrieve info
+            final ReferencedEnvelope latLonBoundingBox = ci.getLatLonBoundingBox();
+            final CoordinateReferenceSystem crs = latLonBoundingBox.getCoordinateReferenceSystem();
+
+            // setup vars
+            final String srsName = "http://www.opengis.net/def/crs/EPSG/0/4326";
+            final String axisLabels="Lat Long"; // should also add elev? time?
+            final String uomLabels="deg deg";  // should also add elev? time?
+            final int srsDimension = crs.getCoordinateSystem().getDimension();  // should also add time?
+
+            final String lower = new StringBuilder()
+                    .append(latLonBoundingBox.getLowerCorner().getOrdinate(0))
+                    .append(" ")
+                    .append(latLonBoundingBox.getLowerCorner().getOrdinate(1))
+                    .toString();
+
+            final String upper = new StringBuilder()
+                    .append(latLonBoundingBox.getUpperCorner().getOrdinate(0))
+                    .append(" ")
+                    .append(latLonBoundingBox.getUpperCorner().getOrdinate(1))
+                    .toString();
+
+            // build the fragment
+            final AttributesImpl envelopeAttrs = new AttributesImpl();
+            envelopeAttrs.addAttribute("", "srsName", "srsName", "", srsName);
+            envelopeAttrs.addAttribute("", "axisLabels", "axisLabels", "", axisLabels);
+            envelopeAttrs.addAttribute("", "uomLabels", "uomLabels", "", uomLabels);
+            envelopeAttrs.addAttribute("", "srsDimension", "srsDimension", "", String.valueOf(srsDimension));
+
             start("gml:boundedBy");
-//       <gml:boundedBy>
-//            <gml:Envelope srsName="http://www.opengis.net/def/crs/EPSG/0/4326" axisLabels="Lat Long" uomLabels="deg deg" srsDimension="2">
-//                <gml:lowerCorner>1 1</gml:lowerCorner>
-//                <gml:upperCorner>5 3</gml:upperCorner>
-//            </gml:Envelope>
-//        </gml:boundedBy>
+            start("gml:Envelope", envelopeAttrs);
+
+            element("gml:lowerCorner", lower);
+            element("gml:upperCorner", upper);
+
+            end("gml:Envelope");
             end("gml:boundedBy");
         }
+
         private void handleCoverageFunction(CoverageInfo ci) {
             start("gml:coverageFunction");
             start("gml:GridFunction");
+
             element("gml:sequenceRule", "Linear"); // minOccurs 0, default Linear
+
             start("gml:startPoint");   // minOccurs 0
             
             end("gml:startPoint");
             end("gml:GridFunction");
             end("gml:coverageFunction");
-
         }
+        
         private void handleMetadata(CoverageInfo ci) {
 
         }
+
+        /**
+         * e.g.:<pre> {@code
+         * <gml:domainSet>
+         *    <gml:Grid gml:id="gr0001_C0001" dimension="2">
+         *       <gml:limits>
+         *          <gml:GridEnvelope>
+         *             <gml:low>1 1</gml:low>
+         *             <gml:high>5 3</gml:high>
+         *          </gml:GridEnvelope>
+         *       </gml:limits>
+         *       <gml:axisLabels>Lat Long</gml:axisLabels>
+         *    </gml:Grid>
+         * </gml:domainSet>
+         * }
+         * </pre>
+         */
         private void handleDomainSet(CoverageInfo ci) {
             start("gml:domainSet");
             end("gml:domainSet");
@@ -214,6 +278,16 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
             return ret;
         }
+
+        private String urnIdentifier(final CoordinateReferenceSystem crs) throws FactoryException {
+            String authorityAndCode = CRS.lookupIdentifier(crs, false);
+            String code = authorityAndCode.substring(authorityAndCode.lastIndexOf(":") + 1);
+            // we don't specify the version, but we still need to put a space
+            // for it in the urn form, that's why we have :: before the code
+//            return "urn:ogc:def:crs:EPSG::" + code;
+            return "http://www.opengis.net/def/crs/EPSG/0/" + code;
+        }
+
     }
 
 }

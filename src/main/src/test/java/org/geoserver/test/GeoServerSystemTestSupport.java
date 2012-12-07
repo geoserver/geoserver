@@ -1059,12 +1059,24 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @return
      */
     protected ByteArrayInputStream getBinaryInputStream(MockHttpServletResponse response) {
+        return new ByteArrayInputStream(getBinary(response));
+    }
+    
+    /**
+     * Extracts the true binary stream out of the response. The usual way (going
+     * thru {@link MockHttpServletResponse#getOutputStreamContent()}) mangles
+     * bytes if the content is not made of chars.
+     * 
+     * @param response
+     * @return
+     */
+    protected byte[] getBinary(MockHttpServletResponse response) {
         try {
             MockServletOutputStream os = (MockServletOutputStream) response.getOutputStream();
             final Field field = os.getClass().getDeclaredField("buffer");
             field.setAccessible(true);
             ByteArrayOutputStream bos = (ByteArrayOutputStream) field.get(os);
-            return new ByteArrayInputStream(bos.toByteArray());
+            return bos.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Whoops, did you change the MockRunner version? "
                     + "If so, you might want to change this method too");
@@ -1557,6 +1569,40 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             Element ex = (Element) dom.getElementsByTagName( "ows:Exception").item(0);
             assertEquals( exceptionCode, ex.getAttribute( "exceptionCode") );
         }
+    }
+    
+    /**
+     * Performs basic checks on an OWS 2.0 exception. The check for status, exception code and locator
+     * is optional, leave null if you don't want to check it. 
+     * @returns Returns the message of the inner exception.
+     */
+    protected String checkOws20Exception(MockHttpServletResponse response, Integer status,
+            String exceptionCode, String locator) throws Exception {
+        // check the http level
+        assertEquals("application/xml", response.getContentType());
+        if (status != null) {
+            assertEquals(status.intValue(), response.getStatusCode());
+        }
+
+        // check the returned xml
+        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Element root = dom.getDocumentElement();
+        assertEquals("ows:ExceptionReport", root.getNodeName());
+        assertEquals("2.0.0", root.getAttribute("version"));
+        assertEquals("http://www.opengis.net/ows/2.0", root.getAttribute("xmlns:ows"));
+
+        // look into exception code and locator
+        assertEquals(1, dom.getElementsByTagName("ows:Exception").getLength());
+        Element ex = (Element) dom.getElementsByTagName("ows:Exception").item(0);
+        if (exceptionCode != null) {
+            assertEquals(exceptionCode, ex.getAttribute("exceptionCode"));
+        }
+        if (locator != null) {
+            assertEquals(locator, ex.getAttribute("locator"));
+        }
+
+        assertEquals(1, dom.getElementsByTagName("ows:ExceptionText").getLength());
+        return dom.getElementsByTagName("ows:ExceptionText").item(0).getTextContent();
     }
 
     //

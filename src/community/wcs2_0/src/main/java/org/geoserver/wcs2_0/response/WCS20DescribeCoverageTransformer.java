@@ -235,7 +235,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             final CoordinateReferenceSystem crs = latLonBoundingBox.getCoordinateReferenceSystem();
 
             // setup vars
-            final String gridId = "grid00__" + NSNameResourceCodec.encode(ci);
+            final String gridId = "grid00__" + NCNameResourceCodec.encode(ci);
             final String axisLabels = "Lat Long"; // should also add elev? time?
             final int gridDimension = ci.getGrid().getGridRange().getDimension();
 

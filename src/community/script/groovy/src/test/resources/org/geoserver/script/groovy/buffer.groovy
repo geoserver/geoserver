@@ -1,5 +1,5 @@
+//import geoscript.geom.Geometry
 import com.vividsolutions.jts.geom.Geometry
-
 title = 'Buffer'
 description = 'Buffers a geometry'
 

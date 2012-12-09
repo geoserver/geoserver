@@ -6,6 +6,8 @@ package org.geoserver.script.groovy;
 
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import org.geoserver.script.ScriptPlugin;
+import org.geoserver.script.function.FunctionHook;
+import org.geoserver.script.wps.WpsHook;
 
 /**
  * Script plugin for groovy.
@@ -27,4 +29,14 @@ public class GroovyPlugin extends ScriptPlugin {
     public String getDisplayName() {
         return "Groovy";
     }
+
+	@Override
+	public WpsHook createWpsHook() {
+		return new GroovyWpsHook(this);
+	}
+
+	@Override
+	public FunctionHook createFunctionHook() {
+		return new GroovyFunctionHook(this);
+	}
 }

@@ -55,12 +55,12 @@ class Layer {
 		else if (layer instanceof String) {
 			// Get Layer from the Store by name
 			if (store && store instanceof String) {
-				def s = catalog.catalog.getStoreByName(store, StoreInfo.class)
-				resourceInfo = catalog.catalog.getResourceByName(s, layer, ResourceInfo.class)
+				StoreInfo s = catalog.catalog.getStoreByName(store, StoreInfo.class)
+				resourceInfo = catalog.catalog.getResourceByStore(s, layer, ResourceInfo.class)
 			} 
 			// Get Layer from the Store by name
 			else if (store && store instanceof Store) {
-				resourceInfo = catalog.catalog.getResourceByName(store.dataStoreInfo, layer, ResourceInfo.class)
+				resourceInfo = catalog.catalog.getResourceByStore(store.dataStoreInfo, layer, ResourceInfo.class)
 			} 
 			// Get the Layer from the Catalog by name
 			else {

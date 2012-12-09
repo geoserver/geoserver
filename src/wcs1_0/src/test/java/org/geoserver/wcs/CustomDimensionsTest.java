@@ -59,7 +59,7 @@ public class CustomDimensionsTest extends CoverageTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertNotNull(image);
-        assertEquals("image/tiff;subtype=\"geotiff\"", response.getContentType());
+        assertEquals("image/tiff", response.getContentType());
     }
 
     private String getWaterTempRequest(String dimensionValue) {

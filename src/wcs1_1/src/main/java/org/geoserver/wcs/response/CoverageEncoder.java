@@ -6,6 +6,7 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
@@ -33,7 +34,7 @@ class CoverageEncoder {
     }
     
     public void encode(OutputStream output) throws ServiceException, IOException {
-        this.delegate.encode(coverage, outputFormat, output);
+        this.delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP,output);
     }
 
 }

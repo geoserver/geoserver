@@ -6,7 +6,9 @@ package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.geoserver.data.test.MockData.WORLD;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.awt.image.RenderedImage;
@@ -27,8 +29,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.TestSetupFrequency;
-import org.geoserver.test.TestSetup;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.Envelope2D;
@@ -207,7 +207,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         raw.put("BoundingBox", "-80,-180,80,180,urn:ogc:def:crs:EPSG:6.6:4326");
         raw.put("GridBaseCRS", "EPSG:3857");
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
-        
+
         // System.out.println(coverages[0]);
 
         // check the envelope
@@ -223,7 +223,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(0, Double.compare(expected.getMaximum(0), envelope.getMaximum(0)));
         assertEquals(0, Double.compare(expected.getMinimum(1), envelope.getMinimum(1)));
         assertEquals(0, Double.compare(expected.getMaximum(1), envelope.getMaximum(1)));
-        
+
         // check we did not get a massive raster out (GEOS-5346)
         GridEnvelope range = coverages[0].getGridGeometry().getGridRange();
         assertEquals(360, range.getSpan(0));
@@ -265,7 +265,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         Multipart multipart = getMultipart(response);
         assertEquals(2, multipart.getCount());
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals("image/tiff;subtype=\"geotiff\"", coveragePart.getContentType());
+        assertEquals("image/tiff", coveragePart.getContentType());
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
 
         // save
@@ -396,14 +396,14 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(0, pixel[1]);
         assertEquals(0, pixel[2]);
     }
-     
+
     @Test
     public void testReadNoGridCRS() throws Exception {
-        String request = // 
-                "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" " +
-                "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" " +
-                "                   xmlns:gml=\"http://www.opengis.net/gml\"" +
-                "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\" >\n"
+        String request = //
+        "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
+                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" "
+                + "                   xmlns:gml=\"http://www.opengis.net/gml\""
+                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\" >\n"
                 + "   <ows:Identifier>"
                 + getLayerId(MockData.TASMANIA_DEM)
                 + "   </ows:Identifier>\n"
@@ -411,7 +411,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                 + "              <ows:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
                 + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
                 + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                + "              </ows:BoundingBox>\n" // 
+                + "              </ows:BoundingBox>\n" //
                 + "            </wcs:DomainSubset>\n"
                 + "            <wcs:Output format=\"image/tiff\"/>\n"
                 + "          </wcs:GetCoverage>";
@@ -430,6 +430,5 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
         RenderedImage image = reader.read(0);
     }
-     
 
 }

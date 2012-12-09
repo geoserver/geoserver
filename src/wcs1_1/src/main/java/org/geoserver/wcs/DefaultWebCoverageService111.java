@@ -669,11 +669,11 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
         if (output == null)
             return;
 
-        String format = output.getFormat();
-        String declaredFormat = getDeclaredFormat(meta.getSupportedFormats(), format);
-        if (declaredFormat == null)
-            throw new WcsException("format " + format + " is not supported for this coverage",
-                    InvalidParameterValue, "format");
+//        String format = output.getFormat();
+//        String declaredFormat = getDeclaredFormat(meta.getSupportedFormats(), format);
+//        if (declaredFormat == null)
+//            throw new WcsException("format " + format + " is not supported for this coverage",
+//                    InvalidParameterValue, "format");
 
         final GridCrsType gridCRS = output.getGridCRS();
         if (gridCRS != null) {

@@ -18,16 +18,18 @@ import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
 /**
- * Encodes coverages in "world image" format
+ * Encodes coverages in "world image" formats, png, jpeg and gif.
+ * 
+ * <p>
+ * Notice that depending on the underlying coverage structure this is not always possible.
  * 
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-@SuppressWarnings("deprecation")
 public class IMGCoverageResponseDelegate implements CoverageResponseDelegate {
 
     private static final List<String> FORMATS = Arrays.asList("image/bmp",
-            "image/gif", "image/tiff", "image/png", "image/jpeg");
+            "image/gif","image/png", "image/jpeg");
 
     public IMGCoverageResponseDelegate() {
     }

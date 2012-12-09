@@ -29,9 +29,9 @@ import org.opengis.parameter.ParameterValueGroup;
  */
 public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff;subtype=\"geotiff\"","image/geotiff"));
+    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff","image/tiff;subtype=\"geotiff\"","image/geotiff"));
 
-	private static final GeoTiffFormat format = new GeoTiffFormat();
+	private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
 
 	public static final String GEOTIFF_CONTENT_TYPE = "image/tiff;subtype=\"geotiff\"";
 
@@ -67,11 +67,11 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
         wp.setCompressionQuality(0.75F);
         wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
         wp.setTiling(256, 256);
-        final ParameterValueGroup writerParams = format.getWriteParameters();
+        final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
         writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
 
         // write down
-        GeoTiffWriter writer = (GeoTiffWriter) format.getWriter(output);
+        GeoTiffWriter writer = (GeoTiffWriter) GEOTIF_FORMAT.getWriter(output);
         try {
             if (writer != null)
                 writer.write(sourceCoverage, (GeneralParameterValue[]) writerParams.values()

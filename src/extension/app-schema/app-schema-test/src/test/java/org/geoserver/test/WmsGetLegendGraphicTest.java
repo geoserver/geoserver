@@ -33,7 +33,7 @@ public class WmsGetLegendGraphicTest extends AbstractAppSchemaTestSupport {
         InputStream is = getBinary("wms?request=GetLegendGraphic&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png");
         
         BufferedImage imageBuffer = ImageIO.read(is);
-        ImageIO.write(imageBuffer, "PNG", new File("/tmp/image.png"));
+        // ImageIO.write(imageBuffer, "PNG", new File("/tmp/image.png"));
         assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);      
         assertPixel(imageBuffer, 10, 10, new Color(0,0,255));
         assertPixel(imageBuffer, 10, 30, new Color(255,0,0));

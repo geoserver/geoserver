@@ -70,7 +70,7 @@ REST service security access rules are specified in a file named :file:`rest.pro
 The parameters include:
 
 * ``[]``—Denote optional parameters
-* ``uriPattern``—The :ref:`ant pattern <ant_patterns>` that matches a set of request URIs 
+* ``uriPattern``—The :ref:`ant pattern <aant_patterns>` that matches a set of request URIs 
 * ``method``—HTTP request method, one of ``GET``, ``POST``, ``PUT``, ``POST``, ``DELETE``, or ``HEAD``
 * ``role``—Name of a predefined role. The wildcard ``*`` is used to indicate all users, including anonymous users.
 
@@ -79,12 +79,12 @@ The parameters include:
    * URI patterns should account for the first component of the rest path, usually ``rest`` or ``api``
    * ``method`` and ``role`` lists should **not** contain any spaces
 
-.. _ant_patterns:
+.. _aant_patterns:
 
 Ant patterns
 ~~~~~~~~~~~~
 
-Ant patterns are commonly used for pattern matching directory and file paths. The following examples  provide some basic instructions. The apache ant `user manual <http://ant.apache.org/manual/dirtasks.html>`_ contains more sophisticated use cases.
+Ant patterns are commonly used for pattern matching directory and file paths. The following examples  provide some basic instructions. The Apache ant `user manual <http://ant.apache.org/manual/dirtasks.html>`_ contains more sophisticated use cases.
 
 These examples are specific to :ref:`RESTconfig <rest_extension>`, but any RESTful GeoServer service could be configured in the same manner.
 

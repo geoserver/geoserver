@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
-import org.springframework.util.StringUtils;
 
 /**
  * Helper Object for role calculations 
@@ -80,6 +79,17 @@ public class RoleCalculator  {
         }
     }
 
+    /**
+     * Convenience method for {@link #calculateRoles(GeoServerUser)}
+     * 
+     * @param username
+     * @return
+     * @throws IOException
+     */
+    public SortedSet<GeoServerRole> calculateRoles(String username)
+            throws IOException {
+        return calculateRoles(new GeoServerUser(username));
+    }
 
     /**
      * Calculate the {@link GeoServerRole} objects for a user
@@ -132,7 +142,7 @@ public class RoleCalculator  {
         return set2;
     }
     
-    protected void addMappedSystemRoles(SortedSet<GeoServerRole> set) {
+    public void addMappedSystemRoles(Collection<GeoServerRole> set) {
         // if the user has the admin role of the role service the 
         // GeoserverRole.ADMIN_ROLE must also be in the set
         GeoServerRole adminRole = roleService.getAdminRole();

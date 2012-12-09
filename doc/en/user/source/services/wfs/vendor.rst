@@ -7,11 +7,6 @@ WFS vendor parameters are non-standard request parameters
 that are defined by an implementation to provide enhanced capabilities. 
 GeoServer supports a variety of vendor-specific WFS parameters.
 
-Callback
---------
-
-In WFS 
-
 CQL filters
 -----------
 
@@ -41,7 +36,7 @@ The syntax is::
     
 The supported format options are:
 
-* ``callback``: specifies the callback function name for the jsonp response format (default is ``paddingOutput``).
+* ``callback`` (default is ``parseResponse``): specifies the callback function name for the jsonp response format.
 
 Reprojection
 ------------

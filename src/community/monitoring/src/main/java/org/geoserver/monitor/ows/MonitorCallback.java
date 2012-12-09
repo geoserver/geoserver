@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestData.Category;
@@ -30,33 +31,33 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
+
 public class MonitorCallback implements DispatcherCallback {
 
-    static List<RequestObjectHandler> HANDLERS = new ArrayList();
-    static {
-        //wfs
-        HANDLERS.add(new DescribeFeatureTypeHandler());
-        HANDLERS.add(new GetFeatureHandler());
-        HANDLERS.add(new LockFeatureHandler());
-        HANDLERS.add(new TransactionHandler());
-        
-        //wms
-        HANDLERS.add(new GetFeatureInfoHandler());
-        HANDLERS.add(new GetMapHandler());
-        HANDLERS.add(new GetLegendGraphicHandler());
-        
-        //wcs
-        HANDLERS.add(new DescribeCoverageHandler());
-        HANDLERS.add(new GetCoverageHandler());
-        
-        HANDLERS.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler());
-        HANDLERS.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler());
-    }
+    List<RequestObjectHandler> handlers = new ArrayList<RequestObjectHandler>();
     
     Monitor monitor;
     
     public MonitorCallback(Monitor monitor) {
         this.monitor = monitor;
+        Catalog catalog = monitor.getServer().getCatalog();
+        //wfs
+        handlers.add(new DescribeFeatureTypeHandler(monitor.getConfig(), catalog));
+        handlers.add(new GetFeatureHandler(monitor.getConfig(), catalog));
+        handlers.add(new LockFeatureHandler(monitor.getConfig(), catalog));
+        handlers.add(new TransactionHandler(monitor.getConfig(), catalog));
+        
+        //wms
+        handlers.add(new GetFeatureInfoHandler(monitor.getConfig()));
+        handlers.add(new GetMapHandler(monitor.getConfig()));
+        handlers.add(new GetLegendGraphicHandler(monitor.getConfig()));
+        
+        //wcs
+        handlers.add(new DescribeCoverageHandler(monitor.getConfig()));
+        handlers.add(new GetCoverageHandler(monitor.getConfig()));
+        
+        handlers.add(new org.geoserver.monitor.ows.wcs11.DescribeCoverageHandler(monitor.getConfig()));
+        handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler(monitor.getConfig()));
     }
     
     public Request init(Request request) {
@@ -87,7 +88,7 @@ public class MonitorCallback implements DispatcherCallback {
         if (operation.getParameters().length > 0) {
             //TODO: a better check for the request object
             Object reqObj = operation.getParameters()[0];
-            for (RequestObjectHandler h : HANDLERS) {
+            for (RequestObjectHandler h : handlers) {
                 if (h.canHandle(reqObj)) {
                     h.handle(reqObj, data);
                     break;
@@ -99,7 +100,7 @@ public class MonitorCallback implements DispatcherCallback {
         
         return operation;
     }
-
+    
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }
@@ -126,9 +127,9 @@ public class MonitorCallback implements DispatcherCallback {
         if (OPS == null) {
             synchronized (this) {
                 if (OPS == null) {
-                    OPS = new HashMap();
+                    OPS = new HashMap<String,Map<String,String>>();
                     for (Service s : GeoServerExtensions.extensions(Service.class)) {
-                        HashMap map = new HashMap();
+                        HashMap<String,String> map = new HashMap<String,String>();
                         OPS.put(s.getId().toUpperCase(), map);
                         
                         for (String o : s.getOperations()) {

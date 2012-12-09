@@ -9,12 +9,12 @@ environment can be set up.
 Java
 ----
 
-Developing with GeoServer requires a Java Development Kit (JDK) 1.5 or greater, available from `Sun Microsystems <http://java.sun.com/javase/downloads/index_jdk5.jsp>`_.
+Developing with GeoServer requires a Java Development Kit (JDK) 6 or greater, available from `Oracle <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_.
 
 .. note::
 
-   While it is possible to use a JDK other than the one provided by Sun, it is 
-   recommended that the Sun JDK be used.
+   While it is possible to use a JDK other than the one provided by Oracle, it is 
+   recommended that the Oracle JDK be used.
 
 Maven
 -----

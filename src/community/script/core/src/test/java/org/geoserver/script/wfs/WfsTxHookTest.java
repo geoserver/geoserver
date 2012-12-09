@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.script.wfs;
 
 import java.io.File;
@@ -54,8 +58,8 @@ public abstract class WfsTxHookTest extends ScriptIntTestSupport {
         hook.handleBefore(eng, tx, context);
         hook.handlePreInsert(eng, null, tx, context);
         hook.handlePostInsert(eng, null, tx, context);
-        hook.handlePreUpdate(eng, null, tx, context);
-        hook.handlePostUpdate(eng, null, tx, context);
+        hook.handlePreUpdate(eng, null, null, tx, context);
+        hook.handlePostUpdate(eng, null, null, tx, context);
         hook.handlePreDelete(eng, null, tx, context);
         hook.handlePostDelete(eng, null, tx, context);
         hook.handlePreCommit(eng, tx, context);

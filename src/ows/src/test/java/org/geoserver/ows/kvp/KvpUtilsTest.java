@@ -162,11 +162,20 @@ public class KvpUtilsTest extends TestCase {
     }
     
     public static void testParseQueryString() {
-        Map<String, String> kvp = KvpUtils.parseQueryString("geoserver?request=WMS&version=1.0.0&CQL_FILTER=NAME='geoserver'");
+        Map<String, Object> kvp = KvpUtils.parseQueryString("geoserver?request=WMS&version=1.0.0&CQL_FILTER=NAME='geoserver'");
         assertEquals(3, kvp.size());
         assertEquals("WMS", kvp.get("request"));
         assertEquals("1.0.0", kvp.get("version"));
         assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
     }
+    
+    public static void testParseQueryStringRepeated() {
+        Map<String, Object> kvp = KvpUtils.parseQueryString("geoserver?request=WMS&version=1.0.0&version=2.0.0&CQL_FILTER=NAME='geoserver'");
+        assertEquals(3, kvp.size());
+        assertEquals("WMS", kvp.get("request"));
+        assertTrue(Arrays.equals(new String[] {"1.0.0", "2.0.0"}, (String[]) kvp.get("version")));
+        assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
+    }
+
     
 }

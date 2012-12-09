@@ -1,0 +1,186 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" targetNamespace="http://www.opengis.net/swe/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.1">
+    <annotation>
+        <documentation>SWE Common Data Model schema for specifying parameters of advanced encoding methods (Raw Binary, Base64 Binary, Compressed Binary). See requirements class http://www.opengis.net/spec/SWE/2.0/req/xsd-advanced-encodings/
+        
+        SWE Common is an OGC Standard.
+        Copyright (c) 2010 Open Geospatial Consortium. 
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <include schemaLocation="swe.xsd"/>
+    <include schemaLocation="simple_encodings.xsd"/>
+    <!-- ================================================= -->
+    <element name="Block" substitutionGroup="swe:AbstractSWE" type="swe:BlockType">
+        <annotation>
+            <documentation>Binary encoding parameters used to encode a block of values at once. This is used for encrypting or compressing a complete array of values for instance</documentation>
+        </annotation>
+    </element>
+    <complexType name="BlockType">
+        <complexContent>
+            <extension base="swe:AbstractSWEType">
+                <attribute name="compression" type="anyURI" use="optional">
+                    <annotation>
+                        <documentation>Name of the compression method used to encrypt the block of values described by the referenced data component</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="encryption" type="anyURI" use="optional">
+                    <annotation>
+                        <documentation>Name of the encryption method used to encrypt the block of values described by the referenced data component</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="paddingBytes-after" type="integer" use="optional">
+                    <annotation>
+                        <documentation>Number of padding bytes present in the stream after this binary block</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="paddingBytes-before" type="integer" use="optional">
+                    <annotation>
+                        <documentation>Number of padding bytes present in the stream before this binary block</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="byteLength" type="integer" use="optional">
+                    <annotation>
+                        <documentation>Length in byte of this binary block (if known in advance)</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="ref" type="string" use="required">
+                    <annotation>
+                        <documentation>Reference to the aggregate data component that this binary block encoding settings apply to</documentation>
+                    </annotation>
+                </attribute>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BlockPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:Block"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="BlockPropertyByValueType">
+        <sequence>
+            <element ref="swe:Block"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="BinaryEncoding" substitutionGroup="swe:AbstractEncoding" type="swe:BinaryEncodingType">
+        <annotation>
+            <documentation>Parameters of the binary encoding method</documentation>
+        </annotation>
+    </element>
+    <complexType name="BinaryEncodingType">
+        <complexContent>
+            <extension base="swe:AbstractEncodingType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="1" name="member">
+                        <annotation>
+                            <documentation>Each member contains detailed parameters for encoding a scalar value or a block of values</documentation>
+                        </annotation>
+                        <complexType>
+                            <sequence>
+                                <group ref="swe:ComponentOrBlock"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+                <attribute name="byteOrder" type="swe:ByteOrderType" use="required">
+                    <annotation>
+                        <documentation>Byte order convention used to encode this binary data (big endian = most significant byte first, MSB or little endian = least significant byte first, LSB)</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="byteEncoding" type="swe:ByteEncodingType" use="required">
+                    <annotation>
+                        <documentation>Byte encoding method used to encode the binary data (raw or base 64)</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="byteLength" type="integer" use="optional">
+                    <annotation>
+                        <documentation>Total length in bytes of the binary stream (if known in advance)</documentation>
+                    </annotation>
+                </attribute>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="BinaryEncodingPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:BinaryEncoding"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="BinaryEncodingPropertyByValueType">
+        <sequence>
+            <element ref="swe:BinaryEncoding"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="Component" substitutionGroup="swe:AbstractSWE" type="swe:ComponentType">
+        <annotation>
+            <documentation>Binary encoding parameters used for encoding a single data component</documentation>
+        </annotation>
+    </element>
+    <complexType name="ComponentType">
+        <complexContent>
+            <extension base="swe:AbstractSWEType">
+                <attribute name="encryption" type="anyURI" use="optional">
+                    <annotation>
+                        <documentation>Name of the encryption method used to encrypt the value of this field</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="significantBits" type="integer" use="optional">
+                    <annotation>
+                        <documentation>Number of significant bits actually used for a binary encoded numerical value (all remaining bits shall be set to 0)</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="bitLength" type="integer" use="optional"/>
+                <attribute name="byteLength" type="integer" use="optional">
+                    <annotation>
+                        <documentation>Byte length of this field when a custom data type is used</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="dataType" type="anyURI" use="required">
+                    <annotation>
+                        <documentation>Binary data type used to encode the value(s) of the referenced data component</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="ref" type="string" use="required">
+                    <annotation>
+                        <documentation>Reference to the data component that these binary encoding settings apply to</documentation>
+                    </annotation>
+                </attribute>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="ComponentPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:Component"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="ComponentPropertyByValueType">
+        <sequence>
+            <element ref="swe:Component"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <group name="ComponentOrBlock">
+        <choice>
+            <element ref="swe:Component"/>
+            <element ref="swe:Block"/>
+        </choice>
+    </group>
+    <complexType name="ComponentOrBlockPropertyType">
+        <sequence minOccurs="0">
+            <group ref="swe:ComponentOrBlock"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <simpleType name="ByteEncodingType">
+        <restriction base="string">
+            <enumeration value="base64"/>
+            <enumeration value="raw"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="ByteOrderType">
+        <restriction base="string">
+            <enumeration value="bigEndian"/>
+            <enumeration value="littleEndian"/>
+        </restriction>
+    </simpleType>
+</schema>

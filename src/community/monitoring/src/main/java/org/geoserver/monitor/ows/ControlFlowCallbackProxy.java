@@ -12,6 +12,7 @@ import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.ows.DispatcherCallback;
+import org.geoserver.ows.util.OwsUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -28,7 +29,21 @@ public class ControlFlowCallbackProxy implements InvocationHandler, BeanPostProc
         this.monitor = monitor;
         this.target = target;
     }
-    
+
+    /**
+     * Returns the number of running requests from the underlying control flow callback. 
+     */
+    public long getRunningRequests() {
+        return (Long) OwsUtils.get(target, "runningRequests");
+    }
+
+    /**
+     * Returns the number of blocked requests from the underlying control flow callback. 
+     */
+    public long getBlockedRequests() {
+        return (Long) OwsUtils.get(target, "blockedRequests");
+    }
+
     public Object postProcessAfterInitialization(Object bean, String beanName)
             throws BeansException {
         if ("ControlFlowCallback".equals(bean.getClass().getSimpleName())) {

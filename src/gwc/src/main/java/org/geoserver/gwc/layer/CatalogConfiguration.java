@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
@@ -433,7 +434,31 @@ public class CatalogConfiguration implements Configuration {
     public boolean canSave(TileLayer tl) {
         return tl instanceof GeoServerTileLayer;
     }
-
+    
+    public static boolean isLayerExposable(LayerInfo layer) {
+        assert layer!=null;
+        // TODO: this was copied from WMS 1.1 GetCapabilitesTransformer.handleLayerTree and is
+        // replicated again in the WMS 1.3 implementation.  Should be refactored to eliminate
+        // duplication.
+        
+        // no sense in exposing a geometryless layer through wms...
+        boolean wmsExposable = false;
+        if (layer.getType() == LayerInfo.Type.RASTER || layer.getType() == LayerInfo.Type.WMS) {
+            wmsExposable = true;
+        } else {
+            try {
+                wmsExposable = layer.getType() == LayerInfo.Type.VECTOR
+                        && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
+                                .getGeometryDescriptor() != null;
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
+                        + " the layer is geometryless", e);
+            }
+        }
+        
+        return wmsExposable;
+    }
+ 
     @Override
     public synchronized void addLayer(final TileLayer tl) {
         checkNotNull(tl);
@@ -444,6 +469,12 @@ public class CatalogConfiguration implements Configuration {
         checkNotNull(tileLayer.getInfo().getName(), "name is null");
 
         GeoServerTileLayerInfo info = tileLayer.getInfo();
+        
+        LayerInfo layerInfo = tileLayer.getLayerInfo();
+        if(layerInfo!=null && !isLayerExposable(layerInfo)) {
+            LOGGER.warning("Requested layer " + layerInfo.getName() + " has no geometry. Won't create TileLayer");
+            return;
+        }
 
         lock.writeLock().lock();
         try {

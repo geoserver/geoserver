@@ -104,7 +104,7 @@ public class Quantizer {
             int spang = box.getGreenSpan();
             int spanb = box.getBlueSpan();
             SortComponent sort;
-            if (spana > spanr && spana > spanb & spana > spang) {
+            if (spana > spanr && spana > spanb && spana > spang) {
                 sort = SortComponent.Alpha;
             } else if (spanr > spang && spanr > spanb) {
                 sort = SortComponent.Red;

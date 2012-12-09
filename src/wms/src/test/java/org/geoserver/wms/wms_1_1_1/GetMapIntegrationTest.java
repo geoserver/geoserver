@@ -4,8 +4,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.Color;
 import java.awt.Transparency;
@@ -16,11 +15,15 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
@@ -28,15 +31,21 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
+import org.apache.commons.logging.impl.Log4JLogger;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.wms.GetMap;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
+import org.geotools.util.logging.Log4JLoggerFactory;
+import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -231,6 +240,54 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
     
     @Test 
+    public void testLargerThanWorld() throws Exception {
+        // setup a logging "bomb" rigged to explode when the warning message we
+        // want to eliminate
+        org.apache.log4j.Logger l4jLogger = getLog4JLogger(GetMap.class, "LOGGER");
+        l4jLogger.addAppender(new AppenderSkeleton() {
+
+            @Override
+            public boolean requiresLayout() {
+                return false;
+            }
+
+            @Override
+            public void close() {
+            }
+
+            @Override
+            protected void append(LoggingEvent event) {
+                if (event.getMessage() != null
+                        && event.getMessage().toString()
+                                .startsWith("Failed to compute the scale denominator")) {
+                    // ka-blam!
+                    fail("The error message is still there!");
+                }
+
+            }
+        });
+        
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7" 
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:900913");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+    }
+
+    private org.apache.log4j.Logger getLog4JLogger(Class targetClass, String fieldName) throws NoSuchFieldException,
+            IllegalAccessException {
+        Field field = targetClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        Logger jlogger = (Logger) field.get(null);
+        Field l4jField = jlogger.getClass().getDeclaredField("logger");
+        l4jField.setAccessible(true);
+        org.apache.log4j.Logger l4jLogger = (org.apache.log4j.Logger) l4jField.get(jlogger);
+        return l4jLogger;
+    }
+
+
+    @Test
     public void testPng8Opaque() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"

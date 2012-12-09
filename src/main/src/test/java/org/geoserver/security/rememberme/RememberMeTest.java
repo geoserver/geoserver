@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.rememberme;
 
 import static org.junit.Assert.*;
@@ -150,7 +154,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
     }
 
     void assertLoginOk(MockHttpServletResponse resp) {
-        assertEquals("/geoserver/", resp.getHeader("Location"));
+        assertEquals("/geoserver/web", resp.getHeader("Location"));
     }
 
     void assertLoginFailed(MockHttpServletResponse resp) {

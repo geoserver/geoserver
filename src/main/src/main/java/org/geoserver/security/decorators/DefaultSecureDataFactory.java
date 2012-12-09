@@ -49,7 +49,6 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
                 || FeatureStore.class.isAssignableFrom(clazz)
                 || FeatureLocking.class.isAssignableFrom(clazz)
                 || FeatureCollection.class.isAssignableFrom(clazz)
-                || Iterator.class.isAssignableFrom(clazz)
                 || FeatureIterator.class.isAssignableFrom(clazz) 
                 || AbstractGridCoverage2DReader.class.isAssignableFrom(clazz)
                 || AbstractGridFormat.class.isAssignableFrom(clazz)
@@ -109,8 +108,6 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
             return new SecuredSimpleFeatureCollection((SimpleFeatureCollection) object, policy);
         } else if (FeatureCollection.class.isAssignableFrom(clazz)) {
             return new SecuredFeatureCollection((FeatureCollection) object, policy);
-        } else if (Iterator.class.isAssignableFrom(clazz)) {
-            return new SecuredIterator((Iterator) object, policy);
         } else if (SimpleFeatureIterator.class.isAssignableFrom(clazz)) {
             return new SecuredSimpleFeatureIterator((SimpleFeatureIterator) object); 
         } else if (FeatureIterator.class.isAssignableFrom(clazz)) {

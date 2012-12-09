@@ -8,9 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
@@ -24,6 +26,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
@@ -60,18 +63,6 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         testData.addStyle("rainfall_classes",MockData.class,catalog);
     }
     
-//    @Override
-//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-//        super.populateDataDirectory(dataDirectory);
-//
-//        dataDirectory.addCoverage(new QName("http://www.geo-solutions.it", "world", "gs"),
-//                MockData.class.getResource("world.tiff"), "tiff", "raster");
-//        dataDirectory.addStyle("rainfall", MockData.class.getResource("rainfall.sld"));
-//        dataDirectory.addStyle("rainfall_ramp", MockData.class.getResource("rainfall_ramp.sld"));
-//        dataDirectory.addStyle("rainfall_classes",
-//                MockData.class.getResource("rainfall_classes.sld"));
-//    }
-
     @Before
     public void setLegendProducer() throws Exception {
         this.legendProducer = new BufferedImageLegendGraphicBuilder() {
@@ -147,25 +138,35 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        req.setLayer(feature.getSchema());
-        req.setStyle(multipleRulesStyle);
-        req.setLegendOptions(new HashMap());
-
-        final int HEIGHT_HINT = 30;
-        req.setHeight(HEIGHT_HINT);
-
-        // use default values for the rest of parameters
-        this.legendProducer.buildLegendGraphic(req);
-
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-
-        // was the legend painted?
-        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
-
-        // was the legend painted?
-        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+        try {
+	        SimpleFeatureCollection feature;
+	        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+	        req.setLayer(feature.getSchema());
+	        req.setStyle(multipleRulesStyle);
+	        req.setLegendOptions(new HashMap());
+	
+	        final int HEIGHT_HINT = 30;
+	        req.setHeight(HEIGHT_HINT);
+	
+	        // use default values for the rest of parameters
+	        this.legendProducer.buildLegendGraphic(req);
+	
+	        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+	
+	        // was the legend painted?
+	        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+	
+	        // was the legend painted?
+	        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+        } finally {
+        	RenderedImage ri = coverage.getRenderedImage();
+        	if(coverage instanceof GridCoverage2D) {
+        		((GridCoverage2D) coverage).dispose(true);
+        	}
+        	if(ri instanceof PlanarImage) {
+        		ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        	}
+        }
 
     }
 

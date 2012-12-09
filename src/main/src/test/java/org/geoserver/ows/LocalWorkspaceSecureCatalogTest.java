@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.ows;
 
 import static org.junit.Assert.*;
@@ -70,11 +74,11 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
-        assertEquals(2, sc.getLayerGroups().size());
+        assertEquals(3, sc.getLayerGroups().size());
 
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
         LocalWorkspace.set(ws);
-        assertEquals(1, sc.getLayerGroups().size());
+        assertEquals(3, sc.getLayerGroups().size());
         LocalWorkspace.remove();
 
         ws = sc.getWorkspaceByName("nurc");

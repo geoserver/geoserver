@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.data.workspace;
 
 import static org.junit.Assert.*;
@@ -32,6 +36,9 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         if (s != null) {
             gs.remove(s);
         }
+        NamespaceInfo citeNS = getCatalog().getNamespaceByPrefix(MockData.CITE_PREFIX);
+        citeNS.setURI(MockData.CITE_URI);
+        getCatalog().save(citeNS);
 
         tester.startPage(new WorkspaceEditPage(citeWorkspace));
     }

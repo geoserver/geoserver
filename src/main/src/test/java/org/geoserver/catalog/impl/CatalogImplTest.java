@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -1655,6 +1659,28 @@ public class CatalogImplTest {
     }
 
     @Test
+    public void testGetLayerGroupByNameWithColon() {
+        addLayer();
+        CatalogFactory factory = catalog.getFactory();
+        LayerGroupInfo lg = factory.createLayerGroup();
+
+        String lgName = "MyFakeWorkspace:layerGroup";
+        lg.setName(lgName);
+        lg.setWorkspace(ws);
+        lg.getLayers().add(l);
+        lg.getStyles().add(s);
+        catalog.add(lg);
+
+        // lg is not global, should not be found at least we specify a prefixed name
+        assertNull("MyFakeWorkspace:layerGroup is not global, should not be found",
+                catalog.getLayerGroupByName(lgName));
+
+        assertEquals(lg, catalog.getLayerGroupByName(ws.getName(), lgName));
+        assertEquals(lg, catalog.getLayerGroupByName(ws, lgName));
+        assertEquals(lg, catalog.getLayerGroupByName(ws.getName() + ":" + lgName));
+    }
+
+    @Test
     public void testGetLayerGroupByNameWithWorkspace() {
         addLayer();
         
@@ -1745,6 +1771,50 @@ public class CatalogImplTest {
         assertEquals(1, catalog.getLayerGroupsByWorkspace((WorkspaceInfo)null).size());
     }
 
+    @Test
+    public void testLayerGroupTitle() {
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setName("layerGroup2");
+        lg2.setTitle("layerGroup2 title");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+        assertEquals(1, catalog.getLayerGroups().size());
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals("layerGroup2 title", lg2.getTitle());
+
+        lg2.setTitle("another title");
+        catalog.save(lg2);
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals("another title", lg2.getTitle());        
+    }
+    
+    @Test
+    public void testLayerGroupAbstract() {
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setName("layerGroup2");
+        lg2.setAbstract("layerGroup2 abstract");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+        assertEquals(1, catalog.getLayerGroups().size());
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals("layerGroup2 abstract", lg2.getAbstract());
+
+        lg2.setAbstract("another abstract");
+        catalog.save(lg2);
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals("another abstract", lg2.getAbstract());        
+    }
+    
     static class TestListener implements CatalogListener {
 
         public List<CatalogAddEvent> added = new ArrayList();

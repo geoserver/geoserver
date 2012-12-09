@@ -272,11 +272,12 @@ SOFTWARE.
 -------
 
 GeoServer uses a number of libraries licensed under the Apache License, 
-Version 2.0.  These include Spring - http://www.springsource.org/, a number of Apache commons libraries - http://jakarta.apache.org/commons/
+Version 2.0.  These include Spring - http://www.springsource.org/,
+a number of Apache commons libraries - http://jakarta.apache.org/commons/
 whose jars we distribute and include in our source tree under lib/.  Also 
 included as libraries are log4 http://logging.apache.org/log4j/docs/index.htmlj, 
-batik http://xmlgraphics.apache.org/batik/, xerces http://xerces.apache.org/xerces-j/
-and xalan http://xml.apache.org/xalan-j/.  Note there is some disagreement as to 
+batik http://xmlgraphics.apache.org/batik/, and xerces http://xerces.apache.org/xerces-j/.
+Note there is some disagreement as to 
 whether GPL and Apache 2.0 are compatible see 
 http://www.apache.org/licenses/GPL-compatibility.html for more information.  We
 hope that something will work out, as GeoServer would not be possible without

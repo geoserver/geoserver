@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps;
 
 import java.util.HashSet;
@@ -19,6 +23,13 @@ import org.opengis.feature.type.Name;
 public class DisabledProcessesSelector extends ProcessSelector implements GeoServerInitializer {
 
     Set<Name> disabledProcesses = new HashSet<Name>();
+
+    public DisabledProcessesSelector() {
+    }
+
+    public DisabledProcessesSelector(Set<Name> disabled) {
+        this.disabledProcesses.addAll(disabled);
+    }
 
     @Override
     protected boolean allowProcess(Name processName) {

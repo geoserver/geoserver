@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+CORRECTIONS referenced 2012-07-13 #01
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Use of absolute path in xsi:schemaLocation
+DESCRIPTION:
+- ../gmx/gmx.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd
+- ../gco/gco.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd
+- ../xlink/xlinks.xsd replaced by http://www.w3.org/1999/xlink.xsd
+- ../gml/gml.xsd replaced by http://schemas.opengis.net/gml/3.2.1/gml.xsd
+
+-->
+<CT_UomCatalogue xmlns="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+	<!--=====Catalogue description=====-->
+	<name>
+		<gco:CharacterString>gmxUom</gco:CharacterString>
+	</name>
+	<scope>
+		<gco:CharacterString>units of measure dictionary compliant with SI definitions</gco:CharacterString>
+	</scope>
+	<fieldOfApplication>
+		<gco:CharacterString>ISO/TC 211 GMX (and imported) namespace</gco:CharacterString>
+	</fieldOfApplication>
+	<versionNumber>
+		<gco:CharacterString>0.0</gco:CharacterString>
+	</versionNumber>
+	<versionDate>
+		<gco:Date>2005-03-18</gco:Date>
+	</versionDate>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--============================= UOM items ======================================-->
+	<!--====== METRE =====-->
+	<uomItem>
+		<gml:BaseUnit gml:id="m">
+			<gml:description>The metre is the length of the path travelled by ligth in vaccum during a time interval of 1/299 792 458 of a second</gml:description>
+			<gml:identifier codeSpace="http://www.bipm.fr/en/si/base_units">metre</gml:identifier>
+			<gml:quantityType>length</gml:quantityType>
+			<gml:catalogSymbol codeSpace="http://www.bipm.org/en/si/base_units">m</gml:catalogSymbol>
+			<gml:unitsSystem xlink:href="http://www.bipm.fr/en/si"/>
+		</gml:BaseUnit>
+	</uomItem>
+	<!--====== DEGREE =====-->
+	<uomItem>
+		<gml:ConventionalUnit gml:id="deg">
+			<gml:description>Measure of angle equal to Pi/180 radians, widely used in geography</gml:description>
+			<gml:identifier codeSpace="ISO31-1">degree</gml:identifier>
+			<gml:quantityType>angle</gml:quantityType>
+			<gml:conversionToPreferredUnit uom="#xpointer(//*[@gml:id='rad'])">
+				<gml:factor>1.74532925199433E-02</gml:factor>
+			</gml:conversionToPreferredUnit>
+		</gml:ConventionalUnit>
+	</uomItem>
+	<!--====== RADIAN =====-->
+	<uomItem>
+		<gml:DerivedUnit gml:id="rad">
+			<gml:description>Radian is an unit of angle measure. It is defined as the ratio of arc length to the radius of the circle.</gml:description>
+			<gml:identifier codeSpace="http://www.bipm.fr/en/s/derived_unitsi">radian</gml:identifier>
+			<gml:quantityType>plane angle</gml:quantityType>
+			<gml:catalogSymbol codeSpace="http://www1.bipm.org/en/si/derived_units">rad</gml:catalogSymbol>
+			<gml:derivationUnitTerm uom="#xpointer(//*[@gml:id='m'])" exponent="1"/>
+			<gml:derivationUnitTerm uom="#xpointer(//*[@gml:id='m'])" exponent="-1"/>
+		</gml:DerivedUnit>
+	</uomItem>
+	<!--=== EOF ===-->
+</CT_UomCatalogue>

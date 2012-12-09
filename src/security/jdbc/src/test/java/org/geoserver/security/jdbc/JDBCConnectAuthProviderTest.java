@@ -5,7 +5,11 @@
 
 package org.geoserver.security.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
@@ -16,6 +20,8 @@ import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -23,8 +29,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+@TestSetup(run=TestSetupFrequency.REPEAT)
 public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderTest {
-
+    
     protected JDBCConnectAuthProviderConfig createAuthConfg(String name, String userGroupServiceName) {
         JDBCConnectAuthProviderConfig config = new JDBCConnectAuthProviderConfig();
         config.setName(name);

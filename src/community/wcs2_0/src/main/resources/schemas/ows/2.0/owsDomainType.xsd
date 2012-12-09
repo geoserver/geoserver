@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns:ows="http://www.opengis.net/ows/2.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.opengis.net/ows/2.0"
+        elementFormDefault="qualified"
+        version="2.0.2"
+        xml:lang="en">
+  <annotation>
+    <appinfo>owsDomainType.xsd</appinfo>
+    <documentation>This XML Schema Document encodes the allowed values (or
+    domain) of a quantity, often for an input or output parameter to an OWS.
+    Such a parameter is sometimes called a variable, quantity, literal, or
+    typed literal. Such a parameter can use one of many data types, including
+    double, integer, boolean, string, or URI. The allowed values can also be
+    encoded for a quantity that is not explicit or not transferred, but is
+    constrained by a server implementation.
+    
+    OWS is an OGC Standard.
+    Copyright (c) 2009 Open Geospatial Consortium.
+    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+                includes and imports
+        ============================================================== -->
+  <include schemaLocation="owsAll.xsd"/>
+  <include schemaLocation="owsCommon.xsd" />
+  <import namespace="http://www.w3.org/1999/xlink"
+          schemaLocation="http://www.w3.org/1999/xlink.xsd" />
+
+  <!-- ==============================================================
+                elements and types
+        ============================================================== -->
+  <complexType name="DomainType">
+    <annotation>
+      <documentation>Valid domain (or allowed set of values) of one quantity,
+      with its name or identifier.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="ows:UnNamedDomainType">
+        <attribute name="name"
+                   type="string"
+                   use="required">
+          <annotation>
+            <documentation>Name or identifier of this
+            quantity.</documentation>
+          </annotation>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- ========================================================== -->
+  <complexType name="UnNamedDomainType">
+    <annotation>
+      <documentation>Valid domain (or allowed set of values) of one quantity,
+      with needed metadata but without a quantity name or
+      identifier.</documentation>
+    </annotation>
+    <sequence>
+      <group ref="ows:PossibleValues" />
+      <element ref="ows:DefaultValue"
+               minOccurs="0">
+        <annotation>
+          <documentation>Optional default value for this quantity, which
+          should be included when this quantity has a default
+          value.</documentation>
+        </annotation>
+      </element>
+      <element ref="ows:Meaning"
+               minOccurs="0">
+        <annotation>
+          <documentation>Meaning metadata should be referenced or included for
+          each quantity.</documentation>
+        </annotation>
+      </element>
+      <element ref="ows:DataType"
+               minOccurs="0">
+        <annotation>
+          <documentation>This data type metadata should be referenced or
+          included for each quantity.</documentation>
+        </annotation>
+      </element>
+      <group ref="ows:ValuesUnit"
+             minOccurs="0">
+        <annotation>
+          <documentation>Unit of measure, which should be included when this
+          set of PossibleValues has units or a more complete reference
+          system.</documentation>
+        </annotation>
+      </group>
+      <element ref="ows:Metadata"
+               minOccurs="0"
+               maxOccurs="unbounded">
+        <annotation>
+          <documentation>Optional unordered list of other metadata about this
+          quantity. A list of required and optional other metadata elements
+          for this quantity should be specified in the Implementation
+          Specification for this service.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <!-- ========================================================== -->
+  <group name="PossibleValues">
+    <annotation>
+      <documentation>Specifies the possible values of this
+      quantity.</documentation>
+    </annotation>
+    <choice>
+      <element ref="ows:AllowedValues" />
+      <element ref="ows:AnyValue" />
+      <element ref="ows:NoValues" />
+      <element ref="ows:ValuesReference" />
+    </choice>
+  </group>
+  <!-- ========================================================== -->
+  <element name="AnyValue">
+    <annotation>
+      <documentation>Specifies that any value is allowed for this
+      parameter.</documentation>
+    </annotation>
+    <complexType />
+  </element>
+  <!-- ========================================================== -->
+  <element name="NoValues">
+    <annotation>
+      <documentation>Specifies that no values are allowed for this parameter
+      or quantity.</documentation>
+    </annotation>
+    <complexType />
+  </element>
+  <!-- ========================================================== -->
+  <element name="ValuesReference">
+    <annotation>
+      <documentation>Reference to externally specified list of all the valid
+      values and/or ranges of values for this quantity. (Informative: This
+      element was simplified from the metaDataProperty element in GML
+      3.0.)</documentation>
+    </annotation>
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <annotation>
+            <documentation>Human-readable name of the list of values provided
+            by the referenced document. Can be empty string when this list has
+            no name.</documentation>
+          </annotation>
+          <attribute ref="ows:reference"
+                     use="required" />
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+  <!-- ========================================================== -->
+  <group name="ValuesUnit">
+    <annotation>
+      <documentation>Indicates that this quantity has units or a reference
+      system, and identifies the unit or reference system used by the
+      AllowedValues or ValuesReference.</documentation>
+    </annotation>
+    <choice>
+      <element ref="ows:UOM">
+        <annotation>
+          <documentation>Identifier of unit of measure of this set of values.
+          Should be included then this set of values has units (and not a more
+          complete reference system).</documentation>
+        </annotation>
+      </element>
+      <element ref="ows:ReferenceSystem">
+        <annotation>
+          <documentation>Identifier of reference system used by this set of
+          values. Should be included then this set of values has a reference
+          system (not just units).</documentation>
+        </annotation>
+      </element>
+    </choice>
+  </group>
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <element name="AllowedValues">
+    <annotation>
+      <documentation>List of all the valid values and/or ranges of values for
+      this quantity. For numeric quantities, signed values should be ordered
+      from negative infinity to positive infinity.</documentation>
+    </annotation>
+    <complexType>
+      <choice maxOccurs="unbounded">
+        <element ref="ows:Value" />
+        <element ref="ows:Range" />
+      </choice>
+    </complexType>
+  </element>
+  <!-- ========================================================== -->
+  <element name="Value"
+           type="ows:ValueType" />
+  <!-- ========================================================== -->
+  <complexType name="ValueType">
+    <annotation>
+      <documentation>A single value, encoded as a string. This type can be
+      used for one value, for a spacing between allowed values, or for the
+      default value of a parameter.</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string" />
+    </simpleContent>
+  </complexType>
+  <!-- ========================================================== -->
+  <element name="DefaultValue"
+           type="ows:ValueType">
+    <annotation>
+      <documentation>The default value for a quantity for which multiple
+      values are allowed.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <element name="Range"
+           type="ows:RangeType" />
+  <!-- ========================================================== -->
+  <complexType name="RangeType">
+    <annotation>
+      <documentation>A range of values of a numeric parameter. This range can
+      be continuous or discrete, defined by a fixed spacing between adjacent
+      valid values. If the MinimumValue or MaximumValue is not included, there
+      is no value limit in that direction. Inclusion of the specified minimum
+      and maximum values in the range shall be defined by the
+      rangeClosure.</documentation>
+    </annotation>
+    <sequence>
+      <element ref="ows:MinimumValue"
+               minOccurs="0" />
+      <element ref="ows:MaximumValue"
+               minOccurs="0" />
+      <element ref="ows:Spacing"
+               minOccurs="0">
+        <annotation>
+          <documentation>Shall be included when the allowed values are NOT
+          continuous in this range. Shall not be included when the allowed
+          values are continuous in this range.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute ref="ows:rangeClosure"
+               use="optional">
+      <annotation>
+        <documentation>Shall be included unless the default value
+        applies.</documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <!-- ========================================================== -->
+  <element name="MinimumValue"
+           type="ows:ValueType">
+    <annotation>
+      <documentation>Minimum value of this numeric parameter.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <element name="MaximumValue"
+           type="ows:ValueType">
+    <annotation>
+      <documentation>Maximum value of this numeric parameter.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <element name="Spacing"
+           type="ows:ValueType">
+    <annotation>
+      <documentation>The regular distance or spacing between the allowed
+      values in a range.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <attribute name="rangeClosure"
+             default="closed">
+    <annotation>
+      <documentation>Specifies which of the minimum and maximum values are
+      included in the range. Note that plus and minus infinity are considered
+      closed bounds.</documentation>
+    </annotation>
+    <simpleType>
+      <restriction base="NMTOKENS">
+        <enumeration value="closed">
+          <annotation>
+            <documentation>The specified minimum and maximum values are
+            included in this range.</documentation>
+          </annotation>
+        </enumeration>
+        <enumeration value="open">
+          <annotation>
+            <documentation>The specified minimum and maximum values are NOT
+            included in this range.</documentation>
+          </annotation>
+        </enumeration>
+        <enumeration value="open-closed">
+          <annotation>
+            <documentation>The specified minimum value is NOT included in this
+            range, and the specified maximum value IS included in this
+            range.</documentation>
+          </annotation>
+        </enumeration>
+        <enumeration value="closed-open">
+          <annotation>
+            <documentation>The specified minimum value IS included in this
+            range, and the specified maximum value is NOT included in this
+            range.</documentation>
+          </annotation>
+        </enumeration>
+      </restriction>
+    </simpleType>
+  </attribute>
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <complexType name="DomainMetadataType">
+    <annotation>
+      <documentation>References metadata about a quantity, and provides a name
+      for this metadata. (Informative: This element was simplified from the
+      metaDataProperty element in GML 3.0.)</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <annotation>
+          <documentation>Human-readable name of the metadata described by
+          associated referenced document.</documentation>
+        </annotation>
+        <attribute ref="ows:reference"
+                   use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- ========================================================== -->
+  <attribute name="reference"
+             type="anyURI">
+    <annotation>
+      <documentation>Reference to data or metadata recorded elsewhere, either
+      external to this XML document or within it. Whenever practical, this
+      attribute should be a URL from which this metadata can be electronically
+      retrieved. Alternately, this attribute can reference a URN for
+      well-known metadata. For example, such a URN could be a URN defined in
+      the "ogc" URN namespace.</documentation>
+    </annotation>
+  </attribute>
+  <!-- ========================================================== -->
+  <element name="Meaning"
+           type="ows:DomainMetadataType">
+    <annotation>
+      <documentation>Definition of the meaning or semantics of this set of
+      values. This Meaning can provide more specific, complete, precise,
+      machine accessible, and machine understandable semantics about this
+      quantity, relative to other available semantic information. For example,
+      other semantic information is often provided in "documentation" elements
+      in XML Schemas or "description" elements in GML objects.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <element name="DataType"
+           type="ows:DomainMetadataType">
+    <annotation>
+      <documentation>Definition of the data type of this set of values. In
+      this case, the xlink:href attribute can reference a URN for a well-known
+      data type. For example, such a URN could be a data type identification
+      URN defined in the "ogc" URN namespace.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <element name="ReferenceSystem"
+           type="ows:DomainMetadataType">
+    <annotation>
+      <documentation>Definition of the reference system used by this set of
+      values, including the unit of measure whenever applicable (as is
+      normal). In this case, the xlink:href attribute can reference a URN for
+      a well-known reference system, such as for a coordinate reference system
+      (CRS). For example, such a URN could be a CRS identification URN defined
+      in the "ogc" URN namespace.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <element name="UOM"
+           type="ows:DomainMetadataType">
+    <annotation>
+      <documentation>Definition of the unit of measure of this set of values.
+      In this case, the xlink:href attribute can reference a URN for a
+      well-known unit of measure (uom). For example, such a URN could be a UOM
+      identification URN defined in the "ogc" URN namespace.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+</schema>

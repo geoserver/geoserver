@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.admin;
 
 import static org.junit.Assert.*;
@@ -244,7 +248,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
             (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         AdminRequest.start(new Object());
-        assertEquals(2, view.getItemCount());
+        assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
         for (Iterator<Item> it = view.getItems(); it.hasNext();) {
             String name = it.next().get("itemProperties:0:component:link:label")

@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.process;
 
 import java.util.LinkedHashSet;
@@ -51,6 +55,9 @@ public class GeoServerProcessors implements ApplicationContextAware {
     }
 
     private static ProcessFactory applyFilters(ProcessFactory pf) {
+        if (pf == null) {
+            return null;
+        }
         if(filters != null) {
             for (ProcessFilter filter : filters) {
                 pf = filter.filterFactory(pf);
@@ -71,7 +78,11 @@ public class GeoServerProcessors implements ApplicationContextAware {
     public static ProcessFactory createProcessFactory(Name name) {
         ProcessFactory pf = Processors.createProcessFactory(name);
         pf = applyFilters(pf);
-
+        //JD: also check the names, this could be a filtered process factory with only a subset 
+        // disabled
+        if (pf != null && !pf.getNames().contains(name)) {
+            pf = null;
+        }
         return pf;
     }
     

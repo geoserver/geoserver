@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.validation;
 
 import static org.easymock.EasyMock.anyObject;
@@ -194,8 +198,10 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
                 expect(roleStore.removeRole(new GeoServerRole("unused"))).andReturn(true);
 
                 DataAccessRule dataAccessRule = createNiceMock(DataAccessRule.class);
+                expect(dataAccessRule.compareTo(dataAccessRule)).andReturn(0).anyTimes();
                 expect(dataAccessRule.getKey()).andReturn("foo").anyTimes();
                 expect(dataAccessRule.getRoles()).andReturn(new TreeSet<String>(Arrays.asList("role1"))).anyTimes();
+                replay(dataAccessRule);
 
                 DataAccessRuleDAO dataAccessDAO = createNiceMock(DataAccessRuleDAO.class);
                 expect(dataAccessDAO.getRulesAssociatedWithRole("role1")).andReturn(
@@ -209,7 +215,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
                     (String)anyObject())).andReturn(new TreeSet<ServiceAccessRule>()).anyTimes();
                 expect(secMgr.getServiceAccessRuleDAO()).andReturn(serviceAccessDAO).anyTimes();
                 
-                replay(dataAccessRule, dataAccessDAO, serviceAccessDAO, roleStore, secMgr);
+                replay(dataAccessDAO, serviceAccessDAO, roleStore, secMgr);
                 return secMgr;
             }
         });

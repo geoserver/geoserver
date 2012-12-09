@@ -96,7 +96,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
                     }
                 } finally {
                     if (iterator != null) {
-                        features.close(iterator);
+                        iterator.close();
                     }
                 }
             }

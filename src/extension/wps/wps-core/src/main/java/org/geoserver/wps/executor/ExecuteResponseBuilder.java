@@ -56,11 +56,13 @@ import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.resource.GridCoverageResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
 import org.geotools.xml.EMFUtils;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
@@ -97,6 +99,13 @@ public class ExecuteResponseBuilder {
 
     public void setOutputs(Map<String, Object> outputs) {
         this.outputs = outputs;
+        // mark the output coverages as resources to be cleaned after
+        // ... hmmm.. wondering if we could make this more pluggable...
+        for (Object result : outputs.values()) {
+            if(result instanceof GridCoverage) {
+                resourceManager.addResource(new GridCoverageResource(((GridCoverage) result)));
+            }
+        }
     }
 
     public ExecuteResponseType build() {

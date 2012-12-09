@@ -268,9 +268,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 destinationG2W = new AffineTransform2D(resX, 0d, 0d, resY, (Double) origin_
                         .getValue().get(0), (Double) origin_.getValue().get(1));
 
-            } else
+            } else {
                 throw new WcsException("Invalid Grid value:" + grid.toString(),
                         InvalidParameterValue, null);
+            }
 
             //
             // SETTING COVERAGE READING PARAMS
@@ -299,6 +300,11 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             final ParameterValue<GeneralGridGeometry> requestedGridGeometryParam = new DefaultParameterDescriptor<GeneralGridGeometry>(
                     AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                     GeneralGridGeometry.class, null, requestedGridGeometry).createValue();
+            GeneralParameterValue[] tmpArray = new GeneralParameterValue[readParameters.length+1];
+            System.arraycopy(readParameters, 0, tmpArray, 0, readParameters.length);
+            tmpArray[tmpArray.length-1]=requestedGridGeometryParam;
+            readParameters=tmpArray;
+            
             
             /*
              * Test if the parameter "TIME" is present in the WMS request, and by the way in the
@@ -514,10 +520,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
             return coverageResults.toArray(new GridCoverage2D[] {});
         } catch (Exception e) {
-            if (e instanceof WcsException)
+        	CoverageCleanerCallback.addCoverages(coverage);
+            if (e instanceof WcsException) {
                 throw (WcsException) e;
-            else
+            } else {
                 throw new WcsException(e);
+            }
         }
 
     }

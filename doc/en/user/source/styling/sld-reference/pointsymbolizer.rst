@@ -44,7 +44,7 @@ Graphic
 ^^^^^^^
 
 Symbology is specified using a ``<Graphic>`` element. 
-The point symbol is specified by either an ``<ExternalGraphic>`` or a ``<Mark>`` element. 
+The symbol is specified by either an ``<ExternalGraphic>`` or a ``<Mark>`` element. 
 **External Graphics** are image files (in formats such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
 **Marks** are vector shapes whose stroke and fill are defined explicitly in the symbolizer.  
 
@@ -65,20 +65,20 @@ One of ``<ExternalGraphic>`` or ``<Mark>`` must be specified; the others are opt
      - Specifies a common shape to use as the symbol.
    * - ``<Opacity>``
      - No
-     - Determines the opacity (transparency) of the symbol.  
+     - Specifies the opacity (transparency) of the symbol.  
        Values range from ``0`` (completely transparent) to ``1`` (completely opaque).  
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``1`` (opaque).
    * - ``<Size>``
      - No 
-     - Determines the size of the symbol, in pixels.  
+     - Specifies the size of the symbol, in pixels.  
        When used with an image file, this specifies the height of the image, with the width being scaled accordingly.
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
    * - ``<Rotation>``
      - No
-     - Determines the rotation of the symbol, in degrees.  
-       The rotation increases in the clockwise direction.  
-       Negative values indicate counter-clockwise rotation. 
+     - Specifies the rotation of the symbol about its center point, in decimal degrees.  
+       Positive values indicate rotation in the clockwise direction,  
+       negative values indicate counter-clockwise rotation. 
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``0``.
 

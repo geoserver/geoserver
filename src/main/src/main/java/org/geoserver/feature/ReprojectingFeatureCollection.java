@@ -120,7 +120,7 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
                 visitor.visit(it.next());
             }
         } finally {
-            close(it);
+            it.close();
         }
     }
 
@@ -130,24 +130,6 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
 
     public SimpleFeatureIterator features() {
         return new ReprojectingFeatureIterator(delegate.features());
-    }
-
-    public Iterator iterator() {
-        return new ReprojectingIterator(delegate.iterator());
-    }
-
-    public void close(SimpleFeatureIterator iterator) {
-        if (iterator instanceof ReprojectingFeatureIterator) {
-            delegate.close(((ReprojectingFeatureIterator) iterator).getDelegate());
-        }
-
-        iterator.close();
-    }
-
-    public void close(Iterator iterator) {
-        if (iterator instanceof ReprojectingIterator) {
-            delegate.close(((ReprojectingIterator) iterator).getDelegate());
-        }
     }
 
     public SimpleFeatureType getFeatureType() {
@@ -218,7 +200,7 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
 
     public ReferencedEnvelope getBounds() {
         ReferencedEnvelope bounds = null;
-        Iterator i = iterator();
+        SimpleFeatureIterator i = features();
 
         try {
             if (!i.hasNext()) {
@@ -237,7 +219,7 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
 
             return bounds;
         } finally {
-            close(i);
+            i.close();
         }
     }
 
@@ -339,6 +321,7 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
         }
 
         public void close() {
+            if (delegate != null) delegate.close();
             delegate = null;
         }
     }

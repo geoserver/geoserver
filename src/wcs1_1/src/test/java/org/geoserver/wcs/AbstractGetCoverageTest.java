@@ -1,6 +1,12 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +21,7 @@ import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_1_1.WCSConfiguration;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
+import org.junit.After;
 import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
 
@@ -29,6 +36,8 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     WCSConfiguration configuration;
 
     WcsXmlReader xmlReader;
+    
+    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
 
     @Before
     public void setup() {
@@ -38,6 +47,13 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
         configuration = new WCSConfiguration();
         xmlReader = new WcsXmlReader("GetCoverage", "1.1.1", configuration);
     }
+    
+    @After
+    public void cleanCoverages() {
+    	for (GridCoverage coverage : coverages) {
+			CoverageCleanerCallback.disposeCoverage(coverage);
+		}
+    }
 
     /**
      * Runs GetCoverage on the specified parameters and returns an array of coverages
@@ -45,7 +61,9 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     protected GridCoverage[] executeGetCoverageKvp(Map<String, Object> raw) throws Exception {
         GetCoverageType getCoverage = (GetCoverageType) kvpreader.read(kvpreader.createRequest(),
                 parseKvp(raw), raw);
-        return service.getCoverage(getCoverage);
+        GridCoverage[] result = service.getCoverage(getCoverage);
+        coverages.addAll(Arrays.asList(result));
+        return result;
     }
 
     /**

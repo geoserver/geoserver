@@ -170,6 +170,10 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertPixel(image, 30, 10, Color.BLUE);
         assertPixel(image, 20, 20, Color.BLUE);
         assertPixel(image, 10, 30, Color.BLUE);
+        
+        // this assertion check that the thickness is not greater than twice the previous value
+        assertPixel(image, 24, 6, Color.WHITE);
+        
         assertPixel(image, 1, 20, Color.WHITE);
     }
     

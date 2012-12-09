@@ -3,14 +3,14 @@
 Quickstart
 ==========
 
-A step by step guide describing how to quickly get up and running with a 
+A step by step guide describing how to quickly get up and running with a
 GeoServer development environment. This guide assumes that all the necessary
 :ref:`tools` are installed.
 
 .. note::
 
   This guide is designed to get developers up and running as quick as possible.
-  For a more comprehensive guide see the :ref:`maven_guide` and the 
+  For a more comprehensive guide see the :ref:`maven_guide` and the
   :ref:`eclipse_guide`.
 
 .. contents:: :local:
@@ -18,7 +18,9 @@ GeoServer development environment. This guide assumes that all the necessary
 Check out source code
 ---------------------
 
-Clone the GeoServer git repository::
+Check out the source code from the git repository.::
+
+   git clone git://github.com/geoserver/geoserver.git geoserver
 
 To list the available branches.::
 
@@ -30,7 +32,7 @@ To list the available branches.::
 Choose ``master`` for the latest development.::
 
   % git checkout master
-   
+
 Or chose a stable branch for versions less likely to change often::
 
   % git checkout 2.2.x
@@ -49,8 +51,8 @@ command::
 
 A successful build will result in something like the following output::
 
-  [INFO] 
-  [INFO] 
+  [INFO]
+  [INFO]
   [INFO] ------------------------------------------------------------------------
   [INFO] Reactor Summary:
   [INFO] ------------------------------------------------------------------------
@@ -78,7 +80,7 @@ A successful build will result in something like the following output::
   [INFO] ------------------------------------------------------------------------
   [INFO] BUILD SUCCESSFUL
   [INFO] ------------------------------------------------------------------------
-  
+
 Generate Eclipse project files with Maven
 -----------------------------------------
 
@@ -91,7 +93,7 @@ Import modules into Eclipse
 
 #. Run the Eclipse IDE
 #. Open the Eclipse ``Preferences``
-#. Navigate to ``Java``, ``Build Path``, ``Classpath Variables`` and click 
+#. Navigate to ``Java``, ``Build Path``, ``Classpath Variables`` and click
    ``New...``
 
    .. image:: m2repo1.jpg
@@ -107,12 +109,12 @@ Import modules into Eclipse
    .. image:: import1.jpg
       :width: 300
 
-#. Select ``Existing Projects into Workspace`` and click ``Next``	
+#. Select ``Existing Projects into Workspace`` and click ``Next``
 
    .. image:: import2.jpg
       :width: 400
 
-#. Navigate to the ``geoserver/src`` directory 
+#. Navigate to the ``geoserver/src`` directory
 #. Ensure all modules are selected and click ``Finish``
 
    .. image:: import3.jpg
@@ -121,12 +123,17 @@ Import modules into Eclipse
 Run GeoServer from Eclipse
 --------------------------
 
-#. From the ``Package Explorer`` select the ``web-app`` module (``web`` in ``1.7.x`` or earlier)
-#. Navigate to the ``org.geoserver.web`` package (``org.vfny.geoserver.jetty`` in ``1.7.x`` or earlier)
+#. From the ``Package Explorer`` select the ``web-app`` module
+#. Navigate to the ``org.geoserver.web`` package
 #. Right-click the ``Start`` class and navigate to ``Run as``, ``Java Application``
 
    .. image:: run1.jpg
       :width: 600
+
+#. After running the first time you can return to the ``Run Configurations`` dialog
+   to fine tune your launch environment (including setting a GEOSERVER_DATA_DIRECTORY).
+#. If you are working on GeoServer 1.7.x or earlier ``Start`` class is located in the ``web`` module
+   in the package ``org.vfny.geoserver.jetty``.
 
 Access GeoServer front page
 ---------------------------

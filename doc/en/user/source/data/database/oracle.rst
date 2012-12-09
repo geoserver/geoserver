@@ -5,7 +5,9 @@ Oracle
 
 .. note:: GeoServer does not come built-in with support for Oracle; it must be installed through an extension.  Proceed to :ref:`oracle_install` for installation details.
 
-`Oracle Spatial and Locator <http://www.oracle.com/technology/products/spatial/index.html>`_ are the spatial extensions of Oracle.
+`Oracle Spatial and Locator <http://www.oracle.com/technology/products/spatial/index.html>`_ are the spatial components of Oracle.
+**Locator** is provided with all Oracle versions, but has limited spatial functions.
+**Spatial** is Oracle's full-featured spatial offering, but requires a specific license to use.
 
 .. _oracle_install:
 
@@ -16,12 +18,12 @@ Installing the Oracle extension
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of he GeoServer installation.
+#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 Adding an Oracle datastore
 --------------------------
 
-Once the extension is properly installed :guilabel:`Oracle` will be an option in the :guilabel:`Vector Data Sources` list when creating a new data store.
+Once the extension is properly installed :guilabel:`Oracle` appears as an option in the :guilabel:`Vector Data Sources` list when creating a new data store.
 
 .. figure:: images/oraclecreate.png
    :align: center
@@ -42,56 +44,68 @@ Configuring an Oracle datastore
    * - **Option**
      - **Description**
    * - ``host``
-     - The oracle server host name or IP address.
+     - The Oracle server host name or IP address.
    * - ``port``
-     - The port on which the Oracle server is accepting connections - often this is port 1521.
+     - The port on which the Oracle server is accepting connections (often this is port 1521).
    * - ``database``
-     - The name of the database to connect to.
+     - The name of the database to connect to.  
+       By default this is interpreted as a SID name.  To connect to a Service, prefix the name with a ``/``.
    * - ``schema``
      - The database schema to access tables from. Setting this value greatly increases the speed at which the data store displays its publishable tables and views, so it is advisable to set this.
    * - ``user``
-     - The name of the user to use when connecting to the oracle database.
+     - The name of the user to use when connecting to the database.
    * - ``password``
      - The password to use when connecting to the database.  Leave blank for no password.
    * - ``max connections``
        ``min connections``
        ``fetch size``
-       ``connection timeout``
+       ``Connection timeout``
        ``validate connections``
-     - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details.
+     - Connection pool configuration parameters. See :ref:`connection_pooling` for details.
    * - ``Loose bbox``
      - 	Controls how bounding box comparisons are made against geometries in the database. See the :ref:`oracle_loose_bbox` section below.
+
+     
+Connecting to a SID or a Service
+````````````````````````````````
+
+Recent versions of Oracle support connecting to a database via either a SID name or a Service name.
+A SID connection descriptor has the form:  ``host:port:database``, 
+while a Service connection descriptor has the format ``host:port/database``.
+GeoServer uses the SID form by default. To connect via a Service,
+prefix the ``database`` name configuration entry with a ``/``.
 
 .. _oracle_loose_bbox:
 
 Using loose bounding box
 ````````````````````````
 
-When the ``loose bbox`` option is set, only the bounding box of a geometry is used.  This results in a significant performance gain. The downside is that some geometries may be considered inside of a bounding box when they are technically not.
+When the ``Loose bbox`` option is set, only the bounding box of database geometries is used in spatial queries.  This results in a significant performance gain. The downside is that some geometries may be reported as intersecting a BBOX when they actually do not.
 
-If the primary use of the database is through :ref:`WMS` this flag can be set safely since a loss of some accuracy is usually acceptable. However if using :ref:`WFS` and making use of BBOX filtering capabilities, this flag should not be set.
+If the primary use of the database is through the :ref:`WMS` this flag can be set safely, since querying more geometries does not have any visible effect. However, if using the :ref:`WFS` and making use of BBOX filtering capabilities, this flag should not be set.
 
 Using the geometry metadata table
 `````````````````````````````````
 
-The Oracle data store will, by default, look into the ``MDSYS.USER_SDO*`` and ``MDSYS.ALL_SDO*`` views
+The Oracle data store by default looks at the ``MDSYS.USER_SDO*`` and ``MDSYS.ALL_SDO*`` views
 to determine the geometry type and native SRID of each geometry column.
 Those views are automatically populated with information about the geometry columns stored in tables that the current
 user owns (for the ``MDSYS.USER_SDO*`` views) or can otherwise access (for the ``MDSYS.ALL_SDO*`` views).
 
-There are a few hiccups in this process:
+There are a few issues with this strategy:
 
   * if the connection pool user cannot access the tables (because :ref:`impersonation <data_sqlsession>` is used) 
-    the MDSYS views will be empty, making it impossible to determine either the geometry type and the native SRID
-  * the geometry type can be specified only while building the spatial indexes, as a index constraint, however 
+    the MDSYS views will be empty, making it impossible to determine both the geometry type and the native SRID
+  * the geometry type can be specified only while building the spatial indexes, as an index constraint.  However 
     such information is often not included when creating the indexes
-  * the views are populated dynamically based on the current user, if the database has thousands of tables and users
+  * the views are populated dynamically based on the current user. If the database has thousands of tables and users
     the views can become very slow
     
 Starting with GeoServer 2.1.4 the administrator can address the above issues by manually creating a geometry metadata table
-describing each geometry column, and then indicate its presence among the Oracle data store connection parameter named *Geometry metadata table*
-(either as a simple table name, or a schema qualified one).
-The table has the following structure (the table name is free, just indicate the one chosen in the data store connection parameter)::
+describing each geometry column.
+Its presence is indicated via the Oracle datastore connection parameter named *Geometry metadata table*
+(which may be a simple table name or a schema-qualified one).
+The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter)::
 
 	CREATE TABLE GEOMETRY_COLUMNS(
 	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL, 
@@ -103,10 +117,10 @@ The table has the following structure (the table name is free, just indicate the
 	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
 	   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
 	   
-When the table is present the store wil first search it for information about each geometry column
-to be classified, and fall back on the MDSYS views only if such table does not contain any information.
+When the table is present the store first searches it for information about each geometry column
+to be classified, and falls back on the MDSYS views only if the table does not contain any information.
 
 Configuring an Oracle database with JNDI
 ----------------------------------------
 
-See :ref:`tomcat_jndi` for a step by step guide on setting up an Oracle JDNI connection.
+See :ref:`tomcat_jndi` for a guide on setting up an Oracle connection using JNDI.

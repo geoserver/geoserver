@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
@@ -50,7 +51,6 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilities;
@@ -68,12 +68,9 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.opengis.feature.type.Name;
-import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
@@ -1000,9 +997,19 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 qatts.addAttribute("", "queryable", "queryable", "", queryable ? "1" : "0");
                 start("Layer", qatts);
                 element("Name", layerName);
-                element("Title", layerName);
-                element("Abstract", "Layer-Group type layer: " + layerName);
+                
+                if (StringUtils.isEmpty(layerGroup.getTitle())) {
+                    element("Title", layerName);                    
+                } else {
+                    element("Title", layerGroup.getTitle());
+                }
 
+                if (StringUtils.isEmpty(layerGroup.getAbstract())) {
+                    element("Abstract", "Layer-Group type layer: " + layerName);
+                } else {
+                    element("Abstract", layerGroup.getAbstract());
+                }
+                
                 final ReferencedEnvelope layerGroupBounds = layerGroup.getBounds();
                 final ReferencedEnvelope latLonBounds = layerGroupBounds.transform(
                         DefaultGeographicCRS.WGS84, true);

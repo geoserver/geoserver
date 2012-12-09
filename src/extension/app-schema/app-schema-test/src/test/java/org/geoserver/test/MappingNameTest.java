@@ -2,7 +2,6 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.test;
 
 import org.w3c.dom.Document;

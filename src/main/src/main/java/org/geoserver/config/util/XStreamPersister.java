@@ -1741,6 +1741,31 @@ public class XStreamPersister {
             LayerGroupInfoImpl lgi = (LayerGroupInfoImpl) super
                     .doUnmarshal(result, reader, context);
             MetadataMap metadata = lgi.getMetadata();
+            
+            /**
+             * If we're upgrading from a 2.2.x server we have to read
+             * property 'title' from metadata
+             */
+            if (lgi.getTitle() == null && metadata != null) {
+                String title = metadata.get("title", String.class);
+                if (title != null) {
+                    lgi.setTitle(title);
+                    metadata.remove("title");
+                }
+            }
+
+            /**
+             * If we're upgrading from a 2.2.x server we have to read
+             * property 'abstract' from metadata
+             */
+            if (lgi.getAbstract() == null && metadata != null) {
+                String abstractTxt = metadata.get("abstract", String.class);
+                if (abstractTxt != null) {
+                    lgi.setAbstract(abstractTxt);
+                    metadata.remove("abstract");
+                }
+            }            
+            
             if (lgi.getAuthorityURLs() == null && metadata != null) {
                 String serialized = metadata.get("authorityURLs", String.class);
                 List<AuthorityURLInfo> authorities;

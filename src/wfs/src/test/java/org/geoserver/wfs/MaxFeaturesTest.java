@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
@@ -5,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -21,6 +26,17 @@ public class MaxFeaturesTest extends WFSTestSupport {
         gs.save( wfs );
     }
 
+    @Before
+    public void resetLocalMaxes() {
+        FeatureTypeInfo info = getFeatureTypeInfo(SystemTestData.FIFTEEN);
+        info.setMaxFeatures(0);
+        getCatalog().save( info );
+
+        info = getFeatureTypeInfo(SystemTestData.BASIC_POLYGONS);
+        info.setMaxFeatures(0);
+        getCatalog().save( info );
+    }
+    
     @Test
     public void testGlobalMax() throws Exception {
         // fifteen has 15 elements, but global max is 5

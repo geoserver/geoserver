@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.auth;
 
 import static org.junit.Assert.*;
@@ -150,7 +154,7 @@ public class LRUAuthenticationCacheTest {
         // test default live time
         cache = new LRUAuthenticationCacheImpl(5,0,4);        
         fillCache(cache);
-        waitForMilliSecs(1);
+        waitForMilliSecs(10);
         assertNull(cache.get("filtera","key1"));
         assertNull(cache.get("filtera","key2"));
         assertNull(cache.get("filterb","key3"));
@@ -159,7 +163,7 @@ public class LRUAuthenticationCacheTest {
         // test default idle time
         cache = new LRUAuthenticationCacheImpl(0,10,4);        
         fillCache(cache);
-        waitForMilliSecs(1);
+        waitForMilliSecs(10);
         assertNull(cache.get("filtera","key1"));
         assertNull(cache.get("filtera","key2"));
         assertNull(cache.get("filterb","key3"));
@@ -173,7 +177,7 @@ public class LRUAuthenticationCacheTest {
         assertNotNull(cache.get("filterb","key3"));
         assertNotNull(cache.get("filterb","key4"));
 
-        waitForMilliSecs(1100);
+        waitForMilliSecs(1500);
         assertNull(cache.get("filtera","key1"));
         assertNull(cache.get("filtera","key2"));
         assertNull(cache.get("filterb","key3"));
@@ -182,7 +186,7 @@ public class LRUAuthenticationCacheTest {
         // test timer task
         cache = new LRUAuthenticationCacheImpl(5,0,4);        
         fillCache(cache);
-        waitForMilliSecs(1);
+        waitForMilliSecs(10);
         cache.runRemoveExpiredTaskSynchron();
         assertEquals(0,cache.cache.size());             
     }

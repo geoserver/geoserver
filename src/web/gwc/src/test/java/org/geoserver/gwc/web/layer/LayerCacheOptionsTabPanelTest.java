@@ -4,24 +4,34 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
+import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
@@ -33,6 +43,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
     @Before
     public void setUpInternal() throws Exception {
         LayerInfo layerInfo = getCatalog().getLayers().get(0);
+        assertTrue(CatalogConfiguration.isLayerExposable(layerInfo));
         GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
         assertNotNull(tileLayer);
         layerModel = new Model<LayerInfo>(layerInfo);
@@ -50,6 +61,34 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         }));
 
         tester.assertComponent("form:panel", LayerCacheOptionsTabPanel.class);
+        tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
+    }
+
+    @Test
+    public void testPageLoadForGeometrylessLayer() {
+        LayerInfo geometryless = getCatalog().getLayerByName(
+                super.getLayerId(MockData.GEOMETRYLESS));
+        
+        assertFalse(CatalogConfiguration.isLayerExposable(geometryless));
+        assertNull(GWC.get().getTileLayer(geometryless));
+
+        layerModel = new Model<LayerInfo>(geometryless);
+        final GWCConfig saneDefaults = GWC.get().getConfig().saneConfig();
+        GeoServerTileLayerInfoImpl tileLayerInfo = TileLayerInfoUtil.loadOrCreate(geometryless,
+                saneDefaults);
+        tileLayerModel = new GeoServerTileLayerInfoModel(tileLayerInfo, false);
+
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
+
+            public Component buildComponent(final String id) {
+                return new LayerCacheOptionsTabPanel(id, layerModel, tileLayerModel);
+            }
+        }));
+
+        tester.assertComponent("form:panel", LayerCacheOptionsTabPanel.class);
+        //Label instead of GeoServerTileLayerEditor
+        tester.assertComponent("form:panel:tileLayerEditor", Label.class);
     }
 
     @Test
@@ -108,6 +147,12 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testRemoveExisting() {
+
+        LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
+        GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
+        assertNotNull(tileLayer);
+        layerModel = new Model<LayerInfo>(layerInfo);
+        tileLayerModel = new GeoServerTileLayerInfoModel(tileLayer.getInfo(), false);
 
         GWC mediator = GWC.get();
 

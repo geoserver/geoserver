@@ -47,13 +47,13 @@ class RetypingFeatureCollection extends AbstractFeatureCollection<FeatureType, F
 
     @Override
     protected Iterator<Feature> openIterator() {
-        return new RetypingIterator(delegate.iterator(), schema, properties);
+        return new RetypingIterator(delegate.features(), schema, properties);
     }
 
     @Override
     protected void closeIterator(Iterator<Feature> close) {
         if(close instanceof RetypingIterator) {
-            delegate.close(((RetypingIterator) close).delegate);
+            ((RetypingIterator) close).close();
         }
     }
 }

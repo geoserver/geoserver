@@ -4,8 +4,11 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.web.data.resource.LayerEditTabPanel;
 import org.geoserver.web.data.resource.LayerEditTabPanelInfo;
@@ -28,12 +31,18 @@ public class LayerCacheOptionsTabPanel extends LayerEditTabPanel {
             IModel<GeoServerTileLayerInfo> tileLayerModel) {
         super(id, tileLayerModel);
 
-        editor = new GeoServerTileLayerEditor("tileLayerEditor", layerModel, tileLayerModel);
-        add(editor);
+        if (CatalogConfiguration.isLayerExposable(layerModel.getObject())) {
+            editor = new GeoServerTileLayerEditor("tileLayerEditor", layerModel, tileLayerModel);
+            add(editor);
+        } else {
+            add(new Label("tileLayerEditor", new ResourceModel("geometryLessLabel")));
+        }
     }
 
     @Override
     public void save() {
-        editor.save();
+        if (editor != null) {
+            editor.save();
+        }
     }
 }

@@ -660,7 +660,9 @@ public class ResourcePool {
                             ft = jstore.getSchema(vtName);
                         } else {
                             vtName = vt.getName();
-                            jstore.addVirtualTable(vt);
+                            if(!jstore.getVirtualTables().containsValue(vt)) {
+                                jstore.addVirtualTable(vt);
+                            }
                             ft = jstore.getSchema(vt.getName());
                         }
                     } else {
@@ -864,7 +866,9 @@ public class ResourcePool {
                 info.getMetadata().containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE)) {
             VirtualTable vt = (VirtualTable) info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
             JDBCDataStore jstore = (JDBCDataStore) dataStore;
-            jstore.addVirtualTable(vt);
+            if(!jstore.getVirtualTables().containsValue(vt)) {
+                 jstore.addVirtualTable(vt);
+            }
         }
                 
         //
@@ -1005,7 +1009,9 @@ public class ResourcePool {
             reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
         } else {
             key = info.getId();
-            reader = (GridCoverageReader) coverageReaderCache.get( key );
+            if(key != null) {
+                reader = (GridCoverageReader) coverageReaderCache.get( key );
+            }
         }
         
         if (reader != null) {
@@ -1013,13 +1019,13 @@ public class ResourcePool {
         }
         
         synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
-        	if(key != null) {
-	            if (hints != null) {
-	                reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
-	            } else {
-	                reader = (GridCoverageReader) coverageReaderCache.get(key);
-	            }
-        	}
+            if (key != null) {
+                if (hints != null) {
+                    reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
+                } else {
+                    reader = (GridCoverageReader) coverageReaderCache.get(key);
+                }
+            }
             if (reader == null) {
                 /////////////////////////////////////////////////////////
                 //
@@ -1029,10 +1035,12 @@ public class ResourcePool {
                 final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
     
                 reader = gridFormat.getReader(obj,hints);
-                if(hints != null) {
-                    hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
-                } else {
-                    coverageReaderCache.put((String) key, reader);
+                if(key != null) {
+                    if(hints != null) {
+                        hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                    } else {
+                        coverageReaderCache.put((String) key, reader);
+                    }
                 }
             }
         }
@@ -1049,7 +1057,7 @@ public class ResourcePool {
         coverageReaderCache.remove(storeId);
         HashSet<CoverageHintReaderKey> keys = new HashSet<CoverageHintReaderKey>(hintCoverageReaderCache.keySet());
         for (CoverageHintReaderKey key : keys) {
-            if(key.id.equals(storeId)) {
+            if(key.id != null && key.id.equals(storeId)) {
                 hintCoverageReaderCache.remove(key);
             }
         }
@@ -1633,7 +1641,7 @@ public class ResourcePool {
     /**
      * Listens to catalog events clearing cache entires when resources are modified.
      */
-    class CacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+    public class CacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
 
         public void handleAddEvent(CatalogAddEvent event) {
         }

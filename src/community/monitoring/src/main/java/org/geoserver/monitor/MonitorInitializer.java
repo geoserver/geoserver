@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.monitor;
 
 import java.util.Arrays;
@@ -19,6 +23,8 @@ public class MonitorInitializer implements GeoServerInitializer {
     }
     
     public void initialize(GeoServer geoServer) throws Exception {
+        monitor.setServer(geoServer);
+
         if (!monitor.isEnabled()) return;
 
         //special case for hibernate, we need to have a session in order to make this work

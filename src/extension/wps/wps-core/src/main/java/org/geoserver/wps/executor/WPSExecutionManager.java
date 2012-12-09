@@ -68,6 +68,10 @@ public class WPSExecutionManager implements ApplicationContextAware,
         this.resourceManager = resourceManager;
     }
 
+    WPSResourceManager getResourceManager() {
+        return resourceManager;
+    }
+    
     /**
      * This call should only be used by process chaining to avoid deadlocking due to execution
      * threads starvation

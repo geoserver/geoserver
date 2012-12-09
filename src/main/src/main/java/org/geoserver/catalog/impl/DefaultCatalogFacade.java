@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog.impl;
 
 import java.lang.reflect.Method;
@@ -900,7 +904,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         for (Iterator k = map.keySet().iterator(); k.hasNext();) {
             Class key = (Class) k.next();
             if (clazz.isAssignableFrom(key)) {
-                result.addAll(map.getCollection(key));
+                Collection value = map.getCollection(key);
+                // the map could have been modified in the meantime and the collection removed,
+                // check before adding 
+                if(value != null) {
+                    result.addAll(value);
+                }
             }
         }
 

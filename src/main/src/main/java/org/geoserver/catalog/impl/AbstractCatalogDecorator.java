@@ -686,4 +686,8 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
             Integer offset, Integer count, SortBy sortOrder) {
         return delegate.list(of, filter, offset, count, sortOrder);
     }
+
+    public void removeListeners(Class listenerClass) {
+        delegate.removeListeners(listenerClass);
+    }
 }

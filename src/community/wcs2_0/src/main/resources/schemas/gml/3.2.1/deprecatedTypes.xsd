@@ -1,0 +1,1133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:deprecatedTypes:3.2.1">deprecatedTypes.xsd</appinfo>
+		<documentation>All global schema components that are part of the GML schema, but were deprecated. See Annex I.
+			
+			GML is an OGC Standard.
+			Copyright (c) 2007,2010 Open Geospatial Consortium.
+			To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<element name="Null" type="gml:NilReasonType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="anchorPoint" type="gml:CodeType" substitutionGroup="gml:anchorDefinition">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="datumRef" type="gml:DatumPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesPrimeMeridian" type="gml:PrimeMeridianPropertyType" substitutionGroup="gml:primeMeridian">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesEllipsoid" type="gml:EllipsoidPropertyType" substitutionGroup="gml:ellipsoid">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="geodeticDatumRef" type="gml:GeodeticDatumPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="ellipsoidRef" type="gml:EllipsoidPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="primeMeridianRef" type="gml:PrimeMeridianPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="engineeringDatumRef" type="gml:EngineeringDatumPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="imageDatumRef" type="gml:ImageDatumPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="verticalDatumRef" type="gml:VerticalDatumPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="temporalDatumRef" type="gml:TemporalDatumPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="coordinateOperationRef" type="gml:CoordinateOperationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="singleOperationRef" type="gml:SingleOperationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="AbstractOperation" type="gml:AbstractCoordinateOperationType" abstract="true" substitutionGroup="gml:AbstractSingleOperation">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="OperationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractOperation"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="operationRef" type="gml:OperationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="generalConversionRef" type="gml:GeneralConversionPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="generalTransformationRef" type="gml:GeneralTransformationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesSingleOperation" type="gml:CoordinateOperationPropertyType" substitutionGroup="gml:coordOperation">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="concatenatedOperationRef" type="gml:ConcatenatedOperationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesOperation" type="gml:CoordinateOperationPropertyType" substitutionGroup="gml:coordOperation">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="passThroughOperationRef" type="gml:PassThroughOperationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesMethod" type="gml:OperationMethodPropertyType" substitutionGroup="gml:method">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesValue" type="gml:AbstractGeneralParameterValuePropertyType" substitutionGroup="gml:parameterValue">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="conversionRef" type="gml:ConversionPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="transformationRef" type="gml:TransformationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="dmsAngleValue" type="gml:DMSAngleType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="valueOfParameter" type="gml:OperationParameterPropertyType" substitutionGroup="gml:operationParameter">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="includesValue" type="gml:AbstractGeneralParameterValuePropertyType" substitutionGroup="gml:parameterValue">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="valuesOfGroup" type="gml:OperationParameterGroupPropertyType" substitutionGroup="gml:group">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="methodFormula" type="gml:CodeType" substitutionGroup="gml:formula">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesParameter" type="gml:AbstractGeneralOperationParameterPropertyType" substitutionGroup="gml:generalOperationParameter">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="operationMethodRef" type="gml:OperationMethodPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="abstractGeneralOperationParameterRef" type="gml:AbstractGeneralOperationParameterPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="operationParameterRef" type="gml:OperationParameterPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="includesParameter" type="gml:AbstractGeneralOperationParameterPropertyType" substitutionGroup="gml:parameter">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="operationParameterGroupRef" type="gml:OperationParameterPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="referenceSystemRef" type="gml:CRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="crsRef" type="gml:CRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="coordinateSystemAxisRef" type="gml:CoordinateSystemAxisPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesAxis" type="gml:CoordinateSystemAxisPropertyType" substitutionGroup="gml:axis">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="coordinateSystemRef" type="gml:CoordinateSystemPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="ellipsoidalCSRef" type="gml:EllipsoidalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="cartesianCSRef" type="gml:CartesianCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="verticalCSRef" type="gml:VerticalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="TemporalCS" type="gml:TemporalCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="TemporalCSType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="TemporalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TemporalCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="temporalCSRef" type="gml:TemporalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="linearCSRef" type="gml:LinearCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="userDefinedCSRef" type="gml:UserDefinedCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="sphericalCSRef" type="gml:SphericalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="polarCSRef" type="gml:PolarCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="cylindricalCSRef" type="gml:CylindricalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="ObliqueCartesianCS" type="gml:ObliqueCartesianCSType" substitutionGroup="gml:AbstractCoordinateSystem">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="ObliqueCartesianCSType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCoordinateSystemType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="ObliqueCartesianCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:ObliqueCartesianCS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="obliqueCartesianCSRef" type="gml:ObliqueCartesianCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="singleCRSRef" type="gml:SingleCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="definedByConversion" type="gml:GeneralConversionPropertyType" substitutionGroup="gml:conversion">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="includesSingleCRS" type="gml:SingleCRSPropertyType" substitutionGroup="gml:componentReferenceSystem">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="compoundCRSRef" type="gml:CompoundCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesEllipsoidalCS" type="gml:EllipsoidalCSPropertyType" substitutionGroup="gml:ellipsoidalCS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesCartesianCS" type="gml:CartesianCSPropertyType" substitutionGroup="gml:cartesianCS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesSphericalCS" type="gml:SphericalCSPropertyType" substitutionGroup="gml:sphericalCS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesGeodeticDatum" type="gml:GeodeticDatumPropertyType" substitutionGroup="gml:geodeticDatum">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesVerticalCS" type="gml:VerticalCSPropertyType" substitutionGroup="gml:verticalCS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesVerticalDatum" type="gml:VerticalDatumPropertyType" substitutionGroup="gml:verticalDatum">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="verticalCRSRef" type="gml:VerticalCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="baseGeographicCRS" type="gml:GeographicCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="projectedCRSRef" type="gml:ProjectedCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesCS" type="gml:CoordinateSystemPropertyType" substitutionGroup="gml:coordinateSystem">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="derivedCRSRef" type="gml:DerivedCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesEngineeringDatum" type="gml:EngineeringDatumPropertyType" substitutionGroup="gml:engineeringDatum">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="engineeringCRSRef" type="gml:EngineeringCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesAffineCS" type="gml:AffineCSPropertyType" substitutionGroup="gml:affineCS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesImageDatum" type="gml:ImageDatumPropertyType" substitutionGroup="gml:imageDatum">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesObliqueCartesianCS" type="gml:ObliqueCartesianCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="imageCRSRef" type="gml:ImageCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesTimeCS" type="gml:TimeCSPropertyType" substitutionGroup="gml:timeCS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesTemporalCS" type="gml:TemporalCSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="usesTemporalDatum" type="gml:TemporalDatumPropertyType" substitutionGroup="gml:temporalDatum">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="temporalCRSRef" type="gml:TemporalCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="GeographicCRS" type="gml:GeographicCRSType" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="GeographicCRSType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<element ref="gml:usesEllipsoidalCS"/>
+					<element ref="gml:usesGeodeticDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeographicCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:GeographicCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="geographicCRSRef" type="gml:GeographicCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="GeocentricCRS" type="gml:GeocentricCRSType" substitutionGroup="gml:AbstractSingleCRS">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="GeocentricCRSType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractCRSType">
+				<sequence>
+					<choice>
+						<element ref="gml:usesCartesianCS"/>
+						<element ref="gml:usesSphericalCS"/>
+					</choice>
+					<element ref="gml:usesGeodeticDatum"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeocentricCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:GeocentricCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="geocentricCRSRef" type="gml:GeocentricCRSPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<attribute name="uom" type="anyURI">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</attribute>
+	<simpleType name="SuccessionType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="substitution"/>
+			<enumeration value="division"/>
+			<enumeration value="fusion"/>
+			<enumeration value="initiation"/>
+		</restriction>
+	</simpleType>
+	<element name="dmsAngle" type="gml:DMSAngleType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="DMSAngleType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence>
+			<element ref="gml:degrees"/>
+			<choice minOccurs="0">
+				<element ref="gml:decimalMinutes"/>
+				<sequence>
+					<element ref="gml:minutes"/>
+					<element ref="gml:seconds" minOccurs="0"/>
+				</sequence>
+			</choice>
+		</sequence>
+	</complexType>
+	<element name="degrees" type="gml:DegreesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="DegreesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:DegreeValueType">
+				<attribute name="direction">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="N"/>
+							<enumeration value="E"/>
+							<enumeration value="S"/>
+							<enumeration value="W"/>
+							<enumeration value="+"/>
+							<enumeration value="-"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="DegreeValueType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<restriction base="nonNegativeInteger">
+			<maxInclusive value="359"/>
+		</restriction>
+	</simpleType>
+	<element name="decimalMinutes" type="gml:DecimalMinutesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<simpleType name="DecimalMinutesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<restriction base="decimal">
+			<minInclusive value="0.00"/>
+			<maxExclusive value="60.00"/>
+		</restriction>
+	</simpleType>
+	<element name="minutes" type="gml:ArcMinutesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<simpleType name="ArcMinutesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<restriction base="nonNegativeInteger">
+			<maxInclusive value="59"/>
+		</restriction>
+	</simpleType>
+	<element name="seconds" type="gml:ArcSecondsType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<simpleType name="ArcSecondsType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<restriction base="decimal">
+			<minInclusive value="0.00"/>
+			<maxExclusive value="60.00"/>
+		</restriction>
+	</simpleType>
+	<complexType name="AngleChoiceType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<choice>
+			<element ref="gml:angle"/>
+			<element ref="gml:dmsAngle"/>
+		</choice>
+	</complexType>
+	<attribute name="remoteSchema" type="anyURI">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</attribute>
+	<element name="member" type="gml:AssociationRoleType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="ArrayAssociationType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence>
+			<element ref="gml:AbstractObject" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="members" type="gml:ArrayAssociationType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="StringOrRefType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<element name="metaDataProperty" type="gml:MetaDataPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="Bag" type="gml:BagType" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="BagType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:member" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:members" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="Array" type="gml:ArrayType" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="ArrayType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:members" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="MetaDataPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractMetaData"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attribute name="about" type="anyURI"/>
+	</complexType>
+	<element name="AbstractMetaData" type="gml:AbstractMetaDataType" abstract="true" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="AbstractMetaDataType" abstract="true" mixed="true">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence/>
+		<attribute ref="gml:id"/>
+	</complexType>
+	<element name="GenericMetaData" type="gml:GenericMetaDataType" substitutionGroup="gml:AbstractMetaData">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="GenericMetaDataType" mixed="true">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent mixed="true">
+			<extension base="gml:AbstractMetaDataType">
+				<sequence>
+					<any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="coordinates" type="gml:CoordinatesType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="pointRep" type="gml:PointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="location" type="gml:LocationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="LocationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence>
+			<choice>
+				<element ref="gml:AbstractGeometry"/>
+				<element ref="gml:LocationKeyWord"/>
+				<element ref="gml:LocationString"/>
+				<element ref="gml:Null"/>
+			</choice>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="LocationString" type="gml:StringOrRefType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="LocationKeyWord" type="gml:CodeType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="priorityLocation" type="gml:PriorityLocationPropertyType" substitutionGroup="gml:location">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="PriorityLocationPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:LocationPropertyType">
+				<attribute name="priority" type="string"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="featureMember" type="gml:FeaturePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="featureProperty" type="gml:FeaturePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="FeatureArrayPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<element ref="gml:AbstractFeature"/>
+		</sequence>
+	</complexType>
+	<element name="featureMembers" type="gml:FeatureArrayPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="BoundedFeatureType" abstract="true">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:AbstractFeatureType">
+				<sequence>
+					<group ref="gml:StandardObjectProperties"/>
+					<element ref="gml:boundedBy"/>
+					<element ref="gml:location" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AbstractFeatureCollectionType" abstract="true">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element ref="gml:featureMember" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:featureMembers" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractFeatureCollection" type="gml:AbstractFeatureCollectionType" abstract="true" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="FeatureCollection" type="gml:FeatureCollectionType" substitutionGroup="gml:AbstractFeature">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="FeatureCollectionType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractFeatureCollectionType"/>
+		</complexContent>
+	</complexType>
+	<element name="track" type="gml:HistoryPropertyType" substitutionGroup="gml:history">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="DefinitionCollection" type="gml:DictionaryType" substitutionGroup="gml:Definition">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="definitionMember" type="gml:DictionaryEntryType" substitutionGroup="gml:dictionaryEntry">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="indirectEntry" type="gml:IndirectEntryType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="IndirectEntryType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<sequence>
+			<element ref="gml:DefinitionProxy"/>
+		</sequence>
+	</complexType>
+	<element name="DefinitionProxy" type="gml:DefinitionProxyType" substitutionGroup="gml:Definition">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="DefinitionProxyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:definitionRef"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="definitionRef" type="gml:ReferenceType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="MappingRule" type="gml:StringOrRefType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<simpleType name="IncrementOrder">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="+x+y"/>
+			<enumeration value="+y+x"/>
+			<enumeration value="+x-y"/>
+			<enumeration value="-x-y"/>
+		</restriction>
+	</simpleType>
+	<element name="centerOf" type="gml:PointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="position" type="gml:PointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="extentOf" type="gml:SurfacePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="edgeOf" type="gml:CurvePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="centerLineOf" type="gml:CurvePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiLocation" type="gml:MultiPointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiCenterOf" type="gml:MultiPointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiPosition" type="gml:MultiPointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiCenterLineOf" type="gml:MultiCurvePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiEdgeOf" type="gml:MultiCurvePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiCoverage" type="gml:MultiSurfacePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiExtentOf" type="gml:MultiSurfacePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="polygonPatches" type="gml:SurfacePatchArrayPropertyType" substitutionGroup="gml:patches">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="trianglePatches" type="gml:SurfacePatchArrayPropertyType" substitutionGroup="gml:patches">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiPointDomain" type="gml:DomainSetType" substitutionGroup="gml:domainSet">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiCurveDomain" type="gml:DomainSetType" substitutionGroup="gml:domainSet">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiSurfaceDomain" type="gml:DomainSetType" substitutionGroup="gml:domainSet">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiSolidDomain" type="gml:DomainSetType" substitutionGroup="gml:domainSet">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="gridDomain" type="gml:DomainSetType" substitutionGroup="gml:domainSet">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="rectifiedGridDomain" type="gml:DomainSetType" substitutionGroup="gml:domainSet">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="generalOperationParameter" type="gml:AbstractGeneralOperationParameterPropertyType" substitutionGroup="gml:parameter">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="MovingObjectStatus" type="gml:MovingObjectStatusType" substitutionGroup="gml:AbstractTimeSlice">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<complexType name="MovingObjectStatusType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractTimeSliceType">
+				<sequence>
+					<choice>
+						<element name="position" type="gml:GeometryPropertyType"/>
+						<element ref="gml:pos"/>
+						<element ref="gml:locationName"/>
+						<element ref="gml:locationReference"/>
+						<element ref="gml:location"/>
+					</choice>
+					<element name="speed" type="gml:MeasureType" minOccurs="0"/>
+					<element name="bearing" type="gml:DirectionPropertyType" minOccurs="0"/>
+					<element name="acceleration" type="gml:MeasureType" minOccurs="0"/>
+					<element name="elevation" type="gml:MeasureType" minOccurs="0"/>
+					<element ref="gml:status" minOccurs="0"/>
+					<element ref="gml:statusReference" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="status" type="gml:StringOrRefType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="statusReference" type="gml:ReferenceType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+  <element name="topoComplexProperty" type="gml:TopoComplexPropertyType">
+    <annotation>
+			<appinfo>deprecated</appinfo>
+    </annotation>
+  </element>
+	<element name="multiPointProperty" type="gml:MultiPointPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiCurveProperty" type="gml:MultiCurvePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiSurfaceProperty" type="gml:MultiSurfacePropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiSolidProperty" type="gml:MultiSolidPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="multiGeometryProperty" type="gml:MultiGeometryPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="pointArrayProperty" type="gml:PointArrayPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="curveArrayProperty" type="gml:CurveArrayPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="surfaceArrayProperty" type="gml:SurfaceArrayPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+	<element name="solidArrayProperty" type="gml:SolidArrayPropertyType">
+		<annotation>
+			<appinfo>deprecated</appinfo>
+		</annotation>
+	</element>
+</schema>

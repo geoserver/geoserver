@@ -26,7 +26,7 @@ import freemarker.template.Template;
 
 
 public class FeatureWrapperTest {
-    SimpleFeatureCollection features;
+    DefaultFeatureCollection features;
     Configuration cfg;
 
     @Before
@@ -37,7 +37,7 @@ public class FeatureWrapperTest {
         SimpleFeatureType featureType = DataUtilities.createType("testType",
                 "string:String,int:Integer,double:Double,geom:Point");
 
-        features = new DefaultFeatureCollection(null, null) {};
+        features = new DefaultFeatureCollection() {};
         features.add(
             SimpleFeatureBuilder.build(featureType, new Object[] {
                 "one", new Integer(1), new Double(1.1), gf.createPoint(new Coordinate(1, 1))

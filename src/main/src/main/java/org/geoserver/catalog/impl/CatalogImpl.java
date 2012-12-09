@@ -858,21 +858,26 @@ public class CatalogImpl implements Catalog {
     
     @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
-        //handle prefixed name case
+
+        final LayerGroupInfo layerGroup = getLayerGroupByName((String) null, name);
+
+        if (layerGroup != null)
+            return layerGroup;
+
+        // last chance: checking handle prefixed name case
         String workspaceName = null;
         String layerGroupName = null;
-        
-        int colon = name.indexOf( ':' );
-        if(colon == -1){
+
+        int colon = name.indexOf(':');
+        if (colon == -1) {
             layerGroupName = name;
-        }if ( colon != -1 ) {
-            workspaceName = name.substring( 0, colon );
-            layerGroupName = name.substring( colon + 1 );
+        }
+        if (colon != -1) {
+            workspaceName = name.substring(0, colon);
+            layerGroupName = name.substring(colon + 1);
         }
 
-
-        LayerGroupInfo layerGroup = getLayerGroupByName(workspaceName, layerGroupName);
-        return layerGroup;
+        return getLayerGroupByName(workspaceName, layerGroupName);
     }
 
     @Override
@@ -1268,6 +1273,16 @@ public class CatalogImpl implements Catalog {
     public void removeListener(CatalogListener listener) {
         listeners.remove(listener);
     }
+    
+    @Override
+    public void removeListeners(Class listenerClass) {
+        for (Iterator it = listeners.iterator(); it.hasNext();) {
+            CatalogListener listener = (CatalogListener) it.next();
+            if(listenerClass.isInstance(listener)) {
+                it.remove();
+            }
+        }
+    }
 
     public Iterator search(String cql) {
         // TODO Auto-generated method stub
@@ -1289,7 +1304,6 @@ public class CatalogImpl implements Catalog {
         this.resourceLoader = resourceLoader;
     }
     public void dispose() {
-        if ( listeners != null ) listeners.clear();
         if ( resourcePool != null ) resourcePool.dispose();
         facade.dispose();
     }

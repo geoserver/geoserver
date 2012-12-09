@@ -90,8 +90,8 @@ public class KMLTransformer extends TransformerBase {
             // calculate scale denominator
             scaleDenominator = 1;
             try {
-                scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(),
-                        mapContent.getMapWidth(), mapContent.getMapHeight(), null);
+                scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
+                        mapContent.getMapWidth(), null);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error calculating scale denominator", e);
             }
@@ -280,9 +280,7 @@ public class KMLTransformer extends TransformerBase {
 
             try {
                 // 90 = OGC standard DPI (see SLD spec page 37)
-                return RendererUtilities.calculateScale(mapContent.getRenderingArea(),
-                        mapContent.getCoordinateReferenceSystem(), paintArea.width,
-                        paintArea.height, 90);
+                return RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(), paintArea.width, null);
             } catch (Exception e) {
                 // probably either (1) no CRS (2) error xforming, revert to
                 // old method - the best we can do (DJB)

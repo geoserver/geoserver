@@ -14,15 +14,13 @@ import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.renderer.lite.StreamingRenderer;
+
 
 public class ScaleRatioDecoration implements MapDecoration {
-    /** A logger for this class. */
-    private static final Logger LOGGER = 
-        org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
     public void loadOptions(Map<String, String> options) {
     }
@@ -32,17 +30,20 @@ public class ScaleRatioDecoration implements MapDecoration {
         return new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
     }
 
-    public String getScaleText(WMSMapContent mapContent) {
-        return String.format(
-            "1 : %0$1.0f", 
-            RendererUtilities.calculateOGCScale(
+    public double getScale(WMSMapContent mapContent) {
+        double dpi = RendererUtilities.getDpi(mapContent.getRequest().getFormatOptions());
+        Map hints = new HashMap();        
+        hints.put(StreamingRenderer.DPI_KEY, dpi);
+        return RendererUtilities.calculateOGCScale(
                 mapContent.getRenderingArea(),
                 mapContent.getRequest().getWidth(),
-                new HashMap()
-            )
-        );
+                hints);
     }
 
+    public String getScaleText(WMSMapContent mapContent) {
+        return String.format("1 : %0$1.0f", getScale(mapContent));
+    }
+    
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 
     throws Exception {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());

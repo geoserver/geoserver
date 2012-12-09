@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.cas;
 
 import static org.junit.Assert.*;
@@ -86,19 +90,15 @@ import com.sun.net.httpserver.HttpsServer;
  */
 public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
-    public final String casFilterName = "testCasFilter";
+    
+   
+    static URL casServerURLPrefix;
 
-    public final String casProxyFilterName1 = "testCasProxyFilter1";
+    static URL serviceUrl;
 
-    public final String CAS_EXCEPTION_TRANSLATION_FILTER = "casExceptionTranslationFilter";
+    static URL loginUrl;
 
-    URL casServerURLPrefix;
-
-    URL serviceUrl;
-
-    URL loginUrl;
-
-    URL proxyCallbackUrlPrefix;
+    static URL proxyCallbackUrlPrefix;
 
     static HttpsServer httpsServer;
 
@@ -241,6 +241,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
     @Test
     public void testCASLogin() throws Exception {
 
+        String casFilterName = "testCasFilter1";
         CasAuthenticationFilterConfig config = new CasAuthenticationFilterConfig();
         config.setClassName(GeoServerCasAuthenticationFilter.class.getName());
         config.setService(serviceUrl.toString());
@@ -249,9 +250,10 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         config.setUserGroupServiceName("ug1");
         getSecurityManager().saveFilter(config);
 
+        String casExceptionTranslationFilter = "casExceptionTranslationFilter1";
         ExceptionTranslationFilterConfig exConfig = new ExceptionTranslationFilterConfig();
         exConfig.setClassName(GeoServerExceptionTranslationFilter.class.getName());
-        exConfig.setName(CAS_EXCEPTION_TRANSLATION_FILTER);
+        exConfig.setName(casExceptionTranslationFilter);
         exConfig.setAccessDeniedErrorPage("/denied.jsp");
         exConfig.setAuthenticationFilterName(casFilterName);
         getSecurityManager().saveFilter(exConfig);
@@ -262,7 +264,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         pattern = "/web/**";
 
         prepareFilterChain(pattern, GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER,
-                CAS_EXCEPTION_TRANSLATION_FILTER,
+                casExceptionTranslationFilter,
                 GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -400,7 +402,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         updateUser("ug1", username, true);
         helper.ssoLogout();
 
-        insertAnonymousFilter(CAS_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter(casExceptionTranslationFilter);
         request = createRequest("foo/bar");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
@@ -482,6 +484,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
     @Test
     public void testLogout() throws Exception {
 
+        String casFilterName = "testCasFilter2";
         CasAuthenticationFilterConfig config = new CasAuthenticationFilterConfig();
         config.setClassName(GeoServerCasAuthenticationFilter.class.getName());
         config.setService(serviceUrl.toString());
@@ -580,9 +583,10 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
     public void testAuthWithServiceTicket() throws Exception {
 
         pattern = "/wms/**";
+        String casProxyFilterName = "testCasProxyFilter1";
         CasProxiedAuthenticationFilterConfig pconfig1 = new CasProxiedAuthenticationFilterConfig();
         pconfig1.setClassName(GeoServerCasProxiedAuthenticationFilter.class.getName());
-        pconfig1.setName(casProxyFilterName1);
+        pconfig1.setName(casProxyFilterName);
         pconfig1.setCasServerUrlPrefix(casServerURLPrefix.toString());
         pconfig1.setRoleSource(RoleSource.UserGroupService);
         pconfig1.setUserGroupServiceName("ug1");
@@ -590,7 +594,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         getSecurityManager().saveFilter(pconfig1);
 
         prepareFilterChain(pattern, GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,
-                casProxyFilterName1,
+                casProxyFilterName,
                 GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
                 GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
 
@@ -623,7 +627,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         TestingAuthenticationCache cache = getCache();
-        Authentication casAuth = cache.get(casProxyFilterName1, username);
+        Authentication casAuth = cache.get(casProxyFilterName, username);
         assertNull(casAuth);
         SecurityContext ctx = (SecurityContext) request.getSession(false).getAttribute(
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
@@ -660,7 +664,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         cache = getCache();
-        casAuth = cache.get(casProxyFilterName1, username);
+        casAuth = cache.get(casProxyFilterName, username);
         assertNull(casAuth);
         ctx = (SecurityContext) request.getSession(false).getAttribute(
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
@@ -695,7 +699,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
         cache = getCache();
-        casAuth = cache.get(casProxyFilterName1, ticket);
+        casAuth = cache.get(casProxyFilterName, ticket);
         assertNull(casAuth);
         assertNull(request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY));
         assertNull(request.getSession(false));
@@ -733,7 +737,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         cache = getCache();
-        casAuth = cache.get(casProxyFilterName1, username);
+        casAuth = cache.get(casProxyFilterName, username);
         assertNull(casAuth);
         ctx = (SecurityContext) request.getSession(false).getAttribute(
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
@@ -775,16 +779,17 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         // GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER,
         // casFilterName);
 
+        String casProxyFilterName = "testCasProxyFilter2";
         CasProxiedAuthenticationFilterConfig pconfig1 = new CasProxiedAuthenticationFilterConfig();
         pconfig1.setClassName(GeoServerCasProxiedAuthenticationFilter.class.getName());
-        pconfig1.setName(casProxyFilterName1);
+        pconfig1.setName(casProxyFilterName);
         pconfig1.setCasServerUrlPrefix(casServerURLPrefix.toString());
         pconfig1.setRoleSource(RoleSource.UserGroupService);
         pconfig1.setUserGroupServiceName("ug1");
         getSecurityManager().saveFilter(pconfig1);
 
         prepareFilterChain(pattern, GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,
-                casProxyFilterName1,
+                casProxyFilterName,
                 GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
                 GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
 
@@ -826,7 +831,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             getProxy().doFilter(request, response, chain);
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
             TestingAuthenticationCache cache = getCache();
-            Authentication casAuth = cache.get(casProxyFilterName1, username);
+            Authentication casAuth = cache.get(casProxyFilterName, username);
             assertNotNull(casAuth);
             checkForAuthenticatedRole(casAuth);
             assertEquals(username, casAuth.getPrincipal());
@@ -855,7 +860,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             getProxy().doFilter(request, response, chain);
             assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
             TestingAuthenticationCache cache = getCache();
-            Authentication casAuth = cache.get(casProxyFilterName1, username);
+            Authentication casAuth = cache.get(casProxyFilterName, username);
             assertNotNull(casAuth);
             checkForAuthenticatedRole(casAuth);
             assertEquals(username, casAuth.getPrincipal());
@@ -883,7 +888,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
         TestingAuthenticationCache cache = getCache();
-        Authentication casAuth = cache.get(casProxyFilterName1, proxyTicket);
+        Authentication casAuth = cache.get(casProxyFilterName, proxyTicket);
         assertNull(casAuth);
         assertNull(request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY));
         assertNull(request.getSession(false));
@@ -920,7 +925,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
         assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
         cache = getCache();
-        casAuth = cache.get(casProxyFilterName1, username);
+        casAuth = cache.get(casProxyFilterName, username);
         assertNotNull(casAuth);
         checkForAuthenticatedRole(casAuth);
         assertEquals(username, casAuth.getPrincipal());

@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
@@ -141,7 +145,8 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("grid envelope",expectedGridEnvelope, gridEnvelope);
         
         // dispose
-        ((GridCoverage2D)coverages[0]).dispose(true);
+        CoverageCleanerCallback.disposeCoverage(baseCoverage);
+        CoverageCleanerCallback.disposeCoverage(coverages[0]);
     }
     
     /**

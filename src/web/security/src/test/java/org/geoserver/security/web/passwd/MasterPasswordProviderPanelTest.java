@@ -1,8 +1,13 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web.passwd;
 
 import static org.junit.Assert.*;
 
 import java.net.URL;
+import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.geoserver.security.config.PasswordPolicyConfig;
@@ -14,9 +19,19 @@ import org.geoserver.security.web.AbstractSecurityNamedServicePanelTest;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.SecurityNamedServiceEditPage;
 import org.geoserver.security.web.SecurityNamedServiceNewPage;
+import org.junit.Before;
 import org.junit.Test;
 
 public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServicePanelTest {
+	
+	@Before
+	public void clearSecurityStuff() throws Exception {
+		Set<String> mpProviders = getSecurityManager().listMasterPasswordProviders();
+		if (mpProviders.contains("default2")) {
+			MasterPasswordProviderConfig default2 = getSecurityManager().loadMasterPassswordProviderConfig("default2");
+			getSecurityManager().removeMasterPasswordProvder(default2);
+		}
+	}
 
     @Override
     protected AbstractSecurityPage getBasePage() {

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" xml:lang="en" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:units:3.2.1">units.xsd</appinfo>
+		<documentation>See ISO/DIS 17.2.
+Several GML Schema components concern or require a reference scale or units of measure.  Units are required for quantities that may occur as values of properties of feature types, as the results of observations, in the range parameters of a coverage, and for measures used in Coordinate Reference System definitions. 
+The basic unit definition is an extension of the general gml:Definition element defined in 16.2.1.  Three specialized elements for unit definition are further derived from this. 
+This model is based on the SI system of units [ISO 1000], which distinguishes between Base Units and Derived Units.  
+-	Base Units are the preferred units for a set of orthogonal fundamental quantities which define the particular system of units, which may not be derived by combination of other base units.  
+-	Derived Units are the preferred units for other quantities in the system, which may be defined by algebraic combination of the base units.  
+In some application areas Conventional units are used, which may be converted to the preferred units using a scaling factor or a formula which defines a re-scaling and offset.  The set of preferred units for all physical quantity types in a particular system of units is composed of the union of its base units and derived units.  
+Unit definitions are substitutable for the gml:Definition element declared as part of the dictionary model.  A dictionary that contains only unit definitions and references to unit definitions is a units dictionary.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="dictionary.xsd"/>
+	<element name="unitOfMeasure" type="gml:UnitOfMeasureType">
+		<annotation>
+			<documentation>The element gml:unitOfMeasure is a property element to refer to a unit of measure. This is an empty element which carries a reference to a unit of measure definition.</documentation>
+		</annotation>
+	</element>
+	<complexType name="UnitOfMeasureType">
+		<sequence/>
+		<attribute name="uom" type="gml:UomIdentifier" use="required"/>
+	</complexType>
+	<element name="UnitDefinition" type="gml:UnitDefinitionType" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>A gml:UnitDefinition is a general definition of a unit of measure. This generic element is used only for units for which no relationship with other units or units systems is known.
+The content model of gml:UnitDefinition adds three additional properties to gml:Definition, gml:quantityType, gml:quantityTypeReference and gml:catalogSymbol.  
+The gml:catalogSymbol property optionally gives the short symbol used for this unit. This element is usually used when the relationship of this unit to other units or units systems is unknown.</documentation>
+		</annotation>
+	</element>
+	<complexType name="UnitDefinitionType">
+		<complexContent>
+			<extension base="gml:DefinitionType">
+				<sequence>
+					<element ref="gml:quantityType" minOccurs="0"/>
+					<element ref="gml:quantityTypeReference" minOccurs="0"/>
+					<element ref="gml:catalogSymbol" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="quantityType" type="gml:StringOrRefType">
+		<annotation>
+			<documentation>The gml:quantityType property indicates the phenomenon to which the units apply. This element contains an informal description of the phenomenon or type of physical quantity that is measured or observed. When the physical quantity is the result of an observation or measurement, this term is known as observable type or measurand.
+The use of gml:quantityType for references to remote values is deprecated.</documentation>
+		</annotation>
+	</element>
+	<element name="quantityTypeReference" type="gml:ReferenceType">
+		<annotation>
+			<documentation>The gml:quantityTypeReference property indicates the phenomenon to which the units apply. The content is a reference to a remote value.</documentation>
+		</annotation>
+	</element>
+	<element name="catalogSymbol" type="gml:CodeType">
+		<annotation>
+			<documentation>The catalogSymbol is the preferred lexical symbol used for this unit of measure.
+The codeSpace attribute in gml:CodeType identifies a namespace for the catalog symbol value, and might reference the external catalog. The string value in gml:CodeType contains the value of a symbol that should be unique within this catalog namespace. This symbol often appears explicitly in the catalog, but it could be a combination of symbols using a specified algebra of units.</documentation>
+		</annotation>
+	</element>
+	<element name="BaseUnit" type="gml:BaseUnitType" substitutionGroup="gml:UnitDefinition">
+		<annotation>
+			<documentation>A base unit is a unit of measure that cannot be derived by combination of other base units within a particular system of units.  For example, in the SI system of units, the base units are metre, kilogram, second, Ampere, Kelvin, mole, and candela, for the physical quantity types length, mass, time interval, electric current, thermodynamic temperature, amount of substance and luminous intensity, respectively.
+gml:BaseUnit extends generic gml:UnitDefinition with the property gml:unitsSystem, which carries a reference to the units system to which this base unit is asserted to belong.  </documentation>
+		</annotation>
+	</element>
+	<complexType name="BaseUnitType">
+		<complexContent>
+			<extension base="gml:UnitDefinitionType">
+				<sequence>
+					<element name="unitsSystem" type="gml:ReferenceType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="DerivedUnit" type="gml:DerivedUnitType" substitutionGroup="gml:UnitDefinition">
+		<annotation>
+			<documentation>Derived units are defined by combination of other units.  Derived units are used for quantities other than those corresponding to the base units, such as hertz (s-1) for frequency, Newton (kg.m/s2) for force.  Derived units based directly on base units are usually preferred for quantities other than the fundamental quantities within a system. If a derived unit is not the preferred unit, the gml:ConventionalUnit element should be used instead.
+The gml:DerivedUnit extends gml:UnitDefinition with the property gml:derivationUnitTerms.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DerivedUnitType">
+		<complexContent>
+			<extension base="gml:UnitDefinitionType">
+				<sequence>
+					<element ref="gml:derivationUnitTerm" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="derivationUnitTerm" type="gml:DerivationUnitTermType">
+		<annotation>
+			<documentation>A set of gml:derivationUnitTerm elements describes a derived unit of measure.  Each element carries an integer exponent.  The terms are combined by raising each referenced unit to the power of its exponent and forming the product.
+This unit term references another unit of measure (uom) and provides an integer exponent applied to that unit in defining the compound unit. The exponent may be positive or negative, but not zero.</documentation>
+		</annotation>
+	</element>
+	<complexType name="DerivationUnitTermType">
+		<complexContent>
+			<extension base="gml:UnitOfMeasureType">
+				<attribute name="exponent" type="integer"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ConventionalUnit" type="gml:ConventionalUnitType" substitutionGroup="gml:UnitDefinition">
+		<annotation>
+			<documentation>Conventional units that are neither base units nor defined by direct combination of base units are used in many application domains.  For example electronVolt for energy, feet and nautical miles for length.  In most cases there is a known, usually linear, conversion to a preferred unit which is either a base unit or derived by direct combination of base units.
+The gml:ConventionalUnit extends gml:UnitDefinition with a property that describes a conversion to a preferred unit for this physical quantity.  When the conversion is exact, the element gml:conversionToPreferredUnit should be used, or when the conversion is not exact the element gml:roughConversionToPreferredUnit is available. Both of these elements have the same content model.  The gml:derivationUnitTerm property defined above is included to allow a user to optionally record how this unit may be derived from other ("more primitive") units.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ConventionalUnitType">
+		<complexContent>
+			<extension base="gml:UnitDefinitionType">
+				<sequence>
+					<choice>
+						<element ref="gml:conversionToPreferredUnit"/>
+						<element ref="gml:roughConversionToPreferredUnit"/>
+					</choice>
+					<element ref="gml:derivationUnitTerm" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="conversionToPreferredUnit" type="gml:ConversionToPreferredUnitType">
+		<annotation>
+			<documentation>The elements gml:conversionToPreferredUnit and gml:roughConversionToPreferredUnit represent parameters used to convert conventional units to preferred units for this physical quantity type.  A preferred unit is either a Base Unit or a Derived Unit that is selected for all values of one physical quantity type.</documentation>
+		</annotation>
+	</element>
+	<element name="roughConversionToPreferredUnit" type="gml:ConversionToPreferredUnitType">
+		<annotation>
+			<documentation>The elements gml:conversionToPreferredUnit and gml:roughConversionToPreferredUnit represent parameters used to convert conventional units to preferred units for this physical quantity type.  A preferred unit is either a Base Unit or a Derived Unit that is selected for all values of one physical quantity type.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ConversionToPreferredUnitType">
+		<annotation>
+			<documentation>The inherited attribute uom references the preferred unit that this conversion applies to. The conversion of a unit to the preferred unit for this physical quantity type is specified by an arithmetic conversion (scaling and/or offset). The content model extends gml:UnitOfMeasureType, which has a mandatory attribute uom which identifies the preferred unit for the physical quantity type that this conversion applies to. The conversion is specified by a choice of 
+-	gml:factor, which defines the scale factor, or
+-	gml:formula, which defines a formula 
+by which a value using the conventional unit of measure can be converted to obtain the corresponding value using the preferred unit of measure.  
+The formula defines the parameters of a simple formula by which a value using the conventional unit of measure can be converted to the corresponding value using the preferred unit of measure. The formula element contains elements a, b, c and d, whose values use the XML Schema type double. These values are used in the formula y = (a + bx) / (c + dx), where x is a value using this unit, and y is the corresponding value using the base unit. The elements a and d are optional, and if values are not provided, those parameters are considered to be zero. If values are not provided for both a and d, the formula is equivalent to a fraction with numerator and denominator parameters.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:UnitOfMeasureType">
+				<choice>
+					<element name="factor" type="double"/>
+					<element name="formula" type="gml:FormulaType"/>
+				</choice>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="FormulaType">
+		<sequence>
+			<element name="a" type="double" minOccurs="0"/>
+			<element name="b" type="double"/>
+			<element name="c" type="double"/>
+			<element name="d" type="double" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

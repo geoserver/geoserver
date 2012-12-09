@@ -4,8 +4,8 @@
  */
 package org.geoserver.feature;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
@@ -13,8 +13,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourceInfo;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.opengis.filter.Id;
-import org.opengis.filter.identity.Identifier;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.filter.identity.Identifier;
 
 /**
  * Extracts feature type names from any Id filters. 
@@ -24,7 +24,7 @@ import org.opengis.filter.identity.FeatureId;
 public class TypeNameExtractingVisitor extends DefaultFilterVisitor {
 
     Catalog catalog;
-    Set<QName> typeNames = new TreeSet<QName>();
+    Set<QName> typeNames = new HashSet<QName>();
 
     public TypeNameExtractingVisitor(Catalog catalog) {
         this.catalog = catalog;

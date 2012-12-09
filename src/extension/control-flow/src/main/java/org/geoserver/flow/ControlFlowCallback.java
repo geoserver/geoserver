@@ -46,6 +46,20 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
     
     AtomicLong runningRequests = new AtomicLong();
 
+    /**
+     * Returns the current number of blocked/queued requests.
+     */
+    public long getBlockedRequests() {
+        return blockedRequests.get();
+    }
+
+    /**
+     * Returns the current number of running requests. 
+     */
+    public long getRunningRequests() {
+        return runningRequests.get();
+    }
+
     public void finished(Request request) {
         if(SENTINEL.isOutermostRequest()) {
             runningRequests.decrementAndGet();

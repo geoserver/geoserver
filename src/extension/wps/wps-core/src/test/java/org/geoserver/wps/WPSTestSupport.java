@@ -7,8 +7,10 @@ package org.geoserver.wps;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -28,11 +30,14 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.process.Processors;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.junit.After;
 import org.junit.Before;
+import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
@@ -49,9 +54,22 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     public static QName ROTATED_CAD = new QName(WCS_URI, "RotatedCad", WCS_PREFIX);
     public static QName WORLD = new QName(WCS_URI, "World", WCS_PREFIX);
     public static String TIFF = "tiff";
+    
+    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
 
     static {
         Processors.addProcessFactory(MonkeyProcess.getFactory());
+    }
+    
+    protected void scheduleForDisposal(GridCoverage coverage) {
+        this.coverages.add(coverage);
+    }
+    
+    @After
+    public void disposeCoverages() {
+        for (GridCoverage coverage : coverages) {
+            CoverageCleanerCallback.disposeCoverage(coverage);
+        }
     }
     
     @Override

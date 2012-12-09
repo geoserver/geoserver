@@ -24,6 +24,7 @@ import org.geoserver.wfs.xml.GML2OutputFormat;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 
 /**
@@ -74,7 +75,7 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         gfreq.setBaseUrl(fInfoReq.getBaseUrl());
 
         for (Iterator i = results.getFeature().iterator(); i.hasNext();) {
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) i.next();
+            FeatureCollection fc = (FeatureCollection) i.next();
             features.getFeature().add(fc);
 
             QueryType qt = WfsFactory.eINSTANCE.createQueryType();
@@ -85,9 +86,8 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                     qt.setSrsName(new URI(srsName));
                 } catch (URISyntaxException e) {
                     throw new ServiceException(
-                            "Unable to determite coordinate system for featureType "
-                                    + fc.getSchema().getTypeName() + ".  Schema told us '"
-                                    + srsName + "'", e);
+                        "Unable to determite coordinate system for featureType " + 
+                            fc.getSchema().getName() + ".  Schema told us '" + srsName + "'", e);
                 }
             }
             gfreq.getQuery().add(qt);

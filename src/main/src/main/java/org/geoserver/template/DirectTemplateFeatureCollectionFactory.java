@@ -8,8 +8,13 @@ package org.geoserver.template;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.util.logging.Logging;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
@@ -27,12 +32,27 @@ import freemarker.template.TemplateModelIterator;
  */
 public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.TemplateFeatureCollectionFactory {
 
-    protected List<FeatureIterator> openIterators = new LinkedList<FeatureIterator>();
+    static Logger LOGGER = Logging.getLogger(DirectTemplateFeatureCollectionFactory.class);
+
+    /**
+     * thread local to track open iterators
+     */
+    static ThreadLocal<List<TemplateFeatureIterator>> ITERATORS = 
+            new ThreadLocal<List<TemplateFeatureIterator>>();
 
     public void purge() {
-        while (!openIterators.isEmpty()) {
-            openIterators.get(0).close();
-            openIterators.remove(0);
+        List<TemplateFeatureIterator> its = ITERATORS.get();
+        if (its != null) {
+            for (TemplateFeatureIterator it : its) {
+                try {
+                    it.close();
+                }
+                catch(Throwable t) {
+                    LOGGER.log(Level.WARNING, "Error closing iterator", t);
+                }
+            }
+            its.clear();
+            ITERATORS.remove();
         }
     }
 
@@ -52,7 +72,14 @@ public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.Te
         }
 
         public TemplateModelIterator iterator() throws TemplateModelException {
-            return new TemplateFeatureIterator(collection.features(), wrapper);
+            TemplateFeatureIterator it = new TemplateFeatureIterator(collection.features(), wrapper);
+            List<TemplateFeatureIterator> open = ITERATORS.get();
+            if (open == null) {
+                open = new LinkedList();
+                ITERATORS.set(open);
+            }
+            open.add(it);
+            return it;
         }
 
     }
@@ -74,6 +101,10 @@ public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.Te
 
         public boolean hasNext() throws TemplateModelException {
             return iterator.hasNext();
+        }
+
+        public void close() {
+            iterator.close();
         }
 
     }

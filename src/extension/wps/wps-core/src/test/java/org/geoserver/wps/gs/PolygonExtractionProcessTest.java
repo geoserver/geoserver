@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertNotNull;
@@ -9,7 +13,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.GeoTools;
-import org.geotools.process.raster.gs.PolygonExtractionProcess;
+import org.geotools.process.raster.PolygonExtractionProcess;
 import org.geotools.util.NullProgressListener;
 import org.jaitools.numeric.Range;
 import org.junit.Test;
@@ -30,6 +34,7 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
     @Test
     public void testProcessStandaloneBasic() throws Exception {
     	final GridCoverage2D gc = (GridCoverage2D) getCatalog().getCoverageByName(DEM.getLocalPart()).getGridCoverage(null, GeoTools.getDefaultHints());
+    	scheduleForDisposal(gc);
     	
     	final PolygonExtractionProcess process = new PolygonExtractionProcess();
 		final SimpleFeatureCollection fc = process.execute(

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gmlcov/1.0" 
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0.2" xml:lang="en">
+    <annotation>
+        <appinfo>grids.xsd</appinfo>
+        <documentation>This XML Schema Document encodes extensions to GML 3.2.1 for grids that are referenced by a Transformation, named "ReferencedGridByTransformation". This document also extends the alternatives allowed in gml:ParameterValueType as expected to be needed by such Transformations.
+        Last updated: 2012-Jul-10
+        Copyright (c) 2012 Open Geospatial Consortium.
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+    <!-- ============================================================== -->
+    <!-- Includes and imports                                           -->
+    <!-- ============================================================== -->
+    <include schemaLocation="gmlcovAll.xsd"/>
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+
+    <!-- ============================================================== -->
+    <!-- Elements and types                                             -->
+    <!-- ============================================================== -->
+    <element name="AbstractReferenceableGrid" type="gmlcov:AbstractReferenceableGridType" abstract="true" substitutionGroup="gml:Grid">
+        <annotation>
+            <documentation>AbstractReferenceableGrid is an encoding of CV_ReferenceableGrid in ISO 19123. AbstractReferenceableGrid is the head of a substitution group that may include multiple concrete implementations.
+
+A referenceable grid is a grid associated with a transformation that can be used to convert grid coordinate values to values of coordinates referenced to an external coordinate reference system [ISO 19123]. The transformation between grid coordinates and 'external' coordinates is usually non-affine, and may take different forms. It may be described analytically (e.g., through parametrised mathematical image rectification models); or it may provided in a table, for instance, relating the grid points to coordinates in the external coordinate reference system [ISO 19123, §8.2.1].
+
+The inherited attribute group gml:SRSReferenceGroup shall link the referenceable grid to the external coordinate reference system to which it is referenceable.
+            </documentation>
+            <documentation>This element and its type are copied from approved Change Request 07-112r3, which adds them to GML 3.2.1. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <complexType name="AbstractReferenceableGridType" abstract="true">
+        <complexContent>
+            <extension base="gml:GridType"/>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="referenceableGridProperty" type="gmlcov:ReferenceableGridPropertyType">
+        <annotation>
+            <documentation>This element and its type are copied from approved Change Request 07-112r3, which adds them to GML 3.2.1. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <complexType name="ReferenceableGridPropertyType">
+        <sequence>
+            <element ref="gmlcov:AbstractReferenceableGrid"/>
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup"/>
+        <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="ParameterValue" type="gmlcov:ParameterValueType" substitutionGroup="gml:AbstractGeneralParameterValue">
+        <annotation>
+            <documentation>Extends gml:ParameterValue to also allow values that are a gml:Geometry or a gml:vector. </documentation>
+            <documentation>This element and its type are copied from  Change Request 09-091r1, which adds them to GML 3.2.1. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <complexType name="ParameterValueType">
+        <complexContent>
+            <extension base="gml:AbstractGeneralParameterValueType">
+                <sequence>
+                    <choice>
+                        <element ref="gml:value"/>
+                        <element ref="gml:dmsAngleValue"/>
+                        <element ref="gml:stringValue"/>
+                        <element ref="gml:integerValue"/>
+                        <element ref="gml:booleanValue"/>
+                        <element ref="gml:valueList"/>
+                        <element ref="gml:integerValueList"/>
+                        <element ref="gml:valueFile"/>
+                        <element ref="gmlcov:geometryValue"/>
+                        <element ref="gmlcov:vectorValue"/>
+                    </choice>
+                    <element ref="gml:operationParameter"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="geometryValue" type="gml:GeometryPropertyType">
+        <annotation>
+            <documentation>A geometry used as a coordinate operation parameter value, which contains any type of geometry element, with a reference to its associated coordinate reference system. </documentation>
+            <documentation>This element and its type are copied from  Change Request 09-091r1, which adds them to GML 3.2.1. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <element name="vectorValue" type="gml:VectorType">
+        <annotation>
+            <documentation>Vector value of a coordinate operation parameter. A vectorValue can represent a distance in a direction (when the magnitude of the vector is significant) or just a direction (when the magnitude of the vector is not considered significant). This vectorValue shall use the coordinate axes directions and units of the coordinate system in the referenced coordinate reference system. This coordinate reference system will often be the same as referenced by an associated geometryValue coordinate operation parameter. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <!-- =========================================================== -->
+    <element name="SimpleMultiPoint" type="gmlcov:SimpleMultiPointType" substitutionGroup="gml:AbstractGeometricAggregate">
+        <annotation>
+            <documentation>gml:SimpleMultiPoint implements, and provides a simplified encoding for, ISO 19107 GM_MultiPoint (see ISO 19107:2003, 6.5.4). A gml:SimpleMultiPoint consists of a list of DirectPositions. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <complexType name="SimpleMultiPointType">
+        <complexContent>
+            <extension base="gml:AbstractGeometricAggregateType">
+                <sequence>
+                    <element name="positions" type="gml:DirectPositionListType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+</schema>

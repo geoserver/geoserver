@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertEquals;
@@ -90,6 +94,7 @@ public class ScaleCoverageTest extends WPSTestSupport {
         GridCoverage gc = format.getReader(is).read(null);
         
         GridCoverage original = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM)).getGridCoverage(null, null);
+        scheduleForDisposal(original);
         
         // check the envelope did not change
         assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);

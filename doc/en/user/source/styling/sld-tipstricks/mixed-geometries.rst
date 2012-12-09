@@ -3,33 +3,33 @@
 Styling mixed geometry types
 ============================
 
-On occasion one might have the need to style a geometry column whose geometry type can be different for each feature 
+On occasion one might need to style a geometry column whose geometry type can be different for each feature 
 (some are polygons, some are points, etc), and use different styling for different geometry types.
 
 SLD 1.0 does not provide a clean solution for dealing with this situation. 
-Point, Line, and Polygon symbolizers do not select geometry by type, since they can each apply to all geometry types:
+Point, Line, and Polygon symbolizers do not select geometry by type, since each can apply to all geometry types:
 
-*  Point symbolizers can apply to any kind of geometry. If the geometry is not a point, the centroid of the geometry is used.
-*  Line symbolizers can apply to both lines and polygons.
-*  Polygon symbolizers can apply to lines, by adding a closing segment connecting the first and last points of the line.
+*  Point symbolizers apply to any kind of geometry. If the geometry is not a point, the centroid of the geometry is used.
+*  Line symbolizers apply to both lines and polygons.  For polygons the boundary is styled.
+*  Polygon symbolizers apply to lines, by adding a closing segment connecting the first and last points of the line.
 
-There is also no standard filter to identify the type of a geometry attribute which could be used in rules.
+There is also no standard filter predicate to identify geometry type which could be used in rules.
 
-There are a number of possible ways to accomplish styling by geometry type.  
+This section suggests a number of ways to accomplish styling by geometry type.  
 They require either data restructuring or the use of non-standard filter functions.
 
 Restructuring the data
 ----------------------
 
-There are a few ways to restructure the data so that it can be rendered without difficulties using only standard SLD constructs.
+There are a few ways to restructure the data so that it can be styled by geometry type using only standard SLD constructs.
 
 Split the table
-```````````````
+^^^^^^^^^^^^^^^
 
-The first and obvious one is to split the table into a set of separate ones, each one containing a single geometry type. For example, if table ``findings`` has a geometry column that can contain point, lines, and polygons, three tables will be generated, each one containing a single geometry type.
+The first and obvious one is to split the original table into a set of separate tables, each one containing a single geometry type. For example, if table ``findings`` has a geometry column that can contain point, lines, and polygons, three tables can be created, each one containing a single geometry type.
 
 Separate geometry columns
-`````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A second way is to use one table and separate geometry columns. So, if the table ``findings`` has a ``geom`` column, the restructured table will have ``point``, ``line`` and ``polygon`` columns, each of them containing just one geometry type. After the restructuring, the symbolizers will refer to a specific geometry, for example:
   
@@ -42,7 +42,7 @@ A second way is to use one table and separate geometry columns. So, if the table
 This way each symbolizer will match only the geometry types it is supposed to render, and skip over the rows that contain a null value.
 
 Add a geometry type column
-``````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A third way is to add a geometry type column allowing standard filtering constructs to be used, and then build a separate rule per geometry type. In the example above a new attribute, ``gtype`` will be added containing the values ``Point``, ``Line`` and ``Polygon``. The following SLD template can be used after the change:
   
@@ -52,7 +52,7 @@ A third way is to add a geometry type column allowing standard filtering constru
       <ogc:Filter>
          <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>gtype</ogc:PropertyName>
-            <ogc:Literal>Point</ogc:PropertyName>
+            <ogc:Literal>Point</ogc:Literal>
          </ogc:PropertyIsEqualTo>
       </ogc:Filter>
       <PointSymbolizer>
@@ -63,7 +63,7 @@ A third way is to add a geometry type column allowing standard filtering constru
       <ogc:Filter>
          <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>gtype</ogc:PropertyName>
-            <ogc:Literal>Line</ogc:PropertyName>
+            <ogc:Literal>Line</ogc:Literal>
          </ogc:PropertyIsEqualTo>
       </ogc:Filter>
       <LineSymbolizer>
@@ -74,7 +74,7 @@ A third way is to add a geometry type column allowing standard filtering constru
       <ogc:Filter>
          <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>gtype</ogc:PropertyName>
-            <ogc:Literal>Polygon</ogc:PropertyName>
+            <ogc:Literal>Polygon</ogc:Literal>
          </ogc:PropertyIsEqualTo>
       </ogc:Filter>
       <PolygonSymbolizer>
@@ -82,23 +82,32 @@ A third way is to add a geometry type column allowing standard filtering constru
       </PolygonSymbolizer>
    </Rule>
    
-All of the above suggestions do work under the assumption that restructuring the data is technically possible, which is usually true in spatial databases that provide functions that allow to recognize the geometry type.
+The above suggestions assume that restructuring the data is technically possible.
+This is usually true in spatial databases that provide functions that allow determining the geometry type.
 
 Create views
-````````````
+^^^^^^^^^^^^
 
-A less invasive way to get the same results without changing the structure of the table is to create views that have the required structure. This allows the original data to be kept intact, and the views to be used only for rendering sake.
+A less invasive way to get the same results without changing the structure of the table is to create views that have the required structure. This allows the original data to be kept intact, and the views may be used for rendering.
 
 
-Using non-standard SLD functions
---------------------------------
+Using SLD rules and filter functions
+------------------------------------
 
-SLD 1.0 uses the OGC Filter 1.0 specification for filtering out the data to be renderered by each rule.
-A function is a black box taking a number of parameters as inputs, and returning a result. It can implement many functionalities, such as computing a trigonometric function, formatting dates, or determining the type of a geometry.
+SLD 1.0 uses the OGC Filter 1.0 specification for filtering out the data to be styled by each rule.
+Filters can contain :ref:`filter_function` to compute properties of geometric values.
+In GeoServer, filtering by geometry type can be done using the ``geometryType`` or ``dimension`` filter functions.
 
-However, none of the standards define a set of well known functions.  This means that any SLD document that uses functions is valid, although it is not portable to another GIS system. If this is not a problem, filtering by geometry type can be done using the ``geometryType`` filter function, which takes a geometry property and returns a string, which can (currently) be one of ``Point``, ``LineString``, ``LinearRing``, ``Polygon``, ``MultiPoint``, ``MultiLineString``, ``MultiPolygon`` and ``GeometryCollection``.
+.. note:: The Filter Encoding specification provides a standard syntax for filter functions, but does not mandate a specific set of functions.
+          SLDs using these functions may not be portable to other styling software.
 
-Using the function, a ``Rule`` matching only single points can be written as:
+
+geometryType function
+^^^^^^^^^^^^^^^^^^^^^
+
+The ``geometryType`` function takes a geometry property and returns a string, which (currently) is one of the values ``Point``, ``LineString``, ``LinearRing``, ``Polygon``, ``MultiPoint``, ``MultiLineString``, ``MultiPolygon`` and ``GeometryCollection``.
+
+Using this function, a ``Rule`` matching only single points can be written as:
 
 .. code-block:: xml
 
@@ -114,7 +123,8 @@ Using the function, a ``Rule`` matching only single points can be written as:
       </PointSymbolizer>
    </Rule>
    
-The filter becomes more complex if one has to match any kind of linear geometry.  In this case, it would look like:
+The filter is more complex if it has to match all linear geometry types.  
+In this case, it looks like:
 
 .. code-block:: xml
 
@@ -137,4 +147,31 @@ The filter becomes more complex if one has to match any kind of linear geometry.
       </LineSymbolizer>
    </Rule>
 
-This filter would read like ``geometryType(geom) in (LineString, LinearRing, MultiLineString)``.  Filter functions in Filter 1.0 have a known number of arguments, so there are various in functions with different names, like ``in2``, ``in3``, ..., ``in10``.
+This filter is read as ``geometryType(geom) in ("LineString", "LinearRing", "MultiLineString")``.  
+Filter functions in Filter 1.0 have a fixed number of arguments, 
+so there is a series of ``in`` functions whose names correspond to the number of arguments they accept: ``in2``, ``in3``, ..., ``in10``.
+
+dimension function
+^^^^^^^^^^^^^^^^^^
+
+A slightly simpler alternative is to use the geometry ``dimension`` function
+to select geometries of a desired dimension.
+Dimension 0 selects Points and MultiPoints, 
+dimension 1 selects LineStrings, LinearRings and MultiLineStrings,
+and dimension 2 selects Polygons and MultiPolygons.
+The following example shows how to select linear geometries:
+
+.. code-block:: xml
+
+   <Rule>
+      <ogc:PropertyIsEqualTo>
+         <ogc:Function name="dimension">
+            <ogc:PropertyName>geom</ogc:PropertyName>
+         </ogc:Function>
+         <ogc:Literal>1</ogc:Literal>
+      </ogc:PropertyIsEqualTo>
+      <LineSymbolizer>
+        ...
+      </LineSymbolizer>
+   </Rule>
+

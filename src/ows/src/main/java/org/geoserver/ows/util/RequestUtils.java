@@ -12,15 +12,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.platform.OWS20Exception;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 
 /**
@@ -189,7 +188,7 @@ public class RequestUtils {
             throw new ServiceException(msg, "VersionNegotiationFailed", locator);
         }
     }
-    
+
     /**
      * Wraps an xml input xstream in a buffered reader specifying a lookahead that can be used
      * to preparse some of the xml document, resetting it back to its original state for actual 

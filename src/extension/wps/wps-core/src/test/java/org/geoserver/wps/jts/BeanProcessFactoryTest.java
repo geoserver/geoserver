@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.jts;
 
 import static junit.framework.Assert.assertEquals;
@@ -23,9 +27,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.factory.AnnotatedBeanProcessFactory;
-import org.geotools.process.feature.gs.BoundsProcess;
-import org.geotools.process.feature.gs.NearestProcess;
-import org.geotools.process.feature.gs.SnapProcess;
+import org.geotools.process.vector.BoundsProcess;
+import org.geotools.process.vector.NearestProcess;
+import org.geotools.process.vector.SnapProcess;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.Before;
 import org.junit.Test;

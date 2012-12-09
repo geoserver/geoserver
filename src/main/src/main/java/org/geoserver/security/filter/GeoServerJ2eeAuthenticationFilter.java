@@ -68,6 +68,7 @@ public class GeoServerJ2eeAuthenticationFilter extends GeoServerPreAuthenticatio
       
         RoleCalculator calc = new RoleCalculator(service);
         calc.addInheritedRoles(roles);
+        calc.addMappedSystemRoles(roles);
         return roles;        
     }
     

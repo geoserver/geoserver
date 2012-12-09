@@ -5,10 +5,8 @@
 package org.geoserver.wms;
 
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.media.jai.PlanarImage;
 
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
@@ -62,10 +62,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.WMSLayer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.geometry.XRectangle2D;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
@@ -248,7 +248,7 @@ public class GetFeatureInfo {
                 
                 
                 // set the requested position in model space for this request
-                final Coordinate middle = pixelToWorld(x, y, bbox, width, height);
+                final Coordinate middle = WMS.pixelToWorld(x, y, bbox, width, height);
                 DirectPosition position = new DirectPosition2D(requestedCRS, middle.x, middle.y);
 
                 // change from request crs to coverage crs in order to compute a minimal request
@@ -394,6 +394,12 @@ public class GetFeatureInfo {
         } catch (PointOutsideCoverageException e) {
             // it's fine, users might legitimately query point outside, we just don't
             // return anything
+        } finally {
+        	RenderedImage ri = coverage.getRenderedImage();
+        	coverage.dispose(true);
+        	if(ri instanceof PlanarImage) {
+        		ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        	}
         }
         return pixel;
     }
@@ -637,8 +643,8 @@ public class GetFeatureInfo {
 
     private Polygon getEnvelopeFilter(int x, int y, int width, int height, ReferencedEnvelope bbox,
             double radius) {
-        Coordinate upperLeft = pixelToWorld(x - radius, y - radius, bbox, width, height);
-        Coordinate lowerRight = pixelToWorld(x + radius, y + radius, bbox, width, height);
+        Coordinate upperLeft = WMS.pixelToWorld(x - radius, y - radius, bbox, width, height);
+        Coordinate lowerRight = WMS.pixelToWorld(x + radius, y + radius, bbox, width, height);
 
         Coordinate[] coords = new Coordinate[5];
         coords[0] = upperLeft;
@@ -679,80 +685,6 @@ public class GetFeatureInfo {
             values[i] = new Double(pixelValues[i]);
         }
         return DataUtilities.collection(SimpleFeatureBuilder.build(gridType, values, ""));
-    }
-
-    /**
-     * Converts a coordinate expressed on the device space back to real world coordinates. Stolen
-     * from LiteRenderer but without the need of a Graphics object
-     * 
-     * @param x
-     *            horizontal coordinate on device space
-     * @param y
-     *            vertical coordinate on device space
-     * @param map
-     *            The map extent
-     * @param width
-     *            image width
-     * @param height
-     *            image height
-     * 
-     * @return The correspondent real world coordinate
-     * 
-     * @throws RuntimeException
-     */
-    private Coordinate pixelToWorld(double x, double y, ReferencedEnvelope map, double width, double height) {
-        // set up the affine transform and calculate scale values
-        AffineTransform at = worldToScreenTransform(map, width, height);
-
-        Point2D result = null;
-
-        try {
-            result = at.inverseTransform(new java.awt.geom.Point2D.Double(x, y),
-                    new java.awt.geom.Point2D.Double());
-        } catch (NoninvertibleTransformException e) {
-            throw new RuntimeException(e);
-        }
-
-        Coordinate c = new Coordinate(result.getX(), result.getY());
-
-        return c;
-    }
-
-    /**
-     * Sets up the affine transform. Stolen from liteRenderer code.
-     * 
-     * @param mapExtent
-     *            the map extent
-     * @param width
-     *            the screen size
-     * @param height
-     * 
-     * @return a transform that maps from real world coordinates to the screen
-     */
-    private AffineTransform worldToScreenTransform(ReferencedEnvelope mapExtent, double width, double height) {
-        
-        //the transformation depends on an x/y ordering, if we have a lat/lon crs swap it
-        CoordinateReferenceSystem crs = mapExtent.getCoordinateReferenceSystem();
-        boolean swap = crs != null && CRS.getAxisOrder(crs) == AxisOrder.NORTH_EAST;
-        if (swap) {
-            mapExtent = new ReferencedEnvelope(mapExtent.getMinY(), mapExtent.getMaxY(), 
-                mapExtent.getMinX(), mapExtent.getMaxX(), null);
-        }
-        
-        double scaleX = (double) width / mapExtent.getWidth();
-        double scaleY = (double) height / mapExtent.getHeight();
-
-        double tx = -mapExtent.getMinX() * scaleX;
-        double ty = (mapExtent.getMinY() * scaleY) + height;
-
-        AffineTransform at = new AffineTransform(scaleX, 0.0d, 0.0d, -scaleY, tx, ty);
-
-        //if we swapped concatenate a transform that swaps back
-        if (swap) {
-            at.concatenate(new AffineTransform(0, 1, 1, 0, 0, 0));
-        }
-
-        return at;
     }
 
 }

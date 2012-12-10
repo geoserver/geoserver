@@ -48,10 +48,14 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
 		super.initialize(service);
         if (service.getExceptionFormats() == null) {
             ((WCSInfoImpl) service).setExceptionFormats(new ArrayList<String>());
-        }        
+        }   
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
             service.getVersions().add(new Version("1.1.1"));
+        } 
+        Version v201 = new Version("2.0.1");        
+        if(!service.getVersions().contains(v201)) {
+            service.getVersions().add(v201);
         }
         return service;
     }

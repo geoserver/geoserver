@@ -3,30 +3,25 @@
 Installing the Scripting Extension
 ==================================
 
-Each supported language is distributed as a different download. 
+.. note:: The various language runtime libraries increase GeoServer's memory footprint, specifically the "PermGen" (Permanent Generation) space. When installing the scripting extension we recommended that you increase PermGen capacity to 256m. This is done with the option ``-XX:MaxPermSize=256m``. If installing multiple language extensions this size may need to be increased even further.
 
-.. note::
+Python
+------
 
-   The various language runtime libraries increase GeoServers memory footprint, namely the "PermGen" 
-   (Permanent Generation) space. If installing the scripting extension it is recommended that you 
-   increase PermGen capacity to 128m. This is done with the option ``-XX:MaxPermSize=128m``. If 
-   installing multiple language extensions this size may need to be increased even further.
-   
-#. Download the language extension of choice from the `GeoServer download page 
-   <http://geoserver.org/display/GEOS/Download>`_.
+Currently, the only scripting language that is distributed as a package for download is Python. This extension is a community extension, in that it is not included with the list of extensions on the standard `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_. Instead, the community extensions are built each night on the `nightly build server <http://gridlock.opengeo.org/geoserver/>`_.
 
-   .. warning:: 
+To access the Python scripting extension:
 
-     Ensure the extension matching the version of the GeoServer installation is
-     downloaded.
+#. Navigate to the `nightly build server <http://gridlock.opengeo.org/geoserver/>`_.
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of
-   the GeoServer installation.
+#. Click the folder that contains the correct branch of GeoServer for your version (for example: for 2.2.2, click on :guilabel:`2.2.x`):
 
-Verifying the Installation
----------------------------
+#. Click :guilabel:`community-latest`. This folder contains the most recently built community extensions for the branch.
 
-To verify the extension has been installed properly start the GeoServer instance and navigate to the 
-data directory. Upon a successful install a new directory named ``scripts`` will be created. You can 
-also navigate to the GeoServer web app and a "Scripting" section of the navigation menu should now 
-be present.
+#. Download the file that contains the string "python". For example: :file:`geoserver-2.2-SNAPSHOT-python-plugin.zip`.
+
+#. Extract the contents of the archive into the :file:`/WEB-INF/lib/` directory of GeoServer. For example, if GeoServer was installed at :file:`/opt/geoserver-2.2.2/`, extract the archive contents in :file:`/opt/geoserver-2.1.0/webapps/geoserver/WEB-INF/lib/`.
+
+#. Restart GeoServer.
+
+Upon a successful install a new directory named ``scripts`` will be created inside the data directory.

@@ -796,7 +796,7 @@ Section "Main" SectionMain
     File /a wrapper.dll
 	
     ; Install the service (and start it)
-    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.3=-Djetty.port=$Port"
+    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.port=$Port"
 
   ${EndIf}
 

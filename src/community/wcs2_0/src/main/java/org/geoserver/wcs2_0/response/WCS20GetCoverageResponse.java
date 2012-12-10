@@ -6,12 +6,17 @@ package org.geoserver.wcs2_0.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import net.opengis.wcs20.ExtensionItemType;
+import net.opengis.wcs20.ExtensionType;
 import net.opengis.wcs20.GetCoverageType;
 
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Response;
-import org.geoserver.platform.Operation;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
+import org.geoserver.platform.Operation;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -70,9 +75,20 @@ public class WCS20GetCoverageResponse extends Response {
         if (format == null) {
             format = "image/tiff;subtype=\"geotiff\"";
         } 
+        
+        // extract additional extensions
+        final Map<String,String> encodingParameters= new HashMap<String,String>();        
+        final ExtensionType extension = getCoverage.getExtension();
+        if(extension!=null){
+            final EList<ExtensionItemType> extensions = extension.getContents();
+            for(ExtensionItemType ext:extensions){
+                encodingParameters.put(ext.getName(),ext.getSimpleContent());
+            }            
+        }
+
 
         // grab the delegate
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
-        delegate.encode(coverage, format, output);
+        delegate.encode(coverage, format,encodingParameters, output);
     }
 }

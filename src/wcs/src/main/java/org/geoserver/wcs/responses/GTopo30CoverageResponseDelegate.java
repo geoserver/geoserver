@@ -7,9 +7,8 @@ package org.geoserver.wcs.responses;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 import org.geoserver.platform.ServiceException;
@@ -22,7 +21,6 @@ import org.opengis.coverage.grid.GridCoverageWriter;
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
-@SuppressWarnings("deprecation")
 public class GTopo30CoverageResponseDelegate implements CoverageResponseDelegate {
 
     private static final List<String> FORMATS = Arrays.asList("application/gtopo30");
@@ -54,7 +52,7 @@ public class GTopo30CoverageResponseDelegate implements CoverageResponseDelegate
      * 
      * @see org.vfny.geoserver.wcs.responses.CoverageResponseDelegate#encode(java.io.OutputStream)
      */
-	public void encode(GridCoverage2D sourceCoverage, String outputFormat, OutputStream output) throws ServiceException, IOException {
+	public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
         // creating a zip outputstream
         final ZipOutputStream outZ = new ZipOutputStream(output);
         output = outZ;

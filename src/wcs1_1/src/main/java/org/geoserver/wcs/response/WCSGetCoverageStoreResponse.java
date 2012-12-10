@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 
 import javax.xml.transform.TransformerException;
 
@@ -106,7 +107,7 @@ public class WCSGetCoverageStoreResponse extends Response {
         OutputStream os = null;
         try {
             os = new BufferedOutputStream(new FileOutputStream(coverageFile));
-            delegate.encode(coverage, outputFormat, os);
+            delegate.encode(coverage, outputFormat,Collections.EMPTY_MAP, os);
             os.flush();
         } finally {
             if(os != null) os.close();

@@ -11,9 +11,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -50,7 +49,7 @@ public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
             return null;
     }
 
-    public void encode(GridCoverage2D coverage, String outputFormat, OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D coverage, String outputFormat,  Map<String,String> econdingParameters,OutputStream output) throws ServiceException, IOException {
         PrintStream ps = new PrintStream(output);
         ps.println("Grid bounds: " + coverage.getEnvelope());
         ps.println("Grid CRS: " + coverage.getCoordinateReferenceSystem());

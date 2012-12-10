@@ -6,6 +6,7 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashMap;
 
 import net.opengis.wcs10.GetCoverageType;
@@ -116,7 +117,7 @@ public class Wcs10GetCoverageResponse extends Response {
 
         // write the coverage
         try {
-            delegate.encode(coverage, outputFormat, output);
+            delegate.encode(coverage, outputFormat,Collections.EMPTY_MAP, output);
             output.flush();
         } finally {
             // if(output != null) output.close();

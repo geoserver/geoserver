@@ -26,16 +26,16 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
         Catalog cat = getCatalog();
 
-        global = createLayerGroup(cat, "base", 
+        global = createLayerGroup(cat, "base", "base default",
             layer(cat, MockData.LAKES), layer(cat, MockData.FORESTS));
         cat.add(global);
 
-        sf = createLayerGroup(cat, "base", layer(cat, MockData.PRIMITIVEGEOFEATURE), 
+        sf = createLayerGroup(cat, "base", "sf base", layer(cat, MockData.PRIMITIVEGEOFEATURE),
             layer(cat, MockData.AGGREGATEGEOFEATURE));
         sf.setWorkspace(cat.getWorkspaceByName("sf"));
         cat.add(sf);
 
-        cite = createLayerGroup(cat, "base", layer(cat, MockData.BRIDGES), 
+        cite = createLayerGroup(cat, "base", "cite base", layer(cat, MockData.BRIDGES), 
             layer(cat, MockData.BUILDINGS));
         cite.setWorkspace(cat.getWorkspaceByName("cite"));
         cat.add(cite);
@@ -49,9 +49,11 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         return cat.getLayerByName(getLayerId(name));
     }
 
-    LayerGroupInfo createLayerGroup(Catalog cat, String name, LayerInfo... layers) throws Exception {
+    LayerGroupInfo createLayerGroup(Catalog cat, String name, String title, LayerInfo... layers) throws Exception {
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName(name);
+        group.setTitle("title for layer group " + title);
+        group.setAbstract("abstract for layer group " + title); 
         group.getLayers().addAll(Arrays.asList(layers));
         new CatalogBuilder(cat).calculateLayerGroupBounds(group);
         return group;
@@ -59,7 +61,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
     public void testAddLayerGroup() throws Exception {
         Catalog cat = getCatalog();
-        LayerGroupInfo lg = createLayerGroup(cat, "base", layer(cat, MockData.LOCKS));
+        LayerGroupInfo lg = createLayerGroup(cat, "base", "base", layer(cat, MockData.LOCKS));
         try {
             cat.add(lg);
             fail();
@@ -80,6 +82,20 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertBounds(cite, "cite:base", dom);
     }
 
+    public void testLayerGroupTitleInCapabilities() throws Exception {
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        assertXpathExists("//wms:Layer/wms:Title[text() = 'title for layer group base default']", dom);
+        assertXpathExists("//wms:Layer/wms:Title[text() = 'title for layer group sf base']", dom);
+        assertXpathExists("//wms:Layer/wms:Title[text() = 'title for layer group cite base']", dom);
+    }
+    
+    public void testLayerGroupAbstractInCapabilities() throws Exception {
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0", false);
+        assertXpathExists("//wms:Layer/wms:Abstract[text() = 'abstract for layer group base default']", dom);
+        assertXpathExists("//wms:Layer/wms:Abstract[text() = 'abstract for layer group sf base']", dom);
+        assertXpathExists("//wms:Layer/wms:Abstract[text() = 'abstract for layer group cite base']", dom);
+    }    
+    
     public void testWorkspaceCapabilities() throws Exception {
         Document dom = getAsDOM("sf/wms?request=getcapabilities&version=1.3.0");
 

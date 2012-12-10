@@ -62,6 +62,30 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.name = name;
     }
 
+    public String getTitle() {
+        if(metadata != null) {
+            return metadata.get("title", String.class);
+        } else {
+            return null;
+        }
+    }
+    
+    public void setTitle(String title) {
+        metadata.put("title", title);
+    }
+    
+    public String getAbstract() {
+        if(metadata != null) {
+            return metadata.get("abstract", String.class);
+        } else {
+            return null;
+        }
+    }
+    
+    public void setAbstract(String abstractTxt) {
+        metadata.put("abstract", abstractTxt);
+    }    
+    
     public WorkspaceInfo getWorkspace() {
         return workspace;
     }

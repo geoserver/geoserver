@@ -136,6 +136,10 @@ public class Monitor implements ApplicationListener<ApplicationEvent>{
         return server;
     }
 
+    public void setServer(GeoServer server) {
+        this.server = server;
+    }
+
     public void query(Query q, RequestDataVisitor visitor) {
         dao.getRequests(q, visitor);
     }

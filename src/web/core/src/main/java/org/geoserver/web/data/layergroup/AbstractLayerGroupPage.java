@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -19,6 +18,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -80,6 +80,9 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         //JD: don't need this, this is validated at the catalog level
         //name.add(new GroupNameValidator());
         form.add(name);
+        
+        form.add(new TextField("title"));
+        form.add(new TextArea("abstract"));
         
         DropDownChoice<WorkspaceInfo> wsChoice = 
                 new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());

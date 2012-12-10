@@ -5,14 +5,15 @@
 package org.geoserver.security.ldap;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.geoserver.security.DelegatingAuthenticationProvider;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.RoleCalculator;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,16 +49,22 @@ public class LDAPAuthenticationProvider extends
                 (UsernamePasswordAuthenticationToken) super.doAuthenticate(authentication, request);
         
         if (auth==null) return null; // next provider
-        
-        if (auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)==false) {
-            List<GrantedAuthority> roles= new ArrayList<GrantedAuthority>();
-            roles.addAll(auth.getAuthorities());
-            roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
-                    auth.getPrincipal(), auth.getCredentials(),roles);
-            newAuth.setDetails(auth.getDetails());
-            return newAuth;
+
+        Set<GeoServerRole> roles = new HashSet<GeoServerRole>();
+        for (GrantedAuthority ga : auth.getAuthorities()) {
+            roles.add(new GeoServerRole(ga.getAuthority()));
         }
+        
+        //map the roles to system roles
+        new RoleCalculator(getSecurityManager().getActiveRoleService()).addMappedSystemRoles(roles);
+
+        //add authenticated role
+        if (!roles.contains(GeoServerRole.AUTHENTICATED_ROLE)) {
+            roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+        }
+
+        auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(),roles);
+        auth.setDetails(auth.getDetails());
         return auth;
     }
 

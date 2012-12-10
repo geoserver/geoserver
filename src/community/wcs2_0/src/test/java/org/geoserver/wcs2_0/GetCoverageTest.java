@@ -15,7 +15,6 @@ import javax.imageio.stream.FileImageInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.imageio.IIOMetadataDumper;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.junit.Ignore;
@@ -157,9 +156,9 @@ public class GetCoverageTest extends WCSTestSupport {
         
         // compression
         final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
-        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
-                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
-        System.out.println(IIOMetadataDumper.getMetadata());        
+//        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
+//                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
+//        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
@@ -203,9 +202,9 @@ public class GetCoverageTest extends WCSTestSupport {
         
         // compression
         final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
-        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
-                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
-        System.out.println(IIOMetadataDumper.getMetadata());        
+//        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
+//                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
+//        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
@@ -250,9 +249,9 @@ public class GetCoverageTest extends WCSTestSupport {
         
         // compression
         final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
-        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
-                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
-        System.out.println(IIOMetadataDumper.getMetadata());        
+//        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
+//                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
+//        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
@@ -296,9 +295,9 @@ public class GetCoverageTest extends WCSTestSupport {
         
         // compression
         final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
-        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
-                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
-        System.out.println(IIOMetadataDumper.getMetadata());        
+//        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
+//                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
+//        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
@@ -376,9 +375,6 @@ public class GetCoverageTest extends WCSTestSupport {
         
         // compression
         final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
-        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
-                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
-        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);

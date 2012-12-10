@@ -4,10 +4,8 @@
  */
 package org.geoserver.wcs2_0;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
-import static org.geoserver.ows.util.ResponseUtils.*;
 import org.geotools.ows.v2_0.OWS;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Some consts useful through the module.
@@ -16,7 +14,7 @@ import org.geotools.ows.v2_0.OWS;
  */
 public class WCS20Const {
     public static final String V20x = "2.0.1"; // current
-    public static final String V20 = "2.0"; // for lenient parsing
+    public static final String V20 = "2.0.0"; // old and deprecated, but tested by CITE
     public static final String V111 = "1.1.1";
     public static final String V110 = "1.1.0";
 

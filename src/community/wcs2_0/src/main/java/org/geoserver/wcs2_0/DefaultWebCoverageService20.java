@@ -52,7 +52,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     @Override
     public TransformerBase getCapabilities(GetCapabilitiesType request) {
 
-        return new GetCapabilities(getServiceInfo(), catalog).run(request);
+        return new GetCapabilities(getServiceInfo(), catalog, responseFactory).run(request);
     }
 
     @Override

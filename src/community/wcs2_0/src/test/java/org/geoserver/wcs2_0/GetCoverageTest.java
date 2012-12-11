@@ -201,7 +201,7 @@ public class GetCoverageTest extends WCSTestSupport {
         reader.setInput(new FileImageInputStream(file));       
         
         // compression
-        final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
+        TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
 //        IIOMetadataDumper IIOMetadataDumper = new IIOMetadataDumper(
 //                (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName));        
 //        System.out.println(IIOMetadataDumper.getMetadata());        
@@ -211,6 +211,15 @@ public class GetCoverageTest extends WCSTestSupport {
         assertNotNull(field);
         assertEquals("Deflate", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("32946", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
 
      }
     
@@ -530,6 +539,40 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals(256, reader.getTileHeight(0));
         assertEquals(256, reader.getTileWidth(0));
 
+    }
+    
+    @Test 
+    public void testGeotiffExtensionBanded() throws Exception {
+
+        String request =  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+        "<wcs:GetCoverage\n" + 
+        "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n" + 
+        "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n" + 
+        "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" + 
+        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+        "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n" + 
+        "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n" + 
+        "  http://www.opengis.net/wcs/geotiff/1.0 \n" + 
+        "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n" + 
+        "  service=\"WCS\"\n" + 
+        "  version=\"2.0.1\">\n" + 
+        "  <wcs:Extension>\n" + 
+        "    <wcsgeotiff:compression>None</wcsgeotiff:compression>\n" + 
+        "    <wcsgeotiff:interleave>band</wcsgeotiff:interleave>\n" + 
+        "  </wcs:Extension>\n" + 
+        "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n" + 
+        "  <wcs:format>image/tiff</wcs:format>\n" + 
+        "</wcs:GetCoverage>";
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("application/xml", response.getContentType());
+        // TODO Fix this test
+//        byte[] tiffContents = getBinary(response);
+//        File file = File.createTempFile("exception", "xml", new File("./target"));
+//        FileUtils.writeByteArrayToFile(file, tiffContents);
+//        
+//        String ex=FileUtils.readFileToString(file);
     }
 
 

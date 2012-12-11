@@ -33,7 +33,8 @@ public class WcsException extends ServiceException {
         TilingInvalid, 
         PredictorNotSupported, 
         PredictorInvalid, 
-        InterleavingInvalid,
+        InterleavingInvalid, 
+        InterleavingNotSupported,
     }
 
     /**

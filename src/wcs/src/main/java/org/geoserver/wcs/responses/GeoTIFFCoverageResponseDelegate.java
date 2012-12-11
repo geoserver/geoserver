@@ -7,8 +7,6 @@ package org.geoserver.wcs.responses;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
 
 import java.awt.Dimension;
-import java.awt.image.BandedSampleModel;
-import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -61,7 +59,7 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
 
     public String getMimeType(String outputFormat) {
         if (canProduce(outputFormat))
-            return "image/tiff;subtype=\"geotiff\"";
+            return "image/tiff";
         else
             return null;
     }
@@ -108,11 +106,17 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
     }
 
     /**
-     * @param econdingParameters
-     * @param wp
-     * @param sourceCoverage 
+     * Handle interleaving encoding parameters for WCS.
+     * 
+     * <p>
+     * Notice that the Tiff ImageWriter supports only pixel interleaving.
+     * 
+     * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to hold the encoding parameters.
+     * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided encoding parameters.
+     * 
+     * @throws WcsException in case there are invalid or unsupported options.
      */
-    private void handleInterleaving(Map<String, String> encondingParameters, GeoTiffWriteParams wp, GridCoverage2D sourceCoverage) {
+    private void handleInterleaving(Map<String, String> encondingParameters, GeoTiffWriteParams wp, GridCoverage2D sourceCoverage) throws WcsException{
 
         // interleaving is optional
         if(encondingParameters.containsKey("interleave")){
@@ -121,17 +125,12 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
             final String interleavingS= encondingParameters.get("interleave");
             if(interleavingS.equals("pixel")){
                 
-                // ok we want pixel interleaving, let's see what we can do 
-                
-                // -1- is the image already in pixel interleaving ?
-                final SampleModel sm= sourceCoverage.getRenderedImage().getSampleModel();
-                if(sm instanceof BandedSampleModel){
-                    // reformat image 
-                    // TODO
-                }
+                // ok we want pixel interleaving, TIFF ImageWriter always writes
+                // with pixel interleaving hence, we are good!
                 
             } else if(interleavingS.equals("band")){
-                // TODO
+                // TODO implement this in TIFF Writer, as it is not supported right now
+                throw new WcsException("Banded Interleaving not supported", WcsExceptionCode.InterleavingNotSupported, "band");
             } else {
                 throw new WcsException("Invalid Interleaving type provided", WcsExceptionCode.InterleavingInvalid, interleavingS);
             }
@@ -140,13 +139,19 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
     }
 
     /**
-     * @param econdingParameters
-     * @param wp
-     * @throws NumberFormatException
-     * @throws WcsException
+     * Handle tiling encoding parameters for WCS.
+     * 
+     * <p>
+     * Notice that tile width and height must be positive and multiple of 16.
+     * 
+     * 
+     * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to hold the encoding parameters.
+     * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided encoding parameters.
+     * 
+     * @throws WcsException in case there are invalid or unsupported options.
      */
     private void handleTiling(Map<String, String> econdingParameters, final GeoTiffWriteParams wp)
-            throws NumberFormatException, WcsException {
+            throws WcsException {
         //
         // tiling
         //
@@ -163,16 +168,25 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                 if(econdingParameters.containsKey("tilewidth")){
                     final String tileW_= econdingParameters.get("tilewidth");
                     if(tileW_!=null){  
-                        final int tileW=Integer.valueOf(tileW_);
-                        if(tileW>0&& (tileW%16==0)){
-                            tileDimensions.width=tileW;
-                        } else {
-                            // compression not supported
+                        try{
+                            final int tileW=Integer.valueOf(tileW_);
+                            if(tileW>0&& (tileW%16==0)){
+                                tileDimensions.width=tileW;
+                            } else {
+                                // tile width not supported
+                                throw new WcsException(
+                                        "Provided tile width is invalid",
+                                        WcsExceptionCode.TilingInvalid,
+                                        tileW_);                            
+                            } 
+                        }catch (Exception e) {
+                            // tile width not supported
                             throw new WcsException(
                                     "Provided tile width is invalid",
                                     WcsExceptionCode.TilingInvalid,
-                                    tileW_);                            
+                                    tileW_);    
                         }
+
                     }
                     
                 }
@@ -180,15 +194,23 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                 if(econdingParameters.containsKey("tileheight")){
                     final String tileH_= econdingParameters.get("tileheight");
                     if(tileH_!=null){  
-                        final int tileH=Integer.valueOf(tileH_);
-                        if(tileH>=0&&(tileH%16==0)){
-                            tileDimensions.height=tileH;
-                        } else {
-                            // compression not supported
+                        try{
+                            final int tileH=Integer.valueOf(tileH_);
+                            if(tileH>0&& (tileH%16==0)){
+                                tileDimensions.width=tileH;
+                            } else {
+                                // tile width not supported
+                                throw new WcsException(
+                                        "Provided tile width is invalid",
+                                        WcsExceptionCode.TilingInvalid,
+                                        tileH_);                            
+                            } 
+                        }catch (Exception e) {
+                            // tile width not supported
                             throw new WcsException(
                                     "Provided tile width is invalid",
                                     WcsExceptionCode.TilingInvalid,
-                                    tileH_);                            
+                                    tileH_);    
                         }
                     }
                     
@@ -201,13 +223,22 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
     }
 
     /**
-     * @param econdingParameters
-     * @param wp
-     * @throws WcsException
-     * @throws NumberFormatException
+     * Handle compression encoding parameters for WCS.
+     * 
+     * <p>
+     * Notice that not all the encoding params are supported by the underlying Tiff ImageWriter
+     * <ol>
+     * <li>Floating Point predictor is not supported  for LZW</li>
+     * <li>Huffman is supported only for 1 bit images</li>
+     * </ol> 
+     * 
+     * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to hold the encoding parameters.
+     * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided encoding parameters.
+     * 
+     * @throws WcsException in case there are invalid or unsupported options.
      */
     private void handleCompression(Map<String, String> econdingParameters,
-            final GeoTiffWriteParams wp) throws WcsException, NumberFormatException {
+            final GeoTiffWriteParams wp) throws WcsException {
         // compression
         if(econdingParameters.containsKey("compression")){ 
             String compressionS= econdingParameters.get("compression");
@@ -247,10 +278,18 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                     if(econdingParameters.containsKey("jpeg_quality")){ 
                         final String quality_= econdingParameters.get("jpeg_quality");
                         if(quality_!=null){  
-                            final int quality=Integer.valueOf(quality_);
-                            if(quality>0&&quality<=100){
-                                wp.setCompressionQuality(quality/100.f);
-                            } else {
+                            try{
+                                final int quality=Integer.valueOf(quality_);
+                                if(quality>0&&quality<=100){
+                                    wp.setCompressionQuality(quality/100.f);
+                                } else {
+                                    // invalid quality
+                                    throw new WcsException(
+                                            "Provided quality value for the jpeg compression in invalid",
+                                            WcsExceptionCode.JpegQualityInvalid,
+                                            quality_);
+                                }  
+                            } catch (Exception e) {
                                 // invalid quality
                                 throw new WcsException(
                                         "Provided quality value for the jpeg compression in invalid",

@@ -142,9 +142,9 @@ public class CapabilitiesTest extends WMSTestSupport {
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath.getMatchingNodes("//Layer/Name[starts-with(., cite)]", dom).getLength() > 0);
-        assertEquals(0, xpath.getMatchingNodes("//Layer/Name[not(starts-with(., cite))]", dom)
-                .getLength());
+        assertEquals(0, xpath.getMatchingNodes("//Layer/Name[starts-with(., 'cite')]", dom).getLength());
+        assertTrue (xpath.getMatchingNodes("//Layer/Name[not(starts-with(., 'cite'))]", dom)
+                .getLength() > 0 );
 
         NodeList nodes = xpath.getMatchingNodes("//Layer//OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);
@@ -162,9 +162,10 @@ public class CapabilitiesTest extends WMSTestSupport {
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath.getMatchingNodes("//Layer/Name[starts-with(., cite:Forests)]", dom)
-                .getLength() == 1);
-        assertEquals(1, xpath.getMatchingNodes("//Layer//Layer", dom).getLength());
+        assertEquals(0, xpath.getMatchingNodes("//Layer/Name[starts-with(., 'cite:Forests')]", dom)
+                .getLength());
+        assertEquals(1, xpath.getMatchingNodes("//Layer[Name = 'Forests']", dom)
+                .getLength());
 
         NodeList nodes = xpath.getMatchingNodes("//Layer//OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);

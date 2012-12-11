@@ -56,8 +56,7 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
         // check if name is root
         if (GeoServerUser.ROOT_USERNAME.equals(token.getPrincipal())==false) return null;
 
-        //check password
-        GeoServerSecurityManager secMgr = getSecurityManager();
+        //check password        
         if (token.getCredentials() !=null) {
             if (getSecurityManager().checkMasterPassword(token.getCredentials().toString())) {
                 Collection<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
@@ -72,7 +71,7 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
             
         // not BadCredentialException is thrown, maybe there is another user with 
         // the same name
-        log(new BadCredentialsException("Bad credentials for"+ token.getPrincipal()));
+        log(new BadCredentialsException("Bad credentials for: "+ token.getPrincipal()));
         return null;
     }
 

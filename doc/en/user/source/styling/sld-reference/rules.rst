@@ -3,14 +3,15 @@
 Rules
 =====
 
-Rules define the portrayal of features.
-A **rule** combines a :ref:`filter <sld_reference_filters>` with any number of symbolizers. 
-The symbolizers are used to render features for which the filter condition is true. 
+Styling **rules** define the portrayal of features.
+A rule combines a :ref:`filter <sld_reference_filters>` with any number of symbolizers. 
+Features for which the filter condition evaluates as true
+are rendered using the the symbolizers in the rule. 
 
 Syntax
 ------
 
-The ``<Rule>`` element can contain the following elements:
+The ``<Rule>`` element contains the following elements:
 
 .. list-table::
    :widths: 25 15 60

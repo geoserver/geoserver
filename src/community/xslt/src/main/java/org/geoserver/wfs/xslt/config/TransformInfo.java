@@ -13,17 +13,32 @@ import org.geoserver.catalog.FeatureTypeInfo;
  */
 public class TransformInfo {
 
-    transient String name;
+    String name;
 
     String sourceFormat;
 
     String outputFormat;
+    
+    String outputMimeType;
 
     String fileExtension;
 
-    String transform;
+    String xslt;
 
     FeatureTypeInfo featureType;
+    
+    public TransformInfo() {
+        
+    }
+    
+    public TransformInfo(TransformInfo other) {
+        this.name = other.name;
+        this.sourceFormat = other.sourceFormat;
+        this.outputFormat = other.outputFormat;
+        this.fileExtension = other.fileExtension;
+        this.xslt = other.xslt;
+        this.featureType = other.featureType;
+    }
 
     /**
      * The transform name (same as the file used to persist the transform configuration)
@@ -83,12 +98,12 @@ public class TransformInfo {
     /**
      * The XLST file name
      */
-    public String getTransform() {
-        return transform;
+    public String getXslt() {
+        return xslt;
     }
 
-    public void setTransform(String fileName) {
-        this.transform = fileName;
+    public void setXslt(String fileName) {
+        this.xslt = fileName;
     }
 
     /**
@@ -104,6 +119,26 @@ public class TransformInfo {
     public void setFeatureType(FeatureTypeInfo featureType) {
         this.featureType = featureType;
     }
+    
+    public String mimeType() {
+        if(outputMimeType != null) {
+            return outputMimeType;
+        } else {
+            return outputFormat;
+        }
+    }
+
+    /**
+     * Returns the output mime type
+     * @return
+     */
+    public String getOutputMimeType() {
+        return outputMimeType;
+    }
+
+    public void setOutputMimeType(String outputMime) {
+        this.outputMimeType = outputMime;
+    }
 
     @Override
     public int hashCode() {
@@ -113,8 +148,9 @@ public class TransformInfo {
         result = prime * result + ((fileExtension == null) ? 0 : fileExtension.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((outputFormat == null) ? 0 : outputFormat.hashCode());
+        result = prime * result + ((outputMimeType == null) ? 0 : outputMimeType.hashCode());
         result = prime * result + ((sourceFormat == null) ? 0 : sourceFormat.hashCode());
-        result = prime * result + ((transform == null) ? 0 : transform.hashCode());
+        result = prime * result + ((xslt == null) ? 0 : xslt.hashCode());
         return result;
     }
 
@@ -147,24 +183,30 @@ public class TransformInfo {
                 return false;
         } else if (!outputFormat.equals(other.outputFormat))
             return false;
+        if (outputMimeType == null) {
+            if (other.outputMimeType != null)
+                return false;
+        } else if (!outputMimeType.equals(other.outputMimeType))
+            return false;
         if (sourceFormat == null) {
             if (other.sourceFormat != null)
                 return false;
         } else if (!sourceFormat.equals(other.sourceFormat))
             return false;
-        if (transform == null) {
-            if (other.transform != null)
+        if (xslt == null) {
+            if (other.xslt != null)
                 return false;
-        } else if (!transform.equals(other.transform))
+        } else if (!xslt.equals(other.xslt))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "TransformInfo [name=" + name + ", sourceFormat="
-                + sourceFormat + ", outputFormat=" + outputFormat + ", fileExtension="
-                + fileExtension + ", transform=" + transform + ", featureType=" + featureType + "]";
+        return "TransformInfo [name=" + name + ", sourceFormat=" + sourceFormat + ", outputFormat="
+                + outputFormat + ", outputMimeType=" + outputMimeType + ", fileExtension="
+                + fileExtension + ", xslt=" + xslt + ", featureType=" + featureType + "]";
     }
 
+    
 }

@@ -251,7 +251,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     public void testRemove() throws Exception {
         initializeForXML();
         XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();
-        config.setName("default2");
+        config.setName("default3");
         config.setClassName(XMLUserGroupService.class.getCanonicalName());
         config.setPasswordEncoderName(getPlainTextPasswordEncoder().getName());
         config.setPasswordPolicyName("default");
@@ -259,8 +259,8 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         getSecurityManager().saveUserGroupService(config);
         
         activatePanel();
-        doRemove("tabbedPanel:panel:removeSelected", "default2");
-        assertNull(getSecurityManager().loadUserGroupService("default2"));
+        doRemove("tabbedPanel:panel:removeSelected", "default3");
+        assertNull(getSecurityManager().loadUserGroupService("default3"));
     }
 
 }

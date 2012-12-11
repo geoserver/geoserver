@@ -4,7 +4,7 @@
  */
 package org.geoserver.monitor.ows;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Proxy;
 
@@ -17,6 +17,7 @@ import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
@@ -65,13 +66,60 @@ public class ControlFlowCallbackProxyTest {
             }
         };
         
-        ControlFlowCallbackProxy proxy = new ControlFlowCallbackProxy(monitor, callback);
-        callback = (DispatcherCallback) Proxy.newProxyInstance(getClass().getClassLoader(), 
-                new Class[]{DispatcherCallback.class}, proxy);
-        
+
+        callback = createProxy(callback);
         callback.operationDispatched(new Request(), 
             new Operation("foo", new Service("bar", null, null, null), null, null));
         
         assertEquals(Status.RUNNING, data.getStatus());
+    }
+
+    public void testGetRunningAndBlockedRequests() throws Exception {
+        DispatcherCallback callback = new DispatcherCallback() {
+
+            public long getRunningRequests() {
+                return 10;
+            }
+
+            public long getBlockedRequests() {
+                return 2;
+            }
+
+            public Service serviceDispatched(Request request, Service service) throws ServiceException {
+                return null;
+            }
+            
+            public Response responseDispatched(Request request, Operation operation, Object result,
+                    Response response) {
+                return null;
+            }
+            
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                return null;
+            }
+            
+            public Operation operationDispatched(Request request, Operation operation) {
+                return null;
+            }
+            
+            public Request init(Request request) {
+                return null;
+            }
+            
+            public void finished(Request request) {
+            }
+        };
+        callback = createProxy(callback);
+        ControlFlowCallbackProxy proxy =
+            (ControlFlowCallbackProxy) Proxy.getInvocationHandler(callback);
+        assertNotNull(proxy);
+        assertEquals(10l, proxy.getRunningRequests());
+        assertEquals(2l, proxy.getBlockedRequests());
+    }
+
+    DispatcherCallback createProxy(DispatcherCallback callback) {
+        ControlFlowCallbackProxy proxy = new ControlFlowCallbackProxy(monitor, callback);
+        return (DispatcherCallback) Proxy.newProxyInstance(getClass().getClassLoader(), 
+                new Class[]{DispatcherCallback.class}, proxy);
     }
 }

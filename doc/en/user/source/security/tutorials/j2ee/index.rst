@@ -53,6 +53,49 @@ configured to recognize the container authentication.
 
 #. Save.
 
+Configure the role service
+--------------------------
+
+Since it is not possible to ask a J2EE container for the roles of a principal it is 
+necessary to have all J2EE roles enlisted in a role service. The only J2EE API GeoServer
+can use is::
+
+	class: javax.servlet.http.HttpServletRequest
+	method: boolean isUserInRole(String role)
+
+The idea is to query all roles from the role service and test each role with the "isUserInRole" method.
+
+This tutorial assumes a user named "admin" with password "password" and a J2EE role named "tomcat".
+
+#. Click the ``Users, Groups, and Roles`` link located under the ``Security`` section of
+   the navigation sidebar.
+   
+   .. figure:: images/j2ee5.jpg
+      :align: center
+
+#. Click on ``default`` to work with the role service named "default".
+
+   .. figure:: images/j2ee6.jpeg
+      :align: center
+
+#. Click on the ``Roles`` tab.
+
+   .. figure:: images/j2ee7.jpeg
+      :align: center
+
+#. Click on the ``Add new role`` link.
+
+   .. figure:: images/j2ee8.jpeg
+      :align: center
+
+   * Set the ``Name`` to "tomcat"
+
+   .. figure:: images/j2ee9.jpeg
+      :align: center
+
+#. Save
+
+
 Configure Tomcat for authentication
 -----------------------------------
 
@@ -86,6 +129,12 @@ login.
     </login-config>
 
 #. Save ``web.xml`` and restart Tomcat.   
+
+.. note::
+
+   It is necessary to add all the role names specified in the ``web.xml`` to the 
+   configured role service. This is duplicate work but there is currently no other solution.
+   
 
 Test J2EE login
 ---------------

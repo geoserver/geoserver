@@ -6,7 +6,6 @@ package org.geoserver.wfs;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -17,13 +16,6 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.AllSomeType;
-import net.opengis.wfs.PropertyType;
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.UpdateElementType;
-
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.request.Property;
@@ -40,6 +32,7 @@ import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
@@ -237,7 +230,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             
             listener.dataStoreChange( event );
 
-            Iterator preprocess = features.iterator();
+            FeatureIterator preprocess = features.features();
 
             try {
                 while (preprocess.hasNext()) {
@@ -247,7 +240,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             } catch (NoSuchElementException e) {
                 throw new WFSException(request, "Could not aquire FeatureIDs", e);
             } finally {
-                features.close(preprocess);
+                preprocess.close();
             }
 
             try {

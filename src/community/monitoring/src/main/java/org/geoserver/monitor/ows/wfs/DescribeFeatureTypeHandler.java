@@ -8,17 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.monitor.MonitorConfig;
 import org.geotools.xml.EMFUtils;
 
 public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 
-    public DescribeFeatureTypeHandler() {
-        super("net.opengis.wfs.DescribeFeatureTypeType");
+    public DescribeFeatureTypeHandler(MonitorConfig config, Catalog catalog) {
+        super("net.opengis.wfs.DescribeFeatureTypeType", config, catalog);
     }
 
     @Override
     public List<String> getLayers(Object request) {
-        List typeNames = (List) EMFUtils.get((EObject)request, "typeName");
+        @SuppressWarnings("unchecked")
+        List<Object> typeNames = (List<Object>) EMFUtils.get((EObject)request, "typeName");
         if (typeNames == null) {
             return null;
         }
@@ -28,6 +31,12 @@ public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
             layers.add(toString(o));
         }
         return layers;
+    }
+
+    @Override
+    protected List<Object> getElements(Object request) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

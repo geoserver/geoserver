@@ -4,13 +4,9 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
-import static org.geoserver.gwc.GWC.tileLayerName;
+import static junit.framework.Assert.*;
+import static org.geoserver.data.test.MockData.*;
+import static org.geoserver.gwc.GWC.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -20,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -48,8 +45,17 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
     
     @Before
-    public void resetLayers() throws IOException {
+    public void resetLayers() throws Exception {
+        final String layerName = getLayerId(BASIC_POLYGONS);
+        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
+        if(layerInfo != null) {
+            getCatalog().remove(layerInfo);
+            getGeoServer().reload();
+            
+        }
+        
         revertLayer(BASIC_POLYGONS);
+        revertLayer(MPOINTS);
     }
 
     @Test 
@@ -338,4 +344,28 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             assertTrue(true);
         }
     }
+    
+    @Test
+    public void testRemoveLayerAfterReload() throws Exception {
+        Catalog cat = getCatalog();
+        TileLayerDispatcher tld = GeoWebCacheExtensions.bean(TileLayerDispatcher.class);
+        
+        LayerInfo li = cat.getLayerByName(super.getLayerId(MockData.MPOINTS));
+        String layerName = tileLayerName(li);
+
+        assertNotNull(tld.getTileLayer(layerName));
+
+        // force reload
+        getGeoServer().reload();
+        
+        // now remove the layer and check it has been removed from GWC as well
+        cat.remove(li);
+        try {
+            tld.getTileLayer(layerName);
+            fail("Layer should not exist");
+        } catch (GeoWebCacheException gwce) {
+            // fine
+        }
+    }
+    
 }

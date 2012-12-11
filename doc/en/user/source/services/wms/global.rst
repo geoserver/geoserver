@@ -25,3 +25,9 @@ USE_STREAMING_RENDERER
 
 Can be ``true`` or ``false`` (defaults to: ``false``).
 When ``true`` the *StreamingRenderer* is used for all data. The *StreamingRenderer* is the one used by default for all data sources by shapefiles, it is usually faster at rendering styles with multiple ``FeatureTypeStyle`` elements but slower at rendering high amount of data.
+
+ENABLE_JSONP
+-------------
+
+Can be ``true`` or ``false`` (defaults to: ``false``).
+When ``true`` the JSONP (text/javascript) output format is enabled.

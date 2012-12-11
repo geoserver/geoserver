@@ -94,7 +94,7 @@ Test a digest authentication login
 
      curl -v -u admin:geoserver -G "http://localhost:8080/geoserve/wfs?request=getcapabilities"
    
-   The result should be a 401 response signalling that authentication is required. The output 
+   The result should be a 401 response signaling that authentication is required. The output 
    should look something like the following::
 
     * About to connect() to localhost port 8080 (#0)
@@ -122,7 +122,7 @@ Test a digest authentication login
     ...
 
 #. Execute the same command but specify the ``--digest`` option to tell curl to use
-   digest authentication rather than digest authentication::
+   digest authentication rather than basic authentication::
    
      curl --digest -v -u admin:geoserver -G "http://localhost:8080/geoserve/wfs?request=getcapabilities"
     

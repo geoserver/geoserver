@@ -240,7 +240,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     }
                 }
             } finally {
-                coll.close(iter);
+                iter.close();
             }
         }
     }
@@ -300,7 +300,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                 }
             }
         } finally {
-            coll.close(iter);
+            iter.close();
         }
 
     }
@@ -556,7 +556,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     blockNames.put(f.getID(), (blockCounter++) + "");
             }
         } finally {
-            coll.close(iter);
+        	iter.close();
         }
     }
 
@@ -569,8 +569,9 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     private boolean isBlockGeometry(Geometry geom) {
         if (geom != null) {
             // collections are exported as blocks
-            if (GeometryCollection.class.isAssignableFrom(geom.getClass()))
-                return true;
+            // quick fix: generates a false reference to a block "0"
+            /* if (GeometryCollection.class.isAssignableFrom(geom.getClass()))
+                return true; */
             // polygons with holes are exported as blocks
             if (Polygon.class.isAssignableFrom(geom.getClass())) {
                 return ((Polygon) geom).getNumInteriorRing() > 0;

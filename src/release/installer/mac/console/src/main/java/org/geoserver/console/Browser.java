@@ -1,26 +1,28 @@
-    /*
-     * This code is free software; you can redistribute it and/or
-     * modify it under the terms of the GNU Lesser General Public 
-     * License as published by the Free Software Foundation; either 
-     * version 2.1 of the License, or (at your option) any later version.
-     *
-     * This code is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-     * GNU Lesser General Public License for more details.
-     *
-     * You should have received a copy of the GNU Lesser General Public 
-     * License along with this program; if not, write to the Free 
-     * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
-     * MA  02111-1307, USA.
-     */
-
+/* Copyright (c) 2011-2012 TOPP - www.openplans.org. All rights reserved.
+ *           (c) 1999-2001 Eric Albert (ejalbert@cs.stanford.edu) 
+ *
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ * 
+ * This code is Copyright 1999-2001 by Eric Albert (ejalbert@cs.stanford.edu) 
+ * and may be redistributed or modified in any form without restrictions as 
+ * long as the portion of this comment from this paragraph through the end of 
+ * the comment is not removed.  The author requests that he be notified of 
+ * any application, applet, or other binary that makes use of this code, but 
+ * that's more out of curiosity than anything and is not required.  This 
+ * software includes no warranty.  The author is not repsonsible for any loss 
+ * of data or functionality or any adverse or unexpected effects of using 
+ * this software.
+ * <p>
+ * Credits:
+ * <br>Steven Spencer, JavaWorld magazine 
+ * (<a href="http://www.javaworld.com/javaworld/javatips/jw-javatip66.html">
+ * Java Tip 66</a>)
+ * <br>Thanks also to Ron B. Yeh, Eric Shapiro, Ben Engber, Paul Teitlebaum, 
+ * Andrea Cantatore,
+ * Larry Barowski, Trevor Bedzek, Frank Miedrich, and Ron Rabakukk
+ */
 package org.geoserver.console;
-
-
-    
-
-
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,8 +32,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-
 
     /**
      * Browser is a class that provides one static method, openURL, which 

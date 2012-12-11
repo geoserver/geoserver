@@ -4,11 +4,13 @@
  */
 package org.geoserver.csw.feature;
 
+import java.io.Closeable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
@@ -17,26 +19,26 @@ import org.opengis.feature.type.FeatureType;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class CompositeIterator implements Iterator<Feature> {
+public class CompositeIterator implements Iterator<Feature>, Closeable {
 
-    FeatureCollection currentCollection;
+    FeatureCollection<FeatureType, Feature> currentCollection;
 
-    Iterator<Feature> current;
+    FeatureIterator<Feature> current;
 
-    private List<FeatureCollection> collections;
+    private List<FeatureCollection<FeatureType, Feature>> collections;
 
-    public CompositeIterator(List<FeatureCollection> collections) {
+    public CompositeIterator(List<FeatureCollection<FeatureType, Feature>> collections) {
         this.collections = collections;
         this.currentCollection = collections.remove(0);
-        this.current = currentCollection.iterator();
+        this.current = currentCollection.features();
     }
 
     @Override
     public boolean hasNext() {
         while (!current.hasNext() && !collections.isEmpty()) {
-            currentCollection.close(current);
+            current.close();
             this.currentCollection = collections.remove(0);
-            this.current = currentCollection.iterator();
+            this.current = currentCollection.features();
         }
 
         return false;
@@ -55,11 +57,9 @@ public class CompositeIterator implements Iterator<Feature> {
     public void remove() {
         throw new UnsupportedOperationException();
     }
-    
+
     public void close() {
-        if(currentCollection != null) {
-            currentCollection.close(current);
-        }
+        current.close();
         collections.clear();
     }
 

@@ -202,8 +202,9 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         // 1. Relative to resource
         // 2. Relative to store of the resource
         // 3. Relative to workspace of resource
-        // 4. Relative to templates directory
-        // 5. Relative to the class
+        // 4. Relative to workspaces directory
+        // 5. Relative to templates directory
+        // 6. Relative to the class
         
         if ( resource != null ) {
             //first check relative to set resource

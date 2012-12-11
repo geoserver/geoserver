@@ -20,6 +20,10 @@ Point Symbology
       * url, symbol
       * The image or well-known shape to render for points
       * yes
+    - * mark-mime
+      * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
+      * The type of the image referenced by a url()
+      * No, defaults to 'image/jpeg'
     - * mark-geometry 
       * expression
       * An expression to use for the geometry when rendering features
@@ -52,11 +56,10 @@ Line Symbology
       * expression
       * An expression to use for the geometry when rendering features. 
       * yes
-    - * stroke-mime      
-      * string           
-      * The mime-type of the external graphic provided.  This is **required**
-        when using external graphics
-      * yes
+    - * stroke-mime
+      * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
+      * The type of the image referenced by a url()
+      * No, defaults to 'image/jpeg'
     - * stroke-opacity   
       * percentage       
       * A value in the range of 0 (fully transparent) to 1.0 (fully opaque)  
@@ -118,11 +121,10 @@ Polygon Symbology
       * expression 
       * An expression to use for the geometry when rendering features. 
       * yes
-    - * fill-mime    
-      * string            
-      * The mime-type of the external graphic provided.  This is *required*
-        when using external graphics 
-      * yes
+    - * fill-mime
+      * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
+      * The type of the image referenced by a url()
+      * No, defaults to 'image/jpeg'
     - * fill-opacity 
       * percentage        
       * A value in the range of 0 (fully transparent) to 1.0 (fully opaque) 
@@ -176,6 +178,10 @@ Text Symbology (Labeling)
       * mark, symbol
       * A graphic to display behind the label, such as a highway shield.
       * yes
+    - * shield-mime
+      * string (`MIME Type <http://en.wikipedia.org/wiki/MIME>`_)
+      * The type of the image referenced by a url()
+      * No, defaults to 'image/jpeg'
     - * font-family
       * string
       * The name of the font or font family to use for labels

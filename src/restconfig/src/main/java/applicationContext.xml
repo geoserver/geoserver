@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
 <bean id="restConfigMapping" class="org.geoserver.rest.RESTMapping">
 <property name="routes">
-  <map>
+  <map> 
         <entry>
           <key><value>/workspaces/{workspace}.{type}</value></key>
           <value>workspaceFinder</value>
@@ -353,11 +358,11 @@
         </entry>
 
         <entry>
-            <key><value>/services/wms/{workspace}/settings</value></key>
+            <key><value>/services/wms/workspaces/{workspace}/settings</value></key>
             <value>wmsSettingsFinder</value>
         </entry>
         <entry>
-            <key><value>/services/wms/{workspace}/settings.{format}</value></key>
+            <key><value>/services/wms/workspaces/{workspace}/settings.{format}</value></key>
             <value>wmsSettingsFinder</value>
         </entry>
 
@@ -371,11 +376,11 @@
         </entry>
 
         <entry>
-            <key><value>/services/wfs/{workspace}/settings</value></key>
+            <key><value>/services/wfs/workspaces/{workspace}/settings</value></key>
             <value>wfsSettingsFinder</value>
         </entry>
         <entry>
-            <key><value>/services/wfs/{workspace}/settings.{format}</value></key>
+            <key><value>/services/wfs/workspaces/{workspace}/settings.{format}</value></key>
             <value>wfsSettingsFinder</value>
         </entry>
 
@@ -389,14 +394,86 @@
         </entry>
 
         <entry>
-            <key><value>/services/wcs/{workspace}/settings</value></key>
+            <key><value>/services/wcs/workspaces/{workspace}/settings</value></key>
             <value>wcsSettingsFinder</value>
         </entry>
         <entry>
-            <key><value>/services/wcs/{workspace}/settings.{format}</value></key>
+            <key><value>/services/wcs/workspaces/{workspace}/settings.{format}</value></key>
             <value>wcsSettingsFinder</value>
-        </entry>
+        </entry>    
 
+        <entry>
+            <key><value>/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
+            <key><value>/templates.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+          <entry>
+            <key><value>/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
+            <key><value>/workspaces/{workspace}/templates.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/templates.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                            
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>                    
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
   </map>
 </property>
 </bean>
@@ -417,6 +494,7 @@
   <bean id="styleFinder2" class="org.geoserver.catalog.rest.StyleFinder" parent="abstractCatalogFinder"/>
   <bean id="layerFinder2" class="org.geoserver.catalog.rest.LayerFinder" parent="abstractCatalogFinder"/>
   <bean id="layerGroupFinder2" class="org.geoserver.catalog.rest.LayerGroupFinder" parent="abstractCatalogFinder"/>
+  <bean id="freemarkerTemplateFinder" class="org.geoserver.catalog.rest.FreemarkerTemplateFinder" parent="abstractCatalogFinder"/>
   <bean id="catalogReloader" class="org.geoserver.catalog.rest.CatalogReloader">
      <constructor-arg index="0" ref="geoServer"/>
      <constructor-arg index="1" value="false"/>

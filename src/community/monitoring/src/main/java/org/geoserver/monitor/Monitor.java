@@ -7,6 +7,7 @@ package org.geoserver.monitor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.monitor.MonitorConfig.Mode;
 import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.context.ApplicationEvent;
@@ -43,6 +44,7 @@ public class Monitor implements ApplicationListener<ApplicationEvent>{
     
     MonitorConfig config;
     MonitorDAO dao;
+    GeoServer server; // Info about the monitored server 
 
     /**
      * The set of listeners for the monitor
@@ -130,6 +132,14 @@ public class Monitor implements ApplicationListener<ApplicationEvent>{
         return dao;
     }
     
+    public GeoServer getServer() {
+        return server;
+    }
+
+    public void setServer(GeoServer server) {
+        this.server = server;
+    }
+
     public void query(Query q, RequestDataVisitor visitor) {
         dao.getRequests(q, visitor);
     }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" xml:lang="en" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:referenceSystems:3.2.1">referenceSystems.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 13.2.
+The reference systems schema components have two logical parts, which define elements and types for XML encoding of the definitions of:
+-	Identified Object, inherited by the ten types of GML objects used for coordinate reference systems and coordinate operations
+-	High-level part of the definitions of coordinate reference systems
+This schema encodes the Identified Object and Reference System packages of the UML Model for ISO 19111.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="dictionary.xsd"/>
+	<import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd"/>
+	<complexType name="IdentifiedObjectType" abstract="true">
+		<annotation>
+			<documentation>gml:IdentifiedObjectType provides identification properties of a CRS-related object. In gml:DefinitionType, the gml:identifier element shall be the primary name by which this object is identified, encoding the "name" attribute in the UML model.
+Zero or more of the gml:name elements can be an unordered set of "identifiers", encoding the "identifier" attribute in the UML model. Each of these gml:name elements can reference elsewhere the object's defining information or be an identifier by which this object can be referenced.
+Zero or more other gml:name elements can be an unordered set of "alias" alternative names by which this CRS related object is identified, encoding the "alias" attributes in the UML model. An object may have several aliases, typically used in different contexts. The context for an alias is indicated by the value of its (optional) codeSpace attribute.
+Any needed version information shall be included in the codeSpace attribute of a gml:identifier and gml:name elements. In this use, the gml:remarks element in the gml:DefinitionType shall contain comments on or information about this object, including data source information.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:DefinitionType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractCRS" type="gml:AbstractCRSType" abstract="true" substitutionGroup="gml:Definition">
+		<annotation>
+			<documentation>gml:AbstractCRS specifies a coordinate reference system which is usually single but may be compound. This abstract complex type shall not be used, extended, or restricted, in a GML Application Schema, to define a concrete subtype with a meaning equivalent to a concrete subtype specified in this document.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractCRSType" abstract="true">
+		<complexContent>
+			<extension base="gml:IdentifiedObjectType">
+				<sequence>
+					<element ref="gml:domainOfValidity" minOccurs="0" maxOccurs="unbounded"/>
+					<element ref="gml:scope" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="domainOfValidity">
+		<annotation>
+			<documentation>The gml:domainOfValidity property implements an association role to an EX_Extent object as encoded in ISO/TS 19139, either referencing or containing the definition of that extent.</documentation>
+		</annotation>
+		<complexType>
+			<sequence minOccurs="0">
+				<element ref="gmd:EX_Extent"/>
+			</sequence>
+			<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		</complexType>
+	</element>
+	<element name="scope" type="string">
+		<annotation>
+			<documentation>The gml:scope property provides a description of the usage, or limitations of usage, for which this CRS-related object is valid. If unknown, enter "not known".</documentation>
+		</annotation>
+	</element>
+	<complexType name="CRSPropertyType">
+		<annotation>
+			<documentation>gml:CRSPropertyType is a property type for association roles to a CRS abstract coordinate reference system, either referencing or containing the definition of that CRS.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractCRS"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+</schema>

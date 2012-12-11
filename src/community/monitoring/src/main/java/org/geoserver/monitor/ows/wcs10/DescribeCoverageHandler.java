@@ -9,18 +9,20 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.monitor.ows.RequestObjectHandler;
+import org.geoserver.monitor.MonitorConfig;
 import org.geotools.xml.EMFUtils;
 
 public class DescribeCoverageHandler extends RequestObjectHandler {
 
-    public DescribeCoverageHandler() {
-        super("net.opengis.wcs10.DescribeCoverageType");
+    public DescribeCoverageHandler(MonitorConfig config) {
+        super("net.opengis.wcs10.DescribeCoverageType", config);
     }
 
     @Override
     public List<String> getLayers(Object request) {
-        List l = (List)EMFUtils.get((EObject)request, "coverage");
-        return l != null ? new ArrayList(l) : null; 
+        @SuppressWarnings("unchecked")
+        List<String> l = (List<String>)EMFUtils.get((EObject)request, "coverage");
+        return l != null ? new ArrayList<String>(l) : null; 
     }
 
 }

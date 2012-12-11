@@ -9,10 +9,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -20,6 +30,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.wfs.WFSException;
 import org.geotools.util.logging.Logging;
 
 import com.thoughtworks.xstream.XStream;
@@ -39,6 +50,9 @@ public class TransformRepository {
 
     GeoServerDataDirectory dataDir;
 
+    /**
+     * Caches the {@link TransformInfo} objects so that we don't have to load them from disk all the time
+     */
     FileItemCache<TransformInfo> infoCache = new FileItemCache<TransformInfo>(100) {
 
         @Override
@@ -59,6 +73,56 @@ public class TransformRepository {
             }
         }
     };
+    
+    /**
+     * Caches the XSLT Templates to avoid parsing the XSLT over and over (Templates is thread safe,
+     * {@link Transformer} is not.
+     */
+    FileItemCache<Templates> transformCache = new FileItemCache<Templates>(100) {
+        
+        @Override
+        protected Templates loadItem(File file) throws IOException {
+            try {
+                Source xslSource = new StreamSource(file);
+                
+                TransformerFactory tf = TransformerFactory.newInstance( );
+                final List<TransformerException> errors = new ArrayList<TransformerException>();
+                tf.setErrorListener(new ErrorListener() {
+                    
+                    @Override
+                    public void warning(TransformerException e) throws TransformerException {
+                        LOGGER.log(Level.WARNING, "Found warning while loading XSLT template", e);
+                        
+                    }
+                    
+                    @Override
+                    public void fatalError(TransformerException e) throws TransformerException {
+                        errors.add(e);
+                    }
+                    
+                    @Override
+                    public void error(TransformerException e) throws TransformerException {
+                        errors.add(e);
+                        
+                    }
+                });
+                Templates template = tf.newTemplates(xslSource);
+                
+                if(errors.size() > 0) {
+                    StringBuilder sb = new StringBuilder("Errors found in the template");
+                    for (TransformerException e : errors) {
+                        sb.append("\n").append(e.getMessageAndLocation());
+                    }
+                    
+                    throw new IOException(sb.toString());
+                }
+                
+                return template;
+            } catch(TransformerException e) {
+                throw new IOException("Error found in the template: " + e.getMessageAndLocation());
+            }
+        }
+    };
 
     public TransformRepository(GeoServerDataDirectory dataDir, Catalog catalog) {
         this.dataDir = dataDir;
@@ -72,6 +136,7 @@ public class TransformRepository {
      */
     private void initXStream(Catalog catalog) {
         xs = new XStream();
+        xs.omitField(TransformInfo.class, "name");
         xs.alias("transform", TransformInfo.class);
         xs.registerLocalConverter(TransformInfo.class, "featureType", new ReferenceConverter(
                 FeatureTypeInfo.class, catalog));
@@ -161,6 +226,94 @@ public class TransformRepository {
         File infoFile = getTransformInfoFile(name);
         return infoCache.getItem(infoFile);
     }
+    
+    /**
+     * Deletes a transformation definition and its associated XSLT file (assuming the
+     * latter is not shared with other transformations)
+     * 
+     * @param info
+     * @return
+     * @throws IOException
+     */
+    public boolean removeTransformInfo(TransformInfo info) throws IOException {
+         File infoFile = getTransformInfoFile(info.getName());
+         boolean result = infoFile.delete();
+         
+         File xsltFile = getTransformFile(info);
+         infoCache.removeItem(infoFile);
+         
+         boolean shared = false;
+         if(xsltFile.exists()) {
+             for(TransformInfo ti : getAllTransforms()) {
+                 File curr = getTransformFile(ti);
+                 if(curr.equals(xsltFile)) {
+                     shared = true;
+                     break;
+                 }
+             }
+         }
+         if(!shared) {
+             result = result && xsltFile.delete();
+             transformCache.removeItem(xsltFile);
+         }
+         
+         return result;
+    }
+
+    
+    /**
+     * Returns the XSLT transformer for a specific {@link TransformInfo}
+     * 
+     * @param name
+     * @return
+     */
+    public Transformer getTransformer(TransformInfo info) throws IOException {
+        File txFile = getTransformFile(info);
+
+        Templates templates = transformCache.getItem(txFile);
+        if(templates != null) {
+            try {
+                return templates.newTransformer();
+            } catch (TransformerConfigurationException e) {
+                throw new WFSException("Failed to load XSLT transformation " + info.getXslt(), e);
+            }
+        } else {
+            throw new IOException("No XLST found at " + txFile.getAbsolutePath());
+        }
+    }
+    
+    /**
+     * Returns the stylesheet of a transformation. It is the duty of the caller to close the input stream after reading it.
+     * @return
+     * @throws IOException
+     */
+    public InputStream getTransformSheet(TransformInfo info) throws IOException {
+        File txFile = getTransformFile(info);
+        
+        return new FileInputStream(txFile);
+    }
+
+   
+    
+    /**
+     * Writes the stylesheet of a transformation. This method will close the provided input stream.
+     * 
+     * @param info
+     * @param sheet
+     * @throws IOException
+     */
+    public void putTransformSheet(TransformInfo info, InputStream sheet) throws IOException {
+        File txFile = getTransformFile(info);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(txFile);
+            IOUtils.copy(sheet, fos);
+        } finally {
+            IOUtils.closeQuietly(sheet);
+            IOUtils.closeQuietly(fos);
+        }
+        
+    }
 
     /**
      * Saves/updates the specified transformation
@@ -190,5 +343,13 @@ public class TransformRepository {
         File infoFile = new File(root, name + ".xml");
         return infoFile;
     }
+    
+    private File getTransformFile(TransformInfo info) throws IOException {
+        String txName = info.getXslt();
+        File root = dataDir.findOrCreateDir("wfs", "transform");
+        File txFile = new File(root, txName);
+        return txFile;
+    }
 
+    
 }

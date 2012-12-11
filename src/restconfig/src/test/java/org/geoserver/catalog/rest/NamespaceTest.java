@@ -5,7 +5,9 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,6 +27,11 @@ import org.w3c.dom.NodeList;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class NamespaceTest extends CatalogRESTTestSupport {
+    
+    @Before
+    public void cleanNamespaces() {
+        removeWorkspace("foo");
+    }
 
     @Test
     public void testGetAllAsXML() throws Exception {
@@ -130,7 +138,6 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     
     @Test
     public void testPostAsJSON() throws Exception {
-        removeWorkspace("foo");
         String json = "{'namespace':{ 'prefix':'foo', 'uri':'http://foo.com' }}";
         
         MockHttpServletResponse response = postAsServletResponse( "/rest/namespaces", json, "text/json" );

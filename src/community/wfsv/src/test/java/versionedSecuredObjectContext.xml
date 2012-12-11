@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
-  <!--  security wrapper factories (add the ones from main as well) -->
-  <bean id="defaultDataSecurityFactory" class="org.geoserver.security.decorators.DefaultSecureDataFactory" />
-  <bean id="defaultCatalogSecurityFactory" class="org.geoserver.security.decorators.DefaultSecureCatalogFactory" />
-  <bean id="versionedSecureDataFactory" class="org.geoserver.wfsv.security.VersionedSecureDataFactory"/>
-</beans>

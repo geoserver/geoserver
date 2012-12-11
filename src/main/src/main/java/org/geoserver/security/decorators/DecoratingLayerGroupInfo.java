@@ -73,6 +73,22 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getMetadata();
     }
     
+    public String getTitle() {
+        return delegate.getTitle();
+    }
+    
+    public void setTitle(String title) {
+        delegate.setTitle(title);
+    }
+    
+    public String getAbstract() {
+        return delegate.getAbstract();
+    }
+    
+    public void setAbstract(String abstractTxt) {
+        delegate.setAbstract(abstractTxt);
+    }    
+    
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }

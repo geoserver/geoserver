@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.inspire.wms;
 
 import static org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider.NAMESPACE;
@@ -48,5 +52,43 @@ public class WMSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         assertNotNull(respLang);
         final Element respLangVal = getFirstElementByTagName(defLang, "inspire_common:Language");
         assertEquals("fre", respLangVal.getFirstChild().getNodeValue());
+    }
+
+    @Test
+    public void testChangeMediaType() throws Exception {
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        wms.getSRS().add("EPSG:4326");
+        wms.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
+        wms.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        getGeoServer().save(wms);
+
+        Document dom = getAsDOM("wms?request=getcapabilities");
+        assertEquals(NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
+        assertMetadataUrlAndMediaType(dom, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
+
+        wms.getMetadata().put(InspireMetadata.SERVICE_METADATA_TYPE.key, "application/xml");
+        getGeoServer().save(wms);
+
+        dom = getAsDOM("wms?request=getcapabilities");
+        assertEquals(NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_vs"));
+        assertMetadataUrlAndMediaType(dom, "http://foo.com?bar=baz", "application/xml");
+    }
+
+    void assertMetadataUrlAndMediaType(Document dom, String metadataUrl, String metadataMediaType) {
+        final Element extendedCaps = getFirstElementByTagName(dom,
+                "inspire_vs:ExtendedCapabilities");
+        assertNotNull(extendedCaps);
+
+        final Element mdUrl = getFirstElementByTagName(extendedCaps, "inspire_common:MetadataUrl");
+        assertNotNull(mdUrl);
+
+        final Element url = getFirstElementByTagName(mdUrl, "inspire_common:URL");
+        assertNotNull(url);
+        assertEquals(metadataUrl, url.getFirstChild().getNodeValue());
+
+        final Element mediaType = getFirstElementByTagName(mdUrl, "inspire_common:MediaType");
+        assertNotNull(mediaType);
+        assertEquals(metadataMediaType, mediaType.getFirstChild().getNodeValue());
+
     }
 }

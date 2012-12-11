@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.test;
 
 import java.io.BufferedReader;
@@ -1160,10 +1164,18 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * Helper method to create the kvp params from the query string.
      */
     private void kvp(MockHttpServletRequest request, String path) {
-         Map<String, String> params = KvpUtils.parseQueryString(path);
+         Map<String, Object> params = KvpUtils.parseQueryString(path);
          for (String key : params.keySet()) {
-            String value = params.get(key);
-            request.setupAddParameter(key, value);
+            Object value = params.get(key);
+            if(value instanceof String) {
+                request.setupAddParameter(key, (String) value);
+            } else {
+                String[] values = (String[]) value;
+                for (String v: values) {
+                    request.setupAddParameter(key, v);
+                }
+            }
+            
         }
          
     }

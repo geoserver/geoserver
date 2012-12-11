@@ -32,9 +32,9 @@ The parameters are:
 .. _ant_patterns:
 
 Ant patterns
-````````````
+~~~~~~~~~~~~
 
-Ant patterns are commonly used for pattern matching directory and file paths. The :ref:`examples <examples>` section contains some basic instructions. The apache ant `user manual <http://ant.apache.org/manual/dirtasks.html>`_ contains more sophisticated use cases.
+Ant patterns are commonly used for pattern matching directory and file paths. The :ref:`examples <examples>` section contains some basic instructions. The Apache ant `user manual <http://ant.apache.org/manual/dirtasks.html>`_ contains more sophisticated use cases.
 
 .. _examples:
 
@@ -44,7 +44,7 @@ Examples
 Most of the examples in this section are specific to the :ref:`rest configuration extension <rest_extension>` but any RESTful GeoServer service may be configured in the same manner.
 
 Allowing only authenticated access
-````````````````````````````````````
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The most secure configuration is one that forces any request to be authenticated. The following example locks down access to all requests::
 
@@ -61,7 +61,7 @@ The following configuration is similar to the previous one except it grants acce
 ``ROLE_TRUSTED`` is a role defined in ``users.properties``.
 
 Providing anonymous read-only access
-````````````````````````````````````
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following configuration allows anonymous access when the ``GET`` (read) method is used but forces authentication for a ``POST``, ``PUT``, or ``DELETE`` (write)::
 
@@ -69,7 +69,7 @@ The following configuration allows anonymous access when the ``GET`` (read) meth
    /**;POST,PUT,DELETE=TRUSTED_ROLE
 
 Securing a specific resource
-````````````````````````````
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following configuration forces authentication for access to a particular resource (in this case a feature type)::
 

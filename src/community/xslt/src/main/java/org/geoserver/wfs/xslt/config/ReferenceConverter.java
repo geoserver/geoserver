@@ -5,8 +5,8 @@
 package org.geoserver.wfs.xslt.config;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 
@@ -48,7 +48,6 @@ class ReferenceConverter implements Converter {
 
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         String ref = null;
-        String pre = null;
         if (reader.hasMoreChildren()) {
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
@@ -59,14 +58,11 @@ class ReferenceConverter implements Converter {
             ref = reader.getValue();
         }
 
-        Object proxy = ResolvingProxy.create(ref, pre, clazz);
-        Object resolved = proxy;
-        if (catalog != null) {
-            resolved = ResolvingProxy.resolve(catalog, proxy);
+        FeatureTypeInfo result = catalog.getFeatureType(ref);
+        if(result == null) {
+            result = catalog.getFeatureTypeByName(ref);
         }
-
-        return resolved;
-
-        // return CatalogImpl.unwrap(resolved);
+        
+        return result;
     }
 }

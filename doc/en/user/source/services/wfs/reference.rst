@@ -47,6 +47,24 @@ WFS can perform the following operations:
    * - ``GetGMLObject`` 
      - *(Version 1.1.0 only)* - Retrieves element instances by traversing XLinks that refer to their XML IDs.
 
+The supported values for exceptions are:
+
+.. list-table::
+   :widths: 15 35 50
+   
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - XML
+     - ``EXCEPTIONS=text/xml``
+     - Xml output. (The default format)
+   * - JSON
+     - ``EXCEPTIONS=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``EXCEPTIONS=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
+
 A WFS server that supports **transactions** is sometimes known as a WFS-T.  **GeoServer fully supports transactions.**
 
 .. _wfs_getcap:
@@ -102,9 +120,6 @@ DescribeFeatureType
 
 The purpose of the **DescribeFeatureType** is to request information about an individual featuretype before requesting the actual data.  Specifically, **DescribeFeatureType** will request a list of features and attributes for the given featuretype, or list the featuretypes available.
 
-The **DescribeLayer** operation is used primarily by clients that understand SLD-based WMS.  
-In order to make an SLD one needs to know the structure of the data.  
-
 The standard parameters for the DescribeFeatureType operation are:
 
 .. list-table::
@@ -130,25 +145,6 @@ The standard parameters for the DescribeFeatureType operation are:
      - Format in which to report exceptions.
        The default value is ``application/vnd.ogc.se_xml``.
 
-The supported values for exceptions are:
-
-.. list-table::
-   :widths: 15 35 50
-   
-   * - **Format**
-     - **Syntax**
-     - **Notes**
-   * - XML
-     - ``EXCEPTIONS=application/vnd.ogc.se_xml``
-     - Xml output. (The default format)
-   * - JSON
-     - ``EXCEPTIONS=application/json``
-     - Simple Json representation.
-   * - JSONP
-     - ``EXCEPTIONS=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
-
-
 Let's say we want a list of featuretypes.  The appropriate GET request would be:
 
 .. code-block:: xml 
@@ -171,6 +167,57 @@ If we wanted information about a specific featuretype, the GET request would be:
       typeName=namespace:featuretype
 
 The only difference between the two requests is the addition of ``typeName=namespace:featuretype``, where ``featuretype`` is the name of the featuretype and ``namespace`` is the name of the namespace that featuretype is contained in.
+
+.. code-block:: xml 
+
+   http://localhost:8080/geoserver/wfs?
+      REQUEST=DescribeFeatureType&SERVICE=WFS&VERSION=1.1.0
+      &EXCEPTIONS=application/json
+      &outputFormat=text/javascript
+      &typeName=sf:roads
+
+Here is the result (if the JsonP format is enabled):
+
+.. code-block:: xml 
+
+   parseResponse(
+   {
+      elementFormDefault: "qualified",
+      targetNamespace: "http://www.openplans.org/spearfish",
+      targetPrefix: "sf",
+      featureTypes: [
+         {
+         typeName: "roads",
+         properties: [
+            {
+            name: "the_geom",
+            maxOccurs: 1,
+            minOccurs: 0,
+            nillable: true,
+            type: "gml:MultiLineString",
+            localType: "MultiLineString"
+            },
+            {
+            name: "cat",
+            maxOccurs: 1,
+            minOccurs: 0,
+            nillable: true,
+            type: "xsd:int",
+            localType: "int"
+            },
+            {
+            name: "label",
+            maxOccurs: 1,
+            minOccurs: 0,
+            nillable: true,
+            type: "xsd:string",
+            localType: "string"
+            }
+         ]
+         }
+      ]
+   }
+   )
 
 .. _wfs_getfeature:
 

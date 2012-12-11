@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://www.opengis.net/ows/2.0"
+        xmlns:ows="http://www.opengis.net/ows/2.0"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        version="2.0.2"
+        xml:lang="en">
+  <annotation>
+    <appinfo>owsAdditionalParameters.xsd</appinfo>
+    <documentation>This XML Schema Document encodes a new AdditionalParameters
+    element that contains one or more AdditionalParameter elements, which each
+    contain a specific parameter name and one or more values of that parameter.
+    This AdditionalParameters element is substitutable for ows:Metadata,
+    anywhere that element is allowed. The document also encodes a new nilValue
+    element of a newly defined NilValue type that allows the specification of
+    a nilReason attribute.
+
+   OWS is an OGC Standard.
+   Copyright (c) 2009 Open Geospatial Consortium.
+   To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+    </documentation>
+  </annotation>
+
+  <!-- ==============================================================
+                includes and imports
+        ============================================================== -->
+  <include schemaLocation="owsAll.xsd"/>
+  <include schemaLocation="owsCommon.xsd" />
+  <include schemaLocation="ows19115subset.xsd" />
+  <include schemaLocation="owsDomainType.xsd" />
+  
+  <!-- ==============================================================
+                elements and types
+        ============================================================== -->
+  <element name="AdditionalParameters"
+           type="ows:AdditionalParametersType"
+           substitutionGroup="ows:Metadata">
+    <annotation>
+      <documentation>Unordered list of one or more
+      AdditionalParameters.</documentation>
+    </annotation>
+  </element>
+  <!-- ========================================================== -->
+  <complexType name="AdditionalParametersBaseType">
+    <complexContent>
+      <restriction base="ows:MetadataType">
+        <sequence>
+          <element ref="ows:AdditionalParameter" />
+        </sequence>
+      </restriction>
+    </complexContent>
+  </complexType>
+  <!-- ========================================================== -->
+  <complexType name="AdditionalParametersType">
+    <complexContent>
+      <extension base="ows:AdditionalParametersBaseType">
+        <sequence>
+          <element ref="ows:AdditionalParameter"
+                   minOccurs="0"
+                   maxOccurs="unbounded" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- ========================================================== -->
+  <element name="AdditionalParameter"
+           substitutionGroup="ows:AbstractMetaData">
+    <annotation>
+      <documentation>One additional metadata parameter.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Name"
+                 type="ows:CodeType">
+          <annotation>
+            <documentation>Name or identifier of this AdditionalParameter,
+            unique for this OGC Web Service.</documentation>
+          </annotation>
+        </element>
+        <element name="Value"
+                 type="anyType"
+                 maxOccurs="unbounded">
+          <annotation>
+            <documentation>Unordered list of one or more values of this
+            AdditionalParameter.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ========================================================== -->
+  <element name="nilValue"
+           type="ows:NilValueType" />
+  <!-- ========================================================== -->
+  <complexType name="NilValueType">
+    <annotation>
+      <documentation>The value used (e.g. -255) to represent a nil value with
+      optional nilReason and codeSpace attributes.</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="ows:CodeType">
+        <attribute name="nilReason"
+                   type="anyURI"
+                   use="optional">
+          <annotation>
+            <documentation>An anyURI value which refers to a resource that
+            describes the reason for the nil value</documentation>
+          </annotation>
+        </attribute>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- ========================================================== -->
+</schema>

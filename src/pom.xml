@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -146,6 +151,12 @@
     <groupId>org.geoserver</groupId>
     <artifactId>gwc</artifactId>
     <version>${gs.version}</version>
+    <exclusions>
+    	<exclusion>
+    		<groupId>net.sf.json-lib</groupId>
+      		<artifactId>json-lib</artifactId>
+    	</exclusion>
+    </exclusions>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
@@ -948,7 +959,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.3.1</version>
+      <version>1.4.3</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -1137,7 +1148,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests}</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image}</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1441,6 +1452,8 @@
   <build.hudsonId>-1</build.hudsonId>
   <fork.javac>true</fork.javac>
   <javac.maxHeapSize>256m</javac.maxHeapSize>
+  <image.tests>true</image.tests>
+  <interactive.tests>false</interactive.tests>
  </properties>
 
  <profiles>

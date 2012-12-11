@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw.store.simple;
 
+import java.io.Closeable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geotools.feature.ComplexFeatureBuilder;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -23,15 +25,15 @@ import org.opengis.filter.expression.PropertyName;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-class RetypingIterator implements Iterator<Feature> {
+class RetypingIterator implements Iterator<Feature>, Closeable {
 
-    Iterator<Feature> delegate;
+    FeatureIterator<Feature> delegate;
 
     Set names;
 
     ComplexFeatureBuilder builder;
 
-    public RetypingIterator(Iterator<Feature> delegate, FeatureType schema,
+    public RetypingIterator(FeatureIterator<Feature> delegate, FeatureType schema,
             List<PropertyName> properties) {
         this.delegate = delegate;
         this.builder = new ComplexFeatureBuilder(schema);
@@ -107,7 +109,11 @@ class RetypingIterator implements Iterator<Feature> {
 
     @Override
     public void remove() {
-        delegate.remove();
+        throw new UnsupportedOperationException();
+    }
+
+    public void close() {
+        delegate.close();
     }
 
 }

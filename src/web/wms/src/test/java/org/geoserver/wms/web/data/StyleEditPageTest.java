@@ -1,3 +1,7 @@
+/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.web.data;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
@@ -29,9 +33,17 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void setUp() throws Exception {
         login();
         buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
+        if(buildingsStyle == null) {
+            // undo the rename performed in one of the test methods
+            StyleInfo si = getCatalog().getStyleByName("BuildingsNew");
+            if(si != null) {
+                si.setName(MockData.BUILDINGS.getLocalPart());
+                getCatalog().save(si);
+            }
+            buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
+        }
         StyleEditPage edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
-//        org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
     }
 
     @Test

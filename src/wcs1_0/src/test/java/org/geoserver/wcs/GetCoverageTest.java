@@ -5,7 +5,8 @@
 package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -21,7 +22,6 @@ import javax.imageio.ImageReader;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import junit.textui.TestRunner;
 import net.opengis.wcs10.GetCoverageType;
 
 import org.apache.commons.io.IOUtils;
@@ -287,7 +287,7 @@ public class GetCoverageTest extends WCSTestSupport {
         		"</GetCoverage>";
         
         MockHttpServletResponse response = postAsServletResponse("wcs", xml);
-        assertEquals("image/tiff;subtype=\"geotiff\"", response.getContentType());
+        assertEquals("image/tiff", response.getContentType());
         
         GeoTiffFormat format = new GeoTiffFormat();
         AbstractGridCoverage2DReader reader = format.getReader(getBinaryInputStream(response));
@@ -423,7 +423,7 @@ public class GetCoverageTest extends WCSTestSupport {
         String request = getWaterTempElevationRequest("0.0");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
-        assertEquals("image/tiff;subtype=\"geotiff\"", response.getContentType());
+        assertEquals("image/tiff", response.getContentType());
         
         // same result as time first
         checkTimeCurrent(response);
@@ -434,7 +434,7 @@ public class GetCoverageTest extends WCSTestSupport {
         String request = getWaterTempElevationRequest("100.0");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
-        assertEquals("image/tiff;subtype=\"geotiff\"", response.getContentType());
+        assertEquals("image/tiff", response.getContentType());
         
         // save
         File tiffFile = File.createTempFile("wcs", "", new File("target"));

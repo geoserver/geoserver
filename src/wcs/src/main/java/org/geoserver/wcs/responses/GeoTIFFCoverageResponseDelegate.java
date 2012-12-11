@@ -43,11 +43,11 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
     /** DEFAULT_JPEG_COMPRESSION_QUALITY */
     private static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
 
-    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff","image/tiff;subtype=\"geotiff\"","image/geotiff"));
+    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff","image/geotiff"));
 
 	private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
 
-	public static final String GEOTIFF_CONTENT_TYPE = "image/tiff;subtype=\"geotiff\"";
+	public static final String GEOTIFF_CONTENT_TYPE = "image/tiff";
 
     public GeoTIFFCoverageResponseDelegate() {
     }

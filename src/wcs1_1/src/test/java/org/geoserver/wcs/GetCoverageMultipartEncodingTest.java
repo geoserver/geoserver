@@ -23,12 +23,10 @@ import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
 public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     // @Override
@@ -145,7 +143,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=GEotIFF"));
         ensureTiffFormat(getAsServletResponse(requestBase
-                + "&format=image/tiff;subtype%3D\"geotiff\""));
+                + "&format=image/tiff"));
     }
 
     private void ensureTiffFormat(MockHttpServletResponse response) throws MessagingException,

@@ -317,7 +317,7 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
     
     @Override
     public List<String> getOutputFormats() {
-        return Arrays.asList("image/tiff;subtype=\"geotiff\"");
+        return Arrays.asList("image/tiff");
     }
     
     @Override

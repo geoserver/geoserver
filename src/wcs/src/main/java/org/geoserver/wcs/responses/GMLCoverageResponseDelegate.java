@@ -16,6 +16,8 @@
  */
 package org.geoserver.wcs.responses;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -25,6 +27,9 @@ import java.util.Map;
 
 import javax.measure.unit.Unit;
 import javax.measure.unit.UnitFormat;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.iterator.RectIter;
+import javax.media.jai.iterator.RectIterFactory;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.platform.ServiceException;

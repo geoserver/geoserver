@@ -5,10 +5,7 @@
 package org.geoserver.wcs2_0.response;
 
 import java.util.ArrayList;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import net.opengis.wcs20.DescribeCoverageType;
@@ -22,18 +19,13 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.StringUtils;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
-
-
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Based on the <code>org.geotools.xml.transform</code> framework, does the
@@ -297,49 +289,6 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             element("wcs:CoverageSubtype", "GridCoverage");
             element("wcs:nativeFormat", ci.getNativeFormat());
             end("wcs:ServiceParameters");
-        }
-
-
-        /**
-         * Writes the element if and only if the content is not null and not
-         * empty
-         * 
-         * @param elementName
-         * @param content
-         */
-        private void elementIfNotEmpty(String elementName, String content) {
-            if ( isNotBlank(content) )
-                element(elementName, content);
-        }
-        private LayerInfo getCoverage(String encodedCoverageId) throws WCS20Exception {
-            List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, encodedCoverageId);
-            if(layers == null)
-                return null;
-
-            LayerInfo ret = null;
-
-            for (LayerInfo layer : layers) {
-                if ( layer.getType() == LayerInfo.Type.RASTER) {
-                    if(ret == null) {
-                        ret = layer;
-                    } else {
-                        LOGGER.warning("Multiple coverages found for NSName '" + encodedCoverageId + "': "
-                                + ret.prefixedName() + " is selected, "
-                                + layer.prefixedName() + " will be ignored");
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        private String urnIdentifier(final CoordinateReferenceSystem crs) throws FactoryException {
-            String authorityAndCode = CRS.lookupIdentifier(crs, false);
-            String code = authorityAndCode.substring(authorityAndCode.lastIndexOf(":") + 1);
-            // we don't specify the version, but we still need to put a space
-            // for it in the urn form, that's why we have :: before the code
-//            return "urn:ogc:def:crs:EPSG::" + code;
-            return "http://www.opengis.net/def/crs/EPSG/0/" + code;
         }
 
     }

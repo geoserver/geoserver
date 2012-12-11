@@ -73,7 +73,7 @@ public class WCS20GetCoverageResponse extends Response {
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         String format = getCoverage.getFormat();
         if (format == null) {
-            format = "image/tiff;subtype=\"geotiff\"";
+            format = "image/tiff";
         } 
         
         // extract additional extensions

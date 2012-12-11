@@ -82,13 +82,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         checkOws11Exception(dom);
     }
 
-    private GridCoverage2D readCoverage(InputStream is) throws Exception {
-        GeoTiffReader reader = new GeoTiffReader(is);
-        GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
-        reader.dispose();
-        return coverage;
-    }
-
     @Test
     public void testTiffOutput() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="

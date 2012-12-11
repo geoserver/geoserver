@@ -116,7 +116,8 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         encoder.setLineWidth(60);
         encoder.setOmitXMLDeclaration(request.isSOAP());
         
-        String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/2.0/owsAll.xsd");
+        // String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/2.0/owsAll.xsd");
+        String schemaLocation = "http://schemas.opengis.net/ows/2.0/owsExceptionReport.xsd";
         encoder.setSchemaLocation(OWS.NAMESPACE, schemaLocation);
 
         try {

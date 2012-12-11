@@ -38,6 +38,7 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+import org.geotools.wcs.v2_0.WCS;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
@@ -172,7 +173,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
 
             // TODO: add a config to choose the canonical or local schema 
-            final String locationDef = "http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd";  // buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsGetCapabilities.xsd");//
+            final String locationDef = WCS.NAMESPACE + " http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd";  
+            // final String locationDef = WCS.NAMESPACE + " " + buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsGetCapabilities.xsd");//
             attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
             
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
@@ -249,6 +251,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
             //element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
             String fees = wcs.getFees();
             if ( isBlank(fees)) {

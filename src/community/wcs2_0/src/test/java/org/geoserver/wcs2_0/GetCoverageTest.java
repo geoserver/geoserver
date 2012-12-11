@@ -166,6 +166,14 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("LZW", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("5", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
 
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
      }
 
     @Test 
@@ -268,6 +276,14 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("Deflate", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("32946", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
 
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
      }
     
     @Test 
@@ -314,6 +330,14 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("PackBits", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("32773", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
 
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
      }
     
     @Test 
@@ -390,7 +414,15 @@ public class GetCoverageTest extends WCSTestSupport {
         assertNotNull(field);
         assertEquals("JPEG", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("7", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
-
+        
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
      }
     
     @Test 
@@ -429,6 +461,15 @@ public class GetCoverageTest extends WCSTestSupport {
         assertTrue(reader.isImageTiled(0));
         assertEquals(512, reader.getTileHeight(0));
         assertEquals(512, reader.getTileWidth(0));
+        
+        IIOMetadataNode node =((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
      }
     
     @Test 
@@ -538,7 +579,14 @@ public class GetCoverageTest extends WCSTestSupport {
         assertTrue(reader.isImageTiled(0));
         assertEquals(256, reader.getTileHeight(0));
         assertEquals(256, reader.getTileWidth(0));
-
+        
+        IIOMetadataNode node =((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        // clean up
+        reader.dispose();
     }
     
     @Test 

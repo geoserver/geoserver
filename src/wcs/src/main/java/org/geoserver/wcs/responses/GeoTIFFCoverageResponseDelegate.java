@@ -197,18 +197,18 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                         try{
                             final int tileH=Integer.valueOf(tileH_);
                             if(tileH>0&& (tileH%16==0)){
-                                tileDimensions.width=tileH;
+                                tileDimensions.height=tileH;
                             } else {
-                                // tile width not supported
+                                // tile height not supported
                                 throw new WcsException(
-                                        "Provided tile width is invalid",
+                                        "Provided tile height is invalid",
                                         WcsExceptionCode.TilingInvalid,
                                         tileH_);                            
                             } 
                         }catch (Exception e) {
-                            // tile width not supported
+                            // tile height not supported
                             throw new WcsException(
-                                    "Provided tile width is invalid",
+                                    "Provided tile height is invalid",
                                     WcsExceptionCode.TilingInvalid,
                                     tileH_);    
                         }

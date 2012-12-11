@@ -4,10 +4,8 @@
  */
 package org.geoserver.wcs2_0;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
-import static org.geoserver.ows.util.ResponseUtils.*;
 import org.geotools.ows.v2_0.OWS;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Some consts useful through the module.

@@ -283,53 +283,53 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 end("gml:rangeParameters"); 
 
                 start("tupleList");
-//                // walk through the coverage and spit it out!
-//                final RenderedImage raster= gc2d.getRenderedImage();
-//                final int numBands=raster.getSampleModel().getNumBands();
-//                final int dataType=raster.getSampleModel().getDataType();
-//                final double[] valuesD= new double[numBands];
-//                final int[] valuesI= new int[numBands];
-//                RectIter iterator = RectIterFactory.create(raster, PlanarImage.wrapRenderedImage(raster).getBounds());
-//                
-//                    iterator.startLines();
-//                    while (!iterator.finishedLines()) {
-//                        iterator.startPixels();
-//                        while (!iterator.finishedPixels()) {
-//                            switch (dataType) {
-//                            case DataBuffer.TYPE_BYTE:
-//                            case DataBuffer.TYPE_INT:
-//                            case DataBuffer.TYPE_SHORT:
-//                            case DataBuffer.TYPE_USHORT:
-//                                iterator.getPixel(valuesI);
-//                                for(int i=0;i<numBands;i++){
-//                                    // spit out
-//                                    chars(String.valueOf(valuesI[i]));
-//                                    if(i+1<numBands){
-//                                        chars(",");
-//                                    }
-//                                }
-//                                break;
-//                            case DataBuffer.TYPE_DOUBLE:
-//                            case DataBuffer.TYPE_FLOAT:
-//                                iterator.getPixel(valuesD);
-//                                for(int i=0;i<numBands;i++){
-//                                    // spit out
-//                                    chars(String.valueOf(valuesD[i]));
-//                                    if(i+1<numBands){
-//                                        chars(",");
-//                                    }
-//                                }                           
-//                                break;
-//                            default:
-//                                break;
-//                            }
-//                            // space as sample separator
-//                            chars(" ");
-//                            iterator.nextPixel();
-//                        }
-//                        iterator.nextLine();
-//                        chars("\n");
-//                    }
+                // walk through the coverage and spit it out!
+                final RenderedImage raster= gc2d.getRenderedImage();
+                final int numBands=raster.getSampleModel().getNumBands();
+                final int dataType=raster.getSampleModel().getDataType();
+                final double[] valuesD= new double[numBands];
+                final int[] valuesI= new int[numBands];
+                RectIter iterator = RectIterFactory.create(raster, PlanarImage.wrapRenderedImage(raster).getBounds());
+                
+                    iterator.startLines();
+                    while (!iterator.finishedLines()) {
+                        iterator.startPixels();
+                        while (!iterator.finishedPixels()) {
+                            switch (dataType) {
+                            case DataBuffer.TYPE_BYTE:
+                            case DataBuffer.TYPE_INT:
+                            case DataBuffer.TYPE_SHORT:
+                            case DataBuffer.TYPE_USHORT:
+                                iterator.getPixel(valuesI);
+                                for(int i=0;i<numBands;i++){
+                                    // spit out
+                                    chars(String.valueOf(valuesI[i]));
+                                    if(i+1<numBands){
+                                        chars(",");
+                                    }
+                                }
+                                break;
+                            case DataBuffer.TYPE_DOUBLE:
+                            case DataBuffer.TYPE_FLOAT:
+                                iterator.getPixel(valuesD);
+                                for(int i=0;i<numBands;i++){
+                                    // spit out
+                                    chars(String.valueOf(valuesD[i]));
+                                    if(i+1<numBands){
+                                        chars(",");
+                                    }
+                                }                           
+                                break;
+                            default:
+                                break;
+                            }
+                            // space as sample separator
+                            chars(" ");
+                            iterator.nextPixel();
+                        }
+                        iterator.nextLine();
+                        chars("\n");
+                    }
 
                 end("tupleList");
                 end("gml:DataBlock");

@@ -59,7 +59,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Encoding a gridcoverage as per WCS 2.0 GML format.
+ * Encoding a {@link GridCoverage2D} as per WCS 2.0 GML format.
  * 
  * @author Simone Giannecchini, GeoSolutions SAS
  *
@@ -123,8 +123,9 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 // TODO do we miss any of them?
                 attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml/3.2");
                 attributes.addAttribute("", "xmlns:gmlcov", "xmlns:gmlcov", "", "http://www.opengis.net/gmlcov/1.0");
-                attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "", "http://www.opengis.net/swe/2.");
+                attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "", "http://www.opengis.net/swe/2.0");
 
+//                attributes.addAttribute("", "xmlns:myNS", "xmlns:myNS", "", "http://myNS.com");// TODO make this parametric
                 attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
                 attributes.addAttribute("", "xmlns:xsi", "xmlns:xsi", "", "http://www.w3.org/2001/XMLSchema-instance");
 
@@ -188,7 +189,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
             private void handleMetadata(GridCoverage2D gc2d) {
                 start("gmlcov:metadata");
                 start("gmlcov:Extension");
-                // TODO encode properties
+                // encode properties of coverage
+                
 //                start("myNS:metadata");
 //                
 //                end("myNS:metadata");

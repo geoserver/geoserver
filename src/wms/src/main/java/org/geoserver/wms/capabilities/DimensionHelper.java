@@ -121,7 +121,7 @@ abstract class DimensionHelper {
 
         DimensionInfo timeInfo = null;
         DimensionInfo elevInfo = null;
-        Map<String, DimensionInfo> customDimensions = null;
+        Map<String, DimensionInfo> customDimensions = new HashMap<String, DimensionInfo>();
         AbstractGridCoverage2DReader reader = null;
         
         for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {
@@ -132,18 +132,15 @@ abstract class DimensionHelper {
             } else if (key.equals(ResourceInfo.ELEVATION)) {
                 elevInfo = Converters.convert(value, DimensionInfo.class);
             } else if (value instanceof DimensionInfo) {
-                DimensionInfo dimInfo = (DimensionInfo)value;
+                DimensionInfo dimInfo = (DimensionInfo) value;
                 if (dimInfo.isEnabled()) {
-                    if (customDimensions == null) {
-                        customDimensions = new HashMap<String, DimensionInfo>();
-                    }
                     customDimensions.put(key, dimInfo);
                 }
             }
         }
         boolean hasTime = timeInfo != null && timeInfo.isEnabled();
         boolean hasElevation = elevInfo != null && elevInfo.isEnabled();
-        boolean hasCustomDimensions = customDimensions != null;
+        boolean hasCustomDimensions = !customDimensions.isEmpty();
 
         // skip if nothing is configured
         if (!hasTime && !hasElevation && !hasCustomDimensions) {
@@ -200,7 +197,8 @@ abstract class DimensionHelper {
         // custom dimensions
         if (hasCustomDimensions) {
             for (String key : customDimensions.keySet()) {
-                handleCustomDimensionRaster(key, dimensions);
+                DimensionInfo dimensionInfo = customDimensions.get(key);
+                handleCustomDimensionRaster(key, dimensionInfo, dimensions);
             }
         }
     }
@@ -220,23 +218,12 @@ abstract class DimensionHelper {
         writeTimeDimension(timeMetadata);
     }
     
-    private void handleCustomDimensionRaster(String dimName, 
+    private void handleCustomDimensionRaster(String dimName, DimensionInfo dimension,
             ReaderDimensionsAccessor dimAccessor) {
-        final TreeSet<Object> domain = dimAccessor.getDomain(dimName);
-        final String metadata;
-        final int count = domain == null ? 0 : domain.size();
-        if (count == 0) {
-            metadata = "";
-        } else if (count == 1) {
-            metadata = domain.first().toString();
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (Object value : domain) {
-                sb.append(value.toString()).append(',');
-            }
-            metadata = sb.substring(0, sb.length() - 1);
-        }
-        writeDimension(dimName, metadata);
+        final TreeSet<String> values = dimAccessor.getDomain(dimName);
+        String metadata = getCustomDomainRepresentation(dimension, values);
+
+        writeCustomDimension(dimName, metadata, values.first(), dimension.getUnits(), dimension.getUnitSymbol());
     }
 
     /**
@@ -260,8 +247,15 @@ abstract class DimensionHelper {
         }
         if (customDimensions != null) {
             for (String dim : customDimensions.keySet()) {
+                DimensionInfo di = customDimensions.get(dim);
                 AttributesImpl custDim = new AttributesImpl();
                 custDim.addAttribute("", "name", "name", "", dim);
+                String units = di.getUnits();
+                String unitSymbol = di.getUnitSymbol();
+                custDim.addAttribute("", "units", "units", "", units != null ? units : "");
+                if(unitSymbol != null) {
+                    custDim.addAttribute("", "unitSymbol", "unitSymbol", "", unitSymbol);
+                }
                 element("Dimension", null, custDim);
             }
         }
@@ -386,6 +380,43 @@ abstract class DimensionHelper {
 
         return timeMetadata;
     }
+    
+    /**
+     * Builds the proper presentation given the specified value domain
+     * 
+     * @param dimension
+     * @param values
+     * @return
+     */
+    String getCustomDomainRepresentation(DimensionInfo dimension, TreeSet<String> values) {
+        String timeMetadata = null;
+
+        final StringBuilder buff = new StringBuilder();
+
+        if (DimensionPresentation.LIST == dimension.getPresentation()) {
+            for (String value : values) {
+                buff.append(value);
+                buff.append(",");
+            }
+            timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
+                    .replaceAll("\\]", "").replaceAll(" ", "");
+        } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
+            buff.append(values.first());
+            buff.append("/");
+
+            buff.append(values.last());
+            buff.append("/");
+
+            final BigDecimal resolution = dimension.getResolution();
+            if (resolution != null) {
+                buff.append(resolution);
+            }
+
+            timeMetadata = buff.toString();
+        }
+
+        return timeMetadata;
+    }
 
     /**
      * Writes out metadata for the time dimension
@@ -471,16 +502,22 @@ abstract class DimensionHelper {
         element("Dimension", elevationMetadata, elevDim);
     }
     
-    private void writeDimension(String name, String metadata) {
+    private void writeCustomDimension(String name, String metadata, String defaultValue, String unit, String unitSymbol) {
         AttributesImpl dim = new AttributesImpl();
         dim.addAttribute("", "name", "name", "", name);
         if (mode == Mode.WMS11) {
+            if (defaultValue != null) {
+                dim.addAttribute("", "default", "default", "", defaultValue);
+            }
             element("Extent", metadata, dim);
         } else {
-            // For now add empty units attribute so that validation succeeds.
-            // Code to make this value configurable would conflict with the
-            // pending elevation units patch.
-            dim.addAttribute("", "units", "units", "", "");
+            if (defaultValue != null) {
+                dim.addAttribute("", "default", "default", "", defaultValue);
+            }
+            dim.addAttribute("", "units", "units", "", unit != null ? unit : "");
+            if (unitSymbol != null && !"".equals(unitSymbol)) {
+                dim.addAttribute("", "unitSymbol", "unitSymbol", "", unitSymbol);
+            }
             
             element("Dimension", metadata, dim);
         }

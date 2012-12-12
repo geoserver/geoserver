@@ -4,17 +4,21 @@
  */
 package org.geoserver.catalog.util;
 
-import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.ELEVATION_DOMAIN;
-import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN;
-import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.HAS_TIME_DOMAIN;
-import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.TIME_DOMAIN;
+import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 
@@ -177,6 +181,25 @@ public class ReaderDimensionsAccessor {
             throw new RuntimeException("Failed to get minimum elevation from coverage reader", e);
         }
     }
+    
+    /**
+     * Lists the custom domains of a raster data set
+     * @return
+     */
+    public List<String> getCustomDomains() {
+        Set<String> names = new HashSet<String>(Arrays.asList(reader.getMetadataNames()));
+        TreeSet<String> result = new TreeSet<String>();
+        for (String name : names) {
+            if(name.startsWith("HAS_") && name.endsWith("_DOMAIN")) {
+                String dimension = name.substring(4, name.length() - 7);
+                if(names.contains(dimension + "_DOMAIN")) {
+                    result.add(dimension);
+                }
+            }
+        }
+        
+        return new ArrayList<String>(result);
+    }
 
     /**
      * True if the reader has a dimension with the given name
@@ -188,12 +211,33 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the full set of values for the given dimension
      */
-    public TreeSet<Object> getDomain(String name) {
+    public TreeSet<String> getDomain(String name) {
         String[] values = reader.getMetadataValue(name + "_DOMAIN").split(",");
-        TreeSet<Object> valueSet = new TreeSet<Object>();
+        TreeSet<String> valueSet = new TreeSet<String>();
         for (String val : values) {
             valueSet.add(val);
         }
         return valueSet;
     }
+
+    /**
+     * Checks if this dimension has a range (min/max) or just a domain
+     * @param domain
+     * @return
+     */
+    public boolean hasRange(String domain) {
+        List names = Arrays.asList(reader.getMetadataNames());
+        return names.contains(domain + "_DOMAIN_MAXIMUM") && names.contains(domain + "_DOMAIN_MINIMUM");
+    }
+    
+    /**
+     * Checks if this dimension has a resolution
+     * @param domain
+     * @return
+     */
+    public boolean hasResolution(String domain) {
+        List names = Arrays.asList(reader.getMetadataNames());
+        return names.contains(domain + "_DOMAIN_RESOLUTION");
+    }
+    
 }

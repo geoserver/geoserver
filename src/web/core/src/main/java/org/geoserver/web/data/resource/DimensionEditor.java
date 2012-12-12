@@ -42,7 +42,7 @@ import org.opengis.feature.type.PropertyDescriptor;
 @SuppressWarnings("serial")
 public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
 
-    List<DimensionPresentation> PRESENTATION_MODES = Arrays.asList(DimensionPresentation.values());
+    List<DimensionPresentation> presentationModes;
 
     private CheckBox enabled;
 
@@ -167,9 +167,10 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         resolutions.setOutputMarkupId(true);
         resContainer.add(resolutions);
         
+        presentationModes = new ArrayList<DimensionPresentation>(Arrays.asList(DimensionPresentation.values()));
         presentation = new DropDownChoice<DimensionPresentation>("presentation",
                 new PropertyModel<DimensionPresentation>(model, "presentation"),
-                PRESENTATION_MODES, new PresentationModeRenderer());
+                presentationModes, new PresentationModeRenderer());
         configs.add(presentation);
         presentation.setRequired(true);
         presentation.add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -196,6 +197,19 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         } else {
             resTime.setVisible(false);
             resElevation.setRequired(true);
+        }
+    }
+    
+    /**
+     * Allows to remove presentation modes from the editor. If only a single presentation mode
+     * is left the editor will setup in non enabled mode and will return that fixed value
+     * @param mode
+     */
+    public void disablePresentationMode(DimensionPresentation mode) {
+        presentationModes.remove(mode);
+        if(presentationModes.size() <= 1) {
+            presentation.setModelObject(presentationModes.get(0));
+            presentation.setEnabled(false);
         }
     }
 

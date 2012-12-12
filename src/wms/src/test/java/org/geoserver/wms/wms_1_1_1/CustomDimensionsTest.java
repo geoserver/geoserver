@@ -9,7 +9,6 @@ import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -69,6 +69,14 @@ public class CustomDimensionsTest extends WMSTestSupport {
         getTestData().registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
+    
+    @After
+    public void removeRasterDimensions() {
+        CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+        info.getMetadata().remove(DIMENSION_NAME);
+        getCatalog().save(info);
+    }
+
 
     @Test
     public void testCapabilitiesNoDimension() throws Exception {
@@ -82,20 +90,39 @@ public class CustomDimensionsTest extends WMSTestSupport {
     
     @Test
     public void testCapabilities() throws Exception {
-        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST);
+        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, null, null);
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
-        print(dom);
+        // print(dom);
 
         // check dimension has been declared 
         assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
         
         // check we have the extent
         assertXpathEvaluatesTo(DIMENSION_NAME, "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//Layer/Extent", dom);
+    }
+    
+    @Test
+    public void testCapabilitiesUnits() throws Exception {
+        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        Document dom = dom(get(CAPABILITIES_REQUEST), false);
+        // print(dom);
+
+        // check dimension has been declared 
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("nano meters", "//Layer/Dimension/@units", dom);
+        assertXpathEvaluatesTo("nm", "//Layer/Dimension/@unitSymbol", dom);
+        
+        // check we have the extent
+        assertXpathEvaluatesTo(DIMENSION_NAME, "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//Layer/Extent", dom);
     }
     
     @Test
     public void testGetMap() throws Exception {
+        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
         
         // check that we get no data when requesting an incorrect value for custom dimension
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
@@ -114,11 +141,13 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertFalse(isEmpty(image));
     }
     
-    private void setupRasterDimension(String metadata, DimensionPresentation presentation) {
+    private void setupRasterDimension(String metadata, DimensionPresentation presentation, String units, String unitSymbol) {
         CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setPresentation(presentation);
+        di.setUnits(units);
+        di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
     }

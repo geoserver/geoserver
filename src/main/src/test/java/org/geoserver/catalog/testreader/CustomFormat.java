@@ -41,7 +41,7 @@ public final class CustomFormat extends AbstractGridFormat {
     public CustomFormat() {
         this.mInfo = new HashMap<String, String>();
         this.mInfo.put("name", TYPE_NAME);
-        this.mInfo.put("description", "Test custom coverage format.");
+        this.mInfo.put("description", "Test custom coverage format - only visible with test jars in the classpath");
         this.mInfo.put("docURL", "");
         this.mInfo.put("version", "1.0");
 

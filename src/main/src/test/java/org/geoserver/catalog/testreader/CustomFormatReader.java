@@ -70,7 +70,6 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         for (GeneralParameterValue p : params) {
             if (p.getDescriptor().getName().toString().equalsIgnoreCase(
                         CustomFormat.CUSTOM_DIMENSION_NAME)) {
-                System.out.println("CustomFormatReader.read: " + p);
                 haveDimension = true;
                 final String value = String.valueOf(extractValue(p));
                 for (String filename : this.dataDirectory.list()) {

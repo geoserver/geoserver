@@ -55,6 +55,10 @@ public class MetadataMapModel implements IModel, IChainingModel {
     public void detach() {
         model.detach();
     }
+    
+    public String getExpression() {
+        return expression;
+    }
 
     private static class MetadataMapWrappingModel implements IModel {
 

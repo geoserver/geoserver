@@ -5,6 +5,7 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
@@ -122,7 +124,16 @@ public class ResourceDimensionsTabPanelInfo extends LayerEditTabPanel {
                 boolean hasRange, boolean hasResolution) {
             super(model, expression, target);
         }
+        
+        @SuppressWarnings("unchecked")
+        public Object getObject() {
+            return ((MetadataMap) model.getObject()).get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
+        }
 
+        @SuppressWarnings("unchecked")
+        public void setObject(Object object) {
+            ((MetadataMap) model.getObject()).put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, (Serializable) object);
+        }
 
     }
 }

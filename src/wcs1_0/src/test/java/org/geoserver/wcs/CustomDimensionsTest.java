@@ -14,6 +14,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.data.test.MockData;
@@ -107,7 +108,7 @@ public class CustomDimensionsTest extends CoverageTestSupport {
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setPresentation(presentation);
-        info.getMetadata().put(metadata, di);
+        info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
         getCatalog().save(info);
     }
 }

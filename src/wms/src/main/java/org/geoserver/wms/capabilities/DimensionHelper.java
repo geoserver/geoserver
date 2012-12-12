@@ -134,7 +134,15 @@ abstract class DimensionHelper {
             } else if (value instanceof DimensionInfo) {
                 DimensionInfo dimInfo = (DimensionInfo) value;
                 if (dimInfo.isEnabled()) {
-                    customDimensions.put(key, dimInfo);
+                    if (key.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
+                        String dimensionName = key.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX
+                                .length());
+                        customDimensions.put(dimensionName, dimInfo);
+                    } else {
+                        LOGGER.log(Level.SEVERE, "Skipping custom  dimension with key " + key
+                                + " since it does not start with "
+                                + ResourceInfo.CUSTOM_DIMENSION_PREFIX);
+                    }
                 }
             }
         }

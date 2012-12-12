@@ -20,6 +20,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.config.GeoServerInfo;
@@ -73,7 +74,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
     @After
     public void removeRasterDimensions() {
         CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
-        info.getMetadata().remove(DIMENSION_NAME);
+        info.getMetadata().remove(ResourceInfo.CUSTOM_DIMENSION_PREFIX + DIMENSION_NAME);
         getCatalog().save(info);
     }
     
@@ -145,7 +146,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         di.setPresentation(presentation);
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
-        info.getMetadata().put(metadata, di);
+        info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
         getCatalog().save(info);
     }
     

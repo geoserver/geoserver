@@ -858,7 +858,9 @@ public class WMS implements ApplicationContextAware {
                 String name = kvp.getKey();
                 if (name.regionMatches(true, 0, "dim_", 0, 4)) {
                     name = name.substring(4);
-                    if (dimensions.hasDomain(name)) {
+                    final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
+                            DimensionInfo.class);
+                    if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
                         final ArrayList<String> val = new ArrayList<String>(1);
                         val.add(kvp.getValue());
                         readParameters = CoverageUtils.mergeParameter(

@@ -26,11 +26,11 @@ import org.geoserver.catalog.MetadataMap;
 @SuppressWarnings("serial")
 public class MetadataMapModel implements IModel, IChainingModel {
 
-    IModel model;
+    protected IModel model;
 
-    String expression;
+    protected String expression;
 
-    Class<?> target;
+    protected Class<?> target;
 
     public MetadataMapModel(MetadataMap map, String expression, Class<?> target) {
         this(new MetadataMapWrappingModel(map), expression, target);

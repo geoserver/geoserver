@@ -4,14 +4,17 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.CoverageInfo;
@@ -21,10 +24,13 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.TestData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
+
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class CustomDimensionsTest extends WMSTestSupport {
@@ -37,19 +43,15 @@ public class CustomDimensionsTest extends WMSTestSupport {
     private static final String LAYERS = "gs:watertemp";
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         
         // add org.geoserver.catalog.testReader.CustomFormat coverage
-        URL style = getClass().getResource("../temperature.sld");
         String styleName = "temperature";
-        dataDirectory.addStyle(styleName, style);
-        dataDirectory.addCoverageFromZip(WATTEMP, TestData.class.getResource("custwatertemp.zip"),
-                        null, styleName);
-    }
-    
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+        testData.addStyle(styleName, "../temperature.sld", getClass(), getCatalog());
+        Map propertyMap = new HashMap();
+        propertyMap.put(LayerProperty.STYLE, "temperature");
+        testData.addRasterLayer(WATTEMP, "custwatertemp.zip", null, propertyMap, SystemTestData.class, getCatalog());
         
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
@@ -66,7 +68,8 @@ public class CustomDimensionsTest extends WMSTestSupport {
         getTestData().registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
-
+    
+    @Test
     public void testCapabilitiesNoDimension() throws Exception {
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
@@ -76,6 +79,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertXpathEvaluatesTo("0", "count(//wms:Layer/wms:Dimension)", dom);
     }
     
+    @Test
     public void testCapabilities() throws Exception {
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST);
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
@@ -89,6 +93,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//wms:Layer/wms:Dimension", dom);
     }
     
+    @Test
     public void testGetMap() throws Exception {
 
         // check that we get no data when requesting an incorrect value for custom dimension

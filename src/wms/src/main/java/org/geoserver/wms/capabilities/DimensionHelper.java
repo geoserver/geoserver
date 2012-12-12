@@ -49,7 +49,7 @@ abstract class DimensionHelper {
     }
 
     Mode mode;
-        WMS wms;
+    WMS wms;
 
     public DimensionHelper(Mode mode, WMS wms) {
         this.mode = mode;
@@ -84,7 +84,7 @@ abstract class DimensionHelper {
         if (mode == Mode.WMS11) {
             String elevUnits = hasElevation ? elevInfo.getUnits() : "";
             String elevUnitSymbol = hasElevation ? elevInfo.getUnitSymbol() : "";
-            declareWMS11Dimensions(hasTime, hasElevation, elevUnits, elevUnitSymbol);
+            declareWMS11Dimensions(hasTime, hasElevation, elevUnits, elevUnitSymbol, null);
         }
 
         // Time dimension
@@ -183,7 +183,7 @@ abstract class DimensionHelper {
         if (mode == Mode.WMS11) {
             String elevUnits = hasElevation ? elevInfo.getUnits() : "";
             String elevUnitSymbol = hasElevation ? elevInfo.getUnitSymbol() : "";
-            declareWMS11Dimensions(hasTime, hasElevation, elevUnits, elevUnitSymbol);
+            declareWMS11Dimensions(hasTime, hasElevation, elevUnits, elevUnitSymbol, customDimensions);
         }
         
 

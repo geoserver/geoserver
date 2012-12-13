@@ -28,7 +28,7 @@ public class QueryResourceTest extends ResourceTest {
     }
     
 // TODO: This test fails because I didn't understand from reading the spec how to encode MultiPolygon data.  Judging from 
-// 
+//
 //    public void testBuildingsQuery() throws Exception {
 //        JSON json = getAsJSON(query("Buildings", "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90"));
 //        assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);

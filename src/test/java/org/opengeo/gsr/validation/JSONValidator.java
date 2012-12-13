@@ -5,13 +5,8 @@
 package org.opengeo.gsr.validation;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.URI;
-
-import javax.management.RuntimeErrorException;
 
 import org.eel.kitchen.jsonschema.main.JsonSchema;
 import org.eel.kitchen.jsonschema.main.JsonSchemaFactory;

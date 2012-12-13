@@ -27,13 +27,26 @@ public final class GeometryEncoder {
         return json.toString();
     }
     
+    public static void referencedEnvelopeToJson(com.vividsolutions.jts.geom.Envelope envelope, SpatialReference sr, JSONBuilder json) {
+        json.object();
+        envelopeCoordsToJson(envelope, json);
+        json.key("spatialReference");
+        SpatialReferenceEncoder.toJson(sr, json);
+        json.endObject();
+    }
+    
     public static void envelopeToJson(com.vividsolutions.jts.geom.Envelope envelope, JSONBuilder json) {
-        json.object()
+        json.object();
+        envelopeCoordsToJson(envelope, json);
+        json.endObject();
+    }
+    
+    private static void envelopeCoordsToJson(com.vividsolutions.jts.geom.Envelope envelope, JSONBuilder json) {
+        json
           .key("xmin").value(envelope.getMinX())
           .key("ymin").value(envelope.getMinY())
           .key("xmax").value(envelope.getMaxX())
-          .key("ymax").value(envelope.getMaxY())
-        .endObject();
+          .key("ymax").value(envelope.getMaxY());
     }
 
     public static void toJson(com.vividsolutions.jts.geom.Geometry geom, JSONBuilder json) {

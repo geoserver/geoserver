@@ -4,7 +4,11 @@
  */
 package org.opengeo.gsr.core.feature;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * 
@@ -13,9 +17,16 @@ import java.util.Date;
  */
 public enum FieldTypeEnum {
 
-    SHORT_INTEGER("FieldTypeSmallInteger"), INTEGER("FieldTypeInteger"), SINGLE("FieldTypeSingle"), DOUBLE(
-            "FieldTypeDouble"), STRING("FieldTypeString"), DATE("FieldTypeDate"), OID(
-            "FieldTypeOID"), GEOMETRY("FieldTypeGeometry"), GUID("FieldTypeGUID");
+    SHORT_INTEGER("FieldTypeSmallInteger"),
+    INTEGER("FieldTypeInteger"),
+    SINGLE("FieldTypeSingle"),
+    DOUBLE("FieldTypeDouble"),
+    STRING("FieldTypeString"),
+    DATE("FieldTypeDate"),
+    OID("FieldTypeOID"),
+    GEOMETRY("FieldTypeGeometry"),
+    GUID("FieldTypeGUID");
+
     private final String fieldType;
 
     public String getFieldType() {
@@ -29,15 +40,20 @@ public enum FieldTypeEnum {
     public static FieldTypeEnum forClass(Class<?> binding) {
         if (String.class.equals(binding)) {
             return STRING;
-        } else if (Double.class.equals(binding)) {
+        } else if (Float.class.equals(binding)) {
+            return SINGLE;
+        } else if (Double.class.equals(binding) || BigDecimal.class.equals(binding)) {
             return DOUBLE;
-        } else if (Long.class.equals(binding)) {
+        } else if (Byte.class.equals(binding) || Short.class.equals(binding)) {
+            return SHORT_INTEGER;
+        } else if (Integer.class.equals(binding) || Long.class.equals(binding) || BigInteger.class.equals(binding)) {
             return INTEGER;
         } else if (Date.class.equals(binding)) {
             return DATE;
+        } else if (Geometry.class.isAssignableFrom(binding)) {
+            return GEOMETRY;
         } else {
             throw new RuntimeException("No FieldType equivalent known for " + binding);
         }
     }
-
 }

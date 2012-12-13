@@ -11,6 +11,6 @@ public class MapRootResourceTest extends ResourceTest {
         String result = getAsString(query("cite", "?f=json"));
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
-        // assertTrue("Root resource validates", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/root.json"));
+         assertTrue("Root resource validates", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/root.json"));
     }
 }

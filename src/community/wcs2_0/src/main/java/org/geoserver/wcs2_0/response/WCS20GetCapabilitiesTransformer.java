@@ -4,6 +4,11 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import static org.apache.commons.lang.StringUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.*;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,11 +16,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.opengis.wcs20.GetCapabilitiesType;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.apache.commons.lang.StringUtils.isBlank;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -26,19 +32,20 @@ import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geoserver.wcs2_0.WCS20Const;
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+import org.geotools.wcs.v2_0.WCS;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.helpers.AttributesImpl;
-
-import static org.geoserver.ows.util.ResponseUtils.*;
-import org.geoserver.wcs2_0.WCS20Const;
-import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  *
@@ -57,9 +64,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
     private final boolean skipMisconfigured;
 
-    private String baseUrl = "http://workaround"; // TODO
+    private CoverageResponseDelegateFinder responseFactory;
 
-    enum SECTIONS {ServiceIdentification, ServiceProvider, OperationsMetadata, Contents, Languages, All;
+    enum SECTIONS {ServiceIdentification, ServiceProvider, OperationsMetadata, ServiceMetadata, Contents, Languages, All;
 
         public static final Set<String> names;
         static  {
@@ -73,13 +80,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
     };
 
 
-    public WCS20GetCapabilitiesTransformer(GeoServer gs) {
-//        this.geoServer = geoServer;
-
+    public WCS20GetCapabilitiesTransformer(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = gs.getService(WCSInfo.class);
         this.catalog = gs.getCatalog();
         this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                 gs.getGlobal().getResourceErrorHandling());
+        this.responseFactory = responseFactory;
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -165,9 +171,11 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
-//
-//            final String locationDef = buildSchemaURL(baseUrl, "wcs/2.0/wcsGetCapabilities.xsd");//
-//            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
+
+            // TODO: add a config to choose the canonical or local schema 
+            final String locationDef = WCS.NAMESPACE + " http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd";  
+            // final String locationDef = WCS.NAMESPACE + " " + buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsGetCapabilities.xsd");//
+            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
             
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
 
@@ -182,6 +190,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     handleServiceProvider();
                 if (allSections || sections.contains(SECTIONS.OperationsMetadata.name()))
                     handleOperationsMetadata();
+                if (allSections || sections.contains(SECTIONS.ServiceMetadata.name()))
+                    handleServiceMetadata(request);
                 if (allSections || sections.contains(SECTIONS.Contents.name()))
                     handleContents();
                 if (allSections || sections.contains(SECTIONS.Languages.name()))
@@ -189,6 +199,31 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             }
 
             end("wcs:Capabilities");
+        }
+
+        private void handleServiceMetadata(GetCapabilitiesType ct) {
+            start("wcs:ServiceMetadata");
+            
+            // formats are part of the document only starting version 2.0.1
+            if(ct.getAcceptVersions() == null || ct.getAcceptVersions().getVersion() == null 
+                    || ct.getAcceptVersions().getVersion().isEmpty() || ct.getAcceptVersions().getVersion().contains("2.0.1")) {
+                Set<String> formats = new TreeSet<String>();
+                for (String format : responseFactory.getOutputFormats()) {
+                    CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
+                    String mime = delegate.getMimeType(format);
+                    try {
+                        new URI(mime);
+                        formats.add(mime);
+                    } catch(URISyntaxException e) {
+                        // skip it
+                    }
+                }
+                for (String format : formats) {
+                    element("wcs:formatSupported", format);
+                }
+            }
+            
+            end("wcs:ServiceMetadata");
         }
 
         /**
@@ -205,6 +240,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             element("ows:Title", wcs.getTitle());
             element("ows:Abstract", wcs.getAbstract());
+            
+            handleKeywords(wcs.getKeywords());
 
             element("ows:ServiceType", "urn:ogc:service:wcs");
             element("ows:ServiceTypeVersion", WCS20Const.V20x);
@@ -214,8 +251,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
             //element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
-
-            handleKeywords(wcs.getKeywords());
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
             String fees = wcs.getFees();
             if ( isBlank(fees)) {
@@ -293,8 +329,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             attributes.addAttribute(null, "name", "name", null, capabilityName);
             start("ows:Operation", attributes);
 
-            final String url = appendQueryString(buildURL(baseUrl, "wcs", null, URLMangler.URLType.SERVICE), "");
-//            final String url = appendQueryString(buildURL(request.getBaseUrl(), "wcs", null, URLMangler.URLType.SERVICE), "");
+            final String url = appendQueryString(buildURL(request.getBaseUrl(), "wcs", null, URLMangler.URLType.SERVICE), "");
 
             start("ows:DCP");
             start("ows:HTTP");

@@ -23,10 +23,16 @@ public interface ResourceInfo extends CatalogInfo {
      * The time dimension
      */
     static final String TIME = "time";
+    
     /**
      * The elevation dimension
      */
     static final String ELEVATION = "elevation";
+    
+    /**
+     * Prefix for custom dimensions
+     */
+    public static final String CUSTOM_DIMENSION_PREFIX = "custom_dimension_";
 
     /**
      * The catalog the resource is part of.

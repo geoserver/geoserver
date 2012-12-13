@@ -18,17 +18,17 @@ The data directory includes the following sets of information:
 ARC Sample
 ----------
 
-TBD
+Data was provided by GeoSolutions with redistribution rights.
 
 IMG Sample
 ----------
 
-TBD
+Data was provided by GeoSolutions with redistribution rights.
 
 MOASIC Sample
 -------------
 
-Data was provided by GeoSolutions.
+Data was provided by GeoSolutions with redistribution rights.
 
 New York City
 -------------
@@ -57,7 +57,7 @@ To quote from the http://grass.osgeo.org/uploads/grass/sampledata/spearDB.pdf ::
 States
 ------
 
-TBD
+TBD (Census data?)
 
 Tasmania
 --------

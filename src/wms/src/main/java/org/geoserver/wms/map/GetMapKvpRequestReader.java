@@ -428,7 +428,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         for (MapLayerInfo layer : getMap.getLayers()) {
             if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
                 MetadataMap metadata = layer.getResource().getMetadata();
-		DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
+                DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
                 hasElevation |= elevationInfo != null && elevationInfo.isEnabled();
                 DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
                 hasTime |= timeInfo != null && timeInfo.isEnabled();

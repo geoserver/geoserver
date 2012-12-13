@@ -149,7 +149,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
                 "</grid>"+*/
                 "<supportedFormats>"+
                   "<string>PNG</string>"+
-                  "<string>TIFF</string>"+
+                  "<string>GEOTIFF</string>"+
                 "</supportedFormats>"+
                 "<requestSRS>"+
                   "<string>EPSG:4326</string>"+

@@ -15,12 +15,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -850,6 +850,26 @@ public class WMS implements ApplicationContextAware {
                 }
             }
         }
+        
+        // custom dimensions
+        final Map<String, String> rawKvpMap = request.getRawKvp();
+        if (rawKvpMap != null) {
+            for (Map.Entry<String, String> kvp : rawKvpMap.entrySet()) {
+                String name = kvp.getKey();
+                if (name.regionMatches(true, 0, "dim_", 0, 4)) {
+                    name = name.substring(4);
+                    final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
+                            DimensionInfo.class);
+                    if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
+                        final ArrayList<String> val = new ArrayList<String>(1);
+                        val.add(kvp.getValue());
+                        readParameters = CoverageUtils.mergeParameter(
+                            parameterDescriptors, readParameters, val, name);
+                    }
+                }
+            }
+        }
+
         return readParameters;
     }
 

@@ -50,6 +50,7 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
@@ -1560,8 +1561,15 @@ public class CatalogImplTest {
     
     protected int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 500;
     private static final int GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_THREAD_COUNT = 10;
-    
+
+    /**
+     * This test cannot work, the catalog subsystem is not thread safe, that's why we have
+     * the configuration locks. Re-enable when the catalog subsystem is made thread safe.
+     * 
+     * @throws Exception
+     */
     @Test
+    @Ignore 
     public void testGetLayerByIdWithConcurrentAdd() throws Exception {
         addDataStore();
         addNamespace();

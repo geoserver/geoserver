@@ -15,6 +15,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.response.WCSCapsTransformer;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.WCS20GetCapabilitiesTransformer;
 import org.geoserver.wcs2_0.util.RequestUtils;
@@ -31,6 +32,7 @@ public class GetCapabilities {
     
     private WCSInfo wcs;
     private Catalog catalog;
+    private CoverageResponseDelegateFinder responseFactory;
 
     public static final List<String> PROVIDED_VERSIONS =
             Collections.unmodifiableList(Arrays.asList(
@@ -39,9 +41,10 @@ public class GetCapabilities {
                 WCS20Const.V111,
                 WCS20Const.V110));
 
-    public GetCapabilities(WCSInfo wcs, Catalog catalog) {
+    public GetCapabilities(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = wcs;
         this.catalog = catalog;
+        this.responseFactory = responseFactory;
     }
 
     TransformerBase run(GetCapabilitiesType request) throws WCS20Exception {
@@ -56,7 +59,7 @@ public class GetCapabilities {
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;
         } else if (WCS20Const.V20.equals(negotiatedVersion) || WCS20Const.V20x.equals(negotiatedVersion)) {
-            WCS20GetCapabilitiesTransformer capsTransformer = new WCS20GetCapabilitiesTransformer(wcs.getGeoServer());
+            WCS20GetCapabilitiesTransformer capsTransformer = new WCS20GetCapabilitiesTransformer(wcs.getGeoServer(), responseFactory);
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;
         } else {

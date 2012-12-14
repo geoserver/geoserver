@@ -48,7 +48,7 @@ public interface LayerGroupVisibilityPolicy {
     public static final LayerGroupVisibilityPolicy HIDE_IF_ALL_HIDDEN = new LayerGroupVisibilityPolicy() {
         @Override
         public boolean hideLayerGroup(LayerGroupInfo group, List<LayerInfo> filteredLayers) {
-            return filteredLayers.size() == 0 && group.getLayers().size() > 0;
+            return filteredLayers.size() == 0 && group.layers().size() > 0;
         }       
     };
 }

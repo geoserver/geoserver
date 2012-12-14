@@ -4,6 +4,9 @@
  */
 package org.geoserver.security.impl;
 
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,6 +14,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -389,4 +393,28 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
         assertEquals(0, layerGroup.getLayers().size());
     }        
+    
+    @Test
+    public void testEoLayerGroupMustBeHiddenIfItsRootLayerIsHidden() throws Exception {
+        LayerGroupInfo eoRoadsLayerGroup = buildLayerGroup("eoRoadsLayerGroup", LayerGroupInfo.Mode.EO, roadsLayer, lineStyle, toppWs, statesLayer);
+        LayerGroupInfo eoStatesLayerGroup = buildLayerGroup("eoStatesLayerGroup", LayerGroupInfo.Mode.EO, statesLayer, lineStyle, toppWs, roadsLayer);
+        
+        Catalog eoCatalog = createNiceMock(Catalog.class);
+        expect(eoCatalog.getLayerGroupByName("topp", eoRoadsLayerGroup.getName())).andReturn(eoRoadsLayerGroup).anyTimes();
+        expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
+        replay(eoCatalog);
+        
+        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
+        SecureCatalogImpl sc = new SecureCatalogImpl(eoCatalog, manager);
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        
+        // if root layer is not hidden
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "eoRoadsLayerGroup");                
+        assertNotNull(layerGroup);
+        assertNotNull(layerGroup.getRootLayer());
+        
+        // if root layer is hidden
+        layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");                
+        assertNull(layerGroup);        
+    }
 }

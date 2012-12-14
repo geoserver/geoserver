@@ -33,8 +33,6 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sf.cglib.transform.impl.AddStaticInitTransformer;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
@@ -79,6 +77,10 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color BG_COLOR = Color.white;
 
+    protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
+    protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
+    
+    
     /**
      * @return The global wms singleton from the application context.
      */
@@ -490,4 +492,32 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         
     }
 
+    protected LayerGroupInfo createLakesPlacesLayerGroup(Catalog catalog, LayerGroupInfo.Mode mode, LayerInfo rootLayer) throws Exception {
+        return createLakesPlacesLayerGroup(catalog, "lakes_and_places", mode, rootLayer);
+    }    
+
+    protected LayerGroupInfo createLakesPlacesLayerGroup(Catalog catalog, String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer) throws Exception {
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.setName(name);
+        
+        group.setMode(mode);
+        if (rootLayer != null) {
+            group.setRootLayer(rootLayer);
+            group.setRootLayerStyle(rootLayer.getDefaultStyle());
+        }
+        
+        group.getLayers().add(lakes);
+        group.getLayers().add(places);
+
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(group);
+        
+        catalog.add(group);
+        
+        return group;
+    }    
+        
 }

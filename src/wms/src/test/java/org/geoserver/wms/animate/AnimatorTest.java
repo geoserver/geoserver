@@ -7,7 +7,10 @@ package org.geoserver.wms.animate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -15,6 +18,8 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSTestSupport;
@@ -141,4 +146,72 @@ public class AnimatorTest extends WMSTestSupport {
         reader.setInput(iis);
         assertEquals(3, reader.getNumImages(true));
     }
+    
+    /**
+     * Animate layer groups
+     */
+    @org.junit.Test
+    public void testAnimatorLayerGroups() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo singleGroup = createLakesPlacesLayerGroup(catalog, "singleGroup", LayerGroupInfo.Mode.SINGLE, null);
+        try {
+            LayerGroupInfo namedGroup = createLakesPlacesLayerGroup(catalog, "namedGroup", LayerGroupInfo.Mode.NAMED, null);
+            try {
+                LayerGroupInfo eoGroup = createLakesPlacesLayerGroup(catalog, "eoGroup", LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));                
+                try {
+                    
+                    String requestURL = "wms/animate?BBOX=0.0000,-0.0020,0.0035,0.0010&aparam=layers&avalues=" +
+                            singleGroup.getName() + "," +
+                            namedGroup.getName() + "," +
+                            eoGroup.getName();
+                    
+                    // check we got a gif
+                    MockHttpServletResponse resp = getAsServletResponse(requestURL);
+                    assertEquals("image/gif", resp.getContentType());
+                    
+                    // check it has three frames
+                    ByteArrayInputStream bis = getBinaryInputStream(resp);
+                    ImageInputStream iis = ImageIO.createImageInputStream(bis);
+                    ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+                    reader.setInput(iis);
+
+                    // BufferedImage gif = getAsImage(requestURL, "image/gif");
+                    // ImageIO.write(gif, "gif", new File("anim.gif"));
+                    
+                    assertEquals(3, reader.getNumImages(true));
+
+                    // single group:
+                    BufferedImage image = reader.read(0);
+                    assertPixel(image, 300, 270, Color.WHITE);
+                    // places
+                    assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
+                    // lakes
+                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);                    
+
+                    // named group:
+                    image = reader.read(1);
+                    assertPixel(image, 300, 270, Color.WHITE);
+                    // places
+                    assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
+                    // lakes
+                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);                    
+                    
+                    // EO group:
+                    image = reader.read(2);
+                    assertPixel(image, 300, 270, Color.WHITE);
+                    // no places
+                    assertPixel(image, 380, 30, Color.WHITE);
+                    // lakes
+                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);               
+                } finally {
+                    catalog.remove(eoGroup);
+                }
+            } finally {
+                catalog.remove(namedGroup);
+            }                     
+        } finally {
+            catalog.remove(singleGroup);
+        }
+    }
+    
 }

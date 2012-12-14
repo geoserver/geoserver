@@ -69,7 +69,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         final List<LayerGroupInfo> layerGroups = getCatalog().getLayerGroups();
         for (LayerGroupInfo group :layerGroups ) {
             boolean enabled = true;
-            layers = group.getLayers();
+            layers = group.layers();
             for (LayerInfo layer :layers ) {
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
                 enabled &= layer.enabled();

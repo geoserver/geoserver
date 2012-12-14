@@ -202,8 +202,14 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     }
 
     protected LayerGroupInfo buildLayerGroup(String name, StyleInfo style, WorkspaceInfo ws, LayerInfo... layer) {
+        return buildLayerGroup(name, LayerGroupInfo.Mode.SINGLE, null, style, ws, layer);
+    }
+
+    protected LayerGroupInfo buildLayerGroup(String name, LayerGroupInfo.Mode type, LayerInfo rootLayer, StyleInfo style, WorkspaceInfo ws, LayerInfo... layer) {
         LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
         expect(layerGroup.getName()).andReturn(name).anyTimes();
+        expect(layerGroup.getMode()).andReturn(type).anyTimes();
+        expect(layerGroup.getRootLayer()).andReturn(rootLayer).anyTimes();
         expect(layerGroup.getLayers()).andReturn(Arrays.asList(layer)).anyTimes();
         expect(layerGroup.getStyles()).andReturn(Arrays.asList(style)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();

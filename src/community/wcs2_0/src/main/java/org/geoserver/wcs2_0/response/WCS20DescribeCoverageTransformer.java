@@ -17,6 +17,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -32,6 +33,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * job of encoding a WCS 2.0.1 DescribeCoverage document.
  * 
  * @author Emanuele Tajariol (etj) - GeoSolutions
+ * @author Simone Giannecchini, GeoSolutions
  */
 public class WCS20DescribeCoverageTransformer extends TransformerBase {
     private static final Logger LOGGER = Logging.getLogger(WCS20DescribeCoverageTransformer.class
@@ -43,14 +45,17 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
     private CoverageResponseDelegateFinder responseFactory;
 
+    /** Utility class to map envelope dimension*/
+    private EnvelopeDimensionsMapper envelopeDimensionsMapper;
+    
     /**
      * Creates a new WFSCapsTransformer object.
      */
-    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
-        super();
+    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeDimensionsMapper envelopeDimensionsMapper) {
         this.wcs = wcs;
         this.catalog = catalog;
         this.responseFactory = responseFactory;
+        this.envelopeDimensionsMapper=envelopeDimensionsMapper;
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -117,7 +122,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             end("wcs:CoverageDescriptions");
         }
 
-        void handleCoverageDescription(CoverageInfo ci) throws Exception {
+        private void handleCoverageDescription(CoverageInfo ci) throws Exception {
             final AttributesImpl coverageAttributes = new AttributesImpl();
             String encodedId = NCNameResourceCodec.encode(ci);
             coverageAttributes.addAttribute("", "gml:id", "gml:id",  "", encodedId);
@@ -155,8 +160,16 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
             // setup vars
             final String srsName = "http://www.opengis.net/def/crs/EPSG/0/4326";
-            final String axisLabels="Lat Long"; // should also add elev? time?
-            final String uomLabels="deg deg";  // should also add elev? time?
+            final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(latLonBoundingBox,true);
+            if(axesNames==null){
+                throw new WCS20Exception("Unable to map the enveloper for this coverage");
+            }
+            final StringBuilder builder= new StringBuilder();
+            for(String axisName:axesNames){
+                builder.append(axisName).append(" ");
+            }
+            final String axisLabels=builder.substring(0, builder.length()-1);//"Lat Long"; // TODO should also add elev? time?
+            final String uomLabels="deg deg";  // TODO should also add elev? time?
             final int srsDimension = crs.getCoordinateSystem().getDimension();  // should also add time?
 
             final String lower = new StringBuilder()
@@ -228,7 +241,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
 
             // setup vars
             final String gridId = "grid00__" + NCNameResourceCodec.encode(ci);
-            final String axisLabels = "Lat Long"; // should also add elev? time?
+            final String axisLabels = "Lat Long"; // TODO should also add elev? time?
             final int gridDimension = ci.getGrid().getGridRange().getDimension();
 
             final StringBuilder lowSb = new StringBuilder();

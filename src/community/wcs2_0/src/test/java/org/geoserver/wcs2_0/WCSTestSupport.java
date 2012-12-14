@@ -4,9 +4,6 @@
  */
 package org.geoserver.wcs2_0;
 
-import static junit.framework.Assert.*;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,24 +28,15 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs.WebCoverageService111;
-import org.geoserver.wcs.kvp.GetCoverageRequestReader;
-import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.wcs.v2_0.WCSConfiguration;
-import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
-import org.geotools.xml.XML;
 import org.junit.After;
-import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXParseException;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
  * Base support class for wcs tests.
@@ -56,6 +44,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * @author Andrea Aime, TOPP
  * 
  */
+@SuppressWarnings("serial")
 public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static XpathEngine xpath;
 
@@ -170,6 +159,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      * @param dom
      * @param configuration
      */
+    @SuppressWarnings("rawtypes")
     protected void checkValidationErrors(Document dom) throws Exception {
         Parser p = new Parser(new WCSConfiguration());
         p.setValidating(true);

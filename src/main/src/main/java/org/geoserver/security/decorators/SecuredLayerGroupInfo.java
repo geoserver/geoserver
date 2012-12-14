@@ -11,6 +11,7 @@ import org.geoserver.catalog.LayerInfo;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
+    private LayerInfo rootLayer;
     private List<LayerInfo> layers;
 
     /**
@@ -21,11 +22,17 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
      * @param delegate
      * @param layers
      */
-    public SecuredLayerGroupInfo(LayerGroupInfo delegate, List<LayerInfo> layers) {
+    public SecuredLayerGroupInfo(LayerGroupInfo delegate, LayerInfo rootLayer, List<LayerInfo> layers) {
         super(delegate);
+        this.rootLayer = rootLayer;
         this.layers = layers;
     }
 
+    @Override
+    public LayerInfo getRootLayer() {
+        return rootLayer;
+    }
+    
     @Override
     public List<LayerInfo> getLayers() {
         return layers;

@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.decorators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -14,6 +15,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.LayerGroupInfo.Type;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -37,14 +39,60 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getId();
     }
 
+    public LayerInfo getRootLayer() {
+        return delegate.getRootLayer();
+    }
+    
+    public StyleInfo getRootLayerStyle() {
+        return delegate.getRootLayerStyle();
+    }   
+    
     public List<LayerInfo> getLayers() {
         return delegate.getLayers();
     }
 
+    /**
+     * Warning: method content should be the same as LayerGroupInfoImpl#renderingLayers()
+     * @Override
+     */
+    public List<LayerInfo> renderingLayers() {
+        switch (getType()) {
+        case CONTAINER:
+            throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
+        case EO:
+            List<LayerInfo> rootLayerList = new ArrayList<LayerInfo>(1);
+            rootLayerList.add(getRootLayer());
+            return rootLayerList;
+        default:
+            return getLayers();
+        }
+    }
+    
+    /**
+     * Warning: method content should be the same as LayerGroupInfoImpl#renderingStyles()
+     * @Override
+     */    
+    public List<StyleInfo> renderingStyles() {
+        switch (getType()) {
+        case CONTAINER:
+            throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
+        case EO:
+            List<StyleInfo> rootLayerStyleList = new ArrayList<StyleInfo>(1);
+            rootLayerStyleList.add(getRootLayerStyle());
+            return rootLayerStyleList;
+        default:
+            return getStyles();
+        }        
+    }
+    
     public String getName() {
         return delegate.getName();
     }
 
+    public Type getType() {
+        return delegate.getType();
+    }
+    
     public WorkspaceInfo getWorkspace() {
         return delegate.getWorkspace();
     }
@@ -57,6 +105,14 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getStyles();
     }
 
+    public void setRootLayer(LayerInfo rootLayer) {
+        delegate.setRootLayer(rootLayer);
+    }
+
+    public void setRootLayerStyle(StyleInfo style) {
+        delegate.setRootLayerStyle(style);
+    }    
+    
     public void setBounds(ReferencedEnvelope bounds) {
         delegate.setBounds(bounds);
     }
@@ -65,6 +121,10 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         delegate.setName(name);
     }
 
+    public void setType(Type type) {
+        delegate.setType(type);
+    }
+    
     public void setWorkspace(WorkspaceInfo workspace) {
         delegate.setWorkspace(workspace);
     }

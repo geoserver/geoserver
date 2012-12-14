@@ -213,7 +213,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 if (o instanceof LayerInfo) {
                     layers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {
-                    for (LayerInfo l : ((LayerGroupInfo) o).getLayers()) {
+                    for (LayerInfo l : ((LayerGroupInfo) o).renderingLayers()) {
                         layers.add(new MapLayerInfo(l));
                     }
                 } else if (o instanceof MapLayerInfo) {
@@ -323,18 +323,18 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
                     if (o instanceof LayerGroupInfo) {
                         LayerGroupInfo groupInfo = (LayerGroupInfo) o;
-                        for (int j = 0; j < groupInfo.getStyles().size(); j++) {
-                            StyleInfo si = groupInfo.getStyles().get(j);
+                        for (int j = 0; j < groupInfo.renderingStyles().size(); j++) {
+                            StyleInfo si = groupInfo.renderingStyles().get(j);
                             if (si != null){
                                 newStyles.add(si.getStyle());
                             } else {
-                                LayerInfo layer = groupInfo.getLayers().get(j);
+                                LayerInfo layer = groupInfo.renderingLayers().get(j);
                                 newStyles.add(getDefaultStyle(layer));
                             }
                         }
                         // expand the filter on the layer group to all its sublayers
                         if (filters != null) {
-                            for (int j = 0; j < groupInfo.getLayers().size(); j++) {
+                            for (int j = 0; j < groupInfo.renderingLayers().size(); j++) {
                                 newFilters.add(getFilter(filters, i));
                             }
                         }
@@ -655,7 +655,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 Style style = findStyleOf(request, currLayer, styleName, styledLayers);
                 styles.add(style);
             } else if (o instanceof LayerGroupInfo) {
-                List<LayerInfo> subLayers = ((LayerGroupInfo) o).getLayers();
+                List<LayerInfo> subLayers = ((LayerGroupInfo) o).renderingLayers();
                 for (LayerInfo layer : subLayers) {
                     currLayer = new MapLayerInfo(layer);
                     layers.add(currLayer);
@@ -729,10 +729,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 } else {
                     if (wms.getLayerGroupByName(layerName) != null) {
                         LayerGroupInfo group = wms.getLayerGroupByName(layerName);
-                        for (int i = 0; i < group.getLayers().size(); i++) {
-                            LayerInfo layer = group.getLayers().get(i);
+                        for (int i = 0; i < group.renderingLayers().size(); i++) {
+                            LayerInfo layer = group.renderingLayers().get(i);
                             layers.add(new MapLayerInfo(layer));
-                            StyleInfo style = group.getStyles().get(i);
+                            StyleInfo style = group.renderingStyles().get(i);
                             if (style != null) {
                                 styles.add(style.getStyle());
                             } else {

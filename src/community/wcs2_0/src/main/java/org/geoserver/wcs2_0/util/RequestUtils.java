@@ -85,7 +85,7 @@ public class RequestUtils {
     public static void checkVersionNumber20(String v, String locator) throws ServiceException {
         if (!v.matches("[0-9]{1,2}\\.[0-9]{1,2}(\\.[0-9]{1,2})?")) {
             String msg = v + " is an invalid version number";
-            throw new OWS20Exception("Could not find any matching version", OWS20Exception.OWSExceptionCode.VersionNegotiationFailed, locator);
+            throw new OWS20Exception("Could not find any matching version,"+msg, OWS20Exception.OWSExceptionCode.VersionNegotiationFailed, locator);
         }
     }
 

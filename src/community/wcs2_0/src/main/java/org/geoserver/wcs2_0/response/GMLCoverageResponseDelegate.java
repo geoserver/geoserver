@@ -14,10 +14,8 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geoserver.wcs.responses;
+package org.geoserver.wcs2_0.response;
 
-import java.awt.image.DataBuffer;
-import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -27,12 +25,11 @@ import java.util.Map;
 
 import javax.measure.unit.Unit;
 import javax.measure.unit.UnitFormat;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.iterator.RectIter;
-import javax.media.jai.iterator.RectIterFactory;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -40,6 +37,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.NumberRange;
@@ -83,7 +81,14 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
      *
      */
     private static class GMLTransformer extends TransformerBase{
-        private static class GMLTranslator extends TranslatorSupport{
+        
+        private EnvelopeDimensionsMapper envelopeDimensionsMapper;
+        
+        public GMLTransformer(EnvelopeDimensionsMapper envelopeDimensionsMapper ) {
+            this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        }
+        
+        private class GMLTranslator extends TranslatorSupport{
 
             public GMLTranslator(ContentHandler contentHandler) {
                 super(contentHandler, null, null);
@@ -104,6 +109,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 
                 // get the crs and look for an EPSG code
                 final CoordinateReferenceSystem crs = gc2d.getCoordinateReferenceSystem2D();
+                List<String> axesNames = GMLTransformer.this.envelopeDimensionsMapper.getAxesNames(gc2d.getEnvelope2D(),true);
+               
                 // lookup EPSG code
                 Integer EPSGCode=null;
                 try {
@@ -116,16 +123,14 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 }                
                 final String srsName = GMLCoverageResponseDelegate.SRS_STARTER+EPSGCode;                
                 // handle axes swap for geographic crs
-                final boolean axisSwap = crs instanceof GeographicCRS;                
+                final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);                
                 
-                final AttributesImpl attributes = new AttributesImpl();
 
                 // TODO do we miss any of them?
+                final AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml/3.2");
                 attributes.addAttribute("", "xmlns:gmlcov", "xmlns:gmlcov", "", "http://www.opengis.net/gmlcov/1.0");
                 attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "", "http://www.opengis.net/swe/2.0");
-
-//                attributes.addAttribute("", "xmlns:myNS", "xmlns:myNS", "", "http://myNS.com");// TODO make this parametric
                 attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
                 attributes.addAttribute("", "xmlns:xsi", "xmlns:xsi", "", "http://www.w3.org/2001/XMLSchema-instance");
 
@@ -134,16 +139,27 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 start("gml:RectifiedGridCoverage",attributes);
                 
                 // handle domain
-                handleBoundedBy(gc2d, axisSwap,srsName);
+                final StringBuilder builder= new StringBuilder();
+                for(String axisName:axesNames){
+                    builder.append(axisName).append(" ");
+                }           
+                String axesLabel=builder.substring(0, builder.length()-1);
+                handleBoundedBy(gc2d, axisSwap,srsName,axesLabel);
                 
                 // handle domain
+                builder.setLength(0);
+                axesNames = GMLTransformer.this.envelopeDimensionsMapper.getAxesNames(gc2d.getEnvelope2D(),false);   
+                for(String axisName:axesNames){
+                    builder.append(axisName).append(" ");
+                }           
+                axesLabel=builder.substring(0, builder.length()-1);                
                 handleDomainSet(gc2d,gcName,srsName,axisSwap);
                 
                 // handle rangetype
                 handleRangeType(gc2d);
                 
                 // handle coverage function
-                handleCoverageFunction(gc2d);
+                handleCoverageFunction(gc2d,axisSwap);
                 
                 // handle range
                 handleRange(gc2d);
@@ -152,21 +168,37 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 handleMetadata(gc2d);
                 
                 end("gml:RectifiedGridCoverage");
+                
             }
 
-            private void handleCoverageFunction(GridCoverage2D gc2d) {
+            /**
+             * Encode the coverage function or better the GridFunction as per clause 19.3.12 of GML 3.2.1
+             * which helps us with indicating in which way we traverse the data.
+             * 
+             * <p>
+             * Notice that we use the axisOrder to actually <strong>always</strong> encode data 
+             * il easting,northing, hence in case of a northing,easting crs we use a reversed order 
+             * to indicate that we always walk on the raster columns first.
+             * 
+             * <p>
+             * In cases where the coordinates increases in the opposite order ho our walk
+             * the offsetVectors of the RectifiedGrid will do the rest.
+             * 
+             * @param gc2d
+             * @param axisSwap
+             */
+            private void handleCoverageFunction(GridCoverage2D gc2d, boolean axisSwap) {
                 start("gml:coverageFunction");
                 start("gml:GridFunction");
 
                 // build the fragment
                 final AttributesImpl gridAttrs = new AttributesImpl();
-                gridAttrs.addAttribute("", "axisOrder", "axisOrder", "", "+x -y");
+                gridAttrs.addAttribute("", "axisOrder", "axisOrder", "", axisSwap?"+2 +1":"+1 +2"); 
                 element("gml:sequenceRule", "Linear",gridAttrs); // minOccurs 0, default Linear
                 final GridEnvelope2D ge2D=gc2d.getGridGeometry().getGridRange2D();
-                element("gml:startPoint", ge2D.x+" "+ge2D.y); // we start at minx, miny
+                element("gml:startPoint", ge2D.x+" "+ge2D.y); // we start at minx, miny (this is optional though)
 
                 
-                end("gml:startPoint");
                 end("gml:GridFunction");
                 end("gml:coverageFunction");
             }
@@ -195,8 +227,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
 //                
 //                end("myNS:metadata");
 
-                end("gmlcovl:Extension");
-                end("gmlcovl:metadata");
+                end("gmlcov:Extension");
+                end("gmlcov:metadata");
             }            
             
             /**
@@ -219,17 +251,16 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
              * @param ePSGCode 
              * @param axisSwap 
              * @param srsName
+             * @param axesNames 
+             * @param axisLabels 
              */
-            private void handleBoundedBy(GridCoverage2D gc2d, boolean axisSwap, String srsName) {
+            private void handleBoundedBy(GridCoverage2D gc2d, boolean axisSwap, String srsName, String axisLabels) {
                 
-                // get the crs and look for an EPSG code
-                final CoordinateReferenceSystem crs = gc2d.getCoordinateReferenceSystem2D();
-                final CoordinateSystem cs= crs.getCoordinateSystem();
                 final GeneralEnvelope envelope=new GeneralEnvelope(gc2d.getEnvelope());
+                final CoordinateReferenceSystem crs = gc2d.getCoordinateReferenceSystem2D();
+                final CoordinateSystem cs= crs.getCoordinateSystem();    
 
                 // TODO time
-                // setup vars
-                final String axisLabels=cs.getAxis(axisSwap?1:0).getAbbreviation()+ " "+cs.getAxis(axisSwap?0:1).getAbbreviation();
                 final String uomLabels=extractUoM(crs,cs.getAxis(axisSwap?1:0).getUnit())+ " "+extractUoM(crs,cs.getAxis(axisSwap?0:1).getUnit());  
                 final int srsDimension = cs.getDimension(); 
 
@@ -290,53 +321,53 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 end("gml:rangeParameters"); 
 
                 start("tupleList");
-                // walk through the coverage and spit it out!
-                final RenderedImage raster= gc2d.getRenderedImage();
-                final int numBands=raster.getSampleModel().getNumBands();
-                final int dataType=raster.getSampleModel().getDataType();
-                final double[] valuesD= new double[numBands];
-                final int[] valuesI= new int[numBands];
-                RectIter iterator = RectIterFactory.create(raster, PlanarImage.wrapRenderedImage(raster).getBounds());
-                
-                    iterator.startLines();
-                    while (!iterator.finishedLines()) {
-                        iterator.startPixels();
-                        while (!iterator.finishedPixels()) {
-                            switch (dataType) {
-                            case DataBuffer.TYPE_BYTE:
-                            case DataBuffer.TYPE_INT:
-                            case DataBuffer.TYPE_SHORT:
-                            case DataBuffer.TYPE_USHORT:
-                                iterator.getPixel(valuesI);
-                                for(int i=0;i<numBands;i++){
-                                    // spit out
-                                    chars(String.valueOf(valuesI[i]));
-                                    if(i+1<numBands){
-                                        chars(",");
-                                    }
-                                }
-                                break;
-                            case DataBuffer.TYPE_DOUBLE:
-                            case DataBuffer.TYPE_FLOAT:
-                                iterator.getPixel(valuesD);
-                                for(int i=0;i<numBands;i++){
-                                    // spit out
-                                    chars(String.valueOf(valuesD[i]));
-                                    if(i+1<numBands){
-                                        chars(",");
-                                    }
-                                }                           
-                                break;
-                            default:
-                                break;
-                            }
-                            // space as sample separator
-                            chars(" ");
-                            iterator.nextPixel();
-                        }
-                        iterator.nextLine();
-                        chars("\n");
-                    }
+//                // walk through the coverage and spit it out!
+//                final RenderedImage raster= gc2d.getRenderedImage();
+//                final int numBands=raster.getSampleModel().getNumBands();
+//                final int dataType=raster.getSampleModel().getDataType();
+//                final double[] valuesD= new double[numBands];
+//                final int[] valuesI= new int[numBands];
+//                RectIter iterator = RectIterFactory.create(raster, PlanarImage.wrapRenderedImage(raster).getBounds());
+//                
+//                    iterator.startLines();
+//                    while (!iterator.finishedLines()) {
+//                        iterator.startPixels();
+//                        while (!iterator.finishedPixels()) {
+//                            switch (dataType) {
+//                            case DataBuffer.TYPE_BYTE:
+//                            case DataBuffer.TYPE_INT:
+//                            case DataBuffer.TYPE_SHORT:
+//                            case DataBuffer.TYPE_USHORT:
+//                                iterator.getPixel(valuesI);
+//                                for(int i=0;i<numBands;i++){
+//                                    // spit out
+//                                    chars(String.valueOf(valuesI[i]));
+//                                    if(i+1<numBands){
+//                                        chars(",");
+//                                    }
+//                                }
+//                                break;
+//                            case DataBuffer.TYPE_DOUBLE:
+//                            case DataBuffer.TYPE_FLOAT:
+//                                iterator.getPixel(valuesD);
+//                                for(int i=0;i<numBands;i++){
+//                                    // spit out
+//                                    chars(String.valueOf(valuesD[i]));
+//                                    if(i+1<numBands){
+//                                        chars(",");
+//                                    }
+//                                }                           
+//                                break;
+//                            default:
+//                                break;
+//                            }
+//                            // space as sample separator
+//                            chars(" ");
+//                            iterator.nextPixel();
+//                        }
+//                        iterator.nextLine();
+//                        chars("\n");
+//                    }
 
                 end("tupleList");
                 end("gml:DataBlock");
@@ -504,9 +535,9 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
              * 
              * @param gc2d the {@link GridCoverage2D} for which to encode the DomainSet.
              * @param srsName 
-             * @param axisSwap 
+             * @param axesSwap 
              */
-            private void handleDomainSet(GridCoverage2D gc2d, String gcName, String srsName, boolean axisSwap) {
+            private void handleDomainSet(GridCoverage2D gc2d, String gcName, String srsName, boolean axesSwap) {
                 // retrieve info
                 
                 final GridGeometry2D gg2D=gc2d.getGridGeometry();
@@ -545,9 +576,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
 
                 end("gml:limits");    
                 
-                // Axis Label
-                final String axisLabels = "x y";                
-                element("gml:axisLabels", axisLabels);
+                // Axis Label              
+                element("gml:axisLabels", "i j");
                 
                 final MathTransform2D transform = gg2D.getGridToCRS2D(PixelOrientation.UPPER_LEFT);
                 if(!(transform instanceof AffineTransform2D)){
@@ -562,8 +592,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 pointAttr.addAttribute("", "srsName", "srsName", "", srsName);                
                 start("gml:origin");
                 start("gml:Point",pointAttr);                
-                element("gml:pos", g2W.getTranslateX()+" "+g2W.getTranslateY()); 
-                start("gml:Point");                
+                element("gml:pos",axesSwap?g2W.getTranslateY()+" "+g2W.getTranslateX():g2W.getTranslateX()+" "+g2W.getTranslateY()); 
+                end("gml:Point");                
                 end("gml:origin");
                 
                 // Offsets
@@ -572,8 +602,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
 
                 // notice the orientation of the transformation I create. The origin of the coordinates
                 // in this grid is not at UPPER LEFT like in our grid to world but at LOWER LEFT !!!                
-                element("gml:offsetVector", Double.valueOf(axisSwap?g2W.getShearX():g2W.getScaleX())+" "+Double.valueOf(axisSwap?g2W.getScaleX():g2W.getShearX()),offsetAttr); 
-                element("gml:offsetVector", Double.valueOf(axisSwap?g2W.getScaleY():g2W.getShearY())+" "+Double.valueOf(axisSwap?g2W.getShearY():g2W.getScaleY()),offsetAttr);                 
+                element("gml:offsetVector", Double.valueOf(axesSwap?g2W.getShearX():g2W.getScaleX())+" "+Double.valueOf(axesSwap?g2W.getScaleX():g2W.getShearX()),offsetAttr); 
+                element("gml:offsetVector", Double.valueOf(axesSwap?g2W.getScaleY():g2W.getShearY())+" "+Double.valueOf(axesSwap?g2W.getShearY():g2W.getScaleY()),offsetAttr);                 
                 end("gml:RectifiedGrid");
                 end("gml:domainSet");
 
@@ -587,8 +617,16 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
         }
         
     }
+
+    /** Can be used to map dimensions name to indexes*/
+    private EnvelopeDimensionsMapper envelopeDimensionsMapper;
     
 
+
+    public GMLCoverageResponseDelegate(EnvelopeDimensionsMapper envelopeDimensionsMapper) {
+        this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        
+    }
 
     @Override
     public boolean canProduce(String outputFormat) {
@@ -611,7 +649,7 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
             IOException {
         
         
-        final GMLTransformer transformer= new GMLTransformer();
+        final GMLTransformer transformer= new GMLTransformer(envelopeDimensionsMapper);
         transformer.setIndentation(4);
         try {
             transformer.transform(coverage, output);

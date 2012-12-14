@@ -12,6 +12,7 @@
   <bean id="wcs20ServiceTarget" class="org.geoserver.wcs2_0.DefaultWebCoverageService20">
     <constructor-arg ref="geoServer" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
+    <constructor-arg ref="envelopeDimensionsMapper"/>
   </bean>
 <!--  
     <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger">
@@ -96,5 +97,14 @@
       </list>
     </constructor-arg>
   </bean>
+  
+  <!--  Envelope dimensions mapper util class-->
+  <bean id="envelopeDimensionsMapper" class="org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper"/> 
 
+
+  <bean id="GMLCoverageResponseDelegate" class="org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate">
+      <constructor-arg index="0">
+        <ref local="envelopeDimensionsMapper" />
+    </constructor-arg>
+  </bean>
 </beans>

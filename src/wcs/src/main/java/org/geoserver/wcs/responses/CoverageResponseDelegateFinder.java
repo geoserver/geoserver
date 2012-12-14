@@ -38,23 +38,7 @@ public class CoverageResponseDelegateFinder implements ApplicationContextAware {
         List<CoverageResponseDelegate> delegates = GeoServerExtensions.extensions(CoverageResponseDelegate.class, applicationContext);
         for (CoverageResponseDelegate delegate : delegates) {
             if (delegate.isAvailable() && delegate.canProduce(outputFormat)) {
-                try {
-                    if (delegate != null) {
-                        return delegate.getClass().newInstance();
-                    }
-                } catch (IllegalAccessException ex) {
-                    final NoSuchElementException e = new NoSuchElementException(new StringBuffer(
-                            "Can't create the encoder ").append(delegate.getClass().getName())
-                            .toString());
-                    e.initCause(ex);
-                    throw e;
-                } catch (InstantiationException ex) {
-                    final NoSuchElementException e = new NoSuchElementException(new StringBuffer(
-                            "Can't create the encoder ").append(delegate.getClass().getName())
-                            .toString());
-                    e.initCause(ex);
-                    throw e;
-                }
+                return delegate;
             }
         }
 

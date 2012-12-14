@@ -13,6 +13,7 @@ import org.geoserver.platform.OWS20Exception;
  * All errors should be wrapped in this before returning to clients.
  * 
  * @author Emanuele Tajariol, GeoSolutions SAS
+ * @author Simone Giannecchini, GeoSolutionS SAS
  */
 public class WCS20Exception extends OWS20Exception {
     /**
@@ -25,16 +26,14 @@ public class WCS20Exception extends OWS20Exception {
         public final static OWSExceptionCode NoSuchCoverage = new WCSExceptionCode("NoSuchCoverage", 404);
         public final static OWSExceptionCode EmptyCoverageIdList = new WCSExceptionCode("emptyCoverageIdList", 404);
         public final static OWSExceptionCode InvalidEncodingSyntax = new WCSExceptionCode("InvalidEncodingSyntax", 400);
+        public final static OWSExceptionCode InvalidScaleFactor = new WCSExceptionCode("InvalidScaleFactor", 404);
+        public final static OWSExceptionCode InvalidExtent = new WCSExceptionCode("InvalidExtent", 404);
+        public final static OWSExceptionCode ScalingAxisUndefined = new WCSExceptionCode("ScalingAxisUndefined", 404);
 
         protected WCSExceptionCode(String exceptionCode, Integer httpCode) {
             super(exceptionCode, httpCode);
         }        
     }
-
-    /**
-     * The fixed MIME type of a WCS exception.
-     */
-    private static final String SE_XML = "application/vnd.ogc.se_xml";
 
     public WCS20Exception(String message) {
         super(message);

@@ -18,6 +18,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
+import org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
@@ -36,11 +37,15 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     private GeoServer geoServer;
 
     private CoverageResponseDelegateFinder responseFactory;
+    
+    /** Utility class to map envelope dimension*/
+    private EnvelopeDimensionsMapper envelopeDimensionsMapper;
 
-    public DefaultWebCoverageService20(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory) {
+    public DefaultWebCoverageService20(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory, EnvelopeDimensionsMapper envelopeDimensionsMapper) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;
+        this.envelopeDimensionsMapper=envelopeDimensionsMapper;
     }
     
     @Override
@@ -67,7 +72,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
         WCSInfo wcs = getServiceInfo();
 
-        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory);
+        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeDimensionsMapper);
         describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
         return describeTransformer;
     }
@@ -81,7 +86,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
             throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
         }
         
-        return new GetCoverage(getServiceInfo(), catalog).run(request);
+        return new GetCoverage(getServiceInfo(), catalog,envelopeDimensionsMapper).run(request);
     }
 
     private void checkVersion(String version) {

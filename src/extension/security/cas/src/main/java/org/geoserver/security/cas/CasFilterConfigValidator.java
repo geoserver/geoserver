@@ -8,8 +8,6 @@ package org.geoserver.security.cas;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import oracle.net.ano.SupervisorService;
-
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;

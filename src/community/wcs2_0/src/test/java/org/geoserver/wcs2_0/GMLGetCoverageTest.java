@@ -2,11 +2,11 @@ package org.geoserver.wcs2_0;
 
 import static junit.framework.Assert.assertEquals;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.geoserver.wcs.responses.GMLCoverageResponseDelegate;
+import org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 /**
@@ -37,10 +37,8 @@ public class GMLGetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
         assertEquals("application/gml+xml", response.getContentType());
-        final File testFile= File.createTempFile("gmlgetcov", "gml",new File("./target"));
-        FileUtils.write(testFile, response.getOutputStreamContent());
-//        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
-//        print(dom);
+        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        print(dom);
 
     }
 }

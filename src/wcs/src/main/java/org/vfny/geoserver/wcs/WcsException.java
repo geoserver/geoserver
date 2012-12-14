@@ -34,7 +34,8 @@ public class WcsException extends ServiceException {
         PredictorNotSupported, 
         PredictorInvalid, 
         InterleavingInvalid, 
-        InterleavingNotSupported,
+        InterleavingNotSupported, 
+        InvalidSubsetting,
     }
 
     /**

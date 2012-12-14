@@ -85,6 +85,33 @@
   	<property name="roleParameterAssignmentString" value="="/>  
   </bean>
   
+  <!-- This is an example how to inject a security filter
+   
+  <bean id="roleFilterConfig" class="org.geoserver.security.config.RoleFilterConfig">
+    <property name="name" value="roleFilter"/>
+    <property name="className" value="org.geoserver.security.filter.GeoServerRoleFilter"/>
+   	<property name="httpResponseHeaderAttrForIncludedRoles" value="roles" />
+  	<property name="roleConverterName" value="roleConverter"/>      
+  </bean>
+  
+  <bean id="roleFilter" class="org.geoserver.security.filter.GeoServerRoleFilter" >
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject">
+        <ref local="roleFilter"/>
+    </property>
+    <property name="targetMethod">
+        <value>initializeFromConfig</value>
+    </property>
+    <property name="arguments">
+        <list>
+            <ref bean="roleFilterConfig"/>            
+        </list>
+    </property>
+  </bean>
+   -->
+  
    
 
   <bean id="xmlSecurityProvider" class="org.geoserver.security.xml.XMLSecurityProvider"/>

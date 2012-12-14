@@ -4,19 +4,19 @@
  */
 package org.geoserver.security.validation;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
 import static org.geoserver.security.validation.SecurityConfigException.*;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.HtmlLoginFilterChain;
+import org.geoserver.security.ServiceLoginFilterChain;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
@@ -34,7 +34,6 @@ import org.geoserver.security.impl.MemoryRoleService;
 import org.geoserver.security.impl.MemoryUserGroupService;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.xml.XMLRoleService;
-import org.geoserver.security.xml.XMLSecurityConfigValidator;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Test;
@@ -104,6 +103,123 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         } catch (SecurityConfigException ex){
             assertEquals(AUTH_PROVIDER_NOT_FOUND_$1,ex.getId());
         }
+        
+        config.getAuthProviderNames().remove("XX");
+        
+//        try {
+//            validator.validateManagerConfig(config);
+//            fail("empty filter chain  should fail");
+//        } catch (SecurityConfigException ex){
+//            assertEquals(FILTER_CHAIN_NULL_ERROR,ex.getId());
+//            assertEquals(0,ex.getArgs().length);
+//        }
+
+        GeoServerSecurityFilterChain filterChain = new GeoServerSecurityFilterChain();
+        config.setFilterChain(filterChain);
+        
+        ServiceLoginFilterChain chain = new ServiceLoginFilterChain();
+        filterChain.getRequestChains().add(chain);
+        
+        try {
+            validator.validateManagerConfig(config);
+            fail("chain with no name should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(FILTER_CHAIN_NAME_MANDATORY,ex.getId());
+            assertEquals(0,ex.getArgs().length);
+        }
+        
+        String chainName="testChain";
+        chain.setName(chainName);
+        
+        try {
+            validator.validateManagerConfig(config);
+            fail("chain with no patterns should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(PATTERN_LIST_EMPTY_$1,ex.getId());
+            assertEquals(1,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+        }
+        chain.getPatterns().add("/**");        
+        chain.setDisabled(true);
+        validator.validateManagerConfig(config);
+        chain.setDisabled(false);
+        
+        try {
+            validator.validateManagerConfig(config);
+            fail("enabled authentication chain with no filter should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(FILTER_CHAIN_EMPTY_$1,ex.getId());
+            assertEquals(1,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+        }
+        
+        String unknownFilter="unknown";
+        chain.getFilterNames().add(unknownFilter);
+        chain.setRoleFilterName("XX");
+        try {
+            validator.validateManagerConfig(config);
+            fail("unknown role filter should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(UNKNOWN_ROLE_FILTER_$2,ex.getId());
+            assertEquals(2,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+            assertEquals("XX",ex.getArgs()[1]);
+        }
+
+        chain.setRoleFilterName(GeoServerSecurityFilterChain.ROLE_FILTER);
+        chain.getFilterNames().add(0,GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+        try {
+            validator.validateManagerConfig(config);
+            fail("anonymous not last should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(ANONYMOUS_NOT_LAST_$1,ex.getId());
+            assertEquals(1,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+        }
+
+        chain.getFilterNames().remove(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+        chain.getFilterNames().add(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+
+        try {
+            validator.validateManagerConfig(config);
+            fail("unknown  filter should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(UNKNOWN_FILTER_$2,ex.getId());
+            assertEquals(2,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+            assertEquals(unknownFilter,ex.getArgs()[1]);
+        }
+        
+        chain.getFilterNames().remove(unknownFilter);
+        chain.getFilterNames().add(0,GeoServerSecurityFilterChain.ROLE_FILTER);
+
+        try {
+            validator.validateManagerConfig(config);
+            fail("no authentication filter should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(NOT_AN_AUTHENTICATION_FILTER_$2,ex.getId());
+            assertEquals(2,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+            assertEquals(GeoServerSecurityFilterChain.ROLE_FILTER,ex.getArgs()[1]);
+        }
+                
+        chain.getFilterNames().remove(GeoServerSecurityFilterChain.ROLE_FILTER);
+        chain.getFilterNames().add(0,GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
+        
+        try {
+            validator.validateManagerConfig(config);
+            fail("form login filter should fail");
+        } catch (SecurityConfigException ex){
+            assertEquals(NOT_A_SERVICE_AUTHENTICATION_FILTER_$2,ex.getId());
+            assertEquals(2,ex.getArgs().length);
+            assertEquals(chainName,ex.getArgs()[0]);
+            assertEquals(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER,ex.getArgs()[1]);
+        }
+
+        chain.getFilterNames().remove(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
+        chain.getFilterNames().add(0,GeoServerSecurityFilterChain.BASIC_AUTH_FILTER);
+        validator.validateManagerConfig(config);
+
     }
 
     @Test

@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerRequestHeaderAuthenticationProvider extends AbstractFilter
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("requestHeaderAuthentication", GeoServerRequestHeaderAuthenticationFilter.class);
+        xp.getXStream().alias("requestHeaderAuthentication", RequestHeaderAuthenticationFilterConfig.class);
     }
 
     @Override

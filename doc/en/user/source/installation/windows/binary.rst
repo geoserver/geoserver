@@ -32,7 +32,7 @@ You will need to set the ``JAVA_HOME`` environment variable if it is not already
 
 #. Click OK three times.
 
-.. note:: You may also want to set the ``GEOSERVER_HOME`` variable, which is the directory where GeoServer is installed, and the ``GEOSERVER_DATA_DIR`` variable, which is the location of the GeoServer data directory (usually :file:`%GEOSERVER_HOME\\data_dir`).  The latter is mandatory if you wish to use a data directory other than the one built in to GeoServer.  The procedure for setting these variables is identical to the above.
+.. note:: You may also want to set the ``GEOSERVER_HOME`` variable, which is the directory where GeoServer is installed, and the ``GEOSERVER_DATA_DIR`` variable, which is the location of the GeoServer data directory (usually :file:`%GEOSERVER_HOME\\data_dir`).  The latter is mandatory if you wish to use a data directory other than the one built in to GeoServer. The procedure for setting these variables is identical to the above. Note that the specified data directory should be a valid :ref:`data_directory`.
 
 Running
 -------

@@ -7,7 +7,7 @@ package org.geoserver.security;
 import static org.junit.Assert.*;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.config.GeoServerRoleFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.filter.GeoServerRoleFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.test.SystemTest;
@@ -25,7 +25,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
     public void testFilterChainWithEnabled() throws Exception {
         
         GeoServerSecurityManager secMgr = getSecurityManager();
-        GeoServerRoleFilterConfig config = new GeoServerRoleFilterConfig();
+        RoleFilterConfig config = new RoleFilterConfig();
         config.setName("roleConverter");
         config.setClassName(GeoServerRoleFilter.class.getName());
         config.setRoleConverterName("roleConverter");

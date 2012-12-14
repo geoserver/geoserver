@@ -27,14 +27,12 @@ public class CasFilterConfigException extends FilterConfigException {
         
     }
     
-    public static final String CAS_SERVICE_URL_REQUIRED ="CAS_SERVICE_URL_REQUIRED";
     public static final String CAS_SERVER_URL_REQUIRED ="CAS_SERVER_URL_REQUIRED";
-    public static final String CAS_SERVICE_URL_MALFORMED ="CAS_SERVICE_URL_MALFORMED";
     public static final String CAS_SERVER_URL_MALFORMED ="CAS_SERVER_URL_MALFORMED";
     public static final String CAS_URL_IN_LOGOUT_PAGE_MALFORMED ="CAS_URL_IN_LOGOUT_PAGE_MALFORMED";
     public static final String CAS_PROXYCALLBACK_MALFORMED="CAS_PROXYCALLBACK_MALFORMED";
     public static final String CAS_PROXYCALLBACK_NOT_HTTPS="CAS_PROXYCALLBACK_NOT_HTTPS";
-    public static final String CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST="CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST";            
+                
 
 
 }

@@ -7,6 +7,7 @@ package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 
 /**
  * Security provider for {@link GeoServerUserNamePasswordAuthenticationFilter}
@@ -18,7 +19,7 @@ public class GeoServerX509CertificateAuthenticationProvider extends AbstractFilt
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("x509Filter", GeoServerX509CertificateAuthenticationFilter.class);
+        xp.getXStream().alias("x509Filter", X509CertificateAuthenticationFilterConfig.class);
     }
 
     @Override

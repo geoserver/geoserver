@@ -99,4 +99,17 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         }
         return null;     
     }
+    
+    protected String getRequestPath(HttpServletRequest request) {
+        String url = request.getServletPath();
+
+        if (request.getPathInfo() != null) {
+            url += request.getPathInfo();
+        }
+
+        url = url.toLowerCase();
+
+        return url;
+    }
+
 }

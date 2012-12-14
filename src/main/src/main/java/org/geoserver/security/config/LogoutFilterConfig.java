@@ -14,5 +14,23 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 public class LogoutFilterConfig extends SecurityFilterConfig {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Optional, redirect URL after a successful logout
+     * If empty, the client will receive an HTTP 200 response.
+     *  
+     * This URL can be an absolute URL or relative to 
+     * the GeoServer root context like the default 
+     * {@link GeoServerLogoutFilter#URL_AFTER_LOGOUT}
+     */
+    private String redirectURL;
+
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
+    public void setRedirectURL(String redirectURL) {
+        this.redirectURL = redirectURL;
+    }
 
 }

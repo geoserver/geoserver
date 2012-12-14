@@ -5,6 +5,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -17,7 +18,7 @@ public class GeoServerAnonymousAuthenticationProvider extends AbstractFilterProv
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("anonymousAuthentication", GeoServerAnonymousAuthenticationFilter.class);
+        xp.getXStream().alias("anonymousAuthentication", AnonymousAuthenticationFilterConfig.class);
     }
 
     @Override

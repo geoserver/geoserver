@@ -4,41 +4,32 @@
  */
 package org.geoserver.security.cas;
 
-import org.geoserver.security.config.SecurityAuthFilterConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 
 
 
 /**
- * Configuration for cas authentication, acting
- * as replacement for a form login and  handling
- * the proxy receptor url
+ * Configuration for cas authentication receiving proxy tickets
  * 
  * 
  * @author mcr
  *
  */
-public class CasAuthenticationFilterConfig extends SecurityFilterConfig implements CasAuthenticationProperties,SecurityAuthFilterConfig {
+public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilterConfig   {
+
+
 
     private static final long serialVersionUID = 1L;
     
-    private String userGroupServiceName;
-     
-
-    /**
-     * The geoserver url where the case server sends credential information
-     * 
-     * example:
-     * http://localhost:8080/geoserver/j_spring_cas_security_check
-     */
-    private String service;
-
+    
+    
     
     /**
      * if true, no single sign on possible
      */
     private boolean sendRenew;
     
+        
     /**
      * The CAS server URL including context root
      * 
@@ -52,11 +43,11 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
      * The geoserver url for the proxy callback 
      * 
      * example:
-     * https://myhost:8443/geoserver
+     * http://localhost:8080/geoserver
      */
     
     private String proxyCallbackUrlPrefix;
-
+        
 
     /**
      * Optional:
@@ -70,44 +61,18 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
      * example:
      * https://myhost:8443/geoserver
      */
+    
     private String urlInCasLogoutPage;
-
     
+    /**
+     * Participate in Single Sign Out.
+     * 
+     */
+    private boolean singleSignOut;
     
-    public String getUrlInCasLogoutPage() {
-        return urlInCasLogoutPage;
-    }
-
-    public void setUrlInCasLogoutPage(String urlInCasLogoutPage) {
-        this.urlInCasLogoutPage = urlInCasLogoutPage;
-    }
-
-
-
-
-    /* (non-Javadoc)
-     * @see org.geoserver.security.cas.CasAuthenticationProperties#getCasServerUrlPrefix()
-     */
-    @Override
-    public String getCasServerUrlPrefix() {
-        return casServerUrlPrefix;
-    }
-
-
-
-    public void setCasServerUrlPrefix(String casServerUrlPrefix) {
-        this.casServerUrlPrefix = casServerUrlPrefix;
-    }
-
-
-    /* (non-Javadoc)
-     * @see org.geoserver.security.cas.CasAuthenticationProperties#isSendRenew()
-     */
-    @Override
     public boolean isSendRenew() {
         return sendRenew;
     }
-
 
 
     public void setSendRenew(boolean sendRenew) {
@@ -115,19 +80,13 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
     }
 
 
-    public String getUserGroupServiceName() {
-        return userGroupServiceName;
+    public String getCasServerUrlPrefix() {
+        return casServerUrlPrefix;
     }
 
 
-
-    public void setUserGroupServiceName(String userGroupServiceName) {
-        this.userGroupServiceName = userGroupServiceName;
-    }
-    
-    @Override
-    public  boolean providesAuthenticationEntryPoint() {
-        return true;
+    public void setCasServerUrlPrefix(String casServerUrlPrefix) {
+        this.casServerUrlPrefix = casServerUrlPrefix;
     }
 
 
@@ -141,13 +100,31 @@ public class CasAuthenticationFilterConfig extends SecurityFilterConfig implemen
         this.proxyCallbackUrlPrefix = proxyCallbackUrlPrefix;
     }
 
-    public String getService() {
-        return service;
+      
+    @Override
+    public boolean providesAuthenticationEntryPoint() {
+        return true;
     }
 
-    public void setService(String service) {
-        this.service = service;
+
+
+    public String getUrlInCasLogoutPage() {
+        return urlInCasLogoutPage;
     }
- 
-    
+
+
+    public void setUrlInCasLogoutPage(String urlInCasLogoutPage) {
+        this.urlInCasLogoutPage = urlInCasLogoutPage;
+    }
+
+
+    public boolean isSingleSignOut() {
+        return singleSignOut;
+    }
+
+
+    public void setSingleSignOut(boolean singleSignOut) {
+        this.singleSignOut = singleSignOut;
+    }
+
 }

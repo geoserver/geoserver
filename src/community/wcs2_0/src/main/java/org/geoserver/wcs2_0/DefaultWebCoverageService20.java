@@ -51,13 +51,16 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
     @Override
     public TransformerBase getCapabilities(GetCapabilitiesType request) {
+        checkService(request.getService());
 
         return new GetCapabilities(getServiceInfo(), catalog, responseFactory).run(request);
     }
 
     @Override
     public WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
+        checkService(request.getService());
         checkVersion(request.getVersion());
+        
         if( request.getCoverageId() == null || request.getCoverageId().isEmpty() ) {
             throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
         }
@@ -71,7 +74,9 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
     @Override
     public GridCoverage getCoverage(GetCoverageType request) {
+        checkService(request.getService());
         checkVersion(request.getVersion());
+
         if( request.getCoverageId() == null || "".equals(request.getCoverageId()) ) {
             throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
         }
@@ -86,6 +91,15 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
         if ( ! WCS20Const.V20x.equals(version) && ! WCS20Const.V20.equals(version)) {
             throw new WCS20Exception("Could not understand version:" + version);
+        }
+    }
+
+    private void checkService(String serviceName) {
+        if( serviceName == null ) {
+            throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
+        }
+        if( ! "WCS".equals(serviceName)) {
+            throw new WCS20Exception("Error in service name", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
         }
     }
 

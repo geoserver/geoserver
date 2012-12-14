@@ -22,6 +22,7 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -99,11 +100,12 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testLast() throws Exception {
-        setupFilterEntry(Pos.LAST, null, true);
-
-        HttpServletRequest request = createRequest("/foo");
-        MockHttpServletResponse response = dispatch(request);
-        assertEquals("bar", response.getHeader("foo"));
+        try {
+            setupFilterEntry(Pos.LAST, null, true);
+            fail("SecurityConfigException missing, anonymous filter must be the last one");
+        } catch (SecurityConfigException ex) {
+            
+        }
     }
 
     @Test
@@ -119,7 +121,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
     @Test
     public void testAfter() throws Exception {
         setupFilterEntry(Pos.AFTER, 
-            GeoServerSecurityFilterChain.ANONYMOUS_FILTER, true);
+            GeoServerSecurityFilterChain.BASIC_AUTH_FILTER, true);
 
         HttpServletRequest request = createRequest("/foo");
         MockHttpServletResponse response = dispatch(request);
@@ -156,7 +158,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         }
     }
 
-    static class Filter extends GeoServerSecurityFilter {
+    static class Filter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
 
         boolean assertAuth = true;
 
@@ -170,15 +172,25 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                 throws IOException, ServletException {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (assertAuth) {
-                assertNotNull(auth);
-            }
-            else {
-                assertNull(auth);
-            }
+//            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//            if (assertAuth) {
+//                assertNotNull(auth);
+//            }
+//            else {
+//                assertNull(auth);
+//            }
             ((HttpServletResponse)response).setHeader("foo", "bar");
             chain.doFilter(request, response);
+        }
+
+        @Override
+        public boolean applicableForHtml() {
+            return true;
+        }
+
+        @Override
+        public boolean applicableForServices() {
+            return true;
         }
     }
 }

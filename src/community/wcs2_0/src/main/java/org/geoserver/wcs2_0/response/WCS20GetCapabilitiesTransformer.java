@@ -243,7 +243,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             
             handleKeywords(wcs.getKeywords());
 
-            element("ows:ServiceType", "urn:ogc:service:wcs");
+            element("ows:ServiceType", "urn:ogc:service:wcs"); // TODO: check this: some docs specify a "OGC WCS" string
             element("ows:ServiceTypeVersion", WCS20Const.V20x);
             element("ows:ServiceTypeVersion", WCS20Const.V111);
             element("ows:ServiceTypeVersion", WCS20Const.V110);
@@ -252,6 +252,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
             //element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
+
+//            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
+            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_geotiff/1.0/"); // TODO: check specs and URL
+            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_gml/1.0/"); // TODO: check specs and URL
 
             String fees = wcs.getFees();
             if ( isBlank(fees)) {
@@ -318,6 +322,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             start("ows:Constraint", attributes);
             start("ows:AllowedValues");
             element("ows:Value", "XML");
+//            element("ows:Value", "text/xml");
+//            element("ows:Value", "application/xml");
             end("ows:AllowedValues");
             end("ows:Constraint");
 

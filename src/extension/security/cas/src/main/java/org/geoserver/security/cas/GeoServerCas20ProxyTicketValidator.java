@@ -7,7 +7,9 @@
 package org.geoserver.security.cas;
 
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.geotools.util.logging.Logging;
 import org.jasig.cas.client.util.XmlUtils;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
@@ -32,6 +34,7 @@ import org.jasig.cas.client.validation.TicketValidationException;
  */
 public class GeoServerCas20ProxyTicketValidator extends Cas20ServiceTicketValidator {
 
+    static Logger LOGGER = Logging.getLogger("org.geoserver.security.cas");
     private boolean acceptAnyProxy;
 
     /** This should be a list of an array of Strings */
@@ -55,6 +58,9 @@ public class GeoServerCas20ProxyTicketValidator extends Cas20ServiceTicketValida
 
         if (proxiedList.length>0) {
             assertion.getAttributes().put(GeoServerCasConstants.CAS_PROXYLIST_KEY, proxiedList);
+            LOGGER.info("Proxy ticket validated");
+        } else {
+            LOGGER.info("Service ticket validated");
         }
         
         // this means there was nothing in the proxy chain, which is okay

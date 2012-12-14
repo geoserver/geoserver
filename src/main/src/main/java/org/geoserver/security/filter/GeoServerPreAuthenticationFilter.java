@@ -153,9 +153,34 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
 
     @Override
     public String getCacheKey(HttpServletRequest request) {
+        
+        if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
+            return null;
+        
+        if (request.getSession(false)!=null) // no caching if there is an HTTP session
+            return null;
+        
         String retval = getPreAuthenticatedPrincipal(request);
         if (GeoServerUser.ROOT_USERNAME.equals(retval))
             return null;
         return retval;
     }
+    
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return true;
+    }
+
 }

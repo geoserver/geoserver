@@ -8,6 +8,8 @@ package org.geoserver.security.cas;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import oracle.net.ano.SupervisorService;
+
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -28,31 +30,44 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
         
     }
 
+ 
+    @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
-        
-        if (config instanceof CasAuthenticationFilterConfig)
-            validateFilterConfig((CasAuthenticationFilterConfig)config);
-        if (config instanceof CasProxiedAuthenticationFilterConfig)
-            validateFilterConfig((CasProxiedAuthenticationFilterConfig)config);
 
-        super.validateFilterConfig(config);
+        if (config instanceof CasAuthenticationFilterConfig) {
+            validateCASFilterConfig((CasAuthenticationFilterConfig)config);
+        } else {
+            super.validateFilterConfig(config);
+        }
+        
+
     }
-
-    public void validateFilterConfig(CasAuthenticationProperties config) throws FilterConfigException {
+    
+    public void validateCASFilterConfig(CasAuthenticationFilterConfig casConfig) throws FilterConfigException {
+                        
         
-        if (StringUtils.hasLength(config.getCasServerUrlPrefix())==false)
+        if (StringUtils.hasLength(casConfig.getUrlInCasLogoutPage())) {    
+            try {
+                new URL(casConfig.getUrlInCasLogoutPage());
+            } catch (MalformedURLException ex) {
+                throw  createFilterException(CasFilterConfigException.CAS_URL_IN_LOGOUT_PAGE_MALFORMED);
+            }
+        }
+        super.validateFilterConfig( (PreAuthenticatedUserNameFilterConfig) casConfig);
+        
+        if (StringUtils.hasLength(casConfig.getCasServerUrlPrefix())==false)
             throw  createFilterException(CasFilterConfigException.CAS_SERVER_URL_REQUIRED);
     
         try {
-            new URL(config.getCasServerUrlPrefix());
+            new URL(casConfig.getCasServerUrlPrefix());
         } catch (MalformedURLException ex) {
             throw  createFilterException(CasFilterConfigException.CAS_SERVER_URL_MALFORMED);
         }        
         
-        if (StringUtils.hasLength(config.getProxyCallbackUrlPrefix())) {
+        if (StringUtils.hasLength(casConfig.getProxyCallbackUrlPrefix())) {
             URL callBackUrl=null;
             try {
-                callBackUrl=new URL(config.getProxyCallbackUrlPrefix());
+                callBackUrl=new URL(casConfig.getProxyCallbackUrlPrefix());
             } catch (MalformedURLException ex) {
                 throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_MALFORMED);
             }
@@ -60,48 +75,9 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
                 throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_NOT_HTTPS);
             
         }
-    }
-
-    public void validateFilterConfig(CasProxiedAuthenticationFilterConfig config) throws FilterConfigException {
-        validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config);
-        validateFilterConfig((CasAuthenticationProperties) config);
+       
     }
     
-    public void validateFilterConfig(CasAuthenticationFilterConfig config) throws FilterConfigException {
-
-        if (StringUtils.hasLength(config.getUrlInCasLogoutPage())) {    
-            try {
-                new URL(config.getCasServerUrlPrefix());
-            } catch (MalformedURLException ex) {
-                throw  createFilterException(CasFilterConfigException.CAS_URL_IN_LOGOUT_PAGE_MALFORMED);
-            }
-        }
-        
-        URL serviceUrl=null;
-        if (StringUtils.hasLength(config.getService())==false)
-           throw  createFilterException(CasFilterConfigException.CAS_SERVICE_URL_REQUIRED);        
-        try {
-           serviceUrl= new URL(config.getService());
-        } catch (MalformedURLException ex) {
-          throw  createFilterException(CasFilterConfigException.CAS_SERVICE_URL_MALFORMED);
-        }
-
-        if (StringUtils.hasLength(config.getProxyCallbackUrlPrefix())) {
-            URL callBackUrl=null;
-            try {
-                callBackUrl=new URL(config.getProxyCallbackUrlPrefix());
-            } catch (MalformedURLException ex) {
-                throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_MALFORMED);
-            }
-            if (callBackUrl.getHost().equals(serviceUrl.getHost())==false)
-                throw  createFilterException(CasFilterConfigException.CAS_PROXYCALLBACK_HOST_UNEQUAL_SERVICE_HOST);
-        }
-
-              
-        checkExistingUGService(config.getUserGroupServiceName());
-        
-        validateFilterConfig((CasAuthenticationProperties) config);                  
-    }
 
     protected CasFilterConfigException createFilterException (String errorid, Object ...args) {
         return new CasFilterConfigException(errorid,args);

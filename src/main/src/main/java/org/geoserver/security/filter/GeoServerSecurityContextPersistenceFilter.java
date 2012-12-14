@@ -7,7 +7,10 @@ package org.geoserver.security.filter;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -21,6 +24,10 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
  *
  */
 public class GeoServerSecurityContextPersistenceFilter extends GeoServerCompositeFilter {
+    
+    public final static String ALLOWSESSIONCREATION_ATTR = "_allowSessionCreation"; 
+    Boolean isAllowSessionCreation;
+    
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
@@ -30,7 +37,16 @@ public class GeoServerSecurityContextPersistenceFilter extends GeoServerComposit
                 (SecurityContextPersistenceFilterConfig) config;
                 
         HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
-        SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter(repo);
+        SecurityContextPersistenceFilter filter = new SecurityContextPersistenceFilter(repo) {
+          @Override
+        public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+                throws IOException, ServletException {
+                 // set the hint for authentcation servlets
+                 req.setAttribute(ALLOWSESSIONCREATION_ATTR, isAllowSessionCreation);
+            super.doFilter(req, res, chain);
+        }  
+        };
+        isAllowSessionCreation=pConfig.isAllowSessionCreation();
         repo.setAllowSessionCreation(pConfig.isAllowSessionCreation());        
         filter.setForceEagerSessionCreation(false);
 

@@ -13,7 +13,7 @@ import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
-import org.geoserver.security.config.GeoServerRoleFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
@@ -74,8 +74,8 @@ public class FilterConfigValidator extends SecurityConfigValidator {
             validateFilterConfig((BasicAuthenticationFilterConfig)config);
         if (config instanceof DigestAuthenticationFilterConfig)
             validateFilterConfig((DigestAuthenticationFilterConfig)config);
-        if (config instanceof GeoServerRoleFilterConfig)
-            validateFilterConfig((GeoServerRoleFilterConfig)config);
+        if (config instanceof RoleFilterConfig)
+            validateFilterConfig((RoleFilterConfig)config);
         if (config instanceof X509CertificateAuthenticationFilterConfig)
             validateFilterConfig((X509CertificateAuthenticationFilterConfig)config);
         if (config instanceof UsernamePasswordAuthenticationFilterConfig)
@@ -161,7 +161,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
             throw createFilterException(FilterConfigException.INVALID_SECONDS);
     }
     
-    public void validateFilterConfig(GeoServerRoleFilterConfig config) throws FilterConfigException {
+    public void validateFilterConfig(RoleFilterConfig config) throws FilterConfigException {
         if (isNotEmpty(config.getHttpResponseHeaderAttrForIncludedRoles())==false) {
                 throw 
                   createFilterException(FilterConfigException.HEADER_ATTRIBUTE_NAME_REQUIRED);

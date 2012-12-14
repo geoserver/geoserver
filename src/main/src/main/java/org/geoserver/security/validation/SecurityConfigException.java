@@ -104,8 +104,15 @@ public class SecurityConfigException extends AbstractSecurityException {
     //return MessageFormat.format("Policy for the master password cannot be deleted",args);
 
     public static final String FILTER_CHAIN_NULL_ERROR="FILTER_CHAIN_NULL_ERROR";
-    public static final String FILTER_CHAIN_CONFIG_ERROR="FILTER_CHAIN_CONFIG_ERROR";
-
+    public static final String FILTER_CHAIN_NAME_MANDATORY="FILTER_CHAIN_NAME_MANDATORY";
+    public static final String FILTER_CHAIN_EMPTY_$1="FILTER_CHAIN_EMPTY";
+    public static final String PATTERN_LIST_EMPTY_$1="PATTERN_LIST_EMPTY";
+    public static final String ANONYMOUS_NOT_LAST_$1="ANONYMOUS_NOT_LAST";
+    public static final String UNKNOWN_ROLE_FILTER_$2="UNKNOWN_ROLE_FILTER";
+    public static final String UNKNOWN_FILTER_$2="UNKNOWN_FILTER";
+    public static final String NOT_AN_AUTHENTICATION_FILTER_$2="NOT_AN_AUTHENTICATION_FILTER";
+    public static final String NOT_A_HTML_AUTHENTICATION_FILTER_$2="NOT_A_HTML_AUTHENTICATION_FILTER";
+    public static final String NOT_A_SERVICE_AUTHENTICATION_FILTER_$2="NOT_A_SERVICE_AUTHENTICATION_FILTER";
     public static final String FILTER_STILL_USED="FILTER_STILL_USED";
     public static final String RESERVED_ROLE_NAME="RESERVED_ROLE_NAME";
     

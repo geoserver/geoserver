@@ -89,6 +89,12 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
     @Override
     public String getCacheKey(HttpServletRequest request) {
         
+        if (request.getSession(false)!=null) // no caching if there is an HTTP session
+            return null;
+        if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
+            return null;
+
+        
         String header = request.getHeader("Authorization");        
         if ((header != null) && header.startsWith("Basic ")) {
             byte[] base64Token=null;
@@ -128,6 +134,23 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             return buff.toString();        
         } else
             return null;
+    }
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return true;
     }
 
 }

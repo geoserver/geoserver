@@ -4,7 +4,11 @@
  */
 package org.geoserver.security.auth;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.security.Principal;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,8 +33,6 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
-import org.geoserver.test.TestSetupFrequency;
-import org.geoserver.test.TestSetup;
 import org.geotools.data.Base64;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -114,12 +116,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setName(testFilterName);
         
         getSecurityManager().saveFilter(config);
-        prepareFilterChain(pattern,
-            GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,    
-            testFilterName,
-            GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-            GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
-
+        prepareFilterChain(pattern,testFilterName);            
+            
 
         SecurityContextHolder.getContext().setAuthentication(null);
         
@@ -254,10 +252,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getSecurityManager().saveFilter(config);
         
         prepareFilterChain(pattern,
-            GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,    
-            testFilterName3,
-            GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-            GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+            testFilterName3);
 
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -340,7 +335,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
         
         // Test anonymous
-        insertAnonymousFilter(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter();
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
@@ -368,10 +363,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getSecurityManager().saveFilter(config);
         
         prepareFilterChain(pattern,
-            GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,    
-            testFilterName4,
-            GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-            GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+            testFilterName4);
 
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -452,7 +444,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());        
         // Test anonymous
-        insertAnonymousFilter(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter();
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
@@ -474,11 +466,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setUserGroupServiceName("ug1");
         
         getSecurityManager().saveFilter(config);
-        prepareFilterChain(pattern,
-                GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,    
-                testFilterName2,
-                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+        prepareFilterChain(pattern,                    
+                testFilterName2);
 
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -621,7 +610,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
 
         // Test anonymous
-        insertAnonymousFilter(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter();
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
@@ -640,12 +629,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setName(testFilterName5);
         
         getSecurityManager().saveFilter(config);
-        prepareFilterChain(pattern,
-            GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,    
+        prepareFilterChain(pattern,                
             testFilterName5,
-            GeoServerSecurityFilterChain.REMEMBER_ME_FILTER,
-            GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-            GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+            GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
     
     
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -762,10 +748,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getSecurityManager().saveFilter(config);
         
         prepareFilterChain(pattern,
-            GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,    
-            testFilterName8,
-            GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-            GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+            testFilterName8);
 
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -849,7 +832,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         // Test anonymous
-        insertAnonymousFilter(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        insertAnonymousFilter();
         request= createRequest("/foo/bar");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
@@ -878,12 +861,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setUserGroupServiceName("ug1");
         
         getSecurityManager().saveFilter(config);
-        prepareFilterChain(pattern,
-                GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER,
+        prepareFilterChain(pattern,                
                 testFilterName,
-                testFilterName2,
-                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+                testFilterName2);
 
 
         SecurityContextHolder.getContext().setAuthentication(null);

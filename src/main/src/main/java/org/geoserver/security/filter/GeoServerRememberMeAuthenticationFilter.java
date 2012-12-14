@@ -32,5 +32,22 @@ public class GeoServerRememberMeAuthenticationFilter extends GeoServerCompositeF
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);        
     }
-    
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return false;
+    }
+
 }

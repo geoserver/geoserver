@@ -5,6 +5,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -17,7 +18,7 @@ public class GeoServerBasicAuthenticationProvider extends AbstractFilterProvider
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("basicAuthentication", GeoServerBasicAuthenticationFilter.class);
+        xp.getXStream().alias("basicAuthentication", BasicAuthenticationFilterConfig.class);
     }
 
     @Override

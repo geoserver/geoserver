@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerSecurityInterceptorProvider extends AbstractFilterProvider
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("securityInterceptor", GeoServerSecurityInterceptorFilter.class);
+        xp.getXStream().alias("securityInterceptor", SecurityInterceptorFilterConfig.class);
     }
 
     @Override

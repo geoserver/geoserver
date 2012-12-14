@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerLogoutProvider extends AbstractFilterProvider {
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("logoutFilter", GeoServerLogoutFilter.class);
+        xp.getXStream().alias("logoutFilter", LogoutFilterConfig.class);
     }
 
     @Override

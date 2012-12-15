@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs2_0;
 
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,11 +29,17 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.data.DataUtilities;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xml.Parser;
 import org.junit.After;
+import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.coverage.grid.GridGeometry;
+import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -53,6 +60,13 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected static final Schema WCS20_SCHEMA;
     
     List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+
+    /**
+     * Small value for comparaison of sample values. Since most grid coverage implementations in
+     * Geotools 2 store geophysics values as {@code float} numbers, this {@code EPS} value must
+     * be of the order of {@code float} relative precision, not {@code double}.
+     */
+    static final float EPS = 1E-5f;
 
     static {
         final Map<String, String> namespaceMap = new HashMap<String, String>() {
@@ -191,6 +205,70 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         for (GridCoverage coverage : coverages) {
             CoverageCleanerCallback.disposeCoverage(coverage);
         }
+    }
+
+    /**
+     * Compares the envelopes of two coverages for equality using the smallest
+     * scale factor of their "grid to world" transform as the tolerance.
+     *
+     * @param expected The coverage having the expected envelope.
+     * @param actual   The coverage having the actual envelope.
+     */
+    static void assertEnvelopeEquals(Coverage expected, Coverage actual) {
+        final double scaleA = getScale(expected);
+        final double scaleB = getScale(actual);
+    
+        assertEnvelopeEquals((GeneralEnvelope)expected.getEnvelope(),scaleA,(GeneralEnvelope)actual.getEnvelope(),scaleB);
+    }
+
+    static void assertEnvelopeEquals(GeneralEnvelope expected,double scaleExpected, GeneralEnvelope actual,double scaleActual) {
+        final double tolerance;
+        if (scaleExpected <= scaleActual) {
+            tolerance = scaleExpected*1E-1;
+        } else if (!Double.isNaN(scaleActual)) {
+            tolerance = scaleActual*1E-1;
+        } else {
+            tolerance = EPS;
+        }
+        Assert.assertTrue(expected.equals(actual, tolerance, false));
+    }
+
+    /**
+     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null}
+     * if none. Note that the returned instance may be an immutable one, not necessarly the
+     * default Java2D implementation.
+     *
+     * @param  coverage The coverage for which to get the "grid to CRS" affine transform.
+     * @return The "grid to CRS" affine transform of the given coverage, or {@code null}
+     *         if none or if the transform is not affine.
+     */
+    static AffineTransform getAffineTransform(final Coverage coverage) {
+        if (coverage instanceof GridCoverage) {
+            final GridGeometry geometry = ((GridCoverage) coverage).getGridGeometry();
+            if (geometry != null) {
+                final MathTransform gridToCRS;
+                if (geometry instanceof GridGeometry2D) {
+                    gridToCRS = ((GridGeometry2D) geometry).getGridToCRS();
+                } else {
+                    gridToCRS = geometry.getGridToCRS();
+                }
+                if (gridToCRS instanceof AffineTransform) {
+                    return (AffineTransform) gridToCRS;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the scale of the "grid to CRS" transform, or {@link Double#NaN} if unknown.
+     *
+     * @param  coverage The coverage for which to get the "grid to CRS" scale, or {@code null}.
+     * @return The "grid to CRS" scale, or {@code NaN} if none or if the transform is not affine.
+     */
+    static double getScale(final Coverage coverage) {
+        final AffineTransform gridToCRS = getAffineTransform(coverage);
+        return (gridToCRS != null) ? XAffineTransform.getScale(gridToCRS) : Double.NaN;
     }
 
     

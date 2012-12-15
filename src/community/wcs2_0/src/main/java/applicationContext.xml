@@ -114,7 +114,7 @@
   </bean>
   
   <!--  Envelope dimensions mapper util class-->
-  <bean id="envelopeDimensionsMapper" class="org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper"/> 
+  <bean id="envelopeDimensionsMapper" class="org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper"/> 
 
 
   <bean id="GMLCoverageResponseDelegate" class="org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate">

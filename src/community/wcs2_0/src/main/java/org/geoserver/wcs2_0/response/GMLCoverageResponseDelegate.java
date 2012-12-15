@@ -16,6 +16,8 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -25,11 +27,14 @@ import java.util.Map;
 
 import javax.measure.unit.Unit;
 import javax.measure.unit.UnitFormat;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.iterator.RectIter;
+import javax.media.jai.iterator.RectIterFactory;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
-import org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper;
+import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -82,9 +87,9 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
      */
     private static class GMLTransformer extends TransformerBase{
         
-        private EnvelopeDimensionsMapper envelopeDimensionsMapper;
+        private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
         
-        public GMLTransformer(EnvelopeDimensionsMapper envelopeDimensionsMapper ) {
+        public GMLTransformer(EnvelopeAxesLabelsMapper envelopeDimensionsMapper ) {
             this.envelopeDimensionsMapper=envelopeDimensionsMapper;
         }
         
@@ -321,7 +326,7 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 end("gml:rangeParameters"); 
 
                 start("tupleList");
-//                // walk through the coverage and spit it out!
+                // walk through the coverage and spit it out!
 //                final RenderedImage raster= gc2d.getRenderedImage();
 //                final int numBands=raster.getSampleModel().getNumBands();
 //                final int dataType=raster.getSampleModel().getDataType();
@@ -411,10 +416,11 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 // get bands
                 final SampleDimension[] bands= gc2d.getSampleDimensions();
                 
-                
+                // handle bands
+                int i=1;
                 for(SampleDimension sd:bands){
                     final AttributesImpl fieldAttr = new AttributesImpl();
-                    fieldAttr.addAttribute("", "name", "name", "", sd.getDescription().toString());  // TODO NCNAME?                  
+                    fieldAttr.addAttribute("", "name", "name", "", "band"+i++);//sd.getDescription().toString());  // TODO NCNAME?                  
                     start("swe:field",fieldAttr);
                     
                     start("swe:Quantity");
@@ -619,11 +625,11 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
     }
 
     /** Can be used to map dimensions name to indexes*/
-    private EnvelopeDimensionsMapper envelopeDimensionsMapper;
+    private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
     
 
 
-    public GMLCoverageResponseDelegate(EnvelopeDimensionsMapper envelopeDimensionsMapper) {
+    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
         
     }

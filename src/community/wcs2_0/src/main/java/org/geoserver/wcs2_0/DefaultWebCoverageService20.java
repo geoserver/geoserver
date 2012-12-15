@@ -18,7 +18,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
-import org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper;
+import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
@@ -39,13 +39,13 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     private CoverageResponseDelegateFinder responseFactory;
     
     /** Utility class to map envelope dimension*/
-    private EnvelopeDimensionsMapper envelopeDimensionsMapper;
+    private EnvelopeAxesLabelsMapper envelopeAxesMapper;
 
-    public DefaultWebCoverageService20(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory, EnvelopeDimensionsMapper envelopeDimensionsMapper) {
+    public DefaultWebCoverageService20(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;
-        this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        this.envelopeAxesMapper=envelopeDimensionsMapper;
     }
     
     @Override
@@ -67,12 +67,12 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         checkVersion(request.getVersion());
         
         if( request.getCoverageId() == null || request.getCoverageId().isEmpty() ) {
-            throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
+            throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCS20ExceptionCode.EmptyCoverageIdList, "coverageId");
         }
 
         WCSInfo wcs = getServiceInfo();
 
-        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeDimensionsMapper);
+        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeAxesMapper);
         describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
         return describeTransformer;
     }
@@ -83,10 +83,10 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         checkVersion(request.getVersion());
 
         if( request.getCoverageId() == null || "".equals(request.getCoverageId()) ) {
-            throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCSExceptionCode.EmptyCoverageIdList, "coverageId");
+            throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCS20ExceptionCode.EmptyCoverageIdList, "coverageId");
         }
         
-        return new GetCoverage(getServiceInfo(), catalog,envelopeDimensionsMapper).run(request);
+        return new GetCoverage(getServiceInfo(), catalog,envelopeAxesMapper).run(request);
     }
 
     private void checkVersion(String version) {

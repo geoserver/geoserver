@@ -28,6 +28,7 @@ import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.cs.CoordinateSystemAxis;
 
@@ -38,17 +39,17 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
  * TODO caching depending on CRS?
  * TODO handle composite CRS
  */
-public class EnvelopeDimensionsMapper {
+public class EnvelopeAxesLabelsMapper {
        
     /** Logger for this class*/
-    private final static Logger LOGGER= Logging.getLogger(EnvelopeDimensionsMapper.class);
+    private final static Logger LOGGER= Logging.getLogger(EnvelopeAxesLabelsMapper.class);
     
     public List<String> getAxesNames(Envelope envelope, boolean swapAxes){
         Utilities.ensureNonNull("envelope", envelope);
         final CoordinateReferenceSystem crs= envelope.getCoordinateReferenceSystem();
         
         // handle axes switch for geographic crs
-        final boolean axesSwitch= CRS.getAxisOrder(crs)==AxisOrder.EAST_NORTH&&swapAxes;
+        final boolean axesSwitch= crs instanceof GeographicCRS &&swapAxes;
         
         // additional fields for CRS 
         final CoordinateSystem cs=crs.getCoordinateSystem();

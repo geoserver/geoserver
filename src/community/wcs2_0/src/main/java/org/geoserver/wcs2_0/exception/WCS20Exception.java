@@ -21,16 +21,34 @@ public class WCS20Exception extends OWS20Exception {
 	 */
 	private static final long serialVersionUID = -6110652531274829497L;
 
-	public static class WCSExceptionCode extends OWS20Exception.OWSExceptionCode {
+	public static class WCS20ExceptionCode extends OWS20Exception.OWSExceptionCode {
 
-        public final static OWSExceptionCode NoSuchCoverage = new WCSExceptionCode("NoSuchCoverage", 404);
-        public final static OWSExceptionCode EmptyCoverageIdList = new WCSExceptionCode("emptyCoverageIdList", 404);
-        public final static OWSExceptionCode InvalidEncodingSyntax = new WCSExceptionCode("InvalidEncodingSyntax", 400);
-        public final static OWSExceptionCode InvalidScaleFactor = new WCSExceptionCode("InvalidScaleFactor", 404);
-        public final static OWSExceptionCode InvalidExtent = new WCSExceptionCode("InvalidExtent", 404);
-        public final static OWSExceptionCode ScalingAxisUndefined = new WCSExceptionCode("ScalingAxisUndefined", 404);
+        public final static WCS20ExceptionCode EmptyCoverageIdList = new WCS20ExceptionCode("emptyCoverageIdList", 404);
+        public final static WCS20ExceptionCode InvalidEncodingSyntax = new WCS20ExceptionCode("InvalidEncodingSyntax", 400);
+        
+        // Scaling Extension
+        public final static WCS20ExceptionCode InvalidScaleFactor = new WCS20ExceptionCode("InvalidScaleFactor", 404);
+        public final static WCS20ExceptionCode InvalidExtent = new WCS20ExceptionCode("InvalidExtent", 404);
+        public final static WCS20ExceptionCode ScaleAxisUndefined = new WCS20ExceptionCode("ScaleAxisUndefined", 404);
+        
+        
+        // Interpolation Extension
+        public final static WCS20ExceptionCode NoSuchAxis = new WCS20ExceptionCode("ScalingAxisUndefined", 404);        
+        public final static WCS20ExceptionCode InterpolationMethodNotSupported = new WCS20ExceptionCode("InterpolationMethodNotSupported", 404);
+        
+        // CRS Extension
+        public final static WCS20ExceptionCode NotACrs = new WCS20ExceptionCode("NotACrs", 404);
+        public final static WCS20ExceptionCode SubsettingCrsNotSupported = new WCS20ExceptionCode("SubsettingCrs-NotSupported", 404);
+        public final static WCS20ExceptionCode OutputCrsNotSupported = new WCS20ExceptionCode("OutputCrs-NotSupported", 404);
+        
 
-        protected WCSExceptionCode(String exceptionCode, Integer httpCode) {
+        // CORE
+        public final static WCS20ExceptionCode NoSuchCoverage = new WCS20ExceptionCode("NoSuchCoverage", 404);
+        public final static WCS20ExceptionCode InvalidSubsetting = new WCS20ExceptionCode("InvalidSubsetting", 404);
+        public final static WCS20ExceptionCode InvalidAxisLabel = new WCS20ExceptionCode("InvalidAxisLabel", 404);
+        
+
+        protected WCS20ExceptionCode(String exceptionCode, Integer httpCode) {
             super(exceptionCode, httpCode);
         }        
     }

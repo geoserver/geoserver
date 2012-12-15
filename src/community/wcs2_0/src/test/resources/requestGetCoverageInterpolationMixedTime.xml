@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
+  xmlns:int="http://www.opengis.net/WCS_service-extension_interpolation/1.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd http://www.opengis.net/wcs/geotiff/1.0 http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd"
+  service="WCS" version="2.0.1">
+  <wcs:Extension>
+    <int:Interpolation>
+      <int:InterpolationAxes>
+        <int:InterpolationAxis
+          interpolationMethod="http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor"
+          axis="http://www.opengis.net/def/axis/OGC/1/Lat" />
+        <int:InterpolationAxis
+          interpolationMethod="http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor"
+          axis="http://www.opengis.net/def/axis/OGC/1/Long" />
+        <int:InterpolationAxis
+          interpolationMethod="http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor"
+          axis="http://www.opengis.net/def/axis/OGC/1/time" />
+      </int:InterpolationAxes>
+    </int:Interpolation>
+  </wcs:Extension>
+  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
+  <wcs:format>image/tiff</wcs:format>
+</wcs:GetCoverage>
+

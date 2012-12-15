@@ -17,7 +17,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
-import org.geoserver.wcs2_0.util.EnvelopeDimensionsMapper;
+import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -46,12 +46,12 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
     private CoverageResponseDelegateFinder responseFactory;
 
     /** Utility class to map envelope dimension*/
-    private EnvelopeDimensionsMapper envelopeDimensionsMapper;
+    private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
     
     /**
      * Creates a new WFSCapsTransformer object.
      */
-    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeDimensionsMapper envelopeDimensionsMapper) {
+    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.wcs = wcs;
         this.catalog = catalog;
         this.responseFactory = responseFactory;
@@ -105,7 +105,7 @@ public class WCS20DescribeCoverageTransformer extends TransformerBase {
             if( ! badCoverageIds.isEmpty() ) {
                 String mergedIds = StringUtils.merge(badCoverageIds);
                 throw new WCS20Exception("Could not find the requested coverage(s): " + mergedIds
-                        , WCS20Exception.WCSExceptionCode.NoSuchCoverage, mergedIds);
+                        , WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, mergedIds);
             }
 
             // ok: build the response

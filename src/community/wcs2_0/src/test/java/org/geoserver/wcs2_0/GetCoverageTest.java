@@ -2,20 +2,26 @@ package org.geoserver.wcs2_0;
 
 import static junit.framework.Assert.assertEquals;
 
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
-
 import java.io.File;
 
-import javax.imageio.stream.FileImageInputStream;
+import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridEnvelope;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
-
+/**
+ * Testing WCS 2.0 Core {@link GetCoverage}
+ * 
+ * @author Simone Giannecchini, GeoSolutions SAS
+ * @author Emanuele Tajariol, GeoSolutions SAS
+ *
+ */
 public class GetCoverageTest extends WCSTestSupport {
 
     @Test
@@ -24,285 +30,102 @@ public class GetCoverageTest extends WCSTestSupport {
 
         checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");
     }
-    @Test
-    public void testReprojectXML() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:crs=\"http://www.opengis.net/wcs/crs/1.0\"\n"                
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n"
-                + "  http://www.opengis.net/wcs/geotiff/1.0 \n"
-                + "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n"
-                + "  service=\"WCS\"\n" 
-                + "  version=\"2.0.1\">\n" 
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:DimensionTrim>\n"
-                + "    <wcs:Dimension>Long</wcs:Dimension>\n"
-                + "    <wcs:TrimLow>146.5</wcs:TrimLow>\n"
-                + "    <wcs:TrimHigh>147.0</wcs:TrimHigh>\n"
-                + "  </wcs:DimensionTrim>\n"
-                + "  <wcs:DimensionTrim>\n"
-                + "    <wcs:Dimension>Lat</wcs:Dimension>\n"
-                + "    <wcs:TrimLow>-43.5</wcs:TrimLow>\n"
-                + "    <wcs:TrimHigh>-43.0</wcs:TrimHigh>\n"
-                + "  </wcs:DimensionTrim>\n"
-                + "  <wcs:Extension>\n"                   
-                + "    <crs:outputCrs>"
-                + "      <crs:outputCrs>http://www.opengis.net/def/crs/EPSG/0/4326</crs:outputCrs>"
-                + "    </crs:outputCrs>\n"
-                + "  </wcs:Extension>\n"                   
-                + "  <wcs:format>image/tiff</wcs:format>\n" 
-                + "</wcs:GetCoverage>";
-
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
-
-        assertEquals("image/tiff", response.getContentType());
-        byte[] tiffContents = getBinary(response);
-        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
-        FileUtils.writeByteArrayToFile(file, tiffContents);
-
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file));
-    }
     
+    /**
+     * Trimming only on Longitude
+     * 
+     * @throws Exception
+     */
     @Test
-    public void testTrimmingCoverageXML() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:crs=\"http://www.opengis.net/wcs/crs/1.0\"\n"                
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n"
-                + "  http://www.opengis.net/wcs/geotiff/1.0 \n"
-                + "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n"
-                + "  service=\"WCS\"\n" 
-                + "  version=\"2.0.1\">\n" 
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:DimensionTrim>\n"
-                + "    <wcs:Dimension>Long</wcs:Dimension>\n"
-                + "    <wcs:TrimLow>146.5</wcs:TrimLow>\n"
-                + "    <wcs:TrimHigh>147.0</wcs:TrimHigh>\n"
-                + "  </wcs:DimensionTrim>\n"
-                + "  <wcs:DimensionTrim>\n"
-                + "    <wcs:Dimension>Lat</wcs:Dimension>\n"
-                + "    <wcs:TrimLow>-43.5</wcs:TrimLow>\n"
-                + "    <wcs:TrimHigh>-43.0</wcs:TrimHigh>\n"
-                + "  </wcs:DimensionTrim>\n"
-                + "  <wcs:Extension>\n"                   
-                + "    <crs:subsettingCrs>"
-                + "      <crs:subsettingCrs>http://www.opengis.net/def/crs/EPSG/0/4326</crs:subsettingCrs>"
-                + "    </crs:subsettingCrs>\n"
-                + "  </wcs:Extension>\n"                   
-                + "  <wcs:format>image/tiff</wcs:format>\n" 
-                + "</wcs:GetCoverage>";
-
+    public void testCoverageTrimmingLatitudeNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingLatitudeNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
-
-        assertEquals("image/tiff", response.getContentType());
-        byte[] tiffContents = getBinary(response);
-        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
-        FileUtils.writeByteArrayToFile(file, tiffContents);
-
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file));
-    }
-    
-    @Test
-    public void testScaleFactorIndividualXML() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:scal=\"http://www.opengis.net/wcs/scaling/1.0\"\n"                
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n"
-                + "  http://www.opengis.net/wcs/geotiff/1.0 \n"
-                + "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n"
-                + "  service=\"WCS\"\n" 
-                + "  version=\"2.0.1\">\n" 
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:Extension>\n"                   
-                + "    <scal:ScaleAxesByFactor>"
-                + "    <scal:ScaleAxis>"
-                + "      <scal:axis>"
-                + "        http://www.opengis.net/def/axis/OGC/1/i"
-                + "      </scal:axis>"
-                + "      <scal:scaleFactor>3.5</scal:scaleFactor>"
-                + "    </scal:ScaleAxis>"
-                + "    <scal:ScaleAxis>"
-                + "     <scal:axis>"
-                + "        http://www.opengis.net/def/axis/OGC/1/j"
-                + "      </scal:axis>"
-                + "      <scal:scaleFactor>3.5</scal:scaleFactor>"
-                + "    </scal:ScaleAxis>"
-                + "    <scal:ScaleAxis>"
-                + "      <scal:axis>"
-                + "        http://www.opengis.net/def/axis/OGC/1/k"
-                + "      </scal:axis>"
-                + "      <scal:scaleFactor>2.0</scal:scaleFactor>"
-                + "    </scal:ScaleAxis>"
-                + "   </scal:ScaleAxesByFactor>"
-                + "  </wcs:Extension>\n"                
-                + "  <wcs:format>image/tiff</wcs:format>\n"    
-                + "</wcs:GetCoverage>";
-
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
-
-        assertEquals("image/tiff", response.getContentType());
-        byte[] tiffContents = getBinary(response);
-        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
-        FileUtils.writeByteArrayToFile(file, tiffContents);
-
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file));
-    } 
-    @Test
-    public void testScaleSizeIndividualXML() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:scal=\"http://www.opengis.net/wcs/scaling/1.0\"\n"                
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n"
-                + "  http://www.opengis.net/wcs/geotiff/1.0 \n"
-                + "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n"
-                + "  service=\"WCS\"\n" 
-                + "  version=\"2.0.1\">\n" 
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:Extension>\n"                   
-                + "  <scal:ScaleToSize>\n"
-                + "    <scal:TargetAxisSize>\n"
-                + "      <scal:axis>\n"
-                + "        http://www.opengis.net/def/axis/OGC/1/i\n"
-                + "      </scal:axis>\n"
-                + "      <scal:low>10</scal:low>\n"
-                + "      <scal:high>20</scal:high>\n"
-                + "    </scal:TargetAxisSize>\n"
-                + "    <scal:TargetAxisSize>\n"
-                + "      <scal:axis>\n"
-                + "        http://www.opengis.net/def/axis/OGC/1/j\n"
-                + "      </scal:axis>\n"
-                + "      <scal:low>20</scal:low>\n"
-                + "      <scal:high>30</scal:high>\n"
-                + "    </scal:TargetAxisSize>\n"
-                + "  </scal:ScaleToSize>\n"
-                + "  <wcs:format>image/tiff</wcs:format>\n"    
-                + " </wcs:Extension>\n"                 
-                + "</wcs:GetCoverage>";
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
-
-        assertEquals("image/tiff", response.getContentType());
-        byte[] tiffContents = getBinary(response);
-        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
-        FileUtils.writeByteArrayToFile(file, tiffContents);
-
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file));        
-    }
         
-    @Test
-    public void testScaleExtentIndividualXML() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:scal=\"http://www.opengis.net/wcs/scaling/1.0\"\n"                
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n"
-                + "  http://www.opengis.net/wcs/geotiff/1.0 \n"
-                + "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n"
-                + "  service=\"WCS\"\n" 
-                + "  version=\"2.0.1\">\n" 
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:Extension>\n"                   
-                + "  <scal:ScaleToExtent>\n"
-                + "    <scal:TargetAxisExtent>\n"
-                + "      <scal:axis>\n"
-                + "        http://www.opengis.net/def/axis/OGC/1/i\n"
-                + "      </scal:axis>\n"
-                + "      <scal:low>10</scal:low>\n"
-                + "      <scal:high>20</scal:high>\n"
-                + "    </scal:TargetAxisExtent>\n"
-                + "    <scal:TargetAxisExtent>\n"
-                + "      <scal:axis>\n"
-                + "        http://www.opengis.net/def/axis/OGC/1/j\n"
-                + "      </scal:axis>\n"
-                + "      <scal:low>20</scal:low>\n"
-                + "      <scal:high>30</scal:high>\n"
-                + "    </scal:TargetAxisExtent>\n"
-                + "  </scal:ScaleToExtent>\n"
-                + "  </wcs:Extension>\n"  
-                + "  <wcs:format>image/tiff</wcs:format>\n"                
-                + "</wcs:GetCoverage>";
-
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
-
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file));
-    } 
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+
+            // checks
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            
+            final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
+                    new double[]{targetCoverage.getEnvelope().getMinimum(0),-43.5},
+                    new double[]{targetCoverage.getEnvelope().getMaximum(0),-43.0});    
+            expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+
+            final double scale = getScale(targetCoverage);
+            assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertEquals(gridRange.getSpan(0), 360);
+            assertEquals(gridRange.getSpan(1), 120);
+            
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
     
     @Test
-    public void testScaleFactorXML() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<wcs:GetCoverage\n"
-                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                + "  xmlns:scal=\"http://www.opengis.net/wcs/scaling/1.0\"\n"                
-                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n"
-                + "  http://www.opengis.net/wcs/geotiff/1.0 \n"
-                + "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n"
-                + "  service=\"WCS\"\n" 
-                + "  version=\"2.0.1\">\n" 
-                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                + "  <wcs:Extension>\n"                   
-                + "    <scal:ScaleByFactor>"
-                + "      <scal:ScaleFactor>2.0</scal:ScaleFactor>"
-                + "    </scal:ScaleByFactor>\n"
-                + "  </wcs:Extension>\n"                
-                + "  <wcs:format>image/tiff</wcs:format>\n"                
-                + "</wcs:GetCoverage>";
-
+    public void testCoverageTrimmingNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
-
+        
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file));
-    }    
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+
+            // checks
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            
+            final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
+                    new double[]{146.5,-43.5},
+                    new double[]{147.0,-43.0});
+            expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+
+            final double scale = getScale(targetCoverage);
+            assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertEquals(gridRange.getSpan(0), 120);
+            assertEquals(gridRange.getSpan(1), 120);
+            
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
     
     @Test
-    public void testGetFullCoverage() throws Exception {
+    public void testGetFullCoverageKVP() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
         
         assertEquals("image/tiff", response.getContentType());
@@ -310,40 +133,267 @@ public class GetCoverageTest extends WCSTestSupport {
         File file = new File("./target/bm_full.tiff");
         FileUtils.writeByteArrayToFile(file, tiffContents);
         
-        // check we can read it as a TIFF
-        GeoTiffReader reader = new GeoTiffReader(file);
-        GridCoverage2D coverage = null;
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null, sourceCoverage=null;
         try {
-            coverage = reader.read(null);
+            targetCoverage = readerTarget.read(null);
+            sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+            
+            // checks
+            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage.getGridGeometry().getGridRange());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
         } finally {
-            reader.dispose();
-            scheduleForCleaning(coverage);
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
         }
-        
-        // TODO: add more checks, make sure we returned the whole thing
     }
     
-    // TODO: add tests for range subsetting
-//    <?xml version="1.0" encoding="UTF-8"?>
-//    <wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
-//        xmlns:gml="http://www.opengis.net/gml/3.2"
-//        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-//        xmlns:rsub="http://www.opengis.net/wcs/range-subsetting/1.0"
-//        service="WCS" version="2.0.1">
-//        <wcs:CoverageId>C0001</wcs:CoverageId>
-//        <wcs:Extension>    
-//            <rsub:rangeSubset>
-//                <rsub:rangeItem>
-//                    <rsub:rangeComponent>band1</rsub:rangeComponent>
-//                </rsub:rangeItem>    
-//                <rsub:rangeItem>        
-//                    <rsub:rangeInterval>
-//                        <rsub:startComponent>band3</rsub:startComponent>
-//                        <rsub:endComponent>band5</rsub:endComponent>
-//                    </rsub:rangeInterval>
-//                </rsub:rangeItem>        
-//            </rsub:rangeSubset>
-//        </wcs:Extension>
-//    </wcs:GetCoverage>
+    @Test
+    public void testGetFullCoverageXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetFullCoverage.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // check we can read it as a TIFF and it is similare to the origina one
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null, sourceCoverage=null;
+        try {
+            targetCoverage = readerTarget.read(null);
+            sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+            
+            // checks
+            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage.getGridGeometry().getGridRange());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
 
+    /**
+     * Trimming only on Longitude
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCoverageTrimmingLongitudeNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingLongNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+    
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+    
+            // checks
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            
+            final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
+                    new double[]{146.5,targetCoverage.getEnvelope().getMinimum(1)},
+                    new double[]{147.0,targetCoverage.getEnvelope().getMaximum(1)});
+            expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+    
+            final double scale = getScale(targetCoverage);
+            assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertEquals(gridRange.getSpan(0), 120);
+            assertEquals(gridRange.getSpan(1), 360);
+            
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+    @Test
+    public void testCoverageTrimmingSlicingNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingSlicingNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+    
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+    
+            // checks
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            
+            // 1 dimensional slice along latitude
+            final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
+                    new double[]{146.49999999999477,-43.5},
+                    new double[]{146.99999999999477,-43.49583333333119});
+            expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+    
+            final double scale = getScale(targetCoverage);
+            assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertEquals(gridRange.getSpan(1), 1);
+            assertEquals(gridRange.getSpan(0), 120);
+            
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+    
+    @Test
+    public void testCoverageTrimmingDuplicatedNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingDuplicatedNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("application/xml", response.getContentType());
+//        checkOws20Exception(response, 404, "InvalidAxisLabel", "coverageId");
+       
+    }
+
+    @Test
+    public void testCoverageSlicingLongitudeNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageSlicingLongitudeNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+    
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+    
+            // checks
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            
+            // 1 dimensional slice along longitude
+            final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
+                    new double[]{146.5,-44.49999999999784},
+                    new double[]{146.50416666666143,-42.99999999999787});
+            expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+    
+            final double scale = getScale(targetCoverage);
+            assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertEquals(gridRange.getSpan(0), 1);
+            assertEquals(gridRange.getSpan(1), 360);
+            
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+
+    @Test
+    public void testCoverageSlicingLatitudeNativeCRSXML() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageSlicingLatitudeNativeCRSXML.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+    
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+    
+            // checks
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            
+            // 1 dimensional slice along latitude
+            final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
+                    new double[]{146.49999999999477,-43.499999999997854},
+                    new double[]{147.99999999999474,-43.49583333333119});
+            expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+    
+            final double scale = getScale(targetCoverage);
+            assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertEquals(gridRange.getSpan(1), 1);
+            assertEquals(gridRange.getSpan(0), 360);
+            
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
 }

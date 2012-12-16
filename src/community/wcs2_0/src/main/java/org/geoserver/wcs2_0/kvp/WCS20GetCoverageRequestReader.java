@@ -7,10 +7,16 @@ import java.util.Map;
 import net.opengis.wcs20.DimensionSubsetType;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.ScaleAxisByFactorType;
+import net.opengis.wcs20.ScaleByFactorType;
+import net.opengis.wcs20.ScaleToExtentType;
+import net.opengis.wcs20.ScaleToSizeType;
+import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.Wcs20Factory;
 
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
+import org.geotools.wcs.v2_0.Scaling;
 
 /**
  * KVP reader for WCS 2.0 GetCoverage request
@@ -19,10 +25,12 @@ import org.geoserver.ows.util.KvpUtils;
  */
 public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
 
+    private static final Wcs20Factory WCS20_FACTORY = Wcs20Factory.eINSTANCE;
+
     private static final String GEOTIFF_NS = "http://www.opengis.net/wcs/geotiff/1.0";
 
     public WCS20GetCoverageRequestReader() {
-        super(GetCoverageType.class, Wcs20Factory.eINSTANCE);
+        super(GetCoverageType.class, WCS20_FACTORY);
     }
 
     @Override
@@ -40,11 +48,12 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         }
 
         // prepare for extensions
-        gc.setExtension(Wcs20Factory.eINSTANCE.createExtensionType());
+        gc.setExtension(WCS20_FACTORY.createExtensionType());
 
         // parse the extensions. Note, here we do only the validation bits that are not shared
         // with the XML, everything else is in GetCoverage
         parseGeoTiffExtension(gc, kvp);
+        parseScalingExtension(gc, kvp);
 
         return gc;
     }
@@ -56,13 +65,47 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         for (String param : geoTiffParams) {
             String value = KvpUtils.firstValue(kvp, param);
             if (value != null) {
-                ExtensionItemType item = Wcs20Factory.eINSTANCE.createExtensionItemType();
+                ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
                 item.setNamespace(GEOTIFF_NS);
                 item.setName(param);
                 item.setSimpleContent(value);
-                
+
                 gc.getExtension().getContents().add(item);
             }
+        }
+
+    }
+
+    private void parseScalingExtension(GetCoverageType gc, Map kvp) {
+        boolean found = false;
+        ScalingType scaling = WCS20_FACTORY.createScalingType();
+        if (kvp.containsKey("scalefactor")) {
+            found = true;
+            ScaleByFactorType sf = WCS20_FACTORY.createScaleByFactorType();
+            sf.setScaleFactor(((Double) kvp.get("scalefactor")));
+            scaling.setScaleByFactor(sf);
+        }
+        if (kvp.containsKey("scaleaxes")) {
+            found = true;
+            scaling.setScaleAxesByFactor((ScaleAxisByFactorType) kvp.get("scaleaxes"));
+        }
+        if (kvp.containsKey("scalesize")) {
+            found = true;
+            scaling.setScaleToSize((ScaleToSizeType) kvp.get("scalesize"));
+        }
+        if (kvp.containsKey("scaleextent")) {
+            found = true;
+            scaling.setScaleToExtent((ScaleToExtentType) kvp.get("scaleextent"));
+        }
+
+        // if we found at least one, put it in the extension map (it's the duty of
+        // GetCoverage to complain about multiple scaling constructs)
+        if (found == true) {
+            ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
+            item.setNamespace(Scaling.NAMESPACE);
+            item.setName("Scaling");
+            item.setObjectContent(scaling);
+            gc.getExtension().getContents().add(item);
         }
 
     }

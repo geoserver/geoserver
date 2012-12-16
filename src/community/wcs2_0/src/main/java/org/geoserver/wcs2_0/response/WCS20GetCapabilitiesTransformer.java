@@ -250,10 +250,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
-            //element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
+            // element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
-//            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
+            
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
             element("ows:Profile","http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage");
             element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_geotiff/1.0/"); // TODO: check specs and URL
             element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_gml/1.0/"); // TODO: check specs and URL

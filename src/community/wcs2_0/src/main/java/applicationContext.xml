@@ -75,6 +75,12 @@
 
   <!-- GetCoverage -->
   <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser"/>
+  <bean id="wcs20scaleFactorKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
+     <constructor-arg value="scalefactor"/>
+  </bean>
+  <bean id="wcs20scaleAxesKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleAxesKvpParser"/>
+  <bean id="wcs20scaleSizeKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleSizeKvpParser"/>
+  <bean id="wcs20scaleExtentKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleExtentKvpParser"/>
   
   <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader"/>
   

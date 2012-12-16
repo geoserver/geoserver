@@ -18,6 +18,7 @@ import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 
+import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
@@ -34,8 +35,8 @@ public class GetCoverageKvpTest extends GeoServerSystemTestSupport {
     }
 
     private GetCoverageType parse(String url) throws Exception {
-        Map<String, Object> rawKvp = KvpUtils.parseQueryString(url);
-        Map<String, Object> kvp = parseKvp(rawKvp);
+        Map<String, Object> rawKvp = new CaseInsensitiveMap(KvpUtils.parseQueryString(url));
+        Map<String, Object> kvp = new CaseInsensitiveMap(parseKvp(rawKvp));
         WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType gc = (GetCoverageType) reader.createRequest();
         return (GetCoverageType) reader.read(gc, kvp, rawKvp);
@@ -162,6 +163,18 @@ public class GetCoverageKvpTest extends GeoServerSystemTestSupport {
         RangeItemType i4 = items.get(3);
         assertEquals("band19", i4.getRangeInterval().getStartComponent());
         assertEquals("band21", i4.getRangeInterval().getEndComponent());
+    }
+    
+    @Test
+    public void testExtensionCRS() throws Exception {
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=theCoverage&SUBSETTINGCRS=http://www.opengis.net/def/crs/EPSG/0/4326&outputcrs=http://www.opengis.net/def/crs/EPSG/0/32632");
+        
+        Map<String, Object> extensions = getExtensionsMap(gc);
+        
+        assertEquals(2, extensions.size());
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", extensions.get("http://www.opengis.net/wcs/service-extension/crs/1.0:subsettingCrs"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/32632", extensions.get("http://www.opengis.net/wcs/service-extension/crs/1.0:outputCrs"));
     }
     
     private Map<String, Object> getExtensionsMap(GetCoverageType gc) {

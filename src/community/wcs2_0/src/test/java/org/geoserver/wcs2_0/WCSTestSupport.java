@@ -132,20 +132,21 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-                System.out.println("---- WCSTestSupport::doSetup ---> " + new Date());
+          // System.out.println("---- WCSTestSupport::doSetup ---> " + new Date());
 //        System.out.println("---- GeoServerBaseTestSupport::setUpLogging --->  " + new Date());
 
         super.onSetUp(testData);
 
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
-        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("wcs", "http://www.opengis.net/wcs/2.0");
+        namespaces.put("wcscrs", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+        namespaces.put("ows", "http://www.opengis.net/ows/2.0");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
 
-        System.out.println("---- WCSTestSupport::doSetup ---< " + new Date());
+        // System.out.println("---- WCSTestSupport::doSetup ---< " + new Date());
     }
 
     @Override

@@ -30,6 +30,8 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
 
     private static final String GEOTIFF_NS = "http://www.opengis.net/wcs/geotiff/1.0";
 
+    private static final String CRS_NS = "http://www.opengis.net/wcs/service-extension/crs/1.0";
+
     public WCS20GetCoverageRequestReader() {
         super(GetCoverageType.class, WCS20_FACTORY);
     }
@@ -54,6 +56,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         // parse the extensions. Note, here we do only the validation bits that are not shared
         // with the XML, everything else is in GetCoverage
         parseGeoTiffExtension(gc, kvp);
+        parseCRSExtension(gc, rawKvp);
         parseScalingExtension(gc, kvp);
         parseRangeSubsetExtension(gc, kvp);
 
@@ -63,12 +66,21 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
         List<String> geoTiffParams = Arrays.asList("compression", "jpeg_quality", "predictor",
                 "interleave", "tiling", "tileheight", "tilewidth");
+        parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS);
+    }
 
+    private void parseCRSExtension(GetCoverageType gc, Map kvp) {
+        List<String> geoTiffParams = Arrays.asList("subsettingCrs", "outputCrs");
+        parseSimpleContentList(gc, kvp, geoTiffParams, CRS_NS);
+    }
+
+    private void parseSimpleContentList(GetCoverageType gc, Map kvp, List<String> geoTiffParams,
+            String namespace) {
         for (String param : geoTiffParams) {
             String value = KvpUtils.firstValue(kvp, param);
             if (value != null) {
                 ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
-                item.setNamespace(GEOTIFF_NS);
+                item.setNamespace(namespace);
                 item.setName(param);
                 item.setSimpleContent(value);
 
@@ -109,16 +121,16 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
             gc.getExtension().getContents().add(item);
         }
     }
-    
+
     private void parseRangeSubsetExtension(GetCoverageType gc, Map kvp) {
-        if(kvp.containsKey("rangesubset")) {
+        if (kvp.containsKey("rangesubset")) {
             ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
             item.setNamespace(RangeSubset.NAMESPACE);
             item.setName("RangeSubset");
             item.setObjectContent(kvp.get("rangesubset"));
             gc.getExtension().getContents().add(item);
         }
-        
+
     }
 
 }
